@@ -1,17 +1,18 @@
 import { reactive } from "vue";
 
-const defaultStatblock = {
+export const defaultStatblock = {
     "description": {
-        "name": "" as string,
+        "name": "Bob the Builder" as string,
         "description": "" as string,
         "image": "" as string,
         "faction": "" as string,
         "environment": "" as string,
-        "alignment": "" as string,
+        "alignment": "Neutral Good" as string,
         "cr": 0 as number,
     } as Description,
     "core": {
-        "race": "" as string,
+        "proficiencyBonus": 2 as number,
+        "race": "Humanoid" as string,
         "size": "Medium" as "Tiny" | "Small" | "Medium" | "Large" | "Huge" | "Gargantuan",
         "speed": {
             "walk": 30 as number,
@@ -93,6 +94,7 @@ export interface Statblock {
     cr: number;
   }
   export interface Core {
+    proficiencyBonus: number;
     race: string;
     size: string;
     speed: Speed;
@@ -164,7 +166,7 @@ export interface Statblock {
   
 // TODO: add typing
 export const StatblockValues = reactive({
-    data: {} as Statblock,
+    data: defaultStatblock as Statblock,
     get(): Statblock {
         return this.data;
     },

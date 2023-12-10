@@ -1,11 +1,13 @@
 <template>
- Home
+	This is a page to view a specific personal bestiary.
 </template>
 
 <script lang="ts">
 import {RouterLink, RouterView} from "vue-router";
 import { defineComponent } from "vue";
+export default defineComponent({
 
+})
 </script>
 
 <style scoped lang="less">
