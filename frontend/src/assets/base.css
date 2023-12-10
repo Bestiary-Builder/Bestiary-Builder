@@ -1,0 +1,199 @@
+@import "https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700";
+:root {
+	--color-surface-0: #121c25;
+	--color-surface-1: #2b3b42;
+	--color-surface-2: #23313c;
+	--color-surface-3: #1b262e;
+	--color-surface-4: #23313c;
+	--color-base: #c1c5c5;
+	--color-base--emphasized: #edeff0;
+	--color-base--subtle: #ff820d;
+	--color-primary__h: 202;
+	--color-primary__s: 82%;
+	--color-primary__l: 71%;
+	--color-destructive: #ee3355;
+	--color-success: #4cb31b;
+	--color-warning: #ff820d;
+	--color-link-new: #ee3355;
+	--color-link: #79c6f2;
+	--border-color-base: rgba(255, 255, 255, 0.2);
+	--shadow-strength: 0.3;
+	--font-family-base: "Atkinson Hyperlegible", system-ui, -apple-system, sans-serif;
+
+	--rarity-color-common: #dfe3e8;
+	--rarity-color-uncommon: #4cb31b;
+	--rarity-color-rare: #1da7ec;
+	--rarity-color-epic: #4f0e8b;
+	--rarity-color-exotic: #ee3355;
+	--rarity-color-legendary: #ff820d;
+
+	--background-color-quiet--hover: rgba(255, 255, 255, 0.07);
+
+	--border-color-base--lighter: rgba(255, 255, 255, 0.02);
+	--border-color-base--darker: rgba(255, 255, 255, 0.08);
+	--border-color-input: rgba(255, 255, 255, 0.05);
+	--border-color-input--hover: rgba(255, 255, 255, 0.5);
+
+	--color-primary: hsl(var(--color-primary__h), var(--color-primary__s), var(--color-primary__l));
+
+	--border-radius--small: 4px;
+	--border-radius--medium: 8px;
+	--border-radius--large: 12px;
+
+	--background-color-icon: rgba(255, 255, 255, 0.6);
+	--background-color-icon--hover: rgba(255, 255, 255, 0.8);
+	--background-color-icon--active: rgba(255, 255, 255, 0.4);
+
+	--background-color-quiet: transparent;
+	--background-color-quiet--hover: rgba(255, 255, 255, 0.07);
+	--background-color-quiet--active: rgba(255, 255, 255, 0.03);
+}
+
+html {
+	--header-size: 3.5rem;
+	--width-layout: 960px;
+	--width-layout--extended: calc(var(--width-layout) * 1.5);
+	--line-height: 1.6;
+	--space-unit: 1rem;
+	--space-xs: calc(0.25 * var(--space-unit));
+	--space-sm: calc(0.5 * var(--space-unit));
+	--space-md: var(--space-unit);
+	--space-lg: calc(1.5 * var(--space-unit));
+	--space-xl: calc(2 * var(--space-unit));
+	--margin-layout: calc((100vw - var(--width-layout)) / 2);
+	--padding-page: 20px;
+	--padding-page--negative: calc(var(--padding-page) * -1);
+}
+
+html,
+body {
+	min-height: 100vh;
+	max-width: 100vw;
+	padding: 0;
+	margin: 0;
+	accent-color: var(--color-base--subtle);
+	background: var(--color-surface-0);
+	color: var(--color-base);
+}
+
+body {
+	font-family: var(--font-family-base);
+}
+
+@media (hover: hover) {
+	* {
+		scrollbar-width: thin;
+	}
+
+	::-webkit-scrollbar {
+		width: 14px;
+	}
+
+	::-webkit-scrollbar-track {
+		background: transparent;
+		transition: background 100ms ease;
+	}
+
+	::-webkit-scrollbar-track:hover {
+		background: var(--background-color-quiet--hover);
+	}
+
+	::-webkit-scrollbar-thumb {
+		border: 5px solid transparent;
+		border-radius: var(--border-radius--large);
+		background-clip: content-box;
+		box-shadow: inset 0 0 0 10px var(--background-color-icon);
+	}
+
+	::-webkit-scrollbar-thumb:hover {
+		box-shadow: inset 0 0 0 10px var(--background-color-icon--hover);
+	}
+	::-webkit-scrollbar-thumb:active {
+		box-shadow: inset 0 0 0 10px var(--background-color-icon--active);
+	}
+
+	::-webkit-scrollbar-button {
+		display: none;
+		width: 0;
+		height: 0;
+	}
+
+	::-webkit-scrollbar-corner {
+		background-color: transparent;
+	}
+}
+
+/* Box sizing rules */
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+/* Remove default margin */
+body,
+h1,
+h2,
+h3,
+h4,
+p,
+figure,
+blockquote,
+dl,
+dd {
+	margin: 0;
+}
+
+/* Remove list styles on ul, ol elements with a list role, which suggests default styling will be removed */
+ul[role="list"],
+ol[role="list"] {
+	list-style: none;
+}
+
+/* Set core root defaults */
+html:focus-within {
+	scroll-behavior: smooth;
+}
+
+/* Set core body defaults */
+body {
+	min-height: 100vh;
+	text-rendering: optimizeSpeed;
+	line-height: 1.5;
+}
+
+/* A elements that don't have a class get default styles */
+a:not([class]) {
+	text-decoration-skip-ink: auto;
+}
+
+/* Make images easier to work with */
+img,
+picture {
+	max-width: 100%;
+	display: block;
+}
+
+/* Inherit fonts for inputs and buttons */
+input,
+button,
+textarea,
+select {
+	font: inherit;
+}
+
+/* Remove all animations, transitions and smooth scroll for people that prefer not to see them */
+@media (prefers-reduced-motion: reduce) {
+	html:focus-within {
+		scroll-behavior: auto;
+	}
+
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}

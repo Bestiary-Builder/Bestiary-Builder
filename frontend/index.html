@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<link rel="icon" href="/favicon.ico" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Bestiary Builder</title>
+	</head>
+	<body>
+		<noscript>
+			<h1>This page requires JavaScript to function.</h1>
+		</noscript>
+		<script type="module" src="/src/main.ts"></script>
+		<script>
+			window.addEventListener("load", (e) => {
+				document.body.classList.add("loaded");
+			});
+		</script>
+		<style>
+			body {
+				opacity: 0;
+			}
+			body.loaded {
+				opacity: 1;
+			}
+		</style>
+	</body>
+</html>

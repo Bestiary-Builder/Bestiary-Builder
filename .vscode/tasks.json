@@ -1,0 +1,102 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "debug-both",
+			"type": "shell",
+			"group": "test",
+			"dependsOrder": "sequence",
+			"dependsOn": ["build-frontend", "start-backend"]
+		},
+		{
+			"label": "debug-frontend",
+			"type": "shell",
+			"options": {
+				"cwd": "${workspaceFolder}/frontend"
+			},
+			"command": "npm run dev",
+			"isBackground": true,
+			"group": "test",
+			"problemMatcher": [
+				{
+					"pattern": [
+						{
+							"regexp": ".",
+							"file": 1,
+							"line": 1,
+							"column": 1,
+							"message": 1
+						}
+					],
+					"background": {
+						"activeOnStart": true,
+						"beginsPattern": {
+							"regexp": "."
+						},
+						"endsPattern": {
+							"regexp": "."
+						}
+					}
+				}
+			]
+		},
+		{
+			"label": "start-backend",
+			"type": "shell",
+			"options": {
+				"cwd": "${workspaceFolder}/backend"
+			},
+			"command": "npm run start",
+			"isBackground": true,
+			"group": "test",
+			"problemMatcher": [
+				{
+					"pattern": [
+						{
+							"regexp": ".",
+							"file": 1,
+							"line": 1,
+							"column": 1,
+							"message": 1
+						}
+					],
+					"background": {
+						"activeOnStart": true,
+						"beginsPattern": {
+							"regexp": "."
+						},
+						"endsPattern": {
+							"regexp": "."
+						}
+					}
+				}
+			]
+		},
+		{
+			"label": "build-frontend",
+			"type": "shell",
+			"options": {
+				"cwd": "${workspaceFolder}/frontend"
+			},
+			"command": "npm run build",
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "startup",
+			"type": "shell",
+			"group": "none",
+			"command": "cd frontend;npm i;cd ../backend;npm i",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"presentation": {
+				"reveal": "always",
+				"panel": "new"
+			},
+			"runOptions": {
+				"runOn": "folderOpen"
+			}
+		}
+	]
+}

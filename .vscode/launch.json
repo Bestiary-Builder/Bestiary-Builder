@@ -1,0 +1,19 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"type": "chrome",
+			"request": "launch",
+			"name": "Chrome: Debug both backend and frontend",
+			"url": "http://localhost:5000",
+			"preLaunchTask": "debug-both"
+		},
+		{
+			"type": "chrome",
+			"request": "launch",
+			"name": "Chrome: Debug only frontend",
+			"url": "http://localhost:5173",
+			"preLaunchTask": "debug-frontend"
+		}
+	]
+}
