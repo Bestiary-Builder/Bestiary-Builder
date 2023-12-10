@@ -23,6 +23,7 @@
 		"helmet": "^7.0.0",
 		"https": "^1.0.0",
 		"jsonwebtoken": "^9.0.2",
+		"mongodb": "^6.3.0",
 		"node-fetch": "^3.3.2"
 	},
 	"devDependencies": {

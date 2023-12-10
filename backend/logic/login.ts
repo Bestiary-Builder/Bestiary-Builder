@@ -2,15 +2,7 @@ import {app} from "../server";
 import fetch, {Request, Response} from "node-fetch";
 import jwt from "jsonwebtoken";
 
-export type user = {
-	id: string;
-	username: string;
-	avatar: string;
-	email: string;
-	verified: true;
-	banner_color: boolean;
-	global_name: string;
-};
+import {getUser, updateUser, User} from "./database";
 
 app.get("/login", async (req, res) => {
 	let code = req.query.code as string;
@@ -44,15 +36,31 @@ app.get("/login", async (req, res) => {
 							authorization: `${oauthData?.token_type} ${oauthData?.access_token}`
 						}
 					})
-				).json()) as user;
+				).json()) as {
+					id: string;
+					username: string;
+					avatar: string;
+					email: string;
+					verified: boolean;
+					banner_color: string;
+					global_name: string;
+				};
 				if (userResult) {
-					console.log(userResult);
 					//Create token
 					const token = jwt.sign(userResult, process.env.JWT_TOKEN ?? "", {
 						expiresIn: "72h"
 					});
 					res.cookie("userToken", token, {expires: new Date(new Date().getTime() + 60 * 60 * 1000 * 24 * 3)});
 					console.log("User logged in: " + userResult.username);
+					await updateUser({
+						id: userResult.id,
+						username: userResult.username,
+						avatar: userResult.avatar,
+						email: userResult.email,
+						verified: userResult.verified,
+						banner_color: userResult.banner_color,
+						global_name: userResult.global_name
+					});
 					res.redirect("/");
 				} else {
 					res.redirect("/?error=" + encodeURIComponent("No user recieved from discord."));
@@ -95,6 +103,7 @@ export const verifyToken = (req: any, res: any, next: any) => {
 	return next();
 };
 
-app.get("/user", verifyToken, (req, res) => {
-	return res.json(req.body.user as user);
+app.get("/user", verifyToken, async (req, res) => {
+	let userData = (await getUser(req.body.user?.id)) as User;
+	return res.json(userData);
 });
