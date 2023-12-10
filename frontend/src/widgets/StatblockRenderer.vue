@@ -32,29 +32,30 @@
     </div>
     <div class="stat-block__row stat-block__abilities">
         <div>
-            <div> STR </div>
+            <div> <b>STR</b> </div>
             <span> {{ data.abilities.stats.str }}  ({{ statSign("str")}}{{ statCalc("str") }})</span>
         </div>
         <div>
-            <div> DEX </div>
+            <div> <b>DEX</b> </div>
             <span> {{ data.abilities.stats.dex }}  ({{ statSign("dex")}}{{ statCalc("dex") }})</span>
         </div>
         <div>
-            <div> CON </div>
+            <div> <b>CON</b> </div>
             <span> {{ data.abilities.stats.con }}  ({{ statSign("con")}}{{ statCalc("con") }})</span>
         </div>
         <div>
-            <div> WIS </div>
+            <div> <b>INT</b> </div>
+            <span> {{ data.abilities.stats.int }}  ({{ statSign("int")}}{{ statCalc("int") }})</span>
+        </div>
+        <div>
+            <div> <b>WIS</b> </div>
             <span> {{ data.abilities.stats.wis }}  ({{ statSign("wis")}}{{ statCalc("wis") }})</span>
         </div>
         <div>
-            <div> CHA </div>
+            <div> <b>CHA</b> </div>
             <span> {{ data.abilities.stats.cha }}  ({{ statSign("cha")}}{{ statCalc("cha") }})</span>
         </div>
-        <div>
-            <div> INT </div>
-            <span> {{ data.abilities.stats.int }}  ({{ statSign("int")}}{{ statCalc("int") }})</span>
-        </div>
+
     </div>
 </div>
 
