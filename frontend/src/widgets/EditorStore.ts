@@ -1,6 +1,6 @@
 import { reactive } from "vue";
 
-const format = {
+const defaultStatblock = {
     "description": {
         "name": "" as string,
         "description": "" as string,
@@ -173,5 +173,24 @@ export const StatblockValues = reactive({
     },
     clear() {
         this.data = {} as Statblock
+    },
+
+    updateName(newName: string) : void {
+        this.data.description.name = newName;
+    },
+    updateDesc(newDesc: string) : void {
+        this.data.description.description = newDesc;
+    },
+    updateImage(newImage: string) : void {
+        this.data.description.image = newImage;
+    },
+    updateEnv(newEnv: string) : void {
+        this.data.description.environment = newEnv;
+    },
+    updateFaction(newFaction: string) : void {
+        this.data.description.faction = newFaction;
+    },
+    updateCr(newCr: number) : void {
+        this.data.description.cr = newCr;
     }
 })
