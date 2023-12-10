@@ -30,6 +30,6 @@ LICENSE.md
 
 frontend/public/sitemap.xml
 
-backend/SSH to server.bat
-
 backend/SSL Certificate update.txt
+
+.env

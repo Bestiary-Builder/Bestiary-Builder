@@ -21,8 +21,7 @@
 					</ul>
 				</nav>
 			</section>
-			<section class="citizen-footer__bottom">
-			</section>
+			<section class="citizen-footer__bottom"></section>
 		</div>
 	</footer>
 </template>
@@ -31,22 +30,8 @@ import {defineComponent} from "vue";
 
 export default defineComponent({
 	name: "Footer",
-	data() {
-		return {
-			META: {} as any
-		};
-	},
-	async mounted() {
-		async function get_meta_data() {
-			const response = await fetch("https://raw.githubusercontent.com/TCF-Wiki/TCF-Information/main/META.json", {});
-			const json = await response.json();
-
-			return json;
-		}
-
-		const META = await get_meta_data();
-		this.META = META;
-	}
+	data: () => ({} as {}),
+	async mounted() {}
 });
 </script>
 <style scoped lang="less">
