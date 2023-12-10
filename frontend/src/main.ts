@@ -26,5 +26,16 @@ app.use(ToastPlugin, {
 
 export const toast = app.config.globalProperties.$toast;
 
+//Types
+export type user = {
+	id: string;
+	username: string;
+	avatar: string;
+	email: string;
+	verified: true;
+	banner_color: boolean;
+	global_name: string;
+};
+
 //Mount
 app.mount("body");

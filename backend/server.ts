@@ -1,3 +1,4 @@
+console.log("Server!");
 import fs from "fs";
 import path from "path";
 import dotenv from "dotenv";
@@ -5,14 +6,15 @@ import dotenv from "dotenv";
 dotenv.config();
 const enableHttps = (process.env.enableHttps == "true") as boolean;
 const frontendPath = path.join(__dirname, process.env.frontendPath as string);
- 
+
 import express from "express";
 import bodyParser from "body-parser";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import cors from "cors";
 import compression from "compression";
- 
+import cookieParser from "cookie-parser";
+
 //Setup express server with settings
 export const app = express();
 app.use(bodyParser.urlencoded({extended: false}));
@@ -23,6 +25,7 @@ app.use(
 		max: 100 // limit each IP to 100 requests per windowMs
 	})
 );
+app.use(cookieParser());
 app.use(express.json());
 app.use(cors());
 app.use(compression());
@@ -30,7 +33,7 @@ app.use(compression());
 //Function to run on all requests
 app.use(function (req, res, next) {
 	//Set Content Security Policy (CSP)
-	res.setHeader("Content-Security-Policy", "default-src 'self';" + "img-src 'self' data: thecyclefrontier.wiki;" + "script-src 'self' 'sha256-reBsRZd5I88opZSwT59Ir+QlBhrEhdRJ1aQUr4GXhyw=';" + "style-src 'self' 'unsafe-inline' fonts.googleapis.com;" + "font-src 'self' data: fonts.gstatic.com;" + "connect-src 'self' raw.githubusercontent.com/TCF-Wiki/TCF-Information/;");
+	res.setHeader("Content-Security-Policy", "default-src 'self';" + "img-src 'self' data: 'self';" + "script-src 'self' 'sha256-reBsRZd5I88opZSwT59Ir+QlBhrEhdRJ1aQUr4GXhyw=';" + "style-src 'self' 'unsafe-inline' fonts.googleapis.com;" + "font-src 'self' data: fonts.gstatic.com;" + "connect-src 'self' discord.com;");
 	//Redirect http to https
 	if (enableHttps) {
 		if (!req.secure) {
@@ -39,9 +42,6 @@ app.use(function (req, res, next) {
 	}
 	next();
 });
-
-//Static files
-app.use(express.static(frontendPath));
 
 //Setup http server
 import http from "http";
@@ -71,7 +71,9 @@ if (enableHttps) {
 }
 
 //Load logic
-import "./mainLogic";
+require("./mainLogic");
 
+//Static files
+app.use(express.static(frontendPath));
 //Redirect everything else to dist
 app.use("/*", express.static(frontendPath));
