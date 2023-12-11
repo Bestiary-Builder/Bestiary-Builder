@@ -54,14 +54,14 @@
         </div>
     </div>
     <div class="stat-block__row">
-        <div v-if="Object.values(data.abilities.saves).some(val => val)" class="stat-block__save-container"> 
+        <div v-if="Object.values(data.abilities.saves).some((val : any )=> (val.isProficient === true || val.override !== null))" class="stat-block__save-container"> 
             <b> Saving Throws </b>
-            <span v-if="data.abilities.saves.str"> Str {{ saveSign("str") }}{{statCalc("str")+data.core.proficiencyBonus  }}<span class="ending-comma">,</span></span>
-            <span v-if="data.abilities.saves.dex"> Dex {{ saveSign("dex") }}{{statCalc("dex")+data.core.proficiencyBonus  }}<span class="ending-comma">,</span></span>
-            <span v-if="data.abilities.saves.con"> Con {{ saveSign("con") }}{{statCalc("con")+data.core.proficiencyBonus  }}<span class="ending-comma">,</span></span>
-            <span v-if="data.abilities.saves.int"> Int {{ saveSign("int") }}{{statCalc("int")+data.core.proficiencyBonus  }}<span class="ending-comma">,</span></span>
-            <span v-if="data.abilities.saves.wis"> Wis {{ saveSign("wis") }}{{statCalc("wis")+data.core.proficiencyBonus  }}<span class="ending-comma">,</span></span>
-            <span v-if="data.abilities.saves.cha"> Cha {{ saveSign("cha") }}{{statCalc("cha")+data.core.proficiencyBonus  }}<span class="ending-comma">,</span></span>
+            <span v-if="null !== data.abilities.saves.str.override"> Str {{ saveSign("str") }}{{data.abilities.saves.str.override }}<span class="ending-comma">,</span> </span> <span v-else-if="data.abilities.saves.str.isProficient"> Str {{ saveSign("str") }}{{statCalc("str")+data.core.proficiencyBonus  }}<span class="ending-comma">,</span></span>
+            <span v-if="null !== data.abilities.saves.dex.override"> Dex {{ saveSign("dex") }}{{data.abilities.saves.dex.override }}<span class="ending-comma">,</span> </span> <span v-if="data.abilities.saves.dex.isProficient"> Dex {{ saveSign("dex") }}{{statCalc("dex")+data.core.proficiencyBonus  }}<span class="ending-comma">,</span></span>
+            <span v-if="null !== data.abilities.saves.con.override"> Con {{ saveSign("con") }}{{data.abilities.saves.con.override }}<span class="ending-comma">,</span> </span> <span v-if="data.abilities.saves.con.isProficient"> Con {{ saveSign("con") }}{{statCalc("con")+data.core.proficiencyBonus  }}<span class="ending-comma">,</span></span>
+            <span v-if="null !== data.abilities.saves.int.override"> Int {{ saveSign("int") }}{{data.abilities.saves.int.override }}<span class="ending-comma">,</span> </span> <span v-if="data.abilities.saves.int.isProficient"> Int {{ saveSign("int") }}{{statCalc("int")+data.core.proficiencyBonus  }}<span class="ending-comma">,</span></span>
+            <span v-if="null !== data.abilities.saves.wis.override"> Wis {{ saveSign("wis") }}{{data.abilities.saves.wis.override }}<span class="ending-comma">,</span> </span> <span v-if="data.abilities.saves.wis.isProficient"> Wis {{ saveSign("wis") }}{{statCalc("wis")+data.core.proficiencyBonus  }}<span class="ending-comma">,</span></span>
+            <span v-if="null !== data.abilities.saves.cha.override"> Cha {{ saveSign("cha") }}{{data.abilities.saves.cha.override }}<span class="ending-comma">,</span> </span> <span v-if="data.abilities.saves.cha.isProficient"> Cha {{ saveSign("cha") }}{{statCalc("cha")+data.core.proficiencyBonus  }}<span class="ending-comma">,</span></span>
         </div>
         <div class="stat-block__skills-container" v-if="showSkills()">
             <b> Skills </b>
@@ -81,15 +81,14 @@
     </div>
 </div>
 
-<div class="stat-block-description">
-    {{ data.description.description }}
-</div>
-<span id="bla"> {{  data  }} </span>
+
+<pre id="bla"> {{  yamlString()  }} </pre>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import type { SkillsEntity, Statblock } from './types';
+import type { SaveEntity, SkillsEntity, Statblock } from './types';
+import { stringify } from 'yaml'
 export default defineComponent({
     props: ["data"],
     data() {
@@ -116,7 +115,7 @@ export default defineComponent({
             return ""
         },
         saveSign(stat: string): string {
-            if (this.statCalc(stat)+this.data.core.proficiencyBonus >= 0) {
+            if (this.statCalc(stat)+this.data.core.proficiencyBonus >= 0 || this.data.abilities.saves[stat].override >= 0) {
                 return "+"
             }
             return ""
@@ -153,8 +152,9 @@ export default defineComponent({
                 for (let stat in SKILLS_BY_STAT) {
                     if (SKILLS_BY_STAT[stat].includes(skills[skill].skillName.replace(" ", "").toLowerCase())) {
                         output += skills[skill].skillName.charAt(0).toUpperCase() + skills[skill].skillName.slice(1).toLowerCase()
-                        if (skills[skill].override) {
-                            output += ` ${skills[skill].override >= 0 ? '+' : ''}${skills[skill].override}, `
+                        if (skills[skill].override && skills[skill].override !== null) {
+                            let over = skills[skill].override
+                            output += ` ${over ?? 0 >= 0 ? '+' : ''}${over}${index == skills.length ? '' : ','} `
                         } else {
                             bonus = this.statCalc(stat)
                             if (skills[skill].isHalfProficient) {
@@ -180,6 +180,9 @@ export default defineComponent({
                 if (sk.isProficient || sk.isHalfProficient || sk.isExpertise || sk.override) return true
             }
             return false
+        },
+        yamlString() {
+            return stringify(this.data)
         }
     }
 
@@ -227,7 +230,6 @@ export default defineComponent({
 
 #bla {
     display: block;
-    margin-top: 10rem;
 }
 
 

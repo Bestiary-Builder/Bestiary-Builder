@@ -18,7 +18,9 @@
 		"mitt": "^3.0.0",
 		"vue": "^3.3.2",
 		"vue-router": "^4.2.1",
-		"vue-toast-notification": "^3.1.1"
+		"vue-select": "^4.0.0-beta.6",
+		"vue-toast-notification": "^3.1.1",
+		"yaml": "^2.3.4"
 	},
 	"devDependencies": {
 		"@tsconfig/node18": "^2.0.1",

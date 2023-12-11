@@ -245,58 +245,74 @@
                         STR
                     </span>
                     <div class="editor-field__contents">
-                        <input type="checkbox" v-model="data.abilities.saves.str">
+                        <input type="checkbox" v-model="data.abilities.saves.str.isProficient">
                     </div>
+                    <p>Override = <input type="number" placeholder="0" v-model="data.abilities.saves.str.override" step=1 > <span @click="data.abilities.saves.str.override = null"> reset </span> </p>
                 </div>
                 <div class="editor-field__slim">
                     <span class="editor-field__title">
                         DEX
                     </span>
                     <div class="editor-field__contents">
-                        <input type="checkbox" v-model="data.abilities.saves.dex">
+                        <input type="checkbox" v-model="data.abilities.saves.dex.isProficient">
                     </div>
+                    <p>Override = <input type="number" placeholder="0" v-model="data.abilities.saves.dex.override" step=1 > <span @click="data.abilities.saves.dex.override = null"> reset </span> </p>
+
                 </div>
                 <div class="editor-field__slim">
                     <span class="editor-field__title">
                         CON
                     </span>
                     <div class="editor-field__contents">
-                        <input type="checkbox" v-model="data.abilities.saves.con">
+                        <input type="checkbox" v-model="data.abilities.saves.con.isProficient">
                     </div>
+                    <p>Override = <input type="number" placeholder="0" v-model="data.abilities.saves.con.override" step=1 > <span @click="data.abilities.saves.con.override = null"> reset </span> </p>
+
                 </div>
                 <div class="editor-field__slim">
                     <span class="editor-field__title">
                         WIS
                     </span>
                     <div class="editor-field__contents">
-                        <input type="checkbox" v-model="data.abilities.saves.wis">
+                        <input type="checkbox" v-model="data.abilities.saves.wis.isProficient">
                     </div>
+                    <p>Override = <input type="number" placeholder="0" v-model="data.abilities.saves.wis.override" step=1 > <span @click="data.abilities.saves.wis.override = null"> reset </span> </p>
+
                 </div>
                 <div class="editor-field__slim">
                     <span class="editor-field__title">
                         CHA
                     </span>
                     <div class="editor-field__contents">
-                        <input type="checkbox" v-model="data.abilities.saves.cha">
+                        <input type="checkbox" v-model="data.abilities.saves.cha.isProficient">
                     </div>
+                    <p>Override = <input type="number" placeholder="0" v-model="data.abilities.saves.cha.override" step=1 > <span @click="data.abilities.saves.cha.override = null"> reset </span> </p>
+
                 </div>
                 <div class="editor-field__slim">
                     <span class="editor-field__title">
                         INT
                     </span>
                     <div class="editor-field__contents">
-                        <input type="checkbox" v-model="data.abilities.saves.int">
+                        <input type="checkbox" v-model="data.abilities.saves.int.isProficient">
                     </div>
+                    <p>Override = <input type="number" placeholder="0" v-model="data.abilities.saves.int.override" step=1 > <span @click="data.abilities.saves.int.override = null"> reset </span> </p>
+
                 </div>
                 <h2> Skills </h2>
                 <div class="editor-field__slim">
                     <div v-for="skill, index in data.abilities.skills">
-                        <b> <input type="text" v-model="skill.skillName"> </b>
+                        <!-- <b> <input type="text" v-model="skill.skillName"> </b> -->
+                        <v-select 
+                            placeholder="Select a skill" 
+                            v-model="skill.skillName"
+                            :options="['Perception', 'Athletics']" 
+                        />
                         <div class="editor-field__contents">
                         <p> Is Proficient? <input type="checkbox" v-model="skill.isProficient" @click="disableOtherSkills(index, 'prof', skill.isProficient)"> </p>
                         <p>Is Expertise? <input type="checkbox" v-model="skill.isExpertise" @click="disableOtherSkills(index, 'exp', skill.isExpertise)"> </p>
                         <p>Is Half Proficient? <input type="checkbox" v-model="skill.isHalfProficient" @click="disableOtherSkills(index, 'halfprof', skill.isHalfProficient)"> </p>
-                        <p>Skill Override = <input type="number" placeholder="0" v-model="skill.override" step=1 > <span @click="skill.override = NaN"> reset </span> </p>
+                        <p>Skill Override = <input type="number" placeholder="0" v-model="skill.override" step=1 > <span @click="skill.override = null"> reset </span> </p>
                         </div>
                         <button @click="deleteSkill(index)"> Delete </button>
                         <hr>
@@ -428,7 +444,7 @@ export default defineComponent({
                 "isHalfProficient": false,
                 "isProficient": true,
                 "isExpertise": false ,
-                "override": NaN
+                "override": null
             } as SkillsEntity
         },
         disableOtherSkills(index: number, type: "prof" | "exp" | "halfprof", value: boolean) : void {

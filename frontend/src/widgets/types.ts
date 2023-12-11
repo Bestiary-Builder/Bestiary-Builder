@@ -41,12 +41,12 @@ export const defaultStatblock = {
             "cha": 10 as number,
         } as Stats,
         "saves": {
-            "str": false as boolean,
-            "dex": false as boolean,
-            "con": false as boolean,
-            "wis": false as boolean,
-            "int": false as boolean,
-            "cha": false as boolean,
+            "str": {isProficient: false as boolean, override: null as number | null},
+            "dex": {isProficient: false as boolean, override: null as number | null},
+            "con": {isProficient: false as boolean, override: null as number | null},
+            "wis": {isProficient: false as boolean, override: null as number | null},
+            "int": {isProficient: false as boolean, override: null as number | null},
+            "cha": {isProficient: false as boolean, override: null as number | null},
         } as Saves,
         "skills": [] as SkillsEntity[]
     } as Abilities,
@@ -54,7 +54,6 @@ export const defaultStatblock = {
         "hp": {
             "numOfHitDie": 1 as number,
             "sizeOfHitDie": 6 as number,
-            "calculatedTotal": 0 as number, // ((size +1)/2+conMod)*num
             "override": false as boolean | number
         } as Hp,
         "ac": {
@@ -122,20 +121,26 @@ export interface Statblock {
     int: number;
     cha: number;
   }
+
   export interface Saves {
-    str: boolean;
-    dex: boolean;
-    con: boolean;
-    wis: boolean;
-    int: boolean;
-    cha: boolean;
+    str: SaveEntity;
+    dex: SaveEntity;
+    con: SaveEntity;
+    wis: SaveEntity;
+    int: SaveEntity;
+    cha: SaveEntity;
   }
+  export interface SaveEntity {
+    isProficient: boolean;
+    override: number | null
+  }
+
   export interface SkillsEntity {
     skillName: string;
     isHalfProficient: boolean;
     isProficient: boolean;
     isExpertise: boolean;
-    override: number;
+    override: number | null;
   }
   export interface Defenses {
     hp: Hp;
@@ -148,7 +153,6 @@ export interface Statblock {
   export interface Hp {
     numOfHitDie: number;
     sizeOfHitDie: number;
-    calculatedTotal: number;
     override: boolean;
   }
   export interface Ac {
