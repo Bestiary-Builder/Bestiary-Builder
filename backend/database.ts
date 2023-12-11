@@ -29,7 +29,7 @@ export async function startConnection() {
 
 //Collections
 export class User {
-	constructor(public username: string, public avatar: string, public email: string, public verified: boolean, public banner_color: string, public global_name: string, public bestiaries: ObjectId[] = [], public _id?: string) {}
+	constructor(public username: string, public avatar: string, public email: string, public verified: boolean, public banner_color: string, public global_name: string, public bestiaries: ObjectId[] = [], public _id?: string, public secret?: ObjectId) {}
 }
 export class Bestiary {
 	constructor(public name: string, public owner: string, public status: "public" | "private" | "unlisted", public description: string, public creatures: ObjectId[], public _id?: ObjectId) {}
@@ -43,6 +43,10 @@ export const collections: {users?: Collection<User>; bestiaries?: Collection<Bes
 export async function getUser(id: string) {
 	return (await collections.users?.findOne({_id: id})) as User;
 }
+export async function getUserFromSecret(secret: ObjectId) {
+	if (!secret) return null;
+	return (await collections.users?.findOne({secret: secret})) as User;
+}
 export async function updateUser(data: {_id: string; username: string; avatar: string; email: string; verified: boolean; banner_color: string; global_name: string}) {
 	console.log("Updating user", data);
 	if (await getUser(data._id)) {
@@ -52,6 +56,7 @@ export async function updateUser(data: {_id: string; username: string; avatar: s
 		console.log("Adding new user to collection with id " + data._id.toString());
 		let userData = data as User;
 		userData._id = data._id;
+		userData.secret = new ObjectId();
 		userData.bestiaries = [];
 		await collections.users?.insertOne(userData);
 	}
@@ -65,7 +70,7 @@ export async function updateBestiary(data: Bestiary, id?: ObjectId) {
 			console.log("Updating bestiary with id " + id.toString());
 			await collections.bestiaries?.updateOne({_id: id}, {$set: data});
 		} else {
-			console.error("Tryign to update non existant bestiary");
+			console.error("Trying to update non existant bestiary");
 		}
 	} else {
 		console.log("Adding new bestiary to collection");

@@ -2,7 +2,7 @@ import {app} from "../server";
 import fetch from "node-fetch";
 import jwt from "jsonwebtoken";
 
-import {getUser, updateUser, User} from "../database";
+import {getUser, getUserFromSecret, updateUser, User} from "../database";
 
 app.get("/login", async (req, res) => {
 	let code = req.query.code as string;
@@ -82,29 +82,27 @@ app.get("/logout", async (req, res) => {
 	res.clearCookie("userToken");
 	res.redirect("/");
 });
-export const verifyToken = (req: any, res: any, next: any) => {
-	//const token = req.body.token || req.query.token || req.headers["x-access-token"];
-	let token = req.cookies.userToken ?? false;
+export const authenticate = async (req: any, res: any, next: any) => {
+	let token = req.cookies.userToken;
 
 	if (!token) {
 		console.log("Authentication failed");
-		return res.status(403).send("Unauthorized; Token required");
+		return res.status(403).json({error: "Not logged in"});
 	}
 
 	try {
 		const decoded = jwt.verify(token, process.env.JWT_TOKEN ?? "") as any;
-		req.body.id = decoded.id;
+		let user = await getUser(decoded.id);
+		req.body.id = user.secret;
 		console.log("Authentication success with id " + decoded.id.toString());
 	} catch (err) {
 		console.log("Invalid Token, probably because it expired");
-		return res.status(401).send("Invalid Token (not logged in)!");
+		return res.status(401).send({error: "Invalid Token (not logged in)"});
 	}
-
 	return next();
 };
 
-app.get("/user", verifyToken, async (req, res) => {
-	let userData = (await getUser(req.body.id)) as User;
-	console.log(userData);
+app.get("/user", authenticate, async (req, res) => {
+	let userData = (await getUserFromSecret(req.body.id)) as User;
 	return res.json(userData);
 });
