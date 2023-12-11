@@ -164,7 +164,7 @@
                         Blindsight
                     </span>
                     <div class="editor-field__contents">
-                        <input type="number" placeholder="Type senses..." v-model="data.core.senses.blindsight" step="5">
+                        <input type="number" v-model="data.core.senses.blindsight" step="5">
                     </div>
                 </div>
                 <div class="editor-field__slim">
@@ -180,7 +180,7 @@
                         Truesight
                     </span>
                     <div class="editor-field__contents">
-                        <input type="number" placeholder="Type senses..." v-model="data.core.senses.truesight" step="5">
+                        <input type="number" v-model="data.core.senses.truesight" step="5">
                     </div>
                 </div>
                 <div class="editor-field__slim">
@@ -188,7 +188,7 @@
                         Tremorsense
                     </span>
                     <div class="editor-field__contents">
-                        <input type="number" placeholder="Type senses..." v-model="data.core.senses.tremorsense" step="5">
+                        <input type="number" v-model="data.core.senses.tremorsense" step="5">
                     </div>
                 </div>
                 <div class="editor-field__slim">
@@ -208,6 +208,15 @@
                     :taggable="true"
                     :pushTags="true"
                 />
+                <h2> Telepathy </h2>
+                <div class="editor-field__slim">
+                    <span class="editor-field__title">
+                        Telepathy
+                    </span>
+                    <div class="editor-field__contents">
+                        <input type="number" v-model="data.core.senses.telepathy" step="5" min="0">
+                    </div>
+                </div>
             </div>
             <div class="editor-content__tab-inner fade">
                 <h2> Ability Scores </h2>

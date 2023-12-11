@@ -101,10 +101,12 @@
         </div>
         <div class="stat-block__language-container"> 
             <b> Languages </b>
-            <span v-if="data.core.languages.length == 0"> — </span>
+            <span v-if="data.core.languages.length == 0 && !data.core.senses.telepathy"> — </span>
             <span v-else v-for="lang in langSort(data.core.languages)">
                 <span> {{ lang }}<span class="ending-comma">,</span></span>
             </span>
+            <span v-if="data.core.senses.telepathy"> telepathy {{ data.core.senses.telepathy}}ft.</span>
+
         </div>
         <div>
             <b> Challenge </b> {{ data.description.cr }} (1000 xp)

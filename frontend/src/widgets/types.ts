@@ -27,9 +27,10 @@ export const defaultStatblock = {
             "blindsight": 0 as number,
             "isBlind": false as boolean,
             "truesight": 0 as number,
-            "tremorsense": 0 as number
+            "tremorsense": 0 as number,
+            "telepathy": 0 as number,
         } as Senses,
-        "languages": ["Common"] as string[]
+        "languages": [] as string[]
     } as Core,
     "abilities": {
         "stats": {
@@ -107,6 +108,7 @@ export interface Statblock {
     isBlind: boolean;
     truesight: number;
     tremorsense: number;
+    telepathy: number;
   }
   export interface Abilities {
     stats: Stats;
