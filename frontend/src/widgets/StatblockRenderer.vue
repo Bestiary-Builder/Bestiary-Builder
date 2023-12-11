@@ -63,6 +63,10 @@
             <span v-if="data.abilities.saves.wis"> Wis {{ saveSign("wis") }}{{statCalc("wis")+data.core.proficiencyBonus  }}<span class="ending-comma">,</span></span>
             <span v-if="data.abilities.saves.cha"> Cha {{ saveSign("cha") }}{{statCalc("cha")+data.core.proficiencyBonus  }}<span class="ending-comma">,</span></span>
         </div>
+        <div class="stat-block__skills-container" v-if="showSkills()">
+            <b> Skills </b>
+            {{ skillOutput() }}
+        </div>
         <div ckass="stat-block__senses-container">
             <b> Senses </b>
             <span v-if="data.core.senses.darkvision"> darkvision {{ data.core.senses.darkvision}}ft.<span class="ending-comma">,</span></span>
@@ -85,7 +89,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import type { Statblock } from './types';
+import type { SkillsEntity, Statblock } from './types';
 export default defineComponent({
     props: ["data"],
     data() {
@@ -124,6 +128,58 @@ export default defineComponent({
                 else return hp.toString()
             }
             return ""
+        },
+        skillOutput() {
+            let skills : SkillsEntity[] = Array.from(this.data.abilities.skills)
+            skills.sort((a : SkillsEntity, b  : SkillsEntity) => {
+                return a.skillName.localeCompare(b.skillName)
+            })
+
+            const SKILLS_BY_STAT = {
+                "str": ["athletics"],
+                "dex": ["acrobatics", "sleightofhand", "stealth"],
+                "con": [],
+                "int": ["arcana", "history", "investigation", "nature", "religion"],
+                "wis": ["animalhandling", "insight", "medicine", "perception", "survival"],
+                "cha": ["deception", "intimidation", "performance", "persuasion"]
+            } as any
+            let output = ""
+            let index = 0;
+            for (let skill in skills) {
+                index++
+                if (!skills[skill].isExpertise && !skills[skill].isHalfProficient && !skills[skill].isProficient && !skills[skill].override) continue
+
+                let bonus = 0
+                for (let stat in SKILLS_BY_STAT) {
+                    if (SKILLS_BY_STAT[stat].includes(skills[skill].skillName.replace(" ", "").toLowerCase())) {
+                        output += skills[skill].skillName.charAt(0).toUpperCase() + skills[skill].skillName.slice(1).toLowerCase()
+                        if (skills[skill].override) {
+                            output += ` ${skills[skill].override >= 0 ? '+' : ''}${skills[skill].override}, `
+                        } else {
+                            bonus = this.statCalc(stat)
+                            if (skills[skill].isHalfProficient) {
+                                bonus += Math.floor(this.data.core.proficiencyBonus/2)
+                            } else if (skills[skill].isProficient) {
+                                bonus += this.data.core.proficiencyBonus
+                            } else if (skills[skill].isExpertise) {
+                                bonus += this.data.core.proficiencyBonus*2
+                            }
+                            output += ` ${bonus >= 0 ? '+' : ''}${bonus}${index == skills.length ? '' : ','} `
+                        }
+                        break;
+                    } else continue;
+                    
+                }
+
+            }
+            return output
+        },
+        showSkills() : boolean {
+            for (let skill in this.data.abilities.skills) {
+                let sk = this.data.abilities.skills[skill]
+                if (sk.isProficient || sk.isHalfProficient || sk.isExpertise || sk.override) return true
+            }
+            return false
         }
     }
 

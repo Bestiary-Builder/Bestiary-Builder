@@ -48,15 +48,7 @@ export const defaultStatblock = {
             "int": false as boolean,
             "cha": false as boolean,
         } as Saves,
-        "skills": [
-            {
-                "skillName": "" as string, 
-                "isHalfProficient": false as boolean,
-                "isProficient": false as boolean,
-                "isExpertise": false as boolean,
-                "override": false as boolean | number
-            } as SkillsEntity
-        ]
+        "skills": [] as SkillsEntity[]
     } as Abilities,
     "defenses": {
         "hp": {
@@ -143,7 +135,7 @@ export interface Statblock {
     isHalfProficient: boolean;
     isProficient: boolean;
     isExpertise: boolean;
-    override: boolean;
+    override: number;
   }
   export interface Defenses {
     hp: Hp;

@@ -7,16 +7,16 @@
             <div @click="currentSlide(1)" :class="{'active-slide': slideIndex === 1}" class="editor-nav__tab">
                 <span> Description </span>
             </div>
-            <div @click="currentSlide(2)" :class="{'active-slide': slideIndex === 1}" class="editor-nav__tab">
+            <div @click="currentSlide(2)" :class="{'active-slide': slideIndex === 2}" class="editor-nav__tab">
                 <span> Core </span>
             </div>
-            <div @click="currentSlide(3)" :class="{'active-slide': slideIndex === 1}" class="editor-nav__tab">
+            <div @click="currentSlide(3)" :class="{'active-slide': slideIndex === 3}" class="editor-nav__tab">
                 <span> Stats </span>
             </div>
-            <div @click="currentSlide(4)" :class="{'active-slide': slideIndex === 1}" class="editor-nav__tab">
+            <div @click="currentSlide(4)" :class="{'active-slide': slideIndex === 4}" class="editor-nav__tab">
                 <span> Defense </span>
             </div>
-            <div @click="currentSlide(5)" :class="{'active-slide': slideIndex === 1}" class="editor-nav__tab">
+            <div @click="currentSlide(5)" :class="{'active-slide': slideIndex === 5}" class="editor-nav__tab">
                 <span> Features </span>
             </div>
         </div>
@@ -288,7 +288,24 @@
                         <input type="checkbox" v-model="data.abilities.saves.int">
                     </div>
                 </div>
-                Skills (prof/exp/JoAT/override)
+                <h2> Skills </h2>
+                <div class="editor-field__slim">
+                    <div v-for="skill, index in data.abilities.skills">
+                        <b> <input type="text" v-model="skill.skillName"> </b>
+                        <div class="editor-field__contents">
+                        <p> Is Proficient? <input type="checkbox" v-model="skill.isProficient" @click="disableOtherSkills(index, 'prof', skill.isProficient)"> </p>
+                        <p>Is Expertise? <input type="checkbox" v-model="skill.isExpertise" @click="disableOtherSkills(index, 'exp', skill.isExpertise)"> </p>
+                        <p>Is Half Proficient? <input type="checkbox" v-model="skill.isHalfProficient" @click="disableOtherSkills(index, 'halfprof', skill.isHalfProficient)"> </p>
+                        <p>Skill Override = <input type="number" placeholder="0" v-model="skill.override" step=1 > <span @click="skill.override = NaN"> reset </span> </p>
+                        </div>
+                        <button @click="deleteSkill(index)"> Delete </button>
+                        <hr>
+                    </div>
+                    <div>
+                        <button class="editor-field__plus-button" @click="addNewSkill()"> +
+                        </button>
+                    </div>
+                </div>
             </div>
             <div class="editor-content__tab-inner fade">
                 <div class="editor-field__slim">
@@ -358,7 +375,7 @@
 import {RouterLink, RouterView} from "vue-router";
 import { defineComponent, watch } from "vue";
 import StatblockRenderer from "../widgets/StatblockRenderer.vue";
-import type { Statblock } from "@/widgets/types";
+import type { SkillsEntity, Statblock } from "@/widgets/types";
 import { defaultStatblock } from "@/widgets/types"
 export default defineComponent({
 	components: {
@@ -401,8 +418,42 @@ export default defineComponent({
             let bonus = Math.min(9, Math.floor((cr + 3) / 4));
 
             this.data.core.proficiencyBonus = bonus
+        },
+        addNewSkill() : void {
+            let index = 0;
+            if (this.data.abilities.skills?.length) index  = this.data.abilities.skills?.length
+            if (!this.data.abilities.skills) this.data.abilities.skills = []
+            this.data.abilities.skills[index] = {
+                "skillName": "" as string, 
+                "isHalfProficient": false,
+                "isProficient": true,
+                "isExpertise": false ,
+                "override": NaN
+            } as SkillsEntity
+        },
+        disableOtherSkills(index: number, type: "prof" | "exp" | "halfprof", value: boolean) : void {
+            if (!value && this.data.abilities.skills) {
+                if (type == "prof") {
+                    this.data.abilities.skills[index].isExpertise = false;
+                    this.data.abilities.skills[index].isHalfProficient = false;
+                }
+                if (type == "exp") {
+                    this.data.abilities.skills[index].isProficient = false;
+                    this.data.abilities.skills[index].isHalfProficient = false;
+                }
+                if (type == "halfprof") {
+                    this.data.abilities.skills[index].isExpertise = false;
+                    this.data.abilities.skills[index].isProficient = false;
+                }
+            }
+        },
+        deleteSkill(index: number) : void {
+            this.data.abilities.skills?.splice(index, 1)
         }
     },
+    mounted() {
+        this.showSlides(1)
+    }
 
 })
 </script>
