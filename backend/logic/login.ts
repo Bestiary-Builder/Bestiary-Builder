@@ -46,14 +46,9 @@ app.get("/login", async (req, res) => {
 					global_name: string;
 				};
 				if (userResult) {
-					//Create token
-					const token = jwt.sign(userResult, process.env.JWT_TOKEN ?? "", {
-						expiresIn: "72h"
-					});
-					res.cookie("userToken", token, {expires: new Date(new Date().getTime() + 60 * 60 * 1000 * 24 * 3)});
-					console.log("User logged in: " + userResult.username);
+					//Update user
 					await updateUser({
-						id: userResult.id,
+						_id: userResult.id,
 						username: userResult.username,
 						avatar: userResult.avatar,
 						email: userResult.email,
@@ -61,6 +56,13 @@ app.get("/login", async (req, res) => {
 						banner_color: userResult.banner_color,
 						global_name: userResult.global_name
 					});
+					//Create token
+					const token = jwt.sign({id: userResult.id}, process.env.JWT_TOKEN ?? "", {
+						expiresIn: "7d"
+					});
+					res.cookie("userToken", token, {expires: new Date(new Date().getTime() + 60 * 60 * 1000 * 24 * 7)});
+					//Logged in!
+					console.log("User logged in: " + userResult.username);
 					res.redirect("/");
 				} else {
 					res.redirect("/?error=" + encodeURIComponent("No user recieved from discord."));
@@ -85,16 +87,14 @@ export const verifyToken = (req: any, res: any, next: any) => {
 	let token = req.cookies.userToken ?? false;
 
 	if (!token) {
-		console.log("Unauthorized");
+		console.log("Authentication failed");
 		return res.status(403).send("Unauthorized; Token required");
 	}
 
 	try {
 		const decoded = jwt.verify(token, process.env.JWT_TOKEN ?? "") as any;
-
-		req.body.user = decoded;
-
-		console.log("Authentication success by: " + decoded.username);
+		req.body.id = decoded.id;
+		console.log("Authentication success with id " + decoded.id.toString());
 	} catch (err) {
 		console.log("Invalid Token, probably because it expired");
 		return res.status(401).send("Invalid Token (not logged in)!");
@@ -103,7 +103,10 @@ export const verifyToken = (req: any, res: any, next: any) => {
 	return next();
 };
 
+import {ObjectId} from "mongodb";
 app.get("/user", verifyToken, async (req, res) => {
-	let userData = (await getUser(req.body.user?.id)) as User;
+	console.log(req.body.id);
+	let userData = (await getUser(req.body.id)) as User;
+	console.log(userData);
 	return res.json(userData);
 });

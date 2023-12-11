@@ -1,5 +1,5 @@
 import {MongoClient, ServerApiVersion} from "mongodb";
-import type {Db, ObjectId, Collection} from "mongodb";
+import {Db, ObjectId, Collection} from "mongodb";
 import {app} from "../server";
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(process.env.MongoDB!, {
@@ -19,6 +19,8 @@ async function startConnection() {
 		// Send a ping to confirm a successful connection
 		database = client.db("bestiarybuilder");
 		collections.users = database.collection("Users");
+		collections.bestiaries = database.collection("Bestiaries");
+		collections.creatures = database.collection("Creatures");
 		console.log(`Successfully connected to database: ${database.databaseName} and collection: ${collections.users.collectionName}`);
 	} catch (e: any) {
 		console.error(e);
@@ -26,27 +28,89 @@ async function startConnection() {
 		await client.close();
 	}
 }
+
 //Collections
 export class User {
-	constructor(public id: string, public username: string, public avatar: string, public email: string, public verified: boolean, public banner_color: string, public global_name: string, public creatures: ObjectId[] = [], public _id?: ObjectId) {}
+	constructor(public username: string, public avatar: string, public email: string, public verified: boolean, public banner_color: string, public global_name: string, public bestiaries: ObjectId[] = [], public _id?: string) {}
 }
-const collections: {users?: Collection} = {};
+export class Bestiary {
+	constructor(public name: string, public owner: ObjectId, public status: "public" | "private" | "unlisted", public description: string, public creatures: ObjectId[], public _id?: ObjectId) {}
+}
+export class Creature {
+	constructor(public lastUpdated: Date, public stats: any, public bestiary: ObjectId, public _id?: ObjectId) {}
+}
+const collections: {users?: Collection<User>; bestiaries?: Collection<Bestiary>; creatures?: Collection<Creature>} = {};
 
-//DB functions
+//Basic DB functions
 export async function getUser(id: string) {
-	let user = (await collections.users?.findOne({id: id})) as User;
-	return user;
+	return (await collections.users?.findOne({_id: id})) as User;
 }
-export async function updateUser(data: {id: string; username: string; avatar: string; email: string; verified: boolean; banner_color: string; global_name: string}) {
+export async function updateUser(data: {_id: string; username: string; avatar: string; email: string; verified: boolean; banner_color: string; global_name: string}) {
 	console.log("Updating user", data);
-	if ((await getUser(data.id)) != null) {
-		console.log("Updating user with id " + data.id);
-		collections.users?.updateOne({id: data.id}, {$set: data});
+	if (await getUser(data._id)) {
+		console.log("Updating user with id " + data._id.toString());
+		await collections.users?.updateOne({_id: data._id}, {$set: data});
 	} else {
-		console.log("Added new user to collection");
+		console.log("Adding new user to collection with id " + data._id.toString());
 		let userData = data as User;
-		userData.creatures = [];
-		collections.users?.insertOne(userData);
+		userData._id = data._id;
+		userData.bestiaries = [];
+		await collections.users?.insertOne(userData);
 	}
-	return await getUser(data.id);
+}
+export async function getBestiary(id: ObjectId) {
+	return (await collections.bestiaries?.findOne({_id: id})) as Bestiary;
+}
+export async function updateBestiary(data: Bestiary, id?: ObjectId) {
+	if (id) {
+		if (await getBestiary(id)) {
+			console.log("Updating bestiary with id " + id.toString());
+			await collections.bestiaries?.updateOne({_id: id}, {$set: data});
+		} else {
+			console.error("Tryign to update non existant bestiary");
+		}
+	} else {
+		console.log("Adding new bestiary to collection");
+		await collections.bestiaries?.insertOne(data);
+	}
+}
+export async function addBestiaryToUser(bestiaryId: ObjectId, userId: string) {
+	let user = await getUser(userId);
+	user.bestiaries.push(bestiaryId);
+	await collections.users?.updateOne({_id: user._id}, {$set: user});
+}
+export async function deleteBestiary(bestiaryId: ObjectId) {
+	let bestiary = await getBestiary(bestiaryId);
+	for (let creatureId of bestiary.creatures) {
+		await collections.creatures?.deleteOne({_id: creatureId});
+	}
+	await collections.bestiaries?.deleteOne({_id: bestiaryId});
+}
+export async function getCreatures(id: ObjectId) {
+	return (await collections.creatures?.findOne({_id: id})) as Creature;
+}
+export async function updateCreature(data: Creature, id?: ObjectId) {
+	if (id) {
+		if (await getBestiary(id)) {
+			console.log("Updating creature with id " + id.toString());
+			await collections.creatures?.updateOne({_id: id}, {$set: data});
+		} else {
+			console.error("Tryign to update non existant bestiary");
+		}
+	} else {
+		console.log("Adding new creature to collection");
+		await collections.creatures?.insertOne(data);
+	}
+}
+export async function addCreatureToBestiary(creatureId: ObjectId, bestiaryId: ObjectId) {
+	let bestiary = await getBestiary(bestiaryId);
+	bestiary.creatures.push(creatureId);
+	await collections.bestiaries?.updateOne({_id: bestiaryId}, {$set: bestiary});
+}
+export async function deleteCreature(creatureId: ObjectId) {
+	let creature = await getCreatures(creatureId);
+	let bestiary = await getBestiary(creature.bestiary);
+	bestiary.creatures = bestiary.creatures.filter((c) => c != creatureId);
+	await collections.creatures?.deleteOne({_id: creatureId});
+	await collections.bestiaries?.updateOne({_id: creature.bestiary}, {$set: bestiary});
 }
