@@ -31,7 +31,7 @@ app.get("/api/user/:userid/bestiaries", possibleUser, async (req, res) => {
 		allBestiaries = (await collections.bestiaries?.find({owner: req.params.userid}).toArray()) ?? [];
 	} else {
 		//Other user
-		allBestiaries = (await collections.bestiaries?.find({owner: req.params.userid, status: {$ne: "private"}}).toArray()) ?? [];
+		allBestiaries = (await collections.bestiaries?.find({owner: req.params.userid, status: "public"}).toArray()) ?? [];
 	}
 	return res.json(allBestiaries);
 });
