@@ -97,6 +97,7 @@
                         <input type="text" placeholder="Type size..." v-model="data.core.size">
                     </div>
                 </div>
+                <h2> Speed </h2>
                 <div class="editor-field__slim">
                     <span class="editor-field__title">
                         Walk Speed
@@ -137,23 +138,65 @@
                         <input type="number" placeholder="Type walking speed..." step="5" v-model="data.core.speed.burrow">
                     </div>
                 </div>
+                <h2> Senses </h2>
                 <div class="editor-field__slim">
                     <span class="editor-field__title">
-                        Senses
+                        Darkvision
                     </span>
                     <div class="editor-field__contents">
-                        <input type="number" placeholder="Type senses..." v-model="data.core.senses.darkvision">
+                        <input type="number" placeholder="Type senses..." v-model="data.core.senses.darkvision" step="5">
+                    </div>
+                </div>
+                <div class="editor-field__slim">
+                    <span class="editor-field__title">
+                        Blindsight
+                    </span>
+                    <div class="editor-field__contents">
+                        <input type="number" placeholder="Type senses..." v-model="data.core.senses.blindsight" step="5">
+                    </div>
+                </div>
+                <div class="editor-field__slim">
+                    <span class="editor-field__title">
+                        Blind beyond this radius?
+                    </span>
+                    <div class="editor-field__contents">
+                        <input type="checkbox" v-model="data.core.senses.isBlind">
+                    </div>
+                </div>
+                <div class="editor-field__slim">
+                    <span class="editor-field__title">
+                        Truesight
+                    </span>
+                    <div class="editor-field__contents">
+                        <input type="number" placeholder="Type senses..." v-model="data.core.senses.truesight" step="5">
+                    </div>
+                </div>
+                <div class="editor-field__slim">
+                    <span class="editor-field__title">
+                        Tremorsense
+                    </span>
+                    <div class="editor-field__contents">
+                        <input type="number" placeholder="Type senses..." v-model="data.core.senses.tremorsense" step="5">
+                    </div>
+                </div>
+                <div class="editor-field__slim">
+                    <span class="editor-field__title">
+                        Passive Perception Override
+                    </span>
+                    <div class="editor-field__contents">
+                        <input type="number" placeholder="Type senses..." v-model="data.core.senses.passivePerceptionOverride">
                     </div>
                 </div>
                 Languages
             </div>
             <div class="editor-content__tab-inner fade">
+                <h2> Ability Scores </h2>
                 <div class="editor-field__slim">
                     <span class="editor-field__title">
                         STR
                     </span>
                     <div class="editor-field__contents">
-                        <input type="number" v-model="data.abilities.stats.str">
+                        <input type="number" v-model="data.abilities.stats.str" min="1" max="30">
                     </div>
                 </div>
                 <div class="editor-field__slim">
@@ -161,7 +204,7 @@
                         DEX
                     </span>
                     <div class="editor-field__contents">
-                        <input type="number" v-model="data.abilities.stats.dex">
+                        <input type="number" v-model="data.abilities.stats.dex" min="1" max="30">
                     </div>
                 </div>
                 <div class="editor-field__slim">
@@ -169,7 +212,7 @@
                         CON
                     </span>
                     <div class="editor-field__contents">
-                        <input type="number" v-model="data.abilities.stats.con">
+                        <input type="number" v-model="data.abilities.stats.con" min="1" max="30">
                     </div>
                 </div>
                 <div class="editor-field__slim">
@@ -177,7 +220,7 @@
                         WIS
                     </span>
                     <div class="editor-field__contents">
-                        <input type="number" v-model="data.abilities.stats.wis">
+                        <input type="number" v-model="data.abilities.stats.wis" min="1" max="30">
                     </div>
                 </div>
                 <div class="editor-field__slim">
@@ -185,7 +228,7 @@
                         CHA
                     </span>
                     <div class="editor-field__contents">
-                        <input type="number" v-model="data.abilities.stats.cha">
+                        <input type="number" v-model="data.abilities.stats.cha" min="1" max="30">
                     </div>
                 </div>
                 <div class="editor-field__slim">
@@ -193,10 +236,58 @@
                         INT
                     </span>
                     <div class="editor-field__contents">
-                        <input type="number" v-model="data.abilities.stats.int">
+                        <input type="number" v-model="data.abilities.stats.int" min="1" max="30">
                     </div>
                 </div>
-                Saving Throws
+                <h2> Saving Throws </h2>
+                <div class="editor-field__slim">
+                    <span class="editor-field__title">
+                        STR
+                    </span>
+                    <div class="editor-field__contents">
+                        <input type="checkbox" v-model="data.abilities.saves.str">
+                    </div>
+                </div>
+                <div class="editor-field__slim">
+                    <span class="editor-field__title">
+                        DEX
+                    </span>
+                    <div class="editor-field__contents">
+                        <input type="checkbox" v-model="data.abilities.saves.dex">
+                    </div>
+                </div>
+                <div class="editor-field__slim">
+                    <span class="editor-field__title">
+                        CON
+                    </span>
+                    <div class="editor-field__contents">
+                        <input type="checkbox" v-model="data.abilities.saves.con">
+                    </div>
+                </div>
+                <div class="editor-field__slim">
+                    <span class="editor-field__title">
+                        WIS
+                    </span>
+                    <div class="editor-field__contents">
+                        <input type="checkbox" v-model="data.abilities.saves.wis">
+                    </div>
+                </div>
+                <div class="editor-field__slim">
+                    <span class="editor-field__title">
+                        CHA
+                    </span>
+                    <div class="editor-field__contents">
+                        <input type="checkbox" v-model="data.abilities.saves.cha">
+                    </div>
+                </div>
+                <div class="editor-field__slim">
+                    <span class="editor-field__title">
+                        INT
+                    </span>
+                    <div class="editor-field__contents">
+                        <input type="checkbox" v-model="data.abilities.saves.int">
+                    </div>
+                </div>
                 Skills (prof/exp/JoAT/override)
             </div>
             <div class="editor-content__tab-inner fade">
@@ -321,7 +412,6 @@ export default defineComponent({
 	display: grid;
 	grid-template-columns: 1fr 1fr;
     width: 90vw;
-	height: 60rem;
 	gap: 2rem;
 }
 

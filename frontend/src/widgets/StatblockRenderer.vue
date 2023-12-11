@@ -11,49 +11,68 @@
         <div>
             <b> Hit Points </b>
             <span v-if="data.defenses.hp.override"> {{ data.defenses.hp.override  }}</span>
-            <span v-else> {{ hpCalc() }} ({{ data.defenses.hp.numOfHitDie }}d{{data.defenses.hp.sizeOfHitDie }})</span>
+            <span v-else> {{ hpCalc() }} ({{ data.defenses.hp.numOfHitDie }}d{{data.defenses.hp.sizeOfHitDie }}{{ hitDieBonus() }})</span>
         </div>
-        <div>
+        <div class="stat-block__speed-container">
             <b> Speed </b>
-            <span> {{ data.core.speed.walk }} ft.</span>
+            <span> {{ data.core.speed.walk }} ft.<span class="ending-comma">,</span></span>
             <span v-if="data.core.speed.fly">
-                / fly {{ data.core.speed.fly }} ft.
-                <span v-if="data.core.speed.isHover">
-                    ({{data.core.speed.isHover }})
-                </span>
+                fly {{ data.core.speed.fly }} ft.<span v-if="data.core.speed.isHover"> (hover)</span><span class="ending-comma">,</span>
             </span>
             <span v-if="data.core.speed.swim">
-                / swim {{ data.core.speed.swim }} ft.
+                swim {{ data.core.speed.swim }} ft.<span class="ending-comma">,</span>
             </span>
             <span v-if="data.core.speed.burrow">
-                / burrow {{ data.core.speed.burrow }} ft.
+                burrow {{ data.core.speed.burrow }} ft.<span class="ending-comma">,</span>
             </span>
         </div>
     </div>
     <div class="stat-block__row stat-block__abilities">
         <div>
-            <div> STR </div>
+            <div> <b>STR</b> </div>
             <span> {{ data.abilities.stats.str }}  ({{ statSign("str")}}{{ statCalc("str") }})</span>
         </div>
         <div>
-            <div> DEX </div>
+            <div> <b>DEX</b> </div>
             <span> {{ data.abilities.stats.dex }}  ({{ statSign("dex")}}{{ statCalc("dex") }})</span>
         </div>
         <div>
-            <div> CON </div>
+            <div> <b>CON</b> </div>
             <span> {{ data.abilities.stats.con }}  ({{ statSign("con")}}{{ statCalc("con") }})</span>
         </div>
         <div>
-            <div> WIS </div>
+            <div> <b>INT</b> </div>
+            <span> {{ data.abilities.stats.int }}  ({{ statSign("int")}}{{ statCalc("int") }})</span>
+        </div>
+        <div>
+            <div> <b>WIS</b> </div>
             <span> {{ data.abilities.stats.wis }}  ({{ statSign("wis")}}{{ statCalc("wis") }})</span>
         </div>
         <div>
-            <div> CHA </div>
+            <div> <b>CHA</b> </div>
             <span> {{ data.abilities.stats.cha }}  ({{ statSign("cha")}}{{ statCalc("cha") }})</span>
         </div>
+    </div>
+    <div class="stat-block__row">
+        <div v-if="Object.values(data.abilities.saves).some(val => val)" class="stat-block__save-container"> 
+            <b> Saving Throws </b>
+            <span v-if="data.abilities.saves.str"> Str {{ saveSign("str") }}{{statCalc("str")+data.core.proficiencyBonus  }}<span class="ending-comma">,</span></span>
+            <span v-if="data.abilities.saves.dex"> Dex {{ saveSign("dex") }}{{statCalc("dex")+data.core.proficiencyBonus  }}<span class="ending-comma">,</span></span>
+            <span v-if="data.abilities.saves.con"> Con {{ saveSign("con") }}{{statCalc("con")+data.core.proficiencyBonus  }}<span class="ending-comma">,</span></span>
+            <span v-if="data.abilities.saves.int"> Int {{ saveSign("int") }}{{statCalc("int")+data.core.proficiencyBonus  }}<span class="ending-comma">,</span></span>
+            <span v-if="data.abilities.saves.wis"> Wis {{ saveSign("wis") }}{{statCalc("wis")+data.core.proficiencyBonus  }}<span class="ending-comma">,</span></span>
+            <span v-if="data.abilities.saves.cha"> Cha {{ saveSign("cha") }}{{statCalc("cha")+data.core.proficiencyBonus  }}<span class="ending-comma">,</span></span>
+        </div>
+        <div ckass="stat-block__senses-container">
+            <b> Senses </b>
+            <span v-if="data.core.senses.darkvision"> darkvision {{ data.core.senses.darkvision}}ft.<span class="ending-comma">,</span></span>
+            <span v-if="data.core.senses.blindsight"> blindsight {{ data.core.senses.blindsight}}ft.<span v-if="data.core.senses.isBlind"> (blind beyond this radius)</span><span class="ending-comma">,</span></span>
+            <span v-if="data.core.senses.truesight"> truesight {{ data.core.senses.truesight}}ft.<span class="ending-comma">,</span></span>
+            <span v-if="data.core.senses.tremorsense"> tremorsense {{ data.core.senses.tremorsense}}ft.<span class="ending-comma">,</span></span>
+            <span> passive Perception {{ ppCalc() }}</span>
+        </div>
         <div>
-            <div> INT </div>
-            <span> {{ data.abilities.stats.int }}  ({{ statSign("int")}}{{ statCalc("int") }})</span>
+            <b> Challenge </b> {{ data.description.cr }} (1000 xp)
         </div>
     </div>
 </div>
@@ -82,9 +101,27 @@ export default defineComponent({
         statCalc(stat: string) : number {
             return Math.floor(this.data.abilities.stats[stat]/2)-5
         },
-        statSign(stat: string) {
+        ppCalc(): number { 
+            if (this.data.core.senses.passivePerceptionOverride) return this.data.core.senses.passivePerceptionOverride
+            else return 10 + this.statCalc("dex")
+        },
+        statSign(stat: string): string {
             if (this.statCalc(stat) >=0) {
                 return "+"
+            }
+            return ""
+        },
+        saveSign(stat: string): string {
+            if (this.statCalc(stat)+this.data.core.proficiencyBonus >= 0) {
+                return "+"
+            }
+            return ""
+        },
+        hitDieBonus(): string {
+            let hp = this.data.defenses.hp.numOfHitDie * this.statCalc("con")
+            if (hp != 0) {
+                if (hp > 0) return "+" + hp.toString()
+                else return hp.toString()
             }
             return ""
         }
@@ -126,6 +163,11 @@ export default defineComponent({
     text-align: center;
 }
 
+.stat-block__senses-container > span:last-of-type > .ending-comma,
+.stat-block__speed-container > span:last-of-type > .ending-comma,
+.stat-block__save-container > span:last-of-type > .ending-comma {
+    display: none;
+}
 
 #bla {
     display: block;

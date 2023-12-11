@@ -22,11 +22,12 @@ export const defaultStatblock = {
             "swim": 0 as number
         } as Speed,
         "senses": {
-            "passivePerceptionOverride": 10 as number,
+            "passivePerceptionOverride": 0 as number,
             "darkvision": 0 as number,
             "blindsight": 0 as number,
             "isBlind": false as boolean,
             "truesight": 0 as number,
+            "tremorsense": 0 as number
         } as Senses,
         "languages": ["Common"] as string[]
     } as Core,
@@ -114,6 +115,7 @@ export interface Statblock {
     blindsight: number;
     isBlind: boolean;
     truesight: number;
+    tremorsense: number;
   }
   export interface Abilities {
     stats: Stats;
