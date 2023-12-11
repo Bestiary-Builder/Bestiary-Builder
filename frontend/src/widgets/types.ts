@@ -7,7 +7,7 @@ export const defaultStatblock = {
         "image": "" as string,
         "faction": "" as string,
         "environment": "" as string,
-        "alignment": "Neutral Good" as string,
+        "alignment": "Unaligned" as string,
         "cr": 0 as number,
     } as Description,
     "core": {
@@ -111,7 +111,7 @@ export interface Statblock {
   export interface Abilities {
     stats: Stats;
     saves: Saves;
-    skills?: (SkillsEntity)[] | null;
+    skills: (SkillsEntity)[] | null;
   }
   export interface Stats {
     str: number;

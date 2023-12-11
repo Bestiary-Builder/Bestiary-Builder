@@ -67,9 +67,13 @@
                     <span class="editor-field__title">
                         Alignment
                     </span>
-                    <div class="editor-field__contents">
-                        <input type="text" placeholder="Type alignment..." v-model="data.description.alignment">
-                    </div>
+                    <v-select 
+                            placeholder="Alignment" 
+                            v-model="data.description.alignment"
+                            :options='["Unaligned", "Good", "Neutral", "Evil", "Lawful Good", "Neutral Good", "Chaotic Good", "Lawful Neutral", "Neutral", "Chaotic Neutral", "Lawful Evil", "Neutral Evil", "Chaotic Evil", "Any Alignment", "Typically Good", "Typically Neutral", "Typically Evil", "Typically Lawful Good", "Typically Neutral Good", "Typically Chaotic Good", "Typically Lawful Neutral", "Typically Chaotic Neutral", "Typically Lawful Evil", "Typically Neutral Evil", "Typically Chaotic Evil"]'
+                            :taggable="true"
+                            :pushTags="true"
+                        />
                 </div>
                 <div class="editor-field__slim">
                     <span class="editor-field__title">
@@ -302,11 +306,11 @@
                 <h2> Skills </h2>
                 <div class="editor-field__slim">
                     <div v-for="skill, index in data.abilities.skills">
-                        <!-- <b> <input type="text" v-model="skill.skillName"> </b> -->
                         <v-select 
                             placeholder="Select a skill" 
                             v-model="skill.skillName"
-                            :options="['Perception', 'Athletics']" 
+                            :options='["Acrobatics", "Animal Handling", "Arcana", "Athletics", "Deception", "History", "Insight", "Intimidation", "Investigation", "Medicine", "Nature", "Perception", "Performance", "Persuasion", "Religion", "Sleight of Hand", "Stealth", "Survival"]'
+                            :clearable="false"
                         />
                         <div class="editor-field__contents">
                         <p> Is Proficient? <input type="checkbox" v-model="skill.isProficient" @click="disableOtherSkills(index, 'prof', skill.isProficient)"> </p>
@@ -401,8 +405,7 @@ export default defineComponent({
         return {
             slideIndex: 1,
             data: defaultStatblock as Statblock,
-
-            nameVar: ""
+            list: [] as string[]
         }
     },
     methods: {
@@ -465,11 +468,29 @@ export default defineComponent({
         },
         deleteSkill(index: number) : void {
             this.data.abilities.skills?.splice(index, 1)
+        },
+        skillList() : void {
+            let list = ["acrobatics", "animal handling", "arcana", "athletics", "deception", "history", "insight", "intimidation", "investigation", "medicine", "nature", "perception", "performance", "persuasion", "religion", "sleight of hand", "stealth", "survival"]
+            let skills = this.data.abilities.skills
+            if (!skills) this.list = list
+            for (let skill = 0; skill++; skill < skills!.length) {
+                list = list.filter(s => s !== skills![skill].skillName)
+            }
+            console.log(list)
+            this.list = list
         }
     },
     mounted() {
         this.showSlides(1)
+
+        this.skillList()
+    },
+    watch: {
+        'data.abilities.skills'(newVal, oldVal) {
+            this.skillList()
+        }
     }
+
 
 })
 </script>

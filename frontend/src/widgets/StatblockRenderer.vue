@@ -2,7 +2,7 @@
 <div class="stat-block">
     <div class="stat-block__row"> 
         <span class="stat-block__name-container"> {{ data.description.name }}</span>
-        <span class="stat-block__core"> {{ data.core.size }} {{ data.core.race }}, {{ data.description.alignment }}</span>
+        <span class="stat-block__core"> {{ data.core.size }} {{ data.core.race }} {{ data.description.alignment ? ',' : '' }} {{ data.description.alignment }}</span>
     </div>
     <div class="stat-block__row">
         <div>  
@@ -81,7 +81,7 @@
     </div>
 </div>
 
-
+{{ data }}
 <pre id="bla"> {{  yamlString()  }} </pre>
 </template>
 
@@ -144,6 +144,21 @@ export default defineComponent({
             } as any
             let output = ""
             let index = 0;
+
+            let seenSkillNames = new Set();
+
+            // Use the filter method to create a new array without duplicates
+            skills = skills.filter(obj => {
+                if (seenSkillNames.has(obj.skillName)) {
+                    // If the skill name is already seen, filter it out
+                    return false;
+                } else {
+                    // Otherwise, add it to the set and include it in the result
+                    seenSkillNames.add(obj.skillName);
+                    return true;
+                }
+            });
+
             for (let skill in skills) {
                 index++
                 if (!skills[skill].isExpertise && !skills[skill].isHalfProficient && !skills[skill].isProficient && !skills[skill].override) continue
@@ -151,7 +166,7 @@ export default defineComponent({
                 let bonus = 0
                 for (let stat in SKILLS_BY_STAT) {
                     if (SKILLS_BY_STAT[stat].includes(skills[skill].skillName.replace(" ", "").toLowerCase())) {
-                        output += skills[skill].skillName.charAt(0).toUpperCase() + skills[skill].skillName.slice(1).toLowerCase()
+                        output += skills[skill].skillName
                         if (skills[skill].override && skills[skill].override !== null) {
                             let over = skills[skill].override
                             output += ` ${over ?? 0 >= 0 ? '+' : ''}${over}${index == skills.length ? '' : ','} `
