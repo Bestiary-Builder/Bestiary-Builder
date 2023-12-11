@@ -43,6 +43,10 @@ app.use(function (req, res, next) {
 	next();
 });
 
+//Setup database connection
+import {startConnection} from "./database";
+startConnection();
+
 //Setup http server
 import http from "http";
 const httpServer = http.createServer(app);

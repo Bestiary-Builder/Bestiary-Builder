@@ -1,8 +1,8 @@
 import {app} from "../server";
-import fetch, {Request, Response} from "node-fetch";
+import fetch from "node-fetch";
 import jwt from "jsonwebtoken";
 
-import {getUser, updateUser, User} from "./database";
+import {getUser, updateUser, User} from "../database";
 
 app.get("/login", async (req, res) => {
 	let code = req.query.code as string;
@@ -103,9 +103,7 @@ export const verifyToken = (req: any, res: any, next: any) => {
 	return next();
 };
 
-import {ObjectId} from "mongodb";
 app.get("/user", verifyToken, async (req, res) => {
-	console.log(req.body.id);
 	let userData = (await getUser(req.body.id)) as User;
 	console.log(userData);
 	return res.json(userData);

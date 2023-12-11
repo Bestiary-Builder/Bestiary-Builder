@@ -1,18 +1,16 @@
 import {MongoClient, ServerApiVersion} from "mongodb";
 import {Db, ObjectId, Collection} from "mongodb";
-import {app} from "../server";
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(process.env.MongoDB!, {
-	serverApi: {
-		version: ServerApiVersion.v1,
-		strict: true,
-		deprecationErrors: true
-	}
-});
 //Connect to database
 let database = null as Db | null;
-startConnection();
-async function startConnection() {
+export async function startConnection() {
+	// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+	const client = new MongoClient(process.env.MongoDB!, {
+		serverApi: {
+			version: ServerApiVersion.v1,
+			strict: true,
+			deprecationErrors: true
+		}
+	});
 	try {
 		// Connect the client to the server	(optional starting in v4.7)
 		await client.connect();
@@ -34,12 +32,12 @@ export class User {
 	constructor(public username: string, public avatar: string, public email: string, public verified: boolean, public banner_color: string, public global_name: string, public bestiaries: ObjectId[] = [], public _id?: string) {}
 }
 export class Bestiary {
-	constructor(public name: string, public owner: ObjectId, public status: "public" | "private" | "unlisted", public description: string, public creatures: ObjectId[], public _id?: ObjectId) {}
+	constructor(public name: string, public owner: string, public status: "public" | "private" | "unlisted", public description: string, public creatures: ObjectId[], public _id?: ObjectId) {}
 }
 export class Creature {
 	constructor(public lastUpdated: Date, public stats: any, public bestiary: ObjectId, public _id?: ObjectId) {}
 }
-const collections: {users?: Collection<User>; bestiaries?: Collection<Bestiary>; creatures?: Collection<Creature>} = {};
+export const collections: {users?: Collection<User>; bestiaries?: Collection<Bestiary>; creatures?: Collection<Creature>} = {};
 
 //Basic DB functions
 export async function getUser(id: string) {
