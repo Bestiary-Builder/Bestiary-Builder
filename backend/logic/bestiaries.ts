@@ -1,15 +1,13 @@
 import {app} from "../server";
-import {authenticate} from "./login";
+import {requireUser, possibleUser} from "./login";
 import {collections, getUserFromSecret, updateBestiary} from "../database";
 import {ObjectId} from "mongodb";
 
 app.get("/api/bestiaries", async (req, res) => {
 	let allBestiaries = (await collections.bestiaries?.find({status: "public"}).toArray()) ?? [];
-	console.log("Found all public bestiaries", allBestiaries);
 	return res.json(allBestiaries);
 });
-app.get("/api/bestiary/:id", authenticate, async (req, res) => {
-	console.log(req.body.id);
+app.get("/api/bestiary/:id", possibleUser, async (req, res) => {
 	let id = req.params.id;
 	if (id.length != 24) {
 		return res.status(404).json({error: "Bestiary id not valid"});
@@ -25,7 +23,7 @@ app.get("/api/bestiary/:id", authenticate, async (req, res) => {
 		return res.status(403).json({error: "You don't have access to this bestiary"});
 	}
 });
-app.get("/api/user/:userid/bestiaries", authenticate, async (req, res) => {
+app.get("/api/user/:userid/bestiaries", possibleUser, async (req, res) => {
 	let allBestiaries = [];
 	let user = await getUserFromSecret(req.body.id);
 	if (user && user._id == req.params.userid) {

@@ -82,12 +82,30 @@ app.get("/logout", async (req, res) => {
 	res.clearCookie("userToken");
 	res.redirect("/");
 });
-export const authenticate = async (req: any, res: any, next: any) => {
+export const requireUser = async (req: any, res: any, next: any) => {
 	let token = req.cookies.userToken;
 
 	if (!token) {
 		console.log("Authentication failed");
 		return res.status(403).json({error: "Not logged in"});
+	}
+	try {
+		const decoded = jwt.verify(token, process.env.JWT_TOKEN ?? "") as any;
+		let user = await getUser(decoded.id);
+		req.body.id = user.secret;
+		console.log("Authentication success with id " + decoded.id.toString());
+	} catch (err) {
+		console.log("Invalid Token");
+		return res.status(401).send({error: "Invalid Token (not logged in)"});
+	}
+	return next();
+};
+export const possibleUser = async (req: any, res: any, next: any) => {
+	let token = req.cookies.userToken;
+
+	if (!token) {
+		console.log("Authentication failed");
+		req.body.id = null;
 	}
 
 	try {
@@ -96,13 +114,13 @@ export const authenticate = async (req: any, res: any, next: any) => {
 		req.body.id = user.secret;
 		console.log("Authentication success with id " + decoded.id.toString());
 	} catch (err) {
-		console.log("Invalid Token, probably because it expired");
-		return res.status(401).send({error: "Invalid Token (not logged in)"});
+		console.log("Invalid Token");
+		req.body.id = null;
 	}
 	return next();
 };
 
-app.get("/user", authenticate, async (req, res) => {
+app.get("/user", requireUser, async (req, res) => {
 	let userData = (await getUserFromSecret(req.body.id)) as User;
 	return res.json(userData);
 });
