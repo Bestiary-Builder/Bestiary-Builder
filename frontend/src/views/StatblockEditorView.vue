@@ -1,6 +1,4 @@
 <template>
-	This is a page to edit a specific creature in a bestiary
-
 <div class="content-container">
 	<div class="content-container__inner editor"> 
         <div class="editor-nav">
@@ -526,30 +524,8 @@ export default defineComponent({
         },
         deleteSkill(index: number) : void {
             this.data.abilities.skills?.splice(index, 1)
-        },
-        skillList() : void {
-            let list = ["acrobatics", "animal handling", "arcana", "athletics", "deception", "history", "insight", "intimidation", "investigation", "medicine", "nature", "perception", "performance", "persuasion", "religion", "sleight of hand", "stealth", "survival"]
-            let skills = this.data.abilities.skills
-            if (!skills) this.list = list
-            for (let skill = 0; skill++; skill < skills!.length) {
-                list = list.filter(s => s !== skills![skill].skillName)
-            }
-            console.log(list)
-            this.list = list
         }
     },
-    mounted() {
-        this.showSlides(1)
-
-        this.skillList()
-    },
-    watch: {
-        'data.abilities.skills'(newVal, oldVal) {
-            this.skillList()
-        }
-    }
-
-
 })
 </script>
 

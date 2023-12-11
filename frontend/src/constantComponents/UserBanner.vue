@@ -50,6 +50,7 @@ export default defineComponent({
 }
 .user img {
 	max-height: 3.5dvh;
+	border-radius: 50rem;
 }
 .user p {
 	font-size: 1.25rem;

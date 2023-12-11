@@ -66,8 +66,15 @@ export const defaultStatblock = {
         "immunities": [] as string[],
         "conditionImmunities": [] as string[]
     } as Defenses,
-    // TODO
-    "features": {} as Features
+    "features": {
+      "features": [] as FeatureEntity[],
+      "actions": [] as FeatureEntity[],
+      "bonus": [] as FeatureEntity[],
+      "reaction": [] as FeatureEntity[],
+      "legendary": [] as FeatureEntity[],
+      "lair": [] as FeatureEntity[],
+      "regional": [] as FeatureEntity[]
+    } as Features
 } as Statblock
 
 export interface Statblock {
@@ -162,6 +169,20 @@ export interface Statblock {
     acSource: string;
   }
   export interface Features {
+    features: FeatureEntity[];
+    actions: FeatureEntity[];
+    bonus: FeatureEntity[];
+    reaction: FeatureEntity[];
+    legendary: FeatureEntity[];
+    lair: FeatureEntity[];
+    regional: FeatureEntity[];
+  }
+
+  export interface FeatureEntity {
+    name: string;
+    description: string;
+    automation: object;
+    // type: "feature" | "action" | "bonus" | "reaction" | "legendary" | "lair" | "regional"
   }
   
 // TODO: add typing
