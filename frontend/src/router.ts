@@ -6,6 +6,7 @@ import relevantRoutes from "./routes";
 const routes = relevantRoutes.map((route) => ({
 	path: route.path,
 	name: route.name,
+	navbar: route.navbar,
 	component: fileRoutes.find((fileRoute: any) => fileRoute.name === route.file.replace(".vue", "").replace("/", "-"))?.component,
 	meta: route.meta,
 	props: true

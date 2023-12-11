@@ -2,6 +2,7 @@
 import {RouterLink, RouterView} from "vue-router";
 import NavBar from "./constantComponents/NavBar.vue";
 import Footer from "./constantComponents/Footer.vue";
+import UserBanner from "./constantComponents/UserBanner.vue";
 
 import {defineComponent} from "vue";
 export default defineComponent({
@@ -9,12 +10,16 @@ export default defineComponent({
 	components: {
 		NavBar,
 		Footer,
-		RouterView
+		RouterView,
+		UserBanner
 	}
 });
 </script>
 
 <template>
+	<div class="banner">
+		<UserBanner />
+	</div>
 	<header>
 		<NavBar />
 	</header>
@@ -26,4 +31,12 @@ export default defineComponent({
 	</footer>
 </template>
 
-<style scoped></style>
+<style scoped>
+.banner {
+	grid-area: user;
+	position: sticky;
+	top: 0;
+	z-index: 100;
+	height: 100%;
+}
+</style>

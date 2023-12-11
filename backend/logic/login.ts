@@ -120,7 +120,7 @@ export const possibleUser = async (req: any, res: any, next: any) => {
 	return next();
 };
 
-app.get("/user", requireUser, async (req, res) => {
+app.get("/api/user", requireUser, async (req, res) => {
 	let userData = (await getUserFromSecret(req.body.id)) as User;
 	return res.json(userData);
 });

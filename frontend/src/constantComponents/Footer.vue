@@ -37,21 +37,16 @@ export default defineComponent({
 <style scoped lang="less">
 .citizen-footer {
 	padding: var(--space-xl) var(--padding-page);
-	margin-top: var(--space-xl);
-	// Reserve space for header
-	margin-bottom: var(--header-size);
 	background-color: var(--color-surface-2);
 	clear: both;
 	color: var(--color-base--subtle);
 	direction: ltr;
 	font-size: 0.875rem;
 
-	width: 100vw;
-
 	&__container {
-		max-width: 92vw;
-		margin-right: var(--space-md);
-		margin-left: var(--space-md);
+		width: 100%;
+		//margin-right: var(--space-md);
+		//margin-left: var(--space-md);
 	}
 
 	&__content,
@@ -67,8 +62,6 @@ export default defineComponent({
 		align-items: center;
 		justify-content: space-between;
 		border-top: 1px solid var(--border-color-base);
-		margin-right: auto;
-		margin-left: auto;
 	}
 
 	&__siteinfo {
@@ -162,10 +155,6 @@ export default defineComponent({
 
 @media (min-width: 1001px) {
 	.citizen-footer {
-		margin-bottom: 0;
-		margin-left: var(--header-size);
-		width: 100vw;
-
 		&__siteinfo {
 			max-width: 40vw;
 		}

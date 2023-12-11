@@ -23,19 +23,21 @@ import "./assets/main.css";
 // Vue Select
 // @ts-expect-error
 import vSelect from "vue-select";
-import 'vue-select/dist/vue-select.css';
+import "vue-select/dist/vue-select.css";
 
 app.use(ToastPlugin, {
 	position: "top-right",
 	duration: 5000,
 	dismissible: true
-}).use(FloatingVue).component('v-select', vSelect);
+})
+	.use(FloatingVue)
+	.component("v-select", vSelect);
 
 export const toast = app.config.globalProperties.$toast;
 
 //Types
 export type user = {
-	id: string;
+	_id: string;
 	username: string;
 	avatar: string;
 	email: string;

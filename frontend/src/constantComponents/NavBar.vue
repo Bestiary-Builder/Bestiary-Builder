@@ -1,16 +1,14 @@
 <template>
-	<header class="mw-header citizen-header">
-		<div class="header-outer">
-			<div class="header-item" v-tooltip.right="{content: 'Bestiary Builder'}">
-				<a href="" target="_blank">
-					<img src="" />
-				</a>
-			</div>
-			<RouterLink v-for="route in $router.options.routes" :to="route.path" class="navlink center">
-				<div class="header-item" v-tooltip.right="route.name" v-html="route.meta?.icon"></div>
-			</RouterLink>
+	<div class="header-outer mw-header citizen-header">
+		<div class="header-item" v-tooltip.right="{content: 'Bestiary Builder'}">
+			<a href="/">
+				<img src="../assets/logo.svg" />
+			</a>
 		</div>
-	</header>
+		<RouterLink v-for="route in $router.options.routes.filter((a: any) => a.navbar)" :to="route.path" class="navlink center">
+			<div class="header-item" v-tooltip.right="route.name" v-html="route.meta?.icon"></div>
+		</RouterLink>
+	</div>
 </template>
 <script lang="ts" setup>
 import {RouterLink, RouterView} from "vue-router";
@@ -20,11 +18,6 @@ import {RouterLink, RouterView} from "vue-router";
 	--header-icon-size: ~"calc( var( --header-button-size ) / 2 )";
 	--header-button-size: ~"calc( var( --header-size ) - var(  --space-xs ) * 2 )";
 	--header-direction: row;
-	position: fixed;
-	z-index: 91;
-	right: 0;
-	bottom: 0;
-	left: 0;
 	display: flex;
 	flex-direction: var(--header-direction);
 	padding: var(--space-xs);
@@ -32,6 +25,7 @@ import {RouterLink, RouterView} from "vue-router";
 	background-color: var(--color-surface-0);
 	gap: var(--space-xxs);
 	justify-content: space-between;
+	align-items: center;
 
 	&__item {
 		display: flex;
@@ -129,6 +123,12 @@ import {RouterLink, RouterView} from "vue-router";
 	}
 }
 
+.navlink {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
 .header-outer {
 	display: flex;
 	flex-direction: column;
@@ -185,12 +185,10 @@ import {RouterLink, RouterView} from "vue-router";
 @media (min-width: 1000px) {
 	.citizen-header {
 		--header-direction: column;
-		top: 0;
-		right: unset;
-		left: 0;
 		border-top: 0;
-		border-right: 1px solid var(--border-color-base);
 		padding: var(--space-sm);
+		position: sticky;
+		top: 3.5dvh;
 
 		&__logo {
 			padding: 0 0 var(--space-xs) 0;
