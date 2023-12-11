@@ -2,7 +2,7 @@
 <div class="stat-block">
     <div class="stat-block__row"> 
         <span class="stat-block__name-container"> {{ data.description.name }}</span>
-        <span class="stat-block__core"> {{ data.core.size }} {{ data.core.race }} {{ data.description.alignment ? ',' : '' }} {{ data.description.alignment }}</span>
+        <span class="stat-block__core"> {{ data.core.size }} {{ data.core.race }}{{ data.description.alignment ? ',' : '' }} {{ data.description.alignment }}</span>
     </div>
     <div class="stat-block__row">
         <div>  
@@ -67,6 +67,30 @@
             <b> Skills </b>
             {{ skillOutput() }}
         </div>
+        <div class="stat-block__vuln-container" v-if="data.defenses.vulnerabilities.length > 0">
+            <b> Vulnerabilities </b>
+            <span v-for="vuln in alphaSort(data.defenses.vulnerabilities)">
+                <span>{{vuln.toLowerCase()}}<span class="ending-comma">, </span> </span>
+            </span>
+        </div>
+        <div class="stat-block__res-container" v-if="data.defenses.resistances.length > 0">
+            <b> Resistances </b>
+            <span v-for="res in alphaSort(data.defenses.resistances)">
+                <span>{{res.toLowerCase()}}<span class="ending-comma">, </span> </span>
+            </span>
+        </div>
+        <div class="stat-block__imm-container" v-if="data.defenses.immunities.length > 0">
+            <b> Immunities </b>
+            <span v-for="imm in alphaSort(data.defenses.immunities)">
+                <span>{{imm.toLowerCase()}}<span class="ending-comma">, </span> </span>
+            </span>
+        </div>
+        <div class="stat-block__imm-container" v-if="data.defenses.conditionImmunities.length > 0">
+            <b> Condition Immunities </b>
+            <span v-for="con in alphaSort(data.defenses.conditionImmunities)">
+                <span>{{con.toLowerCase()}}<span class="ending-comma">, </span> </span>
+            </span>
+        </div>
         <div ckass="stat-block__senses-container">
             <b> Senses </b>
             <span v-if="data.core.senses.darkvision"> darkvision {{ data.core.senses.darkvision}}ft.<span class="ending-comma">,</span></span>
@@ -75,14 +99,20 @@
             <span v-if="data.core.senses.tremorsense"> tremorsense {{ data.core.senses.tremorsense}}ft.<span class="ending-comma">,</span></span>
             <span> passive Perception {{ ppCalc() }}</span>
         </div>
+        <div class="stat-block__language-container"> 
+            <b> Languages </b>
+            <span v-if="data.core.languages.length == 0"> — </span>
+            <span v-else v-for="lang in langSort(data.core.languages)">
+                <span> {{ lang }}<span class="ending-comma">,</span></span>
+            </span>
+        </div>
         <div>
             <b> Challenge </b> {{ data.description.cr }} (1000 xp)
         </div>
     </div>
 </div>
 
-{{ data }}
-<pre id="bla"> {{  yamlString()  }} </pre>
+<pre> {{  yamlString()  }} </pre>
 </template>
 
 <script lang="ts">
@@ -106,7 +136,21 @@ export default defineComponent({
         },
         ppCalc(): number { 
             if (this.data.core.senses.passivePerceptionOverride) return this.data.core.senses.passivePerceptionOverride
-            else return 10 + this.statCalc("dex")
+            else { 
+                let skills = this.data.abilities.skills
+                if (skills) {
+                    for (let skill in skills) {
+                        if (skills[skill].skillName == "Perception") {
+                            if (skills[skill].override) return 10 + skills[skill].override
+                            if (skills[skill].isHalfProficient) return 10 + this.statCalc("wis") + Math.floor(this.data.core.proficiencyBonus/2)
+                            if (skills[skill].isProficient) return 10 + this.statCalc("wis") + this.data.core.proficiencyBonus
+                            if (skills[skill].isExpertise) return 10 + this.statCalc("wis") + this.data.core.proficiencyBonus*2
+                            break;
+                        }
+                    }
+                } 
+            }
+            return 10 + this.statCalc("wis")
         },
         statSign(stat: string): string {
             if (this.statCalc(stat) >=0) {
@@ -196,6 +240,18 @@ export default defineComponent({
             }
             return false
         },
+        alphaSort(list: string[]) : string[] {
+            const sortByLastWord = (a :string , b :string) => {
+                const lastWordA = a.split(' ').pop();
+                const lastWordB = b.split(' ').pop();
+                // @ts-ignore
+                return lastWordA.localeCompare(lastWordB);
+                };
+            return list.sort(sortByLastWord)
+        },
+        langSort(list: string[]) : string[] {
+            return list
+        },
         yamlString() {
             return stringify(this.data)
         }
@@ -237,15 +293,18 @@ export default defineComponent({
     text-align: center;
 }
 
+.stat-block__language-container > span:last-of-type > span > .ending-comma,
+
+.stat-block__cond-container > span:last-of-type > span > .ending-comma,
+
+.stat-block__vuln-container > span:last-of-type > span > .ending-comma,
+.stat-block__res-container > span:last-of-type > span > .ending-comma,
+.stat-block__imm-container > span:last-of-type > span > .ending-comma,
+
 .stat-block__senses-container > span:last-of-type > .ending-comma,
 .stat-block__speed-container > span:last-of-type > .ending-comma,
 .stat-block__save-container > span:last-of-type > .ending-comma {
     display: none;
 }
-
-#bla {
-    display: block;
-}
-
 
 </style>

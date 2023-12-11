@@ -68,12 +68,12 @@
                         Alignment
                     </span>
                     <v-select 
-                            placeholder="Alignment" 
-                            v-model="data.description.alignment"
-                            :options='["Unaligned", "Good", "Neutral", "Evil", "Lawful Good", "Neutral Good", "Chaotic Good", "Lawful Neutral", "Neutral", "Chaotic Neutral", "Lawful Evil", "Neutral Evil", "Chaotic Evil", "Any Alignment", "Typically Good", "Typically Neutral", "Typically Evil", "Typically Lawful Good", "Typically Neutral Good", "Typically Chaotic Good", "Typically Lawful Neutral", "Typically Chaotic Neutral", "Typically Lawful Evil", "Typically Neutral Evil", "Typically Chaotic Evil"]'
-                            :taggable="true"
-                            :pushTags="true"
-                        />
+                        placeholder="Select Alignment or type one yourself" 
+                        v-model="data.description.alignment"
+                        :options='["Unaligned", "Good", "Neutral", "Evil", "Lawful Good", "Neutral Good", "Chaotic Good", "Lawful Neutral", "Neutral", "Chaotic Neutral", "Lawful Evil", "Neutral Evil", "Chaotic Evil", "Any Alignment", "Typically Good", "Typically Neutral", "Typically Evil", "Typically Lawful Good", "Typically Neutral Good", "Typically Chaotic Good", "Typically Lawful Neutral", "Typically Chaotic Neutral", "Typically Lawful Evil", "Typically Neutral Evil", "Typically Chaotic Evil"]'
+                        :taggable="true"
+                        :pushTags="true"
+                    />
                 </div>
                 <div class="editor-field__slim">
                     <span class="editor-field__title">
@@ -89,17 +89,25 @@
                     <span class="editor-field__title">
                         Race
                     </span>
-                    <div class="editor-field__contents">
-                        <input type="text" placeholder="Type race..." v-model="data.core.race">
-                    </div>
+                    <v-select 
+                        placeholder="Select Race or type one yourself" 
+                        v-model="data.core.race"
+                        :options='["Aberration", "Beast", "Celestial", "Construct", "Dragon", "Elemental", "Fey", "Fiend", "Giant", "Humanoid", "Monstrosity", "Ooze", "Plant", "Undead"]'
+                        :taggable="true"
+                        :pushTags="true"
+                    />
                 </div>
                 <div class="editor-field__slim">
                     <span class="editor-field__title">
                         Size
                     </span>
-                    <div class="editor-field__contents">
-                        <input type="text" placeholder="Type size..." v-model="data.core.size">
-                    </div>
+                    <v-select 
+                        placeholder="Select Size or type one yourself" 
+                        v-model="data.core.size"
+                        :options='["Tiny", "Small", "Medium", "Large", "Huge", "Gargantuan"]'
+                        :taggable="true"
+                        :pushTags="true"
+                    />
                 </div>
                 <h2> Speed </h2>
                 <div class="editor-field__slim">
@@ -191,7 +199,15 @@
                         <input type="number" placeholder="Type senses..." v-model="data.core.senses.passivePerceptionOverride">
                     </div>
                 </div>
-                Languages
+                <h2> Languages </h2>
+                <v-select 
+                    placeholder="Select a Language or type one yourself" 
+                    v-model="data.core.languages"
+                    multiple
+                    :options='languages'
+                    :taggable="true"
+                    :pushTags="true"
+                />
             </div>
             <div class="editor-content__tab-inner fade">
                 <h2> Ability Scores </h2>
@@ -368,10 +384,42 @@
                         <input type="text" placeholder="Type race..." v-model="data.defenses.ac.acSource">
                     </div>
                 </div>
-                Vulnerabilities
-                Resistances
-                Immunities
-                Condition Immunities
+                <h2> Vulnerabilities </h2>
+                <v-select 
+                    placeholder="Select a Vulnerability or type one yourself" 
+                    v-model="data.defenses.vulnerabilities"
+                    multiple
+                    :options='["Acid", "Bludgeoning", "Cold", "Fire", "Force", "Lightning", "Necrotic", "Piercing", "Poison", "Pyschic", "Radiant", "Slashing", "Thunder", "Nonmagical Nonsilvered Bludgeoning", "Nonmagical Nonsilvered Piercing", "Nonmagical Nonsilvered Slashing"]'
+                    :taggable="true"
+                    :pushTags="true"
+                />
+                <h2> Resistances </h2>
+                <v-select 
+                    placeholder="Select a Resistance or type one yourself" 
+                    v-model="data.defenses.resistances"
+                    multiple
+                    :options='["Acid", "Bludgeoning", "Cold", "Fire", "Force", "Lightning", "Necrotic", "Piercing", "Poison", "Pyschic", "Radiant", "Slashing", "Thunder", "Nonmagical Nonsilvered Bludgeoning", "Nonmagical Nonsilvered Piercing", "Nonmagical Nonsilvered Slashing"]'
+                    :taggable="true"
+                    :pushTags="true"
+                />
+                <h2> Immunities </h2>
+                <v-select 
+                    placeholder="Select an Immunity or type one yourelf" 
+                    v-model="data.defenses.immunities"
+                    multiple
+                    :options='["Acid", "Bludgeoning", "Cold", "Fire", "Force", "Lightning", "Necrotic", "Piercing", "Poison", "Pyschic", "Radiant", "Slashing", "Thunder", "Nonmagical Nonsilvered Bludgeoning", "Nonmagical Nonsilvered Piercing", "Nonmagical Nonsilvered Slashing"]'
+                    :taggable="true"
+                    :pushTags="true"
+                />
+                <h2> Condition Immunities </h2>
+                <v-select 
+                    placeholder="Select a Condition Immunity or type one yourelf" 
+                    v-model="data.defenses.conditionImmunities"
+                    multiple
+                    :options='["Blinded", "Charmed", "Deafened", "Disease", "Exhaustion", "Frightened", "Grappled", "Incapacitated", "Invisible", "Paralyzed", "Petrified", "Poisoned", "Prone", "Restrained", "Stunned", "Unconscious"]'
+                    :taggable="true"
+                    :pushTags="true"
+                />
             </div>
             <div class="editor-content__tab-inner fade">
                 Actions
@@ -405,7 +453,8 @@ export default defineComponent({
         return {
             slideIndex: 1,
             data: defaultStatblock as Statblock,
-            list: [] as string[]
+            list: [] as string[],
+            languages: ["All", "All languages it knew in life", "Abyssal", "Aarakocra", "Aquan", "Auran", "Celestial", "Common", "Deep Speech", "Draconic", "Druidic", "Dwarvish", "Elvish", "Giant", "Gith", "Gnomish", "Goblin", "Halfling", "Ignan", "Infernal", "Orc", "Primordial", "Sylvan", "Terran", "Thieves' Cant", "Undercommon", "Understands the languages of its creator but can't speak"]
         }
     },
     methods: {
