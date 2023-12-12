@@ -12,12 +12,13 @@
                 <p> DESCRIPTION: </p> <input type="text" placeholder="Enter description" v-model="feat.description">
                 <h3> AUTOMATION </h3>
                 <div class="automation-editor">
+
+                    <span class="error"> {{  errorMessage }} </span>
                     <CodeEditor 
                         width="100%" 
                         :wrap="true"  
                         :languages="[['yaml', 'YAML']]" 
-                        :v-model="automationString"
-                        :value="automationString"
+                        v-model="automationString"
                         theme="obsidian"
                         height="500px"
                     >
@@ -48,8 +49,9 @@ defineEmits(['createFeature'])
 <script lang="ts">
 import { defineComponent } from 'vue';
 import type { SaveEntity, SkillsEntity, Statblock } from './types'
-import { stringify, parse } from 'yaml'
-
+import YAML, { stringify, parse, YAMLParseError, Parser } from 'yaml'
+// @ts-ignore
+import yaml from 'js-yaml'
 // @ts-ignore
 import CodeEditor from "simple-code-editor";
 export default defineComponent({
@@ -58,8 +60,8 @@ export default defineComponent({
         return {
             isModalOpen: false,
             feat: this.data.features[this.type][this.index],
-            automationString: "",
-            prevAutomationString: ""
+            automationString: "" as string,
+            errorMessage: null as null | string
         }
     },
     components: {
@@ -67,9 +69,33 @@ export default defineComponent({
     },
     mounted() {
         this.automationString = stringify(this.feat.automation)
+
     },
+    methods: {
+        validateYaml() {
+            let value = ""
+            try {
+                value = yaml.load(this.automationString)
+                this.errorMessage = null
+            }
+            catch(err) {
+                // @ts-ignore
+                this.errorMessage = err
+            }
+        }
+
+    },
+    watch: {
+        automationString(newVal, oldVal) {
+            this.validateYaml()
+        }
+    }
 })
 </script>
 
 <style scoped lang="less">
+.error {
+    color: red;
+    font-weight: bold;
+}
 </style>

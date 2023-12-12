@@ -68,7 +68,7 @@ export const defaultStatblock = {
 		features: [{name: "Immortality", description: "whatever", automation: {}}] as FeatureEntity[],
 		actions: [{name: "Immortality", description: "whatever", automation: {}}] as FeatureEntity[],
 		bonus: [{name: "Immortality", description: "whatever", automation: {}}] as FeatureEntity[],
-		reaction: [{name: "Immortality", description: "whatever", automation: {}}] as FeatureEntity[],
+		reactions: [{name: "Immortality", description: "whatever", automation: {}}] as FeatureEntity[],
 		legendary: [{name: "Immortality", description: "whatever", automation: {}}] as FeatureEntity[],
 		lair: [{name: "Immortality", description: "whatever", automation: {}}] as FeatureEntity[],
 		regional: [{name: "Immortality", description: "whatever", automation: {}}] as FeatureEntity[]
@@ -170,7 +170,7 @@ export interface Features {
 	features: FeatureEntity[];
 	actions: FeatureEntity[];
 	bonus: FeatureEntity[];
-	reaction: FeatureEntity[];
+	reactions: FeatureEntity[];
 	legendary: FeatureEntity[];
 	lair: FeatureEntity[];
 	regional: FeatureEntity[];

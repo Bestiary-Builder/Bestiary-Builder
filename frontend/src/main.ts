@@ -33,7 +33,6 @@ app.use(ToastPlugin, {
 })
 	.use(FloatingVue)
 	.component("v-select", vSelect)
-	// .use(hljsVuePlugin)
 
 export const toast = app.config.globalProperties.$toast;
 
