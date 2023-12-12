@@ -69,18 +69,24 @@ export async function updateBestiary(data: Bestiary, id?: ObjectId) {
 		if (await getBestiary(id)) {
 			console.log("Updating bestiary with id " + id.toString());
 			await collections.bestiaries?.updateOne({_id: id}, {$set: data});
+			return id;
 		} else {
 			console.error("Trying to update non existant bestiary");
+			return null;
 		}
 	} else {
 		console.log("Adding new bestiary to collection");
+		let _id = new ObjectId();
+		data._id = _id;
 		await collections.bestiaries?.insertOne(data);
+		return _id;
 	}
 }
 export async function addBestiaryToUser(bestiaryId: ObjectId, userId: string) {
 	let user = await getUser(userId);
 	user.bestiaries.push(bestiaryId);
 	await collections.users?.updateOne({_id: user._id}, {$set: user});
+	await collections.bestiaries?.updateOne({_id: bestiaryId}, {$set: {owner: userId}});
 }
 export async function deleteBestiary(bestiaryId: ObjectId) {
 	let bestiary = await getBestiary(bestiaryId);

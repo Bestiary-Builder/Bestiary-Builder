@@ -1,5 +1,6 @@
 <template>
-	<div class="content" :value="getBestiaries" :key="key">
+	<div class="content" :key="key">
+		<button @click.prevent="createBestiary">Create new</button>
 		<div class="error" v-if="error">
 			<h2>Error: {{ error }}</h2>
 		</div>
@@ -24,7 +25,38 @@ export default defineComponent({
 	components: {
 		UserBanner
 	},
-	computed: {
+	beforeMount() {
+		this.getBestiaries();
+	},
+	methods: {
+		async createBestiary() {
+			console.log("Create");
+			//Replace for actual creation data:
+			let data = {
+				name: "Example name",
+				description: "Example description of bestiary",
+				status: "public",
+				creatures: [] as string[]
+			} as Bestiary;
+			//Send data to server
+			await fetch("/api/update/bestiary", {
+				method: "POST",
+				headers: {
+					Accept: "application/json",
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({data: data})
+			}).then(async (response) => {
+				let result = await handleApiResponse(response);
+				if (result.success) {
+					console.log("Created");
+				} else {
+					this.error = (result.data as error).error;
+				}
+			});
+			await this.getBestiaries();
+			this.key++;
+		},
 		async getBestiaries() {
 			//Get user
 			let userId;

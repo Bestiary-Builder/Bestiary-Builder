@@ -1,8 +1,9 @@
 import {app} from "../server";
 import {requireUser, possibleUser} from "./login";
-import {collections, getUserFromSecret, updateBestiary} from "../database";
+import {addBestiaryToUser, collections, getBestiary, getUserFromSecret, updateBestiary} from "../database";
 import {ObjectId} from "mongodb";
 
+//Get info
 app.get("/api/bestiaries", async (req, res) => {
 	let allBestiaries = (await collections.bestiaries?.find({status: "public"}).toArray()) ?? [];
 	return res.json(allBestiaries);
@@ -10,7 +11,7 @@ app.get("/api/bestiaries", async (req, res) => {
 app.get("/api/bestiary/:id", possibleUser, async (req, res) => {
 	let id = req.params.id;
 	if (id.length != 24) {
-		return res.status(404).json({error: "Bestiary id not valid"});
+		return res.status(400).json({error: "Bestiary id not valid"});
 	}
 	let bestiary = (await collections.bestiaries?.findOne({_id: new ObjectId(id)})) ?? null;
 	if (!bestiary) {
@@ -34,6 +35,45 @@ app.get("/api/user/:userid/bestiaries", possibleUser, async (req, res) => {
 		allBestiaries = (await collections.bestiaries?.find({owner: req.params.userid, status: "public"}).toArray()) ?? [];
 	}
 	return res.json(allBestiaries);
+});
+
+//Update info
+app.post("/api/update/bestiary/:id?", requireUser, async (req, res) => {
+	let id = req.params.id;
+	let data = req.body.data;
+	let user = await getUserFromSecret(req.body.id);
+	if (!user) {
+		return res.status(404).json({error: "Couldn't find current user"});
+	}
+	console.log(data);
+	if (id) {
+		//Update existing bestiary
+		if (id.length != 24) {
+			return res.status(400).json({error: "Bestiary id not valid"});
+		}
+		let _id = new ObjectId(id);
+		let bestiary = await getBestiary(_id);
+		if (bestiary) {
+			if (bestiary.owner != user._id) {
+				return res.status(401).json({error: "You don't have permission to update this bestiary"});
+			}
+			let updatedId = await updateBestiary(data, _id);
+			if (updatedId) {
+				return res.json(data);
+			}
+		}
+		return res.status(404).json({error: "No bestiary with that id found"});
+	} else {
+		//Create new bestiary
+		let _id = await updateBestiary(data);
+		if (!_id) {
+			return res.status(500).json({error: "Failed to create bestiary"});
+		}
+		await addBestiaryToUser(_id, user._id!);
+		data._id = _id;
+		data.owner = user._id;
+		return res.json(data);
+	}
 });
 
 //For debugging
