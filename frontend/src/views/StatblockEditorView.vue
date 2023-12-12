@@ -451,7 +451,7 @@
                 <div v-for="feature, index in data.features.reactions">
                     <FeatureWidget :index="index" type="reactions" :data="data"/>
                 </div>
-                <button @click="createNewFeature('features')"> New Reaction (+)</button>
+                <button @click="createNewFeature('reactions')"> New Reaction (+)</button>
 
                 <h2> Legendary Actions </h2>
                 <div v-for="feature, index in data.features.legendary">
@@ -463,7 +463,7 @@
                 <div v-for="feature, index in data.features.lair">
                     <FeatureWidget :index="index" type="lair" :data="data"/>
                 </div>
-                <button @click="createNewFeature('features')"> New Lair Action (+)</button>
+                <button @click="createNewFeature('lair')"> New Lair Action (+)</button>
 
                 <h2> Regional Effects </h2>
                 <div v-for="feature, index in data.features.regional">
