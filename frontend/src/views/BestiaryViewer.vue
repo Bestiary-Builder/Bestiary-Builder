@@ -26,7 +26,7 @@
 <script lang="ts">
 import {defineComponent} from "vue";
 import type {User, Bestiary, Creature} from "@/components/types";
-import UserBanner from "@/constantComponents/UserBanner.vue";
+import UserBanner from "@/components/UserBanner.vue";
 import {handleApiResponse} from "@/main";
 import type {error} from "@/main";
 

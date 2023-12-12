@@ -16,15 +16,11 @@
 <script lang="ts">
 import {defineComponent} from "vue";
 import type {User, Bestiary, Creature} from "@/components/types";
-import UserBanner from "@/constantComponents/UserBanner.vue";
-import {handleApiResponse} from "@/main";
+import {handleApiResponse, user} from "@/main";
 import type {error} from "@/main";
 
 export default defineComponent({
 	data: () => ({bestiaries: [] as Bestiary[], key: 0} as {bestiaries: Bestiary[]; error: string | null; key: number}),
-	components: {
-		UserBanner
-	},
 	beforeMount() {
 		this.getBestiaries();
 	},
@@ -59,15 +55,7 @@ export default defineComponent({
 		},
 		async getBestiaries() {
 			//Get user
-			let userId;
-			await fetch("/api/user").then(async (response) => {
-				let result = await handleApiResponse<User>(response);
-				if (result.success) userId = (result.data as User)._id;
-				else {
-					userId = null;
-					this.error = (result.data as error).error;
-				}
-			});
+			let userId = (await user)?._id;
 			if (userId) {
 				//Request bestiary info
 				await fetch(`/api/user/${userId}/bestiaries`).then(async (response) => {

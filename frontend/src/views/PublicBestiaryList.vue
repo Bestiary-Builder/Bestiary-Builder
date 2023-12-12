@@ -3,7 +3,7 @@
 		<div class="error" v-if="error">
 			<h2>Error: {{ error }}</h2>
 		</div>
-		<a class="bestiary" v-for="bestiary in bestiaries" :href="'/bestiary-viewer?id=' + bestiary._id" v-if="bestiaries">
+		<a v-if="bestiaries" class="bestiary" v-for="bestiary in bestiaries" :href="'/bestiary-viewer?id=' + bestiary._id">
 			<h2>{{ bestiary.name }}</h2>
 			<p>Description: {{ bestiary.description }}</p>
 			<p>Status: {{ bestiary.status }}</p>
@@ -19,7 +19,7 @@
 <script lang="ts">
 import {defineComponent} from "vue";
 import type {User, Bestiary, Creature} from "@/components/types";
-import UserBanner from "@/constantComponents/UserBanner.vue";
+import UserBanner from "@/components/UserBanner.vue";
 import {handleApiResponse} from "@/main";
 import type {error} from "@/main";
 

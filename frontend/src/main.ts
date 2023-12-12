@@ -1,3 +1,26 @@
+//Api handling
+export interface error {
+	error: string;
+}
+export async function handleApiResponse<Type>(response: Response) {
+	let data = await response.json();
+	if (response.status == 200) {
+		//Succesful
+		return {success: true, data: data as Type};
+	} else {
+		//Failed
+		return {success: false, data: data as error};
+	}
+}
+//Get logged in user
+import type {User} from "./components/types";
+export const user = fetch("/api/user").then(async (response: any) => {
+	let result = await handleApiResponse<User>(response);
+	if (result.success) return result.data as User;
+	else return null;
+});
+
+//Emitter
 // @ts-ignore
 import mitt, {Emitter} from "mitt";
 export const emitter: Emitter = mitt();
@@ -32,23 +55,9 @@ app.use(ToastPlugin, {
 	dismissible: true
 })
 	.use(FloatingVue)
-	.component("v-select", vSelect)
+	.component("v-select", vSelect);
 
 export const toast = app.config.globalProperties.$toast;
 
 //Mount
 app.mount("body");
-
-export interface error {
-	error: string;
-}
-export async function handleApiResponse<Type>(response: Response) {
-	let data = await response.json();
-	if (response.status == 200) {
-		//Succesful
-		return {success: true, data: data as Type};
-	} else {
-		//Failed
-		return {success: false, data: data as error};
-	}
-}

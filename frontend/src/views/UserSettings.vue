@@ -20,7 +20,7 @@
 <script lang="ts">
 import {defineComponent} from "vue";
 import type {User, Bestiary, Creature} from "@/components/types";
-import UserBanner from "@/constantComponents/UserBanner.vue";
+import UserBanner from "@/components/UserBanner.vue";
 export default defineComponent({
 	data: () => ({} as {user: User | null}),
 	async mounted() {

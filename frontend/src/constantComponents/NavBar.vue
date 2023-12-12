@@ -5,13 +5,38 @@
 				<img src="../assets/logo.svg" />
 			</a>
 		</div>
+		<div class="user-banner" :key="key" v-if="false">
+			<UserBanner v-if="user" :id="user!._id" />
+			<button @click.prevent="LoginClick" v-else>Login</button>
+		</div>
 		<RouterLink v-for="route in $router.options.routes.filter((a: any) => a.navbar)" :to="route.path" class="navlink center">
 			<div class="header-item" v-tooltip.right="route.name" v-html="route.meta?.icon"></div>
 		</RouterLink>
 	</div>
 </template>
-<script lang="ts" setup>
+<script lang="ts">
 import {RouterLink, RouterView} from "vue-router";
+import UserBanner from "@/components/UserBanner.vue";
+import {user} from "@/main";
+import type {User} from "@/components/types";
+import {defineComponent} from "vue";
+export default defineComponent({
+	name: "Navbar",
+	components: {
+		UserBanner
+	},
+	data: () => ({key: 0} as {user: User | null; key: number}),
+	async mounted() {
+		this.user = await user;
+		console.log("User: ", this.user);
+		this.key++;
+	},
+	methods: {
+		LoginClick() {
+			window.location.href = "https://discord.com/oauth2/authorize?client_id=1183362236509601813&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Flogin&scope=identify+email";
+		}
+	}
+});
 </script>
 <style scoped lang="less">
 .citizen-header {
