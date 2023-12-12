@@ -14,6 +14,7 @@
 		"@fortawesome/free-brands-svg-icons": "^6.4.0",
 		"@fortawesome/free-solid-svg-icons": "^6.4.0",
 		"@highlightjs/vue-plugin": "^2.1.0",
+		"@vueuse/core": "^10.7.0",
 		"floating-vue": "^2.0.0-beta.20",
 		"highlight.js": "^11.9.0",
 		"less": "^4.1.3",

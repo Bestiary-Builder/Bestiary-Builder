@@ -8,6 +8,10 @@
 			<p>Description: {{ bestiary.description }}</p>
 			<p>Status: {{ bestiary.status }}</p>
 			<p>Creature amount: {{ bestiary.creatures.length }}</p>
+			<div class="owner">
+				<p>Owner:</p>
+				<UserBanner :id="bestiary.owner" />
+			</div>
 		</a>
 	</div>
 </template>
@@ -26,28 +30,16 @@ export default defineComponent({
 	},
 	computed: {
 		async getBestiaries() {
-			//Get user
-			let userId;
-			await fetch("/api/user").then(async (response) => {
-				let result = await handleApiResponse<User>(response);
-				if (result.success) userId = (result.data as User)._id;
+			//Request bestiary info
+			await fetch(`/api/bestiaries`).then(async (response) => {
+				let result = await handleApiResponse<Bestiary[]>(response);
+				if (result.success) this.bestiaries = result.data as Bestiary[];
 				else {
-					userId = null;
+					this.bestiaries = [];
 					this.error = (result.data as error).error;
 				}
 			});
-			if (userId) {
-				//Request bestiary info
-				await fetch(`/api/user/${userId}/bestiaries`).then(async (response) => {
-					let result = await handleApiResponse<Bestiary[]>(response);
-					if (result.success) this.bestiaries = result.data as Bestiary[];
-					else {
-						this.bestiaries = [];
-						this.error = (result.data as error).error;
-					}
-				});
-				console.log(this.bestiaries);
-			}
+			console.log(this.bestiaries);
 			this.key++;
 		}
 	}

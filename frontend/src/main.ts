@@ -9,6 +9,7 @@ import FloatingVue from "floating-vue";
 import "floating-vue/dist/style.css";
 //Vue
 import {createApp} from "vue";
+//@ts-ignore
 import VueApp from "./App.vue";
 export const app = createApp(VueApp);
 //Router
@@ -26,8 +27,8 @@ import vSelect from "vue-select";
 import "vue-select/dist/vue-select.css";
 
 // highlight.js
-import 'highlight.js/styles/obsidian.css'
-import 'highlight.js/lib/common';
+import "highlight.js/styles/obsidian.css";
+import "highlight.js/lib/common";
 import hljsVuePlugin from "@highlightjs/vue-plugin";
 
 app.use(ToastPlugin, {
@@ -37,20 +38,23 @@ app.use(ToastPlugin, {
 })
 	.use(FloatingVue)
 	.component("v-select", vSelect)
-	.use(hljsVuePlugin)
+	.use(hljsVuePlugin);
 
 export const toast = app.config.globalProperties.$toast;
 
-//Types
-export type user = {
-	_id: string;
-	username: string;
-	avatar: string;
-	email: string;
-	verified: true;
-	banner_color: boolean;
-	global_name: string;
-};
-
 //Mount
 app.mount("body");
+
+export interface error {
+	error: string;
+}
+export async function handleApiResponse<Type>(response: Response) {
+	let data = await response.json();
+	if (response.status == 200) {
+		//Succesful
+		return {success: true, data: data as Type};
+	} else {
+		//Failed
+		return {success: false, data: data as error};
+	}
+}

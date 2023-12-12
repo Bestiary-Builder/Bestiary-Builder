@@ -20,7 +20,7 @@ app.get("/api/bestiary/:id", possibleUser, async (req, res) => {
 	if ((user && user._id == bestiary.owner) || bestiary.status != "private") {
 		return res.json(bestiary);
 	} else {
-		return res.status(403).json({error: "You don't have access to this bestiary"});
+		return res.status(401).json({error: "You don't have access to this bestiary"});
 	}
 });
 app.get("/api/user/:userid/bestiaries", possibleUser, async (req, res) => {

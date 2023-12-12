@@ -1,25 +1,31 @@
-<template>
-	<a class="user" v-if="user" href="/user">
+<template :key="">
+	<a class="user" v-if="user" :href="'/user' + (id ? '?id=' + id : '')">
 		<img alt="avatar" :src="'https://cdn.discordapp.com/avatars/' + user._id + '/' + user.avatar + '.png'" />
 		<p>{{ user.global_name }}</p>
 	</a>
-	<div v-else class="login">
+	<div v-else-if="id" class="login">
 		<button @click.prevent="LoginClick">Login</button>
 	</div>
+	<div v-else class="user"></div>
 </template>
 
 <script lang="ts">
 import {RouterLink, RouterView} from "vue-router";
-import {defineComponent} from "vue";
-import type {user} from "../main";
+import {defineComponent, defineProps} from "vue";
+import type {User, Bestiary, Creature} from "@/components/types";
+import {handleApiResponse} from "@/main";
 export default defineComponent({
-	data: () => ({} as {user: user | null}),
+	data: () => ({key: 0} as {user: User | null; key: number}),
+	props: {
+		id: String
+	},
 	async mounted() {
-		this.user = (await fetch("/api/user").then((response: any) => {
-			console.log(response.status);
-			if (response.status == 200) return response.json();
-			else return null;
-		})) as user;
+		await fetch("/api/user" + (this.id ? "/" + this.id : "")).then(async (response: any) => {
+			let result = await handleApiResponse<User>(response);
+			if (result.success) this.user = result.data as User;
+			else this.user = null;
+		});
+		this.key++;
 		console.log(this.user);
 		this.$forceUpdate();
 	},

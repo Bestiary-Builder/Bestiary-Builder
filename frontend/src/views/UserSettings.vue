@@ -19,16 +19,15 @@
 
 <script lang="ts">
 import {defineComponent} from "vue";
-import type {user} from "../main";
+import type {User, Bestiary, Creature} from "@/components/types";
 import UserBanner from "@/constantComponents/UserBanner.vue";
 export default defineComponent({
-	data: () => ({} as {user: user | null}),
+	data: () => ({} as {user: User | null}),
 	async mounted() {
-		this.user = (await fetch("/api/user").then((response: any) => {
-			console.log(response.status);
-			if (response.status == 200) return response.json();
+		this.user = (await fetch("/api/user").then(async (response: any) => {
+			if (response.status == 200) return await response.json();
 			else return null;
-		})) as user;
+		})) as User;
 		console.log(this.user);
 		this.$forceUpdate();
 	},

@@ -87,7 +87,7 @@ export const requireUser = async (req: any, res: any, next: any) => {
 
 	if (!token) {
 		console.log("Authentication failed");
-		return res.status(403).json({error: "Not logged in"});
+		return res.status(401).json({error: "Not logged in"});
 	}
 	try {
 		const decoded = jwt.verify(token, process.env.JWT_TOKEN ?? "") as any;
@@ -106,21 +106,37 @@ export const possibleUser = async (req: any, res: any, next: any) => {
 	if (!token) {
 		console.log("Authentication failed");
 		req.body.id = null;
-	}
-
-	try {
-		const decoded = jwt.verify(token, process.env.JWT_TOKEN ?? "") as any;
-		let user = await getUser(decoded.id);
-		req.body.id = user.secret;
-		console.log("Authentication success with id " + decoded.id.toString());
-	} catch (err) {
-		console.log("Invalid Token");
-		req.body.id = null;
+	} else {
+		try {
+			const decoded = jwt.verify(token, process.env.JWT_TOKEN ?? "") as any;
+			let user = await getUser(decoded.id);
+			req.body.id = user.secret;
+			console.log("Authentication success with id " + decoded.id.toString());
+		} catch (err) {
+			console.log("Invalid Token");
+			req.body.id = null;
+		}
 	}
 	return next();
 };
 
 app.get("/api/user", requireUser, async (req, res) => {
 	let userData = (await getUserFromSecret(req.body.id)) as User;
-	return res.json(userData);
+	if (userData) return res.json(userData);
+	else return res.status(404).json({error: "Couldn't find user"});
+});
+
+app.get("/api/user/:id", async (req, res) => {
+	let userData = (await getUser(req.params.id)) as User;
+	if (userData) {
+		let data = {
+			_id: userData._id,
+			global_name: userData.global_name,
+			avatar: userData.avatar,
+			banner_color: userData.banner_color
+		};
+		return res.json(data);
+	} else {
+		return res.status(404).json({error: "User not found"});
+	}
 });
