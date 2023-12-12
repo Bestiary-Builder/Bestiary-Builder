@@ -21,7 +21,7 @@ const router = createRouter({
 //Reload page on route change
 router.beforeEach((to, from, next) => {
 	if (from.name && to.name != from.name) {
-		window.location.pathname = to.path;
+		///window.location.pathname = to.path;
 	}
 	next();
 });
