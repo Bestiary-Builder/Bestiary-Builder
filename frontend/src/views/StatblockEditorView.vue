@@ -460,7 +460,7 @@
                 <button @click="createNewFeature('legendary')"> New Legendary Action (+)</button>
 
                 <h2> Lair Actions </h2>
-                <div v-for="feature, index in data.features.features">
+                <div v-for="feature, index in data.features.lair">
                     <FeatureWidget :index="index" type="lair" :data="data"/>
                 </div>
                 <button @click="createNewFeature('features')"> New Lair Action (+)</button>
@@ -572,6 +572,7 @@ export default defineComponent({
                 "description": "",
                 "automation": null
             }
+            console.log(this.data.features)
         },
     },
     mounted() {

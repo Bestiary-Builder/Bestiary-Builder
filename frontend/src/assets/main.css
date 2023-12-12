@@ -226,8 +226,8 @@ input[type="checkbox"]:checked::before {
 
 .modal__content {
 	position: relative;
-	width: 60%;
-	height: 80%;
+	width: 80%;
+	height: 90%;
 	padding: 2rem;
 	background-color: var(--color-surface-3);
 	border: 2px solid orangered;

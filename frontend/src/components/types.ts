@@ -65,13 +65,13 @@ export const defaultStatblock = {
 		conditionImmunities: [] as string[]
 	} as Defenses,
 	features: {
-		features: [{name: "Immortality", description: "whatever", automation: {}}] as FeatureEntity[],
-		actions: [{name: "Immortality", description: "whatever", automation: {}}] as FeatureEntity[],
-		bonus: [{name: "Immortality", description: "whatever", automation: {}}] as FeatureEntity[],
-		reactions: [{name: "Immortality", description: "whatever", automation: {}}] as FeatureEntity[],
-		legendary: [{name: "Immortality", description: "whatever", automation: {}}] as FeatureEntity[],
-		lair: [{name: "Immortality", description: "whatever", automation: {}}] as FeatureEntity[],
-		regional: [{name: "Immortality", description: "whatever", automation: {}}] as FeatureEntity[]
+		features: [] as FeatureEntity[],
+		actions: [] as FeatureEntity[],
+		bonus: [] as FeatureEntity[],
+		reactions: [] as FeatureEntity[],
+		legendary: [] as FeatureEntity[],
+		lair: [] as FeatureEntity[], 
+		regional: [] as FeatureEntity[]
 	} as Features
 } as Statblock;
 
