@@ -18,6 +18,11 @@ import {RouterLink, RouterView} from "vue-router";
 	--header-icon-size: ~"calc( var( --header-button-size ) / 2 )";
 	--header-button-size: ~"calc( var( --header-size ) - var(  --space-xs ) * 2 )";
 	--header-direction: row;
+	position: fixed;
+	z-index: 91;
+	right: 0;
+	bottom: 0;
+	left: 0;
 	display: flex;
 	flex-direction: var(--header-direction);
 	padding: var(--space-xs);
@@ -25,7 +30,6 @@ import {RouterLink, RouterView} from "vue-router";
 	background-color: var(--color-surface-0);
 	gap: var(--space-xxs);
 	justify-content: space-between;
-	align-items: center;
 
 	&__item {
 		display: flex;
@@ -185,10 +189,12 @@ import {RouterLink, RouterView} from "vue-router";
 @media (min-width: 1000px) {
 	.citizen-header {
 		--header-direction: column;
+		top: 0;
+		right: unset;
+		left: 0;
 		border-top: 0;
+		border-right: 1px solid var(--border-color-base);
 		padding: var(--space-sm);
-		position: sticky;
-		top: 3.5dvh;
 
 		&__logo {
 			padding: 0 0 var(--space-xs) 0;

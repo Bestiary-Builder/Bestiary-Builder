@@ -431,20 +431,45 @@
             <div class="editor-content__tab-inner fade">
                 <h2> Features </h2>
                 <div v-for="feature, index in data.features.features">
-                    <FeatureWidget @create-feature="saveFeature" :index="index" type="features" :data="data"/>
+                    <FeatureWidget :index="index" type="features" :data="data"/>
                 </div>
                 <button @click="createNewFeature('features')"> New Feature (+)</button>
+
                 <h2> Actions </h2>
+                <div v-for="feature, index in data.features.actions">
+                    <FeatureWidget :index="index" type="actions" :data="data"/>
+                </div>
+                <button @click="createNewFeature('actions')"> New Action (+)</button>
 
                 <h2> Bonus Actions </h2>
+                <div v-for="feature, index in data.features.bonus">
+                    <FeatureWidget :index="index" type="bonus" :data="data"/>
+                </div>
+                <button @click="createNewFeature('bonus')"> New Bonus Action (+)</button>
 
                 <h2> Reactions </h2>
+                <div v-for="feature, index in data.features.reactions">
+                    <FeatureWidget :index="index" type="reactions" :data="data"/>
+                </div>
+                <button @click="createNewFeature('features')"> New Reaction (+)</button>
 
-                <h2> Legendary Reactions </h2>
+                <h2> Legendary Actions </h2>
+                <div v-for="feature, index in data.features.legendary">
+                    <FeatureWidget :index="index" type="legendary" :data="data"/>
+                </div>
+                <button @click="createNewFeature('legendary')"> New Legendary Action (+)</button>
 
                 <h2> Lair Actions </h2>
+                <div v-for="feature, index in data.features.features">
+                    <FeatureWidget :index="index" type="lair" :data="data"/>
+                </div>
+                <button @click="createNewFeature('features')"> New Lair Action (+)</button>
 
                 <h2> Regional Effects </h2>
+                <div v-for="feature, index in data.features.regional">
+                    <FeatureWidget :index="index" type="regional" :data="data"/>
+                </div>
+                <button @click="createNewFeature('regional')"> New Regional Effect (+)</button>
             </div>
             <div class="editor-content__tab-inner fade">
                 <h2> Feature Editor </h2>
@@ -541,20 +566,23 @@ export default defineComponent({
         deleteSkill(index: number) : void {
             this.data.abilities.skills?.splice(index, 1)
         },
-        createNewFeature(type: "features" | "actions" | "bonus" | "reaction" | "legendary" | "lair" | "regional" ) : void {
+        createNewFeature(type: "features" | "actions" | "bonus" | "reactions" | "legendary" | "lair" | "regional" ) : void {
             this.data.features[type][this.data.features[type].length] = {
                 "name": "New Feature",
                 "description": "",
                 "automation": null
             }
         },
-        saveFeature(type: string, data: {} ) : void {
-            console.log('hit')
-            console.log(type, data)
-        }
     },
     mounted() {
         this.showSlides(1)
+
+        setInterval(() => {
+            let els = document.querySelectorAll('.language-yaml') as NodeListOf<HTMLElement>
+            for (let e in els) {
+                if (els[e].dataset?.highlighted == "yes") els[e].dataset.highlighted = ""
+        }
+        }, 10)
     }
 })
 </script>
@@ -565,10 +593,12 @@ export default defineComponent({
 	grid-template-columns: 1fr 1fr;
     width: 90vw;
 	gap: 2rem;
+    min-height: 90vh;
 }
 
 .content-container__inner {
 	background-color: rgb(46, 44, 44);
+    
 }
 
 .editor-nav {
