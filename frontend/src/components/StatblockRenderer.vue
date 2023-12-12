@@ -137,9 +137,9 @@
             </p>
         </div>
 
-        <div class="feature-container" v-if="data.features.reaction.length > 0">
+        <div class="feature-container" v-if="data.features.reactions.length > 0">
             <h3 class="feature-container__title"> Reactions </h3>
-                <p v-for="feature in data.features.reaction">
+                <p v-for="feature in data.features.reactions">
                 <b> <i>{{ feature.name }}</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
                 <span class="feature-container__desc"> {{ feature.description }} </span>
             </p>
@@ -170,9 +170,9 @@
         </div>
     </div>
 </div>
-<div id="bla"> 
+<!-- <div id="bla"> 
     <highlightjs language='yaml' :code="yamlString()" />
-</div>
+</div> -->
 
 </template>
 

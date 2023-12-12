@@ -14,53 +14,22 @@ body {
 }
 
 main {
+	width: 100vw;
+	min-height: 100vh;
 	background-color: var(--color-surface-0);
 	display: flex;
 	justify-content: center;
 	align-items: center;
 }
 
-body {
-	display: grid;
-	height: 100%;
-	min-height: 100dvh;
-}
-main {
-	grid-area: main;
-	height: 100%;
-	min-height: 85dvh;
-}
-header {
-	grid-area: header;
-	height: 100%;
-	border-right: 1px solid var(--border-color-base);
-}
-footer {
-	grid-area: footer;
-	height: 100%;
-}
 
 @media screen and (min-width: 1000px) {
-	body {
-		grid-template-areas:
-			"user user none"
-			"header main main"
-			"header main main"
-			"header footer footer";
-		grid-template-columns: 5% 10% 85%;
-		grid-template-rows: 5% 80% 5% 10%;
+	main {
+		margin-left: calc(2.8 * var(--padding-page));
+		margin-top: var(--space-lg);
 	}
 }
-@media screen and (max-width: 999px) {
-	body {
-		grid-template-areas:
-			"main main"
-			"user header"
-			"footer footer";
-		grid-template-columns: 25% 75%;
-		grid-template-rows: 80% 5% 10%;
-	}
-}
+
 
 h1,
 h2,
@@ -82,7 +51,7 @@ a {
 	color: var(--color-link);
 }
 
-button {
+/* button {
 	background-color: var(--rarity-color-rare);
 	padding: var(--space-sm) var(--space-md);
 	margin: var(--space-sm);
@@ -90,7 +59,7 @@ button {
 	text-align: center;
 	border-radius: 2rem;
 	cursor: pointer;
-}
+} */
 
 hr {
 	border-color: var(--border-color-base);
