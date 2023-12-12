@@ -95,7 +95,7 @@ export async function deleteBestiary(bestiaryId: ObjectId) {
 	}
 	await collections.bestiaries?.deleteOne({_id: bestiaryId});
 }
-export async function getCreatures(id: ObjectId) {
+export async function getCreature(id: ObjectId) {
 	return (await collections.creatures?.findOne({_id: id})) as Creature;
 }
 export async function updateCreature(data: Creature, id?: ObjectId) {
@@ -103,12 +103,17 @@ export async function updateCreature(data: Creature, id?: ObjectId) {
 		if (await getBestiary(id)) {
 			console.log("Updating creature with id " + id.toString());
 			await collections.creatures?.updateOne({_id: id}, {$set: data});
+			return id;
 		} else {
-			console.error("Tryign to update non existant bestiary");
+			console.error("Trying to update non existant bestiary");
+			return null;
 		}
 	} else {
 		console.log("Adding new creature to collection");
+		let _id = new ObjectId();
+		data._id = _id;
 		await collections.creatures?.insertOne(data);
+		return _id;
 	}
 }
 export async function addCreatureToBestiary(creatureId: ObjectId, bestiaryId: ObjectId) {
@@ -117,7 +122,7 @@ export async function addCreatureToBestiary(creatureId: ObjectId, bestiaryId: Ob
 	await collections.bestiaries?.updateOne({_id: bestiaryId}, {$set: bestiary});
 }
 export async function deleteCreature(creatureId: ObjectId) {
-	let creature = await getCreatures(creatureId);
+	let creature = await getCreature(creatureId);
 	let bestiary = await getBestiary(creature.bestiary);
 	bestiary.creatures = bestiary.creatures.filter((c) => c != creatureId);
 	await collections.creatures?.deleteOne({_id: creatureId});
