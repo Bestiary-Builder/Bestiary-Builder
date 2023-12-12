@@ -25,13 +25,19 @@ import "./assets/main.css";
 import vSelect from "vue-select";
 import "vue-select/dist/vue-select.css";
 
+// highlight.js
+import 'highlight.js/styles/obsidian.css'
+import 'highlight.js/lib/common';
+import hljsVuePlugin from "@highlightjs/vue-plugin";
+
 app.use(ToastPlugin, {
 	position: "top-right",
 	duration: 5000,
 	dismissible: true
 })
 	.use(FloatingVue)
-	.component("v-select", vSelect);
+	.component("v-select", vSelect)
+	.use(hljsVuePlugin)
 
 export const toast = app.config.globalProperties.$toast;
 

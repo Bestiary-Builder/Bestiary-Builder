@@ -257,11 +257,11 @@ input[type="checkbox"]:checked::before {
 
 .modal__content {
 	position: relative;
-	width: 80%;
-	height: 100%;
+	width: 60%;
+	height: 80%;
 	padding: 2rem;
 	background-color: var(--color-surface-3);
-
+	border: 2px solid orangered;
 	overflow-y: scroll;
 	overscroll-behavior: contain;
 }
@@ -488,3 +488,10 @@ table.wikitable tbody tr th {
 	--vs-transition-timing-function: cubic-bezier(1, -0.115, 0.975, 0.855);
 	--vs-transition-duration: 150ms;
 }
+
+/* #modal {
+	pointer-events: none;
+	z-index: -100;
+	width: 0;
+	height: 0;
+} */

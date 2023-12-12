@@ -1,7 +1,7 @@
 <template>
 <div class="stat-block">
     <div class="stat-block__row"> 
-        <span class="stat-block__name-container"> {{ data.description.name }}</span>
+        <h1 class="stat-block__name-container"> {{ data.description.name }}</h1>
         <span class="stat-block__core"> {{ data.core.size }} {{ data.core.race }}{{ data.description.alignment ? ',' : '' }} {{ data.description.alignment }}</span>
     </div>
     <div class="stat-block__row">
@@ -112,15 +112,76 @@
             <b> Challenge </b> {{ data.description.cr }} (1000 xp)
         </div>
     </div>
+    <div class="stat-block__row" v-if="showFeatures()">
+        <div class="feature-container"  v-if="data.features.features.length > 0">
+            <p v-for="feature in data.features.features">
+                <b> <i>{{ feature.name }}</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup> </b>
+                <span class="feature-container__desc">  {{ feature.description }} </span>
+            </p>
+        </div>
+
+
+        <div class="feature-container" v-if="data.features.actions.length > 0">
+            <h3 class="feature-container__title"> Actions </h3>
+                <p v-for="feature in data.features.actions">
+                <b> <i>{{ feature.name }}</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
+                <span class="feature-container__desc"> {{ feature.description }} </span>
+            </p>
+        </div>
+
+        <div class="feature-container" v-if="data.features.bonus.length > 0">
+            <h3 class="feature-container__title"> Bonus Actions </h3>
+                <p v-for="feature in data.features.bonus">
+                <b> <i>{{ feature.name }}</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
+                <span class="feature-container__desc"> {{ feature.description }} </span>
+            </p>
+        </div>
+
+        <div class="feature-container" v-if="data.features.reaction.length > 0">
+            <h3 class="feature-container__title"> Reactions </h3>
+                <p v-for="feature in data.features.reaction">
+                <b> <i>{{ feature.name }}</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
+                <span class="feature-container__desc"> {{ feature.description }} </span>
+            </p>
+        </div>
+
+        <div class="feature-container" v-if="data.features.legendary.length > 0">
+            <h3 class="feature-container__title"> Legendary Actions </h3>
+                <p v-for="feature in data.features.legendary">
+                <b> <i>{{ feature.name }}</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
+                <span class="feature-container__desc"> {{ feature.description }} </span>
+            </p>
+        </div>
+
+        <div class="feature-container" v-if="data.features.lair.length > 0">
+            <h3 class="feature-container__title"> Lair Actions </h3>
+                <p v-for="feature in data.features.lair">
+                <b> <i>{{ feature.name }}</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
+                <span class="feature-container__desc"> {{ feature.description }} </span>
+            </p>
+        </div>
+
+        <div class="feature-container" v-if="data.features.regional.length > 0">
+            <h3 class="feature-container__title"> Regional Effects </h3>
+                <p v-for="feature in data.features.regional">
+                <b> <i>{{ feature.name }}</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
+                <span class="feature-container__desc"> {{ feature.description }} </span>
+            </p>
+        </div>
+    </div>
+</div>
+<div id="bla"> 
+    <highlightjs language='yaml' :code="yamlString()" />
 </div>
 
-<pre> {{  yamlString()  }} </pre>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import type { SaveEntity, SkillsEntity, Statblock } from './types';
+import type { SaveEntity, SkillsEntity, Statblock } from './types'
 import { stringify } from 'yaml'
+
+
 export default defineComponent({
     props: ["data"],
     data() {
@@ -130,7 +191,6 @@ export default defineComponent({
     },
     methods: {
         hpCalc(): number {
-            let conMod = this.statCalc("con")
             return Math.floor(this.data.defenses.hp.numOfHitDie * ( (this.data.defenses.hp.sizeOfHitDie + 1)/2 + this.statCalc("con")))
         },
         statCalc(stat: string) : number {
@@ -242,6 +302,12 @@ export default defineComponent({
             }
             return false
         },
+        showFeatures() : boolean {
+            for (let f in this.data.features) {
+                if (this.data.features[f].length > 0) return true
+            }
+            return false
+        },
         alphaSort(list: string[]) : string[] {
             const sortByLastWord = (a :string , b :string) => {
                 const lastWordA = a.split(' ').pop();
@@ -263,6 +329,9 @@ export default defineComponent({
 </script>
 
 <style scoped lang="less">
+#bla {
+    margin-top: 20rem;
+}
 .stat-block {
     width: 100%;
     height: 30rem;
@@ -272,18 +341,15 @@ export default defineComponent({
 .stat-block__row {
     display: block;
     width: 100%;
-    border-bottom: 2px solid yellowgreen;
+    border-bottom: 2px solid orangered;
     margin-left: .3rem;
     margin-bottom: .6rem;
     margin-top: .6rem;
 }
 
 .stat-block__name-container {
-    font-size: 2rem;
-    width: 100%;
-    margin: .2rem;
-    margin-bottom: 0;
-    display: block;
+    color: orangered;
+    font-family: 'Times New Roman', Times, serif;
 }
 
 .stat-block__core {
@@ -295,6 +361,9 @@ export default defineComponent({
     text-align: center;
 }
 
+.feature__has-automation-icodn {
+    font-size: .7rem;
+}
 .stat-block__language-container > span:last-of-type > span > .ending-comma,
 
 .stat-block__cond-container > span:last-of-type > span > .ending-comma,
@@ -309,4 +378,21 @@ export default defineComponent({
     display: none;
 }
 
+
+.feature-container {
+    &__title {
+        color: orangered;
+        font-family: 'Times New Roman', Times, serif;
+        font-weight: bold;
+        border-bottom: 1px solid orangered
+    }
+
+    :has(.feature__automation-icon)&__desc {
+        margin-left: .2rem;
+    }
+}
+
+.feature-container:has(sup)  .feature-container__desc {
+    margin-left: .2rem;
+}
 </style>

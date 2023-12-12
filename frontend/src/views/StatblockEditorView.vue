@@ -1,5 +1,5 @@
 <template>
-<div class="content-container">
+<div class="content-container" >
 	<div class="content-container__inner editor"> 
         <div class="editor-nav">
             <div @click="currentSlide(1)" :class="{'active-slide': slideIndex === 1}" class="editor-nav__tab">
@@ -429,12 +429,26 @@
                 />
             </div>
             <div class="editor-content__tab-inner fade">
-                Actions
-                Bonus Actions
-                Reactions
-                Legendary Actions
-                Lair Actions
-                Features
+                <h2> Features </h2>
+                <div v-for="feature, index in data.features.features">
+                    <FeatureWidget @create-feature="saveFeature" :index="index" type="features" :data="data"/>
+                </div>
+                <button @click="createNewFeature('features')"> New Feature (+)</button>
+                <h2> Actions </h2>
+
+                <h2> Bonus Actions </h2>
+
+                <h2> Reactions </h2>
+
+                <h2> Legendary Reactions </h2>
+
+                <h2> Lair Actions </h2>
+
+                <h2> Regional Effects </h2>
+            </div>
+            <div class="editor-content__tab-inner fade">
+                <h2> Feature Editor </h2>
+
             </div>
         </div>
 
@@ -449,12 +463,14 @@
 <script lang="ts">
 import {RouterLink, RouterView} from "vue-router";
 import { defineComponent, watch } from "vue";
-import StatblockRenderer from "../widgets/StatblockRenderer.vue";
-import type { SkillsEntity, Statblock } from "@/widgets/types";
-import { defaultStatblock } from "@/widgets/types"
+import StatblockRenderer from "../components/StatblockRenderer.vue"; 
+import type { SkillsEntity, Statblock } from "@/components/types";
+import { defaultStatblock } from "@/components/types"
+import FeatureWidget from "@/components/FeatureWidget.vue";
 export default defineComponent({
 	components: {
-		StatblockRenderer
+		StatblockRenderer,
+        FeatureWidget
 	},
     data() {
         return {
@@ -524,8 +540,22 @@ export default defineComponent({
         },
         deleteSkill(index: number) : void {
             this.data.abilities.skills?.splice(index, 1)
+        },
+        createNewFeature(type: "features" | "actions" | "bonus" | "reaction" | "legendary" | "lair" | "regional" ) : void {
+            this.data.features[type][this.data.features[type].length] = {
+                "name": "New Feature",
+                "description": "",
+                "automation": null
+            }
+        },
+        saveFeature(type: string, data: {} ) : void {
+            console.log('hit')
+            console.log(type, data)
         }
     },
+    mounted() {
+        this.showSlides(1)
+    }
 })
 </script>
 

@@ -1,8 +1,6 @@
-import { reactive } from "vue";
-
 export const defaultStatblock = {
     "description": {
-        "name": "Bob the Builder" as string,
+        "name": "New Creature" as string,
         "description": "" as string,
         "image": "" as string,
         "faction": "" as string,
@@ -67,13 +65,13 @@ export const defaultStatblock = {
         "conditionImmunities": [] as string[]
     } as Defenses,
     "features": {
-      "features": [] as FeatureEntity[],
-      "actions": [] as FeatureEntity[],
-      "bonus": [] as FeatureEntity[],
-      "reaction": [] as FeatureEntity[],
-      "legendary": [] as FeatureEntity[],
-      "lair": [] as FeatureEntity[],
-      "regional": [] as FeatureEntity[]
+      "features": [{"name": "Immortality", "description": "whatever", "automation": {}}] as FeatureEntity[],
+      "actions": [{"name": "Immortality", "description": "whatever", "automation": {}}] as FeatureEntity[],
+      "bonus": [{"name": "Immortality", "description": "whatever", "automation": {}}] as FeatureEntity[],
+      "reaction": [{"name": "Immortality", "description": "whatever", "automation": {}}] as FeatureEntity[],
+      "legendary": [{"name": "Immortality", "description": "whatever", "automation": {}}] as FeatureEntity[],
+      "lair": [{"name": "Immortality", "description": "whatever", "automation": {}}] as FeatureEntity[],
+      "regional": [{"name": "Immortality", "description": "whatever", "automation": {}}] as FeatureEntity[]
     } as Features
 } as Statblock
 
@@ -181,39 +179,7 @@ export interface Statblock {
   export interface FeatureEntity {
     name: string;
     description: string;
-    automation: object;
+    automation: null | object;
     // type: "feature" | "action" | "bonus" | "reaction" | "legendary" | "lair" | "regional"
   }
   
-// TODO: add typing
-export const StatblockValues = reactive({
-    data: defaultStatblock as Statblock,
-    get(): Statblock {
-        return this.data;
-    },
-    set(newData: Statblock): void {
-        this.data = newData
-    },
-    clear() {
-        this.data = {} as Statblock
-    },
-
-    updateName(newName: string) : void {
-        this.data.description.name = newName;
-    },
-    updateDesc(newDesc: string) : void {
-        this.data.description.description = newDesc;
-    },
-    updateImage(newImage: string) : void {
-        this.data.description.image = newImage;
-    },
-    updateEnv(newEnv: string) : void {
-        this.data.description.environment = newEnv;
-    },
-    updateFaction(newFaction: string) : void {
-        this.data.description.faction = newFaction;
-    },
-    updateCr(newCr: number) : void {
-        this.data.description.cr = newCr;
-    }
-})

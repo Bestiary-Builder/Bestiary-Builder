@@ -17,6 +17,7 @@ export default defineComponent({
 </script>
 
 <template>
+	<div id="modal"></div>
 	<div class="banner">
 		<UserBanner />
 	</div>
@@ -38,5 +39,6 @@ export default defineComponent({
 	top: 0;
 	z-index: 100;
 	height: 100%;
+	display: none;
 }
 </style>
