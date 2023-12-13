@@ -572,7 +572,6 @@ export default defineComponent({
                 "description": "",
                 "automation": null
             }
-            console.log(this.data.features)
         },
     },
     mounted() {
@@ -582,7 +581,7 @@ export default defineComponent({
             let els = document.querySelectorAll('.language-yaml') as NodeListOf<HTMLElement>
             for (let e in els) {
                 if (els[e].dataset?.highlighted == "yes") els[e].dataset.highlighted = ""
-        }
+            }
         }, 10)
     }
 })

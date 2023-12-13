@@ -8,10 +8,26 @@
             <section class="modal__content" ref="modal">  
                 <button @click="isModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
                 <p> NAME: </p> <input type="text" placeholder="Enter name" v-model="feat.name">
-                <p> DESCRIPTION: </p> <textarea rows="8" type="text" placeholder="Enter description" v-model="feat.description" />
+                <hr>
+                <p> DESCRIPTION: </p> <textarea rows="4" type="text" placeholder="Enter description" v-model="feat.description" />
+                <hr>
+                <div class="import-container"> 
+                    <span class="import-container__title"> Import Basic Example </span> 
+                    <div class="import-container__selector"> <v-select :options="basicExamples" label="name" v-model="importedBasicExample"/> </div>                
+                    <button class="import-container__button" @click="importExample"> Load </button>
+                    
+                </div>
+                <hr>
+                <div class="import-container"> 
+                    <span class="import-container__title"> Import SRD Feature </span> 
+                    <div class="import-container__selector"> <v-select :options="srdFeatures" label="name" v-model="importedSrdFeature"/> </div>                
+                    <button class="import-container__button" @click="importSrdAction"> Load </button>
+                </div>
+                <hr>
                 <p> AUTOMATION </p>
-                <button @click="saveAutomation()"> Save Automation! </button>
+                <button @click="saveAutomation(true)"> Save Automation! </button>
                 <button @click="automationString = 'null'"> Clear </button>
+                <hr>
                 <div class="automation-editor">
 
                     <span class="error"> {{  errorMessage }} </span>
@@ -62,6 +78,7 @@ import YAML, { stringify, parse, YAMLParseError, Parser } from 'yaml'
 // @ts-ignore
 import CodeEditor from "simple-code-editor";
 import { toast } from '@/main';
+import { basicExamples, srdFeatures, type FeatureEntity } from './types';
 export default defineComponent({
     props: ["type", "index", "data"],
     data() {
@@ -69,7 +86,11 @@ export default defineComponent({
             isModalOpen: false,
             feat: this.data.features[this.type][this.index],
             automationString: "" as string,
-            errorMessage: null as null | string
+            errorMessage: null as null | string,
+            basicExamples: basicExamples,
+            srdFeatures: srdFeatures,
+            importedBasicExample: null as FeatureEntity | null,
+            importedSrdFeature: null as FeatureEntity | null,
         }
     },
     components: {
@@ -77,8 +98,7 @@ export default defineComponent({
     },
     mounted() {
         this.automationString = stringify(null)
-        //this.feat = this.data.features[this.type][this.index]   
-
+        console.log(srdFeatures.length)
     },
     methods: {
         validateYaml() : boolean {
@@ -93,18 +113,45 @@ export default defineComponent({
                 return false
             }
         },
-        saveAutomation() {
+        saveAutomation(shouldNotify: boolean = false) {
             try {
                 YAML.parse(this.automationString)
                 this.feat.automation = YAML.parse(this.automationString)
-                toast.success("Saved Automation!")
+                if (shouldNotify) toast.success("Saved Automation!")
             }
             catch(err) {
                 // @ts-ignore
-                toast.error("YAML contains Error, did not save automation")
+                if (shouldNotify) toast.error("YAML contains Error, did not save automation")
             }            
-        }
+        },
+        importExample() {
+            if (!this.importedBasicExample) return
+            this.feat.name = this.importedBasicExample.name
+            this.feat.description = this.importedBasicExample.description
+            this.automationString = stringify(this.importedBasicExample.automation)
+            setTimeout(() => {
+                let els = document.querySelectorAll('.language-yaml') as NodeListOf<HTMLElement>
+                for (let e in els) {
+                    if (els[e].dataset?.highlighted == "yes") els[e].dataset.highlighted = ""
+                }
+            }, 100);
 
+            toast.success("Successfully loaded: " + this.importedBasicExample.name)
+        },
+        importSrdAction() {
+            if (!this.importedSrdFeature) return
+            this.feat.name = this.importedSrdFeature.name
+            this.feat.description = this.importedSrdFeature.description
+            this.automationString = stringify(this.importedSrdFeature.automation)
+            setTimeout(() => {
+                let els = document.querySelectorAll('.language-yaml') as NodeListOf<HTMLElement>
+                for (let e in els) {
+                    if (els[e].dataset?.highlighted == "yes") els[e].dataset.highlighted = ""
+                }
+            }, 100);
+
+            toast.success("Successfully loaded: " + this.importedSrdFeature.name)
+        }
     },
     watch: {
         automationString(newVal, oldVal) {
@@ -112,10 +159,14 @@ export default defineComponent({
 
             if (this.feat.name == "New Feature" || this.feat.description == "") {
                 try {
-                    const parsedAutomation = YAML.parse(this.automationString)
+                    let parsedAutomation = YAML.parse(this.automationString)
+                    if (Array.isArray(parsedAutomation)) {
+                        if (parsedAutomation.length>0) parsedAutomation = parsedAutomation[0]
+                        else return
+                    } 
                     console.log(parsedAutomation)
 
-                    if (parsedAutomation.name && this.feat.name == "New Feature") this.feat.name = parsedAutomation.name
+                    if (parsedAutomation.name && this.feat.name == "New Feature") this.feat.name = parsedAutomation.name.replace(" (1H)", "").replace(" (2H)", "")
 
                     if (parsedAutomation.automation &&  this.feat.description == "") {
                         for (let type in parsedAutomation.automation) {
@@ -150,5 +201,21 @@ textarea {
 input {
     min-width: 20rem;
     width: fit-content;
+}
+
+.import-container {
+    display: flex;
+    gap: 1rem;
+
+    &__title {
+        width: 10rem
+    }
+    &__selector {
+        width: 30rem
+    }
+
+}
+.selector-container {
+    width: 20rem;
 }
 </style>

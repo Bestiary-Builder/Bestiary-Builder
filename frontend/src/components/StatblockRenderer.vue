@@ -116,7 +116,7 @@
         <div class="feature-container"  v-if="data.features.features.length > 0">
             <p v-for="feature in data.features.features">
                 <b> <i>{{ feature.name }} </i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup> </b>
-                <span class="feature-container__desc"> {{ feature.description }} </span>
+                <span class="feature-container__desc" v-html="sanitizeAndFormat(feature.description)"> </span>
             </p>
         </div>
 
@@ -125,7 +125,7 @@
             <h3 class="feature-container__title"> Actions </h3>
                 <p v-for="feature in data.features.actions">
                 <b> <i>{{ feature.name }}</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
-                <span class="feature-container__desc"> {{ feature.description }} </span>
+                <span class="feature-container__desc" v-html="sanitizeAndFormat(feature.description)"> </span>
             </p>
         </div>
 
@@ -133,7 +133,7 @@
             <h3 class="feature-container__title"> Bonus Actions </h3>
                 <p v-for="feature in data.features.bonus">
                 <b> <i>{{ feature.name }}</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
-                <span class="feature-container__desc"> {{ feature.description }} </span>
+                <span class="feature-container__desc" v-html="sanitizeAndFormat(feature.description)"> </span>
             </p>
         </div>
 
@@ -141,7 +141,7 @@
             <h3 class="feature-container__title"> Reactions </h3>
                 <p v-for="feature in data.features.reactions">
                 <b> <i>{{ feature.name }}</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
-                <span class="feature-container__desc"> {{ feature.description }} </span>
+                <span class="feature-container__desc" v-html="sanitizeAndFormat(feature.description)"> </span>
             </p>
         </div>
 
@@ -149,7 +149,7 @@
             <h3 class="feature-container__title"> Legendary Actions </h3>
                 <p v-for="feature in data.features.legendary">
                 <b> <i>{{ feature.name }}</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
-                <span class="feature-container__desc"> {{ feature.description }} </span>
+                <span class="feature-container__desc" v-html="sanitizeAndFormat(feature.description)"> </span>
             </p>
         </div>
 
@@ -157,7 +157,7 @@
             <h3 class="feature-container__title"> Lair Actions </h3>
                 <p v-for="feature in data.features.lair">
                 <b> <i>{{ feature.name }}</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
-                <span class="feature-container__desc"> {{ feature.description }} </span>
+                <span class="feature-container__desc" v-html="sanitizeAndFormat(feature.description)"> </span>
             </p>
         </div>
 
@@ -165,7 +165,7 @@
             <h3 class="feature-container__title"> Regional Effects </h3>
                 <p v-for="feature in data.features.regional">
                 <b> <i>{{ feature.name }}</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
-                <span class="feature-container__desc"> {{ feature.description }} </span>
+                <span class="feature-container__desc" v-html="sanitizeAndFormat(feature.description)"> </span>
             </p>
         </div>
     </div>
@@ -320,6 +320,23 @@ export default defineComponent({
         },
         yamlString() {
             return stringify(this.data)
+        },
+        sanitizeAndFormat(input: string) {
+            // thanks chatgpt >.<
+            // Create a temporary div element to sanitize the input
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = input;
+
+            // Extract the sanitized text content
+            const sanitizedText = tempDiv.textContent || tempDiv.innerText;
+
+            // Replace *italic*, **bold**, and ***italic bold*** with HTML markup
+            const formattedText = sanitizedText
+                .replace(/\*{3}([^*]+)\*{3}/g, '<i><b>$1</b></i>')// ***italic bold***
+                .replace(/\*{2}([^*]+)\*{2}/g, '<b>$1</b>') // **bold**
+                .replace(/\*{1}([^*]+)\*{1}/g, '<i>$1</i>'); // *italic*
+
+            return formattedText;
         }
     }
 
@@ -390,7 +407,7 @@ export default defineComponent({
     }
 }
 
-.feature-container:has(sup)  .feature-container__desc {
+.feature-container__desc {
     margin-left: .2rem;
 }
 </style>
