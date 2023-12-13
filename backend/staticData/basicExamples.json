@@ -1,0 +1,225 @@
+[
+	{
+		"name": "Basic Attack",
+		"description": "",
+		"automation": {
+			"name": "Basic Attack",
+			"automation": [
+				{"type": "target", "target": "each", "effects": [{"type": "attack", "hit": [{"type": "damage", "damage": "1d6 + 2 [slashing]", "overheal": false}], "miss": [], "attackBonus": "4"}]},
+				{"type": "text", "text": "*Melee Weapon Attack:* +4 to hit, reach 5 ft., one target. *Hit:* 5 (1d6 + 2) slashing damage.", "title": "Effect"}
+			],
+			"_v": 2
+		}
+	},
+	{
+		"name": "Versatile Weapon",
+		"description": "*Melee Weapon Attack:* +3 to hit, reach 5 ft., one target. *Hit:* 6 (1d8 + 2) slashing damage, or 7 (1d10 + 2) slashing damage if used with two hands'",
+		"automation": [
+			{
+				"name": "Longsword (1H)",
+				"automation": [
+					{"type": "target", "target": "each", "effects": [{"type": "attack", "hit": [{"type": "damage", "damage": "1d8 + 2 [slashing]", "overheal": false}], "miss": [], "attackBonus": "3"}]},
+					{"type": "text", "text": "*Melee Weapon Attack:* +3 to hit, reach 5 ft., one target. *Hit:* 6 (1d8 + 2) slashing damage, or 7 (1d10 + 2) slashing damage if used with two hands.", "title": "Effect"}
+				],
+				"_v": 2
+			},
+			{
+				"name": "Longsword (2H)",
+				"automation": [
+					{"type": "target", "target": "each", "effects": [{"type": "attack", "hit": [{"type": "damage", "damage": "1d10 + 2 [slashing]", "overheal": false}], "miss": [], "attackBonus": "3"}]},
+					{"type": "text", "text": "*Melee Weapon Attack:* +3 to hit, reach 5 ft., one target. *Hit:* 6 (1d8 + 2) slashing damage, or 7 (1d10 + 2) slashing damage if used with two hands.", "title": "Effect"}
+				],
+				"_v": 2
+			}
+		]
+	},
+	{
+		"name": "Save for Half Damage",
+		"description": "Each creature in a 20-foot-radius sphere centered on that point must make a Dexterity saving throw. A target takes 8d6 fire damage on a failed save, or half as much damage on a successful one.",
+		"automation": {
+			"name": "Save for Half Damage",
+			"automation": [
+				{"type": "roll", "dice": "8d6 [fire]", "name": "damage"},
+				{"type": "target", "target": "each", "effects": [{"type": "save", "stat": "dex", "dc": "19", "fail": [{"type": "damage", "damage": "{damage}"}], "success": [{"type": "damage", "damage": "({damage}) / 2"}]}], "meta": []},
+				{"type": "text", "text": "Each creature in a 20-foot-radius sphere centered on that point must make a Dexterity saving throw. A target takes 8d6 fire damage on a failed save, or half as much damage on a successful one."}
+			],
+			"_v": 2
+		}
+	},
+	{
+		"name": "Breath Weapon with Recharge",
+		"desc": "",
+		"automation": {
+			"name": "Breath Weapon with Recharge",
+			"automation": [
+				{
+					"type": "target",
+					"target": "self",
+					"effects": [
+						{
+							"type": "ieffect2",
+							"name": "Breath Weapon Used",
+							"stacking": true,
+							"buttons": [
+								{
+									"automation": [
+										{"type": "roll", "dice": "1d6", "name": "recharge", "hidden": false, "cantripScale": false},
+										{
+											"type": "condition",
+											"condition": "int(recharge) >= 5",
+											"onTrue": [
+												{"type": "remove_ieffect", "removeParent": null},
+												{"type": "text", "text": "{{caster.name}} recharges their Breath Weapon!"}
+											],
+											"onFalse": [{"type": "text", "text": "{{caster.name}} doesn't recharge their Breath Weapon!"}],
+											"errorBehaviour": "false"
+										}
+									],
+									"label": "Recharge Breath Weapon",
+									"verb": "attempts to recharge their Breath Weapon",
+									"style": "3"
+								}
+							]
+						}
+					],
+					"sortBy": null
+				},
+				{"type": "roll", "dice": "12d8 [fire]", "name": "damage"},
+				{"type": "target", "target": "each", "effects": [{"type": "save", "stat": "dex", "dc": "18", "fail": [{"type": "damage", "damage": "{damage}"}], "success": [{"type": "damage", "damage": "{damage}/2"}]}], "meta": []},
+				{"type": "text", "text": "The monster exhales fire in a 60-foot line that is 5 feet wide. Each creature in that line must make a DC 18 Dexterity saving throw, taking 54 (12d8) fire damage on a failed save, or half as much damage on a successful one."}
+			],
+			"_v": 2,
+			"verb": "unleashes their",
+			"proper": true
+		}
+	},
+	{
+		"name": "Basic Attack with Save against Poison Damage",
+		"desc": "*Melee Weapon Attack:* +6 to hit, reach 10 ft., one target. *Hit:* 6 (1d4 + 4) piercing damage, and the target must make a DC 10 Constitution saving throw, taking 10 (3d6) poison damage on a failed save, or half as much damage on a successful one.",
+		"automation": {
+			"name": "Basic Attack with Save against Poison",
+			"automation": [
+				{
+					"type": "target",
+					"target": "each",
+					"effects": [
+						{
+							"type": "attack",
+							"hit": [
+								{"type": "damage", "damage": "1d4 + 4 [piercing]"},
+								{"type": "save", "stat": "con", "dc": "10", "fail": [{"type": "damage", "damage": "3d6 [poison]"}], "success": [{"type": "damage", "damage": "(3d6 [poison]) / 2"}], "meta": []}
+							],
+							"miss": [],
+							"attackBonus": "6"
+						}
+					]
+				},
+				{"type": "text", "text": "*Melee Weapon Attack:* +6 to hit, reach 10 ft., one target. *Hit:* 6 (1d4 + 4) piercing damage, and the target must make a DC 10 Constitution saving throw, taking 10 (3d6) poison damage on a failed save, or half as much damage on a successful one."}
+			],
+			"_v": 2
+		}
+	},
+	{
+		"name": "Basic Attack with Grapple (Restrain)",
+		"desc": "",
+		"automation": {
+			"name": "Basic Attack with Grapple (Restrain)",
+			"automation": [
+				{
+					"type": "target",
+					"target": "each",
+					"effects": [
+						{
+							"type": "attack",
+							"hit": [
+								{"type": "damage", "damage": "2d6 + 4 [bludgeoning]"},
+								{
+									"type": "ieffect2",
+									"name": "Grappled",
+									"duration": null,
+									"desc": "Grappled by {{caster.name}}\n - Escape DC 14",
+									"effects": null,
+									"attacks": null,
+									"buttons": [
+										{
+											"label": "Escape Grapple",
+											"verb": "tries to escape",
+											"automation": [
+												{"type": "target", "target": "self", "effects": [{"type": "check", "ability": ["acrobatics", "athletics"], "dc": "14", "success": [{"type": "remove_ieffect", "removeParent": "if_no_children"}], "fail": []}]},
+												{"type": "text", "text": "A creature grappled by the monster can use its action to try to escape. To do so, it must succeed on a Strength (Athletics) or Dexterity (Acrobatics) check against the escape DC in the monster's stat block."}
+											]
+										}
+									],
+									"end": false,
+									"conc": false,
+									"stacking": false,
+									"save_as": "grapple"
+								}
+							],
+							"miss": [],
+							"attackBonus": "6"
+						}
+					]
+				},
+				{"type": "text", "text": "*Melee Weapon Attack:* +6 to hit, reach 10 ft., one target. *Hit:* 11 (2d6 + 4) bludgeoning damage. The target is grappled (escape DC 14) if it is a Large or smaller creature and the monster doesn't have two other creatures grappled."}
+			],
+			"_v": 2
+		}
+	},
+	{
+		"name": "Basic Attack with Grapple (Restrain) with DMG at start of turn",
+		"desc": "",
+		"automation": {
+			"name": "Basic Attack with Grapple (Restrain) with DMG at start of turn)",
+			"automation": [
+				{
+					"type": "target",
+					"target": "each",
+					"effects": [
+						{
+							"type": "attack",
+							"hit": [
+								{"type": "damage", "damage": "2d6 + 4 [slashing]"},
+								{
+									"type": "ieffect2",
+									"name": "Grappled (Restrained)",
+									"duration": null,
+									"desc": "Grappled by {{caster.name}}\n - Escape DC 14\n - Target takes 2d6 piercing at the start of its turns",
+									"effects": {"attack_advantage": -1, "save_dis": ["dex"]},
+									"attacks": null,
+									"buttons": [
+										{
+											"label": "Escape Grapple",
+											"verb": "tries to escape",
+											"automation": [
+												{"type": "target", "target": "self", "effects": [{"type": "check", "ability": ["acrobatics", "athletics"], "dc": "14", "success": [{"type": "remove_ieffect", "removeParent": "if_no_children"}], "fail": []}]},
+												{"type": "text", "text": "A creature grappled by the monster can use its action to try to escape. To do so, it must succeed on a Strength (Athletics) or Dexterity (Acrobatics) check against the escape DC in the monster's stat block."}
+											]
+										},
+										{
+											"label": "Grapple (Restrain) Damage",
+											"verb": "takes damage from the Grapple (Restrain)",
+											"style": "4",
+											"automation": [
+												{"type": "target", "target": "self", "effects": [{"type": "damage", "damage": "2d6 [piercing]", "overheal": false, "cantripScale": false}]},
+												{"type": "text", "text": "Until this grapple ends, the target is restrained and takes 7 (2d6) piercing damage at the start of each of its turns."}
+											]
+										}
+									],
+									"end": false,
+									"conc": false,
+									"stacking": false,
+									"save_as": "grapple"
+								}
+							],
+							"miss": [],
+							"attackBonus": "8"
+						}
+					]
+				},
+				{"type": "text", "text": "*Melee Weapon Attack:* +8 to hit, reach 10 ft., one target. *Hit:* 11 (2d6 + 4) slashing damage. The target is grappled (escape DC 14) if the monster isn't already grappling a creature. Until this grapple ends, the target is restrained and takes 7 (2d6) piercing damage at the start of each of its turns."}
+			],
+			"_v": 2
+		}
+	}
+]
