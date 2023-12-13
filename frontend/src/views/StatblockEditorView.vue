@@ -17,6 +17,9 @@
             <div @click="currentSlide(5)" :class="{'active-slide': slideIndex === 5}" class="editor-nav__tab">
                 <span> Features </span>
             </div>
+            <div @click="currentSlide(6)" :class="{'active-slide': slideIndex === 6}" class="editor-nav__tab">
+                <span> Spells </span>
+            </div>
         </div>
 
         <div class="editor-content">
@@ -471,8 +474,43 @@
                 </div>
                 <button @click="createNewFeature('regional')"> New Regional Effect (+)</button>
             </div>
-            <div class="editor-content__tab-inner fade">
-                <h2> Feature Editor </h2>
+            <div  class="editor-content__tab-inner fade">
+                <h2> Manage Spellcasting </h2>
+                
+                <h3> Innate Spellcasting </h3>
+
+                <h3> Class Spellcasting </h3>
+
+                <p> Spellcasting Class: </p><v-select v-model="data.spellcasting.casterSpells.castingClass" :options="['Artificer', 'Bard', 'Cleric', 'Druid', 'Paladin', 'Ranger', 'Sorcerer', 'Warlock', 'Wizard']" /> 
+                <p> Spellcasting Level: </p><v-select v-model="data.spellcasting.casterSpells.casterLevel" :options="[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]" />
+                <p> Spell DC Override: <input type="number" v-model="data.spellcasting.casterSpells.spellDcOverride" min="0" step="1"> <button @click="data.spellcasting.casterSpells.spellDcOverride = null"> Reset</button> </p>
+                <p> Spell Attack Bonus Override: <input type="number" v-model="data.spellcasting.casterSpells.spellBonusOverride" step="1"> <button @click="data.spellcasting.casterSpells.spellBonusOverride = null"> Reset</button> </p>
+
+                <div v-if="data.spellcasting.casterSpells.castingClass">
+                    <p v-if="!['Ranger', 'Paladin'].includes(data.spellcasting.casterSpells.castingClass)"> 
+                        <p> Cantrips </p>
+                        <v-select 
+                            v-model="data.spellcasting.casterSpells.spellList[0]"
+                            :options="spellList[0]" 
+                            multiple                     
+                            :taggable="true"
+                            :pushTags="true"
+                        /> 
+                        <hr>
+                    </p>
+                    <p v-for="level in spellLevelList()">
+                        <p> Level {{ level }} Spells </p>
+                        <v-select 
+                        v-model="data.spellcasting.casterSpells.spellList[level]"
+                        :options="getSpellsByLevel(level)" 
+                        multiple                     
+                        :taggable="true"
+                        :pushTags="true"
+                        /> 
+                        <hr>
+                    </p>
+                </div>
+
 
             </div>
         </div>
@@ -490,8 +528,9 @@ import {RouterLink, RouterView} from "vue-router";
 import { defineComponent, watch } from "vue";
 import StatblockRenderer from "../components/StatblockRenderer.vue"; 
 import type { SkillsEntity, Statblock } from "@/components/types";
-import { defaultStatblock } from "@/components/types"
+import { defaultStatblock, getSpellSlots, spellList } from "@/components/types"
 import FeatureWidget from "@/components/FeatureWidget.vue";
+
 export default defineComponent({
 	components: {
 		StatblockRenderer,
@@ -502,6 +541,8 @@ export default defineComponent({
             slideIndex: 1,
             data: defaultStatblock as Statblock,
             list: [] as string[],
+            getSpellSlots: getSpellSlots,
+            spellList: spellList,
             languages: ["All", "All languages it knew in life", "Abyssal", "Aarakocra", "Aquan", "Auran", "Celestial", "Common", "Deep Speech", "Draconic", "Druidic", "Dwarvish", "Elvish", "Giant", "Gith", "Gnomish", "Goblin", "Halfling", "Ignan", "Infernal", "Orc", "Primordial", "Sylvan", "Terran", "Thieves' Cant", "Undercommon", "Understands the languages of its creator but can't speak"]
         }
     },
@@ -573,16 +614,79 @@ export default defineComponent({
                 "automation": null
             }
         },
+        spellLevelList() : number[] {
+            const sClass = this.data.spellcasting.casterSpells.castingClass
+            const level = this.data.spellcasting.casterSpells.casterLevel
+
+            const slots = this.data.spellcasting.casterSpells.spellSlotList
+            if (sClass == "Warlock" && slots) {
+                // @ts-ignore
+                return Array.from({ length: Object.keys(slots)[0] }, (_, index) => index + 1) 
+
+            }
+            if (slots) return Object.keys(slots).map(str => parseInt(str))
+            return []
+        },
+        getSpellsByLevel(level: number) : string[] {
+            // this function is needed for typescript.
+            if (level < 0 || level > 9) return []
+            // @ts-ignore
+            return spellList[level]
+        },
+        clearCasting() {
+            this.data.spellcasting.casterSpells.castingClass = null;
+            this.data.spellcasting.casterSpells.casterLevel = null;
+            this.data.spellcasting.casterSpells.spellList = [[], [], [], [], [], [], [], [], [], []];
+            this.data.spellcasting.casterSpells.spellSlotList = undefined;
+            this.data.spellcasting.casterSpells.spellCastingAbility = null;
+            this.data.spellcasting.casterSpells.spellBonusOverride = null;
+            this.data.spellcasting.casterSpells.spellDcOverride = null;
+        }
     },
     mounted() {
         this.showSlides(1)
 
-        setInterval(() => {
-            let els = document.querySelectorAll('.language-yaml') as NodeListOf<HTMLElement>
-            for (let e in els) {
-                if (els[e].dataset?.highlighted == "yes") els[e].dataset.highlighted = ""
+        // setInterval(() => {
+        //     let els = document.querySelectorAll('.language-yaml') as NodeListOf<HTMLElement>
+        //     for (let e in els) {
+        //         if (els[e].dataset?.highlighted == "yes") els[e].dataset.highlighted = ""
+        //     }
+        // }, 10)
+    },
+    watch: {
+        'data.spellcasting.casterSpells.castingClass'(newValue, oldValue) {
+            if (newValue == null || newValue == undefined) {
+                this.clearCasting()
+                return
             }
-        }, 10)
+
+            const sClass = this.data.spellcasting.casterSpells.castingClass
+            switch (sClass) {
+                case "Artificer":
+                case "Wizard":
+                    this.data.spellcasting.casterSpells.spellCastingAbility = "int"
+                    break
+                case "Cleric":
+                case "Druid":
+                case "Ranger":
+                    this.data.spellcasting.casterSpells.spellCastingAbility = "wis"
+                    break
+                default:
+                    this.data.spellcasting.casterSpells.spellCastingAbility = "cha"
+            }
+
+            // set spell slots in case they changed full caster/half caster/arti half/warlock
+            this.data.spellcasting.casterSpells.spellSlotList = getSpellSlots(sClass, this.data.spellcasting.casterSpells.casterLevel)
+        },
+        'data.spellcasting.casterSpells.casterLevel'(newValue, oldValue) {
+            if (newValue == null || newValue == undefined) {
+                this.clearCasting()
+                return
+            }
+
+            // set spell slots when they change level
+            this.data.spellcasting.casterSpells.spellSlotList = getSpellSlots(this.data.spellcasting.casterSpells.castingClass, this.data.spellcasting.casterSpells.casterLevel)
+        }
     }
 })
 </script>
@@ -603,7 +707,7 @@ export default defineComponent({
 
 .editor-nav {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
     text-align: center;
     gap: .5rem;
     height: fit-content;

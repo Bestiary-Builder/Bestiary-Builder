@@ -112,11 +112,29 @@
             <b> Challenge </b> {{ data.description.cr }} (1000 xp)
         </div>
     </div>
-    <div class="stat-block__row" v-if="showFeatures()">
-        <div class="feature-container"  v-if="data.features.features.length > 0">
+    <div class="stat-block__row" v-if="showFeatures() || showCasting()">
+        <div class="feature-container"  v-if="data.features.features.length > 0 || showCasting()">
             <p v-for="feature in data.features.features">
                 <b> <i>{{ feature.name }} </i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup> </b>
                 <span class="feature-container__desc" v-html="sanitizeAndFormat(feature.description)"> </span>
+            </p>
+
+            <p v-if="showCasting()">
+                <b><i>Spellcasting</i></b> 
+                <span class="feature-container__desc">
+                    <span v-if="!data.description.isProperNoun"> The </span> {{ data.description.name }} is a {{ nthSuffix(data.spellcasting.casterSpells.casterLevel) }}-level spellcaster. <span v-if="data.description.isProperNoun"> Their </span><span v-else> Its </span> spellcasting ability is {{ fullSpellAbilityName() }} (spell save DC {{ spellDc() }}, {{ spellAttackBonus() }} to hit with spell attacks). <span v-if="!data.description.isProperNoun"> It </span><span v-else> {{ data.description.name }}</span><span v-if='["Sorcerer", "Bard", "Ranger", "Warlock"].includes(data.spellcasting.casterSpells.castingClass)'> knows the following {{ data.spellcasting.casterSpells.castingClass.toLowerCase()}} spells: </span> 
+                        <span v-else> has the following {{ data.spellcasting.casterSpells.castingClass.toLowerCase()}} spells prepared: </span>
+
+                    <div class="spell-list">
+                        <p v-for="spells, level in data.spellcasting.casterSpells.spellList"> 
+                            <div v-if="(level == 0 && !['Ranger', 'Paladin'].includes(data.spellcasting.casterSpells.castingClass) )|| Object.keys(data.spellcasting.casterSpells.spellSlotList).includes(level.toString())"> 
+                                <span v-if="level==0"> Cantrips (at will): </span>
+                                <span v-else> {{ nthSuffix(level) }} level ({{ data.spellcasting.casterSpells.spellSlotList[level] }} slots): </span>
+                                <i> {{ spells.sort().join(", ") }} </i>
+                            </div>
+                        </p>
+                    </div>
+                </span>
             </p>
         </div>
 
@@ -296,9 +314,14 @@ export default defineComponent({
         showSkills() : boolean {
             for (let skill in this.data.abilities.skills) {
                 let sk = this.data.abilities.skills[skill]
-                if (sk.isProficient || sk.isHalfProficient || sk.isExpertise || sk.override) return true
+                if (sk.isProficient || sk.isHalfProficient || sk.isExpertise || sk.override || sk.override == 0) return true
             }
             return false
+        },
+        showCasting() : boolean {
+            if ((this.data.spellcasting.casterSpells.casterLevel ) && this.data.spellcasting.casterSpells.castingClass ) return true
+
+            return false;
         },
         showFeatures() : boolean {
             for (let f in this.data.features) {
@@ -337,7 +360,40 @@ export default defineComponent({
                 .replace(/\*{1}([^*]+)\*{1}/g, '<i>$1</i>'); // *italic*
 
             return formattedText;
-        }
+        },
+        nthSuffix(number: number) : string {
+            switch (number) {
+                case 1:
+                    return '1st'
+                case 2:
+                    return '2nd'
+                case 3:
+                    return '3rd'
+                default:
+                    return number.toString() + 'th'
+            }
+        },
+        fullSpellAbilityName() : string {
+            const abi = this.data.spellcasting.casterSpells.spellCastingAbility
+            if (abi == 'wis') return "Wisdom"
+            if (abi == 'int') return "Intelligence"
+            if (abi == 'cha') return "Charisma"
+            return "Spellcasting Ability not found."
+        },
+        spellDc() : number {
+            const castingData = this.data.spellcasting.casterSpells
+            if (castingData.spellDcOverride) return castingData.spellDcOverride
+            else return 8 + this.statCalc(castingData.spellCastingAbility) + this.data.core.proficiencyBonus
+        },
+        spellAttackBonus(): string {
+            const castingData = this.data.spellcasting.casterSpells
+            let bonus;
+            if (castingData.spellBonusOverride || castingData.spellBonusOverride === 0) bonus = castingData.spellBonusOverride
+            else bonus = this.statCalc(castingData.spellCastingAbility) + this.data.core.proficiencyBonus
+
+            if (bonus >= 0) return '+' + bonus
+            return bonus.toString()
+        },
     }
 
 })
