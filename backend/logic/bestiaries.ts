@@ -1,13 +1,9 @@
 import {app} from "../server";
 import {requireUser, possibleUser} from "./login";
-import {addBestiaryToUser, collections, getBestiary, getUserFromSecret, updateBestiary, Bestiary} from "../database";
+import {addBestiaryToUser, collections, getBestiary, getUserFromSecret, incrementBestiaryViewCount, updateBestiary, Bestiary} from "../database";
 import {ObjectId} from "mongodb";
 
 //Get info
-app.get("/api/bestiaries", async (req, res) => {
-	let allBestiaries = (await collections.bestiaries?.find({status: "public"}).toArray()) ?? [];
-	return res.json(allBestiaries);
-});
 app.get("/api/bestiary/:id", possibleUser, async (req, res) => {
 	let id = req.params.id;
 	if (id.length != 24) {
@@ -19,6 +15,9 @@ app.get("/api/bestiary/:id", possibleUser, async (req, res) => {
 	}
 	let user = await getUserFromSecret(req.body.id);
 	if ((user && user._id == bestiary.owner) || bestiary.status != "private") {
+		//Increment view count
+		incrementBestiaryViewCount(bestiary._id);
+		//Return bestiary
 		return res.json(bestiary);
 	} else {
 		return res.status(401).json({error: "You don't have access to this bestiary"});

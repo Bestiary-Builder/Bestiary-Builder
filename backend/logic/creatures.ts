@@ -57,7 +57,6 @@ app.post("/api/update/creature/:id?", requireUser, async (req, res) => {
 	if (!data) {
 		return res.status(400).json({error: "Bestiary id not valid"});
 	}
-	data.lastUpdated = new Date(Date.now());
 	let user = await getUserFromSecret(req.body.id);
 	if (!user) {
 		return res.status(404).json({error: "Couldn't find current user"});
