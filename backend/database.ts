@@ -15,12 +15,13 @@ export async function startConnection() {
 	try {
 		// Connect the client to the server	(optional starting in v4.7)
 		await client.connect();
-		// Send a ping to confirm a successful connection
+		// Connect to databse
 		database = client.db("bestiarybuilder");
+		// Get collections
 		collections.users = database.collection("Users");
 		collections.bestiaries = database.collection("Bestiaries");
 		collections.creatures = database.collection("Creatures");
-		console.log(`Successfully connected to database: ${database.databaseName} and collection: ${collections.users.collectionName}`);
+		console.log(`Successfully connected to database: ${database.databaseName}`);
 	} catch (e: any) {
 		console.error(e);
 		// Ensures that the client will close on error
@@ -48,12 +49,12 @@ export async function getUserFromSecret(secret: string) {
 	if (!secret) return null;
 	return (await collections.users?.findOne({secret: secret})) as User;
 }
-export async function updateUser(data: {_id: string; username: string; avatar: string; email: string; verified: boolean; banner_color: string; global_name: string; secret?: string}) {
+export async function updateUser(data: {_id: string; username: string; avatar: string; email: string; verified: boolean; banner_color: string; global_name: string}) {
 	console.log("Updating user", data);
 	if (await getUser(data._id)) {
 		console.log("Updating user with id " + data._id.toString());
 		await collections.users?.updateOne({_id: data._id}, {$set: data});
-		return data.secret;
+		return (await getUser(data._id)).secret;
 	} else {
 		console.log("Adding new user to collection with id " + data._id.toString());
 		let userData = data as User;

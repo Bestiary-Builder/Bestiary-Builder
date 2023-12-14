@@ -85,17 +85,17 @@ export const requireUser = async (req: any, res: any, next: any) => {
 	let token = req.cookies.userToken;
 
 	if (!token) {
-		return res.status(401).json({error: "Not logged in"});
+		return res.status(401).json({error: "No token"});
 	}
 	try {
 		const decoded = jwt.verify(token, JWTKey) as any;
 		let user = await getUserFromSecret(decoded.id);
 		if (!user) {
-			return res.status(401).send({error: "Invalid Token (not logged in)"});
+			return res.status(401).send({error: "Token doesn't corrospond to user"});
 		}
 		req.body.id = user._id;
 	} catch (err) {
-		return res.status(401).send({error: "Invalid Token (not logged in)"});
+		return res.status(401).send({error: "Invalid Token"});
 	}
 	return next();
 };
