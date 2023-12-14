@@ -10,15 +10,12 @@
 				<UserBanner :id="bestiary.owner" />
 			</div>
 			<div class="creatures">
-				<button @click.prevent="createCreature">Create new creature</button>
-				<a class="creature" v-for="creature in creatures" :href="'/statblock-editor/' + creature._id">
+				<a class="creature" v-for="creature in creatures">
 					<p>Creature:</p>
 					<p>{{ creature.stats?.description?.name }}</p>
 				</a>
 			</div>
-		</div>
-		<div class="error" v-if="error">
-			<h2>Error: {{ error }}</h2>
+			<a :href="'/bestiary-editor/' + bestiary._id" v-if="user && user._id == bestiary.owner"><button>Edit</button></a>
 		</div>
 	</div>
 </template>
@@ -27,50 +24,18 @@
 import {defineComponent} from "vue";
 import type {User, Bestiary, Creature} from "@/components/types";
 import UserBanner from "@/components/UserBanner.vue";
-import {handleApiResponse} from "@/main";
-import type {error} from "@/main";
+import {handleApiResponse, user, type error, toast} from "@/main";
 
 export default defineComponent({
-	data: () => ({key: 0} as {bestiary: Bestiary | null; creatures: Creature[] | null; error: string | null; key: number}),
+	data: () => ({key: 0} as {bestiary: Bestiary | null; creatures: Creature[] | null; user: User | null; key: number}),
 	components: {
 		UserBanner
 	},
-	beforeMount() {
+	async beforeMount() {
 		this.getBestiary();
+		this.user = await user;
 	},
 	methods: {
-		async createCreature() {
-			console.log("Create");
-			//Replace for actual creation data:
-			let data = {
-				stats: {
-					description: {
-						name: "Example",
-						description: "Example creature"
-					}
-				},
-				bestiary: this.bestiary?._id
-			} as Creature;
-			console.log(data);
-			//Send data to server
-			await fetch("/api/update/creature", {
-				method: "POST",
-				headers: {
-					Accept: "application/json",
-					"Content-Type": "application/json"
-				},
-				body: JSON.stringify({data: data})
-			}).then(async (response) => {
-				let result = await handleApiResponse(response);
-				if (result.success) {
-					console.log("Created");
-				} else {
-					this.error = (result.data as error).error;
-				}
-			});
-			await this.getBestiary();
-			this.key++;
-		},
 		async getBestiary() {
 			//Get id
 			let id = this.$route.params.id;
@@ -86,17 +51,15 @@ export default defineComponent({
 							this.creatures = creatureResult.data as Creature[];
 						} else {
 							this.creatures = null;
-							this.error = (creatureResult.data as error).error;
+							toast.error((creatureResult.data as error).error);
 						}
 					});
 				} else {
 					this.bestiary = null;
-					this.error = (result.data as error).error;
+					toast.error((result.data as error).error);
 				}
 			});
 			this.key++;
-			console.log(this.bestiary);
-			console.log(this.creatures);
 		}
 	}
 });

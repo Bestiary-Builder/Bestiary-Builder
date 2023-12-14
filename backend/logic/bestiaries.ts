@@ -78,6 +78,9 @@ app.post("/api/update/bestiary/:id?", requireUser, async (req, res) => {
 	if (data.creatures.length > limits.creatureAmount) {
 		return res.status(400).json({error: `Number of creatures exceeds the limit of ${limits.creatureAmount}`});
 	}
+	if (!["private", "public", "unlisted"].includes(data.status)) {
+		return res.status(400).json({error: "Status has an unkown value, must only be 'public', 'unlisted' or 'private'"});
+	}
 	//Add or update
 	if (data._id) {
 		//Update existing bestiary

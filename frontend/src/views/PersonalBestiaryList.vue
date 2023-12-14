@@ -1,27 +1,24 @@
 <template>
 	<div class="content" :key="key">
-		<h1> <span>my bestiaries </span></h1>
+		<h1><span>my bestiaries </span></h1>
 
 		<div class="tile-container">
-			<div class="content-tile create-tile" @click.prevent="createBestiary"> 
-			<button class="create-button" >+</button>
+			<div class="content-tile create-tile" @click.prevent="createBestiary">
+				<button class="create-button">+</button>
 			</div>
 
 			<a class="content-tile bestiary-tile" v-for="bestiary in bestiaries" :href="'/bestiary-viewer/' + bestiary._id" v-if="bestiaries">
 				<h2>{{ bestiary.name }}</h2>
 				<div class="bestiary-tile-content">
-					<p class="description"> {{ bestiary.description }}
-					</p>
+					<p class="description">{{ bestiary.description }}</p>
 					<div class="footer">
-						<span>{{statusEmoji(bestiary.status)}}{{ bestiary.status }}</span>
-						<span class="fake-edit-button"> edit </span>
+						<span>{{ statusEmoji(bestiary.status) }}{{ bestiary.status }}</span>
+						<a :href="'/bestiary-editor/' + bestiary._id" v-if="user"><button>Edit</button></a>
 						<span>{{ bestiary.creatures.length }}🐉</span>
 					</div>
 				</div>
-
 			</a>
 		</div>
-
 	</div>
 </template>
 
@@ -32,8 +29,9 @@ import {handleApiResponse, toast, user} from "@/main";
 import type {error} from "@/main";
 
 export default defineComponent({
-	data: () => ({bestiaries: [] as Bestiary[], key: 0} as {bestiaries: Bestiary[]; key: number}),
-	beforeMount() {
+	data: () => ({bestiaries: [] as Bestiary[], key: 0} as {bestiaries: Bestiary[]; user: User | null; key: number}),
+	async beforeMount() {
+		this.user = await user;
 		this.getBestiaries();
 	},
 	methods: {
@@ -57,9 +55,9 @@ export default defineComponent({
 			}).then(async (response) => {
 				let result = await handleApiResponse(response);
 				if (result.success) {
-					console.log("Created");
+					toast.success("Created bestiary");
 					// @ts-ignore
-					window.location.href = '/bestiary-viewer/' + result.data._id
+					window.location.href = "/bestiary-viewer/" + result.data._id;
 				} else {
 					toast.error((result.data as error).error);
 				}
@@ -69,7 +67,7 @@ export default defineComponent({
 		},
 		async getBestiaries() {
 			//Get user
-			let userId = (await user)?._id;
+			let userId = this.user?._id;
 			if (userId) {
 				//Request bestiary info
 				await fetch(`/api/user/${userId}/bestiaries`).then(async (response) => {
@@ -84,8 +82,8 @@ export default defineComponent({
 			}
 			this.key++;
 		},
-		statusEmoji(status : "public" | "private" | "unlisted") : string {
-			return status=="public" ? "🌍"  : status=="private" ? "🔒" : "🔗" 
+		statusEmoji(status: "public" | "private" | "unlisted"): string {
+			return status == "public" ? "🌍" : status == "private" ? "🔒" : "🔗";
 		}
 	}
 });
@@ -102,7 +100,7 @@ export default defineComponent({
 
 		& span {
 			border-bottom: 4px solid orangered;
-			padding: 0 10rem
+			padding: 0 10rem;
 		}
 	}
 }
@@ -118,7 +116,7 @@ export default defineComponent({
 		grid-template-columns: 1fr 1fr 1fr;
 	}
 	.content h1 span {
-		padding: 0 7rem
+		padding: 0 7rem;
 	}
 
 	.bestiary-tile-content {
@@ -144,7 +142,7 @@ export default defineComponent({
 	}
 
 	.content h1 span {
-		padding: 0 4rem
+		padding: 0 4rem;
 	}
 }
 
@@ -161,15 +159,14 @@ export default defineComponent({
 		}
 	}
 
-	.content h1  {
+	.content h1 {
 		font-size: 2rem;
-		
-		span { 
-			padding: 0 2rem
+
+		span {
+			padding: 0 2rem;
 		}
 	}
 }
-
 
 .content-tile {
 	aspect-ratio: 1 / 1 !important;
@@ -179,7 +176,7 @@ export default defineComponent({
 	box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
 
 	transition: all 1s;
-	transition-timing-function: cubic-bezier(0.060, 0.975, 0.195, 0.985);
+	transition-timing-function: cubic-bezier(0.06, 0.975, 0.195, 0.985);
 
 	&.create-tile {
 		background-color: orangered;
@@ -189,7 +186,6 @@ export default defineComponent({
 		user-select: none;
 		cursor: pointer;
 
-		
 		& .create-button {
 			background-color: transparent;
 			color: white;
@@ -215,7 +211,7 @@ export default defineComponent({
 			flex-direction: column;
 			position: relative;
 			height: 23rem;
-			
+
 			.description {
 				text-overflow: ellipsis;
 				max-height: 20rem;
@@ -244,7 +240,6 @@ export default defineComponent({
 
 .content-tile:hover {
 	scale: 1.05;
-
 }
 
 .bestiary-tile:hover {
