@@ -2,101 +2,107 @@ import { string } from "node_modules/yaml/dist/schema/common/string";
 
 export const defaultStatblock = {
 	description: {
-		name: "New Creature" as string,
-		isProperNoun: true as boolean,
-		description: "" as string,
-		image: "" as string,
-		faction: "" as string,
-		environment: "" as string,
-		alignment: "Unaligned" as string,
-		cr: 0 as number
-	} as Description,
+		name: "New Creature",
+		isProperNoun: false,
+		description: "",
+		image: "",
+		faction: "",
+		environment: "",
+		alignment: "Unaligned",
+		cr: 0
+	},
 	core: {
-		proficiencyBonus: 2 as number,
-		race: "Humanoid" as string,
-		size: "Medium" as "Tiny" | "Small" | "Medium" | "Large" | "Huge" | "Gargantuan",
+		proficiencyBonus: 2,
+		race: "Humanoid",
+		size: "Medium",
 		speed: {
-			walk: 30 as number,
-			fly: 0 as number,
-			isHover: false as boolean,
-			burrow: 0 as number,
-			swim: 0 as number
-		} as Speed,
+			walk: 30,
+			fly: 0,
+			isHover: false,
+			burrow: 0,
+			swim: 0
+		},
 		senses: {
-			passivePerceptionOverride: 0 as number,
-			darkvision: 0 as number,
-			blindsight: 0 as number,
-			isBlind: false as boolean,
-			truesight: 0 as number,
-			tremorsense: 0 as number,
-			telepathy: 0 as number
-		} as Senses,
-		languages: [] as string[],
-		numOfLegendaryActions: 0 as number
-	} as Core,
+			passivePerceptionOverride: 0,
+			darkvision: 0,
+			blindsight: 0,
+			isBlind: false,
+			truesight: 0,
+			tremorsense: 0,
+			telepathy: 0
+		},
+		languages: [],
+		numOfLegendaryActions: 0
+	},
 	abilities: {
 		stats: {
-			str: 10 as number,
-			dex: 10 as number,
-			con: 10 as number,
-			wis: 10 as number,
-			int: 10 as number,
-			cha: 10 as number
-		} as Stats,
+			str: 10,
+			dex: 10,
+			con: 10,
+			wis: 10,
+			int: 10,
+			cha: 10
+		},
 		saves: {
-			str: {isProficient: false as boolean, override: null as number | null},
-			dex: {isProficient: false as boolean, override: null as number | null},
-			con: {isProficient: false as boolean, override: null as number | null},
-			wis: {isProficient: false as boolean, override: null as number | null},
-			int: {isProficient: false as boolean, override: null as number | null},
-			cha: {isProficient: false as boolean, override: null as number | null}
-		} as Saves,
-		skills: [] as SkillsEntity[]
-	} as Abilities,
+			str: { isProficient: false, override: null },
+			dex: { isProficient: false, override: null },
+			con: { isProficient: false, override: null },
+			wis: { isProficient: false, override: null },
+			int: { isProficient: false, override: null },
+			cha: { isProficient: false, override: null }
+		},
+		skills: []
+	},
 	defenses: {
 		hp: {
-			numOfHitDie: 1 as number,
-			sizeOfHitDie: 6 as number,
-			override: false as boolean | number
-		} as Hp,
+			numOfHitDie: 1,
+			sizeOfHitDie: 6,
+			override: false
+		},
 		ac: {
-			ac: 10 as number,
-			acSource: "natural armor" as string
-		} as Ac,
-		vulnerabilities: [] as string[],
-		resistances: [] as string[],
-		immunities: [] as string[],
-		conditionImmunities: [] as string[]
-	} as Defenses,
+			ac: 10,
+			acSource: "natural armor"
+		},
+		vulnerabilities: [],
+		resistances: [],
+		immunities: [],
+		conditionImmunities: []
+	},
 	features: {
-		features: [] as FeatureEntity[],
-		actions: [] as FeatureEntity[],
-		bonus: [] as FeatureEntity[],
-		reactions: [] as FeatureEntity[],
-		legendary: [] as FeatureEntity[],
-		lair: [] as FeatureEntity[],
-		regional: [] as FeatureEntity[]
-	} as Features,
+		features: [],
+		actions: [],
+		bonus: [],
+		reactions: [],
+		legendary: [],
+		lair: [],
+		regional: []
+	},
 	spellcasting: {
 		innateSpells: {
-			spellList: {} as InnateSpellsList,
-			spellDC: 10 as number,
-			spellBonus: 0 as number,
-			spellCastingAbility: null as "int" | "cha" | "wis" | null,
-			noComponentsOfType: [] as string[]
-		} as InnateSpells,
+			spellList: {
+				0: [],
+				1: [],
+				2: [],
+				3: []
+			},
+			spellDcOverride: null,
+			spellBonusOverride: null,
+			spellCastingAbility: null,
+			noComponentsOfType: ["Material", "Verbal", "Somatic"],
+			isPsionics: false
+		},
 		casterSpells: {
-			casterLevel: null as number | null,
-			castingClass: null as "Wizard" | "Druid" | "Cleric" | "Bard" | "Sorcerer" | "Paladin" | "Ranger" | "Artificer" | "Warlock" | null,
-			spellCastingAbility: null as "int" | "cha" | "wis" | null,
-			spellList: [[], [], [], [], [], [], [], [], [], []] as string[][],
-			spellSlotList: {} as SpellSlotEntity | undefined,
-			spellDcOverride: null as number | null,
-			spellBonusOverride: null as number | null,
-		} as CasterSpells
+			casterLevel: null,
+			castingClass: null,
+			spellCastingAbility: null,
+			spellCastingAbilityOverride: null,
+			spellList: [[], [], [], [], [], [], [], [], [], []],
+			spellSlotList: {},
+			spellDcOverride: null,
+			spellBonusOverride: null,
+		}
 	}
 } as Statblock;
-
 
 export function getSpellSlots(sClass: string | null, level: number | null) : SpellSlotEntity | undefined {
 	if (!sClass || !level) return {}
@@ -174,6 +180,10 @@ export function getSpellSlots(sClass: string | null, level: number | null) : Spe
 		  }[level];
 	}
 }
+
+export type Stat = "str" | "dex" | "con" | "int" | "cha" | "wis"
+
+
 export interface Statblock {
 	description: Description;
 	core: Core;
@@ -220,24 +230,14 @@ export interface Senses {
 export interface Abilities {
 	stats: Stats;
 	saves: Saves;
-	skills: SkillsEntity[] | null;
+	skills: SkillsEntity[];
 }
-export interface Stats {
-	str: number;
-	dex: number;
-	con: number;
-	wis: number;
-	int: number;
-	cha: number;
-}
+export type Stats = {
+[index in Stat]: number;
+};
 
-export interface Saves {
-	str: SaveEntity;
-	dex: SaveEntity;
-	con: SaveEntity;
-	wis: SaveEntity;
-	int: SaveEntity;
-	cha: SaveEntity;
+export type Saves = {
+	[index in Stat]: SaveEntity
 }
 export interface SaveEntity {
 	isProficient: boolean;
@@ -268,7 +268,7 @@ export interface Ac {
 	ac: number;
 	acSource: string;
 }
-export interface Features {
+export type  Features = {
 	features: FeatureEntity[];
 	actions: FeatureEntity[];
 	bonus: FeatureEntity[];
@@ -291,10 +291,11 @@ export interface SpellCasting {
 
 export interface InnateSpells {
 	spellList: InnateSpellsList;
-	spellDC: number;
-	spellBonus: number;
-	spellCastingAbility: "int" | "cha" | "wis";
-	noComponentsOfType: string[]
+	spellDcOverride: null | number;
+	spellBonusOverride: null | number;
+	spellCastingAbility: Stat | null;
+	noComponentsOfType: string[];
+	isPsionics: boolean;
 }
 
 export interface CasterSpells {
@@ -304,16 +305,17 @@ export interface CasterSpells {
 	spellSlotList: SpellSlotEntity | undefined;
 	spellDcOverride: null | number;
 	spellBonusOverride: null | number;
-	spellCastingAbility: "int" | "cha" | "wis" | null;
+	spellCastingAbility: Stat | null;
+	spellCastingAbilityOverride: Stat | null;
 }
 
 export interface InnateSpellsList {
-	[key: string]: InnateSpellsEntity[]
+	[key: number]: InnateSpellsEntity[]
 }
 
 export interface InnateSpellsEntity {
 	spell: string;
-	upcastLevel: number;
+	upcastLevel: null | number;
 	comment: string;
 }
 
@@ -914,3 +916,11 @@ export const spellList = {
 	  "Wish"
 	]
   }
+
+export let spellListFlattened = [];
+for (let l in spellList) {
+	// @ts-ignore
+	spellListFlattened = spellListFlattened.concat(spellList[l])
+}
+
+spellListFlattened.sort()

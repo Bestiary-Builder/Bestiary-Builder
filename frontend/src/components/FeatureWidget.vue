@@ -191,7 +191,7 @@ export default defineComponent({
 
 					if (parsedAutomation.automation && this.feat.description == "") {
 						for (let type in parsedAutomation.automation) {
-							console.log(parsedAutomation.automation[type]);
+
 							if (parsedAutomation.automation[type]["type"] == "text") {
 								console.log(parsedAutomation.automation[type]["text"]);
 								this.feat.description = parsedAutomation.automation[type]["text"];

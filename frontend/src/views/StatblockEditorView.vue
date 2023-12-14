@@ -30,6 +30,7 @@
                     </span>
                     <div class="editor-field__contents">
                         <input type="text" placeholder="Type name..." v-model="data.description.name">
+                        Is Proper Noun? <input type="checkbox" v-model="data.description.isProperNoun">
                     </div>
                 </div>
                 <div class="editor-field__slim">
@@ -205,6 +206,8 @@
                     placeholder="Select a Language or type one yourself" 
                     v-model="data.core.languages"
                     multiple
+                    :deselectFromDropdown="true"
+                    :closeOnSelect="false"
                     :options='languages'
                     :taggable="true"
                     :pushTags="true"
@@ -399,6 +402,8 @@
                     placeholder="Select a Vulnerability or type one yourself" 
                     v-model="data.defenses.vulnerabilities"
                     multiple
+                    :deselectFromDropdown="true"
+                    :closeOnSelect="false"
                     :options='["Acid", "Bludgeoning", "Cold", "Fire", "Force", "Lightning", "Necrotic", "Piercing", "Poison", "Pyschic", "Radiant", "Slashing", "Thunder", "Nonmagical Nonsilvered Bludgeoning", "Nonmagical Nonsilvered Piercing", "Nonmagical Nonsilvered Slashing"]'
                     :taggable="true"
                     :pushTags="true"
@@ -408,6 +413,8 @@
                     placeholder="Select a Resistance or type one yourself" 
                     v-model="data.defenses.resistances"
                     multiple
+                    :deselectFromDropdown="true"
+                    :closeOnSelect="false"
                     :options='["Acid", "Bludgeoning", "Cold", "Fire", "Force", "Lightning", "Necrotic", "Piercing", "Poison", "Pyschic", "Radiant", "Slashing", "Thunder", "Nonmagical Nonsilvered Bludgeoning", "Nonmagical Nonsilvered Piercing", "Nonmagical Nonsilvered Slashing"]'
                     :taggable="true"
                     :pushTags="true"
@@ -417,6 +424,8 @@
                     placeholder="Select an Immunity or type one yourelf" 
                     v-model="data.defenses.immunities"
                     multiple
+                    :deselectFromDropdown="true"
+                    :closeOnSelect="false"
                     :options='["Acid", "Bludgeoning", "Cold", "Fire", "Force", "Lightning", "Necrotic", "Piercing", "Poison", "Pyschic", "Radiant", "Slashing", "Thunder", "Nonmagical Nonsilvered Bludgeoning", "Nonmagical Nonsilvered Piercing", "Nonmagical Nonsilvered Slashing"]'
                     :taggable="true"
                     :pushTags="true"
@@ -426,6 +435,8 @@
                     placeholder="Select a Condition Immunity or type one yourelf" 
                     v-model="data.defenses.conditionImmunities"
                     multiple
+                    :deselectFromDropdown="true"
+                    :closeOnSelect="false"
                     :options='["Blinded", "Charmed", "Deafened", "Disease", "Exhaustion", "Frightened", "Grappled", "Incapacitated", "Invisible", "Paralyzed", "Petrified", "Poisoned", "Prone", "Restrained", "Stunned", "Unconscious"]'
                     :taggable="true"
                     :pushTags="true"
@@ -475,24 +486,58 @@
                 <button @click="createNewFeature('regional')"> New Regional Effect (+)</button>
             </div>
             <div  class="editor-content__tab-inner fade">
-                <h2> Manage Spellcasting </h2>
-                
                 <h3> Innate Spellcasting </h3>
+                <p> Spellcasting Ability <v-select :options="['str', 'dex', 'con', 'wis', 'int', 'cha']" v-model="data.spellcasting.innateSpells.spellCastingAbility" /> <button @click="data.spellcasting.innateSpells.spellCastingAbility = null"> Reset</button> </p>
+                <p> Spell DC Override: <input type="number" v-model="data.spellcasting.innateSpells.spellDcOverride" min="0" step="1"> <button @click="data.spellcasting.innateSpells.spellDcOverride = null"> Reset</button> </p>
+                <p> Spell Attack Bonus Override: <input type="number" v-model="data.spellcasting.innateSpells.spellBonusOverride" step="1"> <button @click="data.spellcasting.innateSpells.spellBonusOverride = null"> Reset</button> </p>
+                <p> Is Psionics? <input type="checkbox" v-model="data.spellcasting.innateSpells.isPsionics"> </p>
 
+                <p> Requiring none of these components: 
+                    <v-select
+                        :options='["Material", "Verbal", "Somatic"]'
+                        v-model="data.spellcasting.innateSpells.noComponentsOfType"
+                        multiple 
+                        :deselectFromDropdown="true"
+                        :closeOnSelect="false"
+                    />
+                </p>
+
+                <p> Spell List 
+
+                    <div> At Will: <v-select :options="spellListFlattened" v-model="innateSpells[0]" multiple :deselectFromDropdown="true" :closeOnSelect="false"/> </div>
+                    <div> 1/day <v-select :options="spellListFlattened" v-model="innateSpells[1]" multiple :deselectFromDropdown="true" :closeOnSelect="false"/> </div>
+                    <div> 2/day: <v-select :options="spellListFlattened" v-model="innateSpells[2]" multiple :deselectFromDropdown="true" :closeOnSelect="false"/> </div>
+                    <div> 3/day: <v-select :options="spellListFlattened" v-model="innateSpells[3]" multiple :deselectFromDropdown="true" :closeOnSelect="false"/> </div>
+
+
+                    <div v-for="times in data.spellcasting.innateSpells.spellList">
+                        <div v-if="times.length>0">
+                            <div v-for="spell in times">
+                                <b>{{ spell.spell }}</b> Override cast at level <input type="number" min=0 max="20" v-model="spell.upcastLevel"> <button @click="spell.upcastLevel = null"> X </button>
+
+                                <input type="text" v-model="spell.comment" placeholder="Spell comment (such as Self Only)">
+                            </div>
+                        </div>
+                    </div>
+                </p>
+                <hr> 
                 <h3> Class Spellcasting </h3>
 
-                <p> Spellcasting Class: </p><v-select v-model="data.spellcasting.casterSpells.castingClass" :options="['Artificer', 'Bard', 'Cleric', 'Druid', 'Paladin', 'Ranger', 'Sorcerer', 'Warlock', 'Wizard']" /> 
-                <p> Spellcasting Level: </p><v-select v-model="data.spellcasting.casterSpells.casterLevel" :options="[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]" />
+                <hr>
+                <p> Spellcasting Class: <v-select v-model="data.spellcasting.casterSpells.castingClass" :options="['Artificer', 'Bard', 'Cleric', 'Druid', 'Paladin', 'Ranger', 'Sorcerer', 'Warlock', 'Wizard']" /> </p>
+                <p> Spellcasting Level: <v-select v-model="data.spellcasting.casterSpells.casterLevel" :options="[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]" /> </p>
                 <p> Spell DC Override: <input type="number" v-model="data.spellcasting.casterSpells.spellDcOverride" min="0" step="1"> <button @click="data.spellcasting.casterSpells.spellDcOverride = null"> Reset</button> </p>
                 <p> Spell Attack Bonus Override: <input type="number" v-model="data.spellcasting.casterSpells.spellBonusOverride" step="1"> <button @click="data.spellcasting.casterSpells.spellBonusOverride = null"> Reset</button> </p>
-
+                <p> Spellcasting Ability Override <v-select :options="['str', 'dex', 'con', 'wis', 'int', 'cha']" v-model="data.spellcasting.casterSpells.spellCastingAbilityOverride" /> <button @click="data.spellcasting.casterSpells.spellCastingAbilityOverride = null"> Reset</button> </p>
                 <div v-if="data.spellcasting.casterSpells.castingClass">
                     <p v-if="!['Ranger', 'Paladin'].includes(data.spellcasting.casterSpells.castingClass)"> 
                         <p> Cantrips </p>
                         <v-select 
                             v-model="data.spellcasting.casterSpells.spellList[0]"
                             :options="spellList[0]" 
-                            multiple                     
+                            multiple           
+                            :deselectFromDropdown="true"
+                            :closeOnSelect="false"          
                             :taggable="true"
                             :pushTags="true"
                         /> 
@@ -503,18 +548,18 @@
                         <v-select 
                         v-model="data.spellcasting.casterSpells.spellList[level]"
                         :options="getSpellsByLevel(level)" 
-                        multiple                     
+                        multiple       
+                        :deselectFromDropdown="true"
+                        :closeOnSelect="false"              
                         :taggable="true"
                         :pushTags="true"
                         /> 
                         <hr>
                     </p>
                 </div>
-
-
             </div>
         </div>
-
+        <button @click="saveStatblock()"> Save Statblock </button>
     </div>
 <div class="content-container__inner"> 
     <StatblockRenderer :data='data'/>
@@ -527,8 +572,8 @@
 import {RouterLink, RouterView} from "vue-router";
 import { defineComponent, watch } from "vue";
 import StatblockRenderer from "../components/StatblockRenderer.vue"; 
-import type { SkillsEntity, Statblock } from "@/components/types";
-import { defaultStatblock, getSpellSlots, spellList } from "@/components/types"
+import type { InnateSpellsEntity, InnateSpellsList, SkillsEntity, Statblock } from "@/components/types";
+import { defaultStatblock, getSpellSlots, spellList, spellListFlattened } from "@/components/types"
 import FeatureWidget from "@/components/FeatureWidget.vue";
 
 export default defineComponent({
@@ -543,6 +588,13 @@ export default defineComponent({
             list: [] as string[],
             getSpellSlots: getSpellSlots,
             spellList: spellList,
+            spellListFlattened: spellListFlattened,
+            innateSpells: {
+                0: [] as InnateSpellsEntity[],
+                1: [] as InnateSpellsEntity[],
+                2: [] as InnateSpellsEntity[],
+                3: [] as InnateSpellsEntity[]
+            } as InnateSpellsList ,
             languages: ["All", "All languages it knew in life", "Abyssal", "Aarakocra", "Aquan", "Auran", "Celestial", "Common", "Deep Speech", "Draconic", "Druidic", "Dwarvish", "Elvish", "Giant", "Gith", "Gnomish", "Goblin", "Halfling", "Ignan", "Infernal", "Orc", "Primordial", "Sylvan", "Terran", "Thieves' Cant", "Undercommon", "Understands the languages of its creator but can't speak"]
         }
     },
@@ -641,6 +693,9 @@ export default defineComponent({
             this.data.spellcasting.casterSpells.spellCastingAbility = null;
             this.data.spellcasting.casterSpells.spellBonusOverride = null;
             this.data.spellcasting.casterSpells.spellDcOverride = null;
+        },
+        saveStatblock() {
+            console.log('Pressed save statblock!')
         }
     },
     mounted() {
@@ -686,6 +741,39 @@ export default defineComponent({
 
             // set spell slots when they change level
             this.data.spellcasting.casterSpells.spellSlotList = getSpellSlots(this.data.spellcasting.casterSpells.castingClass, this.data.spellcasting.casterSpells.casterLevel)
+        },
+        innateSpells: {
+            handler(newValue) {
+                let list = this.data.spellcasting.innateSpells.spellList
+                // add spells to our data that we did not have in our statblock data yet but we did in our editor data
+                for (let times in this.innateSpells) {
+                    for (let spell in this.innateSpells[times]) {
+                        // the spell is not in our stat block data yet, so we add it.
+                        // @ts-ignore
+                        if (!list[times].map(obj => obj.spell).includes(this.innateSpells[times][spell])) {
+                            list[times].push({
+                                // @ts-ignore
+                                "spell": this.innateSpells[times][spell],
+                                "comment": "",
+                                "upcastLevel": null
+                            })
+                        }
+                    }
+                }
+
+                // remove spells that we have in the statblock data but not in the editor data
+
+                for (let times in list) {
+                    for (let spell in list[times]) {
+                        //@ts-ignore
+                        if (!this.innateSpells[times].includes(list[times][spell].spell)) delete list[times][spell]
+                    }
+                    // remove all falsy (null/undefined/etc) from our array which delete leaves behind.
+                    list[times] = list[times].filter( Boolean )
+                }
+
+            },
+            deep: true
         }
     }
 })

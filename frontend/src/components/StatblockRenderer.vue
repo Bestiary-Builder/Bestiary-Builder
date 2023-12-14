@@ -67,25 +67,25 @@
             <b> Skills </b>
             {{ skillOutput() }}
         </div>
-        <div class="stat-block__vuln-container" v-if="data.defenses.vulnerabilities.length > 0">
+        <div class="stat-block__vuln-container" v-if="data.defenses.vulnerabilities && data.defenses.vulnerabilities.length > 0">
             <b> Vulnerabilities </b>
             <span v-for="vuln in alphaSort(data.defenses.vulnerabilities)">
                 <span>{{vuln.toLowerCase()}}<span class="ending-comma">, </span> </span>
             </span>
         </div>
-        <div class="stat-block__res-container" v-if="data.defenses.resistances.length > 0">
+        <div class="stat-block__res-container" v-if="data.defenses.resistances && data.defenses.resistances.length > 0">
             <b> Resistances </b>
             <span v-for="res in alphaSort(data.defenses.resistances)">
                 <span>{{res.toLowerCase()}}<span class="ending-comma">, </span> </span>
             </span>
         </div>
-        <div class="stat-block__imm-container" v-if="data.defenses.immunities.length > 0">
+        <div class="stat-block__imm-container" v-if="data.defenses.immunities && data.defenses.immunities.length > 0">
             <b> Immunities </b>
             <span v-for="imm in alphaSort(data.defenses.immunities)">
                 <span>{{imm.toLowerCase()}}<span class="ending-comma">, </span> </span>
             </span>
         </div>
-        <div class="stat-block__imm-container" v-if="data.defenses.conditionImmunities.length > 0">
+        <div class="stat-block__imm-container" v-if="data.defenses.conditionImmunities && data.defenses.conditionImmunities.length > 0">
             <b> Condition Immunities </b>
             <span v-for="con in alphaSort(data.defenses.conditionImmunities)">
                 <span>{{con.toLowerCase()}}<span class="ending-comma">, </span> </span>
@@ -101,8 +101,8 @@
         </div>
         <div class="stat-block__language-container"> 
             <b> Languages </b>
-            <span v-if="data.core.languages.length == 0 && !data.core.senses.telepathy"> — </span>
-            <span v-else v-for="lang in langSort(data.core.languages)">
+            <span v-if="data.core.languages && data.core.languages.length == 0 && !data.core.senses.telepathy"> — </span>
+            <span v-else v-for="lang in data.core.languages?.sort()">
                 <span> {{ lang }}<span class="ending-comma">,</span></span>
             </span>
             <span v-if="data.core.senses.telepathy"> telepathy {{ data.core.senses.telepathy}}ft.</span>
@@ -112,14 +112,43 @@
             <b> Challenge </b> {{ data.description.cr }} (1000 xp)
         </div>
     </div>
-    <div class="stat-block__row" v-if="showFeatures() || showCasting()">
-        <div class="feature-container"  v-if="data.features.features.length > 0 || showCasting()">
+    <div class="stat-block__row" v-if="showFeatures() || showCasting() || showInnateCasting()">
+        <div class="feature-container"  v-if="data.features.features.length > 0 || showCasting() || showInnateCasting()">
             <p v-for="feature in data.features.features">
                 <b> <i>{{ feature.name }} </i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup> </b>
                 <span class="feature-container__desc" v-html="sanitizeAndFormat(feature.description)"> </span>
             </p>
 
-            <p v-if="showCasting()">
+
+            <p v-if="showInnateCasting() ">
+                <b><i>Innate Spellcasting</i></b> 
+                <span class="feature-container__desc">
+                    <span v-if="!data.description.isProperNoun"> The </span> {{ data.description.name }}'s innate spellcasting ability is <span v-if="data.description.isProperNoun"> Their </span><span v-else> Its </span> spellcasting ability is {{ fullSpellAbilityName(true) }} (spell save DC {{ spellDc(true) }}, {{ spellAttackBonus(true) }} to hit with spell attacks). <span v-if="!data.description.isProperNoun"> It </span><span v-else> {{ data.description.name }}</span> can innately cast the following spells<span v-if="data.spellcasting.innateSpells.noComponentsOfType.length ==0">:</span>
+                    <span v-else> {{ componentsString() }} </span>
+
+                    <div class="spell-list">
+
+                        <div v-if="data.spellcasting.innateSpells.spellList[0].length > 0"> 
+                            <span> At will: </span>
+                            <i> {{ data.spellcasting.innateSpells.spellList[0].map(x => x.spell).sort().join(", ") }} </i> 
+                        </div>
+                        <div v-if="data.spellcasting.innateSpells.spellList[3].length > 0"> 
+                            <span> 3/day each: </span>
+                            <i> {{ data.spellcasting.innateSpells.spellList[3].map(x => x.spell).sort().join(", ") }} </i> 
+                        </div>
+                        <div v-if="data.spellcasting.innateSpells.spellList[2].length > 0"> 
+                            <span> 2/day each: </span>
+                            <i> {{ data.spellcasting.innateSpells.spellList[2].map(x => x.spell).sort().join(", ") }} </i> 
+                        </div>
+                        <div v-if="data.spellcasting.innateSpells.spellList[1].length > 0"> 
+                            <span> 1/day each: </span>
+                            <i> {{ data.spellcasting.innateSpells.spellList[1].map(x => x.spell).sort().join(", ") }} </i> 
+                        </div>
+                    </div>
+                </span>
+            </p>
+
+            <p v-if="showCasting() && data.spellcasting.casterSpells.castingClass && data.spellcasting.casterSpells.casterLevel &&  data.spellcasting.casterSpells.spellSlotList">
                 <b><i>Spellcasting</i></b> 
                 <span class="feature-container__desc">
                     <span v-if="!data.description.isProperNoun"> The </span> {{ data.description.name }} is a {{ nthSuffix(data.spellcasting.casterSpells.casterLevel) }}-level spellcaster. <span v-if="data.description.isProperNoun"> Their </span><span v-else> Its </span> spellcasting ability is {{ fullSpellAbilityName() }} (spell save DC {{ spellDc() }}, {{ spellAttackBonus() }} to hit with spell attacks). <span v-if="!data.description.isProperNoun"> It </span><span v-else> {{ data.description.name }}</span><span v-if='["Sorcerer", "Bard", "Ranger", "Warlock"].includes(data.spellcasting.casterSpells.castingClass)'> knows the following {{ data.spellcasting.casterSpells.castingClass.toLowerCase()}} spells: </span> 
@@ -129,7 +158,7 @@
                         <p v-for="spells, level in data.spellcasting.casterSpells.spellList"> 
                             <div v-if="(level == 0 && !['Ranger', 'Paladin'].includes(data.spellcasting.casterSpells.castingClass) )|| Object.keys(data.spellcasting.casterSpells.spellSlotList).includes(level.toString())"> 
                                 <span v-if="level==0"> Cantrips (at will): </span>
-                                <span v-else> {{ nthSuffix(level) }} level ({{ data.spellcasting.casterSpells.spellSlotList[level] }} slots): </span>
+                                <span v-else> {{ nthSuffix(level) }} level ({{ [level] }} slots): </span>
                                 <i> {{ spells.sort().join(", ") }} </i>
                             </div>
                         </p>
@@ -194,12 +223,17 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import type { SaveEntity, SkillsEntity, Statblock } from './types'
+import type { Stat, SaveEntity, SkillsEntity, Statblock, InnateSpells, CasterSpells } from './types'
 import { stringify } from 'yaml'
 
 
 export default defineComponent({
-    props: ["data"],
+    props: {
+        data: {
+            type: Object as ()=>Statblock,
+            required: true
+        }
+    },
     data() {
         return {
             
@@ -209,7 +243,7 @@ export default defineComponent({
         hpCalc(): number {
             return Math.floor(this.data.defenses.hp.numOfHitDie * ( (this.data.defenses.hp.sizeOfHitDie + 1)/2 + this.statCalc("con")))
         },
-        statCalc(stat: string) : number {
+        statCalc(stat: Stat) : number {
             return Math.floor(this.data.abilities.stats[stat]/2)-5
         },
         ppCalc(): number { 
@@ -217,12 +251,12 @@ export default defineComponent({
             else { 
                 let skills = this.data.abilities.skills
                 if (skills) {
-                    for (let skill in skills) {
-                        if (skills[skill].skillName == "Perception") {
-                            if (skills[skill].override) return 10 + skills[skill].override
-                            if (skills[skill].isHalfProficient) return 10 + this.statCalc("wis") + Math.floor(this.data.core.proficiencyBonus/2)
-                            if (skills[skill].isProficient) return 10 + this.statCalc("wis") + this.data.core.proficiencyBonus
-                            if (skills[skill].isExpertise) return 10 + this.statCalc("wis") + this.data.core.proficiencyBonus*2
+                    for (let skill of skills) {
+                        if (skill.skillName == "Perception") {
+                            if (skill.override || skill.override==0) return 10 + skill.override
+                            if (skill.isHalfProficient) return 10 + this.statCalc("wis") + Math.floor(this.data.core.proficiencyBonus/2)
+                            if (skill.isProficient) return 10 + this.statCalc("wis") + this.data.core.proficiencyBonus
+                            if (skill.isExpertise) return 10 + this.statCalc("wis") + this.data.core.proficiencyBonus*2
                             break;
                         }
                     }
@@ -230,14 +264,15 @@ export default defineComponent({
             }
             return 10 + this.statCalc("wis")
         },
-        statSign(stat: string): string {
+        statSign(stat: Stat): string {
             if (this.statCalc(stat) >=0) {
                 return "+"
             }
             return ""
         },
-        saveSign(stat: string): string {
-            if (this.statCalc(stat)+this.data.core.proficiencyBonus >= 0 || this.data.abilities.saves[stat].override >= 0) {
+        saveSign(stat: Stat): string {
+            if (!this.data.abilities.saves) return "";
+            if (this.statCalc(stat)+this.data.core.proficiencyBonus >= 0 || (this.data.abilities.saves[stat] && this.data.abilities.saves[stat].override)) {
                 return "+"
             }
             return ""
@@ -264,8 +299,7 @@ export default defineComponent({
                 "wis": ["animalhandling", "insight", "medicine", "perception", "survival"],
                 "cha": ["deception", "intimidation", "performance", "persuasion"]
             } as any
-            let output = ""
-            let index = 0;
+
 
             let seenSkillNames = new Set();
 
@@ -281,27 +315,27 @@ export default defineComponent({
                 }
             });
 
-            for (let skill in skills) {
-                index++
-                if (!skills[skill].isExpertise && !skills[skill].isHalfProficient && !skills[skill].isProficient && !skills[skill].override) continue
+            let output = []
+            for (let skill of skills) {
+                if (!skill.isExpertise && !skill.isHalfProficient && !skill.isProficient && !skill.override) continue
 
                 let bonus = 0
                 for (let stat in SKILLS_BY_STAT) {
-                    if (SKILLS_BY_STAT[stat].includes(skills[skill].skillName.replace(" ", "").toLowerCase())) {
-                        output += skills[skill].skillName
-                        if (skills[skill].override && skills[skill].override !== null) {
-                            let over = skills[skill].override
-                            output += ` ${over ?? 0 >= 0 ? '+' : ''}${over}${index == skills.length ? '' : ','} `
+                    if (SKILLS_BY_STAT[stat].includes(skill.skillName.replace(" ", "").toLowerCase())) {
+                        if (skill.override && skill.override !== null) {
+                            let over = skill.override
+                            output.push(`${skill.skillName} ${over ?? 0 >= 0 ? '+' : ''}${over}`)
                         } else {
+                            // @ts-ignore
                             bonus = this.statCalc(stat)
-                            if (skills[skill].isHalfProficient) {
+                            if (skill.isHalfProficient) {
                                 bonus += Math.floor(this.data.core.proficiencyBonus/2)
-                            } else if (skills[skill].isProficient) {
+                            } else if (skill.isProficient) {
                                 bonus += this.data.core.proficiencyBonus
-                            } else if (skills[skill].isExpertise) {
+                            } else if (skill.isExpertise) {
                                 bonus += this.data.core.proficiencyBonus*2
                             }
-                            output += ` ${bonus >= 0 ? '+' : ''}${bonus}${index == skills.length ? '' : ','} `
+                            output.push(`${skill.skillName} ${bonus >= 0 ? '+' : ''}${bonus}`)
                         }
                         break;
                     } else continue;
@@ -309,25 +343,24 @@ export default defineComponent({
                 }
 
             }
-            return output
+            return output.join(", ")
         },
         showSkills() : boolean {
-            for (let skill in this.data.abilities.skills) {
-                let sk = this.data.abilities.skills[skill]
-                if (sk.isProficient || sk.isHalfProficient || sk.isExpertise || sk.override || sk.override == 0) return true
+            for (let skill of this.data.abilities.skills) {
+                if (skill.isProficient || skill.isHalfProficient || skill.isExpertise || skill.override || skill.override == 0) return true
             }
             return false
         },
         showCasting() : boolean {
-            if ((this.data.spellcasting.casterSpells.casterLevel ) && this.data.spellcasting.casterSpells.castingClass ) return true
+            return !!((this.data.spellcasting.casterSpells.casterLevel ) && this.data.spellcasting.casterSpells.castingClass ) 
 
-            return false;
+        },
+
+        showInnateCasting() : boolean {
+            return !!this.data.spellcasting.innateSpells.spellCastingAbility
         },
         showFeatures() : boolean {
-            for (let f in this.data.features) {
-                if (this.data.features[f].length > 0) return true
-            }
-            return false
+            return Object.values(this.data.features).some(v => v.length > 0)
         },
         alphaSort(list: string[]) : string[] {
             const sortByLastWord = (a :string , b :string) => {
@@ -373,27 +406,61 @@ export default defineComponent({
                     return number.toString() + 'th'
             }
         },
-        fullSpellAbilityName() : string {
-            const abi = this.data.spellcasting.casterSpells.spellCastingAbility
+        fullSpellAbilityName(innate = false) : string {
+            let abi;
+            if (innate) abi = this.data.spellcasting.innateSpells.spellCastingAbility
+            else abi = this.data.spellcasting.casterSpells.spellCastingAbilityOverride ?? this.data.spellcasting.casterSpells.spellCastingAbility
+
+            if (abi == 'str') return "Strength"
+            if (abi == 'dex') return "Dexterity"
+            if (abi == 'con') return "Constitution"
             if (abi == 'wis') return "Wisdom"
             if (abi == 'int') return "Intelligence"
             if (abi == 'cha') return "Charisma"
             return "Spellcasting Ability not found."
         },
-        spellDc() : number {
-            const castingData = this.data.spellcasting.casterSpells
+        spellDc(innate = false) : number {
+            let castingData;
+            if (innate) castingData = this.data.spellcasting.innateSpells
+            else castingData = this.data.spellcasting.casterSpells
+
             if (castingData.spellDcOverride) return castingData.spellDcOverride
-            else return 8 + this.statCalc(castingData.spellCastingAbility) + this.data.core.proficiencyBonus
+            else {
+                if (innate && castingData.spellCastingAbility) return this.statCalc(castingData.spellCastingAbility) + this.data.core.proficiencyBonus
+                // @ts-ignore
+                else return 8 + this.statCalc(castingData.spellCastingAbilityOveride ?? castingData.spellCastingAbility) + this.data.core.proficiencyBonus
+            }
         },
-        spellAttackBonus(): string {
-            const castingData = this.data.spellcasting.casterSpells
-            let bonus;
+        spellAttackBonus(innate = false): string {
+            let castingData;
+            if (innate) castingData = this.data.spellcasting.innateSpells as InnateSpells
+            else castingData = this.data.spellcasting.casterSpells as CasterSpells
+
+            let bonus = 0;
             if (castingData.spellBonusOverride || castingData.spellBonusOverride === 0) bonus = castingData.spellBonusOverride
-            else bonus = this.statCalc(castingData.spellCastingAbility) + this.data.core.proficiencyBonus
+            else {
+                if (innate && castingData.spellCastingAbility) bonus = this.statCalc(castingData.spellCastingAbility) + this.data.core.proficiencyBonus
+                // @ts-ignore
+                else bonus = this.statCalc(castingData.spellCastingAbilityOveride ?? castingData.spellCastingAbility) + this.data.core.proficiencyBonus
+            }
 
             if (bonus >= 0) return '+' + bonus
             return bonus.toString()
         },
+        componentsString() : string {
+            let comp = this.data.spellcasting.innateSpells.noComponentsOfType.sort()
+
+            if (comp.length == 0) return ""
+            if (comp.length == 3) return ", requiring no components:"
+            if (comp.length == 2) {
+                let only = "material";
+                if (!comp.includes("Verbal")) only = "verbal"
+                if (!comp.includes("Somatic")) only = "somatic"
+
+                return `, requiring only ${only} components:`
+            }
+            return `, requiring no ${comp[0].toLowerCase()} components:` 
+        }
     }
 
 })

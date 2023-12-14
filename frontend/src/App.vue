@@ -1,13 +1,12 @@
 <script lang="ts">
 import {RouterLink, RouterView} from "vue-router";
-import NavBar from "@/constantComponents/NavBar.vue";
 import Footer from "@/constantComponents/Footer.vue";
-
+import NavHeader from "@/constantComponents/NavHeader.vue";
 import {defineComponent} from "vue";
 export default defineComponent({
 	name: "App",
 	components: {
-		NavBar,
+		NavHeader,
 		Footer,
 		RouterView
 	}
@@ -17,7 +16,7 @@ export default defineComponent({
 <template>
 	<div id="modal"></div>
 	<header>
-		<NavBar />
+		<NavHeader />
 	</header>
 	<main>
 		<RouterView />
