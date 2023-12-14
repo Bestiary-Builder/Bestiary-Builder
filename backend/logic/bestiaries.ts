@@ -82,8 +82,16 @@ app.post("/api/update/bestiary/:id?", requireUser, async (req, res) => {
 		return res.status(400).json({error: "Status has an unkown value, must only be 'public', 'unlisted' or 'private'"});
 	}
 	//Remove bad words
-	data.name = badwords.filter(data.name);
-	data.description = badwords.filter(data.description);
+	if (data.status != "private") {
+		if (badwords.check(data.name)) {
+			return res.status(400).json({error: "Bestiary name includes blocked words or phrases"});
+		}
+		if (badwords.check(data.description)) {
+			return res.status(400).json({error: "Bestiary description includes blocked words or phrases"});
+		}
+		///data.name = badwords.filter(data.name);
+		///data.description = badwords.filter(data.description);
+	}
 	//Add or update
 	if (data._id) {
 		//Update existing bestiary

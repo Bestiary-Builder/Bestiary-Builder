@@ -72,8 +72,14 @@ app.post("/api/update/creature/:id?", requireUser, async (req, res) => {
 		return res.status(400).json({error: `Description exceeds the character limit of ${limits.descriptionLength} characters`});
 	}
 	//Remove bad words
-	data.stats.description.name = badwords.filter(data.stats.description.name);
-	data.stats.description.description = badwords.filter(data.stats.description.description);
+	if (badwords.check(data.stats.description.name)) {
+		return res.status(400).json({error: "Bestiary name includes blocked words or phrases"});
+	}
+	if (badwords.check(data.stats.description.description)) {
+		return res.status(400).json({error: "Bestiary description includes blocked words or phrases"});
+	}
+	///data.stats.description.name = badwords.filter(data.stats.description.name);
+	///data.stats.description.description = badwords.filter(data.stats.description.description);
 	//Update or add
 	if (id) {
 		//Update existing creature
