@@ -57,7 +57,7 @@ export default defineComponent({
 				if (result.success) {
 					toast.success("Created bestiary");
 					// @ts-ignore
-					window.location.href = "/bestiary-viewer/" + result.data._id;
+					window.location.href = "/bestiary-editor/" + result.data._id;
 				} else {
 					toast.error((result.data as error).error);
 				}

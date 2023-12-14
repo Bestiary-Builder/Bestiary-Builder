@@ -20,7 +20,7 @@
 			<p>Creature amount: {{ bestiary.creatures.length }}</p>
 			<div class="creatures">
 				<button @click.prevent="createCreature">Create new creature</button>
-				<a class="creature" v-for="creature in creatures" :href="'/statblock-editor/' + creature._id">
+				<a class="creature" @click="openCreature" v-for="creature in creatures" :href="'/statblock-editor/' + creature._id">
 					<p>Creature:</p>
 					<p>{{ creature.stats?.description?.name }}</p>
 				</a>
@@ -38,7 +38,7 @@ import {handleApiResponse, toast, user} from "@/main";
 import type {error} from "@/main";
 
 export default defineComponent({
-	data: () => ({key: 0} as {bestiary: Bestiary | null; creatures: Creature[] | null; user: User | null; key: number}),
+	data: () => ({key: 0} as {bestiary: Bestiary | null; savedBestiary: Bestiary | null; creatures: Creature[] | null; user: User | null; saved: boolean; key: number}),
 	components: {
 		UserBanner
 	},
@@ -47,6 +47,10 @@ export default defineComponent({
 		this.getBestiary();
 	},
 	methods: {
+		async openCreature(e: Event) {
+			let confirmation = window.confirm("Do you want to save bestiary info before leaving?");
+			if (confirmation) await this.updateBestiary();
+		},
 		async createCreature() {
 			console.log("Create");
 			//Replace for actual creation data:
@@ -87,6 +91,7 @@ export default defineComponent({
 				let result = await handleApiResponse<Bestiary>(response);
 				if (result.success) {
 					this.bestiary = result.data as Bestiary;
+					this.savedBestiary = this.bestiary;
 					if (this.bestiary.owner != this.user?._id) {
 						window.location.href = "/bestiary-viewer/" + id;
 						return;
@@ -125,6 +130,7 @@ export default defineComponent({
 				let result = await handleApiResponse<Bestiary>(response);
 				if (result.success) {
 					toast.success("Saved bestiary");
+					this.savedBestiary = this.bestiary;
 				} else {
 					toast.error((result.data as error).error);
 				}
