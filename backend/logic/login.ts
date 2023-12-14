@@ -132,6 +132,7 @@ app.get("/api/user/:id", async (req, res) => {
 		let data = {
 			_id: userData._id,
 			global_name: userData.global_name,
+			username: userData.username,
 			avatar: userData.avatar,
 			banner_color: userData.banner_color
 		};
