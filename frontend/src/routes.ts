@@ -125,7 +125,7 @@ const routes = [
 	},
 	// viewing a particular bestiary of yourself
 	{
-		path: "/bestiary-viewer",
+		path: "/bestiary-viewer/:id",
 		navbar: false,
 		name: "Bestiary Viewer",
 		file: "BestiaryViewer.vue",
@@ -136,8 +136,9 @@ const routes = [
 	},
 	// editing a creature in a bestiary (which one by url param)
 	{
-		path: "/statblock-editor",
-		name: "",
+		path: "/statblock-editor/:id",
+		name: "Stat block",
+		navbar: false,
 		file: "StatblockEditorView.vue",
 		meta: {
 			title: "Statblock Editor | Bestiary Builder",

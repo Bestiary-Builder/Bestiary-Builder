@@ -11,10 +11,10 @@
 			</div>
 			<div class="creatures">
 				<button @click.prevent="createCreature">Create new creature</button>
-				<div class="creature" v-for="creature in creatures">
+				<a class="creature" v-for="creature in creatures" :href="'/statblock-editor/' + creature._id">
 					<p>Creature:</p>
 					<p>{{ creature.stats?.description?.name }}</p>
-				</div>
+				</a>
 			</div>
 		</div>
 		<div class="error" v-if="error">
@@ -73,8 +73,7 @@ export default defineComponent({
 		},
 		async getBestiary() {
 			//Get id
-			let params = new URLSearchParams(document.location.search);
-			let id = params.get("id");
+			let id = this.$route.params.id;
 			//Request bestiary info
 			await fetch("/api/bestiary/" + id).then(async (response) => {
 				let result = await handleApiResponse<Bestiary>(response);

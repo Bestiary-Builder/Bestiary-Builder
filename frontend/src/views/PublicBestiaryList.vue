@@ -3,7 +3,7 @@
 		<div class="error" v-if="error">
 			<h2>Error: {{ error }}</h2>
 		</div>
-		<a v-if="bestiaries" class="bestiary" v-for="bestiary in bestiaries" :href="'/bestiary-viewer?id=' + bestiary._id">
+		<a v-if="bestiaries" class="bestiary" v-for="bestiary in bestiaries" :href="'/bestiary-viewer/' + bestiary._id">
 			<h2>{{ bestiary.name }}</h2>
 			<p>Description: {{ bestiary.description }}</p>
 			<p>Status: {{ bestiary.status }}</p>

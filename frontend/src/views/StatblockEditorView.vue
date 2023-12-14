@@ -515,12 +515,12 @@
                             <div v-for="spell in times">
                                 <b>{{ spell.spell }}</b> Override cast at level <input type="number" min=0 max="20" v-model="spell.upcastLevel"> <button @click="spell.upcastLevel = null"> X </button>
 
-                                <input type="text" v-model="spell.comment" placeholder="Spell comment (such as Self Only)">
+                                <input type="text" v-model="spell.comment" placeholder="Spell comment (such as Self Only)" />
                             </div>
                         </div>
                     </div>
                 </p>
-                <hr> 
+                <hr /> 
                 <h3> Class Spellcasting </h3>
 
                 <hr>
@@ -554,7 +554,7 @@
                         :taggable="true"
                         :pushTags="true"
                         /> 
-                        <hr>
+                        <hr />
                     </p>
                 </div>
             </div>
@@ -572,8 +572,9 @@
 import {RouterLink, RouterView} from "vue-router";
 import { defineComponent, watch } from "vue";
 import StatblockRenderer from "../components/StatblockRenderer.vue"; 
-import type { InnateSpellsEntity, InnateSpellsList, SkillsEntity, Statblock } from "@/components/types";
+import type { InnateSpellsEntity, InnateSpellsList, SkillsEntity, Statblock, Creature } from "@/components/types";
 import { defaultStatblock, getSpellSlots, spellList, spellListFlattened } from "@/components/types"
+import { handleApiResponse, type error, toast } from "@/main";
 import FeatureWidget from "@/components/FeatureWidget.vue";
 
 export default defineComponent({
@@ -585,6 +586,7 @@ export default defineComponent({
         return {
             slideIndex: 1,
             data: defaultStatblock as Statblock,
+            rawInfo: null as Creature | null,
             list: [] as string[],
             getSpellSlots: getSpellSlots,
             spellList: spellList,
@@ -696,17 +698,48 @@ export default defineComponent({
         },
         saveStatblock() {
             console.log('Pressed save statblock!')
+            if(!this.rawInfo) return;
+            this.rawInfo.stats = this.data;
+            //Send to backend
+            fetch(`/api/update/creature/${this.rawInfo._id}`, {
+                method: "POST",
+				headers: {
+					Accept: "application/json",
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({data: this.rawInfo})
+            }).then(async (response) => {
+                let result = await handleApiResponse<Creature>(response);
+                if(result.success) {
+                    toast.success("Saved stat block");
+                } else {
+                    toast.error("Error: " + (result.data as error).error)
+                }
+            })
         }
     },
     mounted() {
+        console.log("Statblock id: " + this.$route.params.id);
         this.showSlides(1)
-
         // setInterval(() => {
         //     let els = document.querySelectorAll('.language-yaml') as NodeListOf<HTMLElement>
         //     for (let e in els) {
         //         if (els[e].dataset?.highlighted == "yes") els[e].dataset.highlighted = ""
         //     }
         // }, 10)
+
+        //Fetch creature info
+        fetch("/api/creature/" + this.$route.params.id).then(async (response) => {
+            let result = await handleApiResponse<Creature>(response);
+            if(result.success) {
+                this.data = {...defaultStatblock, ...(result.data as Creature).stats};
+                this.rawInfo = result.data as Creature;
+            } else {
+                console.error("Error: " + (result.data as error).error);
+                this.data = defaultStatblock;
+            }
+        })
+
     },
     watch: {
         'data.spellcasting.casterSpells.castingClass'(newValue, oldValue) {
