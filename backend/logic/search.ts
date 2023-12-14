@@ -2,7 +2,7 @@ import {Bestiary, collections} from "../database";
 import type {Filter, FindOptions} from "mongodb";
 import {app} from "../server";
 
-const amountPerPage = 2;
+const amountPerPage = 10;
 
 app.get("/api/search/:page/:searchterm?", async (req, res) => {
 	let searchTerm, page;
