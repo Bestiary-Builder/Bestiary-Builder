@@ -23,7 +23,7 @@
 				<span>@{{ user.username }}</span>
 				<img alt="avatar" :src="'https://cdn.discordapp.com/avatars/' + user._id + '/' + user.avatar + '.png'" />
 			</a>
-			<div v-else class="user">Login</div>
+			<div v-else class="user login" @click.prevent="LoginClick">Login</div>
 		</div>
 
 		<label class="navbar-toggler" for="navbar-indicator"> + </label>
@@ -67,6 +67,9 @@ export default defineComponent({
 }
 .user img {
 	border-radius: 50rem;
+}
+.login {
+	cursor: pointer;
 }
 .navbar {
 	position: relative;

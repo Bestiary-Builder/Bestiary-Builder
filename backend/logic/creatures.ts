@@ -1,6 +1,6 @@
 import {app} from "../server";
 import {requireUser, possibleUser} from "./login";
-import {addCreatureToBestiary, collections, getBestiary, getCreature, getUserFromSecret, updateCreature, Creature} from "../database";
+import {addCreatureToBestiary, collections, getBestiary, getCreature, getUser, updateCreature, Creature} from "../database";
 import {ObjectId} from "mongodb";
 import limits from "../staticData/limits.json";
 
@@ -17,7 +17,7 @@ app.get("/api/creature/:id", async (req, res) => {
 	return res.json(creature);
 });
 app.get("/api/bestiary/:id/creatures", possibleUser, async (req, res) => {
-	let user = await getUserFromSecret(req.body.id);
+	let user = await getUser(req.body.id);
 	let bestiaryId = new ObjectId(req.params.id);
 	let bestiary = await getBestiary(bestiaryId);
 	if (bestiary) {
@@ -59,7 +59,7 @@ app.post("/api/update/creature/:id?", requireUser, async (req, res) => {
 	if (!data) {
 		return res.status(400).json({error: "Bestiary id not valid"});
 	}
-	let user = await getUserFromSecret(req.body.id);
+	let user = await getUser(req.body.id);
 	if (!user) {
 		return res.status(404).json({error: "Couldn't find current user"});
 	}

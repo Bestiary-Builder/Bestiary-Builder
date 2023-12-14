@@ -1,7 +1,6 @@
-import {app} from "../server";
+import {app, JWTKey} from "../server";
 import fetch from "node-fetch";
 import jwt from "jsonwebtoken";
-
 import {getUser, getUserFromSecret, updateUser, User} from "../database";
 
 app.get("/login", async (req, res) => {
@@ -47,7 +46,7 @@ app.get("/login", async (req, res) => {
 				};
 				if (userResult) {
 					//Update user
-					await updateUser({
+					let secret = await updateUser({
 						_id: userResult.id,
 						username: userResult.username,
 						avatar: userResult.avatar,
@@ -57,7 +56,7 @@ app.get("/login", async (req, res) => {
 						global_name: userResult.global_name
 					});
 					//Create token
-					const token = jwt.sign({id: userResult.id}, process.env.JWT_TOKEN ?? "", {
+					const token = jwt.sign({id: secret}, JWTKey, {
 						expiresIn: "7d"
 					});
 					res.cookie("userToken", token, {expires: new Date(new Date().getTime() + 60 * 60 * 1000 * 24 * 7)});
@@ -86,44 +85,41 @@ export const requireUser = async (req: any, res: any, next: any) => {
 	let token = req.cookies.userToken;
 
 	if (!token) {
-		console.log("Authentication failed");
 		return res.status(401).json({error: "Not logged in"});
 	}
 	try {
-		const decoded = jwt.verify(token, process.env.JWT_TOKEN ?? "") as any;
-		let user = await getUser(decoded.id);
-		req.body.id = user.secret;
-		console.log("Authentication success with id " + decoded.id.toString());
+		const decoded = jwt.verify(token, JWTKey) as any;
+		let user = await getUserFromSecret(decoded.id);
+		if (!user) {
+			return res.status(401).send({error: "Invalid Token (not logged in)"});
+		}
+		req.body.id = user._id;
 	} catch (err) {
-		console.log("Invalid Token");
 		return res.status(401).send({error: "Invalid Token (not logged in)"});
 	}
 	return next();
 };
 export const possibleUser = async (req: any, res: any, next: any) => {
 	let token = req.cookies.userToken;
-
-	if (!token) {
-		console.log("Authentication failed");
-		req.body.id = null;
-	} else {
+	req.body.id = null;
+	if (token) {
 		try {
-			const decoded = jwt.verify(token, process.env.JWT_TOKEN ?? "") as any;
-			let user = await getUser(decoded.id);
-			req.body.id = user.secret;
-			console.log("Authentication success with id " + decoded.id.toString());
-		} catch (err) {
-			console.log("Invalid Token");
-			req.body.id = null;
-		}
+			const decoded = jwt.verify(token, JWTKey) as any;
+			let user = await getUserFromSecret(decoded.id);
+			if (user) {
+				req.body.id = user._id;
+			}
+		} catch (err) {}
 	}
 	return next();
 };
 
 app.get("/api/user", requireUser, async (req, res) => {
-	let userData = (await getUserFromSecret(req.body.id)) as User;
-	if (userData) return res.json(userData);
-	else return res.status(404).json({error: "Couldn't find user"});
+	let userData = (await getUser(req.body.id)) as User;
+	if (userData) {
+		delete userData.secret;
+		return res.json(userData);
+	} else return res.status(404).json({error: "Couldn't find user"});
 });
 
 app.get("/api/user/:id", async (req, res) => {

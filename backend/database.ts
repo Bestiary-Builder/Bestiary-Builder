@@ -1,5 +1,6 @@
 import {MongoClient, ServerApiVersion} from "mongodb";
 import {Db, ObjectId, Collection} from "mongodb";
+import {generateUserSecret} from "./server";
 //Connect to database
 let database = null as Db | null;
 export async function startConnection() {
@@ -29,7 +30,7 @@ export async function startConnection() {
 
 //Collections
 export class User {
-	constructor(public username: string, public avatar: string, public email: string, public verified: boolean, public banner_color: string, public global_name: string, public bestiaries: ObjectId[] = [], public _id?: string, public secret?: ObjectId) {}
+	constructor(public username: string, public avatar: string, public email: string, public verified: boolean, public banner_color: string, public global_name: string, public bestiaries: ObjectId[] = [], public _id?: string, public secret?: string) {}
 }
 export class Bestiary {
 	constructor(public name: string, public owner: string, public status: "public" | "private" | "unlisted", public description: string, public creatures: ObjectId[], public viewCount: number, public lastUpdated: Date, public _id?: ObjectId) {}
@@ -43,22 +44,24 @@ export const collections: {users?: Collection<User>; bestiaries?: Collection<Bes
 export async function getUser(id: string) {
 	return (await collections.users?.findOne({_id: id})) as User;
 }
-export async function getUserFromSecret(secret: ObjectId) {
+export async function getUserFromSecret(secret: string) {
 	if (!secret) return null;
 	return (await collections.users?.findOne({secret: secret})) as User;
 }
-export async function updateUser(data: {_id: string; username: string; avatar: string; email: string; verified: boolean; banner_color: string; global_name: string}) {
+export async function updateUser(data: {_id: string; username: string; avatar: string; email: string; verified: boolean; banner_color: string; global_name: string; secret?: string}) {
 	console.log("Updating user", data);
 	if (await getUser(data._id)) {
 		console.log("Updating user with id " + data._id.toString());
 		await collections.users?.updateOne({_id: data._id}, {$set: data});
+		return data.secret;
 	} else {
 		console.log("Adding new user to collection with id " + data._id.toString());
 		let userData = data as User;
 		userData._id = data._id;
-		userData.secret = new ObjectId();
+		userData.secret = generateUserSecret();
 		userData.bestiaries = [];
 		await collections.users?.insertOne(userData);
+		return userData.secret;
 	}
 }
 export async function getBestiary(id: ObjectId) {
