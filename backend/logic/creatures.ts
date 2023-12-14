@@ -1,4 +1,4 @@
-import {app} from "../server";
+import {app, badwords} from "../server";
 import {requireUser, possibleUser} from "./login";
 import {addCreatureToBestiary, collections, getBestiary, getCreature, getUser, updateCreature, Creature} from "../database";
 import {ObjectId} from "mongodb";
@@ -71,6 +71,9 @@ app.post("/api/update/creature/:id?", requireUser, async (req, res) => {
 	if (data.stats.description.description.length > limits.descriptionLength) {
 		return res.status(400).json({error: `Description exceeds the character limit of ${limits.descriptionLength} characters`});
 	}
+	//Remove bad words
+	data.stats.description.name = badwords.filter(data.stats.description.name);
+	data.stats.description.description = badwords.filter(data.stats.description.description);
 	//Update or add
 	if (id) {
 		//Update existing creature

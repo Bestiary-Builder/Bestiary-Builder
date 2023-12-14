@@ -1,4 +1,4 @@
-import {app} from "../server";
+import {app, badwords} from "../server";
 import {requireUser, possibleUser} from "./login";
 import {addBestiaryToUser, collections, getBestiary, getUser, incrementBestiaryViewCount, updateBestiary, Bestiary} from "../database";
 import {ObjectId} from "mongodb";
@@ -81,6 +81,9 @@ app.post("/api/update/bestiary/:id?", requireUser, async (req, res) => {
 	if (!["private", "public", "unlisted"].includes(data.status)) {
 		return res.status(400).json({error: "Status has an unkown value, must only be 'public', 'unlisted' or 'private'"});
 	}
+	//Remove bad words
+	data.name = badwords.filter(data.name);
+	data.description = badwords.filter(data.description);
 	//Add or update
 	if (data._id) {
 		//Update existing bestiary

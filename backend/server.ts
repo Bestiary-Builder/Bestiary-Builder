@@ -44,6 +44,16 @@ function getJWTKey() {
 	return fs.readFileSync(".jwtkey").toString("hex");
 }
 
+//Bad-words filter
+import BadWordsNext from "bad-words-next";
+export const badwords = new BadWordsNext({placeholder: ""});
+let dataFiles = fs.readdirSync("./staticData/badwordsData/");
+for (let file of dataFiles) {
+	console.log("Loading bad words data file: ", file);
+	let data = require("./staticData/badwordsData/" + file);
+	badwords.add(data);
+}
+
 //Function to run on all requests
 app.use(function (req, res, next) {
 	//Set Content Security Policy (CSP)
