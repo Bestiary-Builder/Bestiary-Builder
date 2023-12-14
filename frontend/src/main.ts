@@ -29,7 +29,10 @@ export const limits = fetch("/api/limits").then(async (response: any) => {
 	if (result.success) return result.data as limitsType;
 	else return null;
 });
-export const loginLink = "https://discord.com/oauth2/authorize?client_id=1183362236509601813&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Flogin&scope=identify+email";
+console.log(window.location.host);
+const loginBase = "https://discord.com/api/oauth2/authorize?client_id=1183362236509601813&response_type=code&scope=identify+email";
+//"https://discord.com/oauth2/authorize?client_id=1183362236509601813&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Flogin&scope=identify+email"
+export const loginLink = loginBase + "&redirect_uri=" + encodeURIComponent("http://" + window.location.host + "/login");
 
 //Emitter
 // @ts-ignore

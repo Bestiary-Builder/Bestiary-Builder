@@ -1,6 +1,6 @@
-import {app} from "../server";
+import {app, badwords} from "../server";
 import {requireUser, possibleUser} from "./login";
-import {addBestiaryToUser, collections, getBestiary, getUserFromSecret, incrementBestiaryViewCount, updateBestiary, Bestiary} from "../database";
+import {addBestiaryToUser, collections, getBestiary, getUser, incrementBestiaryViewCount, updateBestiary, Bestiary} from "../database";
 import {ObjectId} from "mongodb";
 import limits from "../staticData/limits.json";
 
@@ -14,7 +14,7 @@ app.get("/api/bestiary/:id", possibleUser, async (req, res) => {
 	if (!bestiary) {
 		return res.status(404).json({error: "No bestiary with that id found"});
 	}
-	let user = await getUserFromSecret(req.body.id);
+	let user = await getUser(req.body.id);
 	if ((user && user._id == bestiary.owner) || bestiary.status != "private") {
 		//Increment view count
 		incrementBestiaryViewCount(bestiary._id);
@@ -26,7 +26,7 @@ app.get("/api/bestiary/:id", possibleUser, async (req, res) => {
 });
 app.get("/api/user/:userid/bestiaries", possibleUser, async (req, res) => {
 	let allBestiaries = [];
-	let user = await getUserFromSecret(req.body.id);
+	let user = await getUser(req.body.id);
 	if (user && user._id == req.params.userid) {
 		//Own user
 		allBestiaries = (await collections.bestiaries?.find({owner: req.params.userid}).toArray()) ?? [];
@@ -63,7 +63,7 @@ app.post("/api/update/bestiary/:id?", requireUser, async (req, res) => {
 		data = inputData as Bestiary;
 		data._id = new ObjectId(id);
 	}
-	let user = await getUserFromSecret(req.body.id);
+	let user = await getUser(req.body.id);
 	if (!user) {
 		return res.status(404).json({error: "Couldn't find current user"});
 	}
@@ -80,6 +80,17 @@ app.post("/api/update/bestiary/:id?", requireUser, async (req, res) => {
 	}
 	if (!["private", "public", "unlisted"].includes(data.status)) {
 		return res.status(400).json({error: "Status has an unkown value, must only be 'public', 'unlisted' or 'private'"});
+	}
+	//Remove bad words
+	if (data.status != "private") {
+		if (badwords.check(data.name)) {
+			return res.status(400).json({error: "Bestiary name includes blocked words or phrases"});
+		}
+		if (badwords.check(data.description)) {
+			return res.status(400).json({error: "Bestiary description includes blocked words or phrases"});
+		}
+		///data.name = badwords.filter(data.name);
+		///data.description = badwords.filter(data.description);
 	}
 	//Add or update
 	if (data._id) {

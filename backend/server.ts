@@ -1,4 +1,3 @@
-console.log("Server!");
 import fs from "fs";
 import path from "path";
 import dotenv from "dotenv";
@@ -29,6 +28,31 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(cors());
 app.use(compression());
+
+//Secrets:
+import crypto from "crypto";
+export function generateUserSecret(): string {
+	return crypto.randomBytes(64).toString("hex");
+}
+export const JWTKey = getJWTKey();
+function getJWTKey() {
+	if (!fs.existsSync(".jwtkey")) {
+		console.log("Generating new JWT key");
+		let newKey = crypto.randomBytes(128).toString("hex");
+		fs.writeFileSync(".jwtkey", newKey);
+	}
+	return fs.readFileSync(".jwtkey").toString("hex");
+}
+
+//Bad-words filter
+import BadWordsNext from "bad-words-next";
+export const badwords = new BadWordsNext({placeholder: ""});
+let dataFiles = fs.readdirSync("./staticData/badwordsData/");
+for (let file of dataFiles) {
+	console.log("Loading bad words data file: ", file);
+	let data = require("./staticData/badwordsData/" + file);
+	badwords.add(data);
+}
 
 //Function to run on all requests
 app.use(function (req, res, next) {

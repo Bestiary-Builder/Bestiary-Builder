@@ -44,9 +44,9 @@ export default defineComponent({
 			console.log("Create");
 			//Replace for actual creation data:
 			let data = {
-				name: "Example name",
-				description: "Example description of bestiary",
-				status: "public",
+				name: "New bestiary",
+				description: "",
+				status: "private",
 				creatures: [] as string[]
 			} as Bestiary;
 			//Send data to server
@@ -62,7 +62,7 @@ export default defineComponent({
 				if (result.success) {
 					toast.success("Created bestiary");
 					// @ts-ignore
-					window.location.href = "/bestiary-viewer/" + result.data._id;
+					window.location.href = "/bestiary-editor/" + result.data._id;
 				} else {
 					toast.error((result.data as error).error);
 				}
