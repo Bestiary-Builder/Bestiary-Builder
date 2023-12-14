@@ -32,7 +32,7 @@ export class User {
 	constructor(public username: string, public avatar: string, public email: string, public verified: boolean, public banner_color: string, public global_name: string, public bestiaries: ObjectId[] = [], public _id?: string, public secret?: ObjectId) {}
 }
 export class Bestiary {
-	constructor(public name: string, public owner: string, public status: "public" | "private" | "unlisted", public description: string, public creatures: ObjectId[], public _id?: ObjectId) {}
+	constructor(public name: string, public owner: string, public status: "public" | "private" | "unlisted", public description: string, public creatures: ObjectId[], public viewCount: number, public lastUpdated: Date, public _id?: ObjectId) {}
 }
 export class Creature {
 	constructor(public lastUpdated: Date, public stats: any, public bestiary: ObjectId, public _id?: ObjectId) {}
@@ -65,6 +65,7 @@ export async function getBestiary(id: ObjectId) {
 	return (await collections.bestiaries?.findOne({_id: id})) as Bestiary;
 }
 export async function updateBestiary(data: Bestiary, id?: ObjectId) {
+	data.lastUpdated = new Date(Date.now());
 	if (id) {
 		if (await getBestiary(id)) {
 			console.log("Updating bestiary with id " + id.toString());
@@ -81,6 +82,9 @@ export async function updateBestiary(data: Bestiary, id?: ObjectId) {
 		await collections.bestiaries?.insertOne(data);
 		return _id;
 	}
+}
+export async function incrementBestiaryViewCount(id: ObjectId) {
+	await collections.bestiaries?.updateOne({_id: id}, {$inc: {viewCount: 1}});
 }
 export async function addBestiaryToUser(bestiaryId: ObjectId, userId: string) {
 	let user = await getUser(userId);
@@ -99,10 +103,13 @@ export async function getCreature(id: ObjectId) {
 	return (await collections.creatures?.findOne({_id: id})) as Creature;
 }
 export async function updateCreature(data: Creature, id?: ObjectId) {
+	data.lastUpdated = new Date(Date.now());
 	if (id) {
 		if (await getBestiary(data.bestiary)) {
 			console.log("Updating creature with id " + id.toString());
 			await collections.creatures?.updateOne({_id: id}, {$set: data});
+			//Update bestiary last updated
+			await updateBestiary({} as Bestiary, data.bestiary);
 			return id;
 		} else {
 			console.error("Trying to update non existant bestiary");

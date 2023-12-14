@@ -1,18 +1,25 @@
 <template>
-	<div class="content" :value="getBestiaries" :key="key">
-		<div class="error" v-if="error">
-			<h2>Error: {{ error }}</h2>
-		</div>
-		<a v-if="bestiaries" class="bestiary" v-for="bestiary in bestiaries" :href="'/bestiary-viewer/' + bestiary._id">
-			<h2>{{ bestiary.name }}</h2>
-			<p>Description: {{ bestiary.description }}</p>
-			<p>Status: {{ bestiary.status }}</p>
-			<p>Creature amount: {{ bestiary.creatures.length }}</p>
-			<div class="owner">
-				<p>Owner:</p>
-				<UserBanner :id="bestiary.owner" />
+	<div class="content" :key="key">
+		<form class="settings" @submit.prevent="searchButtonClick">
+			<input type="text" v-model="search" />
+			<input type="number" v-model="page" min="1" :max="total" />
+			<button type="submit">Search</button>
+		</form>
+		<div class="results">
+			<a v-if="bestiaries && bestiaries.length > 0" class="bestiary" v-for="bestiary in bestiaries" :href="'/bestiary-viewer/' + bestiary._id">
+				<h2>{{ bestiary.name }}</h2>
+				<p>Description: {{ bestiary.description }}</p>
+				<p>Status: {{ bestiary.status }}</p>
+				<p>Creature amount: {{ bestiary.creatures.length }}</p>
+				<div class="owner">
+					<p>Owner:</p>
+					<UserBanner :id="bestiary.owner" />
+				</div>
+			</a>
+			<div v-else>
+				<p>No bestiaries found</p>
 			</div>
-		</a>
+		</div>
 	</div>
 </template>
 
@@ -20,23 +27,53 @@
 import {defineComponent} from "vue";
 import type {User, Bestiary, Creature} from "@/components/types";
 import UserBanner from "@/components/UserBanner.vue";
-import {handleApiResponse} from "@/main";
+import {handleApiResponse, toast} from "@/main";
 import type {error} from "@/main";
 
 export default defineComponent({
-	data: () => ({bestiaries: [] as Bestiary[], key: 0} as {bestiaries: Bestiary[]; error: string | null; key: number}),
+	data: () =>
+		({
+			bestiaries: [] as Bestiary[],
+			key: 0,
+			search: "",
+			page: 1,
+			total: 0
+		} as {
+			bestiaries: Bestiary[];
+			key: number;
+			search: string;
+			page: number;
+			total: number;
+		}),
 	components: {
 		UserBanner
 	},
-	computed: {
-		async getBestiaries() {
+	beforeMount() {
+		this.searchBestiaries();
+	},
+	watch: {
+		page() {
+			this.searchBestiaries();
+		}
+	},
+	methods: {
+		searchButtonClick() {
+			if (this.page == 1) this.searchBestiaries();
+			else this.page = 1;
+		},
+		async searchBestiaries() {
 			//Request bestiary info
-			await fetch(`/api/bestiaries`).then(async (response) => {
-				let result = await handleApiResponse<Bestiary[]>(response);
-				if (result.success) this.bestiaries = result.data as Bestiary[];
-				else {
+			await fetch(`/api/search/${this.page - 1}/${this.search}`).then(async (response) => {
+				let result = await handleApiResponse<{results: Bestiary[]; totalAmount: number}>(response);
+				if (result.success) {
+					let data = result.data as {results: Bestiary[]; totalAmount: number};
+					console.log(data);
+					this.bestiaries = data.results;
+					this.total = data.totalAmount;
+				} else {
 					this.bestiaries = [];
-					this.error = (result.data as error).error;
+					this.total = 0;
+					toast.error((result.data as error).error);
 				}
 			});
 			console.log(this.bestiaries);
