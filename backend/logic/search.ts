@@ -2,7 +2,7 @@ import {Bestiary, collections} from "../database";
 import type {Filter, FindOptions} from "mongodb";
 import {app} from "../server";
 
-const amountPerPage = 10;
+const amountPerPage = 11;
 
 app.get("/api/search/:page/:searchterm?", async (req, res) => {
 	let searchTerm, page;
@@ -20,12 +20,13 @@ app.get("/api/search/:page/:searchterm?", async (req, res) => {
 		$or: [{name: {$regex: "(?i)" + searchTerm + "(?-i)"}}, {description: {$regex: "(?i)" + searchTerm + "(?-i)"}}]
 	} as Filter<Bestiary>;
 	let finder = collections.bestiaries?.find(filter).sort({viewCount: -1, lastUpdated: -1, name: 1});
-	let amountFound = await finder?.count();
+	let amountFound = (await finder?.count()) ?? 0;
+	if (amountFound == 0) amountFound = 1;
 	console.log(amountFound);
 	let results = await finder
 		?.skip(page * amountPerPage)
 		.limit(amountPerPage)
 		.toArray();
 	console.log(results);
-	return res.json({results: results, totalAmount: Math.ceil(((amountFound ?? 0) + 1) / amountPerPage)});
+	return res.json({results: results, totalAmount: Math.ceil(amountFound / amountPerPage)});
 });

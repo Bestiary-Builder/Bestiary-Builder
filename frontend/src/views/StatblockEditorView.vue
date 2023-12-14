@@ -29,7 +29,7 @@
                         Name
                     </span>
                     <div class="editor-field__contents">
-                        <input type="text" placeholder="Type name..." v-model="data.description.name">
+                        <input type="text" :maxlength="limits.nameLength" placeholder="Type name..." v-model="data.description.name" >
                         Is Proper Noun? <input type="checkbox" v-model="data.description.isProperNoun">
                     </div>
                 </div>
@@ -38,7 +38,7 @@
                         Desc
                     </span>
                     <div class="editor-field__contents">
-                        <input type="text" placeholder="Type description..." v-model="data.description.description">
+                        <input type="text"  :maxlength="limits.descriptionLength" placeholder="Type description..." v-model="data.description.description">
                     </div>
                 </div>
                 <div class="editor-field__slim">
@@ -574,7 +574,7 @@ import { defineComponent, watch } from "vue";
 import StatblockRenderer from "../components/StatblockRenderer.vue"; 
 import type { InnateSpellsEntity, InnateSpellsList, SkillsEntity, Statblock, Creature } from "@/components/types";
 import { defaultStatblock, getSpellSlots, spellList, spellListFlattened } from "@/components/types"
-import { handleApiResponse, type error, toast } from "@/main";
+import { handleApiResponse, type error, toast, limits, type limitsType } from "@/main";
 import FeatureWidget from "@/components/FeatureWidget.vue";
 
 export default defineComponent({
@@ -597,6 +597,7 @@ export default defineComponent({
                 2: [] as InnateSpellsEntity[],
                 3: [] as InnateSpellsEntity[]
             } as InnateSpellsList ,
+            limits: {} as limitsType,
             languages: ["All", "All languages it knew in life", "Abyssal", "Aarakocra", "Aquan", "Auran", "Celestial", "Common", "Deep Speech", "Draconic", "Druidic", "Dwarvish", "Elvish", "Giant", "Gith", "Gnomish", "Goblin", "Halfling", "Ignan", "Infernal", "Orc", "Primordial", "Sylvan", "Terran", "Thieves' Cant", "Undercommon", "Understands the languages of its creator but can't speak"]
         }
     },
@@ -717,6 +718,9 @@ export default defineComponent({
                 }
             })
         }
+    },
+    async created() {
+        this.limits = (await limits) ?? {} as limitsType;
     },
     mounted() {
         console.log("Statblock id: " + this.$route.params.id);

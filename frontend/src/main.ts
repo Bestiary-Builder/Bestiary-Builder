@@ -19,6 +19,17 @@ export const user = fetch("/api/user").then(async (response: any) => {
 	if (result.success) return result.data as User;
 	else return null;
 });
+export type limitsType = {
+	nameLength: number;
+	descriptionLength: number;
+	creatureAmount: number;
+};
+export const limits = fetch("/api/limits").then(async (response: any) => {
+	let result = await handleApiResponse<limitsType>(response);
+	if (result.success) return result.data as limitsType;
+	else return null;
+});
+export const loginLink = "https://discord.com/oauth2/authorize?client_id=1183362236509601813&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Flogin&scope=identify+email";
 
 //Emitter
 // @ts-ignore

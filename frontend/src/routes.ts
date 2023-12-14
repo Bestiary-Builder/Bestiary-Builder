@@ -168,7 +168,7 @@ export default routes.map((route) => {
 	}
 	return object;
 });
-
+export const blockForNonUsers = ["My Bestiaries"];
 export const siteMapRoutes = routes.map((route) => ({
 	path: route.path,
 	name: route.name,

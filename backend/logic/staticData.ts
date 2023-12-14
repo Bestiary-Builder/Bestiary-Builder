@@ -35,3 +35,9 @@ app.get("/api/srd-feature/:name", (req, res) => {
 		return res.status(404).json({error: "No srd feature found with that name"});
 	}
 });
+
+//Limits
+import limits from "../staticData/limits.json";
+app.get("/api/limits", async (req, res) => {
+	res.json(limits);
+});

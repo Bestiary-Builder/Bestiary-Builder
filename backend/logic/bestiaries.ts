@@ -2,6 +2,7 @@ import {app} from "../server";
 import {requireUser, possibleUser} from "./login";
 import {addBestiaryToUser, collections, getBestiary, getUserFromSecret, incrementBestiaryViewCount, updateBestiary, Bestiary} from "../database";
 import {ObjectId} from "mongodb";
+import limits from "../staticData/limits.json";
 
 //Get info
 app.get("/api/bestiary/:id", possibleUser, async (req, res) => {
@@ -51,6 +52,7 @@ function convertInput(input: BestiaryInput): Bestiary | null {
 }
 
 app.post("/api/update/bestiary/:id?", requireUser, async (req, res) => {
+	//Get input
 	let id = req.params.id;
 	let inputData = req.body.data as BestiaryInput;
 	let data = convertInput(inputData);
@@ -65,7 +67,18 @@ app.post("/api/update/bestiary/:id?", requireUser, async (req, res) => {
 	if (!user) {
 		return res.status(404).json({error: "Couldn't find current user"});
 	}
+	//Check limits
 	console.log(data);
+	if (data.name.length > limits.nameLength) {
+		return res.status(400).json({error: `Name exceeds the character limit of ${limits.nameLength} characters`});
+	}
+	if (data.description.length > limits.descriptionLength) {
+		return res.status(400).json({error: `Description exceeds the character limit of ${limits.descriptionLength} characters`});
+	}
+	if (data.creatures.length > limits.creatureAmount) {
+		return res.status(400).json({error: `Number of creatures exceeds the limit of ${limits.creatureAmount}`});
+	}
+	//Add or update
 	if (data._id) {
 		//Update existing bestiary
 		let bestiary = await getBestiary(data._id);

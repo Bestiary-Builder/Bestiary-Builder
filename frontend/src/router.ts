@@ -3,6 +3,8 @@ import {createRouter, createWebHistory} from "vue-router";
 /*@ts-ignore*/
 import fileRoutes from "~pages";
 import relevantRoutes from "./routes";
+import {blockForNonUsers} from "./routes";
+import {user, loginLink} from "@/main";
 const routes = relevantRoutes.map((route) => ({
 	path: route.path,
 	name: route.name,
@@ -19,9 +21,17 @@ const router = createRouter({
 });
 
 //Reload page on route change
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
 	if (from.name && to.name != from.name) {
 		///window.location.pathname = to.path;
+	}
+
+	if (blockForNonUsers.includes(to.name?.toString() ?? "")) {
+		let loggedIn = await user;
+		if (!loggedIn) {
+			window.location.href = loginLink;
+			return;
+		}
 	}
 	next();
 });

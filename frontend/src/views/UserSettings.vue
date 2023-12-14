@@ -21,13 +21,11 @@
 import {defineComponent} from "vue";
 import type {User, Bestiary, Creature} from "@/components/types";
 import UserBanner from "@/components/UserBanner.vue";
+import {user, loginLink} from "@/main";
 export default defineComponent({
 	data: () => ({} as {user: User | null}),
 	async mounted() {
-		this.user = (await fetch("/api/user").then(async (response: any) => {
-			if (response.status == 200) return await response.json();
-			else return null;
-		})) as User;
+		this.user = await user;
 		console.log(this.user);
 		this.$forceUpdate();
 	},
@@ -36,7 +34,7 @@ export default defineComponent({
 	},
 	methods: {
 		LoginClick() {
-			window.location.href = "https://discord.com/oauth2/authorize?client_id=1183362236509601813&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Flogin&scope=identify+email";
+			window.location.href = loginLink;
 		},
 		LogoutClick() {
 			window.location.href = "/logout";
