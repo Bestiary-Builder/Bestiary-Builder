@@ -1,5 +1,5 @@
 <template>
-	<div class="content" :key="key">
+	<div class="content">
 		<div class="bestiary" v-if="bestiary">
 			<div>
 				<label>Name: </label>
@@ -38,7 +38,13 @@ import {handleApiResponse, toast, user} from "@/main";
 import type {error} from "@/main";
 
 export default defineComponent({
-	data: () => ({key: 0} as {bestiary: Bestiary | null; creatures: Creature[] | null; user: User | null; key: number}),
+	data() {
+		return {
+			bestiary: null as Bestiary | null,
+			creatures: null as Creature[] | null,
+			user: null as User | null,
+		}
+	},
 	components: {
 		UserBanner
 	},
@@ -77,7 +83,6 @@ export default defineComponent({
 				}
 			});
 			await this.getBestiary();
-			this.key++;
 		},
 		async getBestiary() {
 			//Get id
@@ -106,7 +111,6 @@ export default defineComponent({
 					toast.error((result.data as error).error);
 				}
 			});
-			this.key++;
 			console.log(this.bestiary);
 			console.log(this.creatures);
 		},

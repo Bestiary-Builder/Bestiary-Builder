@@ -23,11 +23,14 @@ import type {User, Bestiary, Creature} from "@/components/types";
 import UserBanner from "@/components/UserBanner.vue";
 import {user, loginLink} from "@/main";
 export default defineComponent({
-	data: () => ({} as {user: User | null}),
+	data() {
+		return {
+			user: null as User | null
+		}
+	},
 	async mounted() {
 		this.user = await user;
 		console.log(this.user);
-		this.$forceUpdate();
 	},
 	components: {
 		UserBanner

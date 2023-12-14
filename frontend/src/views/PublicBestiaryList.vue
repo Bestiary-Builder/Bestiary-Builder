@@ -1,19 +1,28 @@
 <template>
-	<div class="content" :key="key">
-		<form class="settings" @submit.prevent="searchButtonClick">
-			<input type="text" v-model="search" />
-			<input type="number" v-model="page" min="1" :max="total" />
-			<button type="submit">Search</button>
-		</form>
-		<div class="results">
-			<a v-if="bestiaries && bestiaries.length > 0" class="bestiary" v-for="bestiary in bestiaries" :href="'/bestiary-viewer/' + bestiary._id">
+	<div class="content">
+		<h1> <span>public bestiaries </span></h1>
+
+		<div class="tile-container">
+			<div class="content-tile create-tile search-tile"> 
+				<h2> search </h2>
+				<div class="search-title-content">
+					<form class="settings" @submit.prevent="searchButtonClick">
+						<input type="text" v-model="search" placeholder="Search by bestiary name or description"/>
+						<button type="submit">Search</button>
+
+						<div><button @click="page = Math.min(total, page+1)">+</button><button  @click="page = Math.min(0, page-1)">-</button></div>
+					</form>
+				</div>
+			</div>
+			<a v-if="bestiaries && bestiaries.length > 0" class="content-tile bestiary-tile" v-for="bestiary in bestiaries" :href="'/bestiary-viewer/' + bestiary._id">
 				<h2>{{ bestiary.name }}</h2>
-				<p>Description: {{ bestiary.description }}</p>
-				<p>Status: {{ bestiary.status }}</p>
-				<p>Creature amount: {{ bestiary.creatures.length }}</p>
-				<div class="owner">
-					<p>Owner:</p>
-					<UserBanner :id="bestiary.owner" />
+				<div class="bestiary-tile-content">
+					<p class="description"> {{ bestiary.description }}
+					</p>
+					<div class="footer">
+						<UserBanner :id="bestiary.owner" />
+						<span>{{ bestiary.creatures.length }}🐉</span>
+					</div>
 				</div>
 			</a>
 			<div v-else>
@@ -31,20 +40,14 @@ import {handleApiResponse, toast} from "@/main";
 import type {error} from "@/main";
 
 export default defineComponent({
-	data: () =>
-		({
+	data() {
+		return {
 			bestiaries: [] as Bestiary[],
-			key: 0,
-			search: "",
-			page: 1,
-			total: 0
-		} as {
-			bestiaries: Bestiary[];
-			key: number;
-			search: string;
-			page: number;
-			total: number;
-		}),
+			search: "" as string,
+			page: 1 as number,
+			total: 0 as number,
+		}
+	},
 	components: {
 		UserBanner
 	},
@@ -77,28 +80,35 @@ export default defineComponent({
 				}
 			});
 			console.log(this.bestiaries);
-			this.key++;
-		}
+		},
 	}
 });
 </script>
 
 <style scoped lang="less">
-.content-container {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	height: 60rem;
-	gap: 2rem;
-}
+@import url("../assets/bestiary-list.less");
 
-.content {
-	background-color: rgb(46, 44, 44);
+.settings {
 	display: flex;
 	flex-direction: column;
+	gap: 1rem;
 }
-.content .bestiary {
-	margin-bottom: 1rem;
-	text-decoration: none;
-	color: var(--color-base);
+
+.search-tile {
+	color: black;
 }
+
+.content-tile.bestiary-tile .bestiary-tile-content .footer.footer {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		font-size: 1.2rem;
+
+		span:first-of-type {
+			text-align: left;
+		}
+		span:last-of-type {
+			text-align: right;
+		}
+	}
 </style>
+

@@ -825,8 +825,8 @@ export default defineComponent({
     min-height: 90vh;
 }
 
-.content-container__inner {
-	background-color: rgb(46, 44, 44);
+.content-container__inner:first-of-type {
+	background-color:  rgb(59, 55, 54);
     
 }
 

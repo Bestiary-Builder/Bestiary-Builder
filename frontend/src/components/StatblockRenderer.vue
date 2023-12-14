@@ -109,7 +109,7 @@
 
         </div>
         <div>
-            <b> Challenge </b> {{ data.description.cr }} (1000 xp)
+            <b> Challenge </b> {{ data.description.cr.toString() }} (1000 xp)
         </div>
     </div>
     <div class="stat-block__row" v-if="showFeatures() || showCasting() || showInnateCasting()">
@@ -158,7 +158,7 @@
                         <p v-for="spells, level in data.spellcasting.casterSpells.spellList"> 
                             <div v-if="(level == 0 && !['Ranger', 'Paladin'].includes(data.spellcasting.casterSpells.castingClass) )|| Object.keys(data.spellcasting.casterSpells.spellSlotList).includes(level.toString())"> 
                                 <span v-if="level==0"> Cantrips (at will): </span>
-                                <span v-else> {{ nthSuffix(level) }} level ({{ [level] }} slots): </span>
+                                <span v-else> {{ nthSuffix(level) }} level ({{ data.spellcasting.casterSpells.spellSlotList[level] }} slots): </span>
                                 <i> {{ spells.sort().join(", ") }} </i>
                             </div>
                         </p>
@@ -472,17 +472,27 @@ export default defineComponent({
 }
 .stat-block {
     width: 100%;
-    height: 30rem;
-    margin: .1rem
+
+    background-color: rgb(59, 55, 54);
+    box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+    padding: .4rem
 }
 
 .stat-block__row {
     display: block;
     width: 100%;
     border-bottom: 2px solid orangered;
-    margin-left: .3rem;
     margin-bottom: .6rem;
     margin-top: .6rem;
+
+    &:first-of-type {
+        margin-top: 0;
+    }
+
+    &:last-of-type {
+        border-bottom: unset;
+        margin-bottom: 0;
+    }
 }
 
 .stat-block__name-container {

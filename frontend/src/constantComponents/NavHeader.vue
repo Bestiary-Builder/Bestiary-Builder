@@ -40,11 +40,13 @@ export default defineComponent({
 	components: {
 		UserBanner
 	},
-	data: () => ({key: 0} as {user: User | null; key: number}),
+	data() {
+		return {
+			user: null as User | null
+		}
+	},
 	async mounted() {
 		this.user = await user;
-		console.log(this.user);
-		this.$forceUpdate();
 	},
 	methods: {
 		LoginClick() {
