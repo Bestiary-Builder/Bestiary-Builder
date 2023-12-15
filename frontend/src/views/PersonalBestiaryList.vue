@@ -25,8 +25,10 @@
 		<h2 class="modal-header"> Are you sure you want to delete this bestiary? </h2>
 		<p class="modal-desc"> Please confirm you want to permanently delete this bestiary. This action is not reversible. </p>
 
-		<button @click="closeModal()"> Cancel </button>
-		<button @click.prevent="() => deleteBestiary()">Confirm </button>	
+		<div class="modal-buttons">
+			<button class="cancel-button" @click="closeModal()"> Cancel </button>
+			<button class="danger-button" @click.prevent="() => deleteBestiary()">Confirm </button>
+		</div>
 	</dialog>
 </template>
 
@@ -70,7 +72,7 @@ export default defineComponent({
 				if (result.success) {
 					toast.success("Created bestiary");
 					// @ts-ignore
-					window.location.href = "/bestiary-editor/" + result.data._id;
+					window.location.href = "/bestiary-viewer/" + result.data._id;
 				} else {
 					toast.error((result.data as error).error);
 				}

@@ -389,4 +389,37 @@ dialog {
 		padding: 0.5rem 0;
 		color: white;
 	}
+
+	.modal-buttons {
+		display: flex;
+		gap: 1rem;
+		justify-content: center;
+		margin-top: .5rem;
+
+		& button {
+			padding: .5rem 1rem;
+			border: none;
+			cursor: pointer;
+
+			transition: all .3s ease;
+			&:hover {
+				scale: 1.05;
+				filter: brightness(1.05);
+			}
+		}
+
+		.cancel-button {
+			background-color: grey;
+		}
+		
+		.confirm-button {
+			background-color: var(--color-success);
+		
+		}
+		
+		.danger-button {
+			background-color: var(--color-destructive);
+		}
+	}
 }
+

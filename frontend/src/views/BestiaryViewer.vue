@@ -56,16 +56,20 @@
 					<option value="private">Private</option>
 				</select>
 			</div>
-		<button @click="closeModal()"> Cancel </button>
-		<button @click.prevent="updateBestiary">Save bestiary</button>
+		<div class="modal-buttons">
+			<button class="cancel-button"  @click="closeModal()"> Cancel </button>
+			<button class="danger-button" @click.prevent="updateBestiary">Save bestiary</button>
+		</div>
 	</dialog>
 
 	<dialog id="delete-modal" v-if="isOwner && bestiary">
 		<h2 class="modal-header"> Are you sure you want to delete this creature? </h2>
 		<p class="modal-desc"> Please confirm you want to permanently delete this creature. This action is not reversible. </p>
 
-		<button @click="closeDeleteModal()"> Cancel </button>
-		<button @click.prevent="() => deleteCreature(selectedCreature)">Confirm </button>	
+		<div class="modal-buttons">
+			<button class="cancel-button" @click="closeDeleteModal()"> Cancel </button>
+			<button class="danger-button" @click.prevent="() => deleteCreature(selectedCreature)">Confirm </button>	
+		</div>
 	</dialog>
 </template>
 
@@ -144,10 +148,8 @@ export default defineComponent({
 				if (result.success) {
 					this.bestiary = result.data as Bestiary;
 					this.savedBestiary = this.bestiary;
-					if (this.bestiary.owner != this.user?._id) {
-						window.location.href = "/bestiary-viewer/" + id;
-						return;
-					}
+
+					this.isOwner = this.user?._id == this.bestiary.owner
 					//Fetch creatures
 					await fetch("/api/bestiary/" + this.bestiary._id + "/creatures").then(async (creatureResponse) => {
 						let creatureResult = await handleApiResponse<Creature[]>(creatureResponse);
