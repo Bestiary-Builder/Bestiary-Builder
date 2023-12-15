@@ -99,35 +99,6 @@ export default defineComponent({
 		this.user = await user;
 	},
 	methods: {
-		async getBestiary() {
-			//Get id
-			let id = this.$route.params.id;
-			//Request bestiary info
-			await fetch("/api/bestiary/" + id).then(async (response) => {
-				let result = await handleApiResponse<Bestiary>(response);
-				if (result.success) {
-					this.bestiary = result.data as Bestiary;
-					//Fetch creatures
-					await fetch("/api/bestiary/" + this.bestiary._id + "/creatures").then(async (creatureResponse) => {
-						let creatureResult = await handleApiResponse<Creature[]>(creatureResponse);
-						if (creatureResult.success) {
-							this.creatures = creatureResult.data as Creature[];
-						} else {
-							this.creatures = null;
-							toast.error((creatureResult.data as error).error);
-						}
-
-						if (this.bestiary) {
-							this.isOwner = this.user?._id == this.bestiary.owner
-						}
-					});
-				} else {
-					this.bestiary = null;
-					toast.error((result.data as error).error);
-				}
-			});
-
-		},
 		async createCreature() {
 			console.log("Create");
 			//Replace for actual creation data:
@@ -136,7 +107,7 @@ export default defineComponent({
 				bestiary: this.bestiary?._id
 			} as Creature;
 			//Send data to server
-			await fetch("/api/update/creature", {
+			await fetch("/api/creature/update", {
 				method: "POST",
 				headers: {
 					Accept: "application/json",
@@ -154,24 +125,52 @@ export default defineComponent({
 			await this.getBestiary();
 		},
 		async deleteCreature(id: string) {
-			await fetch("/api/delete/creature/" + id, {
-				method: "POST"
-			}).then(async (response) => {
+			await fetch(`/api/creature/${id}/delete`).then(async (response) => {
 				let result = await handleApiResponse(response);
 				if (result.success) {
 					toast.success("Deleted creature succesfully");
-					(document.getElementById("delete-modal") as HTMLDialogElement).close()
 				} else {
 					toast.error((result.data as error).error);
 				}
 			});
 			await this.getBestiary();
 		},
+		async getBestiary() {
+			//Get id
+			let id = this.$route.params.id;
+			//Request bestiary info
+			await fetch("/api/bestiary/" + id).then(async (response) => {
+				let result = await handleApiResponse<Bestiary>(response);
+				if (result.success) {
+					this.bestiary = result.data as Bestiary;
+					this.savedBestiary = this.bestiary;
+					if (this.bestiary.owner != this.user?._id) {
+						window.location.href = "/bestiary-viewer/" + id;
+						return;
+					}
+					//Fetch creatures
+					await fetch("/api/bestiary/" + this.bestiary._id + "/creatures").then(async (creatureResponse) => {
+						let creatureResult = await handleApiResponse<Creature[]>(creatureResponse);
+						if (creatureResult.success) {
+							this.creatures = creatureResult.data as Creature[];
+						} else {
+							this.creatures = null;
+							toast.error((creatureResult.data as error).error);
+						}
+					});
+				} else {
+					this.bestiary = null;
+					toast.error((result.data as error).error);
+				}
+			});
+			console.log(this.bestiary);
+			console.log(this.creatures);
+		},
 		async updateBestiary() {
 			console.log("Pressed save statblock!");
 			if (!this.bestiary) return;
 			//Send to backend
-			fetch(`/api/update/bestiary/${this.bestiary._id}`, {
+			fetch(`/api/bestiary/${this.bestiary._id}/update`, {
 				method: "POST",
 				headers: {
 					Accept: "application/json",
