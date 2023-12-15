@@ -348,3 +348,45 @@ table.wikitable tbody tr th {
 	width: 0;
 	height: 0;
 } */
+
+dialog {
+	background: rgb(53, 53, 53);
+	max-width: px;
+	padding: 2rem;
+	border: 0;
+	box-shadow: 0 5px 30px 0 rgb(0 0 0 / 10%);
+	animation: fadeIn 1s ease both;
+	&::backdrop {
+		animation: fadeIn 1s ease both;
+		background: rgba(47, 47, 47, 0.4);
+		z-index: 2;
+		backdrop-filter: blur(5px);
+	}
+	.x {
+		filter: grayscale(1);
+		border: none;
+		background: none;
+		position: absolute;
+		top: 15px;
+		right: 10px;
+		transition: ease filter, transform 0.3s;
+		cursor: pointer;
+		transform-origin: center;
+		&:hover {
+			filter: grayscale(0);
+			transform: scale(1.1);
+		}
+	}
+	h2.modal-title {
+		font-weight: 600;
+		font-size: 2rem;
+		padding-bottom: 1rem;
+		border-bottom: unset;
+	}
+	p.modal-desc {
+		font-size: 1rem;
+		line-height: 1.3rem;
+		padding: 0.5rem 0;
+		color: white;
+	}
+}
