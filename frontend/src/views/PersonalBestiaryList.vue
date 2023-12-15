@@ -41,7 +41,7 @@ export default defineComponent({
 		return {
 			bestiaries: [] as Bestiary[],
 			user: null as User | null,
-			deleteId: "" as string
+			deleteId: "" as string,
 		};
 	},
 	async beforeMount() {
@@ -77,7 +77,8 @@ export default defineComponent({
 			});
 			await this.getBestiaries();
 		},
-		async deleteBestiary(id: string) {
+		async deleteBestiary() {
+			let id = this.deleteId
 			await fetch(`/api/bestiary/${id}/delete`).then(async (response) => {
 				let result = await handleApiResponse(response);
 				if (result.success) {
