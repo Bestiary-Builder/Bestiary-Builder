@@ -111,6 +111,7 @@ export async function updateCreature(data: Creature, id?: ObjectId) {
 	if (id) {
 		if (await getBestiary(data.bestiary)) {
 			console.log("Updating creature with id " + id.toString());
+			console.log(data);
 			await collections.creatures?.updateOne({_id: id}, {$set: data});
 			//Update bestiary last updated
 			await updateBestiary({} as Bestiary, data.bestiary);

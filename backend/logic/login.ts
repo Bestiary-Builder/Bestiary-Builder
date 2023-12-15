@@ -91,7 +91,7 @@ export const requireUser = async (req: any, res: any, next: any) => {
 		const decoded = jwt.verify(token, JWTKey) as any;
 		let user = await getUserFromSecret(decoded.id);
 		if (!user) {
-			return res.status(401).send({error: "Token doesn't corrospond to user"});
+			return res.status(401).send({error: "Token doesn't correspond to any user"});
 		}
 		req.body.id = user._id;
 	} catch (err) {
@@ -119,7 +119,7 @@ app.get("/api/user", requireUser, async (req, res) => {
 	if (userData) {
 		delete userData.secret;
 		return res.json(userData);
-	} else return res.status(404).json({error: "Couldn't find user"});
+	} else return res.status(404).json({error: "User not found"});
 });
 
 app.get("/api/user/:id", async (req, res) => {

@@ -71,7 +71,14 @@ app.post("/api/update/creature/:id?", requireUser, async (req, res) => {
 	if (!user) {
 		return res.status(404).json({error: "Couldn't find current user"});
 	}
-	//Check limits
+	//Make sure all fields are present
+	let oldStats = data.stats;
+	data.stats = {};
+	for (let key in defaultStatblock) {
+		//@ts-ignore
+		data.stats[key] = {...defaultStatblock[key], ...oldStats[key]};
+	}
+	//Check limit
 	if (data.stats.description.name.length > limits.nameLength) {
 		return res.status(400).json({error: `Name exceeds the character limit of ${limits.nameLength} characters`});
 	}
@@ -151,3 +158,108 @@ app.post("/api/update/creature/:id?", requireUser, async (req, res) => {
 	res.send("Success!");
 });
 */
+
+//Default stat block
+const defaultStatblock = {
+	description: {
+		name: "New Creature",
+		isProperNoun: false,
+		description: "",
+		image: "",
+		faction: "",
+		environment: "",
+		alignment: "Unaligned",
+		cr: 0
+	},
+	core: {
+		proficiencyBonus: 2,
+		race: "Humanoid",
+		size: "Medium",
+		speed: {
+			walk: 30,
+			fly: 0,
+			isHover: false,
+			burrow: 0,
+			swim: 0
+		},
+		senses: {
+			passivePerceptionOverride: 0,
+			darkvision: 0,
+			blindsight: 0,
+			isBlind: false,
+			truesight: 0,
+			tremorsense: 0,
+			telepathy: 0
+		},
+		languages: [],
+		numOfLegendaryActions: 0
+	},
+	abilities: {
+		stats: {
+			str: 10,
+			dex: 10,
+			con: 10,
+			wis: 10,
+			int: 10,
+			cha: 10
+		},
+		saves: {
+			str: {isProficient: false, override: null},
+			dex: {isProficient: false, override: null},
+			con: {isProficient: false, override: null},
+			wis: {isProficient: false, override: null},
+			int: {isProficient: false, override: null},
+			cha: {isProficient: false, override: null}
+		},
+		skills: []
+	},
+	defenses: {
+		hp: {
+			numOfHitDie: 1,
+			sizeOfHitDie: 6,
+			override: false
+		},
+		ac: {
+			ac: 10,
+			acSource: "natural armor"
+		},
+		vulnerabilities: [],
+		resistances: [],
+		immunities: [],
+		conditionImmunities: []
+	},
+	features: {
+		features: [],
+		actions: [],
+		bonus: [],
+		reactions: [],
+		legendary: [],
+		lair: [],
+		regional: []
+	},
+	spellcasting: {
+		innateSpells: {
+			spellList: {
+				0: [],
+				1: [],
+				2: [],
+				3: []
+			},
+			spellDcOverride: null,
+			spellBonusOverride: null,
+			spellCastingAbility: null,
+			noComponentsOfType: ["Material", "Verbal", "Somatic"],
+			isPsionics: false
+		},
+		casterSpells: {
+			casterLevel: null,
+			castingClass: null,
+			spellCastingAbility: null,
+			spellCastingAbilityOverride: null,
+			spellList: [[], [], [], [], [], [], [], [], [], []],
+			spellSlotList: {},
+			spellDcOverride: null,
+			spellBonusOverride: null
+		}
+	}
+};

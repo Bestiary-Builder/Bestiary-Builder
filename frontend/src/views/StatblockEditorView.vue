@@ -698,6 +698,7 @@ export default defineComponent({
             this.data.spellcasting.casterSpells.spellDcOverride = null;
         },
         saveStatblock() {
+            console.log(this.data);
             console.log('Pressed save statblock!')
             if(!this.rawInfo) return;
             this.rawInfo.stats = this.data;
@@ -736,7 +737,7 @@ export default defineComponent({
         fetch("/api/creature/" + this.$route.params.id).then(async (response) => {
             let result = await handleApiResponse<Creature>(response);
             if(result.success) {
-                this.data = {...defaultStatblock, ...(result.data as Creature).stats};
+                this.data = (result.data as Creature).stats;
                 this.rawInfo = result.data as Creature;
             } else {
                 console.error("Error: " + (result.data as error).error);

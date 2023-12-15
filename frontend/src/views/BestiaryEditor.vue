@@ -32,13 +32,20 @@
 
 <script lang="ts">
 import {defineComponent} from "vue";
-import type {User, Bestiary, Creature} from "@/components/types";
+import {type User, type Bestiary, type Creature, defaultStatblock} from "@/components/types";
 import UserBanner from "@/components/UserBanner.vue";
 import {handleApiResponse, toast, user} from "@/main";
 import type {error} from "@/main";
 
 export default defineComponent({
-	data: () => ({key: 0} as {bestiary: Bestiary | null; savedBestiary: Bestiary | null; creatures: Creature[] | null; user: User | null; saved: boolean; key: number}),
+	data() {
+		return {
+			bestiary: null as Bestiary | null,
+			savedBestiary: null as Bestiary | null,
+			creatures: null as Creature[] | null,
+			user: null as User | null
+		};
+	},
 	components: {
 		UserBanner
 	},
@@ -55,15 +62,9 @@ export default defineComponent({
 			console.log("Create");
 			//Replace for actual creation data:
 			let data = {
-				stats: {
-					description: {
-						name: "Example",
-						description: "Example creature"
-					}
-				},
+				stats: defaultStatblock,
 				bestiary: this.bestiary?._id
 			} as Creature;
-			console.log(data);
 			//Send data to server
 			await fetch("/api/update/creature", {
 				method: "POST",
