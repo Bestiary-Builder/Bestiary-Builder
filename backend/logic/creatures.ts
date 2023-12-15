@@ -5,16 +5,24 @@ import {ObjectId} from "mongodb";
 import limits from "../staticData/limits.json";
 
 //Get info
-app.get("/api/creature/:id", async (req, res) => {
+app.get("/api/creature/:id", possibleUser, async (req, res) => {
+	let user = await getUser(req.body.id);
 	let id = req.params.id;
 	if (id.length != 24) {
 		return res.status(400).json({error: "Creature id not valid"});
 	}
-	let creature = (await collections.creatures?.findOne({_id: new ObjectId(id)})) ?? null;
-	if (!creature) {
+	let _id = new ObjectId(id);
+	let creature = await getCreature(_id);
+	if (creature) {
+		let bestiary = await getBestiary(creature.bestiary);
+		if ((user && bestiary.owner == user._id) || bestiary.status != "private") {
+			return res.json(creature);
+		} else {
+			return res.status(401).json({error: "You don't have permission to view this creature"});
+		}
+	} else {
 		return res.status(404).json({error: "No creature with that id found"});
 	}
-	return res.json(creature);
 });
 app.get("/api/bestiary/:id/creatures", possibleUser, async (req, res) => {
 	let user = await getUser(req.body.id);
@@ -64,22 +72,12 @@ app.post("/api/update/creature/:id?", requireUser, async (req, res) => {
 		return res.status(404).json({error: "Couldn't find current user"});
 	}
 	//Check limits
-	console.log(data);
 	if (data.stats.description.name.length > limits.nameLength) {
 		return res.status(400).json({error: `Name exceeds the character limit of ${limits.nameLength} characters`});
 	}
 	if (data.stats.description.description.length > limits.descriptionLength) {
 		return res.status(400).json({error: `Description exceeds the character limit of ${limits.descriptionLength} characters`});
 	}
-	//Remove bad words
-	if (badwords.check(data.stats.description.name)) {
-		return res.status(400).json({error: "Bestiary name includes blocked words or phrases"});
-	}
-	if (badwords.check(data.stats.description.description)) {
-		return res.status(400).json({error: "Bestiary description includes blocked words or phrases"});
-	}
-	///data.stats.description.name = badwords.filter(data.stats.description.name);
-	///data.stats.description.description = badwords.filter(data.stats.description.description);
 	//Update or add
 	if (id) {
 		//Update existing creature
@@ -93,9 +91,22 @@ app.post("/api/update/creature/:id?", requireUser, async (req, res) => {
 			return res.status(404).json({error: "Bestiary not found"});
 		}
 		if (creature) {
+			//Check owner
 			if (bestiary.owner != user._id) {
 				return res.status(401).json({error: "You don't have permission to update this creature"});
 			}
+			//Remove bad words
+			if (bestiary.status != "private") {
+				if (badwords.check(data.stats.description.name)) {
+					return res.status(400).json({error: "Creature name includes blocked words or phrases. Remove the badwords or make the bestiary private"});
+				}
+				if (badwords.check(data.stats.description.description)) {
+					return res.status(400).json({error: "Creature description includes blocked words or phrases. Remove the badwords or make the bestiary private"});
+				}
+				///data.stats.description.name = badwords.filter(data.stats.description.name);
+				///data.stats.description.description = badwords.filter(data.stats.description.description);
+			}
+			//Update creature
 			let updatedId = await updateCreature(data, _id);
 			if (updatedId) {
 				return res.json(data);
@@ -108,8 +119,20 @@ app.post("/api/update/creature/:id?", requireUser, async (req, res) => {
 		if (!bestiary) {
 			return res.status(404).json({error: "Bestiary not found"});
 		}
+		//Check owner
 		if (bestiary.owner != user._id) {
 			return res.status(401).json({error: "You don't have permission to add creature to this bestiary"});
+		}
+		//Remove bad words
+		if (bestiary.status != "private") {
+			if (badwords.check(data.stats.description.name)) {
+				return res.status(400).json({error: "Creature name includes blocked words or phrases. Remove the badwords or make the bestiary private"});
+			}
+			if (badwords.check(data.stats.description.description)) {
+				return res.status(400).json({error: "Creature description includes blocked words or phrases. Remove the badwords or make the bestiary private"});
+			}
+			///data.stats.description.name = badwords.filter(data.stats.description.name);
+			///data.stats.description.description = badwords.filter(data.stats.description.description);
 		}
 		let _id = await updateCreature(data);
 		if (!_id) {
