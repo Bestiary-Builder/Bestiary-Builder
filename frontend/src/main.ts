@@ -19,8 +19,10 @@ export const user = fetch("/api/user").then(async (response: any) => {
 	if (result.success) return result.data as User;
 	else return null;
 });
+
 export type limitsType = {
 	nameLength: number;
+	nameMin: number;
 	descriptionLength: number;
 	creatureAmount: number;
 };

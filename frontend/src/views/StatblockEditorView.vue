@@ -29,7 +29,7 @@
                         Name
                     </span>
                     <div class="editor-field__contents">
-                        <input type="text" :maxlength="limits.nameLength" placeholder="Type name..." v-model="data.description.name" >
+                        <input type="text" :minlength="limits.nameMin" :maxlength="limits.nameLength" placeholder="Type name..." v-model="data.description.name" >
                         Is Proper Noun? <input type="checkbox" v-model="data.description.isProperNoun">
                     </div>
                 </div>
