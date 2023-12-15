@@ -1,6 +1,6 @@
 import {app, badwords} from "../server";
 import {requireUser, possibleUser} from "./login";
-import {addBestiaryToUser, getBestiary, getUser, incrementBestiaryViewCount, updateBestiary, Bestiary, deleteBestiary, getCreature, collections} from "../database";
+import {addBestiaryToUser, getBestiary, getUser, incrementBestiaryViewCount, updateBestiary, Bestiary, deleteBestiary, getCreature, collections, addBookmark, removeBookmark} from "../database";
 import {ObjectId} from "mongodb";
 import limits from "../staticData/limits.json";
 
@@ -158,6 +158,74 @@ app.get("/api/bestiary/:id/delete", requireUser, async (req, res) => {
 			res.json({});
 		} else {
 			res.status(500).json({error: "Failed to delete creature."});
+		}
+	} catch (err) {
+		console.error(err);
+		return res.status(500).json({error: "Unknown server error occured, please try again."});
+	}
+});
+
+//Bookmarks
+app.get("/api/bestiary/:id/bookmark/toggle", requireUser, async (req, res) => {
+	try {
+		//Get input
+		let id = req.params.id;
+		if (id.length != 24) {
+			return res.status(400).json({error: "Bestiary id not valid."});
+		}
+		let _id = new ObjectId(id);
+		let bestiary = await getBestiary(_id);
+		if (!bestiary) return res.status(404).json({error: "Couldn't find bestiary."});
+		let user = await getUser(req.body.id);
+		if (!user) return res.status(404).json({error: "Couldn't find current user."});
+		//Permissions
+		if (bestiary.owner != user._id && bestiary.status == "private") {
+			return res.status(401).json({error: "You don't have permission to view this bestiary."});
+		}
+		//Already bookmarked?
+		let status;
+		let newState;
+		if (user.bookmarks.includes(_id)) {
+			status = await removeBookmark(user._id, _id);
+			newState = false;
+			console.log(`Removed bestiary with the id ${_id} from the bookmarks of user with the id ${user._id}`);
+		} else {
+			status = await addBookmark(user._id, _id);
+			newState = true;
+			console.log(`Added bestiary with the id ${_id} to the bookmarks of user with the id ${user._id}`);
+		}
+		//Bookmark
+		if (status) {
+			return res.json({state: newState});
+		} else {
+			return res.status(500).json({error: "Server failed to toggle bookmark, please try again."});
+		}
+	} catch (err) {
+		console.error(err);
+		return res.status(500).json({error: "Unknown server error occured, please try again."});
+	}
+});
+app.get("/api/bestiary/:id/bookmark/get", requireUser, async (req, res) => {
+	try {
+		//Get input
+		let id = req.params.id;
+		if (id.length != 24) {
+			return res.status(400).json({error: "Bestiary id not valid."});
+		}
+		let _id = new ObjectId(id);
+		let bestiary = await getBestiary(_id);
+		if (!bestiary) return res.status(404).json({error: "Couldn't find bestiary."});
+		let user = await getUser(req.body.id);
+		if (!user) return res.status(404).json({error: "Couldn't find current user."});
+		//Permissions
+		if (bestiary.owner != user._id && bestiary.status == "private") {
+			return res.status(401).json({error: "You don't have permission to view this bestiary."});
+		}
+		//Already bookmarked
+		if (user.bookmarks.includes(_id)) {
+			return res.json({state: true});
+		} else {
+			return res.json({state: false});
 		}
 	} catch (err) {
 		console.error(err);

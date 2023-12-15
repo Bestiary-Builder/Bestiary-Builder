@@ -117,38 +117,3 @@ export const possibleUser = async (req: Request, res: Response, next: NextFuncti
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 };
-
-app.get("/api/user", requireUser, async (req, res) => {
-	try {
-		let userData = (await getUser(req.body.id)) as User;
-		if (userData) {
-			delete userData.secret;
-			console.log(`Retrieved user with the id ${userData._id}`);
-			return res.json(userData);
-		} else return res.status(404).json({error: "User not found."});
-	} catch (err) {
-		console.error(err);
-		return res.status(500).json({error: "Unknown server error occured, please try again."});
-	}
-});
-app.get("/api/user/:id", async (req, res) => {
-	try {
-		let userData = (await getUser(req.params.id)) as User;
-		if (userData) {
-			let data = {
-				_id: userData._id,
-				global_name: userData.global_name,
-				username: userData.username,
-				avatar: userData.avatar,
-				banner_color: userData.banner_color
-			};
-			console.log(`Retrieved user with the id ${data._id}`);
-			return res.json(data);
-		} else {
-			return res.status(404).json({error: "User not found."});
-		}
-	} catch (err) {
-		console.error(err);
-		return res.status(500).json({error: "Unknown server error occured, please try again."});
-	}
-});
