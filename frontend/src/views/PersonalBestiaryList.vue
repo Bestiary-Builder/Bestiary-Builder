@@ -42,7 +42,6 @@ export default defineComponent({
 	},
 	methods: {
 		async createBestiary() {
-			console.log("Create");
 			//Replace for actual creation data:
 			let data = {
 				name: "New bestiary",
@@ -51,7 +50,7 @@ export default defineComponent({
 				creatures: [] as string[]
 			} as Bestiary;
 			//Send data to server
-			await fetch("/api/update/bestiary", {
+			await fetch("/api/bestiary/update", {
 				method: "POST",
 				headers: {
 					Accept: "application/json",
@@ -71,9 +70,7 @@ export default defineComponent({
 			await this.getBestiaries();
 		},
 		async deleteBestiary(id: string) {
-			await fetch("/api/delete/bestiary/" + id, {
-				method: "POST"
-			}).then(async (response) => {
+			await fetch(`/api/bestiary/${id}/delete`).then(async (response) => {
 				let result = await handleApiResponse(response);
 				if (result.success) {
 					toast.success("Deleted bestiary succesfully");

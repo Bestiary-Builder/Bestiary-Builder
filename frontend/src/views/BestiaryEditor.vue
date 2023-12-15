@@ -67,7 +67,7 @@ export default defineComponent({
 				bestiary: this.bestiary?._id
 			} as Creature;
 			//Send data to server
-			await fetch("/api/update/creature", {
+			await fetch("/api/creature/update", {
 				method: "POST",
 				headers: {
 					Accept: "application/json",
@@ -85,9 +85,7 @@ export default defineComponent({
 			await this.getBestiary();
 		},
 		async deleteCreature(id: string) {
-			await fetch("/api/delete/creature/" + id, {
-				method: "POST"
-			}).then(async (response) => {
+			await fetch(`/api/creature/${id}/delete`).then(async (response) => {
 				let result = await handleApiResponse(response);
 				if (result.success) {
 					toast.success("Deleted creature succesfully");
@@ -132,7 +130,7 @@ export default defineComponent({
 			console.log("Pressed save statblock!");
 			if (!this.bestiary) return;
 			//Send to backend
-			fetch(`/api/update/bestiary/${this.bestiary._id}`, {
+			fetch(`/api/bestiary/${this.bestiary._id}/update`, {
 				method: "POST",
 				headers: {
 					Accept: "application/json",
