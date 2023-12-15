@@ -1,6 +1,6 @@
 import {app, badwords} from "../server";
 import {requireUser, possibleUser} from "./login";
-import {addCreatureToBestiary, collections, getBestiary, getCreature, getUser, updateCreature, Creature} from "../database";
+import {addCreatureToBestiary, collections, getBestiary, getCreature, getUser, updateCreature, Creature, deleteCreature} from "../database";
 import {ObjectId} from "mongodb";
 import limits from "../staticData/limits.json";
 
@@ -148,6 +148,29 @@ app.post("/api/update/creature/:id?", requireUser, async (req, res) => {
 		await addCreatureToBestiary(_id, data.bestiary);
 		data._id = _id;
 		return res.json(data);
+	}
+});
+app.post("/api/delete/creature/:id", requireUser, async (req, res) => {
+	//Get input
+	let id = req.params.id;
+	if (id.length != 24) {
+		return res.status(400).json({error: "Creature id not valid"});
+	}
+	let _id = new ObjectId(id);
+	let user = await getUser(req.body.id);
+	if (!user) return res.status(404).json({error: "Couldn't find current user"});
+	//Permissions
+	let creature = await getCreature(_id);
+	if (!creature) return res.status(404).json({error: "Couldn't find creature with that id"});
+	let bestiary = await getBestiary(creature.bestiary);
+	if (!bestiary) return res.status(404).json({error: "Couldn't find bestiary creature is in"});
+	if (bestiary.owner != user._id) return res.status(401).json({error: "You don't have permission to delete this creature"});
+	//Remove from db
+	let status = await deleteCreature(_id);
+	if (status) {
+		res.json({});
+	} else {
+		res.status(500).json({error: "Failed to delete creature"});
 	}
 });
 

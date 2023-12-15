@@ -97,11 +97,21 @@ export async function addBestiaryToUser(bestiaryId: ObjectId, userId: string) {
 	await collections.bestiaries?.updateOne({_id: bestiaryId}, {$set: {owner: userId}});
 }
 export async function deleteBestiary(bestiaryId: ObjectId) {
-	let bestiary = await getBestiary(bestiaryId);
-	for (let creatureId of bestiary.creatures) {
-		await collections.creatures?.deleteOne({_id: creatureId});
+	try {
+		let bestiary = await getBestiary(bestiaryId);
+		if (!bestiary) return false;
+		let user = await getUser(bestiary.owner);
+		if (!user) return false;
+		user.bestiaries = user.bestiaries.filter((b) => b != bestiaryId);
+		await collections.users?.updateOne({_id: user._id}, {$set: {bestiaries: user.bestiaries}});
+		for (let creatureId of bestiary.creatures) {
+			await collections.creatures?.deleteOne({_id: creatureId});
+		}
+		await collections.bestiaries?.deleteOne({_id: bestiaryId});
+		return true;
+	} catch {
+		return false;
 	}
-	await collections.bestiaries?.deleteOne({_id: bestiaryId});
 }
 export async function getCreature(id: ObjectId) {
 	return (await collections.creatures?.findOne({_id: id})) as Creature;
@@ -134,9 +144,17 @@ export async function addCreatureToBestiary(creatureId: ObjectId, bestiaryId: Ob
 	await collections.bestiaries?.updateOne({_id: bestiaryId}, {$set: bestiary});
 }
 export async function deleteCreature(creatureId: ObjectId) {
-	let creature = await getCreature(creatureId);
-	let bestiary = await getBestiary(creature.bestiary);
-	bestiary.creatures = bestiary.creatures.filter((c) => c != creatureId);
-	await collections.creatures?.deleteOne({_id: creatureId});
-	await collections.bestiaries?.updateOne({_id: creature.bestiary}, {$set: bestiary});
+	try {
+		let creature = await getCreature(creatureId);
+		if (!creature) return false;
+		let bestiary = await getBestiary(creature.bestiary);
+		if (bestiary) {
+			bestiary.creatures = bestiary.creatures.filter((c) => c != creatureId);
+			await collections.bestiaries?.updateOne({_id: bestiary._id}, {$set: {creatures: bestiary.creatures}});
+		}
+		await collections.creatures?.deleteOne({_id: creature._id});
+		return true;
+	} catch {
+		return false;
+	}
 }

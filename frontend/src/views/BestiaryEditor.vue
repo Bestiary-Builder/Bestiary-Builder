@@ -23,6 +23,7 @@
 				<a class="creature" @click="openCreature" v-for="creature in creatures" :href="'/statblock-editor/' + creature._id">
 					<p>Creature:</p>
 					<p>{{ creature.stats?.description?.name }}</p>
+					<button @click.prevent="() => deleteCreature(creature._id)">Delete</button>
 				</a>
 			</div>
 			<button @click.prevent="updateBestiary">Save bestiary</button>
@@ -55,8 +56,8 @@ export default defineComponent({
 	},
 	methods: {
 		async openCreature(e: Event) {
-			let confirmation = window.confirm("Do you want to save bestiary info before leaving?");
-			if (confirmation) await this.updateBestiary();
+			///let confirmation = window.confirm("Do you want to save bestiary info before leaving?");
+			///if (confirmation) await this.updateBestiary();
 		},
 		async createCreature() {
 			console.log("Create");
@@ -77,6 +78,19 @@ export default defineComponent({
 				let result = await handleApiResponse(response);
 				if (result.success) {
 					console.log("Created");
+				} else {
+					toast.error((result.data as error).error);
+				}
+			});
+			await this.getBestiary();
+		},
+		async deleteCreature(id: string) {
+			await fetch("/api/delete/creature/" + id, {
+				method: "POST"
+			}).then(async (response) => {
+				let result = await handleApiResponse(response);
+				if (result.success) {
+					toast.success("Deleted creature succesfully");
 				} else {
 					toast.error((result.data as error).error);
 				}

@@ -3,8 +3,8 @@
 		<h1><span>my bestiaries </span></h1>
 
 		<div class="tile-container">
-			<div class="content-tile create-tile" @click.prevent="createBestiary"> 
-				<button class="create-button" >+</button>
+			<div class="content-tile create-tile" @click.prevent="createBestiary">
+				<button class="create-button">+</button>
 			</div>
 
 			<a class="content-tile bestiary-tile" v-for="bestiary in bestiaries" :href="'/bestiary-viewer/' + bestiary._id" v-if="bestiaries">
@@ -14,6 +14,7 @@
 					<div class="footer">
 						<span>{{ statusEmoji(bestiary.status) }}{{ bestiary.status }}</span>
 						<span class="fake-edit-button"> <a :href="'/bestiary-editor/' + bestiary._id" v-if="user">edit</a></span>
+						<button @click.prevent="() => deleteBestiary(bestiary._id)">Delete</button>
 						<span>{{ bestiary.creatures.length }}🐉</span>
 					</div>
 				</div>
@@ -32,8 +33,8 @@ export default defineComponent({
 	data() {
 		return {
 			bestiaries: [] as Bestiary[],
-			user: null as User | null,
-		}
+			user: null as User | null
+		};
 	},
 	async beforeMount() {
 		this.user = await user;
@@ -63,6 +64,19 @@ export default defineComponent({
 					toast.success("Created bestiary");
 					// @ts-ignore
 					window.location.href = "/bestiary-editor/" + result.data._id;
+				} else {
+					toast.error((result.data as error).error);
+				}
+			});
+			await this.getBestiaries();
+		},
+		async deleteBestiary(id: string) {
+			await fetch("/api/delete/bestiary/" + id, {
+				method: "POST"
+			}).then(async (response) => {
+				let result = await handleApiResponse(response);
+				if (result.success) {
+					toast.success("Deleted bestiary succesfully");
 				} else {
 					toast.error((result.data as error).error);
 				}
