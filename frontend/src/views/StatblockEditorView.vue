@@ -703,7 +703,7 @@ export default defineComponent({
             if(!this.rawInfo) return;
             this.rawInfo.stats = this.data;
             //Send to backend
-            fetch(`/api/update/creature/${this.rawInfo._id}`, {
+            fetch(`/api/creature/${this.rawInfo._id}/update`, {
                 method: "POST",
 				headers: {
 					Accept: "application/json",

@@ -6,41 +6,54 @@ import limits from "../staticData/limits.json";
 
 //Get info
 app.get("/api/creature/:id", possibleUser, async (req, res) => {
-	let user = await getUser(req.body.id);
-	let id = req.params.id;
-	if (id.length != 24) {
-		return res.status(400).json({error: "Creature id not valid"});
-	}
-	let _id = new ObjectId(id);
-	let creature = await getCreature(_id);
-	if (creature) {
-		let bestiary = await getBestiary(creature.bestiary);
-		if ((user && bestiary.owner == user._id) || bestiary.status != "private") {
-			return res.json(creature);
-		} else {
-			return res.status(401).json({error: "You don't have permission to view this creature"});
+	try {
+		let user = await getUser(req.body.id);
+		let id = req.params.id;
+		if (id.length != 24) {
+			return res.status(400).json({error: "Creature id not valid-"});
 		}
-	} else {
-		return res.status(404).json({error: "No creature with that id found"});
+		let _id = new ObjectId(id);
+		let creature = await getCreature(_id);
+		if (creature) {
+			let bestiary = await getBestiary(creature.bestiary);
+			if (!bestiary) return res.status(404).json({error: "Bestiary creature is in, was not found-"});
+			if ((user && bestiary.owner == user._id) || bestiary.status != "private") {
+				console.log(`Retrieved creature with the id ${id}`);
+				return res.json(creature);
+			} else {
+				return res.status(401).json({error: "You don't have permission to view this creature-"});
+			}
+		} else {
+			return res.status(404).json({error: "No creature with that id found-"});
+		}
+	} catch (err) {
+		console.error(err);
+		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
 app.get("/api/bestiary/:id/creatures", possibleUser, async (req, res) => {
-	let user = await getUser(req.body.id);
-	let bestiaryId = new ObjectId(req.params.id);
-	let bestiary = await getBestiary(bestiaryId);
-	if (bestiary) {
-		if ((user && bestiary.owner == user._id) || bestiary.status != "private") {
-			let creatures = [];
-			for (let creatureId of bestiary.creatures) {
-				let creature = await collections.creatures?.findOne({_id: new ObjectId(creatureId)});
-				if (creature) creatures.push(creature);
+	try {
+		let user = await getUser(req.body.id);
+		let bestiaryId = new ObjectId(req.params.id);
+		let bestiary = await getBestiary(bestiaryId);
+		if (bestiary) {
+			if ((user && bestiary.owner == user._id) || bestiary.status != "private") {
+				let creatures = [];
+				for (let creatureId of bestiary.creatures) {
+					let creature = await collections.creatures?.findOne({_id: new ObjectId(creatureId)});
+					if (creature) creatures.push(creature);
+				}
+				console.log(`Retrieved creatures from bestiary with the id ${bestiaryId}`);
+				return res.json(creatures);
+			} else {
+				return res.status(401).json({error: "You don't have permission to view this bestiary."});
 			}
-			return res.json(creatures);
 		} else {
-			return res.status(401).json({error: "You don't have permission to view this bestiary"});
+			return res.status(404).json({error: "No bestiary with that id found."});
 		}
-	} else {
-		return res.status(404).json({error: "No bestiary with that id found"});
+	} catch (err) {
+		console.error(err);
+		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
 
@@ -58,129 +71,119 @@ function convertInput(input: CreatureInput): Creature | null {
 	let data = Object.assign(input, {bestiary: bestiaryId, _id: _id} as Creature);
 	return data;
 }
-
-app.post("/api/update/creature/:id?", requireUser, async (req, res) => {
-	//Get input
-	let id = req.params.id;
-	let inputData = req.body.data as CreatureInput;
-	let data = convertInput(inputData);
-	if (!data) {
-		return res.status(400).json({error: "Bestiary id not valid"});
-	}
-	let user = await getUser(req.body.id);
-	if (!user) {
-		return res.status(404).json({error: "Couldn't find current user"});
-	}
-	//Make sure all fields are present
-	let oldStats = data.stats;
-	data.stats = {};
-	for (let key in defaultStatblock) {
-		//@ts-ignore
-		data.stats[key] = {...defaultStatblock[key], ...oldStats[key]};
-	}
-	//Check limit
-	if (data.stats.description.name.length > limits.nameLength) {
-		return res.status(400).json({error: `Name exceeds the character limit of ${limits.nameLength} characters`});
-	}
-	if (data.stats.description.description.length > limits.descriptionLength) {
-		return res.status(400).json({error: `Description exceeds the character limit of ${limits.descriptionLength} characters`});
-	}
-	//Update or add
-	if (id) {
-		//Update existing creature
-		if (id.length != 24) {
-			return res.status(400).json({error: "Creature id not valid"});
+app.post("/api/creature/:id?/update", requireUser, async (req, res) => {
+	try {
+		//Get input
+		let id = req.params.id;
+		let inputData = req.body.data as CreatureInput;
+		let data = convertInput(inputData);
+		if (!data) {
+			return res.status(400).json({error: "Bestiary id not valid."});
 		}
-		let _id = new ObjectId(id);
-		let creature = await getCreature(_id);
-		let bestiary = await getBestiary(creature.bestiary);
-		if (!bestiary) {
-			return res.status(404).json({error: "Bestiary not found"});
+		let user = await getUser(req.body.id);
+		if (!user) {
+			return res.status(404).json({error: "Couldn't find current user."});
 		}
-		if (creature) {
-			//Check owner
-			if (bestiary.owner != user._id) {
-				return res.status(401).json({error: "You don't have permission to update this creature"});
+		//Make sure all fields are present
+		let oldStats = data.stats;
+		data.stats = {};
+		for (let key in defaultStatblock) {
+			//@ts-ignore
+			data.stats[key] = {...defaultStatblock[key], ...oldStats[key]};
+		}
+		//Check limit
+		if (data.stats.description.name.length > limits.nameLength) {
+			return res.status(400).json({error: `Name exceeds the character limit of ${limits.nameLength} characters.`});
+		}
+		if (data.stats.description.description.length > limits.descriptionLength) {
+			return res.status(400).json({error: `Description exceeds the character limit of ${limits.descriptionLength} characters.`});
+		}
+		//Update or add
+		if (id) {
+			//Update existing creature
+			if (id.length != 24) {
+				return res.status(400).json({error: "Creature id not valid."});
 			}
+			let _id = new ObjectId(id);
+			let creature = await getCreature(_id);
+			if (!creature) return res.status(404).json({error: "No creature with that id found."});
+			let bestiary = await getBestiary(creature.bestiary);
+			if (!bestiary) return res.status(404).json({error: "Bestiary not found."});
+			//Check owner
+			if (bestiary.owner != user._id) return res.status(401).json({error: "You don't have permission to update this creature."});
 			//Remove bad words
 			if (bestiary.status != "private") {
-				if (badwords.check(data.stats.description.name)) {
-					return res.status(400).json({error: "Creature name includes blocked words or phrases. Remove the badwords or make the bestiary private"});
-				}
-				if (badwords.check(data.stats.description.description)) {
-					return res.status(400).json({error: "Creature description includes blocked words or phrases. Remove the badwords or make the bestiary private"});
-				}
+				if (badwords.check(data.stats.description.name)) return res.status(400).json({error: "Creature name includes blocked words or phrases. Remove the badwords or make the bestiary private."});
+				if (badwords.check(data.stats.description.description)) return res.status(400).json({error: "Creature description includes blocked words or phrases. Remove the badwords or make the bestiary private."});
 				///data.stats.description.name = badwords.filter(data.stats.description.name);
 				///data.stats.description.description = badwords.filter(data.stats.description.description);
 			}
 			//Update creature
 			let updatedId = await updateCreature(data, _id);
 			if (updatedId) {
-				return res.json(data);
+				console.log(`Updated creature with the id ${_id}`);
+				return res.status(201).json(data);
+			} else {
+				throw new Error(`Failed to update creature with the id: ${_id}`);
 			}
-		}
-		return res.status(404).json({error: "No creature with that id found"});
-	} else {
-		//Create new creature
-		let bestiary = await getBestiary(data.bestiary);
-		if (!bestiary) {
-			return res.status(404).json({error: "Bestiary not found"});
-		}
-		//Check owner
-		if (bestiary.owner != user._id) {
-			return res.status(401).json({error: "You don't have permission to add creature to this bestiary"});
-		}
-		//Remove bad words
-		if (bestiary.status != "private") {
-			if (badwords.check(data.stats.description.name)) {
-				return res.status(400).json({error: "Creature name includes blocked words or phrases. Remove the badwords or make the bestiary private"});
+		} else {
+			//Create new creature
+			let bestiary = await getBestiary(data.bestiary);
+			if (!bestiary) return res.status(404).json({error: "Bestiary not found"});
+			//Check owner
+			if (bestiary.owner != user._id) return res.status(401).json({error: "You don't have permission to add creature to this bestiary."});
+			//Remove bad words
+			if (bestiary.status != "private") {
+				if (badwords.check(data.stats.description.name)) {
+					return res.status(400).json({error: "Creature name includes blocked words or phrases. Remove the badwords or make the bestiary private."});
+				}
+				if (badwords.check(data.stats.description.description)) {
+					return res.status(400).json({error: "Creature description includes blocked words or phrases. Remove the badwords or make the bestiary private."});
+				}
+				///data.stats.description.name = badwords.filter(data.stats.description.name);
+				///data.stats.description.description = badwords.filter(data.stats.description.description);
 			}
-			if (badwords.check(data.stats.description.description)) {
-				return res.status(400).json({error: "Creature description includes blocked words or phrases. Remove the badwords or make the bestiary private"});
-			}
-			///data.stats.description.name = badwords.filter(data.stats.description.name);
-			///data.stats.description.description = badwords.filter(data.stats.description.description);
+			let _id = await updateCreature(data);
+			if (!_id) return res.status(500).json({error: "Failed to create creature."});
+			await addCreatureToBestiary(_id, data.bestiary);
+			data._id = _id;
+			console.log(`New creature created with the id: ${_id}`);
+			return res.status(201).json(data);
 		}
-		let _id = await updateCreature(data);
-		if (!_id) {
-			return res.status(500).json({error: "Failed to create creature"});
-		}
-		await addCreatureToBestiary(_id, data.bestiary);
-		data._id = _id;
-		return res.json(data);
+	} catch (err) {
+		console.error(err);
+		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
-app.post("/api/delete/creature/:id", requireUser, async (req, res) => {
-	//Get input
-	let id = req.params.id;
-	if (id.length != 24) {
-		return res.status(400).json({error: "Creature id not valid"});
-	}
-	let _id = new ObjectId(id);
-	let user = await getUser(req.body.id);
-	if (!user) return res.status(404).json({error: "Couldn't find current user"});
-	//Permissions
-	let creature = await getCreature(_id);
-	if (!creature) return res.status(404).json({error: "Couldn't find creature with that id"});
-	let bestiary = await getBestiary(creature.bestiary);
-	if (!bestiary) return res.status(404).json({error: "Couldn't find bestiary creature is in"});
-	if (bestiary.owner != user._id) return res.status(401).json({error: "You don't have permission to delete this creature"});
-	//Remove from db
-	let status = await deleteCreature(_id);
-	if (status) {
-		res.json({});
-	} else {
-		res.status(500).json({error: "Failed to delete creature"});
+app.get("/api/creature/:id/delete", requireUser, async (req, res) => {
+	try {
+		//Get input
+		let id = req.params.id;
+		if (id.length != 24) {
+			return res.status(400).json({error: "Creature id not valid."});
+		}
+		let _id = new ObjectId(id);
+		let user = await getUser(req.body.id);
+		if (!user) return res.status(404).json({error: "Couldn't find current user."});
+		//Permissions
+		let creature = await getCreature(_id);
+		if (!creature) return res.status(404).json({error: "Couldn't find creature with that id."});
+		let bestiary = await getBestiary(creature.bestiary);
+		if (!bestiary) return res.status(404).json({error: "Couldn't find bestiary creature is in."});
+		if (bestiary.owner != user._id) return res.status(401).json({error: "You don't have permission to delete this creature."});
+		//Remove from db
+		let status = await deleteCreature(_id);
+		if (status) {
+			console.log(`Deleted creature with the id ${id}`);
+			res.json({});
+		} else {
+			res.status(500).json({error: "Failed to delete creature."});
+		}
+	} catch (err) {
+		console.error(err);
+		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
-
-//For debugging
-/**app.get("/test", authenticate, async (req, res) => {
-	console.log(req.body.id);
-	await updatecreature({name: "Test public creature", owner: req.body.id, status: "public", description: "example 2", creatures: []});
-	res.send("Success!");
-});
-*/
 
 //Default stat block
 const defaultStatblock = {

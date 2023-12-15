@@ -4,7 +4,7 @@ export interface error {
 }
 export async function handleApiResponse<Type>(response: Response) {
 	let data = await response.json();
-	if (response.status == 200) {
+	if (response.status >= 200 && response.status < 300) {
 		//Succesful
 		return {success: true, data: data as Type};
 	} else {
@@ -31,8 +31,8 @@ export const limits = fetch("/api/limits").then(async (response: any) => {
 });
 console.log(window.location.host);
 const loginBase = "https://discord.com/api/oauth2/authorize?client_id=1183362236509601813&response_type=code&scope=identify+email";
-//"https://discord.com/oauth2/authorize?client_id=1183362236509601813&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Flogin&scope=identify+email"
-export const loginLink = loginBase + "&redirect_uri=" + encodeURIComponent("http://" + window.location.host + "/login");
+export const loginLink = loginBase + "&redirect_uri=" + encodeURIComponent("http://" + window.location.host + "/user");
+console.log(loginLink);
 
 //Emitter
 // @ts-ignore
