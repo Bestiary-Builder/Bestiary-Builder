@@ -3,6 +3,7 @@ import {requireUser, possibleUser} from "./login";
 import {addBestiaryToUser, getBestiary, getUser, incrementBestiaryViewCount, updateBestiary, Bestiary, deleteBestiary, getCreature, collections, addBookmark, removeBookmark} from "../database";
 import {ObjectId} from "mongodb";
 import limits from "../staticData/limits.json";
+import {stat} from "fs";
 
 //Get info
 app.get("/api/bestiary/:id", possibleUser, async (req, res) => {
@@ -227,3 +228,159 @@ app.get("/api/bestiary/:id/bookmark/get", requireUser, async (req, res) => {
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
+
+//Export data
+app.get("/api/public/bestiary/:id", async (req, res) => {
+	try {
+		let id = req.params.id;
+		if (id.length != 24) return res.status(400).json({error: "Bestiary id not valid."});
+		let _id = new ObjectId(id);
+		let bestiary = await getBestiary(_id);
+		if (!bestiary) return res.status(404).json({error: "No bestiary with that id found."});
+		if (bestiary.status == "private") return res.status(401).json({error: "This bestiary is private"});
+		//Increment view count
+		incrementBestiaryViewCount(_id);
+		//Get creatures
+		let creatures = [];
+		for (let creatureId of bestiary.creatures) {
+			let creature = await collections.creatures?.findOne({_id: new ObjectId(creatureId)});
+			if (!creature) continue;
+
+			//HP:
+			let hpObject = creature.stats.defenses.hp;
+			let hp = hpCalc(creature.stats);
+			let hitdice = hpObject.numOfHitDie + "d" + hpObject.sizeOfHitDie + hpObject.numOfHitDie * statCalc("con", creature.stats);
+
+			//Spellcastin:
+			let spellcastInnateObj = creature.stats.spellcasting.innateSpells;
+			let spellcastCasterObj = creature.stats.spellcasting.casterSpells;
+
+			let spellcasting = {
+				slots: spellcastCasterObj.spellSlotList,
+				max_slots: spellcastCasterObj.spellSlotList,
+				spells: spellcastCasterObj.spellList.flat().map((a: any) => ({name: a, strict: true})),
+				dc: spellDc(false, creature.stats),
+				sab: spellAttackBonus(false, creature.stats),
+				caster_level: spellcastCasterObj.casterLevel,
+				spell_mod: statCalc(spellcastCasterObj.spellCastingAbilityOverride ?? spellcastCasterObj.spellCastingAbility, creature.stats),
+				at_will: [],
+				daily: {}
+			};
+
+			//Saves/stats
+			let saves = {} as any;
+			for (let key in creature.stats.abilities.saves) {
+				let newKey;
+				switch (key) {
+					case "str":
+						newKey = "strengthSave";
+						break;
+					case "dex":
+						newKey = "dexteritySave";
+						break;
+					case "con":
+						newKey = "constitutionSave";
+						break;
+					case "wis":
+						newKey = "wisdomSave";
+						break;
+					case "int":
+						newKey = "intelligenceSave";
+						break;
+					case "cha":
+						newKey = "charismaSave";
+						break;
+					default:
+						continue;
+				}
+				let value = statCalc(key, creature.stats);
+				saves[newKey] = {
+					value: value
+				};
+			}
+
+			//Final data
+			let creatureData = {
+				name: creature.stats.description.name,
+				size: creature.stats.core.size,
+				race: creature.stats.core.race,
+				alignment: creature.stats.description.alignment,
+				ac: creature.stats.defenses.ac.ac,
+				armortype: creature.stats.defenses.ac.acSource,
+				hp: hp,
+				hitdice: hitdice,
+				speed: creature.stats.core.speed,
+				ability_scores: creature.stats.abilities.stats,
+				saves: saves,
+				skills: creature.stats.abilities.skills,
+				senses: getSenses(creature.stats.core.senses),
+				resistances: creature.stats.defenses.resistances,
+				display_resists: creature.stats.defenses.resistances,
+				condition_immune: creature.stats.defenses.conditionImmunities,
+				languages: creature.stats.core.languages,
+				cr: creature.stats.description.cr,
+				xp: 1000,
+				traits: creature.stats.features.features,
+				actions: creature.stats.features.actions,
+				reactions: creature.stats.features.reactions,
+				legactions: creature.stats.features.legendary,
+				la_per_round: 3,
+				attacks: creature.stats.features.actions,
+				proper: creature.stats.description.isProperNoun,
+				image_url: creature.stats.description.empty,
+				spellcasting: spellcasting,
+				homebrew: true,
+				source: bestiary.name
+			};
+			creatures.push(creatureData);
+		}
+		//Return bestiary in specific format
+		///let data = {};
+		console.log(`Public - Retrieved bestiary with the id ${id}`);
+		return res.json(creatures);
+	} catch (err) {
+		console.error(err);
+		return res.status(500).json({error: "Unknown server error occured."});
+	}
+});
+//Statblock functions:
+function spellDc(innate = false, data: any): number {
+	let castingData;
+	if (innate) castingData = data.spellcasting.innateSpells;
+	else castingData = data.spellcasting.casterSpells;
+	if (castingData.spellDcOverride) return castingData.spellDcOverride;
+	else {
+		if (innate && castingData.spellCastingAbility) return statCalc(castingData.spellCastingAbility, data) + data.core.proficiencyBonus;
+		else return 8 + statCalc(castingData.spellCastingAbilityOveride ?? castingData.spellCastingAbility, data) + data.core.proficiencyBonus;
+	}
+}
+function hpCalc(data: any): number {
+	return Math.floor(data.defenses.hp.numOfHitDie * ((data.defenses.hp.sizeOfHitDie + 1) / 2 + statCalc("con", data)));
+}
+function statCalc(stat: string, data: any): number {
+	return Math.floor(data.abilities.stats[stat] / 2) - 5;
+}
+function spellAttackBonus(innate = false, data: any): string {
+	let castingData;
+	if (innate) castingData = data.spellcasting.innateSpells;
+	else castingData = data.spellcasting.casterSpells;
+
+	let bonus = 0;
+	if (castingData.spellBonusOverride || castingData.spellBonusOverride === 0) bonus = castingData.spellBonusOverride;
+	else {
+		if (innate && castingData.spellCastingAbility) bonus = statCalc(castingData.spellCastingAbility, data) + data.core.proficiencyBonus;
+		else bonus = statCalc(castingData.spellCastingAbilityOveride ?? castingData.spellCastingAbility, data) + data.core.proficiencyBonus;
+	}
+
+	if (bonus >= 0) return "+" + bonus;
+	return bonus.toString();
+}
+function getSenses(data: any) {
+	let str = "";
+	if (data.darkvision) str += `darkvision ${data.darkvision}ft., `;
+	if (data.blindsight) str += `blindsight ${data.blindsight}ft., ${data.isBlind ? " (blind beyond this radius)" : ""}`;
+	if (data.truesight) str += `truesight ${data.truesight}ft., `;
+	if (data.tremorsense) str += `tremorsense ${data.tremorsense}ft., `;
+	if (data.telepathy) str += `telepathy ${data.telepathy}ft., `;
+	return str.slice(0, str.length - 2);
+}
