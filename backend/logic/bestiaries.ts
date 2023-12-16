@@ -81,6 +81,7 @@ app.post("/api/bestiary/:id?/update", requireUser, async (req, res) => {
 			return res.status(404).json({error: "Couldn't find current user."});
 		}
 		//Check limits
+		if (!data.creatures) data.creatures = [];
 		if (data.name.length > limits.nameLength) return res.status(400).json({error: `Name exceeds the character limit of ${limits.nameLength} characters.`});
 		if (data.name.length < limits.nameMin) return res.status(400).json({error: `Name is less than the minimum character limit of ${limits.nameMin} characters.`});
 		if (data.description.length > limits.descriptionLength) return res.status(400).json({error: `Description exceeds the character limit of ${limits.descriptionLength} characters.`});
@@ -177,7 +178,8 @@ app.get("/api/bestiary/:id/bookmark/toggle", requireUser, async (req, res) => {
 		//Already bookmarked?
 		let status;
 		let newState;
-		if (user.bookmarks.filter((a) => a.toHexString() == _id.toHexString()).length > 0) {
+		let bookmarks = user.bookmarks ?? [];
+		if (bookmarks.filter((a) => a.toHexString() == _id.toHexString()).length > 0) {
 			status = await removeBookmark(user._id, _id);
 			newState = false;
 			console.log(`Removed bestiary with the id ${_id} from the bookmarks of user with the id ${user._id}`);
