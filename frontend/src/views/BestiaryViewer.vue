@@ -8,6 +8,12 @@
 					<p>Description: {{ bestiary.description }}</p>
 					<p>Status: {{ bestiary.status }}</p>
 					<p>Creature amount: {{ bestiary.creatures.length }}</p>
+					
+					<span v-if="lastClickedCreature">
+						<span class="unpin-button" @click="lastClickedCreature = null" role="button" aria-label="unpin currently pinned creature">unpin</span> 
+						📌
+					</span>
+					
 					<div class="owner">
 						<p>Owner:</p>
 						<UserBanner :id="bestiary.owner" />
@@ -18,21 +24,30 @@
 					<button v-if="isOwner" @click.prevent="createCreature">Create new creature</button>
 				</div>
 
-				<div class="content-tile creature-tile" v-for="creature in creatures" @mouseover="lastHoveredCreature = creature.stats" @click="lastHoveredCreature = creature.stats">
+				<div class="content-tile creature-tile" v-for="creature in creatures" @mouseover="lastHoveredCreature = creature.stats" @click="lastClickedCreature = creature.stats">
 					<div class="left-side">
 						<h2>{{ creature.stats?.description?.name }}</h2>
 						<span>{{ creature.stats?.core?.size }} {{ creature.stats?.core?.race }}{{ creature.stats?.description?.alignment ? ", " + creature.stats?.description?.alignment : "" }}</span>
 					</div>
 					<div class="right-side">
-						<span v-if="isOwner" role="button" @click="openDeleteModal(creature._id)" class="delete-creature"> <span>🗑️</span> </span>
-						<span v-if="isOwner" class="edit-creature"> <RouterLink class="creature" :to="'/statblock-editor/' + creature._id"> ✏️ </RouterLink> </span>
+						<span v-if="isOwner" role="button" @click.stop="openDeleteModal(creature._id)" class="delete-creature"> <span>🗑️</span> </span>
+						<span v-if="isOwner" class="edit-creature" @click.stop="()=>{}"> <RouterLink class="creature" :to="'/statblock-editor/' + creature._id"> ✏️ </RouterLink> </span>
 						<span> CR {{ creature.stats.description.cr }}</span>
 					</div>
 				</div>
 			</div>
 
-			<div class="statblock-container" v-if="creatures && lastHoveredCreature">
-				<StatblockRenderer :data="lastHoveredCreature" />
+			<div class="statblock-container" v-if="creatures && (lastHoveredCreature)">
+				<span v-if="lastClickedCreature" class="pin-notice">
+					<span class="unpin-button" @click="lastClickedCreature = null" role="button" aria-label="unpin currently pinned creature"><b>unpin</b></span>📌
+				</span>
+				<StatblockRenderer :data="lastClickedCreature || lastHoveredCreature" />
+			</div>
+			<div class="statblock-container" v-else>
+				<div class="no-creature-text"> 
+					<p>hover over a creature to see its statblock</p> 
+					<p>click on a creature to pin it to the right side</p> 
+				</div>
 			</div>
 		</div>
 	</div>
@@ -83,7 +98,6 @@ import {handleApiResponse, user, type error, toast, limits, type limitsType} fro
 import StatblockRenderer from "@/components/StatblockRenderer.vue";
 
 export default defineComponent({
-	// data: () => ({key: 0} as {bestiary: Bestiary | null; creatures: Creature[] | null; user: User | null; key: number, selectedCreature: null | Statblock}),
 	data() {
 		return {
 			bestiary: null as Bestiary | null,
@@ -91,6 +105,8 @@ export default defineComponent({
 			creatures: null as Creature[] | null,
 			user: null as User | null,
 			lastHoveredCreature: null as null | Statblock,
+			lastClickedCreature: null as null | Statblock,
+			hasPinnedBefore: false as boolean,
 			selectedCreature: "" as string,
 			limits: {} as limitsType,
 			bookmarked: false as boolean,
@@ -236,6 +252,14 @@ export default defineComponent({
 		closeDeleteModal(): void {
 			(document.getElementById("delete-modal") as HTMLDialogElement).close();
 		}
+	},
+	watch: {
+		lastClickedCreature(newValue, oldValue): void {
+			if (this.hasPinnedBefore) return
+			if (!this.hasPinnedBefore) this.hasPinnedBefore = true
+			
+			toast.info("Pinned creature to the right side. Click unpin there to go back to hover behaviour.")
+		}
 	}
 });
 </script>
@@ -282,13 +306,19 @@ export default defineComponent({
 	display: flex;
 	flex-direction: column;
 	gap: 1rem;
+	position: relative;
+	overflow: scroll;
+	max-height: 85vh;
+	padding: 0 1rem;
+	overflow-x: hidden;
+	overscroll-behavior: contain;
 	.content-tile {
 		height: fit-content !important;
 		background: rgb(59, 55, 54);
 		color: white;
 		padding: 1rem;
 		box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
-
+		cursor: pointer;
 		transition: all 1s;
 		transition-timing-function: cubic-bezier(0.06, 0.975, 0.195, 0.985);
 
@@ -328,8 +358,9 @@ export default defineComponent({
 
 	.header-tile {
 		background-color: orangered;
-
-		cursor: pointer;
+		position: sticky;
+		z-index: 1;
+		top: 0;
 
 		& h2 {
 			text-transform: lowercase;
@@ -359,7 +390,21 @@ export default defineComponent({
 	transition: scale 0.3s ease;
 
 	&:hover {
-		scale: 1.1;
+		scale: 1.08;
 	}
+}
+
+.pin-notice {
+	float: right
+}
+.unpin-button {
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+.no-creature-text {
+	font-size: 1.3rem;
+	text-align: center;
+	margin-top: 1rem;
 }
 </style>

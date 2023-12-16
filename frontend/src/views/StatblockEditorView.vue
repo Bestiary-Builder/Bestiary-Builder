@@ -31,7 +31,7 @@
                     </div>
                     <div class="flow-vertically">
                         <label class="editor-field__title" for="propernoun"><span class="text">proper noun</span></label>
-                        <span> display as {{ data.description.name }} instead of the {{data.description.name}} <input type="checkbox" v-model="data.description.isProperNoun" id=propernoun> </span>
+                        <span> display as "{{ data.description.name }}" instead of "the {{data.description.name}}" <input type="checkbox" v-model="data.description.isProperNoun" id=propernoun> </span>
                     </div>
                 </div>
 

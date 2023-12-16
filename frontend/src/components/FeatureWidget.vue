@@ -6,10 +6,11 @@
 				<section class="modal__content" ref="modal">
 					<button @click="isModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
 					<p>NAME:</p>
-					<input type="text" placeholder="Enter name" v-model="feat.name" />
+					<input type="text" placeholder="Enter name" v-model="feat.name" @change="hasEditedName = true" />
 					<hr />
 					<p>DESCRIPTION:</p>
-					<textarea rows="4" type="text" placeholder="Enter description" v-model="feat.description" />
+					<!-- <textarea rows="4" type="text" placeholder="Enter description" v-model="feat.description" /> -->
+					<CodeEditor height="200px" v-model="feat.description" width="100%" :wrap="true" :languages="[['markdown', 'Markdown']]" theme="obsidian" />
 					<hr />
 					<div class="import-container">
 						<span class="import-container__title"> Import Basic Example </span>
@@ -79,7 +80,9 @@ export default defineComponent({
 			basicExamples: [] as string[],
 			srdFeatures: [] as string[],
 			importedBasicExample: null as string | null,
-			importedSrdFeature: null as string | null
+			importedSrdFeature: null as string | null,
+
+			hasEditedName: false
 		};
 	},
 	components: {
@@ -90,8 +93,11 @@ export default defineComponent({
 		//Fetch example and feature names
 		fetch("/api/basic-examples/list").then(async (response: any) => {
 			let result = await handleApiResponse<string[]>(response);
-			if (result.success) this.basicExamples = result.data as string[];
+			if (result.success) {
+				this.basicExamples = result.data as string[];
+			}
 			else this.basicExamples = [];
+			
 		});
 		fetch("/api/srd-features/list").then(async (response: any) => {
 			let result = await handleApiResponse<string[]>(response);
@@ -135,7 +141,7 @@ export default defineComponent({
 			});
 			if (!example) return;
 			//Add info to feat
-			this.feat.name = example.name;
+			if (this.feat.name == "New Feature" || !this.hasEditedName ) this.feat.name = example.name;
 			this.feat.description = example.description;
 			this.automationString = stringify(example.automation);
 			setTimeout(() => {
@@ -161,7 +167,7 @@ export default defineComponent({
 			});
 			if (!feature) return;
 			//Add info to feat
-			this.feat.name = feature.name;
+			if (this.feat.name == "New Feature" || !this.hasEditedName ) this.feat.name = feature.name;
 			this.feat.description = feature.description;
 			this.automationString = stringify(feature.automation);
 			setTimeout(() => {

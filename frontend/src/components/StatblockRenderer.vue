@@ -123,7 +123,7 @@
             <p v-if="showInnateCasting() ">
                 <b><i>Innate Spellcasting</i></b> 
                 <span class="feature-container__desc">
-                    <span v-if="!data.description.isProperNoun"> The </span> {{ data.description.name }}'s innate spellcasting ability is <span v-if="data.description.isProperNoun"> Their </span><span v-else> Its </span> spellcasting ability is {{ fullSpellAbilityName(true) }} (spell save DC {{ spellDc(true) }}, {{ spellAttackBonus(true) }} to hit with spell attacks). <span v-if="!data.description.isProperNoun"> It </span><span v-else> {{ data.description.name }}</span> can innately cast the following spells<span v-if="data.spellcasting.innateSpells.noComponentsOfType.length ==0">:</span>
+                    <span v-if="!data.description.isProperNoun"> The </span> {{ data.description.name }}'s spellcasting ability is {{ fullSpellAbilityName(true) }} (spell save DC {{ spellDc(true) }}, {{ spellAttackBonus(true) }} to hit with spell attacks). <span v-if="!data.description.isProperNoun"> It </span><span v-else> {{ data.description.name }}</span> can innately cast the following spells<span v-if="data.spellcasting.innateSpells.noComponentsOfType.length ==0">:</span>
                     <span v-else> {{ componentsString() }} </span>
 
                     <div class="spell-list">
@@ -386,7 +386,6 @@ export default defineComponent({
             return stringify(this.data)
         },
         sanitizeAndFormat(input: string) {
-            // thanks chatgpt >.<
             // Create a temporary div element to sanitize the input
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = input;
@@ -434,7 +433,7 @@ export default defineComponent({
 
             if (castingData.spellDcOverride) return castingData.spellDcOverride
             else {
-                if (innate && castingData.spellCastingAbility) return this.statCalc(castingData.spellCastingAbility) + this.data.core.proficiencyBonus
+                if (innate && castingData.spellCastingAbility) return 8 + this.statCalc(castingData.spellCastingAbility) + this.data.core.proficiencyBonus
                 // @ts-ignore
                 else return 8 + this.statCalc(castingData.spellCastingAbilityOveride ?? castingData.spellCastingAbility) + this.data.core.proficiencyBonus
             }
@@ -475,15 +474,14 @@ export default defineComponent({
 </script>
 
 <style scoped lang="less">
-#bla {
-    margin-top: 60rem;
-}
 .stat-block {
     width: 100%;
 
     background-color: rgb(59, 55, 54);
     box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
-    padding: .4rem
+    padding: .4rem;
+
+    font-size: small
 }
 
 .stat-block__row {
