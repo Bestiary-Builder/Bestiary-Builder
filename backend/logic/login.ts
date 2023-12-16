@@ -14,7 +14,7 @@ app.get("/api/login/:code", async (req, res) => {
 				client_secret: process.env.clientSecret ?? "",
 				code,
 				grant_type: "authorization_code",
-				redirect_uri: `http://localhost:5000/user`,
+				redirect_uri: process.env.discordRedirectURI ?? "",
 				scope: "identify+email"
 			}).toString(),
 			headers: {
