@@ -26,11 +26,11 @@
             <div class="editor-content__tab-inner scale-in">
                 <div class="editor-field__container two-wide">
                     <div class="flow-vertically">
-                        <label class="editor-field__title" for="name">name</label>
+                        <label class="editor-field__title" for="name"><span class="text">name</span></label>
                         <input type="text" :maxlength="limits.nameLength" placeholder="name..." v-model="data.description.name" id="name">
                     </div>
                     <div class="flow-vertically">
-                        <label class="editor-field__title" for="propernoun">proper noun</label>
+                        <label class="editor-field__title" for="propernoun"><span class="text">proper noun</span></label>
                         <span> display as {{ data.description.name }} instead of the {{data.description.name}} <input type="checkbox" v-model="data.description.isProperNoun" id=propernoun> </span>
                     </div>
                 </div>
@@ -38,29 +38,29 @@
                 <div class="editor-field__container one-wide">
                     <div class="flow-vertically">
                         <label class="editor-field__title" for="description" >
-                            description
+                            <span class="text">description</span>
                         </label>
-                        <textarea cols="6" :maxlength="limits.descriptionLength" placeholder="description..." v-model="data.description.description" />
+                        <textarea rows="10" :maxlength="limits.descriptionLength" placeholder="description..." v-model="data.description.description" />
                     </div>
                 </div>
                 <div class="editor-field__container two-wide">
                     <div class="flow-vertically">
-                        <label class="editor-field__title" for="image">image url</label>
+                        <label class="editor-field__title" for="image"><span class="text">image url</span></label>
                         <input type="text" placeholder="image url..." v-model="data.description.image" id="image">
                     </div>
                     <div class="flow-vertically">
-                        <label class="editor-field__title" for="environment">environment</label>
+                        <label class="editor-field__title" for="environment"><span class="text">environment</span></label>
                         <input type="text" placeholder="environment..." v-model="data.description.environment" id="environment">
                     </div>
 
                 </div>
                 <div class="editor-field__container two-wide">
                     <div class="flow-vertically">
-                        <label class="editor-field__title" for="faction">faction</label>
+                        <label class="editor-field__title" for="faction"><span class="text">faction</span></label>
                         <input type="text" placeholder="faction..." v-model="data.description.faction" id="faction">
                     </div>
                     <div class="flow-vertically">
-                        <label class="editor-field__title" for="alignment">alignment</label>
+                        <label class="editor-field__title" for="alignment"><span class="text" v-tooltip="'Takes custom text input'">alignment*</span></label>
                         <v-select 
                             placeholder="Select Alignment or type one yourself" 
                             v-model="data.description.alignment"
@@ -73,7 +73,7 @@
                 </div>
                 <div class="editor-field__container two-wide">
                     <div class="flow-vertically">
-                        <label class="editor-field__title" for="challengerating"> challenge rating </label>
+                        <label class="editor-field__title" for="challengerating"><span class="text"> challenge rating</span></label>
                         <div class="quantity">
                             <input 
                                 type="number" 
@@ -95,7 +95,7 @@
             <div class="editor-content__tab-inner scale-in">
                 <div class="editor-field__container two-wide">
                     <div class="flow-vertically">
-                        <label class="editor-field__title" for="race">race</label>
+                        <label class="editor-field__title" for="race"><span class="text" v-tooltip="'Takes custom text input'">race*</span></label>
                         <v-select 
                             v-model="data.core.race"
                             :options='["Aberration", "Beast", "Celestial", "Construct", "Dragon", "Elemental", "Fey", "Fiend", "Giant", "Humanoid", "Monstrosity", "Ooze", "Plant", "Undead"]'
@@ -105,7 +105,7 @@
                         />
                     </div>
                     <div class="flow-vertically">
-                        <label class="editor-field__title" for="size">size </label>
+                        <label class="editor-field__title" for="size"><span class="text" v-tooltip="'Takes custom text input'">size*</span> </label>
                         <v-select 
                             v-model="data.core.size"
                             :options='["Tiny", "Small", "Medium", "Large", "Huge", "Gargantuan"]'
@@ -116,10 +116,10 @@
                     </div>
                 </div>
                 <hr>
-                <h2> speed </h2>
+                <h2 class="group-header"> speed </h2>
                 <div class="editor-field__container three-wide">
                     <div class="flow-vertically">
-                        <label class="editor-field__title" for="walkspeed"> walk speed </label>
+                        <label class="editor-field__title" for="walkspeed"> <span class="text">walk speed</span> </label>
                         <div class="quantity">
                             <input 
                                 type="number" 
@@ -137,7 +137,7 @@
                     </div>
 
                     <div class="flow-vertically">
-                        <label class="editor-field__title" for="flyspeed"> fly speed </label>
+                        <label class="editor-field__title" for="flyspeed"><span class="text"> fly speed </span></label>
                         <div class="quantity">
                             <input 
                                 type="number" 
@@ -155,14 +155,14 @@
                     </div>
 
                     <div class="flow-vertically">
-                        <label class="editor-field__title" for="canhover"> can hover?</label>
+                        <label class="editor-field__title" for="canhover"> <span class="text">can hover?</span></label>
                         <span>can fly and hover? <input type="checkbox" step="5" v-model="data.core.speed.isHover" id="canhover"></span>
                     </div>
                 </div>
 
                 <div class="editor-field__container three-wide">
                     <div class="flow-vertically">
-                        <label class="editor-field__title" for="swimspeed"> swim speed </label>
+                        <label class="editor-field__title" for="swimspeed"> <span class="text">swim speed</span> </label>
                         <div class="quantity">
                             <input 
                                 type="number" 
@@ -180,7 +180,7 @@
                     </div>
 
                     <div class="flow-vertically">
-                        <label class="editor-field__title" for="burrowspeed"> burrow speed </label>
+                        <label class="editor-field__title" for="burrowspeed"><span class="text"> burrow speed</span> </label>
                         <div class="quantity">
                             <input 
                                 type="number" 
@@ -198,10 +198,10 @@
                     </div>
                 </div>
                 <hr>
-                <h2> senses </h2>
+                <h2 class="group-header"> senses </h2>
                 <div class="editor-field__container three-wide">
                     <div class="flow-vertically">
-                        <label class="editor-field__title" for="darkvision"> darkvision </label>
+                        <label class="editor-field__title" for="darkvision"> <span class="text">darkvision</span> </label>
                         <div class="quantity">
                             <input 
                                 type="number" 
@@ -219,7 +219,7 @@
                     </div>
 
                     <div class="flow-vertically">
-                        <label class="editor-field__title" for="blindsight"> blindsight </label>
+                        <label class="editor-field__title" for="blindsight"> <span class="text">blindsight</span> </label>
                         <div class="quantity">
                             <input 
                                 type="number" 
@@ -237,14 +237,14 @@
                     </div>
 
                     <div class="flow-vertically">
-                        <label class="editor-field__title" for="canhover">blind beyond</label>
+                        <label class="editor-field__title" for="canhover"><span class="text">blind beyond</span></label>
                         <span>this radius? <input type="checkbox" step="5" v-model="data.core.speed.isHover" id="canhover"></span>
                     </div>
                 </div>
 
                 <div class="editor-field__container three-wide">
                     <div class="flow-vertically">
-                        <label class="editor-field__title" for="truesight"> truesight </label>
+                        <label class="editor-field__title" for="truesight"> <span class="text">truesight</span> </label>
                         <div class="quantity">
                             <input 
                                 type="number" 
@@ -262,7 +262,7 @@
                     </div>
 
                     <div class="flow-vertically">
-                        <label class="editor-field__title" for="tremorsense"> tremorsense </label>
+                        <label class="editor-field__title" for="tremorsense"> <span class="text">tremorsense</span> </label>
                         <div class="quantity">
                             <input 
                                 type="number" 
@@ -280,7 +280,7 @@
                     </div>
 
                     <div class="flow-vertically">
-                        <label class="editor-field__title" for="passiveperc"> passive perc override </label>
+                        <label class="editor-field__title" for="passiveperc"> <span class="text">passive perc override</span> </label>
                         <div class="quantity">
                             <input 
                                 type="number" 
@@ -300,7 +300,7 @@
                 <hr>
                 <div class="editor-field__container three-wide">
                     <div class="flow-vertically">
-                        <label class="editor-field__title" for="languages">languages</label>
+                        <label class="editor-field__title" for="languages"><span class="text" v-tooltip="'Takes custom text input'">languages*</span></label>
                         <v-select 
                             placeholder="Select a Language or type one yourself" 
                             v-model="data.core.languages"
@@ -314,7 +314,7 @@
                         />
                     </div>
                     <div class="flow-vertically">
-                        <label class=editor-field__title for="telepathy">telepathy</label>
+                        <label class=editor-field__title for="telepathy"><span class="text">telepathy</span></label>
                         <div class="quantity">
                             <input 
                                 type="number" 
@@ -332,226 +332,459 @@
                     </div>
                 </div>
             </div>
+
             <div class="editor-content__tab-inner scale-in">
-                <h2> ability scores </h2>
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        str
-                    </span>
-                    <div class="editor-field__contents">
-                        <input type="number" v-model="data.abilities.stats.str" min="1" max="30">
+                <h2 class="group-header"> ability scores </h2>
+                <div class="editor-field__container three-wide">
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="strstat"><span class="text">strength</span>💪</label>
+                        <div class="quantity">
+                            <input 
+                                type="number" 
+                                v-model="data.abilities.stats.str" 
+                                min="1" 
+                                step="30"
+                                inputmode="numeric"
+                                id="strstat"
+                            >
+                            <div class="quantity-nav">
+                                <div class="quantity-button quantity-up" @click="data.abilities.stats.str= Math.min(30, data.abilities.stats.str+1)" aria-label="Increase strength stat">+</div>
+                                <div class="quantity-button quantity-down" @click="data.abilities.stats.str = Math.max(1, data.abilities.stats.str-1)" aria-label="Decrease strength stat">-</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="dexstat"><span class="text">dexterity</span>🤸</label>
+                        <div class="quantity">
+                            <input 
+                                type="number" 
+                                v-model="data.abilities.stats.dex" 
+                                min="1" 
+                                step="30"
+                                inputmode="numeric"
+                                id="dexstat"
+                            >
+                            <div class="quantity-nav">
+                                <div class="quantity-button quantity-up" @click="data.abilities.stats.dex = Math.min(30, data.abilities.stats.dex+1)" aria-label="Increase dexterity stat">+</div>
+                                <div class="quantity-button quantity-down" @click="data.abilities.stats.dex = Math.max(1, data.abilities.stats.dex-1)" aria-label="Decrease dexterity stat">-</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="constat"><span class="text">constitution</span>💗</label>
+                        <div class="quantity">
+                            <input 
+                                type="number" 
+                                v-model="data.abilities.stats.con" 
+                                min="1" 
+                                step="30"
+                                inputmode="numeric"
+                                id="constat"
+                            >
+                            <div class="quantity-nav">
+                                <div class="quantity-button quantity-up" @click="data.abilities.stats.con = Math.min(30, data.abilities.stats.con+1)" aria-label="Increase constitution stat">+</div>
+                                <div class="quantity-button quantity-down" @click="data.abilities.stats.con = Math.max(1, data.abilities.stats.con-1)" aria-label="Decrease constitution stat">-</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        dex
-                    </span>
-                    <div class="editor-field__contents">
-                        <input type="number" v-model="data.abilities.stats.dex" min="1" max="30">
+                <div class="editor-field__container three-wide">
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="intstat"><span class="text">intelligence</span>🧠</label>
+                        <div class="quantity">
+                            <input 
+                                type="number" 
+                                v-model="data.abilities.stats.int" 
+                                min="1" 
+                                step="30"
+                                inputmode="numeric"
+                                id="intstat"
+                            >
+                            <div class="quantity-nav">
+                                <div class="quantity-button quantity-up" @click="data.abilities.stats.int = Math.min(30, data.abilities.stats.int+1)" aria-label="Increase intelligence stat">+</div>
+                                <div class="quantity-button quantity-down" @click="data.abilities.stats.int = Math.max(1, data.abilities.stats.int-1)" aria-label="Decrease intelligence stat">-</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="wisstat"><span class="text">wisdom</span>🦉</label>
+                        <div class="quantity">
+                            <input 
+                                type="number" 
+                                v-model="data.abilities.stats.wis" 
+                                min="1" 
+                                step="30"
+                                inputmode="numeric"
+                                id="wisstat"
+                            >
+                            <div class="quantity-nav">
+                                <div class="quantity-button quantity-up" @click="data.abilities.stats.wis = Math.min(30, data.abilities.stats.wis+1)" aria-label="Increase wisdom stat">+</div>
+                                <div class="quantity-button quantity-down" @click="data.abilities.stats.wis = Math.max(1, data.abilities.stats.wis-1)" aria-label="Decrease wisdom stat">-</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="chastat"><span class="text">charisma</span>🎭</label>
+                        <div class="quantity">
+                            <input 
+                                type="number" 
+                                v-model="data.abilities.stats.cha" 
+                                min="1" 
+                                step="30"
+                                inputmode="numeric"
+                                id="chastat"
+                            >
+                            <div class="quantity-nav">
+                                <div class="quantity-button quantity-up" @click="data.abilities.stats.cha = Math.min(30, data.abilities.stats.cha+1)" aria-label="Increase charisma stat">+</div>
+                                <div class="quantity-button quantity-down" @click="data.abilities.stats.cha = Math.max(1, data.abilities.stats.cha-1)" aria-label="Decrease charisma stat">-</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        con
-                    </span>
-                    <div class="editor-field__contents">
-                        <input type="number" v-model="data.abilities.stats.con" min="1" max="30">
-                    </div>
-                </div>
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        wis
-                    </span>
-                    <div class="editor-field__contents">
-                        <input type="number" v-model="data.abilities.stats.wis" min="1" max="30">
-                    </div>
-                </div>
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        cha
-                    </span>
-                    <div class="editor-field__contents">
-                        <input type="number" v-model="data.abilities.stats.cha" min="1" max="30">
-                    </div>
-                </div>
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        int
-                    </span>
-                    <div class="editor-field__contents">
-                        <input type="number" v-model="data.abilities.stats.int" min="1" max="30">
-                    </div>
-                </div>
-                <h2> saving throws </h2>
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        str
-                    </span>
-                    <div class="editor-field__contents">
-                        <input type="checkbox" v-model="data.abilities.saves.str.isProficient">
-                    </div>
-                    <p> override <input type="number" placeholder="0" v-model="data.abilities.saves.str.override" step=1 > <span @click="data.abilities.saves.str.override = null"> reset </span> </p>
-                </div>
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        dex
-                    </span>
-                    <div class="editor-field__contents">
-                        <input type="checkbox" v-model="data.abilities.saves.dex.isProficient">
-                    </div>
-                    <p> override <input type="number" placeholder="0" v-model="data.abilities.saves.dex.override" step=1 > <span @click="data.abilities.saves.dex.override = null"> reset </span> </p>
+                <hr>
+                <h2 class="group-header"> saving throws </h2>
+                <div class="editor-field__container three-wide">
+                    <div class="flow-vertically">
+                        <span class="editor-field__title"><span class="text">strength</span>💪</span>
+                        <div>
+                            <p> 
+                                <label for="strsaveprof" aria-label="strength save proficiency">proficient</label>
+                                <input type="checkbox" v-model="data.abilities.saves.str.isProficient" id="strsaveprof"> 
+                            </p>
 
-                </div>
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        con
-                    </span>
-                    <div class="editor-field__contents">
-                        <input type="checkbox" v-model="data.abilities.saves.con.isProficient">
-                    </div>
-                    <p> override <input type="number" placeholder="0" v-model="data.abilities.saves.con.override" step=1 > <span @click="data.abilities.saves.con.override = null"> reset </span> </p>
+                            <div>
+                                <label for="strsave" aria-label="strength save override"> override </label>
+                                <div class="quantity">
+                                    <input 
+                                        type="number" 
+                                        v-model="data.abilities.saves.str.override" 
+                                        inputmode="numeric"
+                                        id="strsave"
+                                    >
+                                    <div class="quantity-nav">
+                                        <div class="quantity-button quantity-up" @click="data.abilities.saves.str.override = (data.abilities.saves.str.override ?? 0)+1" aria-label="Increase strength save override">+</div>
+                                        <div class="quantity-button quantity-down" @click="data.abilities.saves.str.override = (data.abilities.saves.str.override ?? 0)-1" aria-label="Decrease strength save override">-</div>
+                                    </div>
+                                    <span class="delete-button" @click="data.abilities.saves.str.override = null" aria-label="Delete strength save override">🗑️</span>
+                                </div>
+                            </div>
 
-                </div>
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        wis
-                    </span>
-                    <div class="editor-field__contents">
-                        <input type="checkbox" v-model="data.abilities.saves.wis.isProficient">
+                        </div>
                     </div>
-                    <p> override <input type="number" placeholder="0" v-model="data.abilities.saves.wis.override" step=1 > <span @click="data.abilities.saves.wis.override = null"> reset </span> </p>
+                    <div class="flow-vertically">
+                        <span class="editor-field__title"> <span class="text">dexterity</span>🤸</span>
+                        <div>
+                            <p> 
+                                <label for="dexsaveprof" aria-label="dexterity save proficiency">proficient</label>
+                                <input type="checkbox" v-model="data.abilities.saves.dex.isProficient" id="dexsaveprof"> 
+                            </p>
 
-                </div>
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        cha
-                    </span>
-                    <div class="editor-field__contents">
-                        <input type="checkbox" v-model="data.abilities.saves.cha.isProficient">
+                            <div>
+                                <label for="dexsave" aria-label="dexterity save override"> override </label>
+                                <div class="quantity">
+                                    <input 
+                                        type="number" 
+                                        v-model="data.abilities.saves.dex.override" 
+                                        inputmode="numeric"
+                                        id="dexsave"
+                                    >
+                                    <div class="quantity-nav">
+                                        <div class="quantity-button quantity-up" @click="data.abilities.saves.dex.override = (data.abilities.saves.dex.override ?? 0)+1" aria-label="Increase dexterity save override">+</div>
+                                        <div class="quantity-button quantity-down" @click="data.abilities.saves.dex.override = (data.abilities.saves.dex.override ?? 0)-1" aria-label="Decrease dexterity save override">-</div>
+                                    </div>
+                                    <span class="delete-button" @click="data.abilities.saves.dex.override = null" aria-label="Delete dexterity save override">🗑️</span>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
-                    <p> override <input type="number" placeholder="0" v-model="data.abilities.saves.cha.override" step=1 > <span @click="data.abilities.saves.cha.override = null"> reset </span> </p>
+                    <div class="flow-vertically">
+                        <label class="editor-field__title"> <span class="text">constitution</span>💗</label>
+                        <div>
+                            <p> 
+                                <label for="consaveprof" aria-label="constitution save proficiency">proficient</label>
+                                <input type="checkbox" v-model="data.abilities.saves.con.isProficient" id="consaveprof"> 
+                            </p>
 
-                </div>
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        int
-                    </span>
-                    <div class="editor-field__contents">
-                        <input type="checkbox" v-model="data.abilities.saves.int.isProficient">
+                            <div>
+                                <label for="consave" aria-label="constitution save override"> override </label>
+                                <div class="quantity">
+                                    <input 
+                                        type="number" 
+                                        v-model="data.abilities.saves.con.override" 
+                                        inputmode="numeric"
+                                        id="consave"
+                                    >
+                                    <div class="quantity-nav">
+                                        <div class="quantity-button quantity-up" @click="data.abilities.saves.con.override = (data.abilities.saves.con.override ?? 0)+1" aria-label="Increase constitution save override">+</div>
+                                        <div class="quantity-button quantity-down" @click="data.abilities.saves.con.override = (data.abilities.saves.con.override ?? 0)-1" aria-label="Decrease constitution save override">-</div>
+                                    </div>
+                                    <span class="delete-button" @click="data.abilities.saves.con.override = null" aria-label="Delete constitution save override">🗑️</span>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
-                    <p> override <input type="number" placeholder="0" v-model="data.abilities.saves.int.override" step=1 > <span @click="data.abilities.saves.int.override = null"> reset </span> </p>
-
                 </div>
-                <h2> skills </h2>
-                <div class="editor-field__slim">
-                    <div v-for="skill, index in data.abilities.skills">
+                <div class="editor-field__container three-wide">
+                        <div class="flow-vertically">
+                            <span class="editor-field__title"><span class="text">intelligence</span>🧠</span>
+                            <div>
+                                <p> 
+                                    <label for="intsaveprof" aria-label="intelligence save proficiency">proficient</label>
+                                    <input type="checkbox" v-model="data.abilities.saves.int.isProficient" id="intsaveprof"> 
+                                </p>
+
+                                <div>
+                                    <label for="intsave" aria-label="intelligence save override"> override </label>
+                                    <div class="quantity">
+                                        <input 
+                                            type="number" 
+                                            v-model="data.abilities.saves.int.override" 
+                                            inputmode="numeric"
+                                            id="intsave"
+                                        >
+                                        <div class="quantity-nav">
+                                            <div class="quantity-button quantity-up" @click="data.abilities.saves.int.override = (data.abilities.saves.int.override ?? 0)+1" aria-label="Increase intelligence save override">+</div>
+                                            <div class="quantity-button quantity-down" @click="data.abilities.saves.int.override = (data.abilities.saves.int.override ?? 0)-1" aria-label="Decrease intelligence save override">-</div>
+                                        </div>
+                                        <span class="delete-button" @click="data.abilities.saves.int.override = null" aria-label="Delete intelligence save override">🗑️</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flow-vertically">
+                            <span class="editor-field__title"><span class="text">wisdom</span>🦉</span>
+                            <div>
+                                <p> 
+                                    <label for="wissaveprof" aria-label="wisdom save proficiency">proficient</label>
+                                    <input type="checkbox" v-model="data.abilities.saves.wis.isProficient" id="wissaveprof"> 
+                                </p>
+
+                                <div>
+                                    <label for="wissave" aria-label="wisdom save override"> override </label>
+                                    <div class="quantity">
+                                        <input 
+                                            type="number" 
+                                            v-model="data.abilities.saves.wis.override" 
+                                            inputmode="numeric"
+                                            id="wissave"
+                                        >
+                                        <div class="quantity-nav">
+                                            <div class="quantity-button quantity-up" @click="data.abilities.saves.wis.override = (data.abilities.saves.wis.override ?? 0)+1" aria-label="Increase wisdom save override">+</div>
+                                            <div class="quantity-button quantity-down" @click="data.abilities.saves.wis.override = (data.abilities.saves.wis.override ?? 0)-1" aria-label="Decrease wisdom save override">-</div>
+                                        </div>
+                                        <span class="delete-button" @click="data.abilities.saves.wis.override = null" aria-label="Delete wisdom save override">🗑️</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flow-vertically">
+                            <span class="editor-field__title"><span class="text">charisma</span>🎭</span>
+                            <div>
+                                <p> 
+                                    <label for="chasaveprof" aria-label="charisma save proficiency">proficient</label>
+                                    <input type="checkbox" v-model="data.abilities.saves.cha.isProficient" id="chasaveprof"> 
+                                </p>
+                                <div>
+                                    <label for="chasave" aria-label="charisma save override"> override </label>
+                                    <div class="quantity">
+                                        <input 
+                                            type="number" 
+                                            v-model="data.abilities.saves.cha.override" 
+                                            inputmode="numeric"
+                                            id="chasave"
+                                        >
+                                        <div class="quantity-nav">
+                                            <div class="quantity-button quantity-up" @click="data.abilities.saves.cha.override = (data.abilities.saves.cha.override ?? 0)+1" aria-label="Increase charisma save override">+</div>
+                                            <div class="quantity-button quantity-down" @click="data.abilities.saves.cha.override = (data.abilities.saves.cha.override ?? 0)-1" aria-label="Decrease charisma save override">-</div>
+                                        </div>
+                                        <span class="delete-button" @click="data.abilities.saves.cha.override = null" aria-label="Delete charisma save override">🗑️</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                <hr>
+                <h2 class="group-header"> skills </h2>
+                <div class="editor-field__container three-wide" >
+                    <div v-for="skill, index in data.abilities.skills" class="flow-vertically">
                         <v-select 
                             placeholder="Select a skill" 
                             v-model="skill.skillName"
                             :options='["Acrobatics", "Animal Handling", "Arcana", "Athletics", "Deception", "History", "Insight", "Intimidation", "Investigation", "Medicine", "Nature", "Perception", "Performance", "Persuasion", "Religion", "Sleight of Hand", "Stealth", "Survival"]'
                             :clearable="false"
                         />
-                        <div class="editor-field__contents">
-                        <p> proficient <input type="checkbox" v-model="skill.isProficient" @click="disableOtherSkills(index, 'prof', skill.isProficient)"> </p>
-                        <p> expertise<input type="checkbox" v-model="skill.isExpertise" @click="disableOtherSkills(index, 'exp', skill.isExpertise)"> </p>
-                        <p> half prof <input type="checkbox" v-model="skill.isHalfProficient" @click="disableOtherSkills(index, 'halfprof', skill.isHalfProficient)"> </p>
-                        <p> override <input type="number" placeholder="0" v-model="skill.override" step=1 > <span @click="skill.override = null"> reset </span> </p>
+                        <div class="button-container">
+                        <p> <label :for="skill.skillName + 'prof'"> proficient</label> <input type="checkbox" v-model="skill.isProficient" @click="disableOtherSkills(index, 'prof', skill.isProficient)" :id="skill.skillName + 'prof'"> </p>
+                        <p> <label :for="skill.skillName + 'exp'"> expertise </label> <input type="checkbox" v-model="skill.isExpertise" @click="disableOtherSkills(index, 'exp', skill.isExpertise)" :id="skill.skillName + 'exp'"> </p>
+                        <p> <label :for="skill.skillName + 'halfprof'"> half prof </label> <input type="checkbox" v-model="skill.isHalfProficient" @click="disableOtherSkills(index, 'halfprof', skill.isHalfProficient)"
+                            :id="skill.skillName + 'halfprof'"> </p>
+                        </div>
+                        <div>
+                            <label :aria-label="skill.skillName + ' check override'" :for="skill.skillName + 'override'"> override </label>
+                            <div class="quantity">
+                                <input 
+                                    type="number" 
+                                    v-model="skill.override" 
+                                    step="1"
+                                    inputmode="numeric"
+                                    :id="skill.skillName + 'override'"
+                                >
+                                <div class="quantity-nav">
+                                    <div class="quantity-button quantity-up" @click="skill.override = (skill.override ?? 0)+1" :aria-label="'Increase ' + skill.skillName + ' check override'">+</div>
+                                    <div class="quantity-button quantity-down" @click="skill.override = Math.max(0, (skill.override??0)-1)" :aria-label="'Decrease ' + skill.skillName + ' check override'">-</div>
+                                </div>
+                                <span class="delete-button" @click="skill.override = null" :aria-label="'Delete ' + skill.skillName + ' override'">🗑️</span>
+                            </div>
                         </div>
                         <button @click="deleteSkill(index)"> delete </button>
-                        <hr>
                     </div>
-                    <div>
-                        <button class="editor-field__plus-button" @click="addNewSkill()"> +
-                        </button>
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="addnewskill"><span class="text">add new skill</span></label>
+                        <button id="addnewskill" class="editor-field__plus-button" @click="addNewSkill()">new skill</button>
                     </div>
                 </div>
             </div>
             <div class="editor-content__tab-inner scale-in">
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        hit die size
-                    </span>
-                    <div class="editor-field__contents">
-                        <input type="number" placeholder="0" v-model="data.defenses.hp.sizeOfHitDie" min="1" >
+                <div class="editor-field__container three-wide">
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="hitdiesize"><span class="text">hit die size</span>🎲</label>
+                        <div class="quantity">
+                            <input 
+                                type="number" 
+                                v-model="data.defenses.hp.sizeOfHitDie" 
+                                min="0" 
+                                step="2"
+                                inputmode="numeric"
+                                id="hitdiesize"
+                            >
+                            <div class="quantity-nav">
+                                <div class="quantity-button quantity-up" @click="data.defenses.hp.sizeOfHitDie = data.defenses.hp.sizeOfHitDie+2" aria-label="Increase hit die size">+</div>
+                                <div class="quantity-button quantity-down" @click="data.defenses.hp.sizeOfHitDie = Math.max(0, data.defenses.hp.sizeOfHitDie-2)" aria-label="Decrease hit die size">-</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="hitdienum"><span class="text">hit die number</span>🔢</label>
+                        <div class="quantity">
+                            <input 
+                                type="number" 
+                                v-model="data.defenses.hp.numOfHitDie" 
+                                min="1" 
+                                inputmode="numeric"
+                                id="hitdienum"
+                            >
+                            <div class="quantity-nav">
+                                <div class="quantity-button quantity-up" @click="data.defenses.hp.numOfHitDie = data.defenses.hp.numOfHitDie+1" aria-label="Increase hit die number">+</div>
+                                <div class="quantity-button quantity-down" @click="data.defenses.hp.numOfHitDie = Math.max(1, data.defenses.hp.numOfHitDie-1)" aria-label="Decrease hit die number">-</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="hpoverride"><span class="text">hp override</span>💗</label>
+                        <div class="quantity">
+                            <input 
+                                type="number" 
+                                v-model="data.defenses.hp.override" 
+                                min="1" 
+                                step="1"
+                                inputmode="numeric"
+                                id="hpoverride"
+                            >
+                            <div class="quantity-nav">
+                                <div class="quantity-button quantity-up" @click="data.defenses.hp.override = (data.defenses.hp.override??0)+1" aria-label="Increase hit die number">+</div>
+                                <div class="quantity-button quantity-down" @click="data.defenses.hp.override = Math.max(1, (data.defenses.hp.override??0)-1)" aria-label="Decrease hit die number">-</div>
+                            </div>
+                            <span class="delete-button" @click="data.defenses.hp.override = null" aria-label="Delete HP override">🗑️</span>
+                        </div>
                     </div>
                 </div>
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        hit die #
-                    </span>
-                    <div class="editor-field__contents">
-                        <input type="number" placeholder="0" v-model="data.defenses.hp.numOfHitDie" min="1" >
+                <hr>
+                <div class="editor-field__container two-wide">
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="ac"><span class="text">armor class</span>🛡️</label>
+                        <div class="quantity">
+                            <input 
+                                type="number" 
+                                v-model="data.defenses.ac.ac" 
+                                min="0" 
+                                step="1"
+                                inputmode="numeric"
+                                id="ac"
+                            >
+                            <div class="quantity-nav">
+                                <div class="quantity-button quantity-up" @click="data.defenses.ac.ac = data.defenses.ac.ac+1" aria-label="Increase armor class">+</div>
+                                <div class="quantity-button quantity-down" @click="data.defenses.ac.ac = Math.max(0, data.defenses.ac.ac-1)" aria-label="Decrease armor class">-</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="acsource"><span class="text">armor class source</span></label>
+                        <input type="text" placeholder="armor class source..." v-model="data.defenses.ac.acSource">
                     </div>
                 </div>
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        hp override
-                    </span>
-                    <div class="editor-field__contents">
-                        <input type="number" placeholder="0" v-model="data.defenses.hp.override" min="1" >
+                <hr>
+                <div class="editor-field__container two-wide">
+                    <div class="flow-vertically">
+                        <label for="vulnerabilities" class="editor-field__title"><span class="text" v-tooltip="'Takes custom text input'">vulnerabilities*</span></label>
+                        <v-select 
+                            placeholder="type vulnerabilities..." 
+                            v-model="data.defenses.vulnerabilities"
+                            multiple
+                            :deselectFromDropdown="true"
+                            :closeOnSelect="false"
+                            :options='["Acid", "Bludgeoning", "Cold", "Fire", "Force", "Lightning", "Necrotic", "Piercing", "Poison", "Pyschic", "Radiant", "Slashing", "Thunder", "Nonmagical Nonsilvered Bludgeoning", "Nonmagical Nonsilvered Piercing", "Nonmagical Nonsilvered Slashing"]'
+                            :taggable="true"
+                            :pushTags="true"
+                            id="vulnerabilities"
+                        />
+                    </div>
+                    <div class="flow-vertically">
+                        <label for="resistances" class="editor-field__title"><span class="text" v-tooltip="'Takes custom text input'">resistances*</span></label>
+                        <v-select 
+                            placeholder="type resistances..." 
+                            v-model="data.defenses.resistances"
+                            multiple
+                            :deselectFromDropdown="true"
+                            :closeOnSelect="false"
+                            :options='["Acid", "Bludgeoning", "Cold", "Fire", "Force", "Lightning", "Necrotic", "Piercing", "Poison", "Pyschic", "Radiant", "Slashing", "Thunder", "Nonmagical Nonsilvered Bludgeoning", "Nonmagical Nonsilvered Piercing", "Nonmagical Nonsilvered Slashing"]'
+                            :taggable="true"
+                            :pushTags="true"
+                            id="resistances"
+                        />
+                    </div>
+                    <div class="flow-vertically">
+                        <label for="immunities" class="editor-field__title"><span class="text" v-tooltip="'Takes custom text input'">immunities*</span></label>
+                        <v-select 
+                            placeholder="type immunities..." 
+                            v-model="data.defenses.immunities"
+                            multiple
+                            :deselectFromDropdown="true"
+                            :closeOnSelect="false"
+                            :options='["Acid", "Bludgeoning", "Cold", "Fire", "Force", "Lightning", "Necrotic", "Piercing", "Poison", "Pyschic", "Radiant", "Slashing", "Thunder", "Nonmagical Nonsilvered Bludgeoning", "Nonmagical Nonsilvered Piercing", "Nonmagical Nonsilvered Slashing"]'
+                            :taggable="true"
+                            :pushTags="true"
+                            id="immunities"
+                        />
+                    </div>
+                    <div class="flow-vertically">
+                        <label for="conimmunities" class="editor-field__title"><span class="text" v-tooltip="'Takes custom text input'">condition immunities*</span></label>
+                        <v-select 
+                            placeholder="type condition immunities..." 
+                            v-model="data.defenses.conditionImmunities"
+                            multiple
+                            :deselectFromDropdown="true"
+                            :closeOnSelect="false"
+                            :options='["Blinded", "Charmed", "Deafened", "Disease", "Exhaustion", "Frightened", "Grappled", "Incapacitated", "Invisible", "Paralyzed", "Petrified", "Poisoned", "Prone", "Restrained", "Stunned", "Unconscious"]'
+                            :taggable="true"
+                            :pushTags="true"
+                            id="conimmunities"
+                        />
                     </div>
                 </div>
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        armor class
-                    </span>
-                    <div class="editor-field__contents">
-                        <input type="number" placeholder="0" v-model="data.defenses.ac.ac" min="0" step="1" >
-                    </div>
-                </div>                
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        armor type
-                    </span>
-                    <div class="editor-field__contents">
-                        <input type="text" placeholder="Type race..." v-model="data.defenses.ac.acSource">
-                    </div>
-                </div>
-                <h2> vulnerabilities </h2>
-                <v-select 
-                    placeholder="Select a Vulnerability or type one yourself" 
-                    v-model="data.defenses.vulnerabilities"
-                    multiple
-                    :deselectFromDropdown="true"
-                    :closeOnSelect="false"
-                    :options='["Acid", "Bludgeoning", "Cold", "Fire", "Force", "Lightning", "Necrotic", "Piercing", "Poison", "Pyschic", "Radiant", "Slashing", "Thunder", "Nonmagical Nonsilvered Bludgeoning", "Nonmagical Nonsilvered Piercing", "Nonmagical Nonsilvered Slashing"]'
-                    :taggable="true"
-                    :pushTags="true"
-                />
-                <h2> resistances </h2>
-                <v-select 
-                    placeholder="Select a Resistance or type one yourself" 
-                    v-model="data.defenses.resistances"
-                    multiple
-                    :deselectFromDropdown="true"
-                    :closeOnSelect="false"
-                    :options='["Acid", "Bludgeoning", "Cold", "Fire", "Force", "Lightning", "Necrotic", "Piercing", "Poison", "Pyschic", "Radiant", "Slashing", "Thunder", "Nonmagical Nonsilvered Bludgeoning", "Nonmagical Nonsilvered Piercing", "Nonmagical Nonsilvered Slashing"]'
-                    :taggable="true"
-                    :pushTags="true"
-                />
-                <h2> immunities </h2>
-                <v-select 
-                    placeholder="Select an Immunity or type one yourelf" 
-                    v-model="data.defenses.immunities"
-                    multiple
-                    :deselectFromDropdown="true"
-                    :closeOnSelect="false"
-                    :options='["Acid", "Bludgeoning", "Cold", "Fire", "Force", "Lightning", "Necrotic", "Piercing", "Poison", "Pyschic", "Radiant", "Slashing", "Thunder", "Nonmagical Nonsilvered Bludgeoning", "Nonmagical Nonsilvered Piercing", "Nonmagical Nonsilvered Slashing"]'
-                    :taggable="true"
-                    :pushTags="true"
-                />
-                <h2> condition immunities </h2>
-                <v-select 
-                    placeholder="Select a Condition Immunity or type one yourelf" 
-                    v-model="data.defenses.conditionImmunities"
-                    multiple
-                    :deselectFromDropdown="true"
-                    :closeOnSelect="false"
-                    :options='["Blinded", "Charmed", "Deafened", "Disease", "Exhaustion", "Frightened", "Grappled", "Incapacitated", "Invisible", "Paralyzed", "Petrified", "Poisoned", "Prone", "Restrained", "Stunned", "Unconscious"]'
-                    :taggable="true"
-                    :pushTags="true"
-                />
             </div>
+            <hr>
             <div class="editor-content__tab-inner scale-in">
                 <h2> features </h2>
                 <div v-for="feature, index in data.features.features">
@@ -1012,6 +1245,11 @@ export default defineComponent({
     &__tab-inner {
         background-color: rgb(59, 55, 54);
 
+        .group-header {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
         .editor-field__container {
             width: 100%;
             display: grid;
@@ -1022,13 +1260,19 @@ export default defineComponent({
                 display: flex;
                 flex-direction: column;
                 gap: .3rem;
+
+                .button-container p {
+                    display: flex;
+                    justify-content: space-between;
+                }
             }
 
             .center-vertically {
                 display: flex;
                 justify-content: center;
             }
-            .editor-field__title {
+
+            .editor-field__title .text {
                 text-decoration: underline;
             }
 
@@ -1042,6 +1286,10 @@ export default defineComponent({
 
             &.three-wide {
                 grid-template-columns: 1fr 1fr 1fr;
+            }
+
+            &.six-wide {
+                grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
             }
         }
     }
@@ -1094,6 +1342,18 @@ textarea {
 
 .quantity {
   position: relative;
+  white-space: nowrap;
+
+  .delete-button {
+    translate: 0 7px;
+	transition: scale 0.3s ease;
+    cursor: pointer;
+    display: flex;
+
+	&:hover {
+		scale: 1.1;
+	}
+  }
 }
 
 input[type=number]::-webkit-inner-spin-button,
@@ -1121,6 +1381,9 @@ input[type=number]
   padding-left: 10px;
   border: 1px solid rgb(60, 63, 68);
   color: white;
+}
+.quantity:has(.delete-button) input {
+    width: 90%;
 }
 
 .quantity input:focus {

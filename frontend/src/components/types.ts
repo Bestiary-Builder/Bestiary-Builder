@@ -55,7 +55,7 @@ export const defaultStatblock = {
 		hp: {
 			numOfHitDie: 1,
 			sizeOfHitDie: 6,
-			override: false
+			override: null as number | null
 		},
 		ac: {
 			ac: 10,
@@ -257,7 +257,7 @@ export interface Defenses {
 export interface Hp {
 	numOfHitDie: number;
 	sizeOfHitDie: number;
-	override: boolean;
+	override: number | null;
 }
 export interface Ac {
 	ac: number;

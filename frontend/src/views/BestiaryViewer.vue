@@ -358,7 +358,7 @@ export default defineComponent({
 	cursor: pointer;
 	transition: scale 0.3s ease;
 
-	& :hover {
+	&:hover {
 		scale: 1.1;
 	}
 }
