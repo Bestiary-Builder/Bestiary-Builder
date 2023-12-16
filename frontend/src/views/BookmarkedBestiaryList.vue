@@ -2,7 +2,7 @@
 	<div class="content">
 		<h1><span>bookmarked bestiaries</span></h1>
 		<div class="tile-container">
-			<a class="content-tile bestiary-tile" v-for="bestiary in bestiaries" :href="'/bestiary-viewer/' + bestiary._id" v-if="bestiaries">
+			<RouterLink class="content-tile bestiary-tile" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" v-if="bestiaries">
 				<h2>{{ bestiary.name }}</h2>
 				<div class="bestiary-tile-content">
 					<p class="description">{{ bestiary.description }}</p>
@@ -11,12 +11,13 @@
 						<span>{{ bestiary.creatures.length }}🐉</span>
 					</div>
 				</div>
-			</a>
+			</RouterLink>
 		</div>
 	</div>
 </template>
 
 <script lang="ts">
+import {RouterLink} from "vue-router";
 import {defineComponent} from "vue";
 import type {User, Bestiary, Creature} from "@/components/types";
 import {handleApiResponse, toast, user} from "@/main";

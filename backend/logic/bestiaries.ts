@@ -214,7 +214,8 @@ app.get("/api/bestiary/:id/bookmark/get", requireUser, async (req, res) => {
 			return res.status(401).json({error: "You don't have permission to view this bestiary."});
 		}
 		//Already bookmarked
-		if (user.bookmarks.filter((a) => a.toHexString() == _id.toHexString()).length > 0) {
+		let bookmarks = user.bookmarks ?? [];
+		if (bookmarks.filter((a) => a.toHexString() == _id.toHexString()).length > 0) {
 			return res.json({state: true});
 		} else {
 			return res.json({state: false});

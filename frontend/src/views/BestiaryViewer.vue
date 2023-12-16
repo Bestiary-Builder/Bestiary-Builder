@@ -25,7 +25,7 @@
 					</div>
 					<div class="right-side">
 						<span v-if="isOwner" role="button" @click="openDeleteModal(creature._id)" class="delete-creature"> <span>🗑️</span> </span>
-						<span v-if="isOwner" class="edit-creature"> <a class="creature" :href="'/statblock-editor/' + creature._id"> ✏️ </a> </span>
+						<span v-if="isOwner" class="edit-creature"> <RouterLink class="creature" :to="'/statblock-editor/' + creature._id"> ✏️ </RouterLink> </span>
 						<span> CR {{ creature.stats.description.cr }}</span>
 					</div>
 				</div>
@@ -74,6 +74,7 @@
 </template>
 
 <script lang="ts">
+import {RouterLink} from "vue-router";
 import {defineComponent} from "vue";
 import {defaultStatblock} from "@/components/types";
 import type {User, Bestiary, Creature, Statblock} from "@/components/types";

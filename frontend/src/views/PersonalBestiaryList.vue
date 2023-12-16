@@ -6,8 +6,7 @@
 			<div class="content-tile create-tile" @click.prevent="createBestiary">
 				<button class="create-button">+</button>
 			</div>
-
-			<a class="content-tile bestiary-tile" v-for="bestiary in bestiaries" :href="'/bestiary-viewer/' + bestiary._id" v-if="bestiaries">
+			<RouterLink class="content-tile bestiary-tile" v-if="bestiaries" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id">
 				<h2 class="bestiary-title">{{ bestiary.name }}</h2>
 				<div class="bestiary-tile-content">
 					<p class="description">{{ bestiary.description }}</p>
@@ -17,22 +16,23 @@
 						<span>{{ bestiary.creatures.length }}🐉</span>
 					</div>
 				</div>
-			</a>
+			</RouterLink>
 		</div>
 	</div>
 
 	<dialog id="delete-modal">
-		<h2 class="modal-header"> Are you sure you want to delete this bestiary? </h2>
-		<p class="modal-desc"> Please confirm you want to permanently delete this bestiary. This action is not reversible. </p>
+		<h2 class="modal-header">Are you sure you want to delete this bestiary?</h2>
+		<p class="modal-desc">Please confirm you want to permanently delete this bestiary. This action is not reversible.</p>
 
 		<div class="modal-buttons">
-			<button class="cancel-button" @click="closeModal()"> Cancel </button>
-			<button class="danger-button" @click.prevent="() => deleteBestiary()">Confirm </button>
+			<button class="cancel-button" @click="closeModal()">Cancel</button>
+			<button class="danger-button" @click.prevent="() => deleteBestiary()">Confirm</button>
 		</div>
 	</dialog>
 </template>
 
 <script lang="ts">
+import {RouterLink} from "vue-router";
 import {defineComponent} from "vue";
 import type {User, Bestiary, Creature} from "@/components/types";
 import {handleApiResponse, toast, user} from "@/main";
@@ -43,7 +43,7 @@ export default defineComponent({
 		return {
 			bestiaries: [] as Bestiary[],
 			user: null as User | null,
-			deleteId: "" as string,
+			deleteId: "" as string
 		};
 	},
 	async beforeMount() {
@@ -72,7 +72,7 @@ export default defineComponent({
 				if (result.success) {
 					toast.success("Created bestiary");
 					// @ts-ignore
-					window.location.href = "/bestiary-viewer/" + result.data._id;
+					this.$router.push("/bestiary-viewer/" + result.data._id);
 				} else {
 					toast.error((result.data as error).error);
 				}
@@ -80,13 +80,13 @@ export default defineComponent({
 			await this.getBestiaries();
 		},
 		async deleteBestiary() {
-			let id = this.deleteId
+			let id = this.deleteId;
 			await fetch(`/api/bestiary/${id}/delete`).then(async (response) => {
 				let result = await handleApiResponse(response);
 				if (result.success) {
 					toast.success("Deleted bestiary succesfully");
 
-					(document.getElementById("delete-modal") as HTMLDialogElement).close()
+					(document.getElementById("delete-modal") as HTMLDialogElement).close();
 				} else {
 					toast.error((result.data as error).error);
 				}
@@ -113,13 +113,13 @@ export default defineComponent({
 			return status == "public" ? "🌍" : status == "private" ? "🔒" : "🔗";
 		},
 		openModal(id: string): void {
-			const dialog = document.getElementById("delete-modal") as HTMLDialogElement
-			if (!dialog) return
-			this.deleteId = id
-			dialog.showModal()
+			const dialog = document.getElementById("delete-modal") as HTMLDialogElement;
+			if (!dialog) return;
+			this.deleteId = id;
+			dialog.showModal();
 		},
 		closeModal(): void {
-			(document.getElementById("delete-modal") as HTMLDialogElement).close()
+			(document.getElementById("delete-modal") as HTMLDialogElement).close();
 		}
 	}
 });
@@ -130,9 +130,9 @@ export default defineComponent({
 
 .edit-button {
 	margin: auto;
-	transition: scale .3s ease;
+	transition: scale 0.3s ease;
 	& :hover {
-		scale: 1.1
+		scale: 1.1;
 	}
 }
 </style>
