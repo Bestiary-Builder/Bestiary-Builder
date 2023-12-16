@@ -527,83 +527,83 @@
                     </div>
                 </div>
                 <div class="editor-field__container three-wide">
-                        <div class="flow-vertically">
-                            <span class="editor-field__title"><span class="text">intelligence</span>🧠</span>
-                            <div>
-                                <p> 
-                                    <label for="intsaveprof" aria-label="intelligence save proficiency">proficient</label>
-                                    <input type="checkbox" v-model="data.abilities.saves.int.isProficient" id="intsaveprof"> 
-                                </p>
+                    <div class="flow-vertically">
+                        <span class="editor-field__title"><span class="text">intelligence</span>🧠</span>
+                        <div>
+                            <p> 
+                                <label for="intsaveprof" aria-label="intelligence save proficiency">proficient</label>
+                                <input type="checkbox" v-model="data.abilities.saves.int.isProficient" id="intsaveprof"> 
+                            </p>
 
-                                <div>
-                                    <label for="intsave" aria-label="intelligence save override"> override </label>
-                                    <div class="quantity">
-                                        <input 
-                                            type="number" 
-                                            v-model="data.abilities.saves.int.override" 
-                                            inputmode="numeric"
-                                            id="intsave"
-                                        >
-                                        <div class="quantity-nav">
-                                            <div class="quantity-button quantity-up" @click="data.abilities.saves.int.override = (data.abilities.saves.int.override ?? 0)+1" aria-label="Increase intelligence save override">+</div>
-                                            <div class="quantity-button quantity-down" @click="data.abilities.saves.int.override = (data.abilities.saves.int.override ?? 0)-1" aria-label="Decrease intelligence save override">-</div>
-                                        </div>
-                                        <span class="delete-button" @click="data.abilities.saves.int.override = null" aria-label="Delete intelligence save override">🗑️</span>
+                            <div>
+                                <label for="intsave" aria-label="intelligence save override"> override </label>
+                                <div class="quantity">
+                                    <input 
+                                        type="number" 
+                                        v-model="data.abilities.saves.int.override" 
+                                        inputmode="numeric"
+                                        id="intsave"
+                                    >
+                                    <div class="quantity-nav">
+                                        <div class="quantity-button quantity-up" @click="data.abilities.saves.int.override = (data.abilities.saves.int.override ?? 0)+1" aria-label="Increase intelligence save override">+</div>
+                                        <div class="quantity-button quantity-down" @click="data.abilities.saves.int.override = (data.abilities.saves.int.override ?? 0)-1" aria-label="Decrease intelligence save override">-</div>
                                     </div>
+                                    <span class="delete-button" @click="data.abilities.saves.int.override = null" aria-label="Delete intelligence save override">🗑️</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="flow-vertically">
-                            <span class="editor-field__title"><span class="text">wisdom</span>🦉</span>
-                            <div>
-                                <p> 
-                                    <label for="wissaveprof" aria-label="wisdom save proficiency">proficient</label>
-                                    <input type="checkbox" v-model="data.abilities.saves.wis.isProficient" id="wissaveprof"> 
-                                </p>
+                    </div>
+                    <div class="flow-vertically">
+                        <span class="editor-field__title"><span class="text">wisdom</span>🦉</span>
+                        <div>
+                            <p> 
+                                <label for="wissaveprof" aria-label="wisdom save proficiency">proficient</label>
+                                <input type="checkbox" v-model="data.abilities.saves.wis.isProficient" id="wissaveprof"> 
+                            </p>
 
-                                <div>
-                                    <label for="wissave" aria-label="wisdom save override"> override </label>
-                                    <div class="quantity">
-                                        <input 
-                                            type="number" 
-                                            v-model="data.abilities.saves.wis.override" 
-                                            inputmode="numeric"
-                                            id="wissave"
-                                        >
-                                        <div class="quantity-nav">
-                                            <div class="quantity-button quantity-up" @click="data.abilities.saves.wis.override = (data.abilities.saves.wis.override ?? 0)+1" aria-label="Increase wisdom save override">+</div>
-                                            <div class="quantity-button quantity-down" @click="data.abilities.saves.wis.override = (data.abilities.saves.wis.override ?? 0)-1" aria-label="Decrease wisdom save override">-</div>
-                                        </div>
-                                        <span class="delete-button" @click="data.abilities.saves.wis.override = null" aria-label="Delete wisdom save override">🗑️</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flow-vertically">
-                            <span class="editor-field__title"><span class="text">charisma</span>🎭</span>
                             <div>
-                                <p> 
-                                    <label for="chasaveprof" aria-label="charisma save proficiency">proficient</label>
-                                    <input type="checkbox" v-model="data.abilities.saves.cha.isProficient" id="chasaveprof"> 
-                                </p>
-                                <div>
-                                    <label for="chasave" aria-label="charisma save override"> override </label>
-                                    <div class="quantity">
-                                        <input 
-                                            type="number" 
-                                            v-model="data.abilities.saves.cha.override" 
-                                            inputmode="numeric"
-                                            id="chasave"
-                                        >
-                                        <div class="quantity-nav">
-                                            <div class="quantity-button quantity-up" @click="data.abilities.saves.cha.override = (data.abilities.saves.cha.override ?? 0)+1" aria-label="Increase charisma save override">+</div>
-                                            <div class="quantity-button quantity-down" @click="data.abilities.saves.cha.override = (data.abilities.saves.cha.override ?? 0)-1" aria-label="Decrease charisma save override">-</div>
-                                        </div>
-                                        <span class="delete-button" @click="data.abilities.saves.cha.override = null" aria-label="Delete charisma save override">🗑️</span>
+                                <label for="wissave" aria-label="wisdom save override"> override </label>
+                                <div class="quantity">
+                                    <input 
+                                        type="number" 
+                                        v-model="data.abilities.saves.wis.override" 
+                                        inputmode="numeric"
+                                        id="wissave"
+                                    >
+                                    <div class="quantity-nav">
+                                        <div class="quantity-button quantity-up" @click="data.abilities.saves.wis.override = (data.abilities.saves.wis.override ?? 0)+1" aria-label="Increase wisdom save override">+</div>
+                                        <div class="quantity-button quantity-down" @click="data.abilities.saves.wis.override = (data.abilities.saves.wis.override ?? 0)-1" aria-label="Decrease wisdom save override">-</div>
                                     </div>
+                                    <span class="delete-button" @click="data.abilities.saves.wis.override = null" aria-label="Delete wisdom save override">🗑️</span>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="flow-vertically">
+                        <span class="editor-field__title"><span class="text">charisma</span>🎭</span>
+                        <div>
+                            <p> 
+                                <label for="chasaveprof" aria-label="charisma save proficiency">proficient</label>
+                                <input type="checkbox" v-model="data.abilities.saves.cha.isProficient" id="chasaveprof"> 
+                            </p>
+                            <div>
+                                <label for="chasave" aria-label="charisma save override"> override </label>
+                                <div class="quantity">
+                                    <input 
+                                        type="number" 
+                                        v-model="data.abilities.saves.cha.override" 
+                                        inputmode="numeric"
+                                        id="chasave"
+                                    >
+                                    <div class="quantity-nav">
+                                        <div class="quantity-button quantity-up" @click="data.abilities.saves.cha.override = (data.abilities.saves.cha.override ?? 0)+1" aria-label="Increase charisma save override">+</div>
+                                        <div class="quantity-button quantity-down" @click="data.abilities.saves.cha.override = (data.abilities.saves.cha.override ?? 0)-1" aria-label="Decrease charisma save override">-</div>
+                                    </div>
+                                    <span class="delete-button" @click="data.abilities.saves.cha.override = null" aria-label="Delete charisma save override">🗑️</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <hr>
                 <h2 class="group-header"> skills </h2>
@@ -783,76 +783,232 @@
                         />
                     </div>
                 </div>
-            </div>
             <hr>
+            </div>
             <div class="editor-content__tab-inner scale-in">
-                <h2> features </h2>
-                <div v-for="feature, index in data.features.features">
-                    <FeatureWidget :index="index" type="features" :data="data"/>
+                <h2 class="group-header"> features </h2>
+                <div class="editor-field__container three-wide">
+                    <div class="flow-vertically" v-for="feature, index in data.features.features">
+                        <label class="editor-field__title" :for="'features'+index"><span class="text">{{ feature.name }}</span></label>
+                        <FeatureWidget :index="index" type="features" :data="data"/>
+                    </div>
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="newfeature"><span class="text">new feature</span></label>
+                        <button @click="createNewFeature('features')" id="newfeature"> create </button>
+                    </div>
                 </div>
-                <button @click="createNewFeature('features')"> new feature </button>
+                <hr>
 
-                <h2> actions </h2>
-                <div v-for="feature, index in data.features.actions">
-                    <FeatureWidget :index="index" type="actions" :data="data"/>
+                <h2 class="group-header"> actions </h2>
+                <div class="editor-field__container three-wide">
+                    <div class="flow-vertically" v-for="feature, index in data.features.actions">
+                        <label class="editor-field__title" :for="'actions'+index"><span class="text">{{ feature.name }}</span></label>
+                        <FeatureWidget :index="index" type="actions" :data="data"/>
+                    </div>
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="newaction"><span class="text">new action</span></label>
+                        <button @click="createNewFeature('actions')" id="newaction"> create </button>
+                    </div>
                 </div>
-                <button @click="createNewFeature('actions')"> new action </button>
+                <hr>
 
-                <h2> bonus actions </h2>
-                <div v-for="feature, index in data.features.bonus">
-                    <FeatureWidget :index="index" type="bonus" :data="data"/>
+                <h2 class="group-header"> bonus actions </h2>
+                <div class="editor-field__container three-wide">
+                    <div class="flow-vertically" v-for="feature, index in data.features.bonus">
+                        <label class="editor-field__title" :for="'bonus'+index"><span class="text">{{ feature.name }}</span></label>
+                        <FeatureWidget :index="index" type="bonus" :data="data"/>
+                    </div>
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="newbonus"><span class="text">new bonus action</span></label>
+                        <button @click="createNewFeature('bonus')" id="newbonus"> create </button>
+                    </div>
                 </div>
-                <button @click="createNewFeature('bonus')"> new bonus action </button>
 
-                <h2> reactions </h2>
-                <div v-for="feature, index in data.features.reactions">
-                    <FeatureWidget :index="index" type="reactions" :data="data"/>
+                <hr>
+                <h2 class="group-header"> reactions </h2>
+                <div class="editor-field__container three-wide">
+                    <div class="flow-vertically" v-for="feature, index in data.features.reactions">
+                        <label class="editor-field__title" :for="'reactions'+index"><span class="text">{{ feature.name }}</span></label>
+                        <FeatureWidget :index="index" type="reactions" :data="data"/>
+                    </div>
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="newreaction"><span class="text">new reaction action</span></label>
+                        <button @click="createNewFeature('reactions')" id="newreaction"> create </button>
+                    </div>
                 </div>
-                <button @click="createNewFeature('reactions')"> new reaction</button>
 
-                <h2> legendary resistances </h2>
-                <div v-for="feature, index in data.features.legendary">
-                    <FeatureWidget :index="index" type="legendary" :data="data"/>
+                <hr>
+                <h2 class="group-header"> legendary actions </h2>
+                <div class="editor-field__container three-wide">
+                    <div class="flow-vertically" v-for="feature, index in data.features.legendary">
+                        <label class="editor-field__title" :for="'legendary'+index"><span class="text">{{ feature.name }}</span></label>
+                        <FeatureWidget :index="index" type="legendary" :data="data"/>
+                    </div>
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="newlegendary"><span class="text">new legendary action</span></label>
+                        <button @click="createNewFeature('legendary')" id="newlegendary"> create </button>
+                    </div>
                 </div>
-                <button @click="createNewFeature('legendary')"> new legendary action</button>
 
-                <h2> lair actions </h2>
-                <div v-for="feature, index in data.features.lair">
-                    <FeatureWidget :index="index" type="lair" :data="data"/>
+                <hr>
+                <h2 class="group-header"> lair actions </h2>
+                <div class="editor-field__container three-wide">
+                    <div class="flow-vertically" v-for="feature, index in data.features.lair">
+                        <label class="editor-field__title" :for="'lair'+index"><span class="text">{{ feature.name }}</span></label>
+                        <FeatureWidget :index="index" type="lair" :data="data"/>
+                    </div>
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="newlair"><span class="text">new lair action</span></label>
+                        <button @click="createNewFeature('lair')" id="newlair"> create </button>
+                    </div>
                 </div>
-                <button @click="createNewFeature('lair')"> new lair action</button>
 
-                <h2> regional effects </h2>
-                <div v-for="feature, index in data.features.regional">
-                    <FeatureWidget :index="index" type="regional" :data="data"/>
+                <hr>
+                <h2 class="group-header"> mythic actions </h2>
+                <div class="editor-field__container three-wide">
+                    <div class="flow-vertically" v-for="feature, index in data.features.mythic">
+                        <label class="editor-field__title" :for="'mythic'+index"><span class="text">{{ feature.name }}</span></label>
+                        <FeatureWidget :index="index" type="mythic" :data="data"/>
+                    </div>
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="newmythic"><span class="text">new mythic action</span></label>
+                        <button @click="createNewFeature('mythic')" id="newmythic"> create </button>
+                    </div>
                 </div>
-                <button @click="createNewFeature('regional')"> new regional effect</button>
+
+                <hr>
+                <h2 class="group-header"> regional effects </h2>
+                <div class="editor-field__container three-wide">
+                    <div class="flow-vertically" v-for="feature, index in data.features.regional">
+                        <label class="editor-field__title" :for="'regional'+index"><span class="text">{{ feature.name }}</span></label>
+                        <FeatureWidget :index="index" type="regional" :data="data"/>
+                    </div>
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="newregional"><span class="text">new regional effects</span></label>
+                        <button @click="createNewFeature('regional')" id="newregional"> create </button>
+                    </div>
+                </div>
             </div>
             <div  class="editor-content__tab-inner scale-in">
-                <h3> innate spellcasting </h3>
-                <p> spellcasting abilitiy <v-select :options="['str', 'dex', 'con', 'wis', 'int', 'cha']" v-model="data.spellcasting.innateSpells.spellCastingAbility" /> <button @click="data.spellcasting.innateSpells.spellCastingAbility = null"> Reset</button> </p>
-                <p> dc override <input type="number" v-model="data.spellcasting.innateSpells.spellDcOverride" min="0" step="1"> <button @click="data.spellcasting.innateSpells.spellDcOverride = null"> Reset</button> </p>
-                <p> attack bonus override <input type="number" v-model="data.spellcasting.innateSpells.spellBonusOverride" step="1"> <button @click="data.spellcasting.innateSpells.spellBonusOverride = null"> Reset</button> </p>
-                <p> is psionics? <input type="checkbox" v-model="data.spellcasting.innateSpells.isPsionics"> </p>
+                <h2 class="group-header"> innate spellcasting</h2>
+                <div class="editor-field__container two-wide">
+                    <div class="flow-vertically">
+                        <label class=editor-field__title for="innateability"><span class="text">spellcasting ability</span></label>
+                        <p> 
+                            <v-select 
+                                :options="['str', 'dex', 'con', 'wis', 'int', 'cha']" 
+                                v-model="data.spellcasting.innateSpells.spellCastingAbility" 
+                                inputId="innateability"
+                            /> 
+                            <span class="delete-button" @click="data.spellcasting.innateSpells.spellCastingAbility = null" aria-label="Delete innate spellcasting ability">🗑️</span>
+                        </p>
+                    </div>
+                    <div class="flow-vertically">
+                        <label for="notcomponents" class="editor-field__title"><span class="text">not these components</span></label>
+                        <v-select
+                            :options='["Material", "Verbal", "Somatic"]'
+                            v-model="data.spellcasting.innateSpells.noComponentsOfType"
+                            multiple 
+                            :deselectFromDropdown="true"
+                            :closeOnSelect="false"
+                            inputId="notcomponents"
+                        />
+                    </div>
+                </div>
+                <div class="editor-field__container two-wide">
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="innateDcOverride"><span class="text">dc override</span> </label>
+                        <div class="quantity">
+                            <input 
+                                type="number" 
+                                v-model="data.spellcasting.innateSpells.spellDcOverride" 
+                                min="0" 
+                                step="1"
+                                inputmode="numeric"
+                                id="innateDcOverride"
+                            >
+                            <div class="quantity-nav">
+                                <div class="quantity-button quantity-up" @click="data.spellcasting.innateSpells.spellDcOverride = (data.spellcasting.innateSpells.spellDcOverride??0)+1" aria-label="Increase innate spellcasting dc override">+</div>
+                                <div class="quantity-button quantity-down" @click="data.spellcasting.innateSpells.spellDcOverride = Math.max(0, (data.spellcasting.innateSpells.spellDcOverride??0)-1)" aria-label="Decrease innate spellcasting dc override">-</div>
+                            </div>
+                            <span class="delete-button" @click="data.spellcasting.innateSpells.spellDcOverride = null" aria-label="Delete innate spellcasting dc override">🗑️</span>
+                        </div>
+                    </div>
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="innateBonusOverride"><span class="text">attack bonus override</span> </label>
+                        <div class="quantity">
+                            <input 
+                                type="number" 
+                                v-model="data.spellcasting.innateSpells.spellBonusOverride" 
+                                step="1"
+                                inputmode="numeric"
+                                id="innateBonusOverride"
+                            >
+                            <div class="quantity-nav">
+                                <div class="quantity-button quantity-up" @click="data.spellcasting.innateSpells.spellBonusOverride = (data.spellcasting.innateSpells.spellBonusOverride??0)+1" aria-label="Increase innate spellcasting attack bonus override">+</div>
+                                <div class="quantity-button quantity-down" @click="data.spellcasting.innateSpells.spellBonusOverride =(data.spellcasting.innateSpells.spellBonusOverride??0)-1" aria-label="Decrease innate spellcasting attack bonus override">-</div>
+                            </div>
+                            <span class="delete-button" @click="data.spellcasting.innateSpells.spellBonusOverride = null" aria-label="Delete innate spellcasting dc override">🗑️</span>
+                        </div>
+                    </div>
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="atwillspells"><span class="text">at will</span></label>
+                        <v-select 
+                            :options="spellListFlattened" 
+                            v-model="innateSpells[0]" 
+                            multiple 
+                            :deselectFromDropdown="true" 
+                            :closeOnSelect="false"
+                            inputId="atwillspells"
+                        />
+                    </div>
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="onceperday"><span class="text">1/day</span></label>
+                        <v-select 
+                            :options="spellListFlattened" 
+                            v-model="innateSpells[1]" 
+                            multiple 
+                            :deselectFromDropdown="true" 
+                            :closeOnSelect="false"
+                            inputId="onceperday"
+                        />
+                    </div>
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="twiceperday"><span class="text">2/day</span></label>
+                        <v-select 
+                            :options="spellListFlattened" 
+                            v-model="innateSpells[2]" 
+                            multiple 
+                            :deselectFromDropdown="true" 
+                            :closeOnSelect="false"
+                            inputId="twiceperday"
+                        />
+                    </div>
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="thriceperday"><span class="text">3/day</span></label>
+                        <v-select 
+                            :options="spellListFlattened" 
+                            v-model="innateSpells[3]" 
+                            multiple 
+                            :deselectFromDropdown="true" 
+                            :closeOnSelect="false"
+                            inputId="thriceperday"
+                        />
+                    </div>
+                    
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="ispionics"> <span class="text">is psionics? </span></label>
+                        <span> display as psionics? <input type="checkbox" v-model="data.spellcasting.innateSpells.isPsionics" id="ispsionics"> </span>
+                    </div>
 
-                <p> requiring not these components: 
-                    <v-select
-                        :options='["Material", "Verbal", "Somatic"]'
-                        v-model="data.spellcasting.innateSpells.noComponentsOfType"
-                        multiple 
-                        :deselectFromDropdown="true"
-                        :closeOnSelect="false"
-                    />
-                </p>
-
-                <p> spell list
-
-                    <div> at will: <v-select :options="spellListFlattened" v-model="innateSpells[0]" multiple :deselectFromDropdown="true" :closeOnSelect="false"/> </div>
-                    <div> 1/day <v-select :options="spellListFlattened" v-model="innateSpells[1]" multiple :deselectFromDropdown="true" :closeOnSelect="false"/> </div>
-                    <div> 2/day: <v-select :options="spellListFlattened" v-model="innateSpells[2]" multiple :deselectFromDropdown="true" :closeOnSelect="false"/> </div>
-                    <div> 3/day: <v-select :options="spellListFlattened" v-model="innateSpells[3]" multiple :deselectFromDropdown="true" :closeOnSelect="false"/> </div>
-
-
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="openspelldialog"> <span class="text">edit specific spells</span></label>
+                        <button> Edit cast level/add comment</button>
+                    </div>
+                </div>
+                
+                <!-- TODO: Implement this in a modal 
+                    <p> spell list
                     <div v-for="times in data.spellcasting.innateSpells.spellList">
                         <div v-if="times.length>0">
                             <div v-for="spell in times">
@@ -862,19 +1018,81 @@
                             </div>
                         </div>
                     </div>
-                </p>
+                </p> -->
                 <hr /> 
-                <h3> class spellcasting </h3>
+                <h2 class="group-header"> class spellcasting </h2>
+                <div class="editor-field__container two-wide">
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="castingclass"><span class="text">class</span></label>
+                        <v-select 
+                            v-model="data.spellcasting.casterSpells.castingClass" 
+                            :options="['Artificer', 'Bard', 'Cleric', 'Druid', 'Paladin', 'Ranger', 'Sorcerer', 'Warlock', 'Wizard']" 
+                            inputId="castingclass" 
+                        />
+                    </div>
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="castinglevel"><span class="text">class level</span></label>
+                        <v-select 
+                            v-model="data.spellcasting.casterSpells.casterLevel" 
+                            :options="[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]" 
+                            inputId="castinglevel"
+                        />
+                    </div>
 
-                <hr>
-                <p> class <v-select v-model="data.spellcasting.casterSpells.castingClass" :options="['Artificer', 'Bard', 'Cleric', 'Druid', 'Paladin', 'Ranger', 'Sorcerer', 'Warlock', 'Wizard']" /> </p>
-                <p> class level <v-select v-model="data.spellcasting.casterSpells.casterLevel" :options="[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]" /> </p>
-                <p> dc override <input type="number" v-model="data.spellcasting.casterSpells.spellDcOverride" min="0" step="1"> <button @click="data.spellcasting.casterSpells.spellDcOverride = null"> Reset</button> </p>
-                <p> attack bonus override <input type="number" v-model="data.spellcasting.casterSpells.spellBonusOverride" step="1"> <button @click="data.spellcasting.casterSpells.spellBonusOverride = null"> Reset</button> </p>
-                <p> ability override <v-select :options="['str', 'dex', 'con', 'wis', 'int', 'cha']" v-model="data.spellcasting.casterSpells.spellCastingAbilityOverride" /> <button @click="data.spellcasting.casterSpells.spellCastingAbilityOverride = null"> Reset</button> </p>
-                <div v-if="data.spellcasting.casterSpells.castingClass">
-                    <p v-if="!['Ranger', 'Paladin'].includes(data.spellcasting.casterSpells.castingClass)"> 
-                        <p> cantrips </p>
+                    
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="casterDcOverride"><span class="text">dc override</span> </label>
+                        <div class="quantity">
+                            <input 
+                                type="number" 
+                                v-model="data.spellcasting.casterSpells.spellDcOverride" 
+                                min="0" 
+                                step="1"
+                                inputmode="numeric"
+                                id="casterDcOverride"
+                            >
+                            <div class="quantity-nav">
+                                <div class="quantity-button quantity-up" @click="data.spellcasting.casterSpells.spellDcOverride = (data.spellcasting.casterSpells.spellDcOverride??0)+1" aria-label="Increase spellcasting dc override">+</div>
+                                <div class="quantity-button quantity-down" @click="data.spellcasting.casterSpells.spellDcOverride = Math.max(0, (data.spellcasting.casterSpells.spellDcOverride??0)-1)" aria-label="Decrease spellcasting dc override">-</div>
+                            </div>
+                            <span class="delete-button" @click="data.spellcasting.casterSpells.spellDcOverride = null" aria-label="Delete spellcasting dc override">🗑️</span>
+                        </div>
+                    </div>
+
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="casterBonusOverride"><span class="text">attack bonus override</span> </label>
+                        <div class="quantity">
+                            <input 
+                                type="number" 
+                                v-model="data.spellcasting.casterSpells.spellBonusOverride" 
+                                step="1"
+                                inputmode="numeric"
+                                id="casterBonusOverride"
+                            >
+                            <div class="quantity-nav">
+                                <div class="quantity-button quantity-up" @click="data.spellcasting.casterSpells.spellBonusOverride = (data.spellcasting.casterSpells.spellBonusOverride??0)+1" aria-label="Increase spellcasting attack bonus override">+</div>
+                                <div class="quantity-button quantity-down" @click="data.spellcasting.casterSpells.spellBonusOverride =(data.spellcasting.casterSpells.spellBonusOverride??0)-1" aria-label="Decrease spellcasting attack bonus override">-</div>
+                            </div>
+                            <span class="delete-button" @click="data.spellcasting.casterSpells.spellBonusOverride = null" aria-label="Delete spellcasting dc override">🗑️</span>
+                        </div>
+                    </div>
+
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="castingabilityoverride"><span class="text">ability override</span></label>
+                        <p>
+                            <v-select 
+                                :options="['str', 'dex', 'con', 'wis', 'int', 'cha']" 
+                                v-model="data.spellcasting.casterSpells.spellCastingAbilityOverride" 
+                                inputId="castingabilityoverride"    
+                            />
+                            <span class="delete-button" @click="data.spellcasting.casterSpells.spellCastingAbilityOverride = null" aria-label="Delete spellcasting ability override">🗑️</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div v-if="data.spellcasting.casterSpells.castingClass" class="editor-field__container two-wide">
+                    <div class="flow-vertically" v-if="!['Ranger', 'Paladin'].includes(data.spellcasting.casterSpells.castingClass)"> 
+                        <label class="edit-field__title" for="cantrips" > <span class="text">cantrips</span> </label>
                         <v-select 
                             v-model="data.spellcasting.casterSpells.spellList[0]"
                             :options="spellList[0]" 
@@ -883,26 +1101,31 @@
                             :closeOnSelect="false"          
                             :taggable="true"
                             :pushTags="true"
+                            inputId="cantrips"
                         /> 
-                        <hr>
-                    </p>
-                    <p v-for="level in spellLevelList()">
-                        <p> level {{ level }} spells </p>
+                    </div>
+                    <div class="flow-vertically" v-for="level in spellLevelList()">
+                        <label class="edit-field__title" :for="'levelspells'+level" ><span class="text">level {{ level }}</span></label>
                         <v-select 
-                        v-model="data.spellcasting.casterSpells.spellList[level]"
-                        :options="getSpellsByLevel(level)" 
-                        multiple       
-                        :deselectFromDropdown="true"
-                        :closeOnSelect="false"              
-                        :taggable="true"
-                        :pushTags="true"
+                            v-model="data.spellcasting.casterSpells.spellList[level]"
+                            :options="getSpellsByLevel(level)" 
+                            multiple       
+                            :deselectFromDropdown="true"
+                            :closeOnSelect="false"              
+                            :taggable="true"
+                            :pushTags="true"
+                            :inputId="'levelspells'+level"
                         /> 
-                        <hr />
-                    </p>
+                    </div>
                 </div>
             </div>
         </div>
-        <button @click="saveStatblock()"> save statblock </button>
+
+        <hr />
+
+        <div class="save-button">
+            <button @click="saveStatblock()"> save statblock </button>
+        </div>
     </div>
     <div class="content-container__inner"> 
         <StatblockRenderer :data='data'/>
@@ -1013,7 +1236,7 @@ export default defineComponent({
         deleteSkill(index: number) : void {
             this.data.abilities.skills?.splice(index, 1)
         },
-        createNewFeature(type: "features" | "actions" | "bonus" | "reactions" | "legendary" | "lair" | "regional" ) : void {
+        createNewFeature(type: "features" | "actions" | "bonus" | "reactions" | "legendary" | "mythic" | "lair" | "regional" ) : void {
             this.data.features[type][this.data.features[type].length] = {
                 "name": "New Feature",
                 "description": "",
@@ -1273,6 +1496,7 @@ export default defineComponent({
             }
 
             .editor-field__title .text {
+                font-weight: bold;
                 text-decoration: underline;
             }
 
@@ -1426,4 +1650,26 @@ input[type=number]
   height: 50%;
 }
 
+hr {
+    border-color: orangered;
+}
+
+.save-button {
+    width: 100%;
+    display: flex;
+    margin-top: 2rem;
+    justify-content: center;
+    button {
+        font-size: 1.5rem;
+        padding: 1.5rem;
+        background-color: var(--color-success);
+        cursor: pointer;
+
+        transition: scale .3s ease;
+
+        &:hover {
+            scale: 1.05
+        }
+    }
+}
 </style>

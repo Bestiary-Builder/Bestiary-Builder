@@ -200,6 +200,14 @@
             </p>
         </div>
 
+        <div class="feature-container" v-if="data.features.mythic.length > 0">
+            <h3 class="feature-container__title"> Mythic Actions </h3>
+                <p v-for="feature in data.features.mythic">
+                <b> <i>{{ feature.name }}</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
+                <span class="feature-container__desc" v-html="sanitizeAndFormat(feature.description)"> </span>
+            </p>
+        </div>
+
         <div class="feature-container" v-if="data.features.lair.length > 0">
             <h3 class="feature-container__title"> Lair Actions </h3>
                 <p v-for="feature in data.features.lair">

@@ -1,5 +1,5 @@
 <template>
-	<button @click="openModal">{{ feat.name }}: Edit Feature</button>
+	<button @click="openModal" :id="type + index">Edit Feature</button>
 	<Teleport to="#modal">
 		<Transition name="modal">
 			<div class="modal__bg" v-if="isModalOpen">

@@ -73,6 +73,7 @@ export const defaultStatblock = {
 		reactions: [],
 		legendary: [],
 		lair: [],
+		mythic: [],
 		regional: []
 	},
 	spellcasting: {
@@ -87,7 +88,8 @@ export const defaultStatblock = {
 			spellBonusOverride: null,
 			spellCastingAbility: null,
 			noComponentsOfType: ["Material", "Verbal", "Somatic"],
-			isPsionics: false
+			isPsionics: false,
+			displayAsAction: false
 		},
 		casterSpells: {
 			casterLevel: null,
@@ -97,7 +99,18 @@ export const defaultStatblock = {
 			spellList: [[], [], [], [], [], [], [], [], [], []],
 			spellSlotList: {},
 			spellDcOverride: null,
-			spellBonusOverride: null
+			spellBonusOverride: null,
+			displayAsAction: false
+		}
+	},
+	misc: {
+		legActionsPerRound: 0,
+		featureHeaderTexts: {
+			features: "",
+			actions: "",
+			bonus: "",
+			reactions: "",
+			
 		}
 	}
 } as Statblock;
@@ -269,6 +282,7 @@ export type Features = {
 	bonus: FeatureEntity[];
 	reactions: FeatureEntity[];
 	legendary: FeatureEntity[];
+	mythic: FeatureEntity[];
 	lair: FeatureEntity[];
 	regional: FeatureEntity[];
 };
@@ -291,6 +305,7 @@ export interface InnateSpells {
 	spellCastingAbility: Stat | null;
 	noComponentsOfType: string[];
 	isPsionics: boolean;
+	displayAsAction: boolean;
 }
 
 export interface CasterSpells {
@@ -302,6 +317,7 @@ export interface CasterSpells {
 	spellBonusOverride: null | number;
 	spellCastingAbility: Stat | null;
 	spellCastingAbilityOverride: Stat | null;
+	displayAsAction: boolean;
 }
 
 export interface InnateSpellsList {
