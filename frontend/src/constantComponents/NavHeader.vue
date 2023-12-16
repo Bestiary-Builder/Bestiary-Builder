@@ -2,11 +2,9 @@
 	<input id="navbar-indicator" class="navbar-collapse" type="checkbox" checked />
 	<nav class="navbar">
 		<div class="navbar-left">
-			<!-- <a class="navbar-brand" href="#">
-			B E S T I A R Y  B U I L D E R
-		</a> -->
 
-			<RouterLink :to="$router.options.routes[0].path" class="navbar-brand"> B E S T I A R Y B U I L D E R </RouterLink>
+
+			<RouterLink :to="$router.options.routes[0].path" class="navbar-brand"> BESTIARY BUILDER </RouterLink>
 			<RouterLink v-for="route in $router.options.routes.filter((a: any) => a.navbar)" :to="route.path" class="nav-link">
 				<div class="header-item">{{ route.name }}</div>
 			</RouterLink>

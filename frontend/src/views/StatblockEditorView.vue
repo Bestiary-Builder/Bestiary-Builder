@@ -1,232 +1,342 @@
 <template>
-<div class="content-container" >
+<div class="content" >
 	<div class="content-container__inner editor"> 
         <div class="editor-nav">
-            <div @click="currentSlide(1)" :class="{'active-slide': slideIndex === 1}" class="editor-nav__tab">
-                <span> Description </span>
+            <div @click="showSlides(1)" :class="{'active-slide': slideIndex === 1}" class="editor-nav__tab">
+                <span> description </span>
             </div>
-            <div @click="currentSlide(2)" :class="{'active-slide': slideIndex === 2}" class="editor-nav__tab">
-                <span> Core </span>
+            <div @click="showSlides(2)" :class="{'active-slide': slideIndex === 2}" class="editor-nav__tab">
+                <span> core </span>
             </div>
-            <div @click="currentSlide(3)" :class="{'active-slide': slideIndex === 3}" class="editor-nav__tab">
-                <span> Stats </span>
+            <div @click="showSlides(3)" :class="{'active-slide': slideIndex === 3}" class="editor-nav__tab">
+                <span> stats </span>
             </div>
-            <div @click="currentSlide(4)" :class="{'active-slide': slideIndex === 4}" class="editor-nav__tab">
-                <span> Defense </span>
+            <div @click="showSlides(4)" :class="{'active-slide': slideIndex === 4}" class="editor-nav__tab">
+                <span> defense </span>
             </div>
-            <div @click="currentSlide(5)" :class="{'active-slide': slideIndex === 5}" class="editor-nav__tab">
-                <span> Features </span>
+            <div @click="showSlides(5)" :class="{'active-slide': slideIndex === 5}" class="editor-nav__tab">
+                <span> features </span>
             </div>
-            <div @click="currentSlide(6)" :class="{'active-slide': slideIndex === 6}" class="editor-nav__tab">
-                <span> Spells </span>
+            <div @click="showSlides(6)" :class="{'active-slide': slideIndex === 6}" class="editor-nav__tab">
+                <span> spells </span>
             </div>
         </div>
 
         <div class="editor-content">
-            <div class="editor-content__tab-inner fade">
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        Name
-                    </span>
-                    <div class="editor-field__contents">
-                        <input type="text" :maxlength="limits.nameLength" placeholder="Type name..." v-model="data.description.name" >
-                        Is Proper Noun? <input type="checkbox" v-model="data.description.isProperNoun">
+            <div class="editor-content__tab-inner scale-in">
+                <div class="editor-field__container two-wide">
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="name">name</label>
+                        <input type="text" :maxlength="limits.nameLength" placeholder="name..." v-model="data.description.name" id="name">
+                    </div>
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="propernoun">proper noun</label>
+                        <span> display as {{ data.description.name }} instead of the {{data.description.name}} <input type="checkbox" v-model="data.description.isProperNoun" id=propernoun> </span>
                     </div>
                 </div>
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        Desc
-                    </span>
-                    <div class="editor-field__contents">
-                        <input type="text"  :maxlength="limits.descriptionLength" placeholder="Type description..." v-model="data.description.description">
+
+                <div class="editor-field__container one-wide">
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="description" >
+                            description
+                        </label>
+                        <textarea cols="6" :maxlength="limits.descriptionLength" placeholder="description..." v-model="data.description.description" />
                     </div>
                 </div>
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        Image URL
-                    </span>
-                    <div class="editor-field__contents">
-                        <input type="text" placeholder="Type image url..." v-model="data.description.image">
+                <div class="editor-field__container two-wide">
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="image">image url</label>
+                        <input type="text" placeholder="image url..." v-model="data.description.image" id="image">
+                    </div>
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="environment">environment</label>
+                        <input type="text" placeholder="environment..." v-model="data.description.environment" id="environment">
+                    </div>
+
+                </div>
+                <div class="editor-field__container two-wide">
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="faction">faction</label>
+                        <input type="text" placeholder="faction..." v-model="data.description.faction" id="faction">
+                    </div>
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="alignment">alignment</label>
+                        <v-select 
+                            placeholder="Select Alignment or type one yourself" 
+                            v-model="data.description.alignment"
+                            :options='["Unaligned", "Good", "Neutral", "Evil", "Lawful Good", "Neutral Good", "Chaotic Good", "Lawful Neutral", "Neutral", "Chaotic Neutral", "Lawful Evil", "Neutral Evil", "Chaotic Evil", "Any Alignment", "Typically Good", "Typically Neutral", "Typically Evil", "Typically Lawful Good", "Typically Neutral Good", "Typically Chaotic Good", "Typically Lawful Neutral", "Typically Chaotic Neutral", "Typically Lawful Evil", "Typically Neutral Evil", "Typically Chaotic Evil"]'
+                            :taggable="true"
+                            :pushTags="true"
+                            inputId="alignment"
+                        />
                     </div>
                 </div>
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        Environment
-                    </span>
-                    <div class="editor-field__contents">
-                        <input type="text" placeholder="Type environment..." v-model="data.description.environment">
+                <div class="editor-field__container two-wide">
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="challengerating"> challenge rating </label>
+                        <div class="quantity">
+                            <input 
+                                type="number" 
+                                v-model="data.description.cr" 
+                                min="0" 
+                                max="30" 
+                                @change="updateCr()"
+                                inputmode="numeric"
+                                id="challengerating"
+                            >
+                        <div class="quantity-nav">
+                            <div class="quantity-button quantity-up" @click="changeCR(true)" aria-label="Increase CR">+</div>
+                            <div class="quantity-button quantity-down" @click="changeCR(false)" aria-label="Decrease CR">-</div>
+                        </div>
                     </div>
-                </div>
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        Faction
-                    </span>
-                    <div class="editor-field__contents">
-                        <input type="text" placeholder="Type faction..." v-model="data.description.faction">
-                    </div>
-                </div>
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        Alignment
-                    </span>
-                    <v-select 
-                        placeholder="Select Alignment or type one yourself" 
-                        v-model="data.description.alignment"
-                        :options='["Unaligned", "Good", "Neutral", "Evil", "Lawful Good", "Neutral Good", "Chaotic Good", "Lawful Neutral", "Neutral", "Chaotic Neutral", "Lawful Evil", "Neutral Evil", "Chaotic Evil", "Any Alignment", "Typically Good", "Typically Neutral", "Typically Evil", "Typically Lawful Good", "Typically Neutral Good", "Typically Chaotic Good", "Typically Lawful Neutral", "Typically Chaotic Neutral", "Typically Lawful Evil", "Typically Neutral Evil", "Typically Chaotic Evil"]'
-                        :taggable="true"
-                        :pushTags="true"
-                    />
-                </div>
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        CR 
-                    </span>
-                    <div class="editor-field__contents">
-                        <input type="number" placeholder="0" v-model="data.description.cr" min="0" max="30" @change="updateCr()">
-                    </div>
-                </div>
-            </div>
-            <div class="editor-content__tab-inner fade">
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        Race
-                    </span>
-                    <v-select 
-                        placeholder="Select Race or type one yourself" 
-                        v-model="data.core.race"
-                        :options='["Aberration", "Beast", "Celestial", "Construct", "Dragon", "Elemental", "Fey", "Fiend", "Giant", "Humanoid", "Monstrosity", "Ooze", "Plant", "Undead"]'
-                        :taggable="true"
-                        :pushTags="true"
-                    />
-                </div>
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        Size
-                    </span>
-                    <v-select 
-                        placeholder="Select Size or type one yourself" 
-                        v-model="data.core.size"
-                        :options='["Tiny", "Small", "Medium", "Large", "Huge", "Gargantuan"]'
-                        :taggable="true"
-                        :pushTags="true"
-                    />
-                </div>
-                <h2> Speed </h2>
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        Walk Speed
-                    </span>
-                    <div class="editor-field__contents">
-                        <input type="number" placeholder="Type walking speed..." step="5" v-model="data.core.speed.walk">
-                    </div>
-                </div>
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        Fly Speed
-                    </span>
-                    <div class="editor-field__contents">
-                        <input type="number" placeholder="Type walking speed..." step="5" v-model="data.core.speed.fly">
-                    </div>
-                </div>
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        Can Hover
-                    </span>
-                    <div class="editor-field__contents">
-                        <input type="checkbox" placeholder="Type walking speed..." step="5" v-model="data.core.speed.isHover">
-                    </div>
-                </div>
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        Swim Speed
-                    </span>
-                    <div class="editor-field__contents">
-                        <input type="number" placeholder="Type walking speed..." step="5" v-model="data.core.speed.swim">
-                    </div>
-                </div>
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        Burrow Speed
-                    </span>
-                    <div class="editor-field__contents">
-                        <input type="number" placeholder="Type walking speed..." step="5" v-model="data.core.speed.burrow">
-                    </div>
-                </div>
-                <h2> Senses </h2>
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        Darkvision
-                    </span>
-                    <div class="editor-field__contents">
-                        <input type="number" placeholder="Type senses..." v-model="data.core.senses.darkvision" step="5">
-                    </div>
-                </div>
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        Blindsight
-                    </span>
-                    <div class="editor-field__contents">
-                        <input type="number" v-model="data.core.senses.blindsight" step="5">
-                    </div>
-                </div>
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        Blind beyond this radius?
-                    </span>
-                    <div class="editor-field__contents">
-                        <input type="checkbox" v-model="data.core.senses.isBlind">
-                    </div>
-                </div>
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        Truesight
-                    </span>
-                    <div class="editor-field__contents">
-                        <input type="number" v-model="data.core.senses.truesight" step="5">
-                    </div>
-                </div>
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        Tremorsense
-                    </span>
-                    <div class="editor-field__contents">
-                        <input type="number" v-model="data.core.senses.tremorsense" step="5">
-                    </div>
-                </div>
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        Passive Perception Override
-                    </span>
-                    <div class="editor-field__contents">
-                        <input type="number" placeholder="Type senses..." v-model="data.core.senses.passivePerceptionOverride">
-                    </div>
-                </div>
-                <h2> Languages </h2>
-                <v-select 
-                    placeholder="Select a Language or type one yourself" 
-                    v-model="data.core.languages"
-                    multiple
-                    :deselectFromDropdown="true"
-                    :closeOnSelect="false"
-                    :options='languages'
-                    :taggable="true"
-                    :pushTags="true"
-                />
-                <h2> Telepathy </h2>
-                <div class="editor-field__slim">
-                    <span class="editor-field__title">
-                        Telepathy
-                    </span>
-                    <div class="editor-field__contents">
-                        <input type="number" v-model="data.core.senses.telepathy" step="5" min="0">
                     </div>
                 </div>
             </div>
-            <div class="editor-content__tab-inner fade">
-                <h2> Ability Scores </h2>
+            <div class="editor-content__tab-inner scale-in">
+                <div class="editor-field__container two-wide">
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="race">race</label>
+                        <v-select 
+                            v-model="data.core.race"
+                            :options='["Aberration", "Beast", "Celestial", "Construct", "Dragon", "Elemental", "Fey", "Fiend", "Giant", "Humanoid", "Monstrosity", "Ooze", "Plant", "Undead"]'
+                            :taggable="true"
+                            :pushTags="true"
+                            inputId="race"
+                        />
+                    </div>
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="size">size </label>
+                        <v-select 
+                            v-model="data.core.size"
+                            :options='["Tiny", "Small", "Medium", "Large", "Huge", "Gargantuan"]'
+                            :taggable="true"
+                            :pushTags="true"
+                            inputId="size"
+                        />
+                    </div>
+                </div>
+                <hr>
+                <h2> speed </h2>
+                <div class="editor-field__container three-wide">
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="walkspeed"> walk speed </label>
+                        <div class="quantity">
+                            <input 
+                                type="number" 
+                                v-model="data.core.speed.walk" 
+                                min="0" 
+                                step="5"
+                                inputmode="numeric"
+                                id="walkspeed"
+                            >
+                            <div class="quantity-nav">
+                                <div class="quantity-button quantity-up" @click="data.core.speed.walk = data.core.speed.walk+5" aria-label="Increase walk speed">+</div>
+                                <div class="quantity-button quantity-down" @click="data.core.speed.walk = Math.max(0, data.core.speed.walk-5)" aria-label="Decrease walk speed">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="flyspeed"> fly speed </label>
+                        <div class="quantity">
+                            <input 
+                                type="number" 
+                                v-model="data.core.speed.fly" 
+                                min="0" 
+                                step="5"
+                                inputmode="numeric"
+                                id="flyspeed"
+                            >
+                            <div class="quantity-nav">
+                                <div class="quantity-button quantity-up" @click="data.core.speed.fly = data.core.speed.fly+5" aria-label="Increase fly speed">+</div>
+                                <div class="quantity-button quantity-down" @click="data.core.speed.fly = Math.max(0, data.core.speed.fly-5)" aria-label="Decrease fly speed">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="canhover"> can hover?</label>
+                        <span>can fly and hover? <input type="checkbox" step="5" v-model="data.core.speed.isHover" id="canhover"></span>
+                    </div>
+                </div>
+
+                <div class="editor-field__container three-wide">
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="swimspeed"> swim speed </label>
+                        <div class="quantity">
+                            <input 
+                                type="number" 
+                                v-model="data.core.speed.swim" 
+                                min="0" 
+                                step="5"
+                                inputmode="numeric"
+                                id="swimspeed"
+                            >
+                            <div class="quantity-nav">
+                                <div class="quantity-button quantity-up" @click="data.core.speed.swim = data.core.speed.swim+5" aria-label="Increase swim speed">+</div>
+                                <div class="quantity-button quantity-down" @click="data.core.speed.swim = Math.max(0, data.core.speed.swim-5)" aria-label="Decrease swim speed">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="burrowspeed"> burrow speed </label>
+                        <div class="quantity">
+                            <input 
+                                type="number" 
+                                v-model="data.core.speed.burrow" 
+                                min="0" 
+                                step="5"
+                                inputmode="numeric"
+                                id="burrowspeed"
+                            >
+                            <div class="quantity-nav">
+                                <div class="quantity-button quantity-up" @click="data.core.speed.burrow = data.core.speed.burrow+5" aria-label="Increase burrow speed">+</div>
+                                <div class="quantity-button quantity-down" @click="data.core.speed.burrow = Math.max(0, data.core.speed.burrow-5)" aria-label="Decrease burrow speed">-</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <h2> senses </h2>
+                <div class="editor-field__container three-wide">
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="darkvision"> darkvision </label>
+                        <div class="quantity">
+                            <input 
+                                type="number" 
+                                v-model="data.core.senses.darkvision" 
+                                min="0" 
+                                step="5"
+                                inputmode="numeric"
+                                id="darkvision"
+                            >
+                            <div class="quantity-nav">
+                                <div class="quantity-button quantity-up" @click="data.core.senses.darkvision= data.core.senses.darkvision+5" aria-label="Increase darkvision">+</div>
+                                <div class="quantity-button quantity-down" @click="data.core.senses.darkvision = Math.max(0, data.core.senses.darkvision-5)" aria-label="Decrease darkvision">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="blindsight"> blindsight </label>
+                        <div class="quantity">
+                            <input 
+                                type="number" 
+                                v-model="data.core.senses.blindsight" 
+                                min="0" 
+                                step="5"
+                                inputmode="numeric"
+                                id="blindsight"
+                            >
+                            <div class="quantity-nav">
+                                <div class="quantity-button quantity-up" @click="data.core.senses.blindsight= data.core.senses.blindsight+5" aria-label="Increase blindsight">+</div>
+                                <div class="quantity-button quantity-down" @click="data.core.senses.blindsight = Math.max(0, data.core.senses.blindsight-5)" aria-label="Decrease blindsight">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="canhover">blind beyond</label>
+                        <span>this radius? <input type="checkbox" step="5" v-model="data.core.speed.isHover" id="canhover"></span>
+                    </div>
+                </div>
+
+                <div class="editor-field__container three-wide">
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="truesight"> truesight </label>
+                        <div class="quantity">
+                            <input 
+                                type="number" 
+                                v-model="data.core.senses.truesight" 
+                                min="0" 
+                                step="5"
+                                inputmode="numeric"
+                                id="truesight"
+                            >
+                            <div class="quantity-nav">
+                                <div class="quantity-button quantity-up" @click="data.core.senses.truesight= data.core.senses.truesight+5" aria-label="Increase truesight">+</div>
+                                <div class="quantity-button quantity-down" @click="data.core.senses.truesight = Math.max(0, data.core.senses.truesight-5)" aria-label="Decrease truesight">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="tremorsense"> tremorsense </label>
+                        <div class="quantity">
+                            <input 
+                                type="number" 
+                                v-model="data.core.senses.tremorsense" 
+                                min="0" 
+                                step="5"
+                                inputmode="numeric"
+                                id="tremorsense"
+                            >
+                            <div class="quantity-nav">
+                                <div class="quantity-button quantity-up" @click="data.core.senses.tremorsense= data.core.senses.tremorsense+5" aria-label="Increase tremorsense">+</div>
+                                <div class="quantity-button quantity-down" @click="data.core.senses.tremorsense = Math.max(0, data.core.senses.tremorsense-5)" aria-label="Decrease tremorsense">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="passiveperc"> passive perc override </label>
+                        <div class="quantity">
+                            <input 
+                                type="number" 
+                                v-model="data.core.senses.passivePerceptionOverride" 
+                                min="0" 
+                                step="1"
+                                inputmode="numeric"
+                                id="passiveperc"
+                            >
+                            <div class="quantity-nav">
+                                <div class="quantity-button quantity-up" @click="data.core.senses.passivePerceptionOverride= data.core.senses.passivePerceptionOverride+1" aria-label="Increase  passive perception override">+</div>
+                                <div class="quantity-button quantity-down" @click="data.core.senses.passivePerceptionOverride = Math.max(0, data.core.senses.passivePerceptionOverride-1)" aria-label="Decrease passive perception override">-</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="editor-field__container three-wide">
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="languages">languages</label>
+                        <v-select 
+                            placeholder="Select a Language or type one yourself" 
+                            v-model="data.core.languages"
+                            multiple
+                            :deselectFromDropdown="true"
+                            :closeOnSelect="false"
+                            :options='languages'
+                            :taggable="true"
+                            :pushTags="true"
+                            inputId="languages"
+                        />
+                    </div>
+                    <div class="flow-vertically">
+                        <label class=editor-field__title for="telepathy">telepathy</label>
+                        <div class="quantity">
+                            <input 
+                                type="number" 
+                                v-model="data.core.senses.telepathy" 
+                                min="0" 
+                                step="5"
+                                inputmode="numeric"
+                                id="telepathy"
+                            >
+                            <div class="quantity-nav">
+                                <div class="quantity-button quantity-up" @click="data.core.senses.telepathy= data.core.senses.telepathy+5" aria-label="Increase telepathy">+</div>
+                                <div class="quantity-button quantity-down" @click="data.core.senses.telepathy = Math.max(0, data.core.senses.telepathy-5)" aria-label="Decrease telepathy">-</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="editor-content__tab-inner scale-in">
+                <h2> ability scores </h2>
                 <div class="editor-field__slim">
                     <span class="editor-field__title">
-                        STR
+                        str
                     </span>
                     <div class="editor-field__contents">
                         <input type="number" v-model="data.abilities.stats.str" min="1" max="30">
@@ -234,7 +344,7 @@
                 </div>
                 <div class="editor-field__slim">
                     <span class="editor-field__title">
-                        DEX
+                        dex
                     </span>
                     <div class="editor-field__contents">
                         <input type="number" v-model="data.abilities.stats.dex" min="1" max="30">
@@ -242,7 +352,7 @@
                 </div>
                 <div class="editor-field__slim">
                     <span class="editor-field__title">
-                        CON
+                        con
                     </span>
                     <div class="editor-field__contents">
                         <input type="number" v-model="data.abilities.stats.con" min="1" max="30">
@@ -250,7 +360,7 @@
                 </div>
                 <div class="editor-field__slim">
                     <span class="editor-field__title">
-                        WIS
+                        wis
                     </span>
                     <div class="editor-field__contents">
                         <input type="number" v-model="data.abilities.stats.wis" min="1" max="30">
@@ -258,7 +368,7 @@
                 </div>
                 <div class="editor-field__slim">
                     <span class="editor-field__title">
-                        CHA
+                        cha
                     </span>
                     <div class="editor-field__contents">
                         <input type="number" v-model="data.abilities.stats.cha" min="1" max="30">
@@ -266,73 +376,73 @@
                 </div>
                 <div class="editor-field__slim">
                     <span class="editor-field__title">
-                        INT
+                        int
                     </span>
                     <div class="editor-field__contents">
                         <input type="number" v-model="data.abilities.stats.int" min="1" max="30">
                     </div>
                 </div>
-                <h2> Saving Throws </h2>
+                <h2> saving throws </h2>
                 <div class="editor-field__slim">
                     <span class="editor-field__title">
-                        STR
+                        str
                     </span>
                     <div class="editor-field__contents">
                         <input type="checkbox" v-model="data.abilities.saves.str.isProficient">
                     </div>
-                    <p>Override = <input type="number" placeholder="0" v-model="data.abilities.saves.str.override" step=1 > <span @click="data.abilities.saves.str.override = null"> reset </span> </p>
+                    <p> override <input type="number" placeholder="0" v-model="data.abilities.saves.str.override" step=1 > <span @click="data.abilities.saves.str.override = null"> reset </span> </p>
                 </div>
                 <div class="editor-field__slim">
                     <span class="editor-field__title">
-                        DEX
+                        dex
                     </span>
                     <div class="editor-field__contents">
                         <input type="checkbox" v-model="data.abilities.saves.dex.isProficient">
                     </div>
-                    <p>Override = <input type="number" placeholder="0" v-model="data.abilities.saves.dex.override" step=1 > <span @click="data.abilities.saves.dex.override = null"> reset </span> </p>
+                    <p> override <input type="number" placeholder="0" v-model="data.abilities.saves.dex.override" step=1 > <span @click="data.abilities.saves.dex.override = null"> reset </span> </p>
 
                 </div>
                 <div class="editor-field__slim">
                     <span class="editor-field__title">
-                        CON
+                        con
                     </span>
                     <div class="editor-field__contents">
                         <input type="checkbox" v-model="data.abilities.saves.con.isProficient">
                     </div>
-                    <p>Override = <input type="number" placeholder="0" v-model="data.abilities.saves.con.override" step=1 > <span @click="data.abilities.saves.con.override = null"> reset </span> </p>
+                    <p> override <input type="number" placeholder="0" v-model="data.abilities.saves.con.override" step=1 > <span @click="data.abilities.saves.con.override = null"> reset </span> </p>
 
                 </div>
                 <div class="editor-field__slim">
                     <span class="editor-field__title">
-                        WIS
+                        wis
                     </span>
                     <div class="editor-field__contents">
                         <input type="checkbox" v-model="data.abilities.saves.wis.isProficient">
                     </div>
-                    <p>Override = <input type="number" placeholder="0" v-model="data.abilities.saves.wis.override" step=1 > <span @click="data.abilities.saves.wis.override = null"> reset </span> </p>
+                    <p> override <input type="number" placeholder="0" v-model="data.abilities.saves.wis.override" step=1 > <span @click="data.abilities.saves.wis.override = null"> reset </span> </p>
 
                 </div>
                 <div class="editor-field__slim">
                     <span class="editor-field__title">
-                        CHA
+                        cha
                     </span>
                     <div class="editor-field__contents">
                         <input type="checkbox" v-model="data.abilities.saves.cha.isProficient">
                     </div>
-                    <p>Override = <input type="number" placeholder="0" v-model="data.abilities.saves.cha.override" step=1 > <span @click="data.abilities.saves.cha.override = null"> reset </span> </p>
+                    <p> override <input type="number" placeholder="0" v-model="data.abilities.saves.cha.override" step=1 > <span @click="data.abilities.saves.cha.override = null"> reset </span> </p>
 
                 </div>
                 <div class="editor-field__slim">
                     <span class="editor-field__title">
-                        INT
+                        int
                     </span>
                     <div class="editor-field__contents">
                         <input type="checkbox" v-model="data.abilities.saves.int.isProficient">
                     </div>
-                    <p>Override = <input type="number" placeholder="0" v-model="data.abilities.saves.int.override" step=1 > <span @click="data.abilities.saves.int.override = null"> reset </span> </p>
+                    <p> override <input type="number" placeholder="0" v-model="data.abilities.saves.int.override" step=1 > <span @click="data.abilities.saves.int.override = null"> reset </span> </p>
 
                 </div>
-                <h2> Skills </h2>
+                <h2> skills </h2>
                 <div class="editor-field__slim">
                     <div v-for="skill, index in data.abilities.skills">
                         <v-select 
@@ -342,12 +452,12 @@
                             :clearable="false"
                         />
                         <div class="editor-field__contents">
-                        <p> Is Proficient? <input type="checkbox" v-model="skill.isProficient" @click="disableOtherSkills(index, 'prof', skill.isProficient)"> </p>
-                        <p>Is Expertise? <input type="checkbox" v-model="skill.isExpertise" @click="disableOtherSkills(index, 'exp', skill.isExpertise)"> </p>
-                        <p>Is Half Proficient? <input type="checkbox" v-model="skill.isHalfProficient" @click="disableOtherSkills(index, 'halfprof', skill.isHalfProficient)"> </p>
-                        <p>Skill Override = <input type="number" placeholder="0" v-model="skill.override" step=1 > <span @click="skill.override = null"> reset </span> </p>
+                        <p> proficient <input type="checkbox" v-model="skill.isProficient" @click="disableOtherSkills(index, 'prof', skill.isProficient)"> </p>
+                        <p> expertise<input type="checkbox" v-model="skill.isExpertise" @click="disableOtherSkills(index, 'exp', skill.isExpertise)"> </p>
+                        <p> half prof <input type="checkbox" v-model="skill.isHalfProficient" @click="disableOtherSkills(index, 'halfprof', skill.isHalfProficient)"> </p>
+                        <p> override <input type="number" placeholder="0" v-model="skill.override" step=1 > <span @click="skill.override = null"> reset </span> </p>
                         </div>
-                        <button @click="deleteSkill(index)"> Delete </button>
+                        <button @click="deleteSkill(index)"> delete </button>
                         <hr>
                     </div>
                     <div>
@@ -356,10 +466,10 @@
                     </div>
                 </div>
             </div>
-            <div class="editor-content__tab-inner fade">
+            <div class="editor-content__tab-inner scale-in">
                 <div class="editor-field__slim">
                     <span class="editor-field__title">
-                        Hit Die Size
+                        hit die size
                     </span>
                     <div class="editor-field__contents">
                         <input type="number" placeholder="0" v-model="data.defenses.hp.sizeOfHitDie" min="1" >
@@ -367,7 +477,7 @@
                 </div>
                 <div class="editor-field__slim">
                     <span class="editor-field__title">
-                        Number of Hit Die
+                        hit die #
                     </span>
                     <div class="editor-field__contents">
                         <input type="number" placeholder="0" v-model="data.defenses.hp.numOfHitDie" min="1" >
@@ -375,7 +485,7 @@
                 </div>
                 <div class="editor-field__slim">
                     <span class="editor-field__title">
-                        HP Override
+                        hp override
                     </span>
                     <div class="editor-field__contents">
                         <input type="number" placeholder="0" v-model="data.defenses.hp.override" min="1" >
@@ -383,7 +493,7 @@
                 </div>
                 <div class="editor-field__slim">
                     <span class="editor-field__title">
-                        Armor Class
+                        armor class
                     </span>
                     <div class="editor-field__contents">
                         <input type="number" placeholder="0" v-model="data.defenses.ac.ac" min="0" step="1" >
@@ -391,13 +501,13 @@
                 </div>                
                 <div class="editor-field__slim">
                     <span class="editor-field__title">
-                        Armor Type
+                        armor type
                     </span>
                     <div class="editor-field__contents">
                         <input type="text" placeholder="Type race..." v-model="data.defenses.ac.acSource">
                     </div>
                 </div>
-                <h2> Vulnerabilities </h2>
+                <h2> vulnerabilities </h2>
                 <v-select 
                     placeholder="Select a Vulnerability or type one yourself" 
                     v-model="data.defenses.vulnerabilities"
@@ -408,7 +518,7 @@
                     :taggable="true"
                     :pushTags="true"
                 />
-                <h2> Resistances </h2>
+                <h2> resistances </h2>
                 <v-select 
                     placeholder="Select a Resistance or type one yourself" 
                     v-model="data.defenses.resistances"
@@ -419,7 +529,7 @@
                     :taggable="true"
                     :pushTags="true"
                 />
-                <h2> Immunities </h2>
+                <h2> immunities </h2>
                 <v-select 
                     placeholder="Select an Immunity or type one yourelf" 
                     v-model="data.defenses.immunities"
@@ -430,7 +540,7 @@
                     :taggable="true"
                     :pushTags="true"
                 />
-                <h2> Condition Immunities </h2>
+                <h2> condition immunities </h2>
                 <v-select 
                     placeholder="Select a Condition Immunity or type one yourelf" 
                     v-model="data.defenses.conditionImmunities"
@@ -442,57 +552,57 @@
                     :pushTags="true"
                 />
             </div>
-            <div class="editor-content__tab-inner fade">
-                <h2> Features </h2>
+            <div class="editor-content__tab-inner scale-in">
+                <h2> features </h2>
                 <div v-for="feature, index in data.features.features">
                     <FeatureWidget :index="index" type="features" :data="data"/>
                 </div>
-                <button @click="createNewFeature('features')"> New Feature (+)</button>
+                <button @click="createNewFeature('features')"> new feature </button>
 
-                <h2> Actions </h2>
+                <h2> actions </h2>
                 <div v-for="feature, index in data.features.actions">
                     <FeatureWidget :index="index" type="actions" :data="data"/>
                 </div>
-                <button @click="createNewFeature('actions')"> New Action (+)</button>
+                <button @click="createNewFeature('actions')"> new action </button>
 
-                <h2> Bonus Actions </h2>
+                <h2> bonus actions </h2>
                 <div v-for="feature, index in data.features.bonus">
                     <FeatureWidget :index="index" type="bonus" :data="data"/>
                 </div>
-                <button @click="createNewFeature('bonus')"> New Bonus Action (+)</button>
+                <button @click="createNewFeature('bonus')"> new bonus action </button>
 
-                <h2> Reactions </h2>
+                <h2> reactions </h2>
                 <div v-for="feature, index in data.features.reactions">
                     <FeatureWidget :index="index" type="reactions" :data="data"/>
                 </div>
-                <button @click="createNewFeature('reactions')"> New Reaction (+)</button>
+                <button @click="createNewFeature('reactions')"> new reaction</button>
 
-                <h2> Legendary Actions </h2>
+                <h2> legendary resistances </h2>
                 <div v-for="feature, index in data.features.legendary">
                     <FeatureWidget :index="index" type="legendary" :data="data"/>
                 </div>
-                <button @click="createNewFeature('legendary')"> New Legendary Action (+)</button>
+                <button @click="createNewFeature('legendary')"> new legendary action</button>
 
-                <h2> Lair Actions </h2>
+                <h2> lair actions </h2>
                 <div v-for="feature, index in data.features.lair">
                     <FeatureWidget :index="index" type="lair" :data="data"/>
                 </div>
-                <button @click="createNewFeature('lair')"> New Lair Action (+)</button>
+                <button @click="createNewFeature('lair')"> new lair action</button>
 
-                <h2> Regional Effects </h2>
+                <h2> regional effects </h2>
                 <div v-for="feature, index in data.features.regional">
                     <FeatureWidget :index="index" type="regional" :data="data"/>
                 </div>
-                <button @click="createNewFeature('regional')"> New Regional Effect (+)</button>
+                <button @click="createNewFeature('regional')"> new regional effect</button>
             </div>
-            <div  class="editor-content__tab-inner fade">
-                <h3> Innate Spellcasting </h3>
-                <p> Spellcasting Ability <v-select :options="['str', 'dex', 'con', 'wis', 'int', 'cha']" v-model="data.spellcasting.innateSpells.spellCastingAbility" /> <button @click="data.spellcasting.innateSpells.spellCastingAbility = null"> Reset</button> </p>
-                <p> Spell DC Override: <input type="number" v-model="data.spellcasting.innateSpells.spellDcOverride" min="0" step="1"> <button @click="data.spellcasting.innateSpells.spellDcOverride = null"> Reset</button> </p>
-                <p> Spell Attack Bonus Override: <input type="number" v-model="data.spellcasting.innateSpells.spellBonusOverride" step="1"> <button @click="data.spellcasting.innateSpells.spellBonusOverride = null"> Reset</button> </p>
-                <p> Is Psionics? <input type="checkbox" v-model="data.spellcasting.innateSpells.isPsionics"> </p>
+            <div  class="editor-content__tab-inner scale-in">
+                <h3> innate spellcasting </h3>
+                <p> spellcasting abilitiy <v-select :options="['str', 'dex', 'con', 'wis', 'int', 'cha']" v-model="data.spellcasting.innateSpells.spellCastingAbility" /> <button @click="data.spellcasting.innateSpells.spellCastingAbility = null"> Reset</button> </p>
+                <p> dc override <input type="number" v-model="data.spellcasting.innateSpells.spellDcOverride" min="0" step="1"> <button @click="data.spellcasting.innateSpells.spellDcOverride = null"> Reset</button> </p>
+                <p> attack bonus override <input type="number" v-model="data.spellcasting.innateSpells.spellBonusOverride" step="1"> <button @click="data.spellcasting.innateSpells.spellBonusOverride = null"> Reset</button> </p>
+                <p> is psionics? <input type="checkbox" v-model="data.spellcasting.innateSpells.isPsionics"> </p>
 
-                <p> Requiring none of these components: 
+                <p> requiring not these components: 
                     <v-select
                         :options='["Material", "Verbal", "Somatic"]'
                         v-model="data.spellcasting.innateSpells.noComponentsOfType"
@@ -502,9 +612,9 @@
                     />
                 </p>
 
-                <p> Spell List 
+                <p> spell list
 
-                    <div> At Will: <v-select :options="spellListFlattened" v-model="innateSpells[0]" multiple :deselectFromDropdown="true" :closeOnSelect="false"/> </div>
+                    <div> at will: <v-select :options="spellListFlattened" v-model="innateSpells[0]" multiple :deselectFromDropdown="true" :closeOnSelect="false"/> </div>
                     <div> 1/day <v-select :options="spellListFlattened" v-model="innateSpells[1]" multiple :deselectFromDropdown="true" :closeOnSelect="false"/> </div>
                     <div> 2/day: <v-select :options="spellListFlattened" v-model="innateSpells[2]" multiple :deselectFromDropdown="true" :closeOnSelect="false"/> </div>
                     <div> 3/day: <v-select :options="spellListFlattened" v-model="innateSpells[3]" multiple :deselectFromDropdown="true" :closeOnSelect="false"/> </div>
@@ -513,25 +623,25 @@
                     <div v-for="times in data.spellcasting.innateSpells.spellList">
                         <div v-if="times.length>0">
                             <div v-for="spell in times">
-                                <b>{{ spell.spell }}</b> Override cast at level <input type="number" min=0 max="20" v-model="spell.upcastLevel"> <button @click="spell.upcastLevel = null"> X </button>
+                                <b>{{ spell.spell }}</b> override level <input type="number" min=0 max="20" v-model="spell.upcastLevel"> <button @click="spell.upcastLevel = null"> reset </button>
 
-                                <input type="text" v-model="spell.comment" placeholder="Spell comment (such as Self Only)" />
+                                <input type="text" v-model="spell.comment" placeholder="comment" />
                             </div>
                         </div>
                     </div>
                 </p>
                 <hr /> 
-                <h3> Class Spellcasting </h3>
+                <h3> class spellcasting </h3>
 
                 <hr>
-                <p> Spellcasting Class: <v-select v-model="data.spellcasting.casterSpells.castingClass" :options="['Artificer', 'Bard', 'Cleric', 'Druid', 'Paladin', 'Ranger', 'Sorcerer', 'Warlock', 'Wizard']" /> </p>
-                <p> Spellcasting Level: <v-select v-model="data.spellcasting.casterSpells.casterLevel" :options="[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]" /> </p>
-                <p> Spell DC Override: <input type="number" v-model="data.spellcasting.casterSpells.spellDcOverride" min="0" step="1"> <button @click="data.spellcasting.casterSpells.spellDcOverride = null"> Reset</button> </p>
-                <p> Spell Attack Bonus Override: <input type="number" v-model="data.spellcasting.casterSpells.spellBonusOverride" step="1"> <button @click="data.spellcasting.casterSpells.spellBonusOverride = null"> Reset</button> </p>
-                <p> Spellcasting Ability Override <v-select :options="['str', 'dex', 'con', 'wis', 'int', 'cha']" v-model="data.spellcasting.casterSpells.spellCastingAbilityOverride" /> <button @click="data.spellcasting.casterSpells.spellCastingAbilityOverride = null"> Reset</button> </p>
+                <p> class <v-select v-model="data.spellcasting.casterSpells.castingClass" :options="['Artificer', 'Bard', 'Cleric', 'Druid', 'Paladin', 'Ranger', 'Sorcerer', 'Warlock', 'Wizard']" /> </p>
+                <p> class level <v-select v-model="data.spellcasting.casterSpells.casterLevel" :options="[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]" /> </p>
+                <p> dc override <input type="number" v-model="data.spellcasting.casterSpells.spellDcOverride" min="0" step="1"> <button @click="data.spellcasting.casterSpells.spellDcOverride = null"> Reset</button> </p>
+                <p> attack bonus override <input type="number" v-model="data.spellcasting.casterSpells.spellBonusOverride" step="1"> <button @click="data.spellcasting.casterSpells.spellBonusOverride = null"> Reset</button> </p>
+                <p> ability override <v-select :options="['str', 'dex', 'con', 'wis', 'int', 'cha']" v-model="data.spellcasting.casterSpells.spellCastingAbilityOverride" /> <button @click="data.spellcasting.casterSpells.spellCastingAbilityOverride = null"> Reset</button> </p>
                 <div v-if="data.spellcasting.casterSpells.castingClass">
                     <p v-if="!['Ranger', 'Paladin'].includes(data.spellcasting.casterSpells.castingClass)"> 
-                        <p> Cantrips </p>
+                        <p> cantrips </p>
                         <v-select 
                             v-model="data.spellcasting.casterSpells.spellList[0]"
                             :options="spellList[0]" 
@@ -544,7 +654,7 @@
                         <hr>
                     </p>
                     <p v-for="level in spellLevelList()">
-                        <p> Level {{ level }} Spells </p>
+                        <p> level {{ level }} spells </p>
                         <v-select 
                         v-model="data.spellcasting.casterSpells.spellList[level]"
                         :options="getSpellsByLevel(level)" 
@@ -559,11 +669,11 @@
                 </div>
             </div>
         </div>
-        <button @click="saveStatblock()"> Save Statblock </button>
+        <button @click="saveStatblock()"> save statblock </button>
     </div>
-<div class="content-container__inner"> 
-    <StatblockRenderer :data='data'/>
-</div>
+    <div class="content-container__inner"> 
+        <StatblockRenderer :data='data'/>
+    </div>
 </div>
 
 </template>
@@ -584,7 +694,7 @@ export default defineComponent({
 	},
     data() {
         return {
-            slideIndex: 1,
+            slideIndex: 2, // showSlides checks if new is equal to current, so if we instantiate to 1 we can't change to 1 to apply the styling,
             data: defaultStatblock as Statblock,
             rawInfo: null as Creature | null,
             list: [] as string[],
@@ -602,34 +712,42 @@ export default defineComponent({
         }
     },
     methods: {
-        plusSlides(n: number) {
-            this.showSlides((this.slideIndex += n));
-        },
+        showSlides(n: number): void {
+            if (this.slideIndex == n) return;
 
-        currentSlide(n: number) {
-            this.showSlides((this.slideIndex = n));
-        },
+            let slides = document.getElementsByClassName("editor-content__tab-inner") as HTMLCollectionOf<HTMLElement>;
 
-        showSlides(n: number) {
-            let i;
-            let slides = document.getElementsByClassName("editor-content__tab-inner") as any;
-            if (n > slides.length) {
-                this.slideIndex = 1;
+            for (let i = 0; i < slides.length; i++) {
+                if (i != n-1) slides[i].style.display = "none";
             }
-            if (n < 1) {
-                this.slideIndex = slides.length;
-            }
-            for (i = 0; i < slides.length; i++) {
-                slides[i].style.display = "none";
-            }
+            slides[n - 1].style.display = "block";
 
-            slides[this.slideIndex - 1].style.display = "block";
+            this.slideIndex = n;
         },
         updateCr() : void {
             let cr = this.data.description.cr
             let bonus = Math.min(9, Math.floor((cr + 3) / 4));
 
             this.data.core.proficiencyBonus = bonus
+        },
+        changeCR(isIncrease: boolean) : void{
+            let cr = this.data.description.cr
+
+            if (cr == 0 && isIncrease) cr = 0.125
+            else if (cr == 0.125 && isIncrease) cr = 0.25
+            else if (cr == 0.25 && isIncrease) cr = 0.5
+            else if (cr == 0.5 && isIncrease) cr = 1
+            else if (cr == 0.125 && !isIncrease) cr = 0
+            else if (cr == 0.25 && !isIncrease) cr = 0.125
+            else if (cr == 0.5 && !isIncrease) cr = 0.25
+            else if (cr == 1 && !isIncrease) cr = 0.5
+            else {
+                if (isIncrease) cr = Math.min(30, cr+1 )
+                else cr = Math.max(0, cr-1)
+            }
+
+            this.data.description.cr = cr
+            console.log(cr)
         },
         addNewSkill() : void {
             let index = 0;
@@ -800,7 +918,6 @@ export default defineComponent({
                 }
 
                 // remove spells that we have in the statblock data but not in the editor data
-
                 for (let times in list) {
                     for (let spell in list[times]) {
                         //@ts-ignore
@@ -818,12 +935,45 @@ export default defineComponent({
 </script>
 
 <style scoped lang="less">
-.content-container {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-    width: 90vw;
-	gap: 2rem;
+.content {
+	margin: 1rem 5vw;
     min-height: 90vh;
+    display: grid;
+	gap: 2rem;
+	grid-template-columns: 1fr 1fr;
+
+	& h1 {
+		text-align: center;
+		margin-bottom: 2rem;
+		font-size: 3rem;
+
+		& span {
+			border-bottom: 4px solid orangered;
+			padding: 0 10rem;
+		}
+	}
+}
+
+@media screen and (max-width: 1800px) {
+	.content h1 span {
+		padding: 0 7rem;
+	}
+}
+
+@media screen and (max-width: 1550px) {
+	.content h1 span {
+		padding: 0 4rem;
+	}
+}
+
+@media screen and (max-width: 1050px) {
+	.content h1 {
+		font-size: 2rem;
+
+		span {
+			padding: 0 2rem;
+		}
+	}
 }
 
 .content-container__inner:first-of-type {
@@ -841,24 +991,176 @@ export default defineComponent({
         background: var(--color-surface-2);
         padding: .3rem;
         cursor: pointer;
+        border-bottom: 2px solid;
+        border-color: transparent;
+
+        transition: border-color .3s ease-in-out;
+
+
+        &.active-slide {
+            border-color: orangered;
+        }
         & span {
-            font-size: 1.2rem
+            font-size: 1.2rem;
         }
     }
 }
-.fade {
-    animation-name: fade-in;
-    animation-duration: 1s;
-    animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
-}
-@keyframes fade-in {
-    from {
-        opacity: 0;
-        translate: 0 30%;
+
+.editor-content {
+    padding: .5rem 1rem;
+
+    &__tab-inner {
+        background-color: rgb(59, 55, 54);
+
+        .editor-field__container {
+            width: 100%;
+            display: grid;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+
+            .flow-vertically {
+                display: flex;
+                flex-direction: column;
+                gap: .3rem;
+            }
+
+            .center-vertically {
+                display: flex;
+                justify-content: center;
+            }
+            .editor-field__title {
+                text-decoration: underline;
+            }
+
+            &.one-wide {
+                grid-template-columns: 1fr;
+            }
+            &.two-wide {
+                grid-template-columns: 1fr 1fr;
+
+            }
+
+            &.three-wide {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+        }
     }
-    to {
-        opacity: 1;
-        translate: 0 0;
+}
+
+.scale-in {
+    -webkit-animation: scale-in 0.2s ease-in-out;
+    -moz-animation: scale-in 0.2s ease-in-out;
+    animation: scale-in 0.2s ease-in-out;
+}
+
+
+@keyframes scale-in {
+  0% {
+    transform: scale(1);
+    opacity: 0;
+    }
+  50% {
+    transform: scale(1);
+    opacity: 0.5;
+    }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+input[type=text],textarea {
+    
+    padding: 6px 12px;
+    background: rgb(31, 32, 35);
+    border: 1px solid rgb(60, 63, 68);
+    border-radius: 4px;
+    font-size: 13px;
+    color: rgb(247, 248, 248);
+    height: 46px;
+    appearance: none;
+    transition: border 0.15s ease 0s;
+    :focus{
+        outline: none;
+        box-shadow: none;
+        border-color: rgb(100, 153, 255);
     }
 }
+
+textarea {
+    resize: vertical;
+    min-height: 3rem;
+}
+
+.quantity {
+  position: relative;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button
+{
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number]
+{
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.quantity input {
+    background-color: rgb(31, 32, 35);
+  width: 100%;
+  height: 42px;
+  line-height: 1.65;
+  float: left;
+  display: block;
+  padding: 0;
+  margin: 0;
+  padding-left: 10px;
+  border: 1px solid rgb(60, 63, 68);
+  color: white;
+}
+
+.quantity input:focus {
+  outline: 0;
+}
+
+.quantity-nav {
+  float: left;
+  position: relative;
+  height: 42px;
+}
+
+.quantity-button {
+  position: relative;
+  cursor: pointer;
+  border-left: 1px solid rgb(60, 63, 68);
+  width: 20px;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.7;
+  -webkit-transform: translateX(-100%);
+  transform: translateX(-100%);
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+.quantity-button.quantity-up {
+  position: absolute;
+  height: 50%;
+  top: 0;
+  border-bottom: 1px solid rgb(60, 63, 68);
+}
+
+.quantity-button.quantity-down {
+  position: absolute;
+  bottom: -1px;
+  height: 50%;
+}
+
 </style>

@@ -103,7 +103,7 @@
             <b> Languages </b>
             <span v-if="data.core.languages && data.core.languages.length == 0 && !data.core.senses.telepathy"> — </span>
             <span v-else v-for="lang in data.core.languages?.sort()">
-                <span> {{ lang }}<span class="ending-comma">,</span></span>
+                <span> {{ lang }}<span class="ending-comma">, </span></span>
             </span>
             <span v-if="data.core.senses.telepathy"> telepathy {{ data.core.senses.telepathy}}ft.</span>
 
@@ -217,7 +217,7 @@
         </div>
     </div>
 </div>
-<pre id="bla"> {{ yamlString()}} </pre>
+<!-- <pre id="bla"> {{ yamlString()}} </pre> -->
 
 </template>
 
