@@ -36,11 +36,6 @@ const loginBase = "https://discord.com/api/oauth2/authorize?client_id=1183362236
 export const loginLink = loginBase + "&redirect_uri=" + encodeURIComponent("http://" + window.location.host + "/user");
 console.log(loginLink);
 
-//Emitter
-// @ts-ignore
-import mitt, {Emitter} from "mitt";
-export const emitter: Emitter = mitt();
-
 //Style sheet
 import "./assets/main.css";
 // floating vue
