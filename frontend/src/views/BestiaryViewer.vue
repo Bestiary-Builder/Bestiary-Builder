@@ -41,23 +41,23 @@
 		<h2 class="modal-header">Edit bestiary</h2>
 		<p class="modal-desc">bla bla bla bla</p>
 		<div>
-				<label>Name: </label>
-				<input type="text" v-model="bestiary.name" />
-			</div>
-			<div>
-				<label>Description: </label>
-				<input type="text" v-model="bestiary.description" />
-			</div>
-			<div>
-				<label>Status: </label>
-				<select v-model="bestiary.status">
-					<option value="public">Public</option>
-					<option value="unlisted">Unlisted</option>
-					<option value="private">Private</option>
-				</select>
-			</div>
+			<label>Name: </label>
+			<input type="text" v-model="bestiary.name" :minlength="limits.nameMin" :maxlength="limits.nameLength" />
+		</div>
+		<div>
+			<label>Description: </label>
+			<input type="text" v-model="bestiary.description" :maxlength="limits.descriptionLength" />
+		</div>
+		<div>
+			<label>Status: </label>
+			<select v-model="bestiary.status">
+				<option value="public">Public</option>
+				<option value="unlisted">Unlisted</option>
+				<option value="private">Private</option>
+			</select>
+		</div>
 		<div class="modal-buttons">
-			<button class="cancel-button"  @click="closeModal()"> Cancel </button>
+			<button class="cancel-button" @click="closeModal()">Cancel</button>
 			<button class="danger-button" @click.prevent="updateBestiary">Save bestiary</button>
 		</div>
 	</dialog>
@@ -67,8 +67,8 @@
 		<p class="modal-desc">Please confirm you want to permanently delete this creature. This action is not reversible.</p>
 
 		<div class="modal-buttons">
-			<button class="cancel-button" @click="closeDeleteModal()"> Cancel </button>
-			<button class="danger-button" @click.prevent="() => deleteCreature(selectedCreature)">Confirm </button>	
+			<button class="cancel-button" @click="closeDeleteModal()">Cancel</button>
+			<button class="danger-button" @click.prevent="() => deleteCreature(selectedCreature)">Confirm</button>
 		</div>
 	</dialog>
 </template>
@@ -78,7 +78,7 @@ import {defineComponent} from "vue";
 import {defaultStatblock} from "@/components/types";
 import type {User, Bestiary, Creature, Statblock} from "@/components/types";
 import UserBanner from "@/components/UserBanner.vue";
-import {handleApiResponse, user, type error, toast} from "@/main";
+import {handleApiResponse, user, type error, toast, limits, type limitsType} from "@/main";
 import StatblockRenderer from "@/components/StatblockRenderer.vue";
 
 export default defineComponent({
@@ -91,6 +91,7 @@ export default defineComponent({
 			user: null as User | null,
 			lastHoveredCreature: null as null | Statblock,
 			selectedCreature: "" as string,
+			limits: {} as limitsType,
 			bookmarked: false as boolean,
 			isOwner: false
 		};
@@ -98,6 +99,9 @@ export default defineComponent({
 	components: {
 		UserBanner,
 		StatblockRenderer
+	},
+	async created() {
+		this.limits = (await limits) ?? ({} as limitsType);
 	},
 	async beforeMount() {
 		this.getBestiary();
@@ -150,7 +154,7 @@ export default defineComponent({
 					this.bestiary = result.data as Bestiary;
 					this.savedBestiary = this.bestiary;
 
-					this.isOwner = this.user?._id == this.bestiary.owner
+					this.isOwner = this.user?._id == this.bestiary.owner;
 					//Fetch creatures
 					await fetch("/api/bestiary/" + this.bestiary._id + "/creatures").then(async (creatureResponse) => {
 						let creatureResult = await handleApiResponse<Creature[]>(creatureResponse);

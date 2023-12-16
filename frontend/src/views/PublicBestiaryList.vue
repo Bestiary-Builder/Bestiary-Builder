@@ -1,24 +1,26 @@
 <template>
 	<div class="content">
-		<h1> <span>public bestiaries </span></h1>
+		<h1><span>public bestiaries </span></h1>
 
 		<div class="tile-container">
-			<div class="content-tile create-tile search-tile"> 
-				<h2> search </h2>
+			<div class="content-tile create-tile search-tile">
+				<h2>search</h2>
 				<div class="search-title-content">
 					<form class="settings" @submit.prevent="searchButtonClick">
-						<input type="text" v-model="search" placeholder="Search by bestiary name or description"/>
+						<input type="text" v-model="search" placeholder="Search by bestiary name or description" />
 						<button type="submit">Search</button>
-
-						<div><button @click="page = Math.min(total, page+1)">+</button><button  @click="page = Math.min(0, page-1)">-</button></div>
+						<div>
+							<button @click="page = Math.min(total, page + 1)">+</button>
+							<span>{{ page }}</span>
+							<button @click="page = Math.max(1, page - 1)">-</button>
+						</div>
 					</form>
 				</div>
 			</div>
 			<a v-if="bestiaries && bestiaries.length > 0" class="content-tile bestiary-tile" v-for="bestiary in bestiaries" :href="'/bestiary-viewer/' + bestiary._id">
 				<h2>{{ bestiary.name }}</h2>
 				<div class="bestiary-tile-content">
-					<p class="description"> {{ bestiary.description }}
-					</p>
+					<p class="description">{{ bestiary.description }}</p>
 					<div class="footer">
 						<UserBanner :id="bestiary.owner" />
 						<span>{{ bestiary.creatures.length }}🐉</span>
@@ -45,8 +47,8 @@ export default defineComponent({
 			bestiaries: [] as Bestiary[],
 			search: "" as string,
 			page: 1 as number,
-			total: 0 as number,
-		}
+			total: 1 as number
+		};
 	},
 	components: {
 		UserBanner
@@ -80,7 +82,7 @@ export default defineComponent({
 				}
 			});
 			console.log(this.bestiaries);
-		},
+		}
 	}
 });
 </script>
@@ -99,16 +101,15 @@ export default defineComponent({
 }
 
 .content-tile.bestiary-tile .bestiary-tile-content .footer.footer {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		font-size: 1.2rem;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	font-size: 1.2rem;
 
-		span:first-of-type {
-			text-align: left;
-		}
-		span:last-of-type {
-			text-align: right;
-		}
+	span:first-of-type {
+		text-align: left;
 	}
+	span:last-of-type {
+		text-align: right;
+	}
+}
 </style>
-

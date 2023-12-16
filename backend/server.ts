@@ -105,8 +105,3 @@ require("./mainLogic");
 app.use(express.static(frontendPath));
 //Redirect everything else to dist
 app.use("/*", express.static(frontendPath));
-
-/* TODO:
- * Bookmarks/Likes/Saves
- * Error handling on every request and database function
- */

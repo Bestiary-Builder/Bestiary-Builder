@@ -81,19 +81,11 @@ app.post("/api/bestiary/:id?/update", requireUser, async (req, res) => {
 			return res.status(404).json({error: "Couldn't find current user."});
 		}
 		//Check limits
-		console.log(data);
-		if (data.name.length > limits.nameLength) {
-			return res.status(400).json({error: `Name exceeds the character limit of ${limits.nameLength} characters.`});
-		}
-		if (data.description.length > limits.descriptionLength) {
-			return res.status(400).json({error: `Description exceeds the character limit of ${limits.descriptionLength} characters.`});
-		}
-		if (data.creatures.length > limits.creatureAmount) {
-			return res.status(400).json({error: `Number of creatures exceeds the limit of ${limits.creatureAmount}.`});
-		}
-		if (!["private", "public", "unlisted"].includes(data.status)) {
-			return res.status(400).json({error: "Status has an unkown value, must only be 'public', 'unlisted' or 'private'."});
-		}
+		if (data.name.length > limits.nameLength) return res.status(400).json({error: `Name exceeds the character limit of ${limits.nameLength} characters.`});
+		if (data.name.length < limits.nameMin) return res.status(400).json({error: `Name is less than the minimum character limit of ${limits.nameMin} characters.`});
+		if (data.description.length > limits.descriptionLength) return res.status(400).json({error: `Description exceeds the character limit of ${limits.descriptionLength} characters.`});
+		if (data.creatures.length > limits.creatureAmount) return res.status(400).json({error: `Number of creatures exceeds the limit of ${limits.creatureAmount}.`});
+		if (!["private", "public", "unlisted"].includes(data.status)) return res.status(400).json({error: "Status has an unkown value, must only be 'public', 'unlisted' or 'private'."});
 		//Remove bad words
 		if (data.status != "private") {
 			if (badwords.check(data.name)) {

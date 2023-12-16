@@ -92,12 +92,9 @@ app.post("/api/creature/:id?/update", requireUser, async (req, res) => {
 			data.stats[key] = {...defaultStatblock[key], ...oldStats[key]};
 		}
 		//Check limit
-		if (data.stats.description.name.length > limits.nameLength) {
-			return res.status(400).json({error: `Name exceeds the character limit of ${limits.nameLength} characters.`});
-		}
-		if (data.stats.description.description.length > limits.descriptionLength) {
-			return res.status(400).json({error: `Description exceeds the character limit of ${limits.descriptionLength} characters.`});
-		}
+		if (data.stats.description.name.length > limits.nameLength) return res.status(400).json({error: `Name exceeds the character limit of ${limits.nameLength} characters.`});
+		if (data.stats.description.name.length < limits.nameMin) return res.status(400).json({error: `Name is less than the minimum character limit of ${limits.nameMin} characters.`});
+		if (data.stats.description.description.length > limits.descriptionLength) return res.status(400).json({error: `Description exceeds the character limit of ${limits.descriptionLength} characters.`});
 		//Update or add
 		if (id) {
 			//Update existing creature
