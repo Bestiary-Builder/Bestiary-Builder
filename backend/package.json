@@ -4,7 +4,8 @@
 	"description": "",
 	"main": "server.ts",
 	"scripts": {
-		"start": "npx nodemon"
+		"start": "npx nodemon",
+		"start-pm2": "npx tsx ./server.ts"
 	},
 	"author": "",
 	"license": "ISC",
