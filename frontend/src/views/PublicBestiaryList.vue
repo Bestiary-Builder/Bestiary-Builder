@@ -17,7 +17,7 @@
 					</form>
 				</div>
 			</div>
-			<a v-if="bestiaries && bestiaries.length > 0" class="content-tile bestiary-tile" v-for="bestiary in bestiaries" :href="'/bestiary-viewer/' + bestiary._id">
+			<RouterLink v-if="bestiaries && bestiaries.length > 0" class="content-tile bestiary-tile" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id">
 				<h2>{{ bestiary.name }}</h2>
 				<div class="bestiary-tile-content">
 					<p class="description">{{ bestiary.description }}</p>
@@ -26,7 +26,7 @@
 						<span>{{ bestiary.creatures.length }}🐉</span>
 					</div>
 				</div>
-			</a>
+			</RouterLink>
 			<div v-else>
 				<p>No bestiaries found</p>
 			</div>
@@ -35,6 +35,7 @@
 </template>
 
 <script lang="ts">
+import {RouterLink} from "vue-router";
 import {defineComponent} from "vue";
 import type {User, Bestiary, Creature} from "@/components/types";
 import UserBanner from "@/components/UserBanner.vue";

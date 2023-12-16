@@ -2,17 +2,14 @@ import {createRouter, createWebHistory} from "vue-router";
 
 /*@ts-ignore*/
 import fileRoutes from "~pages";
-import relevantRoutes from "./routes";
-import {blockForNonUsers} from "./routes";
+import relevantRoutes, {defaultMetaTags} from "./routes";
 import {user, loginLink} from "@/main";
-const routes = relevantRoutes.map((route) => ({
-	path: route.path,
-	name: route.name,
-	navbar: route.navbar,
-	component: fileRoutes.find((fileRoute: any) => fileRoute.name === route.file.replace(".vue", "").replace("/", "-"))?.component,
-	meta: route.meta,
-	props: true
-}));
+const routes = relevantRoutes.map((route) => {
+	return {
+		...route,
+		...{component: fileRoutes.find((fileRoute: any) => fileRoute.name === route.file.replace(".vue", "").replace("/", "-"))?.component, props: true}
+	};
+});
 
 //Create router
 const router = createRouter({
@@ -20,74 +17,55 @@ const router = createRouter({
 	routes: routes
 });
 
-//Reload page on route change
+//Before each
 router.beforeEach(async (to, from, next) => {
+	//Reload page on route switch
 	if (from.name && to.name != from.name) {
 		///window.location.pathname = to.path;
 	}
 
-	if (blockForNonUsers.includes(to.name?.toString() ?? "")) {
+	//Requires being logged in?
+	if (routes.find((a) => a.path == to.path)?.loggedIn) {
 		let loggedIn = await user;
 		if (!loggedIn) {
 			window.location.href = loginLink;
 			return;
 		}
 	}
-	next();
-});
 
-//Meta tags
-router.beforeEach((to, from, next) => {
-	// This goes through the matched routes from last to first, finding the closest route with a title.
-	const nearestWithTitle = to.matched
-		.slice()
-		.reverse()
-		.find((r) => r.meta && r.meta.title);
-
-	// Find the nearest route element with meta tags.
-	const nearestWithMeta = to.matched
-		.slice()
-		.reverse()
-		.find((r) => r.meta && r.meta.metaTags);
-
-	const previousNearestWithMeta = from.matched
-		.slice()
-		.reverse()
-		.find((r) => r.meta && r.meta.metaTags);
-
+	//Meta tags
+	let current = to.matched[0];
 	// If a route with a title was found, set the document (page) title to that value.
-	if (nearestWithTitle) {
-		document.title = nearestWithTitle.meta.title as string;
-	} else if (previousNearestWithMeta) {
-		document.title = previousNearestWithMeta.meta.title as string;
-	}
-
-	// Remove any stale meta tags from the document using the key attribute we set below.
+	let name = current.name?.toString() as string;
+	if (!name || name == "") name = "Bestiary Builder";
+	else name += " | Bestiary Builder";
+	document.title = name;
+	// Remove any stale meta tags from the document using the key attribute set below.
 	Array.from(document.querySelectorAll("[data-vue-router-controlled]")).map((el) => el.parentNode?.removeChild(el));
-
-	// Skip rendering meta tags if there are none.
-	if (!nearestWithMeta) return next();
-
 	// Turn the meta tag definitions into actual elements in the head.
-	(nearestWithMeta.meta.metaTags as any)
-		.map((tagDef: Object) => {
+	let metaTags = defaultMetaTags;
+	metaTags
+		.map((tagDef) => {
+			//Change content of meta tags:
+			if (tagDef.name?.includes("title") || tagDef.itemprop?.includes("name")) tagDef.content = name;
+			else if (tagDef.name?.includes("description") || tagDef.itemprop?.includes("description")) tagDef.content = (current.meta.description ?? "") as string;
+			else if (tagDef.name == "keywords") tagDef.content = (current.meta.keywords ?? "") as string;
+			else if (tagDef.name?.includes("image") || tagDef.itemprop == "image") tagDef.content = (current.meta.image ?? "") as string;
+			//Create meta element
 			const tag = document.createElement("meta");
-
 			Object.keys(tagDef).forEach((key: string) => {
 				/*@ts-ignore*/
 				tag.setAttribute(key, tagDef[key]);
 			});
-
-			// We use this to track which meta tags we create so we don't interfere with other ones.
 			tag.setAttribute("data-vue-router-controlled", "");
-
 			return tag;
 		})
 		// Add the meta tags to the document head.
 		.forEach((tag: any) => document.head.appendChild(tag));
 
+	//Continue
 	next();
 });
 
 //Export
-export default router;
+export default router; /*@ts-ignore*/

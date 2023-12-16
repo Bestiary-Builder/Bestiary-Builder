@@ -2,8 +2,6 @@
 	<input id="navbar-indicator" class="navbar-collapse" type="checkbox" checked />
 	<nav class="navbar">
 		<div class="navbar-left">
-
-
 			<RouterLink :to="$router.options.routes[0].path" class="navbar-brand"> BESTIARY BUILDER </RouterLink>
 			<RouterLink v-for="route in $router.options.routes.filter((a: any) => a.navbar)" :to="route.path" class="nav-link">
 				<div class="header-item">{{ route.name }}</div>
@@ -17,10 +15,10 @@
 		</div>
 
 		<div class="navbar-right">
-			<a class="user" v-if="user" href="/user">
+			<RouterLink class="user" v-if="user" to="/user">
 				<span>@{{ user.username }}</span>
 				<img alt="avatar" :src="'https://cdn.discordapp.com/avatars/' + user._id + '/' + user.avatar + '.png'" />
-			</a>
+			</RouterLink>
 			<div v-else class="user login" @click.prevent="LoginClick">Login</div>
 		</div>
 
@@ -41,7 +39,7 @@ export default defineComponent({
 	data() {
 		return {
 			user: null as User | null
-		}
+		};
 	},
 	async mounted() {
 		this.user = await user;

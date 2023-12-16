@@ -16,13 +16,12 @@ export default defineConfig({
 		Pages({
 			dirs: "src/views",
 			onRoutesGenerated: (fileroutes) => {
-				console.log("\nGenerating sitemap");
 				generateSitemap({
 					routes: siteMapRoutes,
 					readable: true,
-					hostname: "https://games.thecyclefrontier.wiki"
+					hostname: "https://domain.com"
 				});
-				console.log("Sitemap generated");
+				console.log("\nSitemap generated");
 			}
 		}),
 		FontAwesome({
