@@ -33,3 +33,4 @@ frontend/public/sitemap.xml
 backend/SSL Certificate update.txt
 
 .env
+.jwtkey

@@ -254,7 +254,6 @@ app.get("/api/public/bestiary/:id", async (req, res) => {
 			//Spellcastin:
 			let spellcastInnateObj = creature.stats.spellcasting.innateSpells;
 			let spellcastCasterObj = creature.stats.spellcasting.casterSpells;
-
 			let spellcasting = {
 				slots: spellcastCasterObj.spellSlotList,
 				max_slots: spellcastCasterObj.spellSlotList,
