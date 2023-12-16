@@ -74,7 +74,7 @@ startConnection();
 //Setup http server
 import http from "http";
 const httpServer = http.createServer(app);
-httpServer.listen(80, () => {
+httpServer.listen(enableHttps ? 80 : 5000, () => {
 	console.log("Server listening to port 80 (HTTP)");
 });
 
