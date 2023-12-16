@@ -144,6 +144,16 @@ const routes = [
 		meta: {
 			title: "Statblock Editor | Bestiary Builder"
 		}
+	},
+	// user settings
+	{
+		path: "/user",
+		navbar: false,
+		name: "User Settings",
+		file: "UserSettings.vue",
+		meta: {
+			title: "User | Bestiary Builder"
+		}
 	}
 ];
 export default routes.map((route) => {
@@ -168,7 +178,7 @@ export default routes.map((route) => {
 	}
 	return object;
 });
-export const blockForNonUsers = ["My Bestiaries", "My Bookmarked Bestiaries", "Bestiary Editor", "Stat block Editor"];
+export const blockForNonUsers = ["My Bestiaries", "My Bookmarked Bestiaries", "Stat block Editor"];
 export const siteMapRoutes = routes.map((route) => ({
 	path: route.path,
 	name: route.name,
