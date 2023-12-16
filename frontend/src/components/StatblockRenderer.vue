@@ -120,8 +120,8 @@
             </p>
 
 
-            <p v-if="showInnateCasting() ">
-                <b><i>Innate Spellcasting</i></b> 
+            <p v-if="showInnateCasting() && !data.spellcasting.innateSpells.displayAsAction">
+                <b><i>Innate Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics"> (Psionics)</span> </i></b> 
                 <span class="feature-container__desc">
                     <span v-if="!data.description.isProperNoun"> The </span> {{ data.description.name }}'s spellcasting ability is {{ fullSpellAbilityName(true) }} (spell save DC {{ spellDc(true) }}, {{ spellAttackBonus(true) }} to hit with spell attacks). <span v-if="!data.description.isProperNoun"> It </span><span v-else> {{ data.description.name }}</span> can innately cast the following spells<span v-if="data.spellcasting.innateSpells.noComponentsOfType.length ==0">:</span>
                     <span v-else> {{ componentsString() }} </span>
@@ -171,8 +171,34 @@
         <div class="feature-container" v-if="data.features.actions.length > 0">
             <h3 class="feature-container__title"> Actions </h3>
                 <p v-for="feature in data.features.actions">
-                <b> <i>{{ feature.name }}</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
-                <span class="feature-container__desc" v-html="sanitizeAndFormat(feature.description)"> </span>
+                    <b> <i>{{ feature.name }}</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
+                    <span class="feature-container__desc" v-html="sanitizeAndFormat(feature.description)"> </span>
+                </p>
+
+                <p v-if="showInnateCasting() && data.spellcasting.innateSpells.displayAsAction ">
+                <b><i>Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics"> (Psionics)</span> </i></b> 
+                <span class="feature-container__desc">
+                    <span v-if="!data.description.isProperNoun"> The </span> {{ data.description.name }}'s casts one of the following spells{{ componentsString(false) }}, using {{ fullSpellAbilityName(true) }} as the spellcasting ability, (spell save DC {{ spellDc(true) }}, {{ spellAttackBonus(true) }} to hit with spell attacks).
+
+                    <div class="spell-list">
+                        <div v-if="data.spellcasting.innateSpells.spellList[0].length > 0"> 
+                            <span> At will: </span>
+                            <i> {{ data.spellcasting.innateSpells.spellList[0].map(x => x.spell).sort().join(", ") }} </i> 
+                        </div>
+                        <div v-if="data.spellcasting.innateSpells.spellList[3].length > 0"> 
+                            <span> 3/day each: </span>
+                            <i> {{ data.spellcasting.innateSpells.spellList[3].map(x => x.spell).sort().join(", ") }} </i> 
+                        </div>
+                        <div v-if="data.spellcasting.innateSpells.spellList[2].length > 0"> 
+                            <span> 2/day each: </span>
+                            <i> {{ data.spellcasting.innateSpells.spellList[2].map(x => x.spell).sort().join(", ") }} </i> 
+                        </div>
+                        <div v-if="data.spellcasting.innateSpells.spellList[1].length > 0"> 
+                            <span> 1/day each: </span>
+                            <i> {{ data.spellcasting.innateSpells.spellList[1].map(x => x.spell).sort().join(", ") }} </i> 
+                        </div>
+                    </div>
+                </span>
             </p>
         </div>
 
@@ -454,19 +480,19 @@ export default defineComponent({
             if (bonus >= 0) return '+' + bonus
             return bonus.toString()
         },
-        componentsString() : string {
+        componentsString(hasColon = true) : string {
             let comp = this.data.spellcasting.innateSpells.noComponentsOfType.sort()
-
+            let colon = hasColon ? ':' : ''
             if (comp.length == 0) return ""
-            if (comp.length == 3) return ", requiring no components:"
+            if (comp.length == 3) return ", requiring no components" + colon
             if (comp.length == 2) {
                 let only = "material";
                 if (!comp.includes("Verbal")) only = "verbal"
                 if (!comp.includes("Somatic")) only = "somatic"
 
-                return `, requiring only ${only} components:`
+                return `, requiring only ${only} components` + colon
             }
-            return `, requiring no ${comp[0].toLowerCase()} components:` 
+            return `, requiring no ${comp[0].toLowerCase()} components` + colon 
         }
     }
 
@@ -543,6 +569,10 @@ export default defineComponent({
 
     :has(.feature__automation-icon)&__desc {
         margin-left: .2rem;
+    }
+
+    p:not(:last-of-type) {
+        margin-bottom: .2rem;
     }
 }
 
