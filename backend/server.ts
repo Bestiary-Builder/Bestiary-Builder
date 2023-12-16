@@ -17,6 +17,7 @@ import cookieParser from "cookie-parser";
 //Setup express server with settings
 export const app = express();
 app.use(bodyParser.urlencoded({extended: false}));
+app.use(cookieParser());
 app.use(helmet());
 app.use(
 	rateLimit({
@@ -24,7 +25,6 @@ app.use(
 		max: 100 // limit each IP to 100 requests per windowMs
 	})
 );
-app.use(cookieParser());
 app.use(express.json());
 app.use(cors());
 app.use(compression());
@@ -99,7 +99,17 @@ if (enableHttps) {
 }
 
 //Load logic
-require("./mainLogic");
+const logicPath = path.join(__dirname, "logic");
+const logicFiles = fs.readdirSync(logicPath);
+for (const file of logicFiles) {
+	if (fs.lstatSync(path.join(logicPath, file)).isDirectory()) {
+		if (fs.existsSync(path.join(logicPath, file, "main.ts"))) {
+			require(path.join(logicPath, file, "main.ts"));
+		}
+	} else {
+		require(path.join(logicPath, file));
+	}
+}
 
 //Static files
 app.use(express.static(frontendPath));
