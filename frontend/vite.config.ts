@@ -19,7 +19,7 @@ export default defineConfig({
 				generateSitemap({
 					routes: siteMapRoutes,
 					readable: true,
-					hostname: "https://domain.com"
+					hostname: "https://bestiary.stevnbak.dk"
 				});
 				console.log("\nSitemap generated");
 			}

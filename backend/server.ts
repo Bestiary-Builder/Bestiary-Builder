@@ -82,9 +82,9 @@ httpServer.listen(5000, () => {
 import https from "https";
 if (enableHttps) {
 	//Certificate
-	const privateKey = fs.readFileSync("/etc/letsencrypt/live/games.thecyclefrontier.wiki/privkey.pem", "utf8");
-	const certificate = fs.readFileSync("/etc/letsencrypt/live/games.thecyclefrontier.wiki/cert.pem", "utf8");
-	const ca = fs.readFileSync("/etc/letsencrypt/live/games.thecyclefrontier.wiki/chain.pem", "utf8");
+	const privateKey = fs.readFileSync("/etc/letsencrypt/live/bestiary.stevnbak.dk/privkey.pem", "utf8");
+	const certificate = fs.readFileSync("/etc/letsencrypt/live/bestiary.stevnbak.dk/cert.pem", "utf8");
+	const ca = fs.readFileSync("/etc/letsencrypt/live/bestiary.stevnbak.dk/chain.pem", "utf8");
 	const credentials = {
 		key: privateKey,
 		cert: certificate,

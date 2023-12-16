@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://domain.com/sitemap.xml
+Sitemap: https://bestiary.stevnbak.dk/sitemap.xml
