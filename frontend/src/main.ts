@@ -33,7 +33,7 @@ export const limits = fetch("/api/limits").then(async (response: any) => {
 });
 console.log(window.location.host);
 const loginBase = "https://discord.com/api/oauth2/authorize?client_id=1183362236509601813&response_type=code&scope=identify+email";
-export const loginLink = loginBase + "&redirect_uri=" + encodeURIComponent("http://" + window.location.host + "/user");
+export const loginLink = loginBase + "&redirect_uri=" + encodeURIComponent(window.location.origin + "/user");
 console.log(loginLink);
 
 //Style sheet
