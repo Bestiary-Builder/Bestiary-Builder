@@ -31,7 +31,7 @@
                     </div>
                     <div class="flow-vertically">
                         <label class="editor-field__title" for="propernoun"><span class="text">proper noun</span></label>
-                        <span> display as {{ data.description.name }} instead of the {{data.description.name}} <input type="checkbox" v-model="data.description.isProperNoun" id=propernoun> </span>
+                        <span> display as "{{ data.description.name }}" instead of "the {{data.description.name}}" <input type="checkbox" v-model="data.description.isProperNoun" id=propernoun> </span>
                     </div>
                 </div>
 
@@ -734,7 +734,7 @@
                             multiple
                             :deselectFromDropdown="true"
                             :closeOnSelect="false"
-                            :options='["Acid", "Bludgeoning", "Cold", "Fire", "Force", "Lightning", "Necrotic", "Piercing", "Poison", "Pyschic", "Radiant", "Slashing", "Thunder", "Nonmagical Nonsilvered Bludgeoning", "Nonmagical Nonsilvered Piercing", "Nonmagical Nonsilvered Slashing"]'
+                            :options='["Acid", "Bludgeoning", "Cold", "Fire", "Force", "Lightning", "Necrotic", "Piercing", "Poison", "Psychic", "Radiant", "Slashing", "Thunder", "Nonmagical Bludgeoning", "Nonmagical Piercing", "Nonmagical Slashing", "Nonmagical Nonsilvered Bludgeoning", "Nonmagical Nonsilvered Piercing", "Nonmagical Nonsilvered Slashing"]'
                             :taggable="true"
                             :pushTags="true"
                             id="vulnerabilities"
@@ -748,7 +748,7 @@
                             multiple
                             :deselectFromDropdown="true"
                             :closeOnSelect="false"
-                            :options='["Acid", "Bludgeoning", "Cold", "Fire", "Force", "Lightning", "Necrotic", "Piercing", "Poison", "Pyschic", "Radiant", "Slashing", "Thunder", "Nonmagical Nonsilvered Bludgeoning", "Nonmagical Nonsilvered Piercing", "Nonmagical Nonsilvered Slashing"]'
+                            :options='["Acid", "Bludgeoning", "Cold", "Fire", "Force", "Lightning", "Necrotic", "Piercing", "Poison", "Psychic", "Radiant", "Slashing", "Thunder", "Nonmagical Bludgeoning", "Nonmagical Piercing", "Nonmagical Slashing", "Nonmagical Nonsilvered Bludgeoning", "Nonmagical Nonsilvered Piercing", "Nonmagical Nonsilvered Slashing"]'
                             :taggable="true"
                             :pushTags="true"
                             id="resistances"
@@ -762,7 +762,7 @@
                             multiple
                             :deselectFromDropdown="true"
                             :closeOnSelect="false"
-                            :options='["Acid", "Bludgeoning", "Cold", "Fire", "Force", "Lightning", "Necrotic", "Piercing", "Poison", "Pyschic", "Radiant", "Slashing", "Thunder", "Nonmagical Nonsilvered Bludgeoning", "Nonmagical Nonsilvered Piercing", "Nonmagical Nonsilvered Slashing"]'
+                            :options='["Acid", "Bludgeoning", "Cold", "Fire", "Force", "Lightning", "Necrotic", "Piercing", "Poison", "Psychic", "Radiant", "Slashing", "Thunder", "Nonmagical Bludgeoning", "Nonmagical Piercing", "Nonmagical Slashing", "Nonmagical Nonsilvered Bludgeoning", "Nonmagical Nonsilvered Piercing", "Nonmagical Nonsilvered Slashing"]'
                             :taggable="true"
                             :pushTags="true"
                             id="immunities"
@@ -999,6 +999,11 @@
                     <div class="flow-vertically">
                         <label class="editor-field__title" for="ispionics"> <span class="text">is psionics? </span></label>
                         <span> display as psionics? <input type="checkbox" v-model="data.spellcasting.innateSpells.isPsionics" id="ispsionics"> </span>
+                    </div>
+
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="innatedisplayasaction"> <span class="text">display as action? </span></label>
+                        <span> should this display as an action? <input type="checkbox" v-model="data.spellcasting.innateSpells.displayAsAction" id="innatedisplayasaction"> </span>
                     </div>
 
                     <div class="flow-vertically">
