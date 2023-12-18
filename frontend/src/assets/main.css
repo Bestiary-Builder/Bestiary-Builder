@@ -42,15 +42,21 @@ a {
 	color: var(--color-link);
 }
 
-/* button {
-	background-color: var(--rarity-color-rare);
-	padding: var(--space-sm) var(--space-md);
-	margin: var(--space-sm);
-	border: none;
-	text-align: center;
-	border-radius: 2rem;
-	cursor: pointer;
-} */
+.btn {
+    padding: 6px 12px;
+    background: rgb(31, 32, 35);
+    border: 1px solid rgb(60, 63, 68);
+    border-radius: 4px;
+    font-size: 13px;
+    color: rgb(247, 248, 248);
+    height: 46px;
+    appearance: none;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+    &:hover {
+        background-color: rgb(44, 45, 47);
+    }
+}
 
 hr {
 	border-color: var(--border-color-base);

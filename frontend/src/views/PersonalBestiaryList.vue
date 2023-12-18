@@ -25,8 +25,8 @@
 		<p class="modal-desc">Please confirm you want to permanently delete this bestiary. This action is not reversible.</p>
 
 		<div class="modal-buttons">
-			<button class="cancel-button" @click="closeModal()">Cancel</button>
-			<button class="danger-button" @click.prevent="() => deleteBestiary()">Confirm</button>
+			<button class="btn cancel-button" @click="closeModal()">Cancel</button>
+			<button class="btn danger-button" @click.prevent="() => deleteBestiary()">Confirm</button>
 		</div>
 	</dialog>
 </template>

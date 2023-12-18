@@ -1,5 +1,5 @@
 <template>
-	<button @click="openModal" :id="type + index">Edit Feature</button>
+	<button class="btn" @click="openModal" :id="type + index">Edit Feature</button>
 	<Teleport to="#modal">
 		<Transition name="modal">
 			<div class="modal__bg" v-if="isModalOpen">
@@ -10,7 +10,7 @@
 					<hr />
 					<p>DESCRIPTION:</p>
 					<!-- <textarea rows="4" type="text" placeholder="Enter description" v-model="feat.description" /> -->
-					<CodeEditor height="200px" v-model="feat.description" width="100%" :wrap="true" :languages="[['markdown', 'Markdown']]" theme="obsidian" />
+					<CodeEditor height="100px" v-model="feat.description" width="100%" :wrap="true" :languages="[['markdown', 'Markdown']]" theme="obsidian" />
 					<hr />
 					<div class="import-container">
 						<span class="import-container__title"> Import Basic Example </span>
@@ -30,7 +30,7 @@
 					<hr />
 					<div class="automation-editor">
 						<span class="error"> {{ errorMessage }} </span>
-						<CodeEditor width="100%" :wrap="true" :languages="[['yaml', 'YAML']]" v-model="automationString" theme="obsidian" height="600px" font-size="10px"> </CodeEditor>
+						<CodeEditor width="100%" :wrap="true" :languages="[['yaml', 'YAML']]" v-model="automationString" theme="obsidian" height="600px" font-size="12px"> </CodeEditor>
 					</div>
 				</section>
 			</div>
@@ -64,7 +64,7 @@ const openModal = () => {
 
 <script lang="ts">
 import {defineComponent} from "vue";
-import YAML, {stringify, parse, YAMLParseError, Parser} from "yaml";
+import YAML from "yaml";
 // @ts-ignore
 import CodeEditor from "simple-code-editor";
 import {toast, handleApiResponse, type error} from "@/main";
@@ -89,13 +89,13 @@ export default defineComponent({
 		CodeEditor
 	},
 	mounted() {
-		this.automationString = stringify(null);
+		this.automationString = YAML.stringify(this.feat.automation) ?? YAML.stringify(null);
+
 		//Fetch example and feature names
 		fetch("/api/basic-examples/list").then(async (response: any) => {
 			let result = await handleApiResponse<string[]>(response);
-			if (result.success) {
-				this.basicExamples = result.data as string[];
-			}
+			if (result.success) this.basicExamples = result.data as string[];
+			
 			else this.basicExamples = [];
 			
 		});
@@ -142,8 +142,8 @@ export default defineComponent({
 			if (!example) return;
 			//Add info to feat
 			if (this.feat.name == "New Feature" || !this.hasEditedName ) this.feat.name = example.name;
-			this.feat.description = example.description;
-			this.automationString = stringify(example.automation);
+			this.feat.description = example.description ?? "";
+			this.automationString = YAML.stringify(example.automation);
 			setTimeout(() => {
 				let els = document.querySelectorAll(".language-yaml") as NodeListOf<HTMLElement>;
 				for (let e in els) {
@@ -168,8 +168,8 @@ export default defineComponent({
 			if (!feature) return;
 			//Add info to feat
 			if (this.feat.name == "New Feature" || !this.hasEditedName ) this.feat.name = feature.name;
-			this.feat.description = feature.description;
-			this.automationString = stringify(feature.automation);
+			this.feat.description = feature.description ?? "";
+			this.automationString = YAML.stringify(feature.automation);
 			setTimeout(() => {
 				let els = document.querySelectorAll(".language-yaml") as NodeListOf<HTMLElement>;
 				for (let e in els) {
@@ -207,12 +207,29 @@ export default defineComponent({
 					}
 				} catch {}
 			}
+
+			// I hate this.
+			let els = document.querySelectorAll('.language-yaml') as NodeListOf<HTMLElement>
+			for (let e in els) {
+				if (els[e].dataset?.highlighted == "yes") els[e].dataset.highlighted = ""
+			}
+		},
+		'feat.description'() {
+			// I hate this.
+			let els = document.querySelectorAll('.language-markdown') as NodeListOf<HTMLElement>
+			for (let e in els) {
+				if (els[e].dataset?.highlighted == "yes") els[e].dataset.highlighted = ""
+			}
 		}
 	}
 });
 </script>
 
 <style scoped lang="less">
+.btn {
+	width: 100%;
+}
+
 .error {
 	color: red;
 	font-weight: bold;

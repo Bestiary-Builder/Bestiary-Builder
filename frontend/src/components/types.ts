@@ -30,7 +30,6 @@ export const defaultStatblock = {
 			telepathy: 0
 		},
 		languages: [],
-		numOfLegendaryActions: 0
 	},
 	abilities: {
 		stats: {
@@ -104,13 +103,16 @@ export const defaultStatblock = {
 		}
 	},
 	misc: {
-		legActionsPerRound: 0,
+		legActionsPerRound: 3,
 		featureHeaderTexts: {
 			features: "",
 			actions: "",
 			bonus: "",
 			reactions: "",
-			
+			legendary: "The creature can take $NUM$ legendary actions, choosing from the options below. Only one legendary action can be used at a time and only at the end of another creature's turn. The creature regains spent legendary actions at the start of its turn.",
+			lair: "On initiative count 20 (losing initiative ties), the creature can take one of the following lair actions; it can't take the same lair action two rounds in a row",
+			mythic: "If the creatures' Mythic trait is active, it can use the options below as legendary actions.",
+			regional: "The region containing the creatures lair can be transformed by its presence, creating one or more of the following effects:"
 		}
 	}
 } as Statblock;
@@ -199,6 +201,23 @@ export interface Statblock {
 	defenses: Defenses;
 	features: Features;
 	spellcasting: SpellCasting;
+	misc: Misc;
+}
+
+export interface Misc {
+	legActionsPerRound: number,
+	featureHeaderTexts: FeatureHeaderTexts;
+}
+
+export interface FeatureHeaderTexts {
+	features: string,
+	actions: string,
+	bonus: string,
+	reactions: string,
+	legendary: string,
+	lair: string,
+	mythic: string,
+	regional: string
 }
 export interface Description {
 	name: string;
@@ -217,7 +236,6 @@ export interface Core {
 	speed: Speed;
 	senses: Senses;
 	languages: string[] | null;
-	numOfLegendaryActions: number;
 }
 export interface Speed {
 	walk: number;

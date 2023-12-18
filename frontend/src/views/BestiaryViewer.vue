@@ -5,35 +5,43 @@
 			<div class="tile-container list-tiles">
 				<div class="content-tile header-tile">
 					<h2>{{ bestiary.name }}</h2>
-					<p>Description: {{ bestiary.description }}</p>
-					<p>Status: {{ bestiary.status }}</p>
-					<p>Creature amount: {{ bestiary.creatures.length }}</p>
+					<p class="description"> {{ bestiary.description }}</p>
 					
-					<span v-if="lastClickedCreature">
+					<div class="unpin" v-if="lastClickedCreature">
 						<span class="unpin-button" @click="lastClickedCreature = null" role="button" aria-label="unpin currently pinned creature">unpin</span> 
 						📌
-					</span>
-					
-					<div class="owner">
-						<p>Owner:</p>
-						<UserBanner :id="bestiary.owner" />
 					</div>
-					<p>Bookmarked: {{ bookmarked }}</p>
-					<button @click.prevent="toggleBookmark">Bookmark</button>
-					<button v-if="isOwner" @click="openModal">Edit bestiary</button>
-					<button v-if="isOwner" @click.prevent="createCreature">Create new creature</button>
+					
+					<div class="footer">
+						<UserBanner :id="bestiary.owner" />
+
+						<div> {{ statusEmoji(bestiary.status) }}{{ bestiary.status }} </div>
+						<div> {{ bestiary.creatures.length }}🐉</div>
+						<div v-if="isOwner" > 
+							<span class="edit-bestiary" role="button" @click="openModal" aria-label="Edit bestiary" v-tooltip="'Edit bestiary'">✏️</span>  
+							<span class="edit-bestiary" role="button" @click="createCreature" aria-label="Add creature" v-tooltip="'Add creature'">➕</span>
+						</div>
+						<div role="button" aria-label="bookmark" @click.prevent="toggleBookmark" class="bookmark" v-else> 
+							<span v-if="bookmarked" v-tooltip="'Unbookmark this bestiary'" class="bookmark-enabled">⭐</span>
+							<span v-else v-tooltip="'Bookmark this bestiary'" class="bookmark-disabled">⭐</span>
+						</div>
+					</div>
 				</div>
 
 				<div class="content-tile creature-tile" v-for="creature in creatures" @mouseover="lastHoveredCreature = creature.stats" @click="lastClickedCreature = creature.stats">
 					<div class="left-side">
-						<h2>{{ creature.stats?.description?.name }}</h2>
+						<h3>{{ creature.stats?.description?.name }}</h3>
 						<span>{{ creature.stats?.core?.size }} {{ creature.stats?.core?.race }}{{ creature.stats?.description?.alignment ? ", " + creature.stats?.description?.alignment : "" }}</span>
 					</div>
 					<div class="right-side">
 						<span v-if="isOwner" role="button" @click.stop="openDeleteModal(creature._id)" class="delete-creature"> <span>🗑️</span> </span>
 						<span v-if="isOwner" class="edit-creature" @click.stop="()=>{}"> <RouterLink class="creature" :to="'/statblock-editor/' + creature._id"> ✏️ </RouterLink> </span>
-						<span> CR {{ creature.stats.description.cr }}</span>
+						<span class="cr"> CR {{ creature.stats.description.cr }}</span>
 					</div>
+				</div>
+
+				<div class="create-tile" v-if="isOwner">
+					<span role="button" class="create-text" @click="createCreature">add creature</span>
 				</div>
 			</div>
 
@@ -61,7 +69,7 @@
 		</div>
 		<div>
 			<label>Description: </label>
-			<input type="text" v-model="bestiary.description" :maxlength="limits.descriptionLength" />
+			<textarea v-model="bestiary.description" :maxlength="limits.descriptionLength" cols="4" />
 		</div>
 		<div>
 			<label>Status: </label>
@@ -72,8 +80,8 @@
 			</select>
 		</div>
 		<div class="modal-buttons">
-			<button class="cancel-button" @click="closeModal()">Cancel</button>
-			<button class="danger-button" @click.prevent="updateBestiary">Save bestiary</button>
+			<button class="btn cancel-button" @click="closeModal()">Cancel</button>
+			<button class="btn danger-button" @click.prevent="updateBestiary">Save bestiary</button>
 		</div>
 	</dialog>
 
@@ -225,6 +233,8 @@ export default defineComponent({
 				let bookmarkResult = await handleApiResponse<{state: boolean}>(bookmarkResponse);
 				if (bookmarkResult.success) {
 					this.bookmarked = (bookmarkResult.data as {state: boolean}).state;
+					if (this.bookmarked) toast.success("Successfully bookmarked this bestiary!")
+					else toast.success("Successfully unbookmarked this bestiary!")
 				} else {
 					this.bookmarked = false;
 					toast.error((bookmarkResult.data as error).error);
@@ -251,6 +261,9 @@ export default defineComponent({
 		},
 		closeDeleteModal(): void {
 			(document.getElementById("delete-modal") as HTMLDialogElement).close();
+		},
+		statusEmoji(status: "public" | "private" | "unlisted"): string {
+			return status == "public" ? "🌍" : status == "private" ? "🔒" : "🔗";
 		}
 	},
 	watch: {
@@ -309,7 +322,7 @@ export default defineComponent({
 	position: relative;
 	overflow: scroll;
 	max-height: 85vh;
-	padding: 0 1rem;
+	padding: 0 1rem 1rem;
 	overflow-x: hidden;
 	overscroll-behavior: contain;
 	.content-tile {
@@ -322,7 +335,7 @@ export default defineComponent({
 		transition: all 1s;
 		transition-timing-function: cubic-bezier(0.06, 0.975, 0.195, 0.985);
 
-		h2 {
+		h3 {
 			font-size: 1.5rem;
 		}
 		&.creature-tile {
@@ -351,7 +364,16 @@ export default defineComponent({
 					display: flex;
 					align-items: center;
 					height: 100%;
+
+					&.cr {
+						width: 4rem
+					}
 				}
+			}
+
+			&:hover {
+				scale: 1.05;
+				background-color: rgb(56, 53, 52);
 			}
 		}
 	}
@@ -361,12 +383,42 @@ export default defineComponent({
 		position: sticky;
 		z-index: 1;
 		top: 0;
+		cursor: unset;
 
 		& h2 {
 			text-transform: lowercase;
 			text-align: center;
 			border-bottom: 1px dotted white;
 		}
+
+		.description {
+			max-height: 10.5rem;
+			color: rgb(229, 229, 229);
+			overflow-y: scroll;
+		}
+		.footer {
+			display: grid;
+			grid-template-columns: 1fr 1fr 1fr 1fr;
+			font-size: 1rem;
+
+			margin-top: .5rem;
+
+			div {
+				text-align: center;
+			}
+			div:first-of-type {
+				text-align: left;
+			}
+			div:last-of-type {
+				text-align: right;
+			}
+		}
+	}
+
+	.create-tile {
+		text-align: center;
+		text-decoration: underline;
+		cursor: pointer;
 	}
 }
 
@@ -376,35 +428,58 @@ export default defineComponent({
 	grid-template-columns: 1fr 1fr;
 }
 
-.content-tile:hover {
-	scale: 1.05;
-}
-
-.bestiary-tile:hover {
-	background-color: rgb(56, 53, 52);
-}
-
 .delete-creature,
-.edit-creature {
+.edit-creature,
+.edit-bestiary {
 	cursor: pointer;
 	transition: scale 0.3s ease;
 
-	&:hover {
+	:hover {
 		scale: 1.08;
 	}
 }
 
 .pin-notice {
-	float: right
-}
-.unpin-button {
-	text-decoration: underline;
+	float: right;
 	cursor: pointer;
 }
+
+.unpin {
+	text-align: center;
+	margin: .5rem;
+	.unpin-button {
+		text-decoration: underline;
+		cursor: pointer;
+	}
+}
+
 
 .no-creature-text {
 	font-size: 1.3rem;
 	text-align: center;
 	margin-top: 1rem;
+}
+
+.bookmark {
+	cursor: pointer;
+	font-size: 1.2rem;
+
+	.bookmark-disabled {
+		filter: grayscale(100%);
+		transition: filter .3s ease;
+
+		&:hover {
+			filter: grayscale(0%)
+		}
+	}
+
+	.bookmark-enabled {
+		filter: grayscale(0%);
+		transition: filter .3s ease;
+
+		&:hover {
+			filter: grayscale(100%)
+		}
+	}
 }
 </style>

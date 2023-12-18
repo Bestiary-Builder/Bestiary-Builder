@@ -182,7 +182,7 @@ app.get("/api/creature/:id/delete", requireUser, async (req, res) => {
 	}
 });
 
-//Default stat block
+//Default stat block. Make sure to align with frontend/public/types -> defaultStatblock
 const defaultStatblock = {
 	description: {
 		name: "New Creature",
@@ -215,7 +215,6 @@ const defaultStatblock = {
 			telepathy: 0
 		},
 		languages: [],
-		numOfLegendaryActions: 0
 	},
 	abilities: {
 		stats: {
@@ -283,6 +282,19 @@ const defaultStatblock = {
 			spellSlotList: {},
 			spellDcOverride: null,
 			spellBonusOverride: null
+		}
+	},
+	misc: {
+		legActionsPerRound: 3,
+		featureHeaderTexts: {
+			features: "",
+			actions: "",
+			bonus: "",
+			reactions: "",
+			legendary: "The creature can take $NUM$ legendary actions, choosing from the options below. Only one legendary action can be used at a time and only at the end of another creature's turn. The creature regains spent legendary actions at the start of its turn.",
+			lair: "On initiative count 20 (losing initiative ties), the creature can take one of the following lair actions; it can't take the same lair action two rounds in a row",
+			mythic: "If the creatures' Mythic trait is active, it can use the options below as legendary actions.",
+			regional: "The region containing the creatures lair can be transformed by its presence, creating one or more of the following effects:"
 		}
 	}
 };

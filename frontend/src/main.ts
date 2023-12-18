@@ -53,6 +53,7 @@ import "vue-toast-notification/dist/theme-default.css";
 
 //Font-Awesome-Icons
 import {library} from "@fortawesome/fontawesome-svg-core";
+// @ts-ignore
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faStopwatch, faMap, faLocationPin, faClock, faRuler, faStar, faHashtag, faArrowDown19, faHourglass} from "@fortawesome/free-solid-svg-icons";
 import {faTwitter, faFacebook, faDiscord, faInstagram} from "@fortawesome/free-brands-svg-icons";
@@ -66,7 +67,7 @@ import "vue-select/dist/vue-select.css";
 
 app.use(ToastPlugin, {
 	position: "top-right",
-	duration: 5000,
+	duration: 4000,
 	dismissible: true
 })
 	.use(FloatingVue)

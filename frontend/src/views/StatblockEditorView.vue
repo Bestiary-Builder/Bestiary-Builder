@@ -638,11 +638,11 @@
                                 <span class="delete-button" @click="skill.override = null" :aria-label="'Delete ' + skill.skillName + ' override'">🗑️</span>
                             </div>
                         </div>
-                        <button @click="deleteSkill(index)"> delete </button>
+                        <button class="btn" @click="deleteSkill(index)"> delete </button>
                     </div>
                     <div class="flow-vertically">
                         <label class="editor-field__title" for="addnewskill"><span class="text">add new skill</span></label>
-                        <button id="addnewskill" class="editor-field__plus-button" @click="addNewSkill()">new skill</button>
+                        <button class="btn editor-field__plus-button" id="addnewskill" @click="addNewSkill()">new skill</button>
                     </div>
                 </div>
             </div>
@@ -783,110 +783,53 @@
                         />
                     </div>
                 </div>
-            <hr>
             </div>
             <div class="editor-content__tab-inner scale-in">
-                <h2 class="group-header"> features </h2>
-                <div class="editor-field__container three-wide">
-                    <div class="flow-vertically" v-for="feature, index in data.features.features">
-                        <label class="editor-field__title" :for="'features'+index"><span class="text">{{ feature.name }}</span></label>
-                        <FeatureWidget :index="index" type="features" :data="data"/>
+                <div v-for="descText, fType in featureGenerator">
+                    <h2 class="group-header"> {{ descText.replace("new ", "") }}s</h2>
+                    <div class="editor-field__container three-wide">
+                        <div class="flow-vertically" v-for="feature, index in data.features[fType]">
+                        <label class="editor-field__title" :for="fType+index"><span class="text">{{ feature.name }}</span></label>
+                        <div class="feature-button__container">
+                            <FeatureWidget :index="index" :type="fType" :data="data"/>
+                            <span class="delete-button" @click="deleteFeature(fType, index)" aria-label="Delete feature">🗑️</span>
+                            <div class="moving-buttons">
+                                <span @click="moveFeature(true, fType, index)">▲</span>
+                                <span @click="moveFeature(false, fType, index)">▼</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="flow-vertically">
-                        <label class="editor-field__title" for="newfeature"><span class="text">new feature</span></label>
-                        <button @click="createNewFeature('features')" id="newfeature"> create </button>
-                    </div>
-                </div>
-                <hr>
 
-                <h2 class="group-header"> actions </h2>
-                <div class="editor-field__container three-wide">
-                    <div class="flow-vertically" v-for="feature, index in data.features.actions">
-                        <label class="editor-field__title" :for="'actions'+index"><span class="text">{{ feature.name }}</span></label>
-                        <FeatureWidget :index="index" type="actions" :data="data"/>
-                    </div>
                     <div class="flow-vertically">
-                        <label class="editor-field__title" for="newaction"><span class="text">new action</span></label>
-                        <button @click="createNewFeature('actions')" id="newaction"> create </button>
+                        <label class="editor-field__title" :for="'new'+fType"><span class="text">{{ descText }}</span></label>
+                        <button class="btn" @click="createNewFeature(fType)" :id="'new'+fType"> create + </button>
                     </div>
-                </div>
-                <hr>
 
-                <h2 class="group-header"> bonus actions </h2>
-                <div class="editor-field__container three-wide">
-                    <div class="flow-vertically" v-for="feature, index in data.features.bonus">
-                        <label class="editor-field__title" :for="'bonus'+index"><span class="text">{{ feature.name }}</span></label>
-                        <FeatureWidget :index="index" type="bonus" :data="data"/>
+                    <div class="flow-vertically" v-if="data.features[fType].length > 0">
+                        <label class="editor-field__title" :for="'headertext'+fType"><span class="text"> section header </span></label>
+                        <textarea v-model="data.misc.featureHeaderTexts[fType]" />
                     </div>
-                    <div class="flow-vertically">
-                        <label class="editor-field__title" for="newbonus"><span class="text">new bonus action</span></label>
-                        <button @click="createNewFeature('bonus')" id="newbonus"> create </button>
-                    </div>
-                </div>
 
-                <hr>
-                <h2 class="group-header"> reactions </h2>
-                <div class="editor-field__container three-wide">
-                    <div class="flow-vertically" v-for="feature, index in data.features.reactions">
-                        <label class="editor-field__title" :for="'reactions'+index"><span class="text">{{ feature.name }}</span></label>
-                        <FeatureWidget :index="index" type="reactions" :data="data"/>
+                    <div class="flow-vertically" v-if="fType=='legendary' && data.features[fType].length > 0">
+                        <label class="editor-field__title" for="legactionsperround"><span class="text">leg actions/round</span></label>
+                        <div class="quantity">
+                            <input 
+                                type="number" 
+                                v-model="data.misc.legActionsPerRound" 
+                                min="1" 
+                                step="1"
+                                inputmode="numeric"
+                                id="legactionsperround"
+                            >
+                            <div class="quantity-nav">
+                                <div class="quantity-button quantity-up" @click="data.misc.legActionsPerRound = data.misc.legActionsPerRound+1" aria-label="Increase legendary actions per round">+</div>
+                                <div class="quantity-button quantity-down" @click="data.misc.legActionsPerRound = Math.max(1, data.misc.legActionsPerRound-1)" aria-label="Decrease legendary actions per round">-</div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="flow-vertically">
-                        <label class="editor-field__title" for="newreaction"><span class="text">new reaction action</span></label>
-                        <button @click="createNewFeature('reactions')" id="newreaction"> create </button>
-                    </div>
-                </div>
 
-                <hr>
-                <h2 class="group-header"> legendary actions </h2>
-                <div class="editor-field__container three-wide">
-                    <div class="flow-vertically" v-for="feature, index in data.features.legendary">
-                        <label class="editor-field__title" :for="'legendary'+index"><span class="text">{{ feature.name }}</span></label>
-                        <FeatureWidget :index="index" type="legendary" :data="data"/>
                     </div>
-                    <div class="flow-vertically">
-                        <label class="editor-field__title" for="newlegendary"><span class="text">new legendary action</span></label>
-                        <button @click="createNewFeature('legendary')" id="newlegendary"> create </button>
-                    </div>
-                </div>
-
-                <hr>
-                <h2 class="group-header"> lair actions </h2>
-                <div class="editor-field__container three-wide">
-                    <div class="flow-vertically" v-for="feature, index in data.features.lair">
-                        <label class="editor-field__title" :for="'lair'+index"><span class="text">{{ feature.name }}</span></label>
-                        <FeatureWidget :index="index" type="lair" :data="data"/>
-                    </div>
-                    <div class="flow-vertically">
-                        <label class="editor-field__title" for="newlair"><span class="text">new lair action</span></label>
-                        <button @click="createNewFeature('lair')" id="newlair"> create </button>
-                    </div>
-                </div>
-
-                <hr>
-                <h2 class="group-header"> mythic actions </h2>
-                <div class="editor-field__container three-wide">
-                    <div class="flow-vertically" v-for="feature, index in data.features.mythic">
-                        <label class="editor-field__title" :for="'mythic'+index"><span class="text">{{ feature.name }}</span></label>
-                        <FeatureWidget :index="index" type="mythic" :data="data"/>
-                    </div>
-                    <div class="flow-vertically">
-                        <label class="editor-field__title" for="newmythic"><span class="text">new mythic action</span></label>
-                        <button @click="createNewFeature('mythic')" id="newmythic"> create </button>
-                    </div>
-                </div>
-
-                <hr>
-                <h2 class="group-header"> regional effects </h2>
-                <div class="editor-field__container three-wide">
-                    <div class="flow-vertically" v-for="feature, index in data.features.regional">
-                        <label class="editor-field__title" :for="'regional'+index"><span class="text">{{ feature.name }}</span></label>
-                        <FeatureWidget :index="index" type="regional" :data="data"/>
-                    </div>
-                    <div class="flow-vertically">
-                        <label class="editor-field__title" for="newregional"><span class="text">new regional effects</span></label>
-                        <button @click="createNewFeature('regional')" id="newregional"> create </button>
-                    </div>
+                    <hr v-if="fType!=='regional'" />
                 </div>
             </div>
             <div  class="editor-content__tab-inner scale-in">
@@ -1017,7 +960,7 @@
                     <div v-for="times in data.spellcasting.innateSpells.spellList">
                         <div v-if="times.length>0">
                             <div v-for="spell in times">
-                                <b>{{ spell.spell }}</b> override level <input type="number" min=0 max="20" v-model="spell.upcastLevel"> <button @click="spell.upcastLevel = null"> reset </button>
+                                <b>{{ spell.spell }}</b> override level <input type="number" min=0 max="20" v-model="spell.upcastLevel"> <button class="btn"@click="spell.upcastLevel = null"> reset </button>
 
                                 <input type="text" v-model="spell.comment" placeholder="comment" />
                             </div>
@@ -1129,7 +1072,7 @@
         <hr />
 
         <div class="save-button">
-            <button @click="saveStatblock()"> save statblock </button>
+            <button class="btn" @click="saveStatblock()"> save statblock </button>
         </div>
     </div>
     <div class="content-container__inner"> 
@@ -1169,7 +1112,18 @@ export default defineComponent({
                 3: [] as InnateSpellsEntity[]
             } as InnateSpellsList ,
             limits: {} as limitsType,
-            languages: ["All", "All languages it knew in life", "Abyssal", "Aarakocra", "Aquan", "Auran", "Celestial", "Common", "Deep Speech", "Draconic", "Druidic", "Dwarvish", "Elvish", "Giant", "Gith", "Gnomish", "Goblin", "Halfling", "Ignan", "Infernal", "Orc", "Primordial", "Sylvan", "Terran", "Thieves' Cant", "Undercommon", "Understands the languages of its creator but can't speak"]
+            languages: ["All", "All languages it knew in life", "Abyssal", "Aarakocra", "Aquan", "Auran", "Celestial", "Common", "Deep Speech", "Draconic", "Druidic", "Dwarvish", "Elvish", "Giant", "Gith", "Gnomish", "Goblin", "Halfling", "Ignan", "Infernal", "Orc", "Primordial", "Sylvan", "Terran", "Thieves' Cant", "Undercommon", "Understands the languages of its creator but can't speak"],
+            featureGenerator: {
+                "features": "new feature",
+                "actions": "new action",
+                "bonus": "new bonus action",
+                "reactions": "new reactions",
+                "legendary": "new legendary action",
+                "lair": "new lair action",
+                "mythic": "new mythic action",
+                "regional": "new regional effect"
+            }
+        
         }
     },
     methods: {
@@ -1184,6 +1138,21 @@ export default defineComponent({
             slides[n - 1].style.display = "block";
 
             this.slideIndex = n;
+        },
+        moveFeature(isUp: boolean, type: "features" | "actions" | "bonus" | "reactions" | "legendary" | "mythic" | "lair" | "regional", index: number ) : void {
+            // isUp is true if they want to move it higher in the statblock, e.g. earlier in the array
+            let features = this.data.features[type]
+            if (index == 0 && isUp) return;
+            if (index == features.length-1 && !isUp) return;
+
+
+            let toSwapIndex = index
+            if (isUp) toSwapIndex--
+            else toSwapIndex++
+
+            var b = features[toSwapIndex]
+            features[toSwapIndex] = features[index]
+            features[index] = b
         },
         updateCr() : void {
             let cr = this.data.description.cr
@@ -1208,7 +1177,6 @@ export default defineComponent({
             }
 
             this.data.description.cr = cr
-            console.log(cr)
         },
         addNewSkill() : void {
             let index = 0;
@@ -1241,9 +1209,12 @@ export default defineComponent({
         deleteSkill(index: number) : void {
             this.data.abilities.skills?.splice(index, 1)
         },
+        deleteFeature(type: "features" | "actions" | "bonus" | "reactions" | "legendary" | "mythic" | "lair" | "regional", index: number) : void {
+            this.data.features[type].splice(index, 1)
+        },
         createNewFeature(type: "features" | "actions" | "bonus" | "reactions" | "legendary" | "mythic" | "lair" | "regional" ) : void {
             this.data.features[type][this.data.features[type].length] = {
-                "name": "New Feature",
+                "name": "New Feature " + (this.data.features[type].length+1) ,
                 "description": "",
                 "automation": null
             }
@@ -1305,12 +1276,6 @@ export default defineComponent({
     mounted() {
         console.log("Statblock id: " + this.$route.params.id);
         this.showSlides(1)
-        // setInterval(() => {
-        //     let els = document.querySelectorAll('.language-yaml') as NodeListOf<HTMLElement>
-        //     for (let e in els) {
-        //         if (els[e].dataset?.highlighted == "yes") els[e].dataset.highlighted = ""
-        //     }
-        // }, 10)
 
         //Fetch creature info
         fetch("/api/creature/" + this.$route.params.id).then(async (response) => {
@@ -1493,6 +1458,34 @@ export default defineComponent({
                     display: flex;
                     justify-content: space-between;
                 }
+
+                .feature-button__container {
+                    display: flex;
+                    gap: .5rem;
+                    justify-content: space-between;
+
+                    & .moving-buttons {
+                        display: grid;
+                        grid-template-rows: 1fr 1fr;
+                        cursor: pointer;
+
+                        
+                        span {
+                            border-radius: 50rem;
+                            width: 20px;
+                            height: 20px;
+                            text-align: center;
+                            display: inline-block;
+                            line-height: 20px;
+                            transition: background-color .3s ease;
+
+                            &:hover {
+                                background-color: rgb(60, 63, 68);
+                            }
+                        }
+                    }
+                }
+
             }
 
             .center-vertically {
@@ -1519,6 +1512,11 @@ export default defineComponent({
 
             &.six-wide {
                 grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+            }
+
+            textarea {
+                min-height: 46px;
+                height: 46px;
             }
         }
     }
@@ -1567,24 +1565,28 @@ input[type=text],textarea {
 textarea {
     resize: vertical;
     min-height: 3rem;
+    height: unset;
 }
 
 .quantity {
   position: relative;
   white-space: nowrap;
 
-  .delete-button {
-    translate: 0 7px;
-	transition: scale 0.3s ease;
-    cursor: pointer;
-    display: flex;
 
-	&:hover {
-		scale: 1.1;
-	}
-  }
+
 }
 
+.delete-button {
+    translate: 0 7px;
+    transition: scale 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    height: fit-content;
+    
+    &:hover {
+        scale: 1.1;
+    }
+}
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button
 {
@@ -1662,18 +1664,14 @@ hr {
 .save-button {
     width: 100%;
     display: flex;
-    margin-top: 2rem;
+    margin: 2rem 0;
     justify-content: center;
     button {
-        font-size: 1.5rem;
-        padding: 1.5rem;
         background-color: var(--color-success);
-        cursor: pointer;
-
-        transition: scale .3s ease;
+        font-size: 1.2rem;
 
         &:hover {
-            scale: 1.05
+            background-color: rgb(46, 124, 9) ;
         }
     }
 }

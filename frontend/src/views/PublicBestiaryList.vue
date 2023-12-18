@@ -10,9 +10,9 @@
 						<input type="text" v-model="search" placeholder="Search by bestiary name or description" />
 						<button type="submit">Search</button>
 						<div>
-							<button @click="page = Math.min(total, page + 1)">+</button>
+							<button class="btn"  @click="page = Math.min(total, page + 1)">+</button>
 							<span>{{ page }}</span>
-							<button @click="page = Math.max(1, page - 1)">-</button>
+							<button class="btn" @click="page = Math.max(1, page - 1)">-</button>
 						</div>
 					</form>
 				</div>
