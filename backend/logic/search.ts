@@ -18,7 +18,7 @@ app.get("/api/search/:page/:searchterm?", async (req, res) => {
 			status: "public",
 			$or: [{name: {$regex: "(?i)" + searchTerm + "(?-i)"}}, {description: {$regex: "(?i)" + searchTerm + "(?-i)"}}]
 		} as Filter<Bestiary>;
-		let finder = collections.bestiaries?.find(filter).sort({viewCount: -1, lastUpdated: -1, name: 1});
+		let finder = collections.bestiaries?.find(filter).sort({bookmarks: -1, viewCount: -1, lastUpdated: -1, name: 1});
 		let amountFound = (await finder?.count()) ?? 0;
 		if (amountFound == 0) amountFound = 1;
 		let results = await finder

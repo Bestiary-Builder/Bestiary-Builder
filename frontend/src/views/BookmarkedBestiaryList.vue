@@ -7,7 +7,7 @@
 				<div class="bestiary-tile-content">
 					<p class="description">{{ bestiary.description }}</p>
 					<div class="footer">
-						<span>{{ statusEmoji(bestiary.status) }}{{ bestiary.status }}</span>
+						<UserBanner :id="bestiary.owner" />
 						<span>{{ bestiary.creatures.length }}🐉</span>
 					</div>
 				</div>
