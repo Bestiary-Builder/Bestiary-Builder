@@ -19,6 +19,7 @@
 <script lang="ts">
 import {RouterLink} from "vue-router";
 import {defineComponent} from "vue";
+import UserBanner from "@/components/UserBanner.vue";
 import type {User, Bestiary, Creature} from "@/components/types";
 import {handleApiResponse, toast, user} from "@/main";
 import type {error} from "@/main";
@@ -29,6 +30,10 @@ export default defineComponent({
 			bestiaries: [] as Bestiary[],
 			user: null as User | null
 		};
+	},
+	components: {
+		UserBanner,
+		RouterLink
 	},
 	async beforeMount() {
 		this.user = await user;
@@ -56,4 +61,16 @@ export default defineComponent({
 
 <style scoped lang="less">
 @import url("../assets/bestiary-list.less");
+.content-tile.bestiary-tile .bestiary-tile-content .footer.footer {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	font-size: 1.2rem;
+
+	span:first-of-type {
+		text-align: left;
+	}
+	span:last-of-type {
+		text-align: right;
+	}
+}
 </style>
