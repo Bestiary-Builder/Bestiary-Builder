@@ -169,6 +169,15 @@ const routes = [
 		file: "UserSettings.vue",
 		meta: {}
 	},
+	// privacy policy
+	{
+		path: "/privacy-policy",
+		navbar: false,
+		loggedIn: false,
+		name: "Privacy Policy",
+		file: "PrivacyPolicy.vue",
+		meta: {}
+	},
 	// 404 not found page
 	{
 		path: "/:notfound",

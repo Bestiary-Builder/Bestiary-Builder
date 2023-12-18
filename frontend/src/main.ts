@@ -31,10 +31,8 @@ export const limits = fetch("/api/limits").then(async (response: any) => {
 	if (result.success) return result.data as limitsType;
 	else return null;
 });
-console.log(window.location.host);
 const loginBase = "https://discord.com/api/oauth2/authorize?client_id=1183362236509601813&response_type=code&scope=identify+email";
 export const loginLink = loginBase + "&redirect_uri=" + encodeURIComponent(window.location.origin + "/user");
-console.log(loginLink);
 
 //Style sheet
 import "./assets/main.css";
@@ -53,7 +51,13 @@ app.use(router);
 import ToastPlugin from "vue-toast-notification";
 import "vue-toast-notification/dist/theme-default.css";
 
-import "./assets/main.css";
+//Font-Awesome-Icons
+import {library} from "@fortawesome/fontawesome-svg-core";
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import {faStopwatch, faMap, faLocationPin, faClock, faRuler, faStar, faHashtag, faArrowDown19, faHourglass} from "@fortawesome/free-solid-svg-icons";
+import {faTwitter, faFacebook, faDiscord, faInstagram} from "@fortawesome/free-brands-svg-icons";
+library.add(faTwitter, faFacebook, faDiscord, faInstagram, faStopwatch, faMap, faLocationPin, faClock, faRuler, faStar, faHashtag, faArrowDown19, faHourglass);
+app.component("font-awesome-icon", FontAwesomeIcon);
 
 // Vue Select
 // @ts-expect-error

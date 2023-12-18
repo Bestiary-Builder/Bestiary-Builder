@@ -9,7 +9,7 @@
 				<nav id="footer-places">
 					<ul>
 						<li id="footer-places-privacy">
-							<a href="https://thecyclefrontier.wiki/wiki/Wiki:Privacy_policy" title="Wiki:Privacy policy">Privacy policy<font-awesome-icon icon="fa-user-lock" /></a>
+							<a href="/privacy-policy" title="Privacy policy">Privacy policy<font-awesome-icon icon="fa-user-lock" /></a>
 						</li>
 					</ul>
 				</nav>
