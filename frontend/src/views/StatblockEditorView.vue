@@ -1117,7 +1117,7 @@ export default defineComponent({
                 "features": "new feature",
                 "actions": "new action",
                 "bonus": "new bonus action",
-                "reactions": "new reactions",
+                "reactions": "new reaction",
                 "legendary": "new legendary action",
                 "lair": "new lair action",
                 "mythic": "new mythic action",
@@ -1582,7 +1582,7 @@ textarea {
     cursor: pointer;
     display: flex;
     height: fit-content;
-    
+
     &:hover {
         scale: 1.1;
     }

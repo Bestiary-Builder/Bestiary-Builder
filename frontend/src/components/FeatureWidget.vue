@@ -144,6 +144,7 @@ export default defineComponent({
 			if (this.feat.name == "New Feature" || !this.hasEditedName ) this.feat.name = example.name;
 			this.feat.description = example.description ?? "";
 			this.automationString = YAML.stringify(example.automation);
+			this.saveAutomation(false)
 			setTimeout(() => {
 				let els = document.querySelectorAll(".language-yaml") as NodeListOf<HTMLElement>;
 				for (let e in els) {
@@ -170,6 +171,7 @@ export default defineComponent({
 			if (this.feat.name == "New Feature" || !this.hasEditedName ) this.feat.name = feature.name;
 			this.feat.description = feature.description ?? "";
 			this.automationString = YAML.stringify(feature.automation);
+			this.saveAutomation(false)
 			setTimeout(() => {
 				let els = document.querySelectorAll(".language-yaml") as NodeListOf<HTMLElement>;
 				for (let e in els) {
