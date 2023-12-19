@@ -15,7 +15,9 @@
 					</div>
 					<div class="tile-footer">
 						<span>{{ statusEmoji(bestiary.status) }}{{ bestiary.status }}</span>
-						<span role="button" @click.stop.prevent="openModal(bestiary._id)" class="edit-button">🗑️</span>
+						<span role="button" @click.stop.prevent="openModal(bestiary._id)" class="edit-button" v-if="bestiary.owner == user?._id"
+						>🗑️</span>
+						<span class="shared-notice" v-else v-tooltip="'This bestiary has been shared with you by the owner.'">shared</span>
 						<span>{{ bestiary.creatures.length }}🐉</span>
 					</div>
 				</RouterLink>
@@ -153,5 +155,9 @@ export default defineComponent({
 	& :hover {
 		scale: 1.1;
 	}
+}
+
+.shared-notice {
+	text-decoration: underline;
 }
 </style>

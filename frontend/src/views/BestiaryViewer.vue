@@ -18,7 +18,7 @@
 						<div>{{ statusEmoji(bestiary.status) }}{{ bestiary.status }}</div>
 						<div>{{ bestiary.creatures.length }}🐉</div>
 						<div v-if="isOwner || isEditor">
-							<span class="edit-bestiary" role="button" @click="openModal" aria-label="Edit bestiary" v-tooltip="'Edit bestiary'">✏️</span>
+							<span class="edit-bestiary" role="button" @click="isEditorModalOpen = true" aria-label="Edit bestiary" v-tooltip="'Edit bestiary'">✏️</span>
 							<span class="edit-bestiary" role="button" @click="createCreature" aria-label="Add creature" v-tooltip="'Add creature'">➕</span>
 						</div>
 						<div role="button" aria-label="bookmark" @click.prevent="toggleBookmark" class="bookmark" v-else>
@@ -35,7 +35,7 @@
 							<span>{{ creature.stats?.core?.size }} {{ creature.stats?.core?.race }}{{ creature.stats?.description?.alignment ? ", " + creature.stats?.description?.alignment : "" }}</span>
 						</div>
 						<div class="right-side">
-							<span v-if="isOwner || isEditor" role="button" @click.stop="openDeleteModal(creature._id)" class="delete-creature"> <span>🗑️</span> </span>
+							<span v-if="isOwner || isEditor" role="button" @click.stop="openDeleteModal(creature)" class="delete-creature"> <span>🗑️</span> </span>
 							<span v-if="isOwner || isEditor" class="edit-creature" @click.stop="() => {}"> <RouterLink class="creature" :to="'/statblock-editor/' + creature._id"> ✏️ </RouterLink> </span>
 							<span class="cr"> CR {{ creature.stats.description.cr }}</span>
 						</div>
@@ -64,55 +64,102 @@
 		</div>
 	</div>
 
-	<dialog id="edit-modal" v-if="(isOwner || isEditor) && bestiary">
-		<h2 class="modal-header">Edit bestiary</h2>
-		<p class="modal-desc">bla bla bla bla</p>
-		<div>
-			<label>Name: </label>
-			<input type="text" v-model="bestiary.name" :minlength="limits.nameMin" :maxlength="limits.nameLength" />
-		</div>
-		<div>
-			<label>Description: </label>
-			<textarea v-model="bestiary.description" :maxlength="limits.descriptionLength" cols="4" />
-		</div>
-		<div v-if="isOwner">
-			<label>Status: </label>
-			<select v-model="bestiary.status">
-				<option value="public">Public</option>
-				<option value="unlisted">Unlisted</option>
-				<option value="private">Private</option>
-			</select>
-		</div>
+	<Teleport to="#modal">
+		<Transition name="modal">
+			<div class="modal__bg" v-if="isDeleteModalOpen">
+				<section class="modal__content modal__small" ref="deleteModal" v-if="bestiary && (isOwner || isEditor)">
+					<button @click="isDeleteModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
+					<h2 class="modal-header">are you sure you want to delete {{ selectedCreature?.stats.description.name }}?</h2>
+					<p class="warning"> This action cannot be reversed.</p>
+					<div class="modal-buttons">
+						<button class="btn cancel-button" @click="isDeleteModalOpen=false">Cancel</button>
+						<button v-if="selectedCreature" class="btn danger-button" @click.prevent="deleteCreature(selectedCreature)">Delete creature</button>
+					</div>
+				</section>
+			</div>
+		</Transition>
+	</Teleport>
 
-		<div>
-			<h3>Editors</h3>
-			<p v-for="editor in editors">
-				<UserBanner :id="editor._id" />
-				<button class="btn" @click="removeEditor(editor._id)" v-if="isOwner">Remove</button>
-			</p>
-			<p v-if="isOwner">
-				Add Editor
-				<input type="text" v-model="editorToAdd" inputmode="numeric" />
-				<button class="btn" @click="addEditor()">Add</button>
-			</p>
-		</div>
+	<Teleport to="#modal">
+		<Transition name="modal">
+			<div class="modal__bg" v-if="isEditorModalOpen">
+				<section class="modal__content modal__small" ref="editModal" v-if="bestiary && (isOwner || isEditor)">
+					<button @click="isEditorModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
+					<h2 class="modal-header">edit bestiary</h2>
+					<div class="flow-vertically">
+						<label for="nameinput">name</label>
+						<input type="text" v-model="bestiary.name" :minlength="limits.nameMin" :maxlength="limits.nameLength" id="nameinput" />
+					</div>
+					<div class="flow-vertically">
+						<label for="descinput" >description</label>
+						<textarea v-model="bestiary.description" :maxlength="limits.descriptionLength" id="descinput"/>
+					</div>
+					<div v-if="isOwner" class="flow-vertically">
+						<label for="statusinput">status</label>
 
-		<div class="modal-buttons">
-			<button class="btn cancel-button" @click="closeModal()">Cancel</button>
-			<button class="btn danger-button" @click.prevent="updateBestiary">Save bestiary</button>
-		</div>
-	</dialog>
+						<v-select v-model="bestiary.status" :options="['public', 'unlisted', 'private']" inputId="statusinput" />
+					</div>
 
-	<dialog id="delete-modal" v-if="isOwner && bestiary">
-		<h2 class="modal-header">Are you sure you want to delete this creature?</h2>
-		<p class="modal-desc">Please confirm you want to permanently delete this creature. This action is not reversible.</p>
+					<div class="editor-block">
+						<h3><span>editors</span></h3>
+						<p v-if="isOwner" class="flow-vertically">
+							<p> Editors can add, edit, and remove creatures. They can edit the name of the bestiary and its description. Editors cannot change the status of the bestiary or delete the bestiary. Editors cannot add other editors. The owner can remove editors at any time.</p>
 
-		<div class="modal-buttons">
-			<button class="cancel-button" @click="closeDeleteModal()">Cancel</button>
-			<button class="danger-button" @click.prevent="() => deleteCreature(selectedCreature)">Confirm</button>
-		</div>
-	</dialog>
+						</p>
+						<div class="editor-container">
+							<div v-for="editor in editors" class="editor-list">
+								<p>
+									<UserBanner :id="editor._id" />
+									<span v-if="isOwner" role="button" @click="removeEditor(editor._id)" class="delete-creature"> <span>🗑️</span> </span>
+								</p>
+							</div>
+							<div class="flow-vertically">
+								<label for="addeditor">add editor</label>
+								<div class="button-container">
+									<input type="text" v-model="editorToAdd" inputmode="numeric" placeholder="Discord user ID" />
+									<button class="btn" @click="addEditor()" id="add">add</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<p class="warning" v-if="showWarning">
+						By changing the bestiary status to {{ bestiary.status }} I confirm that I am the copyright holder of the content within, or that I have permission from the copyright holder to share this content. I hereby agree to the (CONTENT POLICY) and agree to be fully liable for the content within. I affirm that the content does not include any official non-free D&D content. 
+
+						Bestiaries that breach these terms may have their status changed to private or be outright removed, and may result in a ban if the content breaches our content policy.
+					</p>
+
+					<div class="modal-buttons">
+						<button class="btn cancel-button" @click="isEditorModalOpen=false">Cancel</button>
+						<button class="btn confirm-button" @click.prevent="updateBestiary">Save changes</button>
+					</div>
+				</section>
+			</div>
+		</Transition>
+	</Teleport>
+
+
 </template>
+<script setup lang="ts">
+import {ref} from "vue";
+import {onClickOutside} from "@vueuse/core";
+const isEditorModalOpen = ref(false);
+const editModal = ref<HTMLDivElement | null>(null);
+// @ts-ignore
+onClickOutside(editModal, () => (isEditorModalOpen.value = false));
+
+
+const selectedCreature = ref<Creature | null>(null)
+
+const isDeleteModalOpen = ref(false);
+const deleteModal = ref<HTMLDivElement | null>(null);
+// @ts-ignore
+onClickOutside(deleteModal, () => (isDeleteModalOpen.value = false));
+
+const openDeleteModal = (creature: Creature) => {
+	selectedCreature.value = creature
+	isDeleteModalOpen.value = true;
+};
+</script>
 
 <script lang="ts">
 import {RouterLink} from "vue-router";
@@ -134,12 +181,12 @@ export default defineComponent({
 			lastHoveredCreature: null as null | Statblock,
 			lastClickedCreature: null as null | Statblock,
 			hasPinnedBefore: false as boolean,
-			selectedCreature: "" as string,
 			limits: {} as limitsType,
 			bookmarked: false as boolean,
 			isOwner: false,
 			isEditor: false,
-			editorToAdd: "" as string
+			editorToAdd: "" as string,
+			showWarning: false as boolean
 		};
 	},
 	components: {
@@ -147,6 +194,7 @@ export default defineComponent({
 		StatblockRenderer
 	},
 	async created() {
+		// @ts-ignore
 		this.limits = (await limits) ?? ({} as limitsType);
 	},
 	async beforeMount() {
@@ -179,11 +227,12 @@ export default defineComponent({
 			});
 			await this.getBestiary();
 		},
-		async deleteCreature(id: string) {
-			await fetch(`/api/creature/${id}/delete`).then(async (response) => {
+		async deleteCreature(creature: Creature) {
+			await fetch(`/api/creature/${creature._id}/delete`).then(async (response) => {
 				let result = await handleApiResponse(response);
 				if (result.success) {
 					toast.success("Deleted creature succesfully");
+					isDeleteModalOpen.value = false;
 				} else {
 					toast.error((result.data as error).error);
 				}
@@ -303,27 +352,9 @@ export default defineComponent({
 		setSelectedCreature(creature: any) {
 			this.lastHoveredCreature = creature;
 		},
-		openModal(): void {
-			const dialog = document.getElementById("edit-modal") as HTMLDialogElement;
-			if (!dialog) return;
-
-			dialog.showModal();
-		},
-		closeModal(): void {
-			(document.getElementById("edit-modal") as HTMLDialogElement).close();
-		},
-		openDeleteModal(id: string): void {
-			const dialog = document.getElementById("delete-modal") as HTMLDialogElement;
-			if (!dialog) return;
-			this.selectedCreature = id;
-			dialog.showModal();
-		},
-		closeDeleteModal(): void {
-			(document.getElementById("delete-modal") as HTMLDialogElement).close();
-		},
 		statusEmoji(status: "public" | "private" | "unlisted"): string {
 			return status == "public" ? "🌍" : status == "private" ? "🔒" : "🔗";
-		}
+		},
 	},
 	watch: {
 		lastClickedCreature(newValue, oldValue): void {
@@ -331,12 +362,27 @@ export default defineComponent({
 			if (!this.hasPinnedBefore) this.hasPinnedBefore = true;
 
 			toast.info("Pinned creature to the right side. Click unpin there to go back to hover behaviour.");
+		},
+		'bestiary.status'(newValue, oldValue): void {
+			if (newValue == "private") this.showWarning = false
+			if (newValue != "private") this.showWarning = true
+			console.log(newValue, oldValue)
 		}
 	}
 });
 </script>
 
 <style scoped lang="less">
+.flow-vertically {
+	display: flex;
+	flex-direction: column;
+	gap: .3rem;
+
+	label {
+		font-weight: bold;
+		text-decoration: underline;
+	}
+}
 .content {
 	margin: 1rem 5vw;
 
@@ -553,5 +599,68 @@ export default defineComponent({
 .slide-fade-leave-to {
   transform: translateX(-50px);
   opacity: 0;
+}
+
+.editor-block {
+	margin-top: 1rem;
+
+	& h3 {
+		font-size: 1.5rem;
+		border-bottom: 1px solid orangered;
+	}
+
+	.editor-list p {
+		display: flex;
+		gap: 1rem;
+		margin: 1rem 0;
+	}
+
+
+	.button-container {
+		display: flex;
+		gap: 1rem;
+	}
+
+}
+.modal-buttons {
+	display: flex;
+	gap: 1rem;
+	justify-content: center;
+	margin-top: 2rem;
+
+	& button {
+		padding: .5rem 1rem;
+		border: none;
+		cursor: pointer;
+
+		transition: all .3s ease;
+		&:hover {
+			scale: 1.05;
+			filter: brightness(1.05);
+		}
+	}
+
+	.cancel-button {
+		background-color: grey;
+	}
+	
+	.confirm-button {
+		background-color: var(--color-success);
+	
+	}
+	
+	.danger-button {
+		background-color: var(--color-destructive);
+	}
+}
+
+.warning {
+	color: var(--color-destructive);
+	margin-top: .5rem;
+}
+
+.editor-container {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
 }
 </style>

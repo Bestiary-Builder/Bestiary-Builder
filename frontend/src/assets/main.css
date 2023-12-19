@@ -152,8 +152,9 @@ textarea {
 }
 
 .modal__small {
-	width: fit-content;
+	width: 50%;
 	height: fit-content;
+	max-height: 90%;
 }
 
 .modal__close-button {
@@ -168,14 +169,17 @@ textarea {
 	cursor: pointer;
 }
 
+.modal-header {
+	border-bottom: 1px solid orangered;
+}
 @media screen and (max-width: 900px) {
 	.modal__bg {
 		top: 6%;
 		z-index: 100;
 	}
-	.modal__content {
+	.modal__content, .modal__small {
 		width: 100%;
-		padding-bottom: 100%;
+		height: 100%;
 	}
 
 	.modal__close-button {
@@ -261,49 +265,6 @@ textarea {
 	.mobile-only {
 		display: none !important;
 	}
-}
-
-.wikitable {
-	border-collapse: collapse;
-	margin: auto;
-	width: 100%;
-}
-
-table.wikitable tr th,
-table.wikitable th td,
-table.wikitable tr td {
-	font-size: unset;
-}
-
-table.wikitable {
-	--color-base--subtle: #edeff0;
-}
-
-table.wikitable tr th,
-table.wikitable tr td,
-table.wikitable tbody tr th,
-table.wikitable tbody tr td {
-	padding: 0.2rem 0.4rem 0.2rem 0.4rem;
-	margin: auto;
-	vertical-align: middle;
-	border: 1px solid var(--border-color-base);
-}
-
-table.wikitable tr td,
-table.wikitable tbody tr td {
-	text-align: left;
-}
-
-table.wikitable tr th,
-table.wikitable tbody tr th {
-	font-weight: bold;
-	text-align: center;
-	background-color: var(--color-surface-2);
-}
-
-table.wikitable tr th,
-table.wikitable tbody tr th {
-	color: var(--color-base);
 }
 
 .v-select {
@@ -414,11 +375,8 @@ dialog {
 			transform: scale(1.1);
 		}
 	}
-	h2.modal-title {
-		font-weight: 600;
-		font-size: 2rem;
-		padding-bottom: 1rem;
-		border-bottom: unset;
+	.modal-header {
+		border-bottom: 1px solid orangered;
 	}
 	p.modal-desc {
 		font-size: 1rem;
@@ -451,7 +409,6 @@ dialog {
 		
 		.confirm-button {
 			background-color: var(--color-success);
-		
 		}
 		
 		.danger-button {

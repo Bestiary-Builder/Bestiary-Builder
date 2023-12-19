@@ -4,6 +4,7 @@
 
 <script lang="ts">
 import {defineComponent} from "vue";
+// @ts-ignore
 import markdownit from "markdown-it";
 const md = markdownit();
 import dataFile from "@/assets/privacy-policy.md";
@@ -17,8 +18,4 @@ export default defineComponent({
 </script>
 
 <style scoped lang="less">
-@import url("../assets/bestiary-list.less");
-.content-tile p {
-	padding-top: 0.75rem;
-}
 </style>
