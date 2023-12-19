@@ -1,0 +1,24 @@
+name: Build frontend & add to branch
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - uses: actions/setup-node@master
+      - name: Installing project dependencies
+        working-directory: ./frontend
+        run: npm install
+      - name: Building the project
+        working-directory: ./frontend
+        run: npm run build
+      - name: Deploy to branch
+        uses: s0/git-publish-subdir-action@develop
+        env:
+          REPO: self
+          BRANCH: frontend-dist
+          FOLDER: ./frontend/dist
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
