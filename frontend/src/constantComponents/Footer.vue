@@ -9,17 +9,18 @@
 				<nav id="footer-places">
 					<ul>
 						<li id="footer-places-privacy">
-							<a href="/privacy-policy" title="Privacy policy">Privacy policy<font-awesome-icon icon="fa-user-lock" /></a>
+							<a href="/privacy-policy" title="Privacy policy">Privacy Policy<font-awesome-icon icon="fa-user-lock" /></a>
+							<a href="/terms-and-conditions" title="Terms And Conditions">Terms And Conditions<font-awesome-icon icon="fa-solid fa-scale-balanced" /></a>
 						</li>
 					</ul>
 				</nav>
-				<nav id="footer-places">
+				<!--<nav id="footer-places">
 					<ul>
 						<li id="footer-places-privacy">
 							<a href="https://github.com/Stevnbak/Bestiary-Builder" title="Edit on Github">Edit on Github<font-awesome-icon icon="fa-brands fa-github" /></a>
 						</li>
 					</ul>
-				</nav>
+				</nav>-->
 			</section>
 			<section class="citizen-footer__bottom"></section>
 		</div>
