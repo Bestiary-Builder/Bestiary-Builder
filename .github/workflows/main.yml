@@ -22,3 +22,4 @@ jobs:
           branch: frontend-dist
           dir: ./frontend/dist
           history: false
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
