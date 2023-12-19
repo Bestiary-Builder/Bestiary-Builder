@@ -1,13 +1,15 @@
 import {fileURLToPath, URL} from "node:url";
 
+//@ts-expect-error
 import {defineConfig} from "vite";
 import vue from "@vitejs/plugin-vue";
-
-const {siteMapRoutes} = require("./src/routes");
+//@ts-ignore
+import {siteMapRoutes} from "./src/routes";
 import Pages from "vite-plugin-pages";
 import generateSitemap from "vite-plugin-pages-sitemap";
-
+//@ts-expect-error
 import FontAwesome from "unplugin-vue-fontawesome/vite";
+import rawloader from "vite-raw-plugin";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -23,6 +25,9 @@ export default defineConfig({
 				});
 				console.log("\nSitemap generated");
 			}
+		}),
+		rawloader({
+			fileRegex: /\.md$/
 		}),
 		FontAwesome({
 			// the fontawesome collections to use

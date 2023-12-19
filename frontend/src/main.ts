@@ -35,44 +35,39 @@ export const loginLink = loginBase + "&redirect_uri=" + encodeURIComponent(windo
 
 //Style sheet
 import "./assets/main.css";
-// floating vue
-import FloatingVue from "floating-vue";
-import "floating-vue/dist/style.css";
 //Vue
 import {createApp} from "vue";
 //@ts-ignore
 import VueApp from "./App.vue";
 export const app = createApp(VueApp);
+
+//Floating vue
+import FloatingVue from "floating-vue";
+import "floating-vue/dist/style.css";
+app.use(FloatingVue);
 //Router
 import router from "./router";
 app.use(router);
 //Toast notifications
 import ToastPlugin from "vue-toast-notification";
 import "vue-toast-notification/dist/theme-default.css";
-
+app.use(ToastPlugin, {
+	position: "top-right",
+	duration: 4000,
+	dismissible: true
+});
+export const toast = app.config.globalProperties.$toast;
 //Font-Awesome-Icons
 import {library} from "@fortawesome/fontawesome-svg-core";
-// @ts-ignore
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faStopwatch, faMap, faLocationPin, faClock, faRuler, faStar, faHashtag, faArrowDown19, faHourglass} from "@fortawesome/free-solid-svg-icons";
 import {faTwitter, faFacebook, faDiscord, faInstagram} from "@fortawesome/free-brands-svg-icons";
 library.add(faTwitter, faFacebook, faDiscord, faInstagram, faStopwatch, faMap, faLocationPin, faClock, faRuler, faStar, faHashtag, faArrowDown19, faHourglass);
 app.component("font-awesome-icon", FontAwesomeIcon);
-
 // Vue Select
-// @ts-expect-error
 import vSelect from "vue-select";
 import "vue-select/dist/vue-select.css";
-
-app.use(ToastPlugin, {
-	position: "top-right",
-	duration: 4000,
-	dismissible: true
-})
-	.use(FloatingVue)
-	.component("v-select", vSelect);
-
-export const toast = app.config.globalProperties.$toast;
+app.component("v-select", vSelect);
 
 //Mount
 app.mount("body");
