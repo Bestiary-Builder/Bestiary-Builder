@@ -3,9 +3,9 @@
 		<h1><span>public bestiaries </span></h1>
 
 		<div class="tile-container">
-			<div class="content-tile create-tile search-tile">
-				<h2><label for="searchinput">search</label> </h2>
-				<div class="search-tile-content">
+			<div class="content-tile search-tile">
+				<h2 class="tile-header"><label for="searchinput">search</label> </h2>
+				<div class="tile-content">
 					<input 
 						id="searchinput" 
 						type="text" 
@@ -13,7 +13,7 @@
 						placeholder="Search by bestiary name or description" 
 						v-debounce:600ms.fireonempty="searchBestiaries" 
 					/>
-					<div class="page-nav-container" v-if="true || total > 1">
+					<div class="page-nav-container" v-if="total > 1">
 						<span role="button" aria-label="Decrease page number" @click="page = Math.max(1, page - 1)">-</span>
 						<span>{{ page }}/{{ total }}</span>
 						<span role="button" aria-label="Increase page number" @click="page = Math.min(total, page + 1)">+</span>
@@ -21,13 +21,13 @@
 				</div>
 			</div>
 			<RouterLink v-if="bestiaries && bestiaries.length > 0" class="content-tile bestiary-tile" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id">
-				<h2>{{ bestiary.name }}</h2>
-				<div class="bestiary-tile-content">
+				<h2 class="tile-header">{{ bestiary.name }}</h2>
+				<div class="tile-content">
 					<p class="description">{{ bestiary.description }}</p>
-					<div class="footer">
-						<UserBanner :id="bestiary.owner" />
-						<span>{{ bestiary.creatures.length }}🐉</span>
-					</div>
+				</div>
+				<div class="tile-footer">
+					<UserBanner :id="bestiary.owner" />
+					<span>{{ bestiary.creatures.length }}🐉</span>
 				</div>
 			</RouterLink>
 			<div v-else>
@@ -71,11 +71,8 @@ export default defineComponent({
 		},
 	},
 	methods: {
-		searchButtonClick() {
-			if (this.page == 1) this.searchBestiaries();
-			else this.page = 1;
-		},
 		async searchBestiaries() {
+			
 			//Request bestiary info
 			await fetch(`/api/search/${this.page - 1}/${this.search}`).then(async (response) => {
 				let result = await handleApiResponse<{results: Bestiary[]; totalAmount: number}>(response);
@@ -83,6 +80,7 @@ export default defineComponent({
 					let data = result.data as {results: Bestiary[]; totalAmount: number};
 					console.log(data);
 					this.bestiaries = data.results;
+					this.page = 1;
 					this.total = data.totalAmount;
 				} else {
 					this.bestiaries = [];
@@ -98,8 +96,17 @@ export default defineComponent({
 
 <style scoped lang="less">
 @import url("../assets/bestiary-list.less");
-.content-tile.search-tile {
-	cursor: unset;
+.search-tile {
+	background-color: orangered;
+
+	& .tile-header {
+		border-bottom-color: white;
+	}
+
+	& .tile-content input {
+		width: 100%;
+		margin-top: .5rem;
+	}
 }
 
 .settings {
@@ -108,17 +115,9 @@ export default defineComponent({
 	gap: 1rem;
 }
 
-.search-tile-content {
-	margin-top: .5rem;
-	& input {
-		width: 100%
-	}
-}
-
-.content-tile.bestiary-tile .bestiary-tile-content .footer.footer {
+.content-tile .tile-footer {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
-	font-size: 1.2rem;
 
 	span:first-of-type {
 		text-align: left;
@@ -135,6 +134,7 @@ export default defineComponent({
     align-items: center;
     margin-top: 1rem;
     font-size: 1.3rem;
+	color: white;
 
 	& span[role=button] {
 		cursor: pointer;

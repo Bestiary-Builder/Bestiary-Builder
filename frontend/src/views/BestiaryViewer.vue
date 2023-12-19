@@ -80,6 +80,21 @@
 				<option value="private">Private</option>
 			</select>
 		</div>
+
+		<div>
+			<h3> Editors </h3>
+			{{  editors  }}
+			<p v-for="editor in editors">
+				<UserBanner :id="editor._id" />
+				<button class="btn" @click="removeEditor(editor._id)" v-if="isOwner"> Remove </button>
+			</p>
+			<p v-if="isOwner">
+				Add Editor
+				<input type="text" v-model="editorToAdd" inputmode="numeric">
+				<button class="btn" @click="addEditor()"> Add </button>
+			</p>
+		</div>
+
 		<div class="modal-buttons">
 			<button class="btn cancel-button" @click="closeModal()">Cancel</button>
 			<button class="btn danger-button" @click.prevent="updateBestiary">Save bestiary</button>
@@ -121,7 +136,8 @@ export default defineComponent({
 			limits: {} as limitsType,
 			bookmarked: false as boolean,
 			isOwner: false,
-			isEditor: false
+			isEditor: false,
+			editorToAdd: "" as string
 		};
 	},
 	components: {
@@ -172,7 +188,8 @@ export default defineComponent({
 			});
 			await this.getBestiary();
 		},
-		async addEditor(id: string) {
+		async addEditor() {
+			let id = this.editorToAdd
 			if (!this.bestiary) return;
 			await fetch(`/api/bestiary/${this.bestiary._id}/editors/add/${id}`).then(async (response) => {
 				let result = await handleApiResponse(response);

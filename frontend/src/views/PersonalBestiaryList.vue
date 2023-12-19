@@ -7,14 +7,14 @@
 				<button class="create-button">+</button>
 			</div>
 			<RouterLink class="content-tile bestiary-tile" v-if="bestiaries" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id">
-				<h2 class="bestiary-title">{{ bestiary.name }}</h2>
-				<div class="bestiary-tile-content">
-					<p class="description">{{ bestiary.description }}</p>
-					<div class="footer">
-						<span>{{ statusEmoji(bestiary.status) }}{{ bestiary.status }}</span>
-						<span role="button" @click.stop.prevent="openModal(bestiary._id)" class="edit-button" v-if="bestiary.owner == user?._id">🗑️</span>
-						<span>{{ bestiary.creatures.length }}🐉</span>
-					</div>
+				<div class="tile-header"> <h2>{{ bestiary.name }}</h2> </div>
+				<div class="tile-content">
+					<p>{{ bestiary.description }}</p>
+				</div>
+				<div class="tile-footer">
+					<span>{{ statusEmoji(bestiary.status) }}{{ bestiary.status }}</span>
+					<span role="button" @click.stop.prevent="openModal(bestiary._id)" class="edit-button">🗑️</span>
+					<span>{{ bestiary.creatures.length }}🐉</span>
 				</div>
 			</RouterLink>
 		</div>
@@ -123,6 +123,25 @@ export default defineComponent({
 
 <style scoped lang="less">
 @import url("../assets/bestiary-list.less");
+.create-tile:first-of-type {
+	background-color: orangered;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	user-select: none;
+	cursor: pointer;
+
+	
+	& .create-button {
+		background-color: transparent;
+		color: white;
+		border: none;
+		outline: none;
+		font-size: 25rem;
+		line-height: 0;
+		pointer-events: none;
+	}
+}
 
 .edit-button {
 	margin: auto;

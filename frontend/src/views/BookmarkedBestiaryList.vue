@@ -3,13 +3,13 @@
 		<h1><span>bookmarked bestiaries</span></h1>
 		<div class="tile-container">
 			<RouterLink class="content-tile bestiary-tile" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" v-if="bestiaries">
-				<h2>{{ bestiary.name }}</h2>
-				<div class="bestiary-tile-content">
+				<h2 class="tile-header">{{ bestiary.name }}</h2>
+				<div class="tile-content">
 					<p class="description">{{ bestiary.description }}</p>
-					<div class="footer">
-						<UserBanner :id="bestiary.owner" />
-						<span>{{ bestiary.creatures.length }}🐉</span>
-					</div>
+				</div>
+				<div class="tile-footer">
+					<UserBanner :id="bestiary.owner" />
+					<span>{{ bestiary.creatures.length }}🐉</span>
 				</div>
 			</RouterLink>
 		</div>
@@ -61,10 +61,9 @@ export default defineComponent({
 
 <style scoped lang="less">
 @import url("../assets/bestiary-list.less");
-.content-tile.bestiary-tile .bestiary-tile-content .footer.footer {
+.content-tile .tile-footer {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
-	font-size: 1.2rem;
 
 	span:first-of-type {
 		text-align: left;
