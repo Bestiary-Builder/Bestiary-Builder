@@ -9,16 +9,16 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - uses: actions/setup-node@master
-      - name: Go to frontend dir
-        run: cd frontend
       - name: Installing project dependencies
+        working-directory: ./frontend
         run: npm install
       - name: Building the project
+        working-directory: ./frontend
         run: npm run build
       - name: Push Dir
         uses: casperdcl/push-dir@v1.0.2
         with:
           message: Frontend built
           branch: frontend-dist
-          dir: dist
+          dir: ./frontend/dist
           history: false
