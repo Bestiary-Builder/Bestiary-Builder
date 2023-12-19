@@ -1,0 +1,22 @@
+name: Build frontend & add to branch
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - uses: actions/setup-node@master
+      - name: Installing project dependencies
+      - run: npm install
+      - name: Building the project
+      - run: npm run build
+      - name: Push Dir
+        uses: casperdcl/push-dir@v1.0.2
+        with:
+          message: Frontend built
+          branch: frontend-dist
+          dir: dist
+          history: false
