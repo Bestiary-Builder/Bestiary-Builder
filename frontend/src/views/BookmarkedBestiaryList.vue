@@ -2,6 +2,7 @@
 	<div class="content">
 		<h1><span>bookmarked bestiaries</span></h1>
 		<div class="tile-container">
+		<TransitionGroup name="popin">
 			<RouterLink class="content-tile bestiary-tile" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" v-if="bestiaries">
 				<h2 class="tile-header">{{ bestiary.name }}</h2>
 				<div class="tile-content">
@@ -12,6 +13,7 @@
 					<span>{{ bestiary.creatures.length }}🐉</span>
 				</div>
 			</RouterLink>
+		</TransitionGroup>
 		</div>
 	</div>
 </template>

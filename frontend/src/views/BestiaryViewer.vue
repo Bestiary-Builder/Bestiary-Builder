@@ -28,17 +28,20 @@
 					</div>
 				</div>
 
-				<div class="content-tile creature-tile" v-for="creature in creatures" @mouseover="lastHoveredCreature = creature.stats" @click="lastClickedCreature = creature.stats">
-					<div class="left-side">
-						<h3>{{ creature.stats?.description?.name }}</h3>
-						<span>{{ creature.stats?.core?.size }} {{ creature.stats?.core?.race }}{{ creature.stats?.description?.alignment ? ", " + creature.stats?.description?.alignment : "" }}</span>
+				<TransitionGroup name="slide-fade">
+					<div class="content-tile creature-tile" v-for="creature in creatures" @mouseover="lastHoveredCreature = creature.stats" @click="lastClickedCreature = creature.stats" :key="creature._id">
+						<div class="left-side">
+							<h3>{{ creature.stats?.description?.name }}</h3>
+							<span>{{ creature.stats?.core?.size }} {{ creature.stats?.core?.race }}{{ creature.stats?.description?.alignment ? ", " + creature.stats?.description?.alignment : "" }}</span>
+						</div>
+						<div class="right-side">
+							<span v-if="isOwner || isEditor" role="button" @click.stop="openDeleteModal(creature._id)" class="delete-creature"> <span>🗑️</span> </span>
+							<span v-if="isOwner || isEditor" class="edit-creature" @click.stop="() => {}"> <RouterLink class="creature" :to="'/statblock-editor/' + creature._id"> ✏️ </RouterLink> </span>
+							<span class="cr"> CR {{ creature.stats.description.cr }}</span>
+						</div>
 					</div>
-					<div class="right-side">
-						<span v-if="isOwner || isEditor" role="button" @click.stop="openDeleteModal(creature._id)" class="delete-creature"> <span>🗑️</span> </span>
-						<span v-if="isOwner || isEditor" class="edit-creature" @click.stop="() => {}"> <RouterLink class="creature" :to="'/statblock-editor/' + creature._id"> ✏️ </RouterLink> </span>
-						<span class="cr"> CR {{ creature.stats.description.cr }}</span>
-					</div>
-				</div>
+				</TransitionGroup>
+
 
 				<div class="create-tile" v-if="isOwner">
 					<span role="button" class="create-text" @click="createCreature">add creature</span>
@@ -536,5 +539,19 @@ export default defineComponent({
 			filter: grayscale(100%);
 		}
 	}
+}
+
+.slide-fade-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateX(-50px);
+  opacity: 0;
 }
 </style>
