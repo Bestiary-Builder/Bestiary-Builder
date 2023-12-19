@@ -4,17 +4,20 @@
 
 		<div class="tile-container">
 			<div class="content-tile create-tile search-tile">
-				<h2>search</h2>
-				<div class="search-title-content">
-					<form class="settings" @submit.prevent="searchButtonClick">
-						<input type="text" v-model="search" placeholder="Search by bestiary name or description" />
-						<button type="submit">Search</button>
-						<div>
-							<button class="btn"  @click="page = Math.min(total, page + 1)">+</button>
-							<span>{{ page }}</span>
-							<button class="btn" @click="page = Math.max(1, page - 1)">-</button>
-						</div>
-					</form>
+				<h2><label for="searchinput">search</label> </h2>
+				<div class="search-tile-content">
+					<input 
+						id="searchinput" 
+						type="text" 
+						v-model="search" 
+						placeholder="Search by bestiary name or description" 
+						v-debounce:600ms.fireonempty="searchBestiaries" 
+					/>
+					<div class="page-nav-container" v-if="true || total > 1">
+						<span role="button" aria-label="Decrease page number" @click="page = Math.max(1, page - 1)">-</span>
+						<span>{{ page }}/{{ total }}</span>
+						<span role="button" aria-label="Increase page number" @click="page = Math.min(total, page + 1)">+</span>
+					</div>
 				</div>
 			</div>
 			<RouterLink v-if="bestiaries && bestiaries.length > 0" class="content-tile bestiary-tile" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id">
@@ -41,14 +44,19 @@ import type {User, Bestiary, Creature} from "@/components/types";
 import UserBanner from "@/components/UserBanner.vue";
 import {handleApiResponse, toast} from "@/main";
 import type {error} from "@/main";
-
+// @ts-ignore
+import { vue3Debounce } from 'vue-debounce'
 export default defineComponent({
+	directives: {
+		debounce: vue3Debounce({ lock: true})
+	},
 	data() {
 		return {
 			bestiaries: [] as Bestiary[],
-			search: "" as string,
 			page: 1 as number,
-			total: 1 as number
+			total: 1 as number,
+			search: "" as string,
+			lastInput: 0
 		};
 	},
 	components: {
@@ -60,7 +68,7 @@ export default defineComponent({
 	watch: {
 		page() {
 			this.searchBestiaries();
-		}
+		},
 	},
 	methods: {
 		searchButtonClick() {
@@ -84,12 +92,15 @@ export default defineComponent({
 			});
 			console.log(this.bestiaries);
 		}
-	}
+	},
 });
 </script>
 
 <style scoped lang="less">
 @import url("../assets/bestiary-list.less");
+.content-tile.search-tile {
+	cursor: unset;
+}
 
 .settings {
 	display: flex;
@@ -97,8 +108,11 @@ export default defineComponent({
 	gap: 1rem;
 }
 
-.search-tile {
-	color: black;
+.search-tile-content {
+	margin-top: .5rem;
+	& input {
+		width: 100%
+	}
 }
 
 .content-tile.bestiary-tile .bestiary-tile-content .footer.footer {
@@ -111,6 +125,19 @@ export default defineComponent({
 	}
 	span:last-of-type {
 		text-align: right;
+	}
+}
+
+.page-nav-container {
+	display: flex;
+    justify-content: center;
+    gap: 1rem;
+    align-items: center;
+    margin-top: 1rem;
+    font-size: 1.3rem;
+
+	& span[role=button] {
+		cursor: pointer;
 	}
 }
 </style>
