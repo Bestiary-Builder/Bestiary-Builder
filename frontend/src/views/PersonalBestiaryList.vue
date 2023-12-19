@@ -6,17 +6,21 @@
 			<div class="content-tile create-tile" @click.prevent="createBestiary">
 				<button class="create-button">+</button>
 			</div>
-			<RouterLink class="content-tile bestiary-tile" v-if="bestiaries" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id">
-				<div class="tile-header"> <h2>{{ bestiary.name }}</h2> </div>
-				<div class="tile-content">
-					<p>{{ bestiary.description }}</p>
-				</div>
-				<div class="tile-footer">
-					<span>{{ statusEmoji(bestiary.status) }}{{ bestiary.status }}</span>
-					<span role="button" @click.stop.prevent="openModal(bestiary._id)" class="edit-button">🗑️</span>
-					<span>{{ bestiary.creatures.length }}🐉</span>
-				</div>
-			</RouterLink>
+
+			<TransitionGroup name="popin">
+				<RouterLink class="content-tile bestiary-tile" v-if="bestiaries" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" :key="bestiary._id">
+					<div class="tile-header"> <h2>{{ bestiary.name }}</h2> </div>
+					<div class="tile-content">
+						<p>{{ bestiary.description }}</p>
+					</div>
+					<div class="tile-footer">
+						<span>{{ statusEmoji(bestiary.status) }}{{ bestiary.status }}</span>
+						<span role="button" @click.stop.prevent="openModal(bestiary._id)" class="edit-button">🗑️</span>
+						<span>{{ bestiary.creatures.length }}🐉</span>
+					</div>
+				</RouterLink>
+			</TransitionGroup>
+
 		</div>
 	</div>
 

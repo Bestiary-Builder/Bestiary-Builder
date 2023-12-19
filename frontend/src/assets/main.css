@@ -460,3 +460,34 @@ dialog {
 	}
 }
 
+.popin-enter-active {
+	animation: bounce-in .7s ease;
+}
+.popin-leave-active {
+	animation: bounce-in .7s ease reverse;
+}
+
+.popin-enter-from,
+.popin-leave-to {
+  scale: 0;
+}
+
+/* ensure leaving items are taken out of layout flow so that moving
+   animations can be calculated correctly. */
+
+.popin-leave-active {
+  position: absolute;
+}
+
+@keyframes bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale(.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% { transform: scale(.9); }
+  100% { transform: scale(1); }
+}

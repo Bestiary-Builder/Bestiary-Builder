@@ -20,6 +20,8 @@
 					</div>
 				</div>
 			</div>
+
+		<TransitionGroup name="popin">
 			<RouterLink v-if="bestiaries && bestiaries.length > 0" class="content-tile bestiary-tile" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id">
 				<h2 class="tile-header">{{ bestiary.name }}</h2>
 				<div class="tile-content">
@@ -30,9 +32,8 @@
 					<span>{{ bestiary.creatures.length }}🐉</span>
 				</div>
 			</RouterLink>
-			<div v-else>
-				<p>No bestiaries found</p>
-			</div>
+		</TransitionGroup>
+
 		</div>
 	</div>
 </template>
