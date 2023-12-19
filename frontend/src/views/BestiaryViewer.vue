@@ -85,16 +85,15 @@
 		</div>
 
 		<div>
-			<h3> Editors </h3>
-			{{  editors  }}
+			<h3>Editors</h3>
 			<p v-for="editor in editors">
 				<UserBanner :id="editor._id" />
-				<button class="btn" @click="removeEditor(editor._id)" v-if="isOwner"> Remove </button>
+				<button class="btn" @click="removeEditor(editor._id)" v-if="isOwner">Remove</button>
 			</p>
 			<p v-if="isOwner">
 				Add Editor
-				<input type="text" v-model="editorToAdd" inputmode="numeric">
-				<button class="btn" @click="addEditor()"> Add </button>
+				<input type="text" v-model="editorToAdd" inputmode="numeric" />
+				<button class="btn" @click="addEditor()">Add</button>
 			</p>
 		</div>
 
@@ -192,7 +191,7 @@ export default defineComponent({
 			await this.getBestiary();
 		},
 		async addEditor() {
-			let id = this.editorToAdd
+			let id = this.editorToAdd;
 			if (!this.bestiary) return;
 			await fetch(`/api/bestiary/${this.bestiary._id}/editors/add/${id}`).then(async (response) => {
 				let result = await handleApiResponse(response);
@@ -225,8 +224,8 @@ export default defineComponent({
 				if (result.success) {
 					this.bestiary = result.data as Bestiary;
 					this.savedBestiary = this.bestiary;
-
 					this.isOwner = this.user?._id == this.bestiary.owner;
+					this.isEditor = this.bestiary.editors.includes(this.user?._id ?? "");
 					//Fetch creatures
 					await fetch("/api/bestiary/" + this.bestiary._id + "/creatures").then(async (creatureResponse) => {
 						let creatureResult = await handleApiResponse<Creature[]>(creatureResponse);
@@ -239,7 +238,7 @@ export default defineComponent({
 					});
 					//Fetch editors
 					this.editors = [] as User[];
-					for (let editorId in this.bestiary.editors) {
+					for (let editorId of this.bestiary.editors) {
 						await fetch("/api/user/" + editorId)
 							.then((response) => handleApiResponse<User>(response))
 							.then((editorResult) => {

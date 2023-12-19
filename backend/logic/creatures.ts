@@ -1,6 +1,7 @@
 import {app, badwords} from "../server";
 import {requireUser, possibleUser} from "./login";
 import {addCreatureToBestiary, collections, getBestiary, getCreature, getUser, updateCreature, Creature, deleteCreature} from "../database";
+import {checkBestiaryPermission} from "./bestiaries";
 import {ObjectId} from "mongodb";
 import limits from "../staticData/limits.json";
 
@@ -17,7 +18,8 @@ app.get("/api/creature/:id", possibleUser, async (req, res) => {
 		if (creature) {
 			let bestiary = await getBestiary(creature.bestiary);
 			if (!bestiary) return res.status(404).json({error: "Bestiary creature is in, was not found-"});
-			if ((user && bestiary.owner == user._id) || bestiary.status != "private") {
+			let bestiaryPermissionLevel = checkBestiaryPermission(bestiary, user);
+			if (bestiaryPermissionLevel != "none") {
 				console.log(`Retrieved creature with the id ${id}`);
 				return res.json(creature);
 			} else {
@@ -37,7 +39,7 @@ app.get("/api/bestiary/:id/creatures", possibleUser, async (req, res) => {
 		let bestiaryId = new ObjectId(req.params.id);
 		let bestiary = await getBestiary(bestiaryId);
 		if (bestiary) {
-			if ((user && bestiary.owner == user._id) || bestiary.status != "private") {
+			if (user && checkBestiaryPermission(bestiary, user) != "none") {
 				let creatures = [];
 				for (let creatureId of bestiary.creatures) {
 					let creature = await collections.creatures?.findOne({_id: new ObjectId(creatureId)});
@@ -107,7 +109,8 @@ app.post("/api/creature/:id?/update", requireUser, async (req, res) => {
 			let bestiary = await getBestiary(creature.bestiary);
 			if (!bestiary) return res.status(404).json({error: "Bestiary not found."});
 			//Check owner
-			if (bestiary.owner != user._id) return res.status(401).json({error: "You don't have permission to update this creature."});
+			let bestiaryPermissionLevel = checkBestiaryPermission(bestiary, user);
+			if (["none", "view"].includes(bestiaryPermissionLevel)) return res.status(401).json({error: "You don't have permission to update this creature."});
 			//Remove bad words
 			if (bestiary.status != "private") {
 				if (badwords.check(data.stats.description.name)) return res.status(400).json({error: "Creature name includes blocked words or phrases. Remove the badwords or make the bestiary private."});
@@ -128,7 +131,8 @@ app.post("/api/creature/:id?/update", requireUser, async (req, res) => {
 			let bestiary = await getBestiary(data.bestiary);
 			if (!bestiary) return res.status(404).json({error: "Bestiary not found"});
 			//Check owner
-			if (bestiary.owner != user._id) return res.status(401).json({error: "You don't have permission to add creature to this bestiary."});
+			let bestiaryPermissionLevel = checkBestiaryPermission(bestiary, user);
+			if (["none", "view"].includes(bestiaryPermissionLevel)) return res.status(401).json({error: "You don't have permission to add creature to this bestiary."});
 			//Remove bad words
 			if (bestiary.status != "private") {
 				if (badwords.check(data.stats.description.name)) {
@@ -167,7 +171,8 @@ app.get("/api/creature/:id/delete", requireUser, async (req, res) => {
 		if (!creature) return res.status(404).json({error: "Couldn't find creature with that id."});
 		let bestiary = await getBestiary(creature.bestiary);
 		if (!bestiary) return res.status(404).json({error: "Couldn't find bestiary creature is in."});
-		if (bestiary.owner != user._id) return res.status(401).json({error: "You don't have permission to delete this creature."});
+		let bestiaryPermissionLevel = checkBestiaryPermission(bestiary, user);
+		if (["none", "view"].includes(bestiaryPermissionLevel)) return res.status(401).json({error: "You don't have permission to delete this creature."});
 		//Remove from db
 		let status = await deleteCreature(_id);
 		if (status) {
@@ -214,7 +219,7 @@ const defaultStatblock = {
 			tremorsense: 0,
 			telepathy: 0
 		},
-		languages: [],
+		languages: []
 	},
 	abilities: {
 		stats: {
