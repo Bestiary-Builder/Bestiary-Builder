@@ -80,101 +80,50 @@
 .content-tile {
 	aspect-ratio: 1 / 1;
 	background: rgb(59, 55, 54);
-	color: white;
+	color: #cbcbcb;
 	padding: 1rem;
 	box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
 
 	transition: all 1s;
 	transition-timing-function: cubic-bezier(0.060, 0.975, 0.195, 0.985);
 
-	&.create-tile {
-		background-color: orangered;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		user-select: none;
-		cursor: pointer;
+	display: grid;
+	grid-template-rows: 1fr 6fr 1fr;
+	gap: .3rem;
 
-		
-		& .create-button {
-			background-color: transparent;
-			color: white;
-			border: none;
-			outline: none;
-			font-size: 25rem;
-			line-height: 0;
-			pointer-events: none;
-		}
+	text-decoration: unset;
 
-		& h2 {
-			text-transform: lowercase;
-			text-align: center;
-			border-bottom: 1px dotted white;
-            font-size: 1.5rem
-		}
-
+	.tile-header {
+		text-transform: lowercase;
+		text-align: center;
+		text-wrap: nowrap;
+		overflow: hidden;
+		color: white;
+		border-bottom: 1px solid orangered;
 	}
 
-	&.search-tile {
-		display: block;
+	.tile-content {
+		overflow-y: auto;
 	}
-	
-	&.bestiary-tile {
-		text-decoration: none;
 
-		& h2.bestiary-title {
-			text-transform: lowercase;
-			text-align: center;
-			border-bottom: 1px dotted orangered;
-            font-size: 1.5rem;
-            height: 2rem;
-            margin: auto;
-            text-wrap: nowrap;
-            overflow: hidden;
-            text-overflow: "→";
-            max-width: 25rem;
+	.tile-footer {
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
+		font-size: 1.2rem;
+		width: 100%;
+		margin: auto;
+
+		span:first-of-type {
+			text-align: left;
 		}
-
-		& .bestiary-tile-content {
-			display: flex;
-			justify-content: space-between;
-			flex-direction: column;
-			position: relative;
-
-            
-			.description {
-				height: 23rem;
-				overflow-y: scroll;
-			}
-
-			.footer {
-				display: grid;
-				grid-template-columns: 1fr 1fr 1fr;
-				font-size: 1.2rem;
-
-				span:first-of-type {
-					text-align: left;
-				}
-				span:last-of-type {
-					text-align: right;
-				}
-				.fake-edit-button {
-					text-align: center;
-					text-decoration: underline;
-                    a { 
-                        color: white;
-                    }
-                }
-
-                .fake-edit-button a:hover {
-                    color: var(--color-link)
-                }
-			}
+		span:last-of-type {
+			text-align: right;
 		}
 	}
 }
 
-.content-tile:hover {
+a.content-tile:hover,
+.create-tile:hover {
 	scale: 1.05;
 
 }
