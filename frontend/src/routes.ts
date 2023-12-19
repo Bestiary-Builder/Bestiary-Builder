@@ -178,6 +178,15 @@ const routes = [
 		file: "PrivacyPolicy.vue",
 		meta: {}
 	},
+	// terms and conditions
+	{
+		path: "/terms-and-conditions",
+		navbar: false,
+		loggedIn: false,
+		name: "Terms And Conditions",
+		file: "TermsAndConditions.vue",
+		meta: {}
+	},
 	// 404 not found page
 	{
 		path: "/:notfound",
