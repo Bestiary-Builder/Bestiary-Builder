@@ -274,7 +274,7 @@ export default defineComponent({
 					this.bestiary = result.data as Bestiary;
 					this.savedBestiary = this.bestiary;
 					this.isOwner = this.user?._id == this.bestiary.owner;
-					this.isEditor = this.bestiary.editors.includes(this.user?._id ?? "");
+					this.isEditor = (this.bestiary?.editors ?? []).includes(this.user?._id ?? "");
 					//Fetch creatures
 					await fetch("/api/bestiary/" + this.bestiary._id + "/creatures").then(async (creatureResponse) => {
 						let creatureResult = await handleApiResponse<Creature[]>(creatureResponse);
@@ -287,7 +287,7 @@ export default defineComponent({
 					});
 					//Fetch editors
 					this.editors = [] as User[];
-					for (let editorId of this.bestiary.editors) {
+					for (let editorId of (this.bestiary?.editors ?? [])) {
 						await fetch("/api/user/" + editorId)
 							.then((response) => handleApiResponse<User>(response))
 							.then((editorResult) => {
