@@ -112,6 +112,7 @@ export default defineComponent({
 			bestiary: null as Bestiary | null,
 			savedBestiary: null as Bestiary | null,
 			creatures: null as Creature[] | null,
+			editors: [] as User[],
 			user: null as User | null,
 			lastHoveredCreature: null as null | Statblock,
 			lastClickedCreature: null as null | Statblock,
@@ -216,6 +217,19 @@ export default defineComponent({
 							toast.error((creatureResult.data as error).error);
 						}
 					});
+					//Fetch editors
+					this.editors = [] as User[];
+					for (let editorId in this.bestiary.editors) {
+						await fetch("/api/user/" + editorId)
+							.then((response) => handleApiResponse<User>(response))
+							.then((editorResult) => {
+								if (editorResult.success) {
+									this.editors.push(editorResult.data as User);
+								} else {
+									toast.error((editorResult.data as error).error);
+								}
+							});
+					}
 					//Bookmark state
 					await fetch(`/api/bestiary/${this.bestiary._id}/bookmark/get`).then(async (bookmarkResponse) => {
 						let bookmarkResult = await handleApiResponse<{state: boolean}>(bookmarkResponse);
