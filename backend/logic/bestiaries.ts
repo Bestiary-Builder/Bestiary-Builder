@@ -1,9 +1,17 @@
 import {app, badwords} from "../server";
 import {requireUser, possibleUser} from "./login";
-import {addBestiaryToUser, getBestiary, getUser, incrementBestiaryViewCount, updateBestiary, Bestiary, deleteBestiary, getCreature, collections, addBookmark, removeBookmark} from "../database";
+import {type Bestiary, type User, Creature, addBestiaryToUser, getBestiary, getUser, incrementBestiaryViewCount, updateBestiary, deleteBestiary, getCreature, collections, addBookmark, removeBookmark} from "../database";
 import {ObjectId} from "mongodb";
 import limits from "../staticData/limits.json";
-import {stat} from "fs";
+
+//Permission checks
+export function checkBestiaryPermission(bestiary: Bestiary, user: User | null): "none" | "view" | "owner" | "editor" {
+	if (!user) return "none";
+	if (bestiary.owner == user._id) return "owner";
+	else if (bestiary.editors.includes(user._id)) return "editor";
+	else if (bestiary.status != "private") return "view";
+	else return "none";
+}
 
 //Get info
 app.get("/api/bestiary/:id", possibleUser, async (req, res) => {
@@ -18,7 +26,8 @@ app.get("/api/bestiary/:id", possibleUser, async (req, res) => {
 			return res.status(404).json({error: "No bestiary with that id found."});
 		}
 		let user = await getUser(req.body.id);
-		if ((user && user._id == bestiary.owner) || bestiary.status != "private") {
+		let permissionLevel = checkBestiaryPermission(bestiary, user);
+		if (permissionLevel != "none") {
 			//Increment view count
 			incrementBestiaryViewCount(_id);
 			//Return bestiary
@@ -27,6 +36,18 @@ app.get("/api/bestiary/:id", possibleUser, async (req, res) => {
 		} else {
 			return res.status(401).json({error: "You don't have access to this bestiary."});
 		}
+	} catch (err) {
+		console.error(err);
+		return res.status(500).json({error: "Unknown server error occured, please try again."});
+	}
+});
+app.get("/api/my-bestiaries", requireUser, async (req, res) => {
+	try {
+		let user = await getUser(req.body.id);
+		if (!user) return res.status(404).json({error: "Couldn't find user"});
+		let allBestiaries = (await collections.bestiaries?.find({$or: [{owner: user._id}, {editors: {$elemMatch: {$eq: user._id}}}]}).toArray()) ?? [];
+		console.log(`Retrieved all bestiaries from the current user with the id ${req.params.userid}`);
+		return res.json(allBestiaries);
 	} catch (err) {
 		console.error(err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
@@ -104,16 +125,30 @@ app.post("/api/bestiary/:id?/update", requireUser, async (req, res) => {
 			//Update existing bestiary
 			let bestiary = await getBestiary(data._id);
 			if (bestiary) {
-				if (bestiary.owner != user._id) {
-					return res.status(401).json({error: "You don't have permission to update this bestiary."});
-				}
-				let updatedId = await updateBestiary(data, data._id);
+				let permissionLevel = checkBestiaryPermission(bestiary, user);
+				if (permissionLevel == "none" || permissionLevel == "view") return res.status(401).json({error: "You don't have permission to update this bestiary."});
+				//Limit properties that are editable:
+				let update = {
+					name: bestiary.name,
+					description: bestiary.description,
+					creatures: bestiary.creatures,
+					status: bestiary.status
+				} as {
+					name: string;
+					description: string;
+					creatures: ObjectId[];
+					status?: "public" | "private" | "unlisted";
+				};
+				if (permissionLevel == "editor") delete update.status;
+				//Update:
+				let updatedId = await updateBestiary(update as Bestiary, data._id);
 				if (updatedId) {
 					console.log(`Updated bestiary with the id ${data._id}`);
 					return res.status(200).json(data);
 				}
+			} else {
+				return res.status(404).json({error: "No bestiary with that id found."});
 			}
-			return res.status(404).json({error: "No bestiary with that id found."});
 		} else {
 			//Create new bestiary
 			let _id = await updateBestiary(data);
@@ -144,7 +179,7 @@ app.get("/api/bestiary/:id/delete", requireUser, async (req, res) => {
 		//Permissions
 		let bestiary = await getBestiary(_id);
 		if (!bestiary) return res.status(404).json({error: "Couldn't find bestiary."});
-		if (bestiary.owner != user._id) return res.status(401).json({error: "You don't have permission to delete this bestiary."});
+		if (checkBestiaryPermission(bestiary, user) != "owner") return res.status(401).json({error: "You don't have permission to delete this bestiary."});
 		//Remove from db
 		let status = await deleteBestiary(_id);
 		if (status) {
@@ -153,6 +188,70 @@ app.get("/api/bestiary/:id/delete", requireUser, async (req, res) => {
 		} else {
 			res.status(500).json({error: "Failed to delete creature."});
 		}
+	} catch (err) {
+		console.error(err);
+		return res.status(500).json({error: "Unknown server error occured, please try again."});
+	}
+});
+
+//Change editors
+app.get("/api/bestiary/:bestiaryid/editors/add/:userid", requireUser, async (req, res) => {
+	try {
+		//Get input
+		if (!req.params.bestiaryid || req.params.bestiaryid.length != 24) {
+			return res.status(400).json({error: "Bestiary id not valid."});
+		}
+		let _id = new ObjectId(req.params.bestiaryid);
+		let currentUser = await getUser(req.body.id);
+		if (!currentUser) {
+			return res.status(404).json({error: "Couldn't find current user."});
+		}
+		let bestiary = await getBestiary(_id);
+		if (!bestiary) return res.status(404).json({error: "Bestiary with that id not found."});
+		let newEditor = await getUser(req.params.userid);
+		if (!newEditor) return res.status(404).json({error: "No user with that id found."});
+		//Permission check
+		if (checkBestiaryPermission(bestiary, currentUser) != "owner") return res.status(401).json({error: "You don't have permission to add editors to this bestiary."});
+		//Already an editor?
+		let editors = bestiary.editors ?? [];
+		if (editors.filter((e) => e == newEditor!._id).length > 0) {
+			return res.json({error: "User is already an editor."});
+		}
+		//Add editor
+		await collections.bestiaries?.updateOne({_id: _id}, {$push: {editors: newEditor._id}});
+		console.log(`Removed user with the id ${newEditor._id} as editor of bestiary with the id ${bestiary._id}`);
+		return res.json({});
+	} catch (err) {
+		console.error(err);
+		return res.status(500).json({error: "Unknown server error occured, please try again."});
+	}
+});
+app.get("/api/bestiary/:bestiaryid/editors/remove/:userid", requireUser, async (req, res) => {
+	try {
+		//Get input
+		if (!req.params.bestiaryid || req.params.bestiaryid.length != 24) {
+			return res.status(400).json({error: "Bestiary id not valid."});
+		}
+		let _id = new ObjectId(req.params.bestiaryid);
+		let currentUser = await getUser(req.body.id);
+		if (!currentUser) {
+			return res.status(404).json({error: "Couldn't find current user."});
+		}
+		let bestiary = await getBestiary(_id);
+		if (!bestiary) return res.status(404).json({error: "Bestiary with that id not found."});
+		let newEditor = await getUser(req.params.userid);
+		if (!newEditor) return res.status(404).json({error: "No user with that id found."});
+		//Permission check
+		if (checkBestiaryPermission(bestiary, currentUser) != "owner") return res.status(401).json({error: "You don't have permission to add editors to this bestiary."});
+		//Already an editor?
+		let editors = bestiary.editors ?? [];
+		if (editors.filter((e) => e == newEditor!._id).length == 0) {
+			return res.json({error: "User is not an editor."});
+		}
+		//Remove editor
+		await collections.bestiaries?.updateOne({_id: _id}, {$pull: {editors: newEditor._id}});
+		console.log(`Removed user with the id ${newEditor._id} as editor of bestiary with the id ${bestiary._id}`);
+		return res.json({});
 	} catch (err) {
 		console.error(err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
