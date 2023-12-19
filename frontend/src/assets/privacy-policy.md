@@ -1,15 +1,16 @@
 ## General scope
 
 This policy covers personally identifiable information collected or
-stored by The Cycle: Frontier Wiki on its servers in relation to the
-articles and their communities. Consistent with its Data Retention
-Policy, The Cycle: Frontier Wiki collects and retains the least amount
-of personally identifiable information needed to fulfil the site's
-operational needs.
+stored by Bestiary Builder on its servers in relation to the service it
+provides.
+
+Consistent with its Data Retention Policy, Bestiary Builder collects and
+retains the least amount of personally identifiable information needed to
+fulfil the site's operational needs.
 
 ## The public and collaborative nature of the Wiki
 
-All pages on The Cycle: Frontier Wiki are collaboratively developed by
+All content on Bestiary Builder are collaboratively developed by
 its users using the MediaWiki software. Anyone with Internet access (and
 not otherwise restricted from doing so) may edit the publicly editable
 pages of these sites with or without logging in as a registered user. By
@@ -21,27 +22,27 @@ about those contributions, are irrevocably licensed and may be freely
 copied, quoted, reused and adapted by third parties with few
 restrictions.
 
-## Activities on The Cycle: Frontier Wiki
+## Activities on Bestiary Builder
 
 In general, this Policy only applies to private information stored or
-held by The Cycle: Frontier Wiki which is not publicly available.
+held by Bestiary Builder which is not publicly available.
 
 Interactions with articles not covered by this Policy include, but are
 not limited to, aspects of browsing and editing pages, use of the wiki
-"email user" function, and subscribing and posting to The Cycle:
-Frontier Wiki hosted email lists. These interactions may reveal a
-contributor's IP address, and possibly other personal information,
-indiscriminately to the general public, or to specific groups of
-volunteers acting independently of The Cycle: Frontier Wiki.
+"email user" function, and subscribing and posting to Bestiary Builder hosted email lists.
 
-Users may also interact with one another outside of The Cycle: Frontier
-Wiki, via email, IRC or other chat, or independent websites, and should
+These interactions may reveal a contributor's IP address, and possibly other personal information,
+indiscriminately to the general public, or to specific groups of
+volunteers acting independently of Bestiary Builder.
+
+Users may also interact with one another outside of Bestiary Builder,
+via email, IRC or other chat, or independent websites, and should
 assess the risks involved, and their personal need for privacy, before
 using these methods of communication.
 
 ## User accounts and authorship
 
-The Cycle: Frontier Wiki does require editors to register with the wiki.
+Bestiary Builder does require editors to register with the wiki.
 Users that do register are identified by their chosen username. Users
 select a password, which is confidential and used to verify the
 integrity of their account. Except insofar as it may be required by law,
@@ -51,15 +52,15 @@ will not be removed.
 
 ## Purpose of the collection of private information
 
-The Cycle: Frontier Wiki limits the collection of personally
+Bestiary Builder limits the collection of personally
 identifiable user data to purposes which serve the well-being of its
 pages, including but not limited to the following:
 
-To enhance the public accountability of the wiki. The Cycle: Frontier
-Wiki recognizes that any system that is open enough to allow the
+To enhance the public accountability of the wiki. Bestiary Builder
+recognizes that any system that is open enough to allow the
 greatest possible participation of the general public will also be
-vulnerable to certain kinds of abuse and counterproductive behavior. The
-Cycle: Frontier Wiki and its community have established a number of
+vulnerable to certain kinds of abuse and counterproductive behavior.
+Bestiary Builder and its community have established a number of
 mechanisms to prevent or remedy abusive activities. For example, when
 investigating abuse on the wiki, including the suspected use of
 malicious “sockpuppets” (duplicate accounts), vandalism, harassment of
@@ -69,7 +70,7 @@ identify the source(s) of the abusive behavior. This information may be
 shared by users with administrative authority who are charged by the
 community to protect the wiki
 
-To provide site statistics. The Cycle: Frontier Wiki statistically
+To provide site statistics. Bestiary Builder statistically
 samples raw log data from users' visits. These logs are used to produce
 the site statistics pages; the raw log data is not made public.
 
@@ -82,8 +83,8 @@ badly-behaved web spiders that overwhelm the site.
 ### IP and other technical information
 
 When a visitor requests or reads a page, no more information is
-collected than is typically collected by web sites. The Cycle: Frontier
-Wiki may keep raw logs of such transactions, but these will not be
+collected than is typically collected by web sites. Bestiary Builder
+may keep raw logs of such transactions, but these will not be
 published or used to track legitimate users.
 
 <!-- -->
@@ -111,8 +112,8 @@ permanently delete it. Normally, in pages, anyone can look at a previous
 version of an article and see what was there. Even if an article is
 "deleted", a user entrusted with higher level of access may still see
 what was removed from public view. Information can be permanently
-deleted by individuals with access to The Cycle: Frontier Wiki servers,
-but aside from the rare circumstance when The Cycle: Frontier Wiki is
+deleted by individuals with access to Bestiary Builder servers,
+but aside from the rare circumstance when Bestiary Builder is
 required to delete editing-history material in response to a court order
 or equivalent legal process, there is no guarantee any permanent
 deletion will happen.
@@ -173,7 +174,7 @@ preferences, to identify an author completely.
 On wiki discussion pages:
 
 Any editable page can theoretically be the location of a discussion. In
-general, discussions on The Cycle: Frontier Wiki pages occur on user
+general, discussions on Bestiary Builder pages occur on user
 talk pages (associated with particular users), on article talk pages
 (associated with particular articles) or in pages specially designated
 to function as forums (e.g., the Staff Lounge). Privacy expectations
@@ -188,20 +189,20 @@ users through this system, one's email address is not revealed to them.
 When choosing to send an email to other users, one's email is displayed
 as the sender.
 
-The email address put into one's user preferences may be used by The
-Cycle: Frontier Wiki for communication. Users whose accounts do not have
+The email address put into one's user preferences may be used by Bestiary Builder
+for communication. Users whose accounts do not have
 a valid email address will not be able to reset their password if it is
 lost. In such a situation, however, users may be able to contact one of
-the The Cycle: Frontier Wiki server administrators to enter a new e-mail
+the Bestiary Builder server administrators to enter a new e-mail
 address. A user can remove the account's email address from his
 preferences at any time to prevent it from being used. Private
 correspondence between users may be saved at those users' discretion and
-is not subject to The Cycle: Frontier Wiki policy.
+is not subject to Bestiary Builder policy.
 
 On IRC:
 
-IRC channels are not officially part of the The Cycle: Frontier Wiki and
-are not operated on The Cycle: Frontier Wiki controlled servers. The IP
+IRC channels are not officially part of the Bestiary Builder and
+are not operated on Bestiary Builder controlled servers. The IP
 address of users who chat over such a service may be exposed to other
 participants. IRC users' privacy on each channel can only be protected
 according to the policies of the respective service and channel.
@@ -221,8 +222,8 @@ members are reachable from the
 
 Other users who may have access to private identifiable information
 include, but are not limited to, users who have access to the CheckUser
-and Oversight functions, The Cycle: Frontier Wiki employees, and
-contractors and agents employed by the The Cycle: Frontier Wiki, and
+and Oversight functions, Bestiary Builder employees, and
+contractors and agents employed by the Bestiary Builder, and
 developers and others with high levels of server access.
 
 Access to and publication of this information is governed by the Access
@@ -232,11 +233,10 @@ users is not considered "distribution."
 
 Release: Policy on Release of Data
 
-It is the policy of The Cycle: Frontier Wiki that personally
+It is the policy of Bestiary Builder that personally
 identifiable data collected in the server logs, or through records in
 the database via the CheckUser feature, or through other
-non-publicly-available methods, may be released by The Cycle: Frontier
-Wiki admins or staff, in any of the following situations:
+non-publicly-available methods, may be released by Bestiary Builder admins or staff, in any of the following situations:
 
 1.  In response to a valid subpoena or other compulsory request from law
     enforcement,
@@ -251,9 +251,9 @@ Wiki admins or staff, in any of the following situations:
     targeting of IP blocks, or to assist in the formulation of a
     complaint to relevant Internet Service Providers,
 6.  Where it is reasonably necessary to protect the rights, property or
-    safety of The Cycle: Frontier Wiki, its users or the public.
+    safety of Bestiary Builder, its users or the public.
 
-Except as described above, The Cycle: Frontier Wiki policy does not
+Except as described above, Bestiary Builder policy does not
 permit distribution of personally identifiable information under any
 circumstances.
 
@@ -263,38 +263,36 @@ process:
 As a general principle, the access to, and retention of, personally
 identifiable data in all pages should be minimal and should be used only
 internally to serve the well-being of the pages. Occasionally, however,
-The Cycle: Frontier Wiki may receive a subpoena or other compulsory
+Bestiary Builder may receive a subpoena or other compulsory
 request from a law-enforcement agency or a court or equivalent
 government body that requests the disclosure of information about a
 registered user, and may be compelled by law to comply with the request.
-In the event of such a legally compulsory request, The Cycle: Frontier
-Wiki will attempt to notify the affected user within three business days
+In the event of such a legally compulsory request, Bestiary Builder will attempt to notify the affected user within three business days
 after the arrival of such subpoena by sending a notice by email to the
 email address (if any) that the affected user has listed in his or her
 user preferences.
 
-The Cycle: Frontier Wiki cannot advise a user receiving such a
+Bestiary Builder cannot advise a user receiving such a
 notification regarding the law or an appropriate response to a subpoena.
-The Cycle: Frontier Wiki does note, however, that such users may have
+Bestiary Builder does note, however, that such users may have
 the legal right to resist or limit that information in court by filing a
 motion to quash the subpoena. Users who wish to oppose a subpoena or
 other compulsory request should seek legal advice concerning applicable
 rights and procedures that may be available.
 
-If The Cycle: Frontier Wiki receives a court-filed motion to quash or
+If Bestiary Builder receives a court-filed motion to quash or
 otherwise limit the subpoena as a result of action by a user or their
-lawyer, The Cycle: Frontier Wiki will not disclose the requested
+lawyer, Bestiary Builder will not disclose the requested
 information until it receives an order from the court to do so.
 
 Registered users are not required to provide an email address. However,
-when an affected registered user does not provide an email address, The
-Cycle: Frontier Wiki will not be able to notify the affected user in
+when an affected registered user does not provide an email address, Bestiary Builder will not be able to notify the affected user in
 private email messages when it receives requests from law enforcement to
 disclose personally identifiable information about the user.
 
 ## Google Analytics Usage
 
-The Cycle: Frontier Wiki makes use of Google Analytics, which uses
+Bestiary Builder makes use of Google Analytics, which uses
 cookies and collects information. Certain information such as your
 browser, and your IP address may be sent to Google Analytics but this
 information is always anonymized so that we don’t know which specific
@@ -316,18 +314,14 @@ Google](https://tools.google.com/dlpage/gaoptout).
 
 ## Disclaimer
 
-The Cycle: Frontier Wiki believes that maintaining and preserving the
+Bestiary Builder believes that maintaining and preserving the
 privacy of user data is an important value. This Privacy Policy,
-together with other policies, resolutions, and actions by The Cycle:
-Frontier Wiki, represents a committed effort to safeguard the security
+together with other policies, resolutions, and actions by Bestiary Builder, represents a committed effort to safeguard the security
 of the limited user information that is collected and retained on our
-servers. Nevertheless, The Cycle: Frontier Wiki cannot guarantee that
+servers. Nevertheless, Bestiary Builder cannot guarantee that
 user information will remain private. We acknowledge that, in spite of
 our committed effort to protect private user information, determined
 individuals may still develop data-mining and other methods to uncover
-such information and disclose it. For this reason, The Cycle: Frontier
-Wiki can make no guarantee against unauthorized access to information
-provided in the course of participating in The Cycle: Frontier Wiki
+such information and disclose it. For this reason, Bestiary Builder can make no guarantee against unauthorized access to information
+provided in the course of participating in Bestiary Builder
 pages or related communities.
-
-[Category:Wiki Policy](Category:Wiki_Policy "wikilink")
