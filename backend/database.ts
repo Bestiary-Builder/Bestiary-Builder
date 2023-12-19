@@ -9,7 +9,7 @@ export async function startConnection() {
 		serverApi: {
 			version: ServerApiVersion.v1,
 			strict: true,
-			deprecationErrors: true
+			deprecationErrors: false
 		}
 	});
 	try {
@@ -34,7 +34,7 @@ export class User {
 	constructor(public username: string, public avatar: string, public email: string, public verified: boolean, public banner_color: string, public global_name: string, public bestiaries: ObjectId[] = [], public bookmarks: ObjectId[] = [], public _id: string, public secret?: string) {}
 }
 export class Bestiary {
-	constructor(public name: string, public owner: string, public status: "public" | "private" | "unlisted", public description: string, public creatures: ObjectId[], public viewCount: number, public bookmarks: number, public lastUpdated: Date, public _id?: ObjectId) {}
+	constructor(public name: string, public owner: string, public editors: string[], public status: "public" | "private" | "unlisted", public description: string, public creatures: ObjectId[], public viewCount: number, public bookmarks: number, public lastUpdated: Date, public _id?: ObjectId) {}
 }
 export class Creature {
 	constructor(public lastUpdated: Date, public stats: any, public bestiary: ObjectId, public _id?: ObjectId) {}

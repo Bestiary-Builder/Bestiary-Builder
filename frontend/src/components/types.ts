@@ -29,7 +29,7 @@ export const defaultStatblock = {
 			tremorsense: 0,
 			telepathy: 0
 		},
-		languages: [],
+		languages: []
 	},
 	abilities: {
 		stats: {
@@ -205,19 +205,19 @@ export interface Statblock {
 }
 
 export interface Misc {
-	legActionsPerRound: number,
+	legActionsPerRound: number;
 	featureHeaderTexts: FeatureHeaderTexts;
 }
 
 export interface FeatureHeaderTexts {
-	features: string,
-	actions: string,
-	bonus: string,
-	reactions: string,
-	legendary: string,
-	lair: string,
-	mythic: string,
-	regional: string
+	features: string;
+	actions: string;
+	bonus: string;
+	reactions: string;
+	legendary: string;
+	lair: string;
+	mythic: string;
+	regional: string;
 }
 export interface Description {
 	name: string;
@@ -369,6 +369,7 @@ export interface User {
 export interface Bestiary {
 	name: string;
 	owner: string;
+	editors: string[];
 	status: "public" | "private" | "unlisted";
 	description: string;
 	creatures: string[];

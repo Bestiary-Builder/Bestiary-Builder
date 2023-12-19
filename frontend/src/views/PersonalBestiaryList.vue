@@ -94,20 +94,16 @@ export default defineComponent({
 			await this.getBestiaries();
 		},
 		async getBestiaries() {
-			//Get user
-			let userId = this.user?._id;
-			if (userId) {
-				//Request bestiary info
-				await fetch(`/api/user/${userId}/bestiaries`).then(async (response) => {
-					let result = await handleApiResponse<Bestiary[]>(response);
-					if (result.success) this.bestiaries = result.data as Bestiary[];
-					else {
-						this.bestiaries = [];
-						toast.error((result.data as error).error);
-					}
-				});
-				console.log(this.bestiaries);
-			}
+			//Request bestiary info
+			await fetch(`/api/my-bestiaries`).then(async (response) => {
+				let result = await handleApiResponse<Bestiary[]>(response);
+				if (result.success) this.bestiaries = result.data as Bestiary[];
+				else {
+					this.bestiaries = [];
+					toast.error((result.data as error).error);
+				}
+			});
+			console.log(this.bestiaries);
 		},
 		statusEmoji(status: "public" | "private" | "unlisted"): string {
 			return status == "public" ? "🌍" : status == "private" ? "🔒" : "🔗";

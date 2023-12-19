@@ -5,23 +5,23 @@
 			<div class="tile-container list-tiles">
 				<div class="content-tile header-tile">
 					<h2>{{ bestiary.name }}</h2>
-					<p class="description"> {{ bestiary.description }}</p>
-					
+					<p class="description">{{ bestiary.description }}</p>
+
 					<div class="unpin" v-if="lastClickedCreature">
-						<span class="unpin-button" @click="lastClickedCreature = null" role="button" aria-label="unpin currently pinned creature">unpin</span> 
+						<span class="unpin-button" @click="lastClickedCreature = null" role="button" aria-label="unpin currently pinned creature">unpin</span>
 						📌
 					</div>
-					
+
 					<div class="footer">
 						<UserBanner :id="bestiary.owner" />
 
-						<div> {{ statusEmoji(bestiary.status) }}{{ bestiary.status }} </div>
-						<div> {{ bestiary.creatures.length }}🐉</div>
-						<div v-if="isOwner" > 
-							<span class="edit-bestiary" role="button" @click="openModal" aria-label="Edit bestiary" v-tooltip="'Edit bestiary'">✏️</span>  
+						<div>{{ statusEmoji(bestiary.status) }}{{ bestiary.status }}</div>
+						<div>{{ bestiary.creatures.length }}🐉</div>
+						<div v-if="isOwner || isEditor">
+							<span class="edit-bestiary" role="button" @click="openModal" aria-label="Edit bestiary" v-tooltip="'Edit bestiary'">✏️</span>
 							<span class="edit-bestiary" role="button" @click="createCreature" aria-label="Add creature" v-tooltip="'Add creature'">➕</span>
 						</div>
-						<div role="button" aria-label="bookmark" @click.prevent="toggleBookmark" class="bookmark" v-else> 
+						<div role="button" aria-label="bookmark" @click.prevent="toggleBookmark" class="bookmark" v-else>
 							<span v-if="bookmarked" v-tooltip="'Unbookmark this bestiary'" class="bookmark-enabled">⭐</span>
 							<span v-else v-tooltip="'Bookmark this bestiary'" class="bookmark-disabled">⭐</span>
 						</div>
@@ -34,8 +34,8 @@
 						<span>{{ creature.stats?.core?.size }} {{ creature.stats?.core?.race }}{{ creature.stats?.description?.alignment ? ", " + creature.stats?.description?.alignment : "" }}</span>
 					</div>
 					<div class="right-side">
-						<span v-if="isOwner" role="button" @click.stop="openDeleteModal(creature._id)" class="delete-creature"> <span>🗑️</span> </span>
-						<span v-if="isOwner" class="edit-creature" @click.stop="()=>{}"> <RouterLink class="creature" :to="'/statblock-editor/' + creature._id"> ✏️ </RouterLink> </span>
+						<span v-if="isOwner || isEditor" role="button" @click.stop="openDeleteModal(creature._id)" class="delete-creature"> <span>🗑️</span> </span>
+						<span v-if="isOwner || isEditor" class="edit-creature" @click.stop="() => {}"> <RouterLink class="creature" :to="'/statblock-editor/' + creature._id"> ✏️ </RouterLink> </span>
 						<span class="cr"> CR {{ creature.stats.description.cr }}</span>
 					</div>
 				</div>
@@ -45,22 +45,23 @@
 				</div>
 			</div>
 
-			<div class="statblock-container" v-if="creatures && (lastHoveredCreature)">
+			<div class="statblock-container" v-if="creatures && lastHoveredCreature">
 				<span v-if="lastClickedCreature" class="pin-notice">
-					<span class="unpin-button" @click="lastClickedCreature = null" role="button" aria-label="unpin currently pinned creature"><b>unpin</b></span>📌
+					<span class="unpin-button" @click="lastClickedCreature = null" role="button" aria-label="unpin currently pinned creature"><b>unpin</b></span
+					>📌
 				</span>
 				<StatblockRenderer :data="lastClickedCreature || lastHoveredCreature" />
 			</div>
 			<div class="statblock-container" v-else>
-				<div class="no-creature-text"> 
-					<p>hover over a creature to see its statblock</p> 
-					<p>click on a creature to pin it to the right side</p> 
+				<div class="no-creature-text">
+					<p>hover over a creature to see its statblock</p>
+					<p>click on a creature to pin it to the right side</p>
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<dialog id="edit-modal" v-if="isOwner && bestiary">
+	<dialog id="edit-modal" v-if="(isOwner || isEditor) && bestiary">
 		<h2 class="modal-header">Edit bestiary</h2>
 		<p class="modal-desc">bla bla bla bla</p>
 		<div>
@@ -71,7 +72,7 @@
 			<label>Description: </label>
 			<textarea v-model="bestiary.description" :maxlength="limits.descriptionLength" cols="4" />
 		</div>
-		<div>
+		<div v-if="isOwner">
 			<label>Status: </label>
 			<select v-model="bestiary.status">
 				<option value="public">Public</option>
@@ -111,6 +112,7 @@ export default defineComponent({
 			bestiary: null as Bestiary | null,
 			savedBestiary: null as Bestiary | null,
 			creatures: null as Creature[] | null,
+			editors: [] as User[],
 			user: null as User | null,
 			lastHoveredCreature: null as null | Statblock,
 			lastClickedCreature: null as null | Statblock,
@@ -118,7 +120,8 @@ export default defineComponent({
 			selectedCreature: "" as string,
 			limits: {} as limitsType,
 			bookmarked: false as boolean,
-			isOwner: false
+			isOwner: false,
+			isEditor: false
 		};
 	},
 	components: {
@@ -169,6 +172,30 @@ export default defineComponent({
 			});
 			await this.getBestiary();
 		},
+		async addEditor(id: string) {
+			if (!this.bestiary) return;
+			await fetch(`/api/bestiary/${this.bestiary._id}/editors/add/${id}`).then(async (response) => {
+				let result = await handleApiResponse(response);
+				if (result.success) {
+					toast.success("Added editor succesfully");
+				} else {
+					toast.error((result.data as error).error);
+				}
+			});
+			await this.getBestiary();
+		},
+		async removeEditor(id: string) {
+			if (!this.bestiary) return;
+			await fetch(`/api/bestiary/${this.bestiary._id}/editors/remove/${id}`).then(async (response) => {
+				let result = await handleApiResponse(response);
+				if (result.success) {
+					toast.success("Removed editor succesfully");
+				} else {
+					toast.error((result.data as error).error);
+				}
+			});
+			await this.getBestiary();
+		},
 		async getBestiary() {
 			//Get id
 			let id = this.$route.params.id;
@@ -190,6 +217,19 @@ export default defineComponent({
 							toast.error((creatureResult.data as error).error);
 						}
 					});
+					//Fetch editors
+					this.editors = [] as User[];
+					for (let editorId in this.bestiary.editors) {
+						await fetch("/api/user/" + editorId)
+							.then((response) => handleApiResponse<User>(response))
+							.then((editorResult) => {
+								if (editorResult.success) {
+									this.editors.push(editorResult.data as User);
+								} else {
+									toast.error((editorResult.data as error).error);
+								}
+							});
+					}
 					//Bookmark state
 					await fetch(`/api/bestiary/${this.bestiary._id}/bookmark/get`).then(async (bookmarkResponse) => {
 						let bookmarkResult = await handleApiResponse<{state: boolean}>(bookmarkResponse);
@@ -233,8 +273,8 @@ export default defineComponent({
 				let bookmarkResult = await handleApiResponse<{state: boolean}>(bookmarkResponse);
 				if (bookmarkResult.success) {
 					this.bookmarked = (bookmarkResult.data as {state: boolean}).state;
-					if (this.bookmarked) toast.success("Successfully bookmarked this bestiary!")
-					else toast.success("Successfully unbookmarked this bestiary!")
+					if (this.bookmarked) toast.success("Successfully bookmarked this bestiary!");
+					else toast.success("Successfully unbookmarked this bestiary!");
 				} else {
 					this.bookmarked = false;
 					toast.error((bookmarkResult.data as error).error);
@@ -268,10 +308,10 @@ export default defineComponent({
 	},
 	watch: {
 		lastClickedCreature(newValue, oldValue): void {
-			if (this.hasPinnedBefore) return
-			if (!this.hasPinnedBefore) this.hasPinnedBefore = true
-			
-			toast.info("Pinned creature to the right side. Click unpin there to go back to hover behaviour.")
+			if (this.hasPinnedBefore) return;
+			if (!this.hasPinnedBefore) this.hasPinnedBefore = true;
+
+			toast.info("Pinned creature to the right side. Click unpin there to go back to hover behaviour.");
 		}
 	}
 });
@@ -366,7 +406,7 @@ export default defineComponent({
 					height: 100%;
 
 					&.cr {
-						width: 4rem
+						width: 4rem;
 					}
 				}
 			}
@@ -401,7 +441,7 @@ export default defineComponent({
 			grid-template-columns: 1fr 1fr 1fr 1fr;
 			font-size: 1rem;
 
-			margin-top: .5rem;
+			margin-top: 0.5rem;
 
 			div {
 				text-align: center;
@@ -446,13 +486,12 @@ export default defineComponent({
 
 .unpin {
 	text-align: center;
-	margin: .5rem;
+	margin: 0.5rem;
 	.unpin-button {
 		text-decoration: underline;
 		cursor: pointer;
 	}
 }
-
 
 .no-creature-text {
 	font-size: 1.3rem;
@@ -466,19 +505,19 @@ export default defineComponent({
 
 	.bookmark-disabled {
 		filter: grayscale(100%);
-		transition: filter .3s ease;
+		transition: filter 0.3s ease;
 
 		&:hover {
-			filter: grayscale(0%)
+			filter: grayscale(0%);
 		}
 	}
 
 	.bookmark-enabled {
 		filter: grayscale(0%);
-		transition: filter .3s ease;
+		transition: filter 0.3s ease;
 
 		&:hover {
-			filter: grayscale(100%)
+			filter: grayscale(100%);
 		}
 	}
 }
