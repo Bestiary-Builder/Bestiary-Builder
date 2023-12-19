@@ -9,6 +9,8 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - uses: actions/setup-node@master
+      - name: Go to frontend dir
+        run: cd frontend
       - name: Installing project dependencies
         run: npm install
       - name: Building the project
