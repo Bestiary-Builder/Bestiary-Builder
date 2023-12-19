@@ -1,0 +1,1 @@
+import{d as o,_ as e,o as n,c as t}from"./index-f02c2614.js";const c=o({mounted(){console.log("404")}});function r(s,a,d,p,_,f){return n(),t("h1",null,"Eror 404 - Page not found")}const u=e(c,[["render",r]]);export{u as default};
