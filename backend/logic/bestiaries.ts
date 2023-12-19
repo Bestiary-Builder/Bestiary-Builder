@@ -6,10 +6,11 @@ import limits from "../staticData/limits.json";
 
 //Permission checks
 export function checkBestiaryPermission(bestiary: Bestiary, user: User | null): "none" | "view" | "owner" | "editor" {
-	if (!user) return "none";
-	if (bestiary.owner == user._id) return "owner";
-	else if (bestiary.editors.includes(user._id)) return "editor";
-	else if (bestiary.status != "private") return "view";
+	if (user) {
+		if (bestiary.owner == user._id) return "owner";
+		else if (bestiary.editors.includes(user._id)) return "editor";
+	}
+	if (bestiary.status != "private") return "view";
 	else return "none";
 }
 
@@ -272,7 +273,7 @@ app.get("/api/bestiary/:id/bookmark/toggle", requireUser, async (req, res) => {
 		let user = await getUser(req.body.id);
 		if (!user) return res.status(404).json({error: "Couldn't find current user."});
 		//Permissions
-		if (bestiary.owner != user._id && bestiary.status == "private") {
+		if (checkBestiaryPermission(bestiary, user) != "none") {
 			return res.status(401).json({error: "You don't have permission to view this bestiary."});
 		}
 		//Already bookmarked?
@@ -312,7 +313,7 @@ app.get("/api/bestiary/:id/bookmark/get", requireUser, async (req, res) => {
 		let user = await getUser(req.body.id);
 		if (!user) return res.status(404).json({error: "Couldn't find current user."});
 		//Permissions
-		if (bestiary.owner != user._id && bestiary.status == "private") {
+		if (checkBestiaryPermission(bestiary, user) == "none") {
 			return res.status(401).json({error: "You don't have permission to view this bestiary."});
 		}
 		//Already bookmarked
