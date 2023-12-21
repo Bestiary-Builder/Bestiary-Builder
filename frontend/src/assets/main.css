@@ -146,7 +146,7 @@ textarea {
 	height: 90%;
 	padding: 2rem;
 	background-color: var(--color-surface-3);
-	border: 2px solid orangered;
+	border: 2px solid #ff4500;
 	overflow-y: scroll;
 	overscroll-behavior: contain;
 }

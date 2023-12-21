@@ -64,10 +64,15 @@ import {faStopwatch, faMap, faLocationPin, faClock, faRuler, faStar, faHashtag, 
 import {faTwitter, faFacebook, faDiscord, faInstagram} from "@fortawesome/free-brands-svg-icons";
 library.add(faTwitter, faFacebook, faDiscord, faInstagram, faStopwatch, faMap, faLocationPin, faClock, faRuler, faStar, faHashtag, faArrowDown19, faHourglass);
 app.component("font-awesome-icon", FontAwesomeIcon);
-// Vue Select
+// @ts-ignore Vue Select 
 import vSelect from "vue-select";
 import "vue-select/dist/vue-select.css";
 app.component("v-select", vSelect);
 
 //Mount
 app.mount("body");
+
+
+import { testCritterDB } from './parser/parseFromCritterDB'
+
+console.log(testCritterDB)
