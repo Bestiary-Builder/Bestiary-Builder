@@ -31,7 +31,7 @@ export async function startConnection() {
 
 //Collections
 export class User {
-	constructor(public username: string, public avatar: string, public email: string, public verified: boolean, public banner_color: string, public global_name: string, public bestiaries: ObjectId[] = [], public bookmarks: ObjectId[] = [], public _id: string, public secret?: string) {}
+	constructor(public username: string, public avatar: string, public email: string, public verified: boolean, public banner_color: string, public global_name: string, public bestiaries: ObjectId[] = [], public bookmarks: ObjectId[] = [], public supporter: boolean, public _id: string, public secret?: string) {}
 }
 export class Bestiary {
 	constructor(public name: string, public owner: string, public editors: string[], public status: "public" | "private" | "unlisted", public description: string, public creatures: ObjectId[], public tags: string[], public viewCount: number, public bookmarks: number, public lastUpdated: Date, public _id?: ObjectId) {}

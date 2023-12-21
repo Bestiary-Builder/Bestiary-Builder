@@ -1,11 +1,11 @@
 <template>
-<div>
-	<div class="user" v-if="user">
-		<img alt="avatar" :src="'https://cdn.discordapp.com/avatars/' + user._id + '/' + user.avatar + '.png'" />
-		<span>{{ user.username }}</span>
+	<div>
+		<div class="user" v-if="user">
+			<img alt="avatar" :src="'https://cdn.discordapp.com/avatars/' + user._id + '/' + user.avatar + '.png'" />
+			<span :class="user.supporter ? 'supporter' : ''">{{ user.username }}{{ user.supporter ? "👑" : "" }}</span>
+		</div>
+		<div v-else class="user">no User</div>
 	</div>
-	<div v-else class="user"> no User </div>
-</div>
 </template>
 
 <script lang="ts">
@@ -16,7 +16,7 @@ export default defineComponent({
 	data() {
 		return {
 			user: null as User | null
-		}
+		};
 	},
 	props: {
 		id: {
@@ -34,15 +34,20 @@ export default defineComponent({
 });
 </script>
 
-<style scoped lang="less">.user {
+<style scoped lang="less">
+.user {
 	display: flex;
 	align-items: center;
 
-	gap: .3rem;
+	gap: 0.3rem;
 	& img {
 		height: 1.5rem;
 		border-radius: 50rem;
-		scale: 1.1
+		scale: 1.1;
 	}
+}
+
+.supporter {
+	color: goldenrod;
 }
 </style>

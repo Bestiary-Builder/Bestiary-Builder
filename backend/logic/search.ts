@@ -16,14 +16,13 @@ app.post("/api/search", async (req, res) => {
 		if (!searchOptions) return res.status(400).json({error: "No search options were found"});
 		if (!searchOptions.search) searchOptions.search = ".";
 		if (!searchOptions.page) searchOptions.page = 0;
-		if (!searchOptions.tags || searchOptions.tags.length == 0) searchOptions.tags = allTags;
 		if (searchOptions.page < 0) return res.status(400).json({error: "Page out of bounds"});
 		//Do the search
 		let filter = {
 			status: "public",
-			tags: {$elemMatch: {$in: searchOptions.tags}},
 			$or: [{name: {$regex: "(?i)" + searchOptions.search + "(?-i)"}}, {description: {$regex: "(?i)" + searchOptions.search + "(?-i)"}}]
 		} as Filter<Bestiary>;
+		if (searchOptions.tags && searchOptions.tags.length > 0) filter.tags = {$elemMatch: {$in: searchOptions.tags}};
 		let finder = collections.bestiaries?.find(filter).sort({bookmarks: -1, viewCount: -1, lastUpdated: -1, name: 1});
 		let amountFound = (await finder?.count()) ?? 0;
 		if (amountFound == 0) amountFound = 1;

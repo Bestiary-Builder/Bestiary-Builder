@@ -363,6 +363,8 @@ export interface User {
 	banner_color: string;
 	global_name: string;
 	bestiaries: string[];
+	bookmarks: string[];
+	supporter: boolean;
 	_id: string;
 }
 

@@ -50,7 +50,8 @@ app.get("/api/user/:id", async (req, res) => {
 				global_name: userData.global_name,
 				username: userData.username,
 				avatar: userData.avatar,
-				banner_color: userData.banner_color
+				banner_color: userData.banner_color,
+				supporter: userData.supporter
 			};
 			console.log(`Retrieved user with the id ${data._id}`);
 			return res.json(data);
