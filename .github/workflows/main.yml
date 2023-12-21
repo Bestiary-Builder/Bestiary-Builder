@@ -1,4 +1,4 @@
-name: Deploy site to production
+name: Deploy site to production server
 on:
     push:
         branches:
