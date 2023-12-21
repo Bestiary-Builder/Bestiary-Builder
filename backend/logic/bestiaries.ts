@@ -8,7 +8,7 @@ import limits from "../staticData/limits.json";
 export function checkBestiaryPermission(bestiary: Bestiary, user: User | null): "none" | "view" | "owner" | "editor" {
 	if (user) {
 		if (bestiary.owner == user._id) return "owner";
-		else if (bestiary.editors.includes(user._id)) return "editor";
+		else if ((bestiary.editors ?? []).includes(user._id)) return "editor";
 	}
 	if (bestiary.status != "private") return "view";
 	else return "none";
