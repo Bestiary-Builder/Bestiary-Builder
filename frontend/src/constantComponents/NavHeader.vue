@@ -124,6 +124,7 @@ export default defineComponent({
 .navbar-brand img {
 	margin-right: 10px;
 	height: 2rem;
+	//filter: invert(42%) sepia(93%) saturate(1352%) hue-rotate(87deg) brightness(119%) contrast(119%);
 }
 .nav-link {
 	min-width: 10vw;
