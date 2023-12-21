@@ -122,6 +122,7 @@ export default defineComponent({
 	align-items: center;
 }
 .navbar-brand img {
+	margin-right: 10px;
 	height: 2rem;
 }
 .nav-link {
