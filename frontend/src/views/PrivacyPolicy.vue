@@ -21,4 +21,5 @@ export default defineComponent({
 </script>
 
 <style scoped lang="less">
+@import url("../assets/bestiary-list.less");
 </style>
