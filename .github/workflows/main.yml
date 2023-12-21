@@ -1,24 +1,37 @@
-name: Build frontend & add to branch
+name: Deploy site to production
 on:
-  push:
-    branches:
-      - main
+    push:
+        branches:
+            - main
 jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@master
-      - uses: actions/setup-node@master
-      - name: Installing project dependencies
-        working-directory: ./frontend
-        run: npm install
-      - name: Building the project
-        working-directory: ./frontend
-        run: npm run build
-      - name: Deploy to branch
-        uses: s0/git-publish-subdir-action@develop
-        env:
-          REPO: self
-          BRANCH: frontend-dist
-          FOLDER: ./frontend/dist
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    build-frontend:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@master
+            - uses: actions/setup-node@master
+            - name: Installing project dependencies
+              working-directory: ./frontend
+              run: npm install
+            - name: Building the project
+              working-directory: ./frontend
+              run: npm run build
+            - name: Deploy to branch
+              uses: s0/git-publish-subdir-action@develop
+              env:
+                  REPO: self
+                  BRANCH: frontend-dist
+                  FOLDER: ./frontend/dist
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    deploy-to-server:
+        runs-on: ubuntu-latest
+        needs: build-frontend
+        steps:
+            - name: executing remote ssh commands using password
+              uses: appleboy/ssh-action@v1.0.0
+              with:
+                  host: ${{ secrets.HOST }}
+                  username: ${{ secrets.USERNAME }}
+                  key: ${{ secrets.KEY }}
+                  port: ${{ secrets.PORT }}
+                  fingerprint: ${{ secrets.FINGERPRINT }}
+                  script: bash update.sh
