@@ -26,12 +26,12 @@ jobs:
         runs-on: ubuntu-latest
         needs: build-frontend
         steps:
-            - name: executing remote ssh commands using password
+            - name: executing remote ssh command
               uses: appleboy/ssh-action@v1.0.0
               with:
                   host: ${{ secrets.HOST }}
                   username: ${{ secrets.USERNAME }}
                   key: ${{ secrets.KEY }}
                   port: ${{ secrets.PORT }}
-                  fingerprint: ${{ secrets.FINGERPRINT }}
+                  #fingerprint: ${{ secrets.FINGERPRINT }}
                   script: bash update.sh
