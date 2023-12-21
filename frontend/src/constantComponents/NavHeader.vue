@@ -2,7 +2,10 @@
 	<input id="navbar-indicator" class="navbar-collapse" type="checkbox" checked />
 	<nav class="navbar">
 		<div class="navbar-left">
-			<RouterLink :to="$router.options.routes[0].path" class="navbar-brand"> BESTIARY BUILDER </RouterLink>
+			<RouterLink :to="$router.options.routes[0].path" class="navbar-brand">
+				<img src="../assets/logo.svg" />
+				<span>BESTIARY BUILDER</span>
+			</RouterLink>
 			<RouterLink v-for="route in $router.options.routes.filter((a: any) => a.navbar)" :to="route.path" class="nav-link">
 				<div class="header-item">{{ route.name }}</div>
 			</RouterLink>
@@ -82,7 +85,9 @@ export default defineComponent({
 }
 
 .navbar-left {
-	display: inline-block;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
 }
 
 .navbar-right {
@@ -110,6 +115,16 @@ export default defineComponent({
 	padding-right: 2rem;
 
 	background: orangered;
+
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+}
+.navbar-brand img {
+	margin-right: 10px;
+	height: 2rem;
+	//filter: invert(42%) sepia(93%) saturate(1352%) hue-rotate(87deg) brightness(119%) contrast(119%);
 }
 .nav-link {
 	min-width: 10vw;
