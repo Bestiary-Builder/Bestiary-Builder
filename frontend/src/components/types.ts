@@ -361,6 +361,8 @@ export interface User {
 	banner_color: string;
 	global_name: string;
 	bestiaries: string[];
+	bookmarks: string[];
+	supporter: boolean;
 	_id: string;
 }
 
@@ -371,6 +373,7 @@ export interface Bestiary {
 	status: "public" | "private" | "unlisted";
 	description: string;
 	creatures: string[];
+	tags: string[];
 	_id: string;
 }
 

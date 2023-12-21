@@ -3,6 +3,7 @@ import {app} from "../server";
 import basicExamples from "../staticData/basicExamples.json";
 import srdFeatures from "../staticData/srdFeatures.json";
 
+//Basic example
 app.get("/api/basic-examples/list", (req, res) => {
 	let names = [] as string[];
 	for (let example of basicExamples) {
@@ -19,6 +20,7 @@ app.get("/api/basic-example/:name", (req, res) => {
 		return res.status(404).json({error: "No example found with that name"});
 	}
 });
+//Features
 app.get("/api/srd-features/list", (req, res) => {
 	let names = [] as string[];
 	for (let example of srdFeatures) {
@@ -34,6 +36,12 @@ app.get("/api/srd-feature/:name", (req, res) => {
 	} else {
 		return res.status(404).json({error: "No srd feature found with that name"});
 	}
+});
+
+//Tags
+import tags from "../staticData/tags.json";
+app.get("/api/tags", async (req, res) => {
+	res.json(tags);
 });
 
 //Limits

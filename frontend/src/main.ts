@@ -30,6 +30,12 @@ export const limits = fetch("/api/limits").then(async (response: any) => {
 	if (result.success) return result.data as limitsType;
 	else return null;
 });
+export const tags = fetch("/api/tags").then(async (response: any) =>
+	handleApiResponse<string[]>(response).then(async (result) => {
+		if (result.success) return result.data as string[];
+		else return null;
+	})
+);
 const loginBase = "https://discord.com/api/oauth2/authorize?client_id=1183362236509601813&response_type=code&scope=identify+email";
 export const loginLink = loginBase + "&redirect_uri=" + encodeURIComponent(window.location.origin + "/user");
 
