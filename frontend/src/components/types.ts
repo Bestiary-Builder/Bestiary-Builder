@@ -373,6 +373,7 @@ export interface Bestiary {
 	status: "public" | "private" | "unlisted";
 	description: string;
 	creatures: string[];
+	tags: string[];
 	_id: string;
 }
 

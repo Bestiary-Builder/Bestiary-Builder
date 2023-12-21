@@ -1,28 +1,34 @@
 import {Bestiary, collections} from "../database";
 import type {Filter, FindOptions} from "mongodb";
 import {app} from "../server";
+import allTags from "../staticData/tags.json";
 
 const amountPerPage = 11;
 
-app.get("/api/search/:page/:searchterm?", async (req, res) => {
+app.post("/api/search", async (req, res) => {
 	try {
-		let searchTerm, page;
-		try {
-			searchTerm = req.params.searchterm ?? ".";
-			page = parseInt(req.params.page);
-			if (page < 0) throw EvalError("Page out of bounds");
-		} catch {
-			return res.status(400).json({error: "Failed to parse search inputs"});
-		}
+		//Parse search inputs
+		let searchOptions = req.body.options as {
+			search: string;
+			page: number;
+			tags: string[];
+		};
+		if (!searchOptions) return res.status(400).json({error: "No search options were found"});
+		if (!searchOptions.search) searchOptions.search = ".";
+		if (!searchOptions.page) searchOptions.page = 0;
+		if (!searchOptions.tags || searchOptions.tags.length == 0) searchOptions.tags = allTags;
+		if (searchOptions.page < 0) return res.status(400).json({error: "Page out of bounds"});
+		//Do the search
 		let filter = {
 			status: "public",
-			$or: [{name: {$regex: "(?i)" + searchTerm + "(?-i)"}}, {description: {$regex: "(?i)" + searchTerm + "(?-i)"}}]
+			tags: {$elemMatch: {$in: searchOptions.tags}},
+			$or: [{name: {$regex: "(?i)" + searchOptions.search + "(?-i)"}}, {description: {$regex: "(?i)" + searchOptions.search + "(?-i)"}}]
 		} as Filter<Bestiary>;
 		let finder = collections.bestiaries?.find(filter).sort({bookmarks: -1, viewCount: -1, lastUpdated: -1, name: 1});
 		let amountFound = (await finder?.count()) ?? 0;
 		if (amountFound == 0) amountFound = 1;
 		let results = await finder
-			?.skip(page * amountPerPage)
+			?.skip(searchOptions.page * amountPerPage)
 			.limit(amountPerPage)
 			.toArray();
 		console.log(`Search completed with ${amountFound} results`);

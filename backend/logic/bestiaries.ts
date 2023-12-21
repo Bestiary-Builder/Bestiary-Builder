@@ -3,6 +3,7 @@ import {requireUser, possibleUser} from "./login";
 import {type Bestiary, type User, Creature, addBestiaryToUser, getBestiary, getUser, incrementBestiaryViewCount, updateBestiary, deleteBestiary, getCreature, collections, addBookmark, removeBookmark} from "../database";
 import {ObjectId} from "mongodb";
 import limits from "../staticData/limits.json";
+import tags from "../staticData/tags.json";
 
 //Permission checks
 export function checkBestiaryPermission(bestiary: Bestiary, user: User | null): "none" | "view" | "owner" | "editor" {
@@ -33,6 +34,7 @@ app.get("/api/bestiary/:id", possibleUser, async (req, res) => {
 			incrementBestiaryViewCount(_id);
 			//Return bestiary
 			console.log(`Retrieved bestiary with the id ${id}`);
+			if (!bestiary.tags) bestiary.tags = [];
 			return res.json(bestiary);
 		} else {
 			return res.status(401).json({error: "You don't have access to this bestiary."});
@@ -83,7 +85,7 @@ function convertInput(input: BestiaryInput): Bestiary | null {
 		return null;
 	}
 	let bestiaryId = new ObjectId(input._id);
-	let data = Object.assign(input, {_id: bestiaryId} as Bestiary);
+	let data = Object.assign(input, {_id: bestiaryId});
 	return data;
 }
 app.post("/api/bestiary/:id?/update", requireUser, async (req, res) => {
@@ -105,6 +107,10 @@ app.post("/api/bestiary/:id?/update", requireUser, async (req, res) => {
 		}
 		//Check limits
 		if (!data.creatures) data.creatures = [];
+		console.log(data.tags);
+		if (!data.tags) data.tags = [];
+		else data.tags = data.tags.filter((t) => tags.includes(t));
+		console.log(data.tags);
 		if (data.name.length > limits.nameLength) return res.status(400).json({error: `Name exceeds the character limit of ${limits.nameLength} characters.`});
 		if (data.name.length < limits.nameMin) return res.status(400).json({error: `Name is less than the minimum character limit of ${limits.nameMin} characters.`});
 		if (data.description.length > limits.descriptionLength) return res.status(400).json({error: `Description exceeds the character limit of ${limits.descriptionLength} characters.`});
@@ -130,15 +136,17 @@ app.post("/api/bestiary/:id?/update", requireUser, async (req, res) => {
 				if (permissionLevel == "none" || permissionLevel == "view") return res.status(401).json({error: "You don't have permission to update this bestiary."});
 				//Limit properties that are editable:
 				let update = {
-					name: bestiary.name,
-					description: bestiary.description,
-					creatures: bestiary.creatures,
-					status: bestiary.status
+					name: data.name,
+					description: data.description,
+					creatures: data.creatures,
+					status: data.status,
+					tags: data.tags
 				} as {
 					name: string;
 					description: string;
 					creatures: ObjectId[];
 					status?: "public" | "private" | "unlisted";
+					tags: string[];
 				};
 				if (permissionLevel == "editor") delete update.status;
 				//Update:

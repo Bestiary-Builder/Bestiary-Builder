@@ -6,7 +6,9 @@
 				<div class="content-tile header-tile">
 					<h2>{{ bestiary.name }}</h2>
 					<p class="description">{{ bestiary.description }}</p>
-
+					<div class="tags">
+						<span class="tag" v-for="tag in bestiary.tags">{{ tag }}</span>
+					</div>
 					<div class="unpin" v-if="lastClickedCreature">
 						<span class="unpin-button" @click="lastClickedCreature = null" role="button" aria-label="unpin currently pinned creature">unpin</span>
 						📌
@@ -42,7 +44,6 @@
 					</div>
 				</TransitionGroup>
 
-
 				<div class="create-tile" v-if="isOwner">
 					<span role="button" class="create-text" @click="createCreature">add creature</span>
 				</div>
@@ -70,9 +71,9 @@
 				<section class="modal__content modal__small" ref="deleteModal" v-if="bestiary && (isOwner || isEditor)">
 					<button @click="isDeleteModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
 					<h2 class="modal-header">are you sure you want to delete {{ selectedCreature?.stats.description.name }}?</h2>
-					<p class="warning"> This action cannot be reversed.</p>
+					<p class="warning">This action cannot be reversed.</p>
 					<div class="modal-buttons">
-						<button class="btn cancel-button" @click="isDeleteModalOpen=false">Cancel</button>
+						<button class="btn cancel-button" @click="isDeleteModalOpen = false">Cancel</button>
 						<button v-if="selectedCreature" class="btn danger-button" @click.prevent="deleteCreature(selectedCreature)">Delete creature</button>
 					</div>
 				</section>
@@ -91,21 +92,21 @@
 						<input type="text" v-model="bestiary.name" :minlength="limits.nameMin" :maxlength="limits.nameLength" id="nameinput" />
 					</div>
 					<div class="flow-vertically">
-						<label for="descinput" >description</label>
-						<textarea v-model="bestiary.description" :maxlength="limits.descriptionLength" id="descinput"/>
+						<label for="descinput">description</label>
+						<textarea v-model="bestiary.description" :maxlength="limits.descriptionLength" id="descinput" />
 					</div>
 					<div v-if="isOwner" class="flow-vertically">
 						<label for="statusinput">status</label>
-
 						<v-select v-model="bestiary.status" :options="['public', 'unlisted', 'private']" inputId="statusinput" />
+					</div>
+					<div class="tags">
+						<label for="tagsInput">tags</label>
+						<v-select placeholder="Select Tags" v-model="bestiary.tags" multiple :options="allTags" inputId="tagsInput" />
 					</div>
 
 					<div class="editor-block">
 						<h3><span>editors</span></h3>
-						<p v-if="isOwner" class="flow-vertically">
-							<p> Editors can add, edit, and remove creatures. They can edit the name of the bestiary and its description. Editors cannot change the status of the bestiary or delete the bestiary. Editors cannot add other editors. The owner can remove editors at any time.</p>
-
-						</p>
+						<p v-if="isOwner" class="flow-vertically">Editors can add, edit, and remove creatures. They can edit the name of the bestiary and its description. Editors cannot change the status of the bestiary or delete the bestiary. Editors cannot add other editors. The owner can remove editors at any time.</p>
 						<div class="editor-container">
 							<div v-for="editor in editors" class="editor-list">
 								<p>
@@ -123,21 +124,18 @@
 						</div>
 					</div>
 					<p class="warning" v-if="showWarning">
-						By changing the bestiary status to {{ bestiary.status }} I confirm that I am the copyright holder of the content within, or that I have permission from the copyright holder to share this content. I hereby agree to the (CONTENT POLICY) and agree to be fully liable for the content within. I affirm that the content does not include any official non-free D&D content. 
-
-						Bestiaries that breach these terms may have their status changed to private or be outright removed, and may result in a ban if the content breaches our content policy.
+						By changing the bestiary status to {{ bestiary.status }} I confirm that I am the copyright holder of the content within, or that I have permission from the copyright holder to share this content. I hereby agree to the (CONTENT POLICY) and agree to be fully liable for the content within. I affirm that the content does not include any official non-free D&D content. Bestiaries
+						that breach these terms may have their status changed to private or be outright removed, and may result in a ban if the content breaches our content policy.
 					</p>
 
 					<div class="modal-buttons">
-						<button class="btn cancel-button" @click="isEditorModalOpen=false">Cancel</button>
+						<button class="btn cancel-button" @click="isEditorModalOpen = false">Cancel</button>
 						<button class="btn confirm-button" @click.prevent="updateBestiary">Save changes</button>
 					</div>
 				</section>
 			</div>
 		</Transition>
 	</Teleport>
-
-
 </template>
 <script setup lang="ts">
 import {ref} from "vue";
@@ -147,8 +145,7 @@ const editModal = ref<HTMLDivElement | null>(null);
 // @ts-ignore
 onClickOutside(editModal, () => (isEditorModalOpen.value = false));
 
-
-const selectedCreature = ref<Creature | null>(null)
+const selectedCreature = ref<Creature | null>(null);
 
 const isDeleteModalOpen = ref(false);
 const deleteModal = ref<HTMLDivElement | null>(null);
@@ -156,7 +153,7 @@ const deleteModal = ref<HTMLDivElement | null>(null);
 onClickOutside(deleteModal, () => (isDeleteModalOpen.value = false));
 
 const openDeleteModal = (creature: Creature) => {
-	selectedCreature.value = creature
+	selectedCreature.value = creature;
 	isDeleteModalOpen.value = true;
 };
 </script>
@@ -167,7 +164,7 @@ import {defineComponent} from "vue";
 import {defaultStatblock} from "@/components/types";
 import type {User, Bestiary, Creature, Statblock} from "@/components/types";
 import UserBanner from "@/components/UserBanner.vue";
-import {handleApiResponse, user, type error, toast, limits, type limitsType} from "@/main";
+import {handleApiResponse, user, type error, toast, tags, limits, type limitsType} from "@/main";
 import StatblockRenderer from "@/components/StatblockRenderer.vue";
 
 export default defineComponent({
@@ -182,6 +179,7 @@ export default defineComponent({
 			lastClickedCreature: null as null | Statblock,
 			hasPinnedBefore: false as boolean,
 			limits: {} as limitsType,
+			allTags: [] as string[],
 			bookmarked: false as boolean,
 			isOwner: false,
 			isEditor: false,
@@ -194,12 +192,18 @@ export default defineComponent({
 		StatblockRenderer
 	},
 	async created() {
-		// @ts-ignore
+		//@ts-ignore
 		this.limits = (await limits) ?? ({} as limitsType);
+		//@ts-ignore
+		tags.then((t) => {
+			this.allTags = t ?? ([] as string[]);
+		});
 	},
 	async beforeMount() {
-		this.getBestiary();
 		this.user = await user;
+		await this.getBestiary();
+		console.log(this.allTags);
+		console.log(this.bestiary);
 	},
 	methods: {
 		async createCreature() {
@@ -287,7 +291,7 @@ export default defineComponent({
 					});
 					//Fetch editors
 					this.editors = [] as User[];
-					for (let editorId of (this.bestiary?.editors ?? [])) {
+					for (let editorId of this.bestiary?.editors ?? []) {
 						await fetch("/api/user/" + editorId)
 							.then((response) => handleApiResponse<User>(response))
 							.then((editorResult) => {
@@ -354,7 +358,7 @@ export default defineComponent({
 		},
 		statusEmoji(status: "public" | "private" | "unlisted"): string {
 			return status == "public" ? "🌍" : status == "private" ? "🔒" : "🔗";
-		},
+		}
 	},
 	watch: {
 		lastClickedCreature(newValue, oldValue): void {
@@ -363,10 +367,10 @@ export default defineComponent({
 
 			toast.info("Pinned creature to the right side. Click unpin there to go back to hover behaviour.");
 		},
-		'bestiary.status'(newValue, oldValue): void {
-			if (newValue == "private") this.showWarning = false
-			if (newValue != "private") this.showWarning = true
-			console.log(newValue, oldValue)
+		"bestiary.status"(newValue, oldValue): void {
+			if (newValue == "private") this.showWarning = false;
+			if (newValue != "private") this.showWarning = true;
+			console.log(newValue, oldValue);
 		}
 	}
 });
@@ -376,7 +380,7 @@ export default defineComponent({
 .flow-vertically {
 	display: flex;
 	flex-direction: column;
-	gap: .3rem;
+	gap: 0.3rem;
 
 	label {
 		font-weight: bold;
@@ -588,17 +592,17 @@ export default defineComponent({
 }
 
 .slide-fade-enter-active {
-  transition: all 0.3s ease-out;
+	transition: all 0.3s ease-out;
 }
 
 .slide-fade-leave-active {
-  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+	transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
 }
 
 .slide-fade-enter-from,
 .slide-fade-leave-to {
-  transform: translateX(-50px);
-  opacity: 0;
+	transform: translateX(-50px);
+	opacity: 0;
 }
 
 .editor-block {
@@ -615,12 +619,10 @@ export default defineComponent({
 		margin: 1rem 0;
 	}
 
-
 	.button-container {
 		display: flex;
 		gap: 1rem;
 	}
-
 }
 .modal-buttons {
 	display: flex;
@@ -629,11 +631,11 @@ export default defineComponent({
 	margin-top: 2rem;
 
 	& button {
-		padding: .5rem 1rem;
+		padding: 0.5rem 1rem;
 		border: none;
 		cursor: pointer;
 
-		transition: all .3s ease;
+		transition: all 0.3s ease;
 		&:hover {
 			scale: 1.05;
 			filter: brightness(1.05);
@@ -643,12 +645,11 @@ export default defineComponent({
 	.cancel-button {
 		background-color: grey;
 	}
-	
+
 	.confirm-button {
 		background-color: var(--color-success);
-	
 	}
-	
+
 	.danger-button {
 		background-color: var(--color-destructive);
 	}
@@ -656,7 +657,7 @@ export default defineComponent({
 
 .warning {
 	color: var(--color-destructive);
-	margin-top: .5rem;
+	margin-top: 0.5rem;
 }
 
 .editor-container {

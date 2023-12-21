@@ -9,20 +9,23 @@
 
 			<TransitionGroup name="popin">
 				<RouterLink class="content-tile bestiary-tile" v-if="bestiaries" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" :key="bestiary._id">
-					<div class="tile-header"> <h2>{{ bestiary.name }}</h2> </div>
+					<div class="tile-header">
+						<h2>{{ bestiary.name }}</h2>
+					</div>
 					<div class="tile-content">
+						<div class="tags">
+							<span class="tag" v-for="tag in bestiary.tags">{{ tag }}</span>
+						</div>
 						<p>{{ bestiary.description }}</p>
 					</div>
 					<div class="tile-footer">
 						<span>{{ statusEmoji(bestiary.status) }}{{ bestiary.status }}</span>
-						<span role="button" @click.stop.prevent="openModal(bestiary._id)" class="edit-button" v-if="bestiary.owner == user?._id"
-						>🗑️</span>
+						<span role="button" @click.stop.prevent="openModal(bestiary._id)" class="edit-button" v-if="bestiary.owner == user?._id">🗑️</span>
 						<span class="shared-notice" v-else v-tooltip="'This bestiary has been shared with you by the owner.'">shared</span>
 						<span>{{ bestiary.creatures.length }}🐉</span>
 					</div>
 				</RouterLink>
 			</TransitionGroup>
-
 		</div>
 	</div>
 
@@ -137,7 +140,6 @@ export default defineComponent({
 	user-select: none;
 	cursor: pointer;
 
-	
 	& .create-button {
 		background-color: transparent;
 		color: white;
