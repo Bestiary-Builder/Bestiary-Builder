@@ -208,10 +208,11 @@ const defaultStatblock = {
 			fly: 0,
 			isHover: false,
 			burrow: 0,
-			swim: 0
+			swim: 0,
+			climb: 0
 		},
 		senses: {
-			passivePerceptionOverride: 0,
+			passivePerceptionOverride: null,
 			darkvision: 0,
 			blindsight: 0,
 			isBlind: false,

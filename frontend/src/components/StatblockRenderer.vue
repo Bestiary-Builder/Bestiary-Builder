@@ -16,6 +16,9 @@
         <div class="stat-block__speed-container">
             <b> Speed </b>
             <span> {{ data.core.speed.walk }} ft.<span class="ending-comma">,</span></span>
+            <span v-if="data.core.speed.climb">
+                climb {{ data.core.speed.climb }} ft.<span class="ending-comma">,</span>
+            </span>
             <span v-if="data.core.speed.fly">
                 fly {{ data.core.speed.fly }} ft.<span v-if="data.core.speed.isHover"> (hover)</span><span class="ending-comma">,</span>
             </span>
@@ -25,6 +28,7 @@
             <span v-if="data.core.speed.burrow">
                 burrow {{ data.core.speed.burrow }} ft.<span class="ending-comma">,</span>
             </span>
+
         </div>
     </div>
     <div class="stat-block__row stat-block__abilities">
@@ -108,8 +112,9 @@
             <span v-if="data.core.senses.telepathy"> telepathy {{ data.core.senses.telepathy}}ft.</span>
 
         </div>
-        <div>
-            <b> Challenge </b> {{ data.description.cr.toString() }} (1000 xp)
+        <div class="challenge-prof">
+            <span> <b> Challenge </b> {{ data.description.cr.toString() }} (1000 xp) </span>
+            <span> <b> Proficiency Bonus </b> +{{ data.core.proficiencyBonus }}</span>
         </div>
     </div>
     <div class="stat-block__row" v-if="showFeatures() || showCasting() || (showInnateCasting() && !data.spellcasting.innateSpells.displayAsAction)">
@@ -290,7 +295,7 @@ export default defineComponent({
             return Math.floor(this.data.abilities.stats[stat]/2)-5
         },
         ppCalc(): number { 
-            if (this.data.core.senses.passivePerceptionOverride) return this.data.core.senses.passivePerceptionOverride
+            if (this.data.core.senses.passivePerceptionOverride !== null) return this.data.core.senses.passivePerceptionOverride
             else { 
                 let skills = this.data.abilities.skills
                 if (skills) {
@@ -384,7 +389,6 @@ export default defineComponent({
                     } else continue;
                     
                 }
-
             }
             return output.join(", ")
         },
@@ -592,5 +596,10 @@ export default defineComponent({
 
 .feature-container__desc {
     margin-left: .2rem;
+}
+
+.challenge-prof {
+    display: flex;
+    justify-content: space-between;
 }
 </style>

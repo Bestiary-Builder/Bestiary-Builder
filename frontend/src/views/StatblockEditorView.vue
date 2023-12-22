@@ -80,7 +80,6 @@
                                 v-model="data.description.cr" 
                                 min="0" 
                                 max="30" 
-                                @change="updateCr()"
                                 inputmode="numeric"
                                 id="challengerating"
                             >
@@ -196,6 +195,24 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="climbspeed"><span class="text"> climb speed</span> </label>
+                        <div class="quantity">
+                            <input 
+                                type="number" 
+                                v-model="data.core.speed.climb" 
+                                min="0" 
+                                step="5"
+                                inputmode="numeric"
+                                id="climbspeed"
+                            >
+                            <div class="quantity-nav">
+                                <div class="quantity-button quantity-up" @click="data.core.speed.climb = data.core.speed.climb+5" aria-label="Increase climb speed">+</div>
+                                <div class="quantity-button quantity-down" @click="data.core.speed.climb = Math.max(0, data.core.speed.climb-5)" aria-label="Decrease climb speed">-</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <hr>
                 <h2 class="group-header"> senses </h2>
@@ -291,9 +308,11 @@
                                 id="passiveperc"
                             >
                             <div class="quantity-nav">
-                                <div class="quantity-button quantity-up" @click="data.core.senses.passivePerceptionOverride= data.core.senses.passivePerceptionOverride+1" aria-label="Increase  passive perception override">+</div>
-                                <div class="quantity-button quantity-down" @click="data.core.senses.passivePerceptionOverride = Math.max(0, data.core.senses.passivePerceptionOverride-1)" aria-label="Decrease passive perception override">-</div>
+                                <div class="quantity-button quantity-up" @click="data.core.senses.passivePerceptionOverride= (data.core.senses.passivePerceptionOverride??0)+1" aria-label="Increase passive perception override">+</div>
+                                <div class="quantity-button quantity-down" @click="data.core.senses.passivePerceptionOverride = Math.max(0, (data.core.senses.passivePerceptionOverride??0)-1)" aria-label="Decrease passive perception override">-</div>
                             </div>
+                            <span class="delete-button" @click="data.core.senses.passivePerceptionOverride = null" aria-label="Delete passive perception override">🗑️</span>
+
                         </div>
                     </div>
                 </div>
@@ -1072,15 +1091,46 @@
         <hr />
 
         <div class="save-button">
+            <button class="btn" @click="isModalOpen = true"> open import modal </button>
+        </div>
+        <div class="save-button">
             <button class="btn" @click="saveStatblock()"> save statblock </button>
         </div>
     </div>
     <div class="content-container__inner"> 
         <StatblockRenderer :data='data'/>
     </div>
+
+    <Teleport to="#modal">
+		<Transition name="modal">
+			<div class="modal__bg" v-if="isModalOpen">
+				<section class="modal__content modal__small" ref="modal">
+					<button @click="isModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
+					<h2 class="modal-header">import from critterDB</h2>
+					
+                    <textarea v-model="critterDBJson" style="width: 1200px; height: 800px" />
+					<div class="modal-buttons">
+						<button class="btn cancel-button" @click="isModalOpen=false">Cancel</button>
+						<button class="btn confirm-button" @click.prevent="importCritterDB()">import</button>
+					</div>
+				</section>
+			</div>
+		</Transition>
+	</Teleport>
 </div>
 
 </template>
+<script setup lang="ts">
+import {ref} from "vue";
+import {onClickOutside} from "@vueuse/core";
+
+
+const isModalOpen = ref(false);
+const modal = ref<HTMLDivElement | null>(null);
+// @ts-ignore
+onClickOutside(modal, () => (isModalOpen.value = false));
+
+</script>
 
 <script lang="ts">
 import {RouterLink, RouterView} from "vue-router";
@@ -1090,7 +1140,7 @@ import type { InnateSpellsEntity, InnateSpellsList, SkillsEntity, Statblock, Cre
 import { defaultStatblock, getSpellSlots, spellList, spellListFlattened } from "@/components/types"
 import { handleApiResponse, type error, toast, limits, type limitsType } from "@/main";
 import FeatureWidget from "@/components/FeatureWidget.vue";
-
+import { parseFromCritterDB } from "../parser/parseFromCritterDB"
 export default defineComponent({
 	components: {
 		StatblockRenderer,
@@ -1122,11 +1172,17 @@ export default defineComponent({
                 "lair": "new lair action",
                 "mythic": "new mythic action",
                 "regional": "new regional effect"
-            }
-        
+            },
+            critterDBJson: "" as string
         }
     },
     methods: {
+        importCritterDB() : void {
+            console.log(this.critterDBJson)
+            this.data = parseFromCritterDB(JSON.parse(this.critterDBJson))
+            this.critterDBJson = ""
+            //isModalOpen.value = false;
+        },
         showSlides(n: number): void {
             if (this.slideIndex == n) return;
 
@@ -1153,12 +1209,6 @@ export default defineComponent({
             var b = features[toSwapIndex]
             features[toSwapIndex] = features[index]
             features[index] = b
-        },
-        updateCr() : void {
-            let cr = this.data.description.cr
-            let bonus = Math.min(9, Math.floor((cr + 3) / 4));
-
-            this.data.core.proficiencyBonus = bonus
         },
         changeCR(isIncrease: boolean) : void{
             let cr = this.data.description.cr
@@ -1271,6 +1321,7 @@ export default defineComponent({
         }
     },
     async created() {
+        // @ts-ignore
         this.limits = (await limits) ?? {} as limitsType;
     },
     mounted() {
@@ -1355,6 +1406,9 @@ export default defineComponent({
 
             },
             deep: true
+        },
+        'data.description.cr'() {
+            this.data.core.proficiencyBonus = Math.max(2, Math.min(9, Math.floor((this.data.description.cr + 3) / 4))+1)
         }
     }
 })
