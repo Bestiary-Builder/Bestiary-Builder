@@ -86,17 +86,34 @@ textarea {
 	height: unset;
 }
 
+//Header
 .content {
 	margin: 1rem 5vw;
-
 	& h1 {
 		text-align: center;
 		margin-bottom: 2rem;
 		font-size: 3rem;
-
 		& span {
 			border-bottom: 4px solid orangered;
 			padding: 0 10rem;
+		}
+	}
+}
+@media screen and (max-width: 1800px) {
+	.content h1 span {
+		padding: 0 7rem;
+	}
+}
+@media screen and (max-width: 1550px) {
+	.content h1 span {
+		padding: 0 4rem;
+	}
+}
+@media screen and (max-width: 1050px) {
+	.content h1 {
+		font-size: 2rem;
+		span {
+			padding: 0 2rem;
 		}
 	}
 }
