@@ -6,14 +6,6 @@
 					<div id="footer-sitetitle" class="mw-wiki-title">Bestiary Builder</div>
 					<p id="footer-desc">Welcome to Bestiary Builder</p>
 				</div>
-				<nav id="footer-places">
-					<ul>
-						<li id="footer-places-privacy">
-							<a href="/privacy-policy" title="Privacy policy">Privacy Policy<font-awesome-icon icon="fa-user-lock" /></a>
-							<a href="/terms-and-conditions" title="Terms And Conditions">Terms And Conditions<font-awesome-icon icon="fa-solid fa-scale-balanced" /></a>
-						</li>
-					</ul>
-				</nav>
 				<!--<nav id="footer-places">
 					<ul>
 						<li id="footer-places-privacy">
@@ -21,6 +13,19 @@
 						</li>
 					</ul>
 				</nav>-->
+				<nav id="footer-places">
+					<ul>
+						<li id="footer-places-privacy">
+							<a href="/privacy-policy" title="Privacy policy">Privacy Policy<font-awesome-icon icon="fa-solid fa-user-lock" /></a>
+						</li>
+						<li id="footer-places-terms">
+							<a href="/terms-and-conditions" title="Terms And Conditions">Terms And Conditions<font-awesome-icon icon="fa-solid fa-scale-balanced" /></a>
+						</li>
+						<li id="footer-places-discord">
+							<a href="/privacy-policy" title="Discord">Discord<font-awesome-icon icon="fa-brands fa-discord" /></a>
+						</li>
+					</ul>
+				</nav>
 			</section>
 			<section class="citizen-footer__bottom"></section>
 		</div>
@@ -53,15 +58,15 @@ export default defineComponent({
 	&__content,
 	&__bottom {
 		display: flex;
+		align-items: center;
+		justify-content: space-between;
 		flex-wrap: wrap;
-		width: 90vw;
+		width: 100%;
 		padding: var(--space-md) 0;
 		gap: var(--space-md);
 	}
 
 	&__bottom {
-		align-items: center;
-		justify-content: space-between;
 		border-top: 1px solid var(--border-color-base);
 	}
 
