@@ -20,7 +20,6 @@ export default defineComponent({
 </script>
 
 <style scoped lang="less">
-@import url("../assets/bestiary-list.less");
 .content-tile p {
 	padding-top: 0.75rem;
 }

@@ -40,7 +40,7 @@ const loginBase = "https://discord.com/api/oauth2/authorize?client_id=1183362236
 export const loginLink = loginBase + "&redirect_uri=" + encodeURIComponent(window.location.origin + "/user");
 
 //Style sheet
-import "./assets/main.css";
+import "./assets/main.less";
 //Vue
 import {createApp} from "vue";
 //@ts-ignore

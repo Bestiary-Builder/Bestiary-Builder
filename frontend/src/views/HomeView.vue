@@ -1,17 +1,20 @@
 <template>
-	<h1>Home</h1>
+	<div class="content">
+		<h1><span>bestiary builder</span></h1>
+		<img class="logo" src="/logo-text.svg" />
+	</div>
 </template>
 
 <style scoped lang="less">
-.content-container {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	height: 60rem;
-	gap: 2rem;
-}
-
 .content {
-	background-color: rgb(46, 44, 44);
 	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
+}
+.logo {
+	width: 75%;
+	max-height: 30rem;
+	aspect-ratio: 1;
 }
 </style>

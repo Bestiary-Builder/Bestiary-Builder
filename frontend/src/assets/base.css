@@ -1,10 +1,10 @@
 @import "https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700";
-@import 'https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700';
+@import "https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700";
 
 :root {
 	--color-surface-0: #121c25;
 	--color-surface-1: #2b3b42;
-	--color-surface-2: #23313c;
+	--color-surface-2: #324661;
 	--color-surface-3: #1b262e;
 	--color-surface-4: #23313c;
 	--color-base: #c1c5c5;
