@@ -2,6 +2,7 @@
 <div class="stat-block">
     <div class="stat-block__row"> 
         <h1 class="stat-block__name-container"> {{ data.description.name }}</h1>
+        <img class="stat-block__image" :src="data.description.image" v-if="data.description.image"/>
         <span class="stat-block__core"> {{ data.core.size }} {{ data.core.race }}{{ data.description.alignment ? ',' : '' }} {{ data.description.alignment }}</span>
     </div>
     <div class="stat-block__row">

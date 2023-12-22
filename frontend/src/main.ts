@@ -24,8 +24,9 @@ export type limitsType = {
 	nameMin: number;
 	descriptionLength: number;
 	creatureAmount: number;
+	imageFormats: string[];
 };
-export const limits = fetch("/api/limits").then(async (response: any) => {
+export const asyncLimits = fetch("/api/limits").then(async (response: any) => {
 	let result = await handleApiResponse<limitsType>(response);
 	if (result.success) return result.data as limitsType;
 	else return null;
@@ -70,7 +71,7 @@ import {faStopwatch, faMap, faLocationPin, faClock, faRuler, faStar, faHashtag, 
 import {faTwitter, faFacebook, faDiscord, faInstagram} from "@fortawesome/free-brands-svg-icons";
 library.add(faTwitter, faFacebook, faDiscord, faInstagram, faStopwatch, faMap, faLocationPin, faClock, faRuler, faStar, faHashtag, faArrowDown19, faHourglass);
 app.component("font-awesome-icon", FontAwesomeIcon);
-// @ts-ignore Vue Select 
+// @ts-ignore Vue Select
 import vSelect from "vue-select";
 import "vue-select/dist/vue-select.css";
 app.component("v-select", vSelect);
@@ -78,7 +79,6 @@ app.component("v-select", vSelect);
 //Mount
 app.mount("body");
 
+import {testCritterDB} from "./parser/parseFromCritterDB";
 
-import { testCritterDB } from './parser/parseFromCritterDB'
-
-console.log(testCritterDB)
+console.log(testCritterDB);

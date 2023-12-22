@@ -164,7 +164,7 @@ import {defineComponent} from "vue";
 import {defaultStatblock} from "@/components/types";
 import type {User, Bestiary, Creature, Statblock} from "@/components/types";
 import UserBanner from "@/components/UserBanner.vue";
-import {handleApiResponse, user, type error, toast, tags, limits, type limitsType} from "@/main";
+import {handleApiResponse, user, type error, toast, tags, type limitsType, asyncLimits} from "@/main";
 import StatblockRenderer from "@/components/StatblockRenderer.vue";
 
 export default defineComponent({
@@ -192,9 +192,7 @@ export default defineComponent({
 		StatblockRenderer
 	},
 	async created() {
-		//@ts-ignore
-		this.limits = (await limits) ?? ({} as limitsType);
-		//@ts-ignore
+		this.limits = (await asyncLimits) ?? ({} as limitsType);
 		tags.then((t) => {
 			this.allTags = t ?? ([] as string[]);
 		});
@@ -202,8 +200,8 @@ export default defineComponent({
 	async beforeMount() {
 		this.user = await user;
 		await this.getBestiary();
-		console.log(this.allTags);
 		console.log(this.bestiary);
+		console.log(this.creatures);
 	},
 	methods: {
 		async createCreature() {
@@ -303,15 +301,19 @@ export default defineComponent({
 							});
 					}
 					//Bookmark state
-					await fetch(`/api/bestiary/${this.bestiary._id}/bookmark/get`).then(async (bookmarkResponse) => {
-						let bookmarkResult = await handleApiResponse<{state: boolean}>(bookmarkResponse);
-						if (bookmarkResult.success) {
-							this.bookmarked = (bookmarkResult.data as {state: boolean}).state;
-						} else {
-							this.bookmarked = false;
-							toast.error((bookmarkResult.data as error).error);
-						}
-					});
+					if (this.user) {
+						await fetch(`/api/bestiary/${this.bestiary._id}/bookmark/get`).then(async (bookmarkResponse) => {
+							let bookmarkResult = await handleApiResponse<{state: boolean}>(bookmarkResponse);
+							if (bookmarkResult.success) {
+								this.bookmarked = (bookmarkResult.data as {state: boolean}).state;
+							} else {
+								this.bookmarked = false;
+								toast.error((bookmarkResult.data as error).error);
+							}
+						});
+					} else {
+						this.bookmarked = false;
+					}
 				} else {
 					this.bestiary = null;
 					toast.error((result.data as error).error);

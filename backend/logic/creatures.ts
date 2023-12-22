@@ -39,13 +39,16 @@ app.get("/api/bestiary/:id/creatures", possibleUser, async (req, res) => {
 		let bestiaryId = new ObjectId(req.params.id);
 		let bestiary = await getBestiary(bestiaryId);
 		if (bestiary) {
-			if (user && checkBestiaryPermission(bestiary, user) != "none") {
+			if (checkBestiaryPermission(bestiary, user) != "none") {
 				let creatures = [];
 				for (let creatureId of bestiary.creatures) {
+					console.log(creatureId);
 					let creature = await collections.creatures?.findOne({_id: new ObjectId(creatureId)});
+					console.log(creature?._id);
 					if (creature) creatures.push(creature);
 				}
 				console.log(`Retrieved creatures from bestiary with the id ${bestiaryId}`);
+				console.log(creatures);
 				return res.json(creatures);
 			} else {
 				return res.status(401).json({error: "You don't have permission to view this bestiary."});
@@ -93,10 +96,20 @@ app.post("/api/creature/:id?/update", requireUser, async (req, res) => {
 			//@ts-ignore
 			data.stats[key] = {...defaultStatblock[key], ...oldStats[key]};
 		}
-		//Check limit
+		//Check limits
 		if (data.stats.description.name.length > limits.nameLength) return res.status(400).json({error: `Name exceeds the character limit of ${limits.nameLength} characters.`});
 		if (data.stats.description.name.length < limits.nameMin) return res.status(400).json({error: `Name is less than the minimum character limit of ${limits.nameMin} characters.`});
 		if (data.stats.description.description.length > limits.descriptionLength) return res.status(400).json({error: `Description exceeds the character limit of ${limits.descriptionLength} characters.`});
+		//Check image link
+		let image = data.stats.description.image as string;
+		if (image && image != "") {
+			if (!image.startsWith("https")) return res.status(400).json({error: "Image link not from a secure https location."});
+			let isApproved = false;
+			for (let format of limits.imageFormats) {
+				if (image.endsWith("." + format)) isApproved = true;
+			}
+			if (!isApproved) return res.status(400).json({error: "Image link not recognized as an allowed image format."});
+		}
 		//Update or add
 		if (id) {
 			//Update existing creature
