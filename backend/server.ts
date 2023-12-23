@@ -57,7 +57,7 @@ for (let file of dataFiles) {
 //Function to run on all requests
 app.use(function (req, res, next) {
 	//Set Content Security Policy (CSP)
-	res.setHeader("Content-Security-Policy", "default-src 'self';" + "img-src cdn.discordapp.com * 'self' data: 'self';" + "script-src 'self' 'sha256-reBsRZd5I88opZSwT59Ir+QlBhrEhdRJ1aQUr4GXhyw=';" + "style-src 'self' 'unsafe-inline' fonts.googleapis.com;" + "font-src 'self' data: fonts.gstatic.com;" + "connect-src 'self' discord.com critterdb.com;");
+	res.setHeader("Content-Security-Policy", "default-src 'self';" + "img-src cdn.discordapp.com * 'self' data: 'self';" + "script-src 'self' 'sha256-reBsRZd5I88opZSwT59Ir+QlBhrEhdRJ1aQUr4GXhyw=';" + "style-src 'self' 'unsafe-inline' fonts.googleapis.com;" + "font-src 'self' data: fonts.gstatic.com;" + "connect-src 'self' discord.com;");
 	//Redirect http to https
 	if (enableHttps) {
 		if (!req.secure) {
