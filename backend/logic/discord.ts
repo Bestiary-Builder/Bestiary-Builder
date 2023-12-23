@@ -1,3 +1,4 @@
+import {log} from "../server";
 import discord, {PresenceUpdateStatus, Status} from "discord.js";
 import {collections, type User} from "../database";
 const client = new discord.Client({
@@ -5,9 +6,8 @@ const client = new discord.Client({
 });
 const token = process.env.discordBotToken ?? "";
 
-client.on("error", console.error);
 client.on("ready", async () => {
-	console.log("Discord bot is ready");
+	log.info("Discord bot is ready");
 	client.user?.setPresence({
 		status: "invisible"
 	});
@@ -19,12 +19,12 @@ client.on("ready", async () => {
 	}, 60 * 60 * 1000); //Once an hour
 });
 
-client.login(token).catch(() => console.error("Failed to connect to discord bot"));
+client.login(token).catch(() => log.error("Failed to connect to discord bot"));
 
 async function checkUserStatuses(guild: discord.Guild) {
 	let supporterRole = await guild.roles.fetch("1187500073836367965");
 	if (!supporterRole) {
-		console.error("Failed to fetch supporter role");
+		log.error("Failed to fetch supporter role");
 		return;
 	}
 	//Fetch all member info

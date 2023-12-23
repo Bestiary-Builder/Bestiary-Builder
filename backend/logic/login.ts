@@ -1,4 +1,4 @@
-import {app, JWTKey} from "../server";
+import {app, JWTKey, log} from "../server";
 import fetch from "node-fetch";
 import jwt from "jsonwebtoken";
 import {getUser, getUserFromSecret, updateUser, User} from "../database";
@@ -58,17 +58,17 @@ app.get("/api/login/:code", async (req, res) => {
 					expiresIn: "7d"
 				});
 				res.cookie("userToken", token, {expires: new Date(new Date().getTime() + 60 * 60 * 1000 * 24 * 7), sameSite: "strict", secure: true, httpOnly: true});
-				console.log(`User with the id ${userResult.id} logged in`);
+				log.info(`User with the id ${userResult.id} logged in`);
 				return res.json({});
 			} else {
 				return res.status(400).json({error: "No user recieved from discord."});
 			}
 		} else {
-			console.error(oauthData);
+			log.error(oauthData);
 			return res.status(401).json({error: "Failed to authenticate discord login."});
 		}
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return res.status(500).json({error: "Unknown server error occured, please try again"});
 	}
 });
@@ -94,7 +94,7 @@ export const requireUser = async (req: Request, res: Response, next: NextFunctio
 		}
 		return next();
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 };
@@ -113,7 +113,7 @@ export const possibleUser = async (req: Request, res: Response, next: NextFuncti
 		}
 		return next();
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 };

@@ -1,6 +1,6 @@
 import {Bestiary, collections} from "../database";
 import type {Filter, FindOptions} from "mongodb";
-import {app} from "../server";
+import {app, log} from "../server";
 import allTags from "../staticData/tags.json";
 
 const amountPerPage = 11;
@@ -30,10 +30,10 @@ app.post("/api/search", async (req, res) => {
 			?.skip(searchOptions.page * amountPerPage)
 			.limit(amountPerPage)
 			.toArray();
-		console.log(`Search completed with ${amountFound} results`);
+		log.info(`Search completed with ${amountFound} results`);
 		return res.json({results: results, totalAmount: Math.ceil(amountFound / amountPerPage)});
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });

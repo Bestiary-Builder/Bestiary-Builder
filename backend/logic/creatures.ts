@@ -1,4 +1,4 @@
-import {app, badwords} from "../server";
+import {app, badwords, log} from "../server";
 import {requireUser, possibleUser} from "./login";
 import {addCreatureToBestiary, collections, getBestiary, getCreature, getUser, updateCreature, Creature, deleteCreature} from "../database";
 import {checkBestiaryPermission} from "./bestiaries";
@@ -20,7 +20,7 @@ app.get("/api/creature/:id", possibleUser, async (req, res) => {
 			if (!bestiary) return res.status(404).json({error: "Bestiary creature is in, was not found-"});
 			let bestiaryPermissionLevel = checkBestiaryPermission(bestiary, user);
 			if (bestiaryPermissionLevel != "none") {
-				console.log(`Retrieved creature with the id ${id}`);
+				log.info(`Retrieved creature with the id ${id}`);
 				return res.json(creature);
 			} else {
 				return res.status(401).json({error: "You don't have permission to view this creature-"});
@@ -29,7 +29,7 @@ app.get("/api/creature/:id", possibleUser, async (req, res) => {
 			return res.status(404).json({error: "No creature with that id found-"});
 		}
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
@@ -42,13 +42,13 @@ app.get("/api/bestiary/:id/creatures", possibleUser, async (req, res) => {
 			if (checkBestiaryPermission(bestiary, user) != "none") {
 				let creatures = [];
 				for (let creatureId of bestiary.creatures) {
-					console.log(creatureId);
+					log.info(creatureId);
 					let creature = await collections.creatures?.findOne({_id: new ObjectId(creatureId)});
-					console.log(creature?._id);
+					log.info(creature?._id);
 					if (creature) creatures.push(creature);
 				}
-				console.log(`Retrieved creatures from bestiary with the id ${bestiaryId}`);
-				console.log(creatures);
+				log.info(`Retrieved creatures from bestiary with the id ${bestiaryId}`);
+				log.info(creatures);
 				return res.json(creatures);
 			} else {
 				return res.status(401).json({error: "You don't have permission to view this bestiary."});
@@ -57,7 +57,7 @@ app.get("/api/bestiary/:id/creatures", possibleUser, async (req, res) => {
 			return res.status(404).json({error: "No bestiary with that id found."});
 		}
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
@@ -134,7 +134,7 @@ app.post("/api/creature/:id?/update", requireUser, async (req, res) => {
 			//Update creature
 			let updatedId = await updateCreature(data, _id);
 			if (updatedId) {
-				console.log(`Updated creature with the id ${_id}`);
+				log.info(`Updated creature with the id ${_id}`);
 				return res.status(201).json(data);
 			} else {
 				throw new Error(`Failed to update creature with the id: ${_id}`);
@@ -161,11 +161,11 @@ app.post("/api/creature/:id?/update", requireUser, async (req, res) => {
 			if (!_id) return res.status(500).json({error: "Failed to create creature."});
 			await addCreatureToBestiary(_id, data.bestiary);
 			data._id = _id;
-			console.log(`New creature created with the id: ${_id}`);
+			log.info(`New creature created with the id: ${_id}`);
 			return res.status(201).json(data);
 		}
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
@@ -189,13 +189,13 @@ app.get("/api/creature/:id/delete", requireUser, async (req, res) => {
 		//Remove from db
 		let status = await deleteCreature(_id);
 		if (status) {
-			console.log(`Deleted creature with the id ${id}`);
+			log.info(`Deleted creature with the id ${id}`);
 			res.json({});
 		} else {
 			res.status(500).json({error: "Failed to delete creature."});
 		}
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });

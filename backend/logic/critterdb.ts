@@ -1,6 +1,5 @@
-import crypto, {Hash} from "crypto";
-import {app} from "../server";
-import fetch, {Response} from "node-fetch";
+import {app, log} from "../server";
+import fetch from "node-fetch";
 
 app.get("/api/critterdb/:id/:published", async (req, res) => {
 	let id = req.params.id;
@@ -15,7 +14,7 @@ app.get("/api/critterdb/:id/:published", async (req, res) => {
 
 async function from_critterdb(url: string, published: boolean) {
 	let data = {creatures: [] as any[], name: "", description: ""};
-	console.log(`Getting bestiary ID ${url}...`);
+	log.info(`CritterDB | Getting bestiary ID ${url}...`);
 	let api_base = published ? "https://critterdb.com:443/api/publishedbestiaries" : "https://critterdb.com:443/api/bestiaries";
 
 	let errored = false;
@@ -25,7 +24,7 @@ async function from_critterdb(url: string, published: boolean) {
 			data.name = raw["name"];
 			data.description = raw["description"];
 		} catch (error) {
-			console.error("Error importing bestiary metadata. Are you sure the link is right?");
+			log.error("CritterDB | Error importing bestiary metadata. Are you sure the link is right?");
 			errored = true;
 		}
 	});
@@ -38,13 +37,13 @@ async function from_critterdb(url: string, published: boolean) {
 }
 
 async function get_published_bestiary_creatures(id: string, api_base: string) {
+	log.info(`CritterDB | Getting link published bestiary ${id}...`);
 	let creatures = [] as any[];
-	for (let index = 1; index <= 100; index++) {
-		//100 pages max
-		console.log(`Getting page ${index} of ${id}...`);
+	for (let index = 1; index <= 100 /* 100 pages max */; index++) {
+		log.info(`CritterDB | Getting page ${index} of ${id}...`);
 		let raw_creatures = (await fetch(`${api_base}/${id}/creatures/${index}`).then(async (resp) => {
 			if (!(resp.status >= 200 && resp.status < 300)) {
-				console.error("Error importing bestiary: HTTP error. Are you sure the link is right?");
+				log.error("CritterDB | Error importing bestiary: HTTP error. Are you sure the link is right?");
 				return null;
 			}
 			return resp.json();
@@ -56,12 +55,12 @@ async function get_published_bestiary_creatures(id: string, api_base: string) {
 }
 
 async function get_link_shared_bestiary_creatures(id: string, api_base: string) {
-	console.log(`Getting link shared bestiary ${id}...`);
+	log.info(`CritterDB | Getting link shared bestiary ${id}...`);
 	let creatures = await fetch(`${api_base}/${id}/creatures`).then(async (resp) => {
 		if (resp.status == 400) {
-			console.error("Error importing bestiary: Cannot access bestiary. Please ensure link sharing is enabled!");
+			log.error("CritterDB | Error importing bestiary: Cannot access bestiary. Please ensure link sharing is enabled!");
 		} else if (!(resp.status >= 200 && resp.status < 300)) {
-			console.error("Error importing bestiary: HTTP error. Are you sure the link is right?");
+			log.error("CritterDB | Error importing bestiary: HTTP error. Are you sure the link is right?");
 			return null;
 		}
 		return (await resp.json()) as any[];

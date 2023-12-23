@@ -1,4 +1,4 @@
-import {app, badwords} from "../server";
+import {app, badwords, log} from "../server";
 import {requireUser, possibleUser} from "./login";
 import {type Bestiary, type User, Creature, addBestiaryToUser, getBestiary, getUser, incrementBestiaryViewCount, updateBestiary, deleteBestiary, getCreature, collections, addBookmark, removeBookmark} from "../database";
 import {ObjectId} from "mongodb";
@@ -33,14 +33,14 @@ app.get("/api/bestiary/:id", possibleUser, async (req, res) => {
 			//Increment view count
 			incrementBestiaryViewCount(_id);
 			//Return bestiary
-			console.log(`Retrieved bestiary with the id ${id}`);
+			log.info(`Retrieved bestiary with the id ${id}`);
 			if (!bestiary.tags) bestiary.tags = [];
 			return res.json(bestiary);
 		} else {
 			return res.status(401).json({error: "You don't have access to this bestiary."});
 		}
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
@@ -49,10 +49,10 @@ app.get("/api/my-bestiaries", requireUser, async (req, res) => {
 		let user = await getUser(req.body.id);
 		if (!user) return res.status(404).json({error: "Couldn't find user"});
 		let allBestiaries = (await collections.bestiaries?.find({$or: [{owner: user._id}, {editors: {$elemMatch: {$eq: user._id}}}]}).toArray()) ?? [];
-		console.log(`Retrieved all bestiaries from the current user with the id ${req.params.userid}`);
+		log.info(`Retrieved all bestiaries from the current user with the id ${req.params.userid}`);
 		return res.json(allBestiaries);
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
@@ -67,10 +67,10 @@ app.get("/api/user/:userid/bestiaries", possibleUser, async (req, res) => {
 			//Other user
 			allBestiaries = (await collections.bestiaries?.find({owner: req.params.userid, status: "public"}).toArray()) ?? [];
 		}
-		console.log(`Retrieved all bestiaries from the user with the id ${req.params.userid}`);
+		log.info(`Retrieved all bestiaries from the user with the id ${req.params.userid}`);
 		return res.json(allBestiaries);
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
@@ -107,10 +107,10 @@ app.post("/api/bestiary/:id?/update", requireUser, async (req, res) => {
 		}
 		//Check limits
 		if (!data.creatures) data.creatures = [];
-		console.log(data.tags);
+		log.info(data.tags);
 		if (!data.tags) data.tags = [];
 		else data.tags = data.tags.filter((t) => tags.includes(t));
-		console.log(data.tags);
+		log.info(data.tags);
 		if (data.name.length > limits.nameLength) return res.status(400).json({error: `Name exceeds the character limit of ${limits.nameLength} characters.`});
 		if (data.name.length < limits.nameMin) return res.status(400).json({error: `Name is less than the minimum character limit of ${limits.nameMin} characters.`});
 		if (data.description.length > limits.descriptionLength) return res.status(400).json({error: `Description exceeds the character limit of ${limits.descriptionLength} characters.`});
@@ -152,7 +152,7 @@ app.post("/api/bestiary/:id?/update", requireUser, async (req, res) => {
 				//Update:
 				let updatedId = await updateBestiary(update as Bestiary, data._id);
 				if (updatedId) {
-					console.log(`Updated bestiary with the id ${data._id}`);
+					log.info(`Updated bestiary with the id ${data._id}`);
 					return res.status(200).json(data);
 				}
 			} else {
@@ -167,11 +167,11 @@ app.post("/api/bestiary/:id?/update", requireUser, async (req, res) => {
 			await addBestiaryToUser(_id, user._id!);
 			data._id = _id;
 			data.owner = user._id!;
-			console.log(`Created new bestiary with the id ${_id}`);
+			log.info(`Created new bestiary with the id ${_id}`);
 			return res.status(201).json(data);
 		}
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
@@ -192,13 +192,13 @@ app.get("/api/bestiary/:id/delete", requireUser, async (req, res) => {
 		//Remove from db
 		let status = await deleteBestiary(_id);
 		if (status) {
-			console.log(`Deleted bestiary with the id ${id}`);
+			log.info(`Deleted bestiary with the id ${id}`);
 			res.json({});
 		} else {
 			res.status(500).json({error: "Failed to delete creature."});
 		}
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
@@ -228,10 +228,10 @@ app.get("/api/bestiary/:bestiaryid/editors/add/:userid", requireUser, async (req
 		}
 		//Add editor
 		await collections.bestiaries?.updateOne({_id: _id}, {$push: {editors: newEditor._id}});
-		console.log(`Removed user with the id ${newEditor._id} as editor of bestiary with the id ${bestiary._id}`);
+		log.info(`Removed user with the id ${newEditor._id} as editor of bestiary with the id ${bestiary._id}`);
 		return res.json({});
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
@@ -259,10 +259,10 @@ app.get("/api/bestiary/:bestiaryid/editors/remove/:userid", requireUser, async (
 		}
 		//Remove editor
 		await collections.bestiaries?.updateOne({_id: _id}, {$pull: {editors: newEditor._id}});
-		console.log(`Removed user with the id ${newEditor._id} as editor of bestiary with the id ${bestiary._id}`);
+		log.info(`Removed user with the id ${newEditor._id} as editor of bestiary with the id ${bestiary._id}`);
 		return res.json({});
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
@@ -281,7 +281,7 @@ app.get("/api/bestiary/:id/bookmark/toggle", requireUser, async (req, res) => {
 		let user = await getUser(req.body.id);
 		if (!user) return res.status(404).json({error: "Couldn't find current user."});
 		//Permissions
-		console.log(checkBestiaryPermission(bestiary, user));
+		log.info(checkBestiaryPermission(bestiary, user));
 		if (checkBestiaryPermission(bestiary, user) == "none") {
 			return res.status(401).json({error: "You don't have permission to view this bestiary."});
 		}
@@ -292,11 +292,11 @@ app.get("/api/bestiary/:id/bookmark/toggle", requireUser, async (req, res) => {
 		if (bookmarks.filter((a) => a.toHexString() == _id.toHexString()).length > 0) {
 			status = await removeBookmark(user._id, _id);
 			newState = false;
-			console.log(`Removed bestiary with the id ${_id} from the bookmarks of user with the id ${user._id}`);
+			log.info(`Removed bestiary with the id ${_id} from the bookmarks of user with the id ${user._id}`);
 		} else {
 			status = await addBookmark(user._id, _id);
 			newState = true;
-			console.log(`Added bestiary with the id ${_id} to the bookmarks of user with the id ${user._id}`);
+			log.info(`Added bestiary with the id ${_id} to the bookmarks of user with the id ${user._id}`);
 		}
 		//Bookmark
 		if (status) {
@@ -305,7 +305,7 @@ app.get("/api/bestiary/:id/bookmark/toggle", requireUser, async (req, res) => {
 			return res.status(500).json({error: "Server failed to toggle bookmark, please try again."});
 		}
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
@@ -333,13 +333,14 @@ app.get("/api/bestiary/:id/bookmark/get", requireUser, async (req, res) => {
 			return res.json({state: false});
 		}
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
 
 //Export data
-app.get("/api/public/bestiary/:id", async (req, res) => {
+app.get("/api/public/bestiary/:id", (req, res) => res.redirect("/api/export/bestiary/" + req.params.id));
+app.get("/api/export/bestiary/:id", async (req, res) => {
 	try {
 		let id = req.params.id;
 		if (id.length != 24) return res.status(400).json({error: "Bestiary id not valid."});
@@ -444,10 +445,10 @@ app.get("/api/public/bestiary/:id", async (req, res) => {
 		}
 		//Return bestiary in specific format
 		///let data = {};
-		console.log(`Public - Retrieved bestiary with the id ${id}`);
+		log.info(`Public - Retrieved bestiary with the id ${id}`);
 		return res.json(creatures);
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return res.status(500).json({error: "Unknown server error occured."});
 	}
 });
