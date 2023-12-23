@@ -1,4 +1,4 @@
-import {log} from "../server";
+import {log, isProduction} from "../server";
 import discord, {PresenceUpdateStatus, Status} from "discord.js";
 import {collections, type User} from "../database";
 const client = new discord.Client({
@@ -17,6 +17,24 @@ client.on("ready", async () => {
 	setInterval(function () {
 		checkUserStatuses(guild);
 	}, 60 * 60 * 1000); //Once an hour
+
+	//Discord logging
+	if (isProduction) {
+		let combinedChannel = (await guild.channels.fetch("1188124583975460954")) as discord.TextBasedChannel;
+		let errorChannel = (await guild.channels.fetch("1188133661208477806")) as discord.TextBasedChannel;
+		combinedChannel.sendTyping();
+		errorChannel.sendTyping();
+		log.on("data", (info) => {
+			if (info.level == "request") return;
+			let message = `[${info.timestamp}]-(${info.label}) ${info.level.toUpperCase()} > ${info.message}${info.stack ? "\n" + info.stack : ""}`;
+			combinedChannel.send(message);
+			combinedChannel.sendTyping();
+			if (info.level == "error" || info.level == "warn") {
+				errorChannel.send(message);
+				errorChannel.sendTyping();
+			}
+		});
+	}
 });
 
 client.login(token).catch(() => log.error("Failed to connect to discord bot"));

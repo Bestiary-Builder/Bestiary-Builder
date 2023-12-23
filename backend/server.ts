@@ -4,13 +4,13 @@ import path from "path";
 import dotenv from "dotenv";
 dotenv.config();
 //Get info
-const isProduction = (process.env.NODE_ENV == "production") as boolean;
+export const isProduction = (process.env.NODE_ENV == "production") as boolean;
 const frontendPath = path.join(__dirname, process.env.frontendPath as string);
 
 //Setup logging
 import winston from "winston";
-const format = winston.format.printf(({level, message, timestamp, label}) => {
-	return `[${timestamp}]-(${label}) ${level} > ${message}`;
+const format = winston.format.printf((info) => {
+	return `[${info.timestamp}]-(${info.label}) ${info.level} > ${info.message}${info.stack ? "\n" + info.stack : ""}`;
 });
 const winstonLevels = {
 	levels: {
@@ -34,6 +34,7 @@ export const log = winston.createLogger({
 		winston.format.timestamp({
 			format: "YYYY-MM-DD HH:mm:ss"
 		}),
+		winston.format.errors({stack: true}),
 		winston.format.label({label: "Bestiary Builder"})
 	),
 	transports: [
