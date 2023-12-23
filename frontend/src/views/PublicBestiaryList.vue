@@ -67,8 +67,15 @@ export default defineComponent({
 	async beforeMount() {
 		this.tags = (await tags) ?? ([] as string[]);
 		this.searchBestiaries();
-		let critterdbData = await fetch("/api/critterdb/" + encodeURIComponent("publishedbestiaries/65818239b2c850e4cf1871e2/creatures/1")).then((response) => response.json());
-		console.log(critterdbData);
+		await fetch("/api/critterdb/" + encodeURIComponent("publishedbestiaries/65818239b2c850e4cf1871e2/creatures/1"))
+			.then((response) => handleApiResponse<any>(response))
+			.then((result) => {
+				if (result.success) {
+					console.log(result.data); //This is the recieved data
+				} else {
+					toast.error((result.data as error).error);
+				}
+			});
 	},
 	watch: {
 		page() {
