@@ -70,7 +70,6 @@ if (isProduction) {
 		})
 	);
 }
-log.error("Test");
 
 //Setup express server with settings
 import express, {NextFunction, Request, Response} from "express";
