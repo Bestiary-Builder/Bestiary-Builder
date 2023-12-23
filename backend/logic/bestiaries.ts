@@ -1,5 +1,6 @@
 import {app, badwords, log} from "../server";
 import {requireUser, possibleUser} from "./login";
+import {publicLog, colors} from "./discord";
 import {type Bestiary, type User, Creature, addBestiaryToUser, getBestiary, getUser, incrementBestiaryViewCount, updateBestiary, deleteBestiary, getCreature, collections, addBookmark, removeBookmark} from "../database";
 import {ObjectId} from "mongodb";
 import limits from "../staticData/limits.json";
@@ -149,6 +150,10 @@ app.post("/api/bestiary/:id?/update", requireUser, async (req, res) => {
 					tags: string[];
 				};
 				if (permissionLevel == "editor") delete update.status;
+				//Public log
+				if (update.status == "public" && bestiary.status != "public") {
+					publicLog("New public bestiary", `Bestiary "${data.name}" changed to public by ${user.username}.`, "https://" + req.hostname + "/bestiary-viewer/" + bestiary._id, user, colors.Blurple);
+				}
 				//Update:
 				let updatedId = await updateBestiary(update as Bestiary, data._id);
 				if (updatedId) {
