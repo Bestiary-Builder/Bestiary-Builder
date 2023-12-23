@@ -67,7 +67,7 @@ export default defineComponent({
 	async beforeMount() {
 		this.tags = (await tags) ?? ([] as string[]);
 		this.searchBestiaries();
-		await fetch("/api/critterdb/" + encodeURIComponent("publishedbestiaries/65818239b2c850e4cf1871e2/creatures/1"))
+		await fetch(`/api/critterdb/${"6541539c94b584b853f2cdfc" /* ID */}/false`)
 			.then((response) => handleApiResponse<any>(response))
 			.then((result) => {
 				if (result.success) {
