@@ -1,4 +1,4 @@
-import{M as a}from"./index-3c6563bf.js";import{d as s,_ as i,o as n,c as t,f as r,p as l,g as c,a as o}from"./index-360a236d.js";const d=`## General scope
+import{M as s}from"./index-3c6563bf.js";import{d as a,_ as i,o as n,c as t,f as r,p as l,g as c,a as o}from"./index-9c45a690.js";const d=`## General scope
 
 The following are the rules and guidelines for content created or otherwise added to Bestiary Builder.
 You do NOT need to publish your content publicly, but even if the content is private, it is subject to these rules & guidelines.
@@ -30,4 +30,4 @@ or pure gibberish, posting meme or troll text as part of the content.
 -   Sexually explicit content
 -   Referral links for contests, promotions, or anything else.
 -   Advertisements for other services
-`,u=a(),p=s({data(){return{content:u.render(d)}}});const m=e=>(l("data-v-253a4afa"),e=e(),c(),e),h={class:"content"},f=m(()=>o("h1",null,[o("span",null,"terms and conditions")],-1)),g=["innerHTML"];function y(e,b,_,v,w,I){return n(),t("div",h,[f,e.content?(n(),t("div",{key:0,innerHTML:e.content},null,8,g)):r("",!0)])}const B=i(p,[["render",y],["__scopeId","data-v-253a4afa"]]);export{B as default};
+`,u=s(),p=a({data(){return{content:u.render(d)}}});const m=e=>(l("data-v-aa53c44b"),e=e(),c(),e),h={class:"content terms"},f=m(()=>o("h1",null,[o("span",null,"terms and conditions")],-1)),g=["innerHTML"];function _(e,b,y,v,w,T){return n(),t("div",h,[f,e.content?(n(),t("div",{key:0,innerHTML:e.content},null,8,g)):r("",!0)])}const B=i(p,[["render",_],["__scopeId","data-v-aa53c44b"]]);export{B as default};
