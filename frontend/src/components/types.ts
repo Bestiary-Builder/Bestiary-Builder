@@ -346,7 +346,6 @@ export interface InnateSpellsList {
 
 export interface InnateSpellsEntity {
 	spell: string;
-	// upcastLevel: null | number;
 	comment: string;
 }
 

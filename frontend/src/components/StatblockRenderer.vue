@@ -2,8 +2,8 @@
 <div class="stat-block">
     <div class="stat-block__row"> 
         <h1 class="stat-block__name-container"> {{ data.description.name }}</h1>
-        <img class="stat-block__image" :src="data.description.image" v-if="data.description.image"/>
         <span class="stat-block__core"> {{ data.core.size }} {{ data.core.race }}{{ data.description.alignment ? ',' : '' }} {{ data.description.alignment }}</span>
+        <img class="stat-block__image" :src="data.description.image" v-if="data.description.image"/>
     </div>
     <div class="stat-block__row">
         <div>  
@@ -430,20 +430,14 @@ export default defineComponent({
             return stringify(this.data)
         },
         sanitizeAndFormat(input: string) {
-            // Create a temporary div element to sanitize the input
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = input;
-
-            // Extract the sanitized text content
-            const sanitizedText = tempDiv.textContent || tempDiv.innerText;
-
             // Replace *italic*, **bold**, and ***italic bold*** with HTML markup
-            const formattedText = sanitizedText
+            const formattedText = input
                 .replace(/\*{3}([^*]+)\*{3}/g, '<i><b>$1</b></i>')// ***italic bold***
                 .replace(/\*{2}([^*]+)\*{2}/g, '<b>$1</b>') // **bold**
                 .replace(/\*{1}([^*]+)\*{1}/g, '<i>$1</i>'); // *italic*
 
-            return formattedText;
+            
+            return formattedText ;
         },
         nthSuffix(number: number) : string {
             switch (number) {
@@ -525,7 +519,12 @@ export default defineComponent({
     box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
     padding: .4rem;
 
-    font-size: small
+    font-family:  'Convergence', monospace;
+}
+
+.stat-block__image {
+    margin: auto;
+    max-height: 300px;
 }
 
 .stat-block__row {
@@ -543,11 +542,17 @@ export default defineComponent({
         border-bottom: unset;
         margin-bottom: 0;
     }
+
+    &.no-bottom-border {
+        border-bottom: unset;
+    }
 }
 
 .stat-block__name-container {
     color: orangered;
     font-family: 'Times New Roman', Times, serif;
+    margin-bottom: 0rem;
+    text-align: left;
 }
 
 .stat-block__core {
@@ -586,9 +591,9 @@ export default defineComponent({
         margin-top: .3rem;
     }
 
-    :has(.feature__automation-icon)&__desc {
-        margin-left: .2rem;
-    }
+    // :has(.feature__automation-icon)&__desc {
+    //     margin-left: .2rem;
+    // }
 
     p:not(:last-of-type) {
         margin-bottom: .2rem;
@@ -596,11 +601,14 @@ export default defineComponent({
 }
 
 .feature-container__desc {
-    margin-left: .2rem;
+    margin-left: .3rem;
+    white-space: pre-line;
 }
 
 .challenge-prof {
     display: flex;
     justify-content: space-between;
 }
+
+
 </style>

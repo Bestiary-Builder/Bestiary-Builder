@@ -770,60 +770,104 @@
 							</div>
 						</div>
 
-						<div class="flow-vertically">
-							<label class="editor-field__title" for="castingabilityoverride"><span class="text">ability override</span></label>
-							<p>
-								<v-select :options="['str', 'dex', 'con', 'wis', 'int', 'cha']" v-model="data.spellcasting.casterSpells.spellCastingAbilityOverride" inputId="castingabilityoverride" />
-								<span class="delete-button" @click="data.spellcasting.casterSpells.spellCastingAbilityOverride = null" aria-label="Delete spellcasting ability override">🗑️</span>
-							</p>
-						</div>
-					</div>
+                    <div class="flow-vertically">
+                        <label class="editor-field__title" for="castingabilityoverride"><span class="text">ability override</span></label>
+                        <p>
+                            <v-select 
+                                :options="['str', 'dex', 'con', 'wis', 'int', 'cha']" 
+                                v-model="data.spellcasting.casterSpells.spellCastingAbilityOverride" 
+                                inputId="castingabilityoverride"    
+                            />
+                            <span class="delete-button" @click="data.spellcasting.casterSpells.spellCastingAbilityOverride = null" aria-label="Delete spellcasting ability override">🗑️</span>
+                        </p>
+                    </div>
+                </div>
 
-					<div v-if="data.spellcasting.casterSpells.castingClass" class="editor-field__container two-wide">
-						<div class="flow-vertically" v-if="!['Ranger', 'Paladin'].includes(data.spellcasting.casterSpells.castingClass)">
-							<label class="edit-field__title" for="cantrips"> <span class="text">cantrips</span> </label>
-							<v-select v-model="data.spellcasting.casterSpells.spellList[0]" :options="spellList[0]" multiple :deselectFromDropdown="true" :closeOnSelect="false" :taggable="true" :pushTags="true" inputId="cantrips" />
-						</div>
-						<div class="flow-vertically" v-for="level in spellLevelList()">
-							<label class="edit-field__title" :for="'levelspells' + level"
-								><span class="text">level {{ level }}</span></label
-							>
-							<v-select v-model="data.spellcasting.casterSpells.spellList[level]" :options="getSpellsByLevel(level)" multiple :deselectFromDropdown="true" :closeOnSelect="false" :taggable="true" :pushTags="true" :inputId="'levelspells' + level" />
-						</div>
-					</div>
-				</div>
+                <div v-if="data.spellcasting.casterSpells.castingClass" class="editor-field__container two-wide">
+                    <div class="flow-vertically" v-if="!['Ranger', 'Paladin'].includes(data.spellcasting.casterSpells.castingClass)"> 
+                        <label class="edit-field__title" for="cantrips" > <span class="text">cantrips</span> </label>
+                        <v-select 
+                            v-model="data.spellcasting.casterSpells.spellList[0]"
+                            :options="spellList[0]" 
+                            multiple           
+                            :deselectFromDropdown="true"
+                            :closeOnSelect="false"          
+                            :taggable="true"
+                            :pushTags="true"
+                            inputId="cantrips"
+                        /> 
+                    </div>
+                    <div class="flow-vertically" v-for="level in spellLevelList()">
+                        <label class="edit-field__title" :for="'levelspells'+level" ><span class="text">level {{ level }}</span></label>
+                        <v-select 
+                            v-model="data.spellcasting.casterSpells.spellList[level]"
+                            :options="getSpellsByLevel(level)" 
+                            multiple       
+                            :deselectFromDropdown="true"
+                            :closeOnSelect="false"              
+                            :taggable="true"
+                            :pushTags="true"
+                            :inputId="'levelspells'+level"
+                        /> 
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr />
+
+        <div class="save-button">
+            <button class="btn" @click="isModalOpen = true"> open import modal </button>
+        </div>
+        <div class="save-button">
+            <button class="btn" @click="saveStatblock()"> save statblock </button>
+        </div>
+    </div>
+    <div class="content-container__inner"> 
+        <StatblockRenderer :data='data'/>
+    </div>
+
+    <Teleport to="#modal">
+		<Transition name="modal">
+			<div class="modal__bg" v-if="isModalOpen">
+				<section class="modal__content modal__small" ref="modal">
+					<button @click="isModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
+					<h2 class="modal-header">import from 5e tools</h2>
+					
+                    <div class="modal-desc">
+                        <p>
+                            <b>CritterDB json input: </b>
+                            <input type="text" v-model="toolsjson"/>
+                        </p>
+
+                        <div v-if="JSON.stringify(notices) !== '{}'">
+                            <p class="warning"> <b>Please note the following for this import:</b> </p>
+                            <p> 
+                                Some features may not have automation as they should, aka description only features, but some might not have imported correctly or are missing certain parts. 
+                                It is recommended to review.
+                            </p>
+                            <div v-for="type, index in notices">
+                                <h3 v-if="type.length > 0"> {{ index }} </h3>
+                                <ul v-if="type.length > 0"> 
+                                    <li v-for="notice in type">
+                                        {{ notice }}
+                                    </li>    
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="modal-buttons">
+                            <button class="btn cancel-button" @click="isModalOpen=false">Cancel</button>
+                            <button class="btn confirm-button" @click.prevent="import5etools()">import</button>
+					    </div>
+                    </div>
+				</section>
 			</div>
+		</Transition>
+	</Teleport>
+</div>
 
-			<hr />
 
-			<div class="save-button">
-				<button class="btn" @click="isModalOpen = true">open import modal</button>
-			</div>
-			<div class="save-button">
-				<button class="btn" @click="saveStatblock()">save statblock</button>
-			</div>
-		</div>
-		<div class="content-container__inner">
-			<StatblockRenderer :data="data" />
-		</div>
-
-		<Teleport to="#modal">
-			<Transition name="modal">
-				<div class="modal__bg" v-if="isModalOpen">
-					<section class="modal__content modal__small" ref="modal">
-						<button @click="isModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
-						<h2 class="modal-header">import from critterDB</h2>
-
-						<textarea v-model="critterDBJson" style="width: 1200px; height: 800px" />
-						<div class="modal-buttons">
-							<button class="btn cancel-button" @click="isModalOpen = false">Cancel</button>
-							<button class="btn confirm-button" @click.prevent="importCritterDB()">import</button>
-						</div>
-					</section>
-				</div>
-			</Transition>
-		</Teleport>
-	</div>
 </template>
 <script setup lang="ts">
 import {ref} from "vue";
@@ -843,51 +887,57 @@ import type {InnateSpellsEntity, InnateSpellsList, SkillsEntity, Statblock, Crea
 import {defaultStatblock, getSpellSlots, spellList, spellListFlattened} from "@/components/types";
 import {handleApiResponse, type error, toast, asyncLimits, type limitsType} from "@/main";
 import FeatureWidget from "@/components/FeatureWidget.vue";
-import {parseFromCritterDB} from "../parser/parseFromCritterDB";
+import { parseFrom5eTools } from "../parser/parseFrom5eTools"
 export default defineComponent({
 	components: {
 		StatblockRenderer,
 		FeatureWidget
 	},
-	data() {
-		return {
-			slideIndex: 2, // showSlides checks if new is equal to current, so if we instantiate to 1 we can't change to 1 to apply the styling,
-			data: defaultStatblock as Statblock,
-			rawInfo: null as Creature | null,
-			list: [] as string[],
-			getSpellSlots: getSpellSlots,
-			spellList: spellList,
-			spellListFlattened: spellListFlattened,
-			innateSpells: {
-				0: [] as InnateSpellsEntity[],
-				1: [] as InnateSpellsEntity[],
-				2: [] as InnateSpellsEntity[],
-				3: [] as InnateSpellsEntity[]
-			} as InnateSpellsList,
-			limits: {} as limitsType,
-			languages: ["All", "All languages it knew in life", "Abyssal", "Aarakocra", "Aquan", "Auran", "Celestial", "Common", "Deep Speech", "Draconic", "Druidic", "Dwarvish", "Elvish", "Giant", "Gith", "Gnomish", "Goblin", "Halfling", "Ignan", "Infernal", "Orc", "Primordial", "Sylvan", "Terran", "Thieves' Cant", "Undercommon", "Understands the languages of its creator but can't speak"],
-			featureGenerator: {
-				features: "new feature",
-				actions: "new action",
-				bonus: "new bonus action",
-				reactions: "new reaction",
-				legendary: "new legendary action",
-				lair: "new lair action",
-				mythic: "new mythic action",
-				regional: "new regional effect"
-			},
-			critterDBJson: "" as string
-		};
-	},
-	methods: {
-		importCritterDB(): void {
-			console.log(this.critterDBJson);
-			this.data = parseFromCritterDB(JSON.parse(this.critterDBJson));
-			this.critterDBJson = "";
-			//isModalOpen.value = false;
-		},
-		showSlides(n: number): void {
-			if (this.slideIndex == n) return;
+    data() {
+        return {
+            slideIndex: 2, // showSlides checks if new is equal to current, so if we instantiate to 1 we can't change to 1 to apply the styling,
+            data: defaultStatblock as Statblock,
+            rawInfo: null as Creature | null,
+            list: [] as string[],
+            getSpellSlots: getSpellSlots,
+            spellList: spellList,
+            spellListFlattened: spellListFlattened,
+            innateSpells: {
+                0: [] as InnateSpellsEntity[],
+                1: [] as InnateSpellsEntity[],
+                2: [] as InnateSpellsEntity[],
+                3: [] as InnateSpellsEntity[]
+            } as InnateSpellsList ,
+            limits: {} as limitsType,
+            languages: ["All", "All languages it knew in life", "Abyssal", "Aarakocra", "Aquan", "Auran", "Celestial", "Common", "Deep Speech", "Draconic", "Druidic", "Dwarvish", "Elvish", "Giant", "Gith", "Gnomish", "Goblin", "Halfling", "Ignan", "Infernal", "Orc", "Primordial", "Sylvan", "Terran", "Thieves' Cant", "Undercommon", "Understands the languages of its creator but can't speak"],
+            featureGenerator: {
+                "features": "new feature",
+                "actions": "new action",
+                "bonus": "new bonus action",
+                "reactions": "new reaction",
+                "legendary": "new legendary action",
+                "lair": "new lair action",
+                "mythic": "new mythic action",
+                "regional": "new regional effect"
+            },
+            toolsjson: "" as string,
+            notices: {} as {[key: string] : string[]}
+        }
+    },
+    methods: {
+        import5etools() : void {
+            try {
+                [this.data, this.notices] = parseFrom5eTools(JSON.parse(this.toolsjson))
+                this.toolsjson = ""
+                toast.success("Successfully imported " + this.data.description.name)
+            } catch (e) {
+                console.error(e)
+                toast.error("Failed to import this creature")
+            }
+            
+        },
+        showSlides(n: number): void {
+            if (this.slideIndex == n) return;
 
 			let slides = document.getElementsByClassName("editor-content__tab-inner") as HTMLCollectionOf<HTMLElement>;
 
@@ -1399,5 +1449,26 @@ hr {
 			background-color: rgb(46, 124, 9);
 		}
 	}
+}
+
+.modal-desc {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+
+    & .btn {
+        font-size: 1.2rem;
+
+        &.confirm-button {
+            background-color: var(--color-success)
+        }
+    }
 }
 </style>

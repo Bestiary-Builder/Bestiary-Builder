@@ -67,15 +67,6 @@ export default defineComponent({
 	async beforeMount() {
 		this.tags = (await tags) ?? ([] as string[]);
 		this.searchBestiaries();
-		await fetch(`/api/critterdb/${"6541539c94b584b853f2cdfc" /* ID */}/false`)
-			.then((response) => handleApiResponse<any>(response))
-			.then((result) => {
-				if (result.success) {
-					console.log(result.data); //This is the recieved data
-				} else {
-					toast.error((result.data as error).error);
-				}
-			});
 	},
 	watch: {
 		page() {

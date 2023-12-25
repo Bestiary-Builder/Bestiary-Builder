@@ -78,7 +78,3 @@ app.component("v-select", vSelect);
 
 //Mount
 app.mount("body");
-
-import {testCritterDB} from "./parser/parseFromCritterDB";
-
-console.log(testCritterDB);

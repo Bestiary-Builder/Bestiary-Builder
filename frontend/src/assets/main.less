@@ -370,83 +370,6 @@ textarea {
 	}
 }
 
-/* #modal {
-	pointer-events: none;
-	z-index: -100;
-	width: 0;
-	height: 0;
-} */
-
-dialog {
-	background: rgb(53, 53, 53);
-	max-width: px;
-	padding: 2rem;
-	border: 0;
-	box-shadow: 0 5px 30px 0 rgb(0 0 0 / 10%);
-	animation: fadeIn 1s ease both;
-	&::backdrop {
-		animation: fadeIn 1s ease both;
-		background: rgba(47, 47, 47, 0.4);
-		z-index: 2;
-		backdrop-filter: blur(5px);
-	}
-	.x {
-		filter: grayscale(1);
-		border: none;
-		background: none;
-		position: absolute;
-		top: 15px;
-		right: 10px;
-		transition: ease filter, transform 0.3s;
-		cursor: pointer;
-		transform-origin: center;
-		&:hover {
-			filter: grayscale(0);
-			transform: scale(1.1);
-		}
-	}
-	.modal-header {
-		border-bottom: 1px solid orangered;
-	}
-	p.modal-desc {
-		font-size: 1rem;
-		line-height: 1.3rem;
-		padding: 0.5rem 0;
-		color: white;
-	}
-
-	.modal-buttons {
-		display: flex;
-		gap: 1rem;
-		justify-content: center;
-		margin-top: 2rem;
-
-		& button {
-			padding: 0.5rem 1rem;
-			border: none;
-			cursor: pointer;
-
-			transition: all 0.3s ease;
-			&:hover {
-				scale: 1.05;
-				filter: brightness(1.05);
-			}
-		}
-
-		.cancel-button {
-			background-color: grey;
-		}
-
-		.confirm-button {
-			background-color: var(--color-success);
-		}
-
-		.danger-button {
-			background-color: var(--color-destructive);
-		}
-	}
-}
-
 .popin-enter-active {
 	animation: bounce-in 0.7s ease;
 }
@@ -467,18 +390,22 @@ dialog {
 }
 
 @keyframes bounce-in {
-	0% {
-		opacity: 0;
-		transform: scale(0.3);
-	}
-	50% {
-		opacity: 1;
-		transform: scale(1.05);
-	}
-	70% {
-		transform: scale(0.9);
-	}
-	100% {
-		transform: scale(1);
-	}
+  0% {
+    opacity: 0;
+    transform: scale(.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% { transform: scale(.9); }
+  100% { transform: scale(1); }
+}
+
+b.indent {
+	margin-left: 1.5rem;
+}
+
+.warning {
+	color: var(--color-destructive)
 }
