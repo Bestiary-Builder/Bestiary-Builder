@@ -103,11 +103,11 @@ app.post("/api/creature/:id?/update", requireUser, async (req, res) => {
 		//Check image link
 		let image = data.stats.description.image as string;
 		// remove any url parameters from the string
-		if(image) {
-			image = new URL(image).origin + new URL(image).pathname
-			data.stats.description.image = image
+		if (image) {
+			image = new URL(image).origin + new URL(image).pathname;
+			data.stats.description.image = image;
 		}
-		
+
 		if (image && image != "") {
 			if (!image.startsWith("https")) return res.status(400).json({error: "Image link not from a secure https location."});
 			let isApproved = false;
@@ -152,6 +152,8 @@ app.post("/api/creature/:id?/update", requireUser, async (req, res) => {
 			//Check owner
 			let bestiaryPermissionLevel = checkBestiaryPermission(bestiary, user);
 			if (["none", "view"].includes(bestiaryPermissionLevel)) return res.status(401).json({error: "You don't have permission to add creature to this bestiary."});
+			//Check amount of creatures:
+			if (bestiary.creatures.length > limits.creatureAmount) return res.status(400).json({error: `Number of creatures exceeds the limit of ${limits.creatureAmount}.`});
 			//Remove bad words
 			if (bestiary.status != "private") {
 				if (badwords.check(data.stats.description.name)) {
