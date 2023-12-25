@@ -1,4 +1,4 @@
-import {app, badwords} from "../server";
+import {app, log} from "../server";
 import {requireUser, possibleUser} from "./login";
 import {getUser, collections, type User, type Bestiary} from "../database";
 
@@ -17,13 +17,13 @@ app.get("/api/user/bookmarks", requireUser, async (req, res) => {
 						]
 					})
 					.toArray()) ?? [];
-			console.log(`Retrieved all bookmarked bestiaries from the user with the id ${user._id}`);
+			log.info(`Retrieved all bookmarked bestiaries from the user with the id ${user._id}`);
 			return res.json(allBestiaries);
 		} else {
 			return res.status(401).json({error: "Not logged in."});
 		}
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
@@ -33,11 +33,11 @@ app.get("/api/user", requireUser, async (req, res) => {
 		let userData = (await getUser(req.body.id)) as User;
 		if (userData) {
 			delete userData.secret;
-			console.log(`Retrieved user with the id ${userData._id}`);
+			log.info(`Retrieved user with the id ${userData._id}`);
 			return res.json(userData);
 		} else return res.status(404).json({error: "User not found."});
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
@@ -53,13 +53,13 @@ app.get("/api/user/:id", async (req, res) => {
 				banner_color: userData.banner_color,
 				supporter: userData.supporter
 			};
-			console.log(`Retrieved user with the id ${data._id}`);
+			log.info(`Retrieved user with the id ${data._id}`);
 			return res.json(data);
 		} else {
 			return res.status(404).json({error: "User not found."});
 		}
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });

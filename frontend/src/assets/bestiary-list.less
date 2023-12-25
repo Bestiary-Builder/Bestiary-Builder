@@ -1,19 +1,3 @@
-
-.content {
-	margin: 1rem 5vw;
-
-	& h1 {
-		text-align: center;
-		margin-bottom: 2rem;
-		font-size: 3rem;
-
-		& span {
-			border-bottom: 4px solid orangered;
-			padding: 0 10rem
-		}
-	}
-}
-
 .tile-container {
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -24,14 +8,11 @@
 	.tile-container {
 		grid-template-columns: 1fr 1fr 1fr;
 	}
-	.content h1 span {
-		padding: 0 7rem
-	}
 
 	.content-tile.bestiary-tile .bestiary-tile-content {
 		height: 25rem;
 		.description {
-            height: 23rem;
+			height: 23rem;
 		}
 	}
 }
@@ -48,10 +29,6 @@
 			max-height: 28rem;
 		}
 	}
-
-	.content h1 span {
-		padding: 0 4rem
-	}
 }
 
 @media screen and (max-width: 1050px) {
@@ -66,16 +43,7 @@
 			max-height: 33rem;
 		}
 	}
-
-	.content h1  {
-		font-size: 2rem;
-
-		span { 
-			padding: 0 2rem
-		}
-	}
 }
-
 
 .content-tile {
 	aspect-ratio: 1 / 1;
@@ -85,11 +53,11 @@
 	box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
 
 	transition: all 1s;
-	transition-timing-function: cubic-bezier(0.060, 0.975, 0.195, 0.985);
+	transition-timing-function: cubic-bezier(0.06, 0.975, 0.195, 0.985);
 
 	display: grid;
 	grid-template-rows: 1fr 6fr 1fr;
-	gap: .3rem;
+	gap: 0.3rem;
 
 	text-decoration: unset;
 
@@ -120,7 +88,7 @@
 		span:nth-of-type(2) {
 			text-align: center;
 		}
-		
+
 		span:last-of-type {
 			text-align: right;
 		}
@@ -130,7 +98,6 @@
 a.content-tile:hover,
 .create-tile:hover {
 	scale: 1.05;
-
 }
 
 .bestiary-tile:hover {

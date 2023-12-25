@@ -2,12 +2,16 @@
 	"name": "server",
 	"version": "1.0.0",
 	"description": "",
+	"private": true,
 	"main": "server.ts",
 	"scripts": {
 		"start": "npx nodemon",
 		"start-pm2": "npx tsx ./server.ts"
 	},
-	"author": "",
+	"engines": {
+		"node": ">=21.4.0"
+	},
+	"author": "Stevnbak",
 	"license": "ISC",
 	"dependencies": {
 		"@pm2/io": "^5.0.0",
@@ -28,7 +32,8 @@
 		"jsonwebtoken": "^9.0.2",
 		"mongodb": "^6.3.0",
 		"naughty-words": "^1.2.0",
-		"node-fetch": "^3.3.2"
+		"node-fetch": "^3.3.2",
+		"winston": "^3.11.0"
 	},
 	"devDependencies": {
 		"@types/compression": "^1.7.2",

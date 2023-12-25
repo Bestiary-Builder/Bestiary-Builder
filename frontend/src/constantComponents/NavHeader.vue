@@ -3,7 +3,7 @@
 	<nav class="navbar">
 		<div class="navbar-left">
 			<RouterLink :to="$router.options.routes[0].path" class="navbar-brand">
-				<img src="../assets/logo.svg" />
+				<img src="/logo.svg" />
 				<span>BESTIARY BUILDER</span>
 			</RouterLink>
 			<RouterLink v-for="route in $router.options.routes.filter((a: any) => a.navbar)" :to="route.path" class="nav-link">
@@ -60,6 +60,8 @@ export default defineComponent({
 	align-items: center;
 	padding: 1rem;
 	gap: 0.3rem;
+	text-decoration: none;
+	color: var(--color-base);
 	& img {
 		height: 1.5rem;
 		border-radius: 50rem;
@@ -103,9 +105,11 @@ export default defineComponent({
 .navbar .nav-link {
 	color: White;
 	text-decoration: none;
-
-	display: inline-block;
 	padding: 1rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
 }
 
 .navbar-brand {
@@ -114,23 +118,19 @@ export default defineComponent({
 	padding-left: 2rem;
 	padding-right: 2rem;
 
-	background: orangered;
+	background: rgb(48, 46, 46);
 
-	display: flex;
 	flex-direction: row;
-	justify-content: center;
-	align-items: center;
 }
 .navbar-brand img {
 	margin-right: 10px;
-	height: 2rem;
+	height: 2.25rem;
 	//filter: invert(42%) sepia(93%) saturate(1352%) hue-rotate(87deg) brightness(119%) contrast(119%);
 }
 .nav-link {
 	min-width: 10vw;
 	text-align: center;
 	border-left: 1px solid orangered;
-
 	text-transform: lowercase;
 }
 .nav-link:last-of-type {
@@ -159,10 +159,6 @@ export default defineComponent({
 
 	.navbar-right {
 		position: static;
-	}
-
-	.navbar .nav-link {
-		display: block;
 	}
 
 	.navbar-collapse:checked + .navbar {

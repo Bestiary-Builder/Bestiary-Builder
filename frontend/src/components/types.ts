@@ -18,10 +18,11 @@ export const defaultStatblock = {
 			fly: 0,
 			isHover: false,
 			burrow: 0,
-			swim: 0
+			swim: 0,
+			climb: 0,
 		},
 		senses: {
-			passivePerceptionOverride: 0,
+			passivePerceptionOverride: null,
 			darkvision: 0,
 			blindsight: 0,
 			isBlind: false,
@@ -243,9 +244,10 @@ export interface Speed {
 	isHover: boolean;
 	burrow: number;
 	swim: number;
+	climb: number;
 }
 export interface Senses {
-	passivePerceptionOverride: number;
+	passivePerceptionOverride: number | null;
 	darkvision: number;
 	blindsight: number;
 	isBlind: boolean;
@@ -280,10 +282,10 @@ export interface SkillsEntity {
 export interface Defenses {
 	hp: Hp;
 	ac: Ac;
-	vulnerabilities?: string[] | null;
-	resistances?: string[] | null;
-	immunities?: string[] | null;
-	conditionImmunities?: string[] | null;
+	vulnerabilities: string[];
+	resistances: string[];
+	immunities: string[];
+	conditionImmunities: string[];
 }
 export interface Hp {
 	numOfHitDie: number;
@@ -344,12 +346,7 @@ export interface InnateSpellsList {
 
 export interface InnateSpellsEntity {
 	spell: string;
-	upcastLevel: null | number;
 	comment: string;
-}
-
-export interface SpellSlotList {
-	[index: number]: SpellSlotEntity;
 }
 
 export interface SpellSlotEntity {

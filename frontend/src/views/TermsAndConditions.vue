@@ -1,5 +1,5 @@
 <template>
-	<div class="content">
+	<div class="content terms">
 		<h1><span>terms and conditions</span></h1>
 		<div v-if="content" v-html="content"></div>
 	</div>
@@ -20,8 +20,31 @@ export default defineComponent({
 </script>
 
 <style scoped lang="less">
-@import url("../assets/bestiary-list.less");
-.content-tile p {
-	padding-top: 0.75rem;
+.content {
+	display: flex;
+	flex-direction: column;
+	justify-content: start;
+	align-items: center;
+	margin-bottom: 5rem;
+}
+
+@media screen and (min-width: 1080px) {
+	.content div {
+		min-width: 50rem;
+		width: 50%;
+	}
+}
+</style>
+
+<style lang="less">
+.terms.content {
+	& h2 {
+		text-align: center;
+		margin-bottom: 1rem;
+		margin-top: 1.5rem;
+		font-size: 2rem;
+		border-bottom: 1px solid orangered;
+		text-transform: lowercase;
+	}
 }
 </style>

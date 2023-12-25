@@ -1,6 +1,6 @@
 import {MongoClient, ServerApiVersion} from "mongodb";
 import {Db, ObjectId, Collection} from "mongodb";
-import {generateUserSecret} from "./server";
+import {generateUserSecret, log} from "./server";
 //Connect to database
 let database = null as Db | null;
 export async function startConnection() {
@@ -21,9 +21,9 @@ export async function startConnection() {
 		collections.users = database.collection("Users");
 		collections.bestiaries = database.collection("Bestiaries");
 		collections.creatures = database.collection("Creatures");
-		console.log(`Successfully connected to database: ${database.databaseName}`);
+		log.info(`Successfully connected to database: ${database.databaseName}`);
 	} catch (e: any) {
-		console.error(e);
+		log.error(e);
 		// Ensures that the client will close on error
 		await client.close();
 	}
@@ -46,7 +46,7 @@ export async function getUser(id: string) {
 	try {
 		return (await collections.users?.findOne({_id: id})) as User | null;
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return null;
 	}
 }
@@ -55,18 +55,18 @@ export async function getUserFromSecret(secret: string) {
 		if (!secret) return null;
 		return (await collections.users?.findOne({secret: secret})) as User | null;
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return null;
 	}
 }
 export async function updateUser(data: {_id: string; username: string; avatar: string; email: string; verified: boolean; banner_color: string; global_name: string}) {
 	try {
 		if (await getUser(data._id)) {
-			///console.log("Updating user with id " + data._id.toString());
+			///log.info("Updating user with id " + data._id.toString());
 			await collections.users?.updateOne({_id: data._id}, {$set: data});
 			return (await getUser(data._id))?.secret ?? null;
 		} else {
-			///console.log("Adding new user to collection with id " + data._id.toString());
+			///log.info("Adding new user to collection with id " + data._id.toString());
 			let userData = data as User;
 			userData._id = data._id;
 			userData.secret = generateUserSecret();
@@ -75,7 +75,7 @@ export async function updateUser(data: {_id: string; username: string; avatar: s
 			return userData.secret;
 		}
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return null;
 	}
 }
@@ -85,7 +85,7 @@ export async function addBookmark(userId: string, bestiaryId: ObjectId) {
 		await collections.bestiaries?.updateOne({_id: bestiaryId}, {$inc: {bookmarks: 1}});
 		return true;
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return false;
 	}
 }
@@ -95,7 +95,7 @@ export async function removeBookmark(userId: string, bestiaryId: ObjectId) {
 		await collections.bestiaries?.updateOne({_id: bestiaryId}, {$inc: {bookmarks: -1}});
 		return true;
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return false;
 	}
 }
@@ -104,7 +104,7 @@ export async function getBestiary(id: ObjectId) {
 	try {
 		return (await collections.bestiaries?.findOne({_id: id})) as Bestiary | null;
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return null;
 	}
 }
@@ -113,22 +113,22 @@ export async function updateBestiary(data: Bestiary, id?: ObjectId) {
 		data.lastUpdated = new Date(Date.now());
 		if (id) {
 			if (await getBestiary(id)) {
-				///console.log("Updating bestiary with id " + id.toString());
+				///log.info("Updating bestiary with id " + id.toString());
 				await collections.bestiaries?.updateOne({_id: id}, {$set: data});
 				return id;
 			} else {
-				///console.error("Trying to update non existant bestiary");
+				///log.error("Trying to update non existant bestiary");
 				return null;
 			}
 		} else {
-			///console.log("Adding new bestiary to collection");
+			///log.info("Adding new bestiary to collection");
 			let _id = new ObjectId();
 			data._id = _id;
 			await collections.bestiaries?.insertOne(data);
 			return _id;
 		}
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return null;
 	}
 }
@@ -141,7 +141,7 @@ export async function addBestiaryToUser(bestiaryId: ObjectId, userId: string) {
 		await collections.bestiaries?.updateOne({_id: bestiaryId}, {$set: {owner: userId}});
 		return true;
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return false;
 	}
 }
@@ -156,7 +156,7 @@ export async function deleteBestiary(bestiaryId: ObjectId) {
 		await collections.bestiaries?.deleteOne({_id: bestiaryId});
 		return true;
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return false;
 	}
 }
@@ -165,7 +165,7 @@ export async function getCreature(id: ObjectId) {
 	try {
 		return (await collections.creatures?.findOne({_id: id})) as Creature | null;
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return null;
 	}
 }
@@ -174,24 +174,24 @@ export async function updateCreature(data: Creature, id?: ObjectId) {
 		data.lastUpdated = new Date(Date.now());
 		if (id) {
 			if (await getBestiary(data.bestiary)) {
-				///console.log("Updating creature with id " + id.toString());
+				///log.info("Updating creature with id " + id.toString());
 				await collections.creatures?.updateOne({_id: id}, {$set: data});
 				//Update bestiary last updated
 				await updateBestiary({} as Bestiary, data.bestiary);
 				return id;
 			} else {
-				///console.error("Trying to update non existant bestiary");
+				///log.error("Trying to update non existant bestiary");
 				return null;
 			}
 		} else {
-			///console.log("Adding new creature to collection");
+			///log.info("Adding new creature to collection");
 			let _id = new ObjectId();
 			data._id = _id;
 			await collections.creatures?.insertOne(data);
 			return _id;
 		}
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return null;
 	}
 }
@@ -200,7 +200,7 @@ export async function addCreatureToBestiary(creatureId: ObjectId, bestiaryId: Ob
 		await collections.bestiaries?.updateOne({_id: bestiaryId}, {$push: {creatures: creatureId}});
 		return true;
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return false;
 	}
 }
@@ -212,7 +212,7 @@ export async function deleteCreature(creatureId: ObjectId) {
 		await collections.creatures?.deleteOne({_id: creature._id});
 		return true;
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return false;
 	}
 }

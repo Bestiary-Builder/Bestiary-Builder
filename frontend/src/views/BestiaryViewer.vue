@@ -20,8 +20,9 @@
 						<div>{{ statusEmoji(bestiary.status) }}{{ bestiary.status }}</div>
 						<div>{{ bestiary.creatures.length }}🐉</div>
 						<div v-if="isOwner || isEditor">
+							<span class="edit-bestiary" role="button" @click="isImportModalOpen = true" aria-label="Import bestiary from CritterDB" v-tooltip="'Import bestiary from CritterDB'">⤓</span>
 							<span class="edit-bestiary" role="button" @click="isEditorModalOpen = true" aria-label="Edit bestiary" v-tooltip="'Edit bestiary'">✏️</span>
-							<span class="edit-bestiary" role="button" @click="createCreature" aria-label="Add creature" v-tooltip="'Add creature'">➕</span>
+							<span class="edit-bestiary" role="button" @click="createCreature()" aria-label="Add creature" v-tooltip="'Add creature'">➕</span>
 						</div>
 						<div role="button" aria-label="bookmark" @click.prevent="toggleBookmark" class="bookmark" v-else>
 							<span v-if="bookmarked" v-tooltip="'Unbookmark this bestiary'" class="bookmark-enabled">⭐</span>
@@ -45,7 +46,7 @@
 				</TransitionGroup>
 
 				<div class="create-tile" v-if="isOwner">
-					<span role="button" class="create-text" @click="createCreature">add creature</span>
+					<span role="button" class="create-text" @click="createCreature()">add creature</span>
 				</div>
 			</div>
 
@@ -67,14 +68,29 @@
 
 	<Teleport to="#modal">
 		<Transition name="modal">
+			<div class="modal__bg" v-if="isImportModalOpen">
+				<section class="modal__content modal__small" ref="importModal" v-if="bestiary && isOwner">
+					<button @click="isImportModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
+					<h2 class="modal-header">Import from CritterDB</h2>
+					<input type="text" v-model="critterDbId" />
+					<div class="modal-buttons">
+						<button class="btn cancel-button" @click="isImportModalOpen = false">Cancel</button>
+						<button class="btn confirm-button" @click.prevent="importBestiaryFromCritterDB">Import Bestiary</button>
+					</div>
+				</section>
+			</div>
+		</Transition>
+	</Teleport>
+
+	<Teleport to="#modal">
+		<Transition name="modal">
 			<div class="modal__bg" v-if="isDeleteModalOpen">
 				<section class="modal__content modal__small" ref="deleteModal" v-if="bestiary && (isOwner || isEditor)">
 					<button @click="isDeleteModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
-					<h2 class="modal-header">are you sure you want to delete {{ selectedCreature?.stats.description.name }}?</h2>
-					<p class="warning">This action cannot be reversed.</p>
+					<h2 class="modal-header"> are you sure you want to delete {{ selectedCreature?.stats.description.name }}? </h2>
 					<div class="modal-buttons">
 						<button class="btn cancel-button" @click="isDeleteModalOpen = false">Cancel</button>
-						<button v-if="selectedCreature" class="btn danger-button" @click.prevent="deleteCreature(selectedCreature)">Delete creature</button>
+						<button v-if="selectedCreature" class="btn danger-button" @click.prevent="deleteCreature(selectedCreature)">Delete Creature</button>
 					</div>
 				</section>
 			</div>
@@ -124,7 +140,7 @@
 						</div>
 					</div>
 					<p class="warning" v-if="showWarning">
-						By changing the bestiary status to {{ bestiary.status }} I confirm that I am the copyright holder of the content within, or that I have permission from the copyright holder to share this content. I hereby agree to the (CONTENT POLICY) and agree to be fully liable for the content within. I affirm that the content does not include any official non-free D&D content. Bestiaries
+						By changing the bestiary status to public I confirm that I am the copyright holder of the content within, or that I have permission from the copyright holder to share this content. I hereby agree to the (CONTENT POLICY) and agree to be fully liable for the content within. I affirm that the content does not include any official non-free D&D content. Bestiaries
 						that breach these terms may have their status changed to private or be outright removed, and may result in a ban if the content breaches our content policy.
 					</p>
 
@@ -156,6 +172,12 @@ const openDeleteModal = (creature: Creature) => {
 	selectedCreature.value = creature;
 	isDeleteModalOpen.value = true;
 };
+
+const isImportModalOpen = ref(false);
+const importModal = ref<HTMLDivElement | null>(null);
+// @ts-ignore
+onClickOutside(deleteModal, () => (isImportModalOpen.value = false));
+
 </script>
 
 <script lang="ts">
@@ -164,8 +186,9 @@ import {defineComponent} from "vue";
 import {defaultStatblock} from "@/components/types";
 import type {User, Bestiary, Creature, Statblock} from "@/components/types";
 import UserBanner from "@/components/UserBanner.vue";
-import {handleApiResponse, user, type error, toast, tags, limits, type limitsType} from "@/main";
+import {handleApiResponse, user, type error, toast, tags, type limitsType, asyncLimits} from "@/main";
 import StatblockRenderer from "@/components/StatblockRenderer.vue";
+import { parseFromCritterDB } from "@/parser/parseFromCritterDB";
 
 export default defineComponent({
 	data() {
@@ -184,7 +207,8 @@ export default defineComponent({
 			isOwner: false,
 			isEditor: false,
 			editorToAdd: "" as string,
-			showWarning: false as boolean
+			showWarning: false as boolean,
+			critterDbId: "" as string
 		};
 	},
 	components: {
@@ -192,9 +216,7 @@ export default defineComponent({
 		StatblockRenderer
 	},
 	async created() {
-		//@ts-ignore
-		this.limits = (await limits) ?? ({} as limitsType);
-		//@ts-ignore
+		this.limits = (await asyncLimits) ?? ({} as limitsType);
 		tags.then((t) => {
 			this.allTags = t ?? ([] as string[]);
 		});
@@ -202,15 +224,46 @@ export default defineComponent({
 	async beforeMount() {
 		this.user = await user;
 		await this.getBestiary();
-		console.log(this.allTags);
 		console.log(this.bestiary);
+		console.log(this.creatures);
 	},
 	methods: {
-		async createCreature() {
-			console.log("Create");
+		async importBestiaryFromCritterDB() {
+			let data = {} as {
+				name: string;
+				description: string;
+				creatures: object[]
+			}
+			toast.info("Fetching bestiary data has started. This may take a while.")
+			await fetch(`/api/critterdb/${this.critterDbId /* ID */}/false`)
+			.then((response) => handleApiResponse<any>(response))
+			.then((result) => {
+				if (result.success) {
+					data = result.data
+				} else {
+					toast.error((result.data as error).error);
+				}
+			});
+
+			toast.info("Importing creatures has started. This may take a while.")
+			let index = 0
+			for (let creature of data.creatures) {
+				let stats;
+				try {
+					stats = parseFromCritterDB(creature)
+					// only refresh bestiary on screen every 5 creatures
+					await this.createCreature(stats[0], index % 5 == 0)
+					index++
+				} catch (e) {
+					console.error(e)
+				}
+			}
+			toast.success("Importing has finished!")
+		},
+		async createCreature(stats = defaultStatblock, shouldRefresh=true) {
 			//Replace for actual creation data:
 			let data = {
-				stats: defaultStatblock,
+				stats: stats,
 				bestiary: this.bestiary?._id
 			} as Creature;
 			//Send data to server
@@ -224,19 +277,17 @@ export default defineComponent({
 			}).then(async (response) => {
 				let result = await handleApiResponse(response);
 				if (result.success) {
-					console.log("Created");
 				} else {
 					toast.error((result.data as error).error);
 				}
 			});
-			await this.getBestiary();
+			if (shouldRefresh) await this.getBestiary();
 		},
 		async deleteCreature(creature: Creature) {
 			await fetch(`/api/creature/${creature._id}/delete`).then(async (response) => {
 				let result = await handleApiResponse(response);
 				if (result.success) {
 					toast.success("Deleted creature succesfully");
-					isDeleteModalOpen.value = false;
 				} else {
 					toast.error((result.data as error).error);
 				}
@@ -303,15 +354,19 @@ export default defineComponent({
 							});
 					}
 					//Bookmark state
-					await fetch(`/api/bestiary/${this.bestiary._id}/bookmark/get`).then(async (bookmarkResponse) => {
-						let bookmarkResult = await handleApiResponse<{state: boolean}>(bookmarkResponse);
-						if (bookmarkResult.success) {
-							this.bookmarked = (bookmarkResult.data as {state: boolean}).state;
-						} else {
-							this.bookmarked = false;
-							toast.error((bookmarkResult.data as error).error);
-						}
-					});
+					if (this.user) {
+						await fetch(`/api/bestiary/${this.bestiary._id}/bookmark/get`).then(async (bookmarkResponse) => {
+							let bookmarkResult = await handleApiResponse<{state: boolean}>(bookmarkResponse);
+							if (bookmarkResult.success) {
+								this.bookmarked = (bookmarkResult.data as {state: boolean}).state;
+							} else {
+								this.bookmarked = false;
+								toast.error((bookmarkResult.data as error).error);
+							}
+						});
+					} else {
+						this.bookmarked = false;
+					}
 				} else {
 					this.bestiary = null;
 					toast.error((result.data as error).error);
@@ -369,7 +424,7 @@ export default defineComponent({
 		},
 		"bestiary.status"(newValue, oldValue): void {
 			if (newValue == "private") this.showWarning = false;
-			if (newValue != "private") this.showWarning = true;
+			if (newValue == "public") this.showWarning = true;
 			console.log(newValue, oldValue);
 		}
 	}

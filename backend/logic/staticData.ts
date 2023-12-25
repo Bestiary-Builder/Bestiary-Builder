@@ -1,17 +1,17 @@
-import {app} from "../server";
+import {app, log} from "../server";
 
 import basicExamples from "../staticData/basicExamples.json";
 import srdFeatures from "../staticData/srdFeatures.json";
 
 //Basic example
-app.get("/api/basic-examples/list", (req, res) => {
+app.get("/api/basic-examples/list", async (req, res) => {
 	let names = [] as string[];
 	for (let example of basicExamples) {
 		names.push(example.name);
 	}
 	return res.json(names);
 });
-app.get("/api/basic-example/:name", (req, res) => {
+app.get("/api/basic-example/:name", async (req, res) => {
 	let name = req.params.name;
 	let data = basicExamples.find((a) => a.name == name);
 	if (data) {
@@ -21,14 +21,14 @@ app.get("/api/basic-example/:name", (req, res) => {
 	}
 });
 //Features
-app.get("/api/srd-features/list", (req, res) => {
+app.get("/api/srd-features/list", async (req, res) => {
 	let names = [] as string[];
 	for (let example of srdFeatures) {
 		names.push(example.name);
 	}
 	return res.json(names);
 });
-app.get("/api/srd-feature/:name", (req, res) => {
+app.get("/api/srd-feature/:name", async (req, res) => {
 	let name = req.params.name;
 	let data = srdFeatures.find((a) => a.name == name);
 	if (data) {

@@ -1,4 +1,4 @@
-import {app, JWTKey} from "../server";
+import {app, JWTKey, log} from "../server";
 import fetch from "node-fetch";
 import jwt from "jsonwebtoken";
 import {getUser, getUserFromSecret, updateUser, User} from "../database";
@@ -58,17 +58,17 @@ app.get("/api/login/:code", async (req, res) => {
 					expiresIn: "7d"
 				});
 				res.cookie("userToken", token, {expires: new Date(new Date().getTime() + 60 * 60 * 1000 * 24 * 7), sameSite: "strict", secure: true, httpOnly: true});
-				console.log(`User with the id ${userResult.id} logged in`);
+				log.info(`User with the id ${userResult.id} logged in`);
 				return res.json({});
 			} else {
 				return res.status(400).json({error: "No user recieved from discord."});
 			}
 		} else {
-			console.error(oauthData);
+			log.error(oauthData);
 			return res.status(401).json({error: "Failed to authenticate discord login."});
 		}
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return res.status(500).json({error: "Unknown server error occured, please try again"});
 	}
 });
@@ -80,21 +80,21 @@ export const requireUser = async (req: Request, res: Response, next: NextFunctio
 	try {
 		let token = req.cookies.userToken;
 		if (!token) {
-			return res.status(401).json({error: "No token."});
+			return res.status(401).json({error: "Not logged in."});
 		}
 		try {
 			const decoded = jwt.verify(token, JWTKey) as any;
 			let user = await getUserFromSecret(decoded.id);
 			if (!user) {
-				return res.status(401).send({error: "Token doesn't correspond to any user."});
+				return res.status(401).send({error: "User token doesn't correspond to any user."});
 			}
 			req.body.id = user._id;
 		} catch (err) {
-			return res.status(401).send({error: "Invalid Token."});
+			return res.status(401).send({error: "Invalid user token."});
 		}
 		return next();
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 };
@@ -113,7 +113,7 @@ export const possibleUser = async (req: Request, res: Response, next: NextFuncti
 		}
 		return next();
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 };

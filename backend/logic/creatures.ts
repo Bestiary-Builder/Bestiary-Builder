@@ -1,4 +1,4 @@
-import {app, badwords} from "../server";
+import {app, badwords, log} from "../server";
 import {requireUser, possibleUser} from "./login";
 import {addCreatureToBestiary, collections, getBestiary, getCreature, getUser, updateCreature, Creature, deleteCreature} from "../database";
 import {checkBestiaryPermission} from "./bestiaries";
@@ -20,7 +20,7 @@ app.get("/api/creature/:id", possibleUser, async (req, res) => {
 			if (!bestiary) return res.status(404).json({error: "Bestiary creature is in, was not found-"});
 			let bestiaryPermissionLevel = checkBestiaryPermission(bestiary, user);
 			if (bestiaryPermissionLevel != "none") {
-				console.log(`Retrieved creature with the id ${id}`);
+				log.info(`Retrieved creature with the id ${id}`);
 				return res.json(creature);
 			} else {
 				return res.status(401).json({error: "You don't have permission to view this creature-"});
@@ -29,7 +29,7 @@ app.get("/api/creature/:id", possibleUser, async (req, res) => {
 			return res.status(404).json({error: "No creature with that id found-"});
 		}
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
@@ -39,13 +39,16 @@ app.get("/api/bestiary/:id/creatures", possibleUser, async (req, res) => {
 		let bestiaryId = new ObjectId(req.params.id);
 		let bestiary = await getBestiary(bestiaryId);
 		if (bestiary) {
-			if (user && checkBestiaryPermission(bestiary, user) != "none") {
+			if (checkBestiaryPermission(bestiary, user) != "none") {
 				let creatures = [];
 				for (let creatureId of bestiary.creatures) {
+					log.info(creatureId);
 					let creature = await collections.creatures?.findOne({_id: new ObjectId(creatureId)});
+					log.info(creature?._id);
 					if (creature) creatures.push(creature);
 				}
-				console.log(`Retrieved creatures from bestiary with the id ${bestiaryId}`);
+				log.info(`Retrieved creatures from bestiary with the id ${bestiaryId}`);
+				log.info(creatures);
 				return res.json(creatures);
 			} else {
 				return res.status(401).json({error: "You don't have permission to view this bestiary."});
@@ -54,7 +57,7 @@ app.get("/api/bestiary/:id/creatures", possibleUser, async (req, res) => {
 			return res.status(404).json({error: "No bestiary with that id found."});
 		}
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
@@ -93,10 +96,26 @@ app.post("/api/creature/:id?/update", requireUser, async (req, res) => {
 			//@ts-ignore
 			data.stats[key] = {...defaultStatblock[key], ...oldStats[key]};
 		}
-		//Check limit
+		//Check limits
 		if (data.stats.description.name.length > limits.nameLength) return res.status(400).json({error: `Name exceeds the character limit of ${limits.nameLength} characters.`});
 		if (data.stats.description.name.length < limits.nameMin) return res.status(400).json({error: `Name is less than the minimum character limit of ${limits.nameMin} characters.`});
 		if (data.stats.description.description.length > limits.descriptionLength) return res.status(400).json({error: `Description exceeds the character limit of ${limits.descriptionLength} characters.`});
+		//Check image link
+		let image = data.stats.description.image as string;
+		// remove any url parameters from the string
+		if(image) {
+			image = new URL(image).origin + new URL(image).pathname
+			data.stats.description.image = image
+		}
+		
+		if (image && image != "") {
+			if (!image.startsWith("https")) return res.status(400).json({error: "Image link not from a secure https location."});
+			let isApproved = false;
+			for (let format of limits.imageFormats) {
+				if (image.endsWith("." + format)) isApproved = true;
+			}
+			if (!isApproved) return res.status(400).json({error: "Image link not recognized as an allowed image format."});
+		}
 		//Update or add
 		if (id) {
 			//Update existing creature
@@ -121,7 +140,7 @@ app.post("/api/creature/:id?/update", requireUser, async (req, res) => {
 			//Update creature
 			let updatedId = await updateCreature(data, _id);
 			if (updatedId) {
-				console.log(`Updated creature with the id ${_id}`);
+				log.info(`Updated creature with the id ${_id}`);
 				return res.status(201).json(data);
 			} else {
 				throw new Error(`Failed to update creature with the id: ${_id}`);
@@ -148,11 +167,11 @@ app.post("/api/creature/:id?/update", requireUser, async (req, res) => {
 			if (!_id) return res.status(500).json({error: "Failed to create creature."});
 			await addCreatureToBestiary(_id, data.bestiary);
 			data._id = _id;
-			console.log(`New creature created with the id: ${_id}`);
+			log.info(`New creature created with the id: ${_id}`);
 			return res.status(201).json(data);
 		}
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
@@ -176,13 +195,13 @@ app.get("/api/creature/:id/delete", requireUser, async (req, res) => {
 		//Remove from db
 		let status = await deleteCreature(_id);
 		if (status) {
-			console.log(`Deleted creature with the id ${id}`);
+			log.info(`Deleted creature with the id ${id}`);
 			res.json({});
 		} else {
 			res.status(500).json({error: "Failed to delete creature."});
 		}
 	} catch (err) {
-		console.error(err);
+		log.error(err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
@@ -208,10 +227,11 @@ const defaultStatblock = {
 			fly: 0,
 			isHover: false,
 			burrow: 0,
-			swim: 0
+			swim: 0,
+			climb: 0
 		},
 		senses: {
-			passivePerceptionOverride: 0,
+			passivePerceptionOverride: null,
 			darkvision: 0,
 			blindsight: 0,
 			isBlind: false,
