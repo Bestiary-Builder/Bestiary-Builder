@@ -6,7 +6,7 @@ app.get("/api/critterdb/:id/:published", async (req, res) => {
 	let published = req.params.published.toLowerCase() == "true";
 	let result = await from_critterdb(id, published);
 	if (!result) {
-		return res.status(500).json({error: "Failed to fetch info from critterdb.com. Are you sure the link is right?"});
+		return res.status(500).json({error: "Failed to fetch info from critterdb.com"});
 	} else {
 		return res.json(result);
 	}

@@ -1,6 +1,6 @@
 <template>
 	<div class="content">
-		<h1><span>My Bestiaries </span></h1>
+		<h1><span>my bestiaries </span></h1>
 
 		<div class="tile-container">
 			<div class="content-tile create-tile" @click.prevent="createBestiary">
@@ -56,10 +56,8 @@ export default defineComponent({
 		};
 	},
 	async beforeMount() {
-		const loader = this.$loading.show()
 		this.user = await user;
 		this.getBestiaries();
-		loader.hide()
 	},
 	methods: {
 		async createBestiary() {
