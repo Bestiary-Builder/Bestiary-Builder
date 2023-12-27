@@ -4,7 +4,7 @@ Description bla bla bla...
 Currently available at [bestiary.stevnbak.dk](https://bestiary.stevnbak.dk)
 
 ## Support
-You can support the development of Bestiary Builder, and at the same time gain special perks, by subscribing on [Patreon](https://www.patreon.com/BestiaryBuilder).
+You can support the development of Bestiary Builder, and at the same time gain special perks, by supporting us on [Patreon](https://www.patreon.com/BestiaryBuilder).
 
 ## Project setup
 To start editing the project follow these simple steps:
