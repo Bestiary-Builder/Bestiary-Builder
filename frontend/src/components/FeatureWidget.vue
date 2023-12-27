@@ -68,7 +68,7 @@ import YAML from "yaml";
 // @ts-ignore
 import CodeEditor from "simple-code-editor";
 import {toast, handleApiResponse, type error} from "@/main";
-import {type FeatureEntity} from "./types";
+import {type FeatureEntity} from "../generic/types";
 export default defineComponent({
 	props: ["type", "index", "data"],
 	data() {

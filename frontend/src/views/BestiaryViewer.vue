@@ -40,7 +40,7 @@
 						<div class="right-side">
 							<span v-if="isOwner || isEditor" role="button" @click.stop="openDeleteModal(creature)" class="delete-creature"> <span>🗑️</span> </span>
 							<span v-if="isOwner || isEditor" class="edit-creature" @click.stop="() => {}"> <RouterLink class="creature" :to="'/statblock-editor/' + creature._id"> ✏️ </RouterLink> </span>
-							<span class="cr"> CR {{ creature.stats.description.cr }}</span>
+							<span class="cr"> CR {{ displayCR(creature.stats.description.cr) }}</span>
 						</div>
 					</div>
 				</TransitionGroup>
@@ -72,10 +72,14 @@
 				<section class="modal__content modal__small" ref="importModal" v-if="bestiary && isOwner">
 					<button @click="isImportModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
 					<h2 class="modal-header">Import from CritterDB</h2>
-					<input type="text" v-model="critterDbId" />
+					<div class="flow-vertically">
+						<label for="critterdblink">CritterDB bestiary link </label>
+						<input type="text" v-model="critterDbId" id="critterdblink" style="width: 100%" placeholder=""/>
+
+					</div>
 					<div class="modal-buttons">
-						<button class="btn cancel-button" @click="isImportModalOpen = false">Cancel</button>
-						<button class="btn confirm-button" @click.prevent="importBestiaryFromCritterDB">Import Bestiary</button>
+						<button class="btn" @click="isImportModalOpen = false">Cancel</button>
+						<button class="btn confirm" @click.prevent="importBestiaryFromCritterDB">Import Bestiary</button>
 					</div>
 				</section>
 			</div>
@@ -87,10 +91,10 @@
 			<div class="modal__bg" v-if="isDeleteModalOpen">
 				<section class="modal__content modal__small" ref="deleteModal" v-if="bestiary && (isOwner || isEditor)">
 					<button @click="isDeleteModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
-					<h2 class="modal-header"> are you sure you want to delete {{ selectedCreature?.stats.description.name }}? </h2>
+					<h2 class="modal-header"> Are you sure you want to delete <u>{{ selectedCreature?.stats.description.name }}</u>? </h2>
 					<div class="modal-buttons">
-						<button class="btn cancel-button" @click="isDeleteModalOpen = false">Cancel</button>
-						<button v-if="selectedCreature" class="btn danger-button" @click.prevent="deleteCreature(selectedCreature)">Delete Creature</button>
+						<button class="btn" @click="isDeleteModalOpen = false">Cancel</button>
+						<button v-if="selectedCreature" class="btn danger" @click.prevent="deleteCreature(selectedCreature)">Delete Creature</button>
 					</div>
 				</section>
 			</div>
@@ -104,19 +108,19 @@
 					<button @click="isEditorModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
 					<h2 class="modal-header">edit bestiary</h2>
 					<div class="flow-vertically">
-						<label for="nameinput">name</label>
+						<label for="nameinput">Name</label>
 						<input type="text" v-model="bestiary.name" :minlength="limits.nameMin" :maxlength="limits.nameLength" id="nameinput" />
 					</div>
 					<div class="flow-vertically">
-						<label for="descinput">description</label>
+						<label for="descinput">Description</label>
 						<textarea v-model="bestiary.description" :maxlength="limits.descriptionLength" id="descinput" />
 					</div>
 					<div v-if="isOwner" class="flow-vertically">
-						<label for="statusinput">status</label>
+						<label for="statusinput">Status</label>
 						<v-select v-model="bestiary.status" :options="['public', 'unlisted', 'private']" inputId="statusinput" />
 					</div>
 					<div class="tags">
-						<label for="tagsInput">tags</label>
+						<label for="tagsInput">Tags</label>
 						<v-select placeholder="Select Tags" v-model="bestiary.tags" multiple :options="allTags" inputId="tagsInput" />
 					</div>
 
@@ -131,10 +135,10 @@
 								</p>
 							</div>
 							<div class="flow-vertically">
-								<label for="addeditor">add editor</label>
+								<label for="addeditor">Add editor</label>
 								<div class="button-container">
 									<input type="text" v-model="editorToAdd" inputmode="numeric" placeholder="Discord user ID" />
-									<button class="btn" @click="addEditor()" id="add">add</button>
+									<button class="btn" @click="addEditor()" id="add">Add</button>
 								</div>
 							</div>
 						</div>
@@ -145,8 +149,8 @@
 					</p>
 
 					<div class="modal-buttons">
-						<button class="btn cancel-button" @click="isEditorModalOpen = false">Cancel</button>
-						<button class="btn confirm-button" @click.prevent="updateBestiary">Save changes</button>
+						<button class="btn" @click="isEditorModalOpen = false">Cancel</button>
+						<button class="btn confirm" @click.prevent="updateBestiary">Save changes</button>
 					</div>
 				</section>
 			</div>
@@ -183,13 +187,13 @@ onClickOutside(deleteModal, () => (isImportModalOpen.value = false));
 <script lang="ts">
 import {RouterLink} from "vue-router";
 import {defineComponent} from "vue";
-import {defaultStatblock} from "@/components/types";
-import type {User, Bestiary, Creature, Statblock} from "@/components/types";
+import {defaultStatblock} from "@/generic/types";
+import type {User, Bestiary, Creature, Statblock} from "@/generic/types";
 import UserBanner from "@/components/UserBanner.vue";
 import {handleApiResponse, user, type error, toast, tags, type limitsType, asyncLimits} from "@/main";
 import StatblockRenderer from "@/components/StatblockRenderer.vue";
 import { parseFromCritterDB } from "@/parser/parseFromCritterDB";
-
+import { statusEmoji, displayCR } from "@/generic/displayFunctions";
 export default defineComponent({
 	data() {
 		return {
@@ -433,12 +437,9 @@ export default defineComponent({
 		setSelectedCreature(creature: any) {
 			this.lastHoveredCreature = creature;
 		},
-		statusEmoji(status: "public" | "private" | "unlisted"): string {
-			return status == "public" ? "🌍" : status == "private" ? "🔒" : "🔗";
-		}
 	},
 	watch: {
-		lastClickedCreature(newValue, oldValue): void {
+		lastClickedCreature(): void {
 			if (this.hasPinnedBefore) return;
 			if (!this.hasPinnedBefore) this.hasPinnedBefore = true;
 
@@ -515,7 +516,7 @@ export default defineComponent({
 					height: 100%;
 
 					&.cr {
-						width: 4rem;
+						width: 5rem;
 					}
 				}
 			}
@@ -528,7 +529,7 @@ export default defineComponent({
 	}
 
 	.header-tile {
-		background-color: orangered;
+		background-color: var(--color-surface-2);
 		position: sticky;
 		z-index: 1;
 		top: 0;
@@ -661,36 +662,6 @@ export default defineComponent({
 	.button-container {
 		display: flex;
 		gap: 1rem;
-	}
-}
-.modal-buttons {
-	display: flex;
-	gap: 1rem;
-	justify-content: center;
-	margin-top: 2rem;
-
-	& button {
-		padding: 0.5rem 1rem;
-		border: none;
-		cursor: pointer;
-
-		transition: all 0.3s ease;
-		&:hover {
-			scale: 1.05;
-			filter: brightness(1.05);
-		}
-	}
-
-	.cancel-button {
-		background-color: grey;
-	}
-
-	.confirm-button {
-		background-color: var(--color-success);
-	}
-
-	.danger-button {
-		background-color: var(--color-destructive);
 	}
 }
 

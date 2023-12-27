@@ -1,7 +1,5 @@
-import {type CasterSpells, type Statblock, type InnateSpellsList, defaultStatblock, spellListFlattened, type SpellSlotEntity, type SkillsEntity} from "@/components/types";
-import YAML from "yaml";
-
-import {abilityParser, descParser, parseDescIntoAutomation, capitalizeFirstLetter} from "./utils";
+import { type CasterSpells, type Statblock, type InnateSpellsList, defaultStatblock, spellListFlattened, type SpellSlotEntity, type SkillsEntity } from "../generic/types";
+import { abilityParser, capitalizeFirstLetter } from "./utils";
 
 export function parseFrom5eTools(data: any): [Statblock, {[key: string]: string[]}] {
 	let outputData = {} as Statblock;

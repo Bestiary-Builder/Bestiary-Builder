@@ -25,10 +25,9 @@
 import {RouterLink} from "vue-router";
 import {defineComponent} from "vue";
 import UserBanner from "@/components/UserBanner.vue";
-import type {User, Bestiary, Creature} from "@/components/types";
+import type {User, Bestiary} from "@/generic/types";
 import {handleApiResponse, toast, user} from "@/main";
 import type {error} from "@/main";
-
 export default defineComponent({
 	data() {
 		return {
@@ -60,9 +59,6 @@ export default defineComponent({
 			});
 			console.log(this.bestiaries);
 		},
-		statusEmoji(status: "public" | "private" | "unlisted"): string {
-			return status == "public" ? "🌍" : status == "private" ? "🔒" : "🔗";
-		}
 	}
 });
 </script>
