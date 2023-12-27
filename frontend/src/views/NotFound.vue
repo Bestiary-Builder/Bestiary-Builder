@@ -6,7 +6,7 @@ import {defineComponent} from "vue";
 
 export default defineComponent({
 	mounted() {
-		console.log("404");
+		///console.log("404");
 	}
 });
 </script>

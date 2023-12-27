@@ -210,9 +210,9 @@ function errorHandler(err: Error, req: Request, res: Response, next: NextFunctio
 }
 app.use(errorHandler);
 process.on("uncaughtException", (err) => {
-	log.error("Uncaught exception", err);
+	log.error("Uncaught exception" + err);
 });
 
 process.on("unhandledRejection", (err) => {
-	log.error("unhandled rejection", err);
+	log.error("Unhandled rejection" + err);
 });

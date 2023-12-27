@@ -1,5 +1,5 @@
-import { type CasterSpells, type Statblock, type InnateSpellsList, defaultStatblock, spellListFlattened, type SpellSlotEntity, type SkillsEntity } from "../generic/types";
-import { abilityParser, capitalizeFirstLetter } from "./utils";
+import {type CasterSpells, type Statblock, type InnateSpellsList, defaultStatblock, spellListFlattened, type SpellSlotEntity, type SkillsEntity} from "../generic/types";
+import {abilityParser, capitalizeFirstLetter} from "./utils";
 
 export function parseFrom5eTools(data: any): [Statblock, {[key: string]: string[]}] {
 	let outputData = {} as Statblock;
@@ -45,8 +45,7 @@ export function parseFrom5eTools(data: any): [Statblock, {[key: string]: string[
 			if (typeof typeData?.tags[0] == "object") {
 				return capitalizeFirstLetter(baseType) + " " + typeData?.tags.map((t: any) => `${capitalizeFirstLetter(t.prefix)}} ${capitalizeFirstLetter(t.tag)}`).join(", ");
 			}
-			console.log("Something is fucked in race", typeData);
-
+			console.log("Something is wrong in race", typeData);
 			return "";
 		})(),
 		size: (() => {

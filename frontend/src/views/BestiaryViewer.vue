@@ -74,8 +74,7 @@
 					<h2 class="modal-header">Import from CritterDB</h2>
 					<div class="flow-vertically">
 						<label for="critterdblink">CritterDB bestiary link </label>
-						<input type="text" v-model="critterDbId" id="critterdblink" style="width: 100%" placeholder=""/>
-
+						<input type="text" v-model="critterDbId" id="critterdblink" style="width: 100%" placeholder="" />
 					</div>
 					<div class="modal-buttons">
 						<button class="btn" @click="isImportModalOpen = false">Cancel</button>
@@ -91,7 +90,10 @@
 			<div class="modal__bg" v-if="isDeleteModalOpen">
 				<section class="modal__content modal__small" ref="deleteModal" v-if="bestiary && (isOwner || isEditor)">
 					<button @click="isDeleteModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
-					<h2 class="modal-header"> Are you sure you want to delete <u>{{ selectedCreature?.stats.description.name }}</u>? </h2>
+					<h2 class="modal-header">
+						Are you sure you want to delete <u>{{ selectedCreature?.stats.description.name }}</u
+						>?
+					</h2>
 					<div class="modal-buttons">
 						<button class="btn" @click="isDeleteModalOpen = false">Cancel</button>
 						<button v-if="selectedCreature" class="btn danger" @click.prevent="deleteCreature(selectedCreature)">Delete Creature</button>
@@ -126,7 +128,9 @@
 
 					<div class="editor-block">
 						<h3><span>editors</span></h3>
-						<p v-if="isOwner" class="flow-vertically">Editors can add, edit, and remove creatures. They can edit the name of the bestiary and its description. Editors cannot change the status of the bestiary or delete the bestiary. Editors cannot add other editors. The owner can remove editors at any time.</p>
+						<p v-if="isOwner" class="flow-vertically">
+							Editors can add, edit, and remove creatures. They can edit the name of the bestiary and its description. Editors cannot change the status of the bestiary or delete the bestiary. Editors cannot add other editors. The owner can remove editors at any time.
+						</p>
 						<div class="editor-container">
 							<div v-for="editor in editors" class="editor-list">
 								<p>
@@ -144,8 +148,8 @@
 						</div>
 					</div>
 					<p class="warning" v-if="showWarning">
-						By changing the bestiary status to public I confirm that I am the copyright holder of the content within, or that I have permission from the copyright holder to share this content. I hereby agree to the (CONTENT POLICY) and agree to be fully liable for the content within. I affirm that the content does not include any official non-free D&D content. Bestiaries
-						that breach these terms may have their status changed to private or be outright removed, and may result in a ban if the content breaches our content policy.
+						By changing the bestiary status to public I confirm that I am the copyright holder of the content within, or that I have permission from the copyright holder to share this content. I hereby agree to the (CONTENT POLICY) and agree to be fully liable for the content within. I
+						affirm that the content does not include any official non-free D&D content. Bestiaries that breach these terms may have their status changed to private or be outright removed, and may result in a ban if the content breaches our content policy.
 					</p>
 
 					<div class="modal-buttons">
@@ -181,7 +185,6 @@ const isImportModalOpen = ref(false);
 const importModal = ref<HTMLDivElement | null>(null);
 // @ts-ignore
 onClickOutside(deleteModal, () => (isImportModalOpen.value = false));
-
 </script>
 
 <script lang="ts">
@@ -192,8 +195,8 @@ import type {User, Bestiary, Creature, Statblock} from "@/generic/types";
 import UserBanner from "@/components/UserBanner.vue";
 import {handleApiResponse, user, type error, toast, tags, type limitsType, asyncLimits} from "@/main";
 import StatblockRenderer from "@/components/StatblockRenderer.vue";
-import { parseFromCritterDB } from "@/parser/parseFromCritterDB";
-import { statusEmoji, displayCR } from "@/generic/displayFunctions";
+import {parseFromCritterDB} from "@/parser/parseFromCritterDB";
+import {statusEmoji, displayCR} from "@/generic/displayFunctions";
 export default defineComponent({
 	data() {
 		return {
@@ -226,67 +229,67 @@ export default defineComponent({
 		});
 	},
 	async beforeMount() {
-		const loader = this.$loading.show()
+		const loader = this.$loading.show();
 
 		this.user = await user;
 
 		await this.getBestiary();
-		loader.hide()
+		loader.hide();
 	},
 	methods: {
 		async importBestiaryFromCritterDB() {
-			let link = this.critterDbId.trim()
-			let isPublic = link.includes("publishedbestiary")
+			let link = this.critterDbId.trim();
+			let isPublic = link.includes("publishedbestiary");
 			if (!link.startsWith("https://critterdb.com") && !link.startsWith("critterdb.com")) {
-				toast.error("Are you sure this is a link to a critterDB bestiary?")
+				toast.error("Are you sure this is a link to a critterDB bestiary?");
 				return;
 			}
 
-			let linkEls = link.split("/")
-			link = linkEls[linkEls.length-1]
+			let linkEls = link.split("/");
+			link = linkEls[linkEls.length - 1];
 
 			let data = {} as {
 				name: string;
 				description: string;
-				creatures: object[]
-			}
+				creatures: object[];
+			};
 			let hasFailed = false;
-			toast.info("Fetching bestiary data has started. This may take a while.")
-			let loader = this.$loading.show()
+			toast.info("Fetching bestiary data has started. This may take a while.");
+			let loader = this.$loading.show();
 			await fetch(`/api/critterdb/${link}/${isPublic}`)
-			.then((response) => handleApiResponse<any>(response))
-			.then((result) => {
-				if (result.success) {
-					data = result.data
-					loader.hide()
-				} else {
-					toast.error((result.data as error).error);
-					hasFailed = true;
-				}
-			});
+				.then((response) => handleApiResponse<any>(response))
+				.then((result) => {
+					if (result.success) {
+						data = result.data;
+						loader.hide();
+					} else {
+						toast.error((result.data as error).error);
+						hasFailed = true;
+					}
+				});
 
 			if (hasFailed) {
 				return;
 			}
 
-			loader = this.$loading.show()
-			toast.info("Importing creatures has started. This may take a while.")
-			let index = 0
+			loader = this.$loading.show();
+			toast.info("Importing creatures has started. This may take a while.");
+			let index = 0;
 			for (let creature of data.creatures) {
 				let stats;
 				try {
-					stats = parseFromCritterDB(creature)
-					await this.createCreature(stats[0], false)
+					stats = parseFromCritterDB(creature);
+					await this.createCreature(stats[0], false);
 				} catch (e) {
-					console.error(e)
+					console.error(e);
 				}
-				index++
+				index++;
 			}
-			await this.getBestiary()
-			loader.hide()
-			toast.success("Importing has finished!")
+			await this.getBestiary();
+			loader.hide();
+			toast.success("Importing has finished!");
 		},
-		async createCreature(stats = defaultStatblock, shouldRefresh=true) {
+		async createCreature(stats = defaultStatblock, shouldRefresh = true) {
 			//Replace for actual creation data:
 			let data = {
 				stats: stats,
@@ -400,7 +403,6 @@ export default defineComponent({
 			});
 		},
 		async updateBestiary() {
-			console.log("Pressed save statblock!");
 			if (!this.bestiary) return;
 			//Send to backend
 			fetch(`/api/bestiary/${this.bestiary._id}/update`, {
@@ -436,7 +438,7 @@ export default defineComponent({
 		},
 		setSelectedCreature(creature: any) {
 			this.lastHoveredCreature = creature;
-		},
+		}
 	},
 	watch: {
 		lastClickedCreature(): void {

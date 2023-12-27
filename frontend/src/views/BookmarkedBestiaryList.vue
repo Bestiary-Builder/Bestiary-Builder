@@ -57,8 +57,8 @@ export default defineComponent({
 					toast.error((result.data as error).error);
 				}
 			});
-			console.log(this.bestiaries);
-		},
+			///console.log(this.bestiaries);
+		}
 	}
 });
 </script>
