@@ -1,6 +1,6 @@
 <template>
 	<div class="content">
-		<h1><span>public bestiaries </span></h1>
+		<h1><span>Public Bestiaries </span></h1>
 
 		<div class="tile-container">
 			<div class="content-tile search-tile">
@@ -65,8 +65,10 @@ export default defineComponent({
 		UserBanner
 	},
 	async beforeMount() {
+		const loader = this.$loading.show()
 		this.tags = (await tags) ?? ([] as string[]);
 		this.searchBestiaries();
+		loader.hide()
 	},
 	watch: {
 		page() {
