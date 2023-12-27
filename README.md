@@ -18,7 +18,7 @@ To start editing the project follow these simple steps:
         - Go [here](https://discord.com/developers/applications) and create a new application.
         - Save the client id and client secret, for use later.
         - Go to "OAuth2"->"General" and add "http://localhost:5000/user" to the redirects.
-        - Change the constant "clientId" in thee file "frontend/main.ts", to match the id for the application.
+        - Change the constant "clientId" in the file "frontend/main.ts", to match the id for the application.
 6. Rename ".env.template" in the backend folder to ".env", and change it's values to your own environment
     - "frontendPath" should stay unchanged. (Unless you moved the folder around)
     - "NODE_ENV" should stay unchanged.
