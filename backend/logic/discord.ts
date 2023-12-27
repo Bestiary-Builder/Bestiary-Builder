@@ -47,15 +47,16 @@ if (isProduction) {
 client.login(token).catch(() => log.error("Failed to connect to discord bot"));
 
 async function checkUserStatuses(guild: discord.Guild) {
-	let supporterRole = await guild.roles.fetch("1187500073836367965");
-	if (!supporterRole) {
+	let supporterTier1Role = await guild.roles.fetch("1187500073836367965");
+	let supporterTier2Role = await guild.roles.fetch("1189343430820778055");
+	if (!supporterTier1Role || !supporterTier2Role) {
 		log.error("Failed to fetch supporter role");
 		return;
 	}
 	//Fetch all member info
 	await guild.members.fetch();
 	//Find supporters
-	let supporterIds = supporterRole.members.map((m) => m.id);
+	let supporterIds = [...supporterTier1Role.members.map((m) => m.id), ...supporterTier2Role.members.map((m) => m.id)];
 	//Update database
 	collections.users?.updateMany({_id: {$nin: supporterIds}}, {$set: {supporter: false}});
 	collections.users?.updateMany({_id: {$in: supporterIds}}, {$set: {supporter: true}});
