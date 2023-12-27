@@ -92,11 +92,11 @@ app.use(
 		contentSecurityPolicy: {
 			directives: {
 				"default-src": ["'self'"],
-				"img-src": ["cdn.discordapp.com", "*", "'self'", "data: 'self'"],
+				"img-src": ["https://cdn.discordapp.com", "*", "'self'", "data: 'self'"],
 				"script-src": ["'self'", "'sha256-reBsRZd5I88opZSwT59Ir+QlBhrEhdRJ1aQUr4GXhyw='"],
-				"style-src": ["'self'", "'unsafe-inline'", "fonts.googleapis.com"],
-				"font-src": ["'self'", "data: fonts.gstatic.com"],
-				"connect-src": ["'self'", "discord.com"]
+				"style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+				"font-src": ["'self'", "data: https://fonts.gstatic.com"],
+				"connect-src": ["'self'", "https://discord.com"]
 			},
 			useDefaults: true
 		}

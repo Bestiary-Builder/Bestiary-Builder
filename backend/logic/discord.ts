@@ -56,10 +56,14 @@ async function checkUserStatuses(guild: discord.Guild) {
 	//Fetch all member info
 	await guild.members.fetch();
 	//Find supporters
-	let supporterIds = [...supporterTier1Role.members.map((m) => m.id), ...supporterTier2Role.members.map((m) => m.id)];
+	let tier1Ids = supporterTier1Role.members.map((m) => m.id);
+	let tier2Ids = supporterTier2Role.members.map((m) => m.id);
+	log.info("Tier 1: " + tier1Ids);
+	log.info("Tier 2: " + tier2Ids);
 	//Update database
-	collections.users?.updateMany({_id: {$nin: supporterIds}}, {$set: {supporter: false}});
-	collections.users?.updateMany({_id: {$in: supporterIds}}, {$set: {supporter: true}});
+	collections.users?.updateMany({$and: [{_id: {$nin: tier1Ids}}, {_id: {$nin: tier2Ids}}]}, {$set: {supporter: 0}});
+	collections.users?.updateMany({_id: {$in: tier1Ids}}, {$set: {supporter: 1}});
+	collections.users?.updateMany({_id: {$in: tier2Ids}}, {$set: {supporter: 2}});
 }
 
 //Public discord logging
