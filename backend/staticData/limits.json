@@ -1,7 +1,7 @@
 {
-	"nameMin": 5,
+	"nameMin": 3,
 	"nameLength": 50,
 	"descriptionLength": 3000,
-	"creatureAmount": 250,
+	"creatureAmount": 1000,
 	"imageFormats": ["png", "jpg", "jpeg", "webp"]
 }

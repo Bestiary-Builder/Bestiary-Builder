@@ -1,6 +1,6 @@
 <template>
 	<div class="content terms">
-		<h1><span>terms and conditions</span></h1>
+		<h1><span>Terms and Conditions</span></h1>
 		<div v-if="content" v-html="content"></div>
 	</div>
 </template>
@@ -44,7 +44,6 @@ export default defineComponent({
 		margin-top: 1.5rem;
 		font-size: 2rem;
 		border-bottom: 1px solid orangered;
-		text-transform: lowercase;
 	}
 }
 </style>

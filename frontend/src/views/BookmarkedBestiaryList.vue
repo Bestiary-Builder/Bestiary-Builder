@@ -1,6 +1,6 @@
 <template>
 	<div class="content">
-		<h1><span>bookmarked bestiaries</span></h1>
+		<h1><span>Bookmarked Bestiaries</span></h1>
 		<div class="tile-container">
 			<TransitionGroup name="popin">
 				<RouterLink class="content-tile bestiary-tile" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" v-if="bestiaries">
@@ -41,8 +41,11 @@ export default defineComponent({
 		RouterLink
 	},
 	async beforeMount() {
+		const loader = this.$loading.show()
+
 		this.user = await user;
 		this.getBestiaries();
+		loader.hide()
 	},
 	methods: {
 		async getBestiaries() {

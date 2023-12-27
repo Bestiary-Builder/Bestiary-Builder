@@ -108,13 +108,20 @@ app.post("/api/creature/:id?/update", requireUser, async (req, res) => {
 			data.stats.description.image = image;
 		}
 		
+		let failedToImportImage = false;
 		if (image && image != "") {
-			if (!image.startsWith("https")) return res.status(400).json({error: "Image link not from a secure https location."});
+			if (!image.startsWith("https")) {
+				data.stats.description.image = ""
+				failedToImportImage = true
+			} 
 			let isApproved = false;
-			for (let format of limits.imageFormats) {
+			if (!failedToImportImage) for (let format of limits.imageFormats) {
 				if (image.endsWith("." + format)) isApproved = true;
 			}
-			if (!isApproved) return res.status(400).json({error: "Image link not recognized as an allowed image format."});
+			if (!isApproved) {
+				data.stats.description.image = ""
+				failedToImportImage = true
+			} 
 		}
 		//Update or add
 		if (id) {
@@ -141,6 +148,8 @@ app.post("/api/creature/:id?/update", requireUser, async (req, res) => {
 			let updatedId = await updateCreature(data, _id);
 			if (updatedId) {
 				log.info(`Updated creature with the id ${_id}`);
+
+				if (failedToImportImage) return res.status(400).json({error: "Image link not recognized as an allowed image format. Make sure it is from a secure https location and ends in an image file format extension (e.g. .png)"});
 				return res.status(201).json(data);
 			} else {
 				throw new Error(`Failed to update creature with the id: ${_id}`);
@@ -170,6 +179,8 @@ app.post("/api/creature/:id?/update", requireUser, async (req, res) => {
 			await addCreatureToBestiary(_id, data.bestiary);
 			data._id = _id;
 			log.info(`New creature created with the id: ${_id}`);
+
+			if (failedToImportImage) return res.status(400).json({error: "Image link not recognized as an allowed image format. Make sure it is from a secure https location and ends in an image file format extension (e.g. .png)"});
 			return res.status(201).json(data);
 		}
 	} catch (err) {
