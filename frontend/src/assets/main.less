@@ -14,11 +14,7 @@ body {
 
 main {
 	width: 100vw;
-	min-height: 100vh;
-	/* background-color: var(--color-surface-0);
-	display: flex;
-	justify-content: center;
-	align-items: center; */
+	min-height: 80vh;
 }
 
 h1,
@@ -27,7 +23,6 @@ h3,
 h4,
 h5,
 h6 {
-	text-transform: normal;
 	color: var(--color-base--emphasized);
 	font-weight: 100;
 }
@@ -87,7 +82,9 @@ textarea {
 
 //Header
 .content {
-	margin: 1rem 5vw;
+	padding: 1rem 5vw;
+	background-image: url("/bg_black.png");
+	min-height: 80vh;
 	& h1 {
 		text-align: center;
 		margin-bottom: 2rem;
@@ -333,7 +330,7 @@ textarea {
 	--vs-controls--deselect-text-shadow: 0 1px 0 #fff;
 
 	/* Selected */
-	--vs-selected-bg: var(--color-surface-1);
+	--vs-selected-bg: var(--color-surface-2);
 	--vs-selected-color: var(--color-base);
 	--vs-selected-border-color: var(--vs-border-color);
 	--vs-selected-border-style: var(--vs-border-style);
@@ -353,12 +350,12 @@ textarea {
 	--vs-dropdown-option-padding: 3px 30px;
 
 	/* Active State */
-	--vs-dropdown-option--active-bg: var(--rarity-color-rare);
+	--vs-dropdown-option--active-bg: orangered;
 	--vs-dropdown-option--active-color: var(--color-surface-0);
 
 	/* Deselect State */
 	--vs-dropdown-option--deselect-bg: var(--rarity-color-exotic);
-	--vs-dropdown-option--deselect-color: var(--color-surface-0);
+	--vs-dropdown-option--deselect-color: white;
 
 	/* Transitions */
 	--vs-transition-timing-function: cubic-bezier(1, -0.115, 0.975, 0.855);

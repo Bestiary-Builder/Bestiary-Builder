@@ -1,6 +1,6 @@
 <template>
 	<div class="content">
-		<h1><span>bestiary builder</span></h1>
+		<h1><span>Bestiary Builder</span></h1>
 		<div class="description">
 			<img class="logo" src="/logo-text.svg" />
 			<p>bla bla bla...</p>
