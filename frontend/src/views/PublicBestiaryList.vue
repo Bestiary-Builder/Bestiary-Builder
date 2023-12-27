@@ -98,7 +98,6 @@ export default defineComponent({
 				let result = await handleApiResponse<{results: Bestiary[]; totalAmount: number}>(response);
 				if (result.success) {
 					let data = result.data as {results: Bestiary[]; totalAmount: number};
-					console.log(data);
 					this.bestiaries = data.results;
 					this.page = 1;
 					this.total = data.totalAmount;
@@ -108,7 +107,7 @@ export default defineComponent({
 					toast.error((result.data as error).error);
 				}
 			});
-			console.log(this.bestiaries);
+			///console.log(this.bestiaries);
 		}
 	}
 });

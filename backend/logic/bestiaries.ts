@@ -108,10 +108,8 @@ app.post("/api/bestiary/:id?/update", requireUser, async (req, res) => {
 		}
 		//Check limits
 		if (!data.creatures) data.creatures = [];
-		log.info(data.tags);
 		if (!data.tags) data.tags = [];
 		else data.tags = data.tags.filter((t) => tags.includes(t));
-		log.info(data.tags);
 		if (data.name.length > limits.nameLength) return res.status(400).json({error: `Name exceeds the character limit of ${limits.nameLength} characters.`});
 		if (data.name.length < limits.nameMin) return res.status(400).json({error: `Name is less than the minimum character limit of ${limits.nameMin} characters.`});
 		if (data.description.length > limits.descriptionLength) return res.status(400).json({error: `Description exceeds the character limit of ${limits.descriptionLength} characters.`});
@@ -286,7 +284,6 @@ app.get("/api/bestiary/:id/bookmark/toggle", requireUser, async (req, res) => {
 		let user = await getUser(req.body.id);
 		if (!user) return res.status(404).json({error: "Couldn't find current user."});
 		//Permissions
-		log.info(checkBestiaryPermission(bestiary, user));
 		if (checkBestiaryPermission(bestiary, user) == "none") {
 			return res.status(401).json({error: "You don't have permission to view this bestiary."});
 		}

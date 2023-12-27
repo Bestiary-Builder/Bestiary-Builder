@@ -44,7 +44,7 @@ export default defineComponent({
 			});
 		} else {
 			this.user = await user;
-			console.log(this.user);
+			///console.log(this.user);
 		}
 	},
 	components: {

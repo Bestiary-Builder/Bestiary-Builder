@@ -37,7 +37,10 @@
 			<div class="modal__bg" v-if="isDeleteModalOpen">
 				<section class="modal__content modal__small" ref="deleteModal" v-if="isDeleteModalOpen">
 					<button @click="isDeleteModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
-					<h2 class="modal-header"> Are you sure you want to delete <u> {{ selectedBestiary?.name }}</u>? </h2>
+					<h2 class="modal-header">
+						Are you sure you want to delete <u> {{ selectedBestiary?.name }}</u
+						>?
+					</h2>
 					<p class="modal-desc">Please confirm you want to permanently delete this bestiary. This action is not reversible.</p>
 					<div class="modal-buttons">
 						<button class="btn" @click="isDeleteModalOpen = false">Cancel</button>
@@ -55,7 +58,7 @@ import {onClickOutside} from "@vueuse/core";
 const isDeleteModalOpen = ref(false);
 const deleteModal = ref<HTMLDivElement | null>(null);
 
-const selectedBestiary =  ref<Bestiary | null>(null);
+const selectedBestiary = ref<Bestiary | null>(null);
 const openDeleteModal = (bestiary: Bestiary) => {
 	selectedBestiary.value = bestiary;
 	isDeleteModalOpen.value = true;
@@ -69,7 +72,7 @@ import {RouterLink} from "vue-router";
 import {defineComponent} from "vue";
 import {handleApiResponse, toast, user} from "@/main";
 import type {User, Bestiary, Creature} from "@/generic/types";
-import { statusEmoji } from "@/generic/displayFunctions";
+import {statusEmoji} from "@/generic/displayFunctions";
 import type {error} from "@/main";
 import UserBanner from "@/components/UserBanner.vue";
 export default defineComponent({
@@ -84,7 +87,7 @@ export default defineComponent({
 		};
 	},
 	async beforeMount() {
-		const loader = this.$loading.show()
+		const loader = this.$loading.show();
 
 		this.userData = await user;
 
@@ -122,7 +125,7 @@ export default defineComponent({
 		},
 		async deleteBestiary(bestiary: Bestiary | null) {
 			if (!bestiary) return;
-			const loader = this.$loading.show()
+			const loader = this.$loading.show();
 			await fetch(`/api/bestiary/${bestiary._id}/delete`).then(async (response) => {
 				let result = await handleApiResponse(response);
 				if (result.success) {
@@ -131,7 +134,7 @@ export default defineComponent({
 					toast.error((result.data as error).error);
 				}
 			});
-			loader.hide()
+			loader.hide();
 			await this.getBestiaries();
 		},
 		async getBestiaries() {
@@ -144,8 +147,8 @@ export default defineComponent({
 					toast.error((result.data as error).error);
 				}
 			});
-			console.log(this.bestiaries);
-		},
+			///console.log(this.bestiaries);
+		}
 	}
 });
 </script>

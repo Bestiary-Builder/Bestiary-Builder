@@ -37,7 +37,8 @@ export const tags = fetch("/api/tags").then(async (response: any) =>
 		else return null;
 	})
 );
-const loginBase = "https://discord.com/api/oauth2/authorize?client_id=1183362236509601813&response_type=code&scope=identify+email";
+const clientId = "1183362236509601813";
+const loginBase = "https://discord.com/api/oauth2/authorize?client_id=" + clientId + "&response_type=code&scope=identify+email";
 export const loginLink = loginBase + "&redirect_uri=" + encodeURIComponent(window.location.origin + "/user");
 
 //Style sheet

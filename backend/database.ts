@@ -22,8 +22,8 @@ export async function startConnection() {
 		collections.bestiaries = database.collection("Bestiaries");
 		collections.creatures = database.collection("Creatures");
 		log.info(`Successfully connected to database: ${database.databaseName}`);
-	} catch (e: any) {
-		log.error(e);
+	} catch (err: any) {
+		log.error(err);
 		// Ensures that the client will close on error
 		await client.close();
 	}
@@ -86,11 +86,11 @@ export async function getUserFromSecret(secret: string) {
 export async function updateUser(data: {_id: string; username: string; avatar: string; email: string; verified: boolean; banner_color: string; global_name: string}) {
 	try {
 		if (await getUser(data._id)) {
-			///log.info("Updating user with id " + data._id.toString());
+			log.info("Updating user with id " + data._id.toString());
 			await collections.users?.updateOne({_id: data._id}, {$set: data});
 			return (await getUser(data._id))?.secret ?? null;
 		} else {
-			///log.info("Adding new user to collection with id " + data._id.toString());
+			log.info("Adding new user to collection with id " + data._id.toString());
 			let userData = data as User;
 			userData._id = data._id;
 			userData.secret = generateUserSecret();
@@ -137,7 +137,7 @@ export async function updateBestiary(data: Bestiary, id?: ObjectId) {
 		data.lastUpdated = new Date(Date.now());
 		if (id) {
 			if (await getBestiary(id)) {
-				///log.info("Updating bestiary with id " + id.toString());
+				log.info("Updating bestiary with id " + id.toString());
 				await collections.bestiaries?.updateOne({_id: id}, {$set: data});
 				return id;
 			} else {
@@ -145,7 +145,7 @@ export async function updateBestiary(data: Bestiary, id?: ObjectId) {
 				return null;
 			}
 		} else {
-			///log.info("Adding new bestiary to collection");
+			log.info("Adding new bestiary to collection");
 			let _id = new ObjectId();
 			data._id = _id;
 			await collections.bestiaries?.insertOne(data);
@@ -198,7 +198,7 @@ export async function updateCreature(data: Creature, id?: ObjectId) {
 		data.lastUpdated = new Date(Date.now());
 		if (id) {
 			if (await getBestiary(data.bestiary)) {
-				///log.info("Updating creature with id " + id.toString());
+				log.info("Updating creature with id " + id.toString());
 				await collections.creatures?.updateOne({_id: id}, {$set: data});
 				//Update bestiary last updated
 				await updateBestiary({} as Bestiary, data.bestiary);
@@ -208,7 +208,7 @@ export async function updateCreature(data: Creature, id?: ObjectId) {
 				return null;
 			}
 		} else {
-			///log.info("Adding new creature to collection");
+			log.info("Adding new creature to collection");
 			let _id = new ObjectId();
 			data._id = _id;
 			await collections.creatures?.insertOne(data);
