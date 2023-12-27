@@ -223,7 +223,7 @@ export function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: s
 		},
 		ac: {
 			ac: data.stats.armorClass,
-			acSource: data.stats.armourType ?? ""
+			acSource: data.stats.armorType ?? ""
 		},
 		conditionImmunities: data.stats.conditionImmunities || [],
 		immunities: parseDamageTypes(data.stats.damageImmunities),

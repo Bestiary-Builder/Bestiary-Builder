@@ -1112,6 +1112,7 @@ export default defineComponent({
 			console.log("Pressed save statblock!");
 			if (!this.rawInfo) return;
 			this.rawInfo.stats = this.data;
+			const loader = this.$loading.show()
 			//Send to backend
 			fetch(`/api/creature/${this.rawInfo._id}/update`, {
 				method: "POST",
@@ -1129,6 +1130,7 @@ export default defineComponent({
 					toast.error("Error: " + (result.data as error).error);
 				}
 			});
+			loader.hide()
 		}
 	},
 	async mounted() {

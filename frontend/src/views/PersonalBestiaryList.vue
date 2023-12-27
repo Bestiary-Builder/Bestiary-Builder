@@ -7,10 +7,12 @@
 			</div>
 
 			<TransitionGroup name="popin">
-				<RouterLink class="content-tile bestiary-tile" v-if="bestiaries" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" :key="bestiary._id">
-					<div class="tile-header">
+				<RouterLink class="content-tile bestiary-tile" v-if="bestiaries" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" :key="bestiary._id"
+					:class="{'four-tall': bestiary.owner != userData?._id}">
+					<div class="tile-header" >
 						<h2>{{ bestiary.name }}</h2>
 					</div>
+					<span class="shared-notice" v-if="bestiary.owner != userData?._id">(shared)</span>
 					<div class="tile-content">
 						<div class="tags">
 							<span class="tag" v-for="tag in bestiary.tags">{{ tag }}</span>
@@ -20,7 +22,9 @@
 					<div class="tile-footer">
 						<span>{{ statusEmoji(bestiary.status) }}{{ bestiary.status }}</span>
 						<span role="button" @click.stop.prevent="openDeleteModal(bestiary)" class="edit-button" v-if="bestiary.owner == userData?._id">🗑️</span>
-						<span class="shared-notice" v-else v-tooltip="'This bestiary has been shared with you by the owner.'">shared</span>
+						<span v-else>
+							<UserBanner :id="bestiary.owner"/>
+						</span>
 						<span>{{ bestiary.creatures.length }}🐉</span>
 					</div>
 				</RouterLink>
@@ -67,8 +71,11 @@ import {handleApiResponse, toast, user} from "@/main";
 import type {User, Bestiary, Creature} from "@/generic/types";
 import { statusEmoji } from "@/generic/displayFunctions";
 import type {error} from "@/main";
-
+import UserBanner from "@/components/UserBanner.vue";
 export default defineComponent({
+	components: {
+		UserBanner
+	},
 	data() {
 		return {
 			bestiaries: [] as Bestiary[],
@@ -172,7 +179,13 @@ export default defineComponent({
 	}
 }
 
+.four-tall {
+	grid-template-rows: 1fr .1fr 6fr 1fr
+}
+
 .shared-notice {
-	text-decoration: underline;
+	margin: auto;
+	color: orangered;
+	translate: 0 -4px;
 }
 </style>

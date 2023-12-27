@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="container">
 		<div class="user" v-if="user">
 			<img alt="avatar" :src="'https://cdn.discordapp.com/avatars/' + user._id + '/' + user.avatar + '.png'" />
 			<span v-if="!user.supporter">{{ user.username }}</span>
@@ -37,6 +37,9 @@ export default defineComponent({
 </script>
 
 <style scoped lang="less">
+.container {
+	white-space: nowrap;
+}
 .user {
 	display: flex;
 	align-items: center;
@@ -44,7 +47,7 @@ export default defineComponent({
 	gap: 0.3rem;
 	& img {
 		height: 1.5rem;
-		border-radius: 50rem;
+		border-radius: 50%;
 		scale: 1.1;
 	}
 }
