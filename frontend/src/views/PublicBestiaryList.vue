@@ -41,7 +41,7 @@
 <script lang="ts">
 import {RouterLink} from "vue-router";
 import {defineComponent} from "vue";
-import type {User, Bestiary, Creature} from "@/components/types";
+import type {User, Bestiary, Creature} from "@/generic/types";
 import UserBanner from "@/components/UserBanner.vue";
 import {handleApiResponse, toast, tags, type error} from "@/main";
 // @ts-ignore

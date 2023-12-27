@@ -32,7 +32,7 @@
 import {RouterLink, RouterView} from "vue-router";
 import UserBanner from "@/components/UserBanner.vue";
 import {user, loginLink} from "@/main";
-import type {User} from "@/components/types";
+import type {User} from "@/generic/types";
 import {defineComponent} from "vue";
 export default defineComponent({
 	name: "NavHeader",

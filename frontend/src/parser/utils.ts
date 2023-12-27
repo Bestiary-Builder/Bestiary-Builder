@@ -1,4 +1,4 @@
-import type {FeatureEntity} from "@/components/types";
+import type { FeatureEntity } from "@/generic/types"
 import YAML from "yaml";
 
 export function abilityParser(fData: any, activationType: number): [FeatureEntity[], string[]] {
