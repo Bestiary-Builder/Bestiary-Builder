@@ -1,0 +1,17 @@
+name: Check status of branch
+on:
+    pull_request:
+        branches:
+            - main
+jobs:
+    build-frontend:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@master
+            - uses: actions/setup-node@master
+            - name: Installing project dependencies
+              working-directory: ./frontend
+              run: npm install
+            - name: Building the frontend
+              working-directory: ./frontend
+              run: npm run build
