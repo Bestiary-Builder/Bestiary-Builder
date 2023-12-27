@@ -4,7 +4,7 @@ on:
         branches:
             - main
 jobs:
-    build-frontend:
+    build-and-push-frontend:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@master
@@ -24,7 +24,7 @@ jobs:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     deploy-to-server:
         runs-on: ubuntu-latest
-        needs: build-frontend
+        needs: build-and-push-frontend
         steps:
             - name: executing remote ssh command
               uses: appleboy/ssh-action@v1.0.0
