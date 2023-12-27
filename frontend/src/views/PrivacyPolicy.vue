@@ -26,7 +26,7 @@ export default defineComponent({
 	flex-direction: column;
 	justify-content: start;
 	align-items: center;
-	margin-bottom: 5rem;
+	padding-bottom: 5rem;
 }
 
 @media screen and (min-width: 1080px) {
