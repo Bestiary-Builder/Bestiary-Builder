@@ -107,7 +107,7 @@ app.post("/api/creature/:id?/update", requireUser, async (req, res) => {
 			image = new URL(image).origin + new URL(image).pathname;
 			data.stats.description.image = image;
 		}
-
+		
 		if (image && image != "") {
 			if (!image.startsWith("https")) return res.status(400).json({error: "Image link not from a secure https location."});
 			let isApproved = false;
