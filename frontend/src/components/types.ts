@@ -19,7 +19,7 @@ export const defaultStatblock = {
 			isHover: false,
 			burrow: 0,
 			swim: 0,
-			climb: 0,
+			climb: 0
 		},
 		senses: {
 			passivePerceptionOverride: null,
@@ -361,7 +361,7 @@ export interface User {
 	global_name: string;
 	bestiaries: string[];
 	bookmarks: string[];
-	supporter: boolean;
+	supporter: 0 | 1 | 2;
 	_id: string;
 }
 
@@ -895,8 +895,56 @@ export const spellList = {
 		"Tether Essence",
 		"Whirlwind"
 	],
-	8: ["Abi-Dalzim's Horrid Wilting", "Animal Shapes", "Antimagic Field", "Antipathy/Sympathy", "Clone", "Control Weather", "Dark Star", "Demiplane", "Dominate Monster", "Earthquake", "Feeblemind", "Glibness", "Holy Aura", "Illusory Dragon", "Incendiary Cloud", "Maddening Darkness", "Maze", "Mighty Fortress", "Mind Blank", "Power Word Stun", "Reality Break", "Sunburst", "Telepathy", "Tsunami"],
-	9: ["Astral Projection", "Blade of Disaster", "Foresight", "Gate", "Imprisonment", "Invulnerability", "Mass Heal", "Mass Polymorph", "Meteor Swarm", "Power Word Heal", "Power Word Kill", "Prismatic Wall", "Psychic Scream", "Ravenous Void", "Shapechange", "Storm of Vengeance", "Time Ravage", "Time Stop", "True Polymorph", "True Resurrection", "Weird", "Wish"]
+	8: [
+		"Abi-Dalzim's Horrid Wilting",
+		"Animal Shapes",
+		"Antimagic Field",
+		"Antipathy/Sympathy",
+		"Clone",
+		"Control Weather",
+		"Dark Star",
+		"Demiplane",
+		"Dominate Monster",
+		"Earthquake",
+		"Feeblemind",
+		"Glibness",
+		"Holy Aura",
+		"Illusory Dragon",
+		"Incendiary Cloud",
+		"Maddening Darkness",
+		"Maze",
+		"Mighty Fortress",
+		"Mind Blank",
+		"Power Word Stun",
+		"Reality Break",
+		"Sunburst",
+		"Telepathy",
+		"Tsunami"
+	],
+	9: [
+		"Astral Projection",
+		"Blade of Disaster",
+		"Foresight",
+		"Gate",
+		"Imprisonment",
+		"Invulnerability",
+		"Mass Heal",
+		"Mass Polymorph",
+		"Meteor Swarm",
+		"Power Word Heal",
+		"Power Word Kill",
+		"Prismatic Wall",
+		"Psychic Scream",
+		"Ravenous Void",
+		"Shapechange",
+		"Storm of Vengeance",
+		"Time Ravage",
+		"Time Stop",
+		"True Polymorph",
+		"True Resurrection",
+		"Weird",
+		"Wish"
+	]
 };
 
 export let spellListFlattened = [];
