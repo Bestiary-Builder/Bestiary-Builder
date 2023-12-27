@@ -65,10 +65,10 @@ export default defineComponent({
 		UserBanner
 	},
 	async beforeMount() {
-		const loader = this.$loading.show()
+		const loader = this.$loading.show();
 		this.tags = (await tags) ?? ([] as string[]);
 		this.searchBestiaries();
-		loader.hide()
+		loader.hide();
 	},
 	watch: {
 		page() {
@@ -115,7 +115,7 @@ export default defineComponent({
 </script>
 
 <style scoped lang="less">
-@import url("../assets/bestiary-list.less");
+@import url("@/assets/bestiary-list.less");
 .search-tile {
 	background-color: orangered;
 

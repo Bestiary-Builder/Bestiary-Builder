@@ -15,7 +15,6 @@
 		"@fortawesome/free-solid-svg-icons": "^6.4.0",
 		"@fortawesome/vue-fontawesome": "^3.0.5",
 		"@highlightjs/vue-plugin": "^2.1.0",
-		"@tsconfig/node18": "^18.2.2",
 		"@vueuse/core": "^10.7.0",
 		"floating-vue": "^2.0.0-beta.20",
 		"js-yaml": "^4.1.0",
@@ -31,6 +30,7 @@
 		"yaml": "^2.3.4"
 	},
 	"devDependencies": {
+		"@tsconfig/node18": "^18.2.2",
 		"@types/markdown-it": "^13.0.7",
 		"@types/vue-select": "^3.16.8",
 		"@vitejs/plugin-vue": "^4.2.3",

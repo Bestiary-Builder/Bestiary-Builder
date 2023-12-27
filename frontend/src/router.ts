@@ -48,9 +48,10 @@ router.beforeEach(async (to, from, next) => {
 		.map((tagDef) => {
 			//Change content of meta tags:
 			if (tagDef.name?.includes("title") || tagDef.itemprop?.includes("name")) tagDef.content = name;
-			else if (tagDef.name?.includes("description") || tagDef.itemprop?.includes("description")) tagDef.content = (current.meta.description ?? "") as string;
-			else if (tagDef.name == "keywords") tagDef.content = (current.meta.keywords ?? "") as string;
-			else if (tagDef.name?.includes("image") || tagDef.itemprop == "image") tagDef.content = (current.meta.image ?? "") as string;
+			else if (tagDef.name?.includes("description") || tagDef.itemprop?.includes("description")) tagDef.content = (current.meta.description ?? tagDef.content) as string;
+			else if (tagDef.name == "keywords") tagDef.content = (current.meta.keywords ?? tagDef.content) as string;
+			else if (tagDef.name?.includes("image") || tagDef.itemprop == "image") tagDef.content = (current.meta.image ?? tagDef.content) as string;
+			else if (tagDef.name?.includes("url")) tagDef.content = location.origin + to.fullPath;
 			//Create meta element
 			const tag = document.createElement("meta");
 			Object.keys(tagDef).forEach((key: string) => {

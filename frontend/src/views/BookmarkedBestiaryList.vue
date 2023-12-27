@@ -41,11 +41,11 @@ export default defineComponent({
 		RouterLink
 	},
 	async beforeMount() {
-		const loader = this.$loading.show()
+		const loader = this.$loading.show();
 
 		this.user = await user;
 		this.getBestiaries();
-		loader.hide()
+		loader.hide();
 	},
 	methods: {
 		async getBestiaries() {
@@ -68,7 +68,7 @@ export default defineComponent({
 </script>
 
 <style scoped lang="less">
-@import url("../assets/bestiary-list.less");
+@import url("@/assets/bestiary-list.less");
 .content-tile .tile-footer {
 	display: grid;
 	grid-template-columns: 1fr 1fr;

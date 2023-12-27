@@ -56,10 +56,10 @@ export default defineComponent({
 		};
 	},
 	async beforeMount() {
-		const loader = this.$loading.show()
+		const loader = this.$loading.show();
 		this.user = await user;
 		this.getBestiaries();
-		loader.hide()
+		loader.hide();
 	},
 	methods: {
 		async createBestiary() {
@@ -133,7 +133,7 @@ export default defineComponent({
 </script>
 
 <style scoped lang="less">
-@import url("../assets/bestiary-list.less");
+@import url("@/assets/bestiary-list.less");
 .create-tile:first-of-type {
 	background-color: orangered;
 	display: flex;

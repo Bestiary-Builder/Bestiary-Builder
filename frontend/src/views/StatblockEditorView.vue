@@ -471,7 +471,12 @@
 					<h2 class="group-header">Skills</h2>
 					<div class="editor-field__container two-wide">
 						<div v-for="(skill, index) in data.abilities.skills" class="flow-vertically">
-							<v-select placeholder="Select a skill" v-model="skill.skillName" :options="['Acrobatics', 'Animal Handling', 'Arcana', 'Athletics', 'Deception', 'History', 'Insight', 'Intimidation', 'Investigation', 'Medicine', 'Nature', 'Perception', 'Performance', 'Persuasion', 'Religion', 'Sleight of Hand', 'Stealth', 'Survival']" :clearable="false" />
+							<v-select
+								placeholder="Select a skill"
+								v-model="skill.skillName"
+								:options="['Acrobatics', 'Animal Handling', 'Arcana', 'Athletics', 'Deception', 'History', 'Insight', 'Intimidation', 'Investigation', 'Medicine', 'Nature', 'Perception', 'Performance', 'Persuasion', 'Religion', 'Sleight of Hand', 'Stealth', 'Survival']"
+								:clearable="false"
+							/>
 							<div class="button-container">
 								<p><label :for="skill.skillName + 'prof'"> Proficient</label> <input type="checkbox" v-model="skill.isProficient" @click="disableOtherSkills(index, 'prof', skill.isProficient)" :id="skill.skillName + 'prof'" /></p>
 								<p><label :for="skill.skillName + 'exp'"> Expertise </label> <input type="checkbox" v-model="skill.isExpertise" @click="disableOtherSkills(index, 'exp', skill.isExpertise)" :id="skill.skillName + 'exp'" /></p>
@@ -557,7 +562,27 @@
 								multiple
 								:deselectFromDropdown="true"
 								:closeOnSelect="false"
-								:options="['Acid', 'Bludgeoning', 'Cold', 'Fire', 'Force', 'Lightning', 'Necrotic', 'Piercing', 'Poison', 'Psychic', 'Radiant', 'Slashing', 'Thunder', 'Nonmagical Bludgeoning', 'Nonmagical Piercing', 'Nonmagical Slashing', 'Nonmagical Nonsilvered Bludgeoning', 'Nonmagical Nonsilvered Piercing', 'Nonmagical Nonsilvered Slashing']"
+								:options="[
+									'Acid',
+									'Bludgeoning',
+									'Cold',
+									'Fire',
+									'Force',
+									'Lightning',
+									'Necrotic',
+									'Piercing',
+									'Poison',
+									'Psychic',
+									'Radiant',
+									'Slashing',
+									'Thunder',
+									'Nonmagical Bludgeoning',
+									'Nonmagical Piercing',
+									'Nonmagical Slashing',
+									'Nonmagical Nonsilvered Bludgeoning',
+									'Nonmagical Nonsilvered Piercing',
+									'Nonmagical Nonsilvered Slashing'
+								]"
 								:taggable="true"
 								:pushTags="true"
 								id="vulnerabilities"
@@ -571,7 +596,27 @@
 								multiple
 								:deselectFromDropdown="true"
 								:closeOnSelect="false"
-								:options="['Acid', 'Bludgeoning', 'Cold', 'Fire', 'Force', 'Lightning', 'Necrotic', 'Piercing', 'Poison', 'Psychic', 'Radiant', 'Slashing', 'Thunder', 'Nonmagical Bludgeoning', 'Nonmagical Piercing', 'Nonmagical Slashing', 'Nonmagical Nonsilvered Bludgeoning', 'Nonmagical Nonsilvered Piercing', 'Nonmagical Nonsilvered Slashing']"
+								:options="[
+									'Acid',
+									'Bludgeoning',
+									'Cold',
+									'Fire',
+									'Force',
+									'Lightning',
+									'Necrotic',
+									'Piercing',
+									'Poison',
+									'Psychic',
+									'Radiant',
+									'Slashing',
+									'Thunder',
+									'Nonmagical Bludgeoning',
+									'Nonmagical Piercing',
+									'Nonmagical Slashing',
+									'Nonmagical Nonsilvered Bludgeoning',
+									'Nonmagical Nonsilvered Piercing',
+									'Nonmagical Nonsilvered Slashing'
+								]"
 								:taggable="true"
 								:pushTags="true"
 								id="resistances"
@@ -585,7 +630,27 @@
 								multiple
 								:deselectFromDropdown="true"
 								:closeOnSelect="false"
-								:options="['Acid', 'Bludgeoning', 'Cold', 'Fire', 'Force', 'Lightning', 'Necrotic', 'Piercing', 'Poison', 'Psychic', 'Radiant', 'Slashing', 'Thunder', 'Nonmagical Bludgeoning', 'Nonmagical Piercing', 'Nonmagical Slashing', 'Nonmagical Nonsilvered Bludgeoning', 'Nonmagical Nonsilvered Piercing', 'Nonmagical Nonsilvered Slashing']"
+								:options="[
+									'Acid',
+									'Bludgeoning',
+									'Cold',
+									'Fire',
+									'Force',
+									'Lightning',
+									'Necrotic',
+									'Piercing',
+									'Poison',
+									'Psychic',
+									'Radiant',
+									'Slashing',
+									'Thunder',
+									'Nonmagical Bludgeoning',
+									'Nonmagical Piercing',
+									'Nonmagical Slashing',
+									'Nonmagical Nonsilvered Bludgeoning',
+									'Nonmagical Nonsilvered Piercing',
+									'Nonmagical Nonsilvered Slashing'
+								]"
 								:taggable="true"
 								:pushTags="true"
 								id="immunities"
@@ -770,104 +835,79 @@
 							</div>
 						</div>
 
-                    <div class="flow-vertically">
-                        <label class="editor-field__title" for="castingabilityoverride"><span class="text">ability override</span></label>
-                        <p>
-                            <v-select 
-                                :options="['str', 'dex', 'con', 'wis', 'int', 'cha']" 
-                                v-model="data.spellcasting.casterSpells.spellCastingAbilityOverride" 
-                                inputId="castingabilityoverride"    
-                            />
-                            <span class="delete-button" @click="data.spellcasting.casterSpells.spellCastingAbilityOverride = null" aria-label="Delete spellcasting ability override">🗑️</span>
-                        </p>
-                    </div>
-                </div>
+						<div class="flow-vertically">
+							<label class="editor-field__title" for="castingabilityoverride"><span class="text">ability override</span></label>
+							<p>
+								<v-select :options="['str', 'dex', 'con', 'wis', 'int', 'cha']" v-model="data.spellcasting.casterSpells.spellCastingAbilityOverride" inputId="castingabilityoverride" />
+								<span class="delete-button" @click="data.spellcasting.casterSpells.spellCastingAbilityOverride = null" aria-label="Delete spellcasting ability override">🗑️</span>
+							</p>
+						</div>
+					</div>
 
-                <div v-if="data.spellcasting.casterSpells.castingClass" class="editor-field__container two-wide">
-                    <div class="flow-vertically" v-if="!['Ranger', 'Paladin'].includes(data.spellcasting.casterSpells.castingClass)"> 
-                        <label class="edit-field__title" for="cantrips" > <span class="text">cantrips</span> </label>
-                        <v-select 
-                            v-model="data.spellcasting.casterSpells.spellList[0]"
-                            :options="spellList[0]" 
-                            multiple           
-                            :deselectFromDropdown="true"
-                            :closeOnSelect="false"          
-                            :taggable="true"
-                            :pushTags="true"
-                            inputId="cantrips"
-                        /> 
-                    </div>
-                    <div class="flow-vertically" v-for="level in spellLevelList()">
-                        <label class="edit-field__title" :for="'levelspells'+level" ><span class="text">level {{ level }}</span></label>
-                        <v-select 
-                            v-model="data.spellcasting.casterSpells.spellList[level]"
-                            :options="getSpellsByLevel(level)" 
-                            multiple       
-                            :deselectFromDropdown="true"
-                            :closeOnSelect="false"              
-                            :taggable="true"
-                            :pushTags="true"
-                            :inputId="'levelspells'+level"
-                        /> 
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <hr />
-
-        <div class="save-button">
-            <button class="btn" @click="isModalOpen = true"> open import modal </button>
-        </div>
-        <div class="save-button">
-            <button class="btn" @click="saveStatblock()"> save statblock </button>
-        </div> 
-    </div>
-    <div class="content-container__inner"> 
-        <StatblockRenderer :data='data'/>
-    </div>
-
-    <Teleport to="#modal">
-		<Transition name="modal">
-			<div class="modal__bg" v-if="isModalOpen">
-				<section class="modal__content modal__small" ref="modal">
-					<button @click="isModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
-					<h2 class="modal-header">import from 5e tools</h2>
-					
-                    <div class="modal-desc">
-                        <p>
-                            <b>CritterDB json input: </b>
-                            <input type="text" v-model="toolsjson"/>
-                        </p>
-
-                        <div v-if="JSON.stringify(notices) !== '{}'">
-                            <p class="warning"> <b>Please note the following for this import:</b> </p>
-                            <p> 
-                                Some features may not have automation as they should, aka description only features, but some might not have imported correctly or are missing certain parts. 
-                                It is recommended to review.
-                            </p>
-                            <div v-for="type, index in notices">
-                                <h3 v-if="type.length > 0"> {{ index }} </h3>
-                                <ul v-if="type.length > 0"> 
-                                    <li v-for="notice in type">
-                                        {{ notice }}
-                                    </li>    
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div class="modal-buttons">
-                            <button class="btn cancel-button" @click="isModalOpen=false">Cancel</button>
-                            <button class="btn confirm-button" @click.prevent="import5etools()">import</button>
-					    </div>
-                    </div>
-				</section>
+					<div v-if="data.spellcasting.casterSpells.castingClass" class="editor-field__container two-wide">
+						<div class="flow-vertically" v-if="!['Ranger', 'Paladin'].includes(data.spellcasting.casterSpells.castingClass)">
+							<label class="edit-field__title" for="cantrips"> <span class="text">cantrips</span> </label>
+							<v-select v-model="data.spellcasting.casterSpells.spellList[0]" :options="spellList[0]" multiple :deselectFromDropdown="true" :closeOnSelect="false" :taggable="true" :pushTags="true" inputId="cantrips" />
+						</div>
+						<div class="flow-vertically" v-for="level in spellLevelList()">
+							<label class="edit-field__title" :for="'levelspells' + level"
+								><span class="text">level {{ level }}</span></label
+							>
+							<v-select v-model="data.spellcasting.casterSpells.spellList[level]" :options="getSpellsByLevel(level)" multiple :deselectFromDropdown="true" :closeOnSelect="false" :taggable="true" :pushTags="true" :inputId="'levelspells' + level" />
+						</div>
+					</div>
+				</div>
 			</div>
-		</Transition>
-	</Teleport>
-</div>
 
+			<hr />
 
+			<div class="save-button">
+				<button class="btn" @click="isModalOpen = true">open import modal</button>
+			</div>
+			<div class="save-button">
+				<button class="btn" @click="saveStatblock()">save statblock</button>
+			</div>
+		</div>
+		<div class="content-container__inner">
+			<StatblockRenderer :data="data" />
+		</div>
+
+		<Teleport to="#modal">
+			<Transition name="modal">
+				<div class="modal__bg" v-if="isModalOpen">
+					<section class="modal__content modal__small" ref="modal">
+						<button @click="isModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
+						<h2 class="modal-header">import from 5e tools</h2>
+
+						<div class="modal-desc">
+							<p>
+								<b>CritterDB json input: </b>
+								<input type="text" v-model="toolsjson" />
+							</p>
+
+							<div v-if="JSON.stringify(notices) !== '{}'">
+								<p class="warning"><b>Please note the following for this import:</b></p>
+								<p>Some features may not have automation as they should, aka description only features, but some might not have imported correctly or are missing certain parts. It is recommended to review.</p>
+								<div v-for="(type, index) in notices">
+									<h3 v-if="type.length > 0">{{ index }}</h3>
+									<ul v-if="type.length > 0">
+										<li v-for="notice in type">
+											{{ notice }}
+										</li>
+									</ul>
+								</div>
+							</div>
+
+							<div class="modal-buttons">
+								<button class="btn cancel-button" @click="isModalOpen = false">Cancel</button>
+								<button class="btn confirm-button" @click.prevent="import5etools()">import</button>
+							</div>
+						</div>
+					</section>
+				</div>
+			</Transition>
+		</Teleport>
+	</div>
 </template>
 <script setup lang="ts">
 import {ref} from "vue";
@@ -882,62 +922,89 @@ onClickOutside(modal, () => (isModalOpen.value = false));
 <script lang="ts">
 import {RouterLink, RouterView} from "vue-router";
 import {defineComponent, watch} from "vue";
-import StatblockRenderer from "../components/StatblockRenderer.vue";
+import StatblockRenderer from "@/components/StatblockRenderer.vue";
 import type {InnateSpellsEntity, InnateSpellsList, SkillsEntity, Statblock, Creature} from "@/components/types";
 import {defaultStatblock, getSpellSlots, spellList, spellListFlattened} from "@/components/types";
 import {handleApiResponse, type error, toast, asyncLimits, type limitsType} from "@/main";
 import FeatureWidget from "@/components/FeatureWidget.vue";
-import { parseFrom5eTools } from "../parser/parseFrom5eTools"
+import {parseFrom5eTools} from "../parser/parseFrom5eTools";
 export default defineComponent({
 	components: {
 		StatblockRenderer,
 		FeatureWidget
 	},
-    data() {
-        return {
-            slideIndex: 2, // showSlides checks if new is equal to current, so if we instantiate to 1 we can't change to 1 to apply the styling,
-            data: defaultStatblock as Statblock,
-            rawInfo: null as Creature | null,
-            list: [] as string[],
-            getSpellSlots: getSpellSlots,
-            spellList: spellList,
-            spellListFlattened: spellListFlattened,
-            innateSpells: {
-                0: [] as string[],
-                1: [] as string[],
-                2: [] as string[],
-                3: [] as string[]
-            } as {[key: number]: string[]},
-            limits: {} as limitsType,
-            languages: ["All", "All languages it knew in life", "Abyssal", "Aarakocra", "Aquan", "Auran", "Celestial", "Common", "Deep Speech", "Draconic", "Druidic", "Dwarvish", "Elvish", "Giant", "Gith", "Gnomish", "Goblin", "Halfling", "Ignan", "Infernal", "Orc", "Primordial", "Sylvan", "Terran", "Thieves' Cant", "Undercommon", "Understands the languages of its creator but can't speak"],
-            featureGenerator: {
-                "features": "New Feature",
-                "actions": "New Action",
-                "bonus": "New Bonus Action",
-                "reactions": "New Reaction",
-                "legendary": "New Legendary Action",
-                "lair": "New Lair Action",
-                "mythic": "New Mythic Action",
-                "regional": "New Regional Effect"
-            },
-            toolsjson: "" as string,
-            notices: {} as {[key: string] : string[]},
-        }
-    },
-    methods: {
-        import5etools() : void {
-            try {
-                [this.data, this.notices] = parseFrom5eTools(JSON.parse(this.toolsjson))
-                this.toolsjson = ""
-                toast.success("Successfully imported " + this.data.description.name)
-            } catch (e) {
-                console.error(e)
-                toast.error("Failed to import this creature")
-            }
-            
-        },
-        showSlides(n: number): void {
-            if (this.slideIndex == n) return;
+	data() {
+		return {
+			slideIndex: 2, // showSlides checks if new is equal to current, so if we instantiate to 1 we can't change to 1 to apply the styling,
+			data: defaultStatblock as Statblock,
+			rawInfo: null as Creature | null,
+			list: [] as string[],
+			getSpellSlots: getSpellSlots,
+			spellList: spellList,
+			spellListFlattened: spellListFlattened,
+			innateSpells: {
+				0: [] as string[],
+				1: [] as string[],
+				2: [] as string[],
+				3: [] as string[]
+			} as {[key: number]: string[]},
+			limits: {} as limitsType,
+			languages: [
+				"All",
+				"All languages it knew in life",
+				"Abyssal",
+				"Aarakocra",
+				"Aquan",
+				"Auran",
+				"Celestial",
+				"Common",
+				"Deep Speech",
+				"Draconic",
+				"Druidic",
+				"Dwarvish",
+				"Elvish",
+				"Giant",
+				"Gith",
+				"Gnomish",
+				"Goblin",
+				"Halfling",
+				"Ignan",
+				"Infernal",
+				"Orc",
+				"Primordial",
+				"Sylvan",
+				"Terran",
+				"Thieves' Cant",
+				"Undercommon",
+				"Understands the languages of its creator but can't speak"
+			],
+			featureGenerator: {
+				features: "New Feature",
+				actions: "New Action",
+				bonus: "New Bonus Action",
+				reactions: "New Reaction",
+				legendary: "New Legendary Action",
+				lair: "New Lair Action",
+				mythic: "New Mythic Action",
+				regional: "New Regional Effect"
+			},
+			toolsjson: "" as string,
+			notices: {} as {[key: string]: string[]}
+		};
+	},
+	methods: {
+		import5etools(): void {
+			try {
+				[this.data, this.notices] = parseFrom5eTools(JSON.parse(this.toolsjson));
+				this.toolsjson = "";
+				toast.success("Successfully imported " + this.data.description.name);
+			} catch (e) {
+				console.error(e);
+				toast.error("Failed to import this creature");
+			}
+		},
+		showSlides(n: number): void {
+			if (this.slideIndex == n) return;
 
 			let slides = document.getElementsByClassName("editor-content__tab-inner") as HTMLCollectionOf<HTMLElement>;
 
@@ -1072,7 +1139,7 @@ export default defineComponent({
 		}
 	},
 	async mounted() {
-		const loader = this.$loading.show()
+		const loader = this.$loading.show();
 		this.limits = (await asyncLimits) ?? ({} as limitsType);
 		console.log("Statblock id: " + this.$route.params.id);
 		this.showSlides(1);
@@ -1090,12 +1157,12 @@ export default defineComponent({
 		});
 
 		this.innateSpells = {
-			0: this.data.spellcasting.innateSpells.spellList[0].map(spell => spell.spell),
-			1: this.data.spellcasting.innateSpells.spellList[1].map(spell => spell.spell),
-			2: this.data.spellcasting.innateSpells.spellList[2].map(spell => spell.spell),
-			3: this.data.spellcasting.innateSpells.spellList[3].map(spell => spell.spell),
-		}
-		loader.hide()
+			0: this.data.spellcasting.innateSpells.spellList[0].map((spell) => spell.spell),
+			1: this.data.spellcasting.innateSpells.spellList[1].map((spell) => spell.spell),
+			2: this.data.spellcasting.innateSpells.spellList[2].map((spell) => spell.spell),
+			3: this.data.spellcasting.innateSpells.spellList[3].map((spell) => spell.spell)
+		};
+		loader.hide();
 	},
 	watch: {
 		"data.spellcasting.casterSpells.castingClass"(newValue, oldValue) {
@@ -1157,7 +1224,7 @@ export default defineComponent({
 					}
 					// remove all falsy (null/undefined/etc) from our array which delete leaves behind.
 					list[times] = list[times].filter(Boolean);
-				} 
+				}
 			},
 			deep: true
 		},
@@ -1414,23 +1481,23 @@ hr {
 }
 
 .modal-desc {
-    margin-top: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+	margin-top: 1rem;
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
 }
 
 .modal-buttons {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
+	display: flex;
+	gap: 1rem;
+	justify-content: center;
 
-    & .btn {
-        font-size: 1.2rem;
+	& .btn {
+		font-size: 1.2rem;
 
-        &.confirm-button {
-            background-color: var(--color-success)
-        }
-    }
+		&.confirm-button {
+			background-color: var(--color-success);
+		}
+	}
 }
 </style>
