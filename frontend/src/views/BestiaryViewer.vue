@@ -1,6 +1,6 @@
 <template>
 	<div class="content">
-		<h1><span>Bestiary Viewer </span></h1>
+		<h1><span>bestiary viewer </span></h1>
 		<div class="bestiary" v-if="bestiary">
 			<div class="tile-container list-tiles">
 				<div class="content-tile header-tile">
@@ -222,64 +222,42 @@ export default defineComponent({
 		});
 	},
 	async beforeMount() {
-		const loader = this.$loading.show()
-
 		this.user = await user;
-
 		await this.getBestiary();
-		loader.hide()
+		console.log(this.bestiary);
+		console.log(this.creatures);
 	},
 	methods: {
 		async importBestiaryFromCritterDB() {
-			let link = this.critterDbId.trim()
-			let isPublic = link.includes("publishedbestiary")
-			if (!link.startsWith("https://critterdb.com") && !link.startsWith("critterdb.com")) {
-				toast.error("Are you sure this is a link to a critterDB bestiary?")
-				return;
-			}
-
-			let linkEls = link.split("/")
-			link = linkEls[linkEls.length-1]
-
 			let data = {} as {
 				name: string;
 				description: string;
 				creatures: object[]
 			}
-			let hasFailed = false;
 			toast.info("Fetching bestiary data has started. This may take a while.")
-			let loader = this.$loading.show()
-			await fetch(`/api/critterdb/${link}/${isPublic}`)
+			await fetch(`/api/critterdb/${this.critterDbId /* ID */}/false`)
 			.then((response) => handleApiResponse<any>(response))
 			.then((result) => {
 				if (result.success) {
 					data = result.data
-					loader.hide()
 				} else {
 					toast.error((result.data as error).error);
-					hasFailed = true;
 				}
 			});
 
-			if (hasFailed) {
-				return;
-			}
-
-			loader = this.$loading.show()
 			toast.info("Importing creatures has started. This may take a while.")
 			let index = 0
 			for (let creature of data.creatures) {
 				let stats;
 				try {
 					stats = parseFromCritterDB(creature)
-					await this.createCreature(stats[0], false)
+					// only refresh bestiary on screen every 5 creatures
+					await this.createCreature(stats[0], index % 5 == 0)
+					index++
 				} catch (e) {
 					console.error(e)
 				}
-				index++
 			}
-			await this.getBestiary()
-			loader.hide()
 			toast.success("Importing has finished!")
 		},
 		async createCreature(stats = defaultStatblock, shouldRefresh=true) {
@@ -447,6 +425,7 @@ export default defineComponent({
 		"bestiary.status"(newValue, oldValue): void {
 			if (newValue == "private") this.showWarning = false;
 			if (newValue == "public") this.showWarning = true;
+			console.log(newValue, oldValue);
 		}
 	}
 });
@@ -461,6 +440,42 @@ export default defineComponent({
 	label {
 		font-weight: bold;
 		text-decoration: underline;
+	}
+}
+.content {
+	margin: 1rem 5vw;
+
+	& h1 {
+		text-align: center;
+		margin-bottom: 2rem;
+		font-size: 3rem;
+
+		& span {
+			border-bottom: 4px solid orangered;
+			padding: 0 10rem;
+		}
+	}
+}
+
+@media screen and (max-width: 1800px) {
+	.content h1 span {
+		padding: 0 7rem;
+	}
+}
+
+@media screen and (max-width: 1550px) {
+	.content h1 span {
+		padding: 0 4rem;
+	}
+}
+
+@media screen and (max-width: 1050px) {
+	.content h1 {
+		font-size: 2rem;
+
+		span {
+			padding: 0 2rem;
+		}
 	}
 }
 
@@ -535,6 +550,7 @@ export default defineComponent({
 		cursor: unset;
 
 		& h2 {
+			text-transform: lowercase;
 			text-align: center;
 			border-bottom: 1px dotted white;
 		}

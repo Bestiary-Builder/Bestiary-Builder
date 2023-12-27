@@ -1,6 +1,6 @@
 <template>
 	<div class="content privacy">
-		<h1><span>Privacy Policy</span></h1>
+		<h1><span>privacy policy</span></h1>
 		<div v-if="content" v-html="content"></div>
 	</div>
 </template>
@@ -45,6 +45,7 @@ export default defineComponent({
 		margin-top: 1.5rem;
 		font-size: 2rem;
 		border-bottom: 1px solid orangered;
+		text-transform: lowercase;
 	}
 }
 </style>

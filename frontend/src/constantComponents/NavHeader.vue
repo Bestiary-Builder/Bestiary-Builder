@@ -131,6 +131,7 @@ export default defineComponent({
 	min-width: 10vw;
 	text-align: center;
 	border-left: 1px solid orangered;
+	text-transform: lowercase;
 }
 .nav-link:last-of-type {
 	border-right: 1px solid orangered;

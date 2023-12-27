@@ -64,26 +64,12 @@ app.use(ToastPlugin, {
 	dismissible: true
 });
 export const toast = app.config.globalProperties.$toast;
-
-// Loading animation 
-import {LoadingPlugin} from 'vue-loading-overlay';
-import 'vue-loading-overlay/dist/css/index.css';
-app.use(LoadingPlugin, {
-	loader: "bars",
-	color: "orangered",
-	backgroundColor: "black",
-	height: 128,
-	width: 128
-});
-
 //Font-Awesome-Icons
 import {library} from "@fortawesome/fontawesome-svg-core";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faStopwatch, faMap, faLocationPin, faClock, faRuler, faStar, faHashtag, faArrowDown19, faHourglass} from "@fortawesome/free-solid-svg-icons";
 import {faTwitter, faFacebook, faDiscord, faInstagram} from "@fortawesome/free-brands-svg-icons";
 library.add(faTwitter, faFacebook, faDiscord, faInstagram, faStopwatch, faMap, faLocationPin, faClock, faRuler, faStar, faHashtag, faArrowDown19, faHourglass);
-
-
 app.component("font-awesome-icon", FontAwesomeIcon);
 // @ts-ignore Vue Select
 import vSelect from "vue-select";
