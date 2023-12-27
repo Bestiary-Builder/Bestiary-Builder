@@ -404,9 +404,17 @@ export function parseFromCritterDB(data=tData[0] as any) : [Statblock, {[key: st
                 }
             }
         }
-        return {
+        console.log({
             spellList: {
                 0: innateSpellListConstructor(atWillMatch?.groups?.spells || ""),
+                1: oncePerDay,
+                2: twicePerDay,
+                3: thricePerDay
+            }
+        })
+        return {
+            spellList: {
+                0: innateSpellListConstructor(atWillMatch?.groups?.spells || "") || [],
                 1: oncePerDay,
                 2: twicePerDay,
                 3: thricePerDay
@@ -422,9 +430,7 @@ export function parseFromCritterDB(data=tData[0] as any) : [Statblock, {[key: st
     let [features, FnoteList] =  abilityParser(data.stats.additionalAbilities, 2)
 	let [actions, AnoteList] =  abilityParser(data.stats.actions, 1)
 	let [bonus, BnoteList] =  [[], []]
-    console.log(data.stats.reactions)
 	let [reactions, RnoteList] =  abilityParser(data.stats.reactions, 4)
-    console.log(reactions)
 	let [legendary, LenoteList] =  abilityParser(data.stats.legendaryActions, 9)
 	let [lair, LanoteList] = [[], []]
 	let [mythic, MnoteList] =  [[], []]
@@ -493,6 +499,8 @@ function spellListConstructor(spells: string) : string[] {
 
 
 function innateSpellListConstructor(spellString: string) : InnateSpellsEntity[] {
+    if (spellString == "") return []
+
     let output = []
 
     let spellList = spellString.split(', ')
