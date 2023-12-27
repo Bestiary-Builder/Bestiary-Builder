@@ -30,7 +30,7 @@ export const defaultMetaTags = [
 	},
 	{
 		name: "image",
-		content: ""
+		content: "https://bestiary.stevnbak.dk/logo.svg"
 	},
 	{
 		name: "description",
@@ -47,7 +47,7 @@ export const defaultMetaTags = [
 	},
 	{
 		itemprop: "image",
-		content: ""
+		content: "https://bestiary.stevnbak.dk/logo.svg"
 	},
 	//Twitter
 	{
@@ -68,7 +68,7 @@ export const defaultMetaTags = [
 	},
 	{
 		name: "twitter:image:src",
-		content: ""
+		content: "https://bestiary.stevnbak.dk/logo.svg"
 	},
 	//Open Graph general (Facebook, Pinterest & Google+)
 	{
@@ -81,19 +81,19 @@ export const defaultMetaTags = [
 	},
 	{
 		name: "og:image",
-		content: ""
+		content: "https://bestiary.stevnbak.dk/logo.svg"
 	},
 	{
 		name: "og:url",
-		content: ""
+		content: "https://bestiary.stevnbak.dk"
 	},
 	{
 		name: "og:site_name",
-		content: ""
+		content: "Bestiary Builder"
 	},
 	{
 		name: "og:type",
-		content: ""
+		content: "website"
 	}
 ] as metaTag[];
 

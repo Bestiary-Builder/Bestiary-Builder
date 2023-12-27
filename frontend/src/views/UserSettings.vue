@@ -19,7 +19,7 @@
 
 <script lang="ts">
 import {defineComponent} from "vue";
-import type {User, Bestiary, Creature} from "@/components/types";
+import type {User, Bestiary, Creature} from "@/generic/types";
 import UserBanner from "@/components/UserBanner.vue";
 import {user, loginLink, handleApiResponse, toast, type error} from "@/main";
 export default defineComponent({
@@ -44,7 +44,7 @@ export default defineComponent({
 			});
 		} else {
 			this.user = await user;
-			console.log(this.user);
+			///console.log(this.user);
 		}
 	},
 	components: {

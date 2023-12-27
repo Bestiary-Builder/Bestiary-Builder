@@ -50,6 +50,14 @@ a {
 	&:hover {
 		background-color: rgb(44, 45, 47);
 	}
+
+	&.confirm {
+		background-color: var(--color-success);
+	}
+
+	&.danger {
+		background-color: var(--color-destructive);
+	}
 }
 
 hr {
@@ -84,7 +92,7 @@ textarea {
 .content {
 	padding: 1rem 5vw;
 	background-image: url("/bg_black.png");
-	min-height: 80vh;
+	min-height: 100vh;
 	& h1 {
 		text-align: center;
 		margin-bottom: 2rem;
@@ -198,6 +206,26 @@ textarea {
 .modal-header {
 	border-bottom: 1px solid orangered;
 }
+
+.modal-buttons {
+	display: flex;
+	gap: 1rem;
+	justify-content: center;
+	margin-top: 2rem;
+
+	& button {
+		padding: 0.5rem 1rem;
+		border: none;
+		cursor: pointer;
+
+		transition: all 0.3s ease;
+		&:hover {
+			scale: 1.05;
+			filter: brightness(1.05);
+		}
+	}
+}
+
 @media screen and (max-width: 900px) {
 	.modal__bg {
 		top: 6%;

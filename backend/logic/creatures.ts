@@ -42,13 +42,10 @@ app.get("/api/bestiary/:id/creatures", possibleUser, async (req, res) => {
 			if (checkBestiaryPermission(bestiary, user) != "none") {
 				let creatures = [];
 				for (let creatureId of bestiary.creatures) {
-					log.info(creatureId);
 					let creature = await collections.creatures?.findOne({_id: new ObjectId(creatureId)});
-					log.info(creature?._id);
 					if (creature) creatures.push(creature);
 				}
 				log.info(`Retrieved creatures from bestiary with the id ${bestiaryId}`);
-				log.info(creatures);
 				return res.json(creatures);
 			} else {
 				return res.status(401).json({error: "You don't have permission to view this bestiary."});
@@ -107,21 +104,22 @@ app.post("/api/creature/:id?/update", requireUser, async (req, res) => {
 			image = new URL(image).origin + new URL(image).pathname;
 			data.stats.description.image = image;
 		}
-		
+
 		let failedToImportImage = false;
 		if (image && image != "") {
 			if (!image.startsWith("https")) {
-				data.stats.description.image = ""
-				failedToImportImage = true
-			} 
-			let isApproved = false;
-			if (!failedToImportImage) for (let format of limits.imageFormats) {
-				if (image.endsWith("." + format)) isApproved = true;
+				data.stats.description.image = "";
+				failedToImportImage = true;
 			}
+			let isApproved = false;
+			if (!failedToImportImage)
+				for (let format of limits.imageFormats) {
+					if (image.endsWith("." + format)) isApproved = true;
+				}
 			if (!isApproved) {
-				data.stats.description.image = ""
-				failedToImportImage = true
-			} 
+				data.stats.description.image = "";
+				failedToImportImage = true;
+			}
 		}
 		//Update or add
 		if (id) {

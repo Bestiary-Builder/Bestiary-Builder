@@ -6,13 +6,19 @@
 					<div id="footer-sitetitle" class="mw-wiki-title">Bestiary Builder</div>
 					<p id="footer-desc">Welcome to Bestiary Builder</p>
 				</div>
-				<!--<nav id="footer-places">
+				<nav id="footer-places">
 					<ul>
-						<li id="footer-places-privacy">
-							<a href="https://github.com/Stevnbak/Bestiary-Builder" title="Edit on Github">Edit on Github<font-awesome-icon icon="fa-brands fa-github" /></a>
+						<li id="footer-places-github">
+							<a href="https://github.com/Stevnbak/Bestiary-Builder" target="_blank" title="Edit on Github">Github<font-awesome-icon icon="fa-brands fa-github" /></a>
+						</li>
+						<li id="footer-places-patreon">
+							<a href="https://patreon.com/BestiaryBuilder" target="_blank" title="Support us on Patreon">Patreon<font-awesome-icon icon="fa-brands fa-patreon" /></a>
+						</li>
+						<li id="footer-places-discord">
+							<a href="https://discord.gg/a6bwXCSymN" target="_blank" title="Join our Discord server">Discord<font-awesome-icon icon="fa-brands fa-discord" /></a>
 						</li>
 					</ul>
-				</nav>-->
+				</nav>
 				<nav id="footer-places">
 					<ul>
 						<li id="footer-places-privacy">
@@ -20,9 +26,6 @@
 						</li>
 						<li id="footer-places-terms">
 							<a href="/terms-and-conditions" title="Terms And Conditions">Terms And Conditions<font-awesome-icon icon="fa-solid fa-scale-balanced" /></a>
-						</li>
-						<li id="footer-places-discord">
-							<a href="/privacy-policy" title="Discord">Discord<font-awesome-icon icon="fa-brands fa-discord" /></a>
 						</li>
 					</ul>
 				</nav>

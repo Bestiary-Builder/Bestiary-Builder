@@ -25,10 +25,9 @@
 import {RouterLink} from "vue-router";
 import {defineComponent} from "vue";
 import UserBanner from "@/components/UserBanner.vue";
-import type {User, Bestiary, Creature} from "@/components/types";
+import type {User, Bestiary} from "@/generic/types";
 import {handleApiResponse, toast, user} from "@/main";
 import type {error} from "@/main";
-
 export default defineComponent({
 	data() {
 		return {
@@ -41,11 +40,11 @@ export default defineComponent({
 		RouterLink
 	},
 	async beforeMount() {
-		const loader = this.$loading.show()
+		const loader = this.$loading.show();
 
 		this.user = await user;
 		this.getBestiaries();
-		loader.hide()
+		loader.hide();
 	},
 	methods: {
 		async getBestiaries() {
@@ -58,17 +57,14 @@ export default defineComponent({
 					toast.error((result.data as error).error);
 				}
 			});
-			console.log(this.bestiaries);
-		},
-		statusEmoji(status: "public" | "private" | "unlisted"): string {
-			return status == "public" ? "🌍" : status == "private" ? "🔒" : "🔗";
+			///console.log(this.bestiaries);
 		}
 	}
 });
 </script>
 
 <style scoped lang="less">
-@import url("../assets/bestiary-list.less");
+@import url("@/assets/bestiary-list.less");
 .content-tile .tile-footer {
 	display: grid;
 	grid-template-columns: 1fr 1fr;

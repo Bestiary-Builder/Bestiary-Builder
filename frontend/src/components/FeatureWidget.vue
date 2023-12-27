@@ -68,7 +68,7 @@ import YAML from "yaml";
 // @ts-ignore
 import CodeEditor from "simple-code-editor";
 import {toast, handleApiResponse, type error} from "@/main";
-import {type FeatureEntity} from "./types";
+import {type FeatureEntity} from "../generic/types";
 export default defineComponent({
 	props: ["type", "index", "data"],
 	data() {
@@ -95,9 +95,7 @@ export default defineComponent({
 		fetch("/api/basic-examples/list").then(async (response: any) => {
 			let result = await handleApiResponse<string[]>(response);
 			if (result.success) this.basicExamples = result.data as string[];
-			
 			else this.basicExamples = [];
-			
 		});
 		fetch("/api/srd-features/list").then(async (response: any) => {
 			let result = await handleApiResponse<string[]>(response);
@@ -141,10 +139,10 @@ export default defineComponent({
 			});
 			if (!example) return;
 			//Add info to feat
-			if (this.feat.name == "New Feature" || !this.hasEditedName ) this.feat.name = example.name;
+			if (this.feat.name == "New Feature" || !this.hasEditedName) this.feat.name = example.name;
 			this.feat.description = example.description ?? "";
 			this.automationString = YAML.stringify(example.automation);
-			this.saveAutomation(false)
+			this.saveAutomation(false);
 			setTimeout(() => {
 				let els = document.querySelectorAll(".language-yaml") as NodeListOf<HTMLElement>;
 				for (let e in els) {
@@ -168,10 +166,10 @@ export default defineComponent({
 			});
 			if (!feature) return;
 			//Add info to feat
-			if (this.feat.name == "New Feature" || !this.hasEditedName ) this.feat.name = feature.name;
+			if (this.feat.name == "New Feature" || !this.hasEditedName) this.feat.name = feature.name;
 			this.feat.description = feature.description ?? "";
 			this.automationString = YAML.stringify(feature.automation);
-			this.saveAutomation(false)
+			this.saveAutomation(false);
 			setTimeout(() => {
 				let els = document.querySelectorAll(".language-yaml") as NodeListOf<HTMLElement>;
 				for (let e in els) {
@@ -193,15 +191,14 @@ export default defineComponent({
 						if (parsedAutomation.length > 0) parsedAutomation = parsedAutomation[0];
 						else return;
 					}
-					console.log(parsedAutomation);
+					///console.log(parsedAutomation);
 
 					if (parsedAutomation.name && this.feat.name == "New Feature") this.feat.name = parsedAutomation.name.replace(" (1H)", "").replace(" (2H)", "");
 
 					if (parsedAutomation.automation && this.feat.description == "") {
 						for (let type in parsedAutomation.automation) {
-
 							if (parsedAutomation.automation[type]["type"] == "text") {
-								console.log(parsedAutomation.automation[type]["text"]);
+								///console.log(parsedAutomation.automation[type]["text"]);
 								this.feat.description = parsedAutomation.automation[type]["text"];
 								break;
 							}
@@ -211,16 +208,16 @@ export default defineComponent({
 			}
 
 			// I hate this.
-			let els = document.querySelectorAll('.language-yaml') as NodeListOf<HTMLElement>
+			let els = document.querySelectorAll(".language-yaml") as NodeListOf<HTMLElement>;
 			for (let e in els) {
-				if (els[e].dataset?.highlighted == "yes") els[e].dataset.highlighted = ""
+				if (els[e].dataset?.highlighted == "yes") els[e].dataset.highlighted = "";
 			}
 		},
-		'feat.description'() {
+		"feat.description"() {
 			// I hate this.
-			let els = document.querySelectorAll('.language-markdown') as NodeListOf<HTMLElement>
+			let els = document.querySelectorAll(".language-markdown") as NodeListOf<HTMLElement>;
 			for (let e in els) {
-				if (els[e].dataset?.highlighted == "yes") els[e].dataset.highlighted = ""
+				if (els[e].dataset?.highlighted == "yes") els[e].dataset.highlighted = "";
 			}
 		}
 	}

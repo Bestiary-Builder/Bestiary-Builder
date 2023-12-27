@@ -41,7 +41,7 @@
 <script lang="ts">
 import {RouterLink} from "vue-router";
 import {defineComponent} from "vue";
-import type {User, Bestiary, Creature} from "@/components/types";
+import type {User, Bestiary, Creature} from "@/generic/types";
 import UserBanner from "@/components/UserBanner.vue";
 import {handleApiResponse, toast, tags, type error} from "@/main";
 // @ts-ignore
@@ -65,10 +65,10 @@ export default defineComponent({
 		UserBanner
 	},
 	async beforeMount() {
-		const loader = this.$loading.show()
+		const loader = this.$loading.show();
 		this.tags = (await tags) ?? ([] as string[]);
 		this.searchBestiaries();
-		loader.hide()
+		loader.hide();
 	},
 	watch: {
 		page() {
@@ -98,7 +98,6 @@ export default defineComponent({
 				let result = await handleApiResponse<{results: Bestiary[]; totalAmount: number}>(response);
 				if (result.success) {
 					let data = result.data as {results: Bestiary[]; totalAmount: number};
-					console.log(data);
 					this.bestiaries = data.results;
 					this.page = 1;
 					this.total = data.totalAmount;
@@ -108,14 +107,14 @@ export default defineComponent({
 					toast.error((result.data as error).error);
 				}
 			});
-			console.log(this.bestiaries);
+			///console.log(this.bestiaries);
 		}
 	}
 });
 </script>
 
 <style scoped lang="less">
-@import url("../assets/bestiary-list.less");
+@import url("@/assets/bestiary-list.less");
 .search-tile {
 	background-color: orangered;
 

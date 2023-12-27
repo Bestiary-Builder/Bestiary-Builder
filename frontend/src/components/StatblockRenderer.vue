@@ -114,7 +114,7 @@
 
         </div>
         <div class="challenge-prof">
-            <span> <b> Challenge </b> {{ data.description.cr.toString() }} (1000 xp) </span>
+            <span> <b> Challenge </b> {{ displayCR(data.description.cr) }} (1000 xp) </span>
             <span> <b> Proficiency Bonus </b> +{{ data.core.proficiencyBonus }}</span>
         </div>
     </div>
@@ -266,15 +266,13 @@
         </div>
     </div>
 </div>
-<!-- <pre id="bla"> {{ yamlString()}} </pre> -->
-
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import type { Stat, SaveEntity, SkillsEntity, Statblock, InnateSpells, CasterSpells } from './types'
+import type { Stat, SaveEntity, SkillsEntity, Statblock, InnateSpells, CasterSpells } from '../generic/types'
 import { stringify } from 'yaml'
-
+import { displayCR } from '@/generic/displayFunctions';
 
 export default defineComponent({
     props: {
@@ -285,7 +283,7 @@ export default defineComponent({
     },
     data() {
         return {
-            
+            displayCR: displayCR
         }
     },
     methods: {

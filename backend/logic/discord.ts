@@ -50,7 +50,7 @@ async function checkUserStatuses(guild: discord.Guild) {
 	let supporterTier1Role = await guild.roles.fetch("1187500073836367965");
 	let supporterTier2Role = await guild.roles.fetch("1189343430820778055");
 	if (!supporterTier1Role || !supporterTier2Role) {
-		log.error("Failed to fetch supporter role");
+		log.error("Failed to fetch supporter roles");
 		return;
 	}
 	//Fetch all member info

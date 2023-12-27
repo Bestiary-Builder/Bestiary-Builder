@@ -64,7 +64,6 @@ app.get("/api/login/:code", async (req, res) => {
 				return res.status(400).json({error: "No user recieved from discord."});
 			}
 		} else {
-			log.error(oauthData);
 			return res.status(401).json({error: "Failed to authenticate discord login."});
 		}
 	} catch (err) {

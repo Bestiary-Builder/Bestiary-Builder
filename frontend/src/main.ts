@@ -13,7 +13,7 @@ export async function handleApiResponse<Type>(response: Response) {
 	}
 }
 //Get logged in user
-import type {User} from "./components/types";
+import type {User} from "./generic/types";
 export const user = fetch("/api/user").then(async (response: any) => {
 	let result = await handleApiResponse<User>(response);
 	if (result.success) return result.data as User;
@@ -37,15 +37,16 @@ export const tags = fetch("/api/tags").then(async (response: any) =>
 		else return null;
 	})
 );
-const loginBase = "https://discord.com/api/oauth2/authorize?client_id=1183362236509601813&response_type=code&scope=identify+email";
+const clientId = "1183362236509601813";
+const loginBase = "https://discord.com/api/oauth2/authorize?client_id=" + clientId + "&response_type=code&scope=identify+email";
 export const loginLink = loginBase + "&redirect_uri=" + encodeURIComponent(window.location.origin + "/user");
 
 //Style sheet
-import "./assets/main.less";
+import "@/assets/main.less";
 //Vue
 import {createApp} from "vue";
 //@ts-ignore
-import VueApp from "./App.vue";
+import VueApp from "@/App.vue";
 export const app = createApp(VueApp);
 
 //Floating vue
@@ -53,7 +54,7 @@ import FloatingVue from "floating-vue";
 import "floating-vue/dist/style.css";
 app.use(FloatingVue);
 //Router
-import router from "./router";
+import router from "@/router";
 app.use(router);
 //Toast notifications
 import ToastPlugin from "vue-toast-notification";
@@ -65,9 +66,9 @@ app.use(ToastPlugin, {
 });
 export const toast = app.config.globalProperties.$toast;
 
-// Loading animation 
-import {LoadingPlugin} from 'vue-loading-overlay';
-import 'vue-loading-overlay/dist/css/index.css';
+// Loading animation
+import {LoadingPlugin} from "vue-loading-overlay";
+import "vue-loading-overlay/dist/css/index.css";
 app.use(LoadingPlugin, {
 	loader: "bars",
 	color: "orangered",
@@ -82,7 +83,6 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faStopwatch, faMap, faLocationPin, faClock, faRuler, faStar, faHashtag, faArrowDown19, faHourglass} from "@fortawesome/free-solid-svg-icons";
 import {faTwitter, faFacebook, faDiscord, faInstagram} from "@fortawesome/free-brands-svg-icons";
 library.add(faTwitter, faFacebook, faDiscord, faInstagram, faStopwatch, faMap, faLocationPin, faClock, faRuler, faStar, faHashtag, faArrowDown19, faHourglass);
-
 
 app.component("font-awesome-icon", FontAwesomeIcon);
 // @ts-ignore Vue Select

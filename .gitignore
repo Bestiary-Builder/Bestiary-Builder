@@ -14,9 +14,6 @@ dist-ssr
 coverage
 *.local
 
-/cypress/videos/
-/cypress/screenshots/
-
 # Editor directories and files
 .idea
 *.suo
@@ -25,12 +22,7 @@ coverage
 *.sln
 *.sw?
 
-
-LICENSE.md
-
+# Project specific
 frontend/public/sitemap.xml
-
-backend/SSL Certificate update.txt
-
 .env
 .jwtkey
