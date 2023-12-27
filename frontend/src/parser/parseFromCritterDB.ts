@@ -21,6 +21,7 @@ export function parseFromCritterDB(data=tData[0] as any) : [Statblock, {[key: st
         cr: data.stats.challengeRating,
     }
 
+
     outputData.core = {
         proficiencyBonus: Math.max(2, Math.min(9, Math.floor((outputData.description.cr + 3) / 4))+1),
         race: data.stats.race,
@@ -82,8 +83,8 @@ export function parseFromCritterDB(data=tData[0] as any) : [Statblock, {[key: st
         dex: data.stats.abilityScores.dexterity || 10,
         con: data.stats.abilityScores.constitution || 10,
         int: data.stats.abilityScores.intelligence || 10,
-        cha: data.stats.abilityScores.wisdom || 10,
-        wis: data.stats.abilityScores.charisma || 10
+        wis: data.stats.abilityScores.wisdom || 10,
+        cha: data.stats.abilityScores.charisma || 10,
     }
 
     outputData.abilities.saves = {

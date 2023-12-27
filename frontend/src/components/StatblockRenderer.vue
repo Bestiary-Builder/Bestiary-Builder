@@ -165,8 +165,8 @@
                     <div class="spell-list">
                         <p v-for="spells, level in data.spellcasting.casterSpells.spellList"> 
                             <div v-if="(level == 0 && !['Ranger', 'Paladin'].includes(data.spellcasting.casterSpells.castingClass) )|| Object.keys(data.spellcasting.casterSpells.spellSlotList).includes(level.toString())"> 
-                                <span v-if="level==0"> Cantrips (at will): </span>
-                                <span v-else> {{ nthSuffix(level) }} level ({{ data.spellcasting.casterSpells.spellSlotList[level] }} slots): </span>
+                                <span v-if="level==0 && spells.length > 0"> Cantrips (at will): </span>
+                                <span v-else-if="spells.length > 0"> {{ nthSuffix(level) }} level ({{ data.spellcasting.casterSpells.spellSlotList[level] }} slots): </span>
                                 <i> {{ spells.sort().join(", ") }} </i>
                             </div>
                         </p>
