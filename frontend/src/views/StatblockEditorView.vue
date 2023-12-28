@@ -1147,18 +1147,23 @@ export default defineComponent({
 		this.showSlides(1);
 
 		//Fetch creature info
-		await fetch("/api/creature/" + this.$route.params.id).then(async (response) => {
+		let fetchResult = await fetch("/api/creature/" + this.$route.params.id).then(async (response) => {
 			let result = await handleApiResponse<Creature>(response);
 			if (result.success) {
 				this.data = (result.data as Creature).stats;
 				this.rawInfo = result.data as Creature;
+				return true;
 			} else {
 				toast.error("Error: " + (result.data as error).error);
+				this.madeChanges = false;
 				this.$router.push("/error");
-				this.data = defaultStatblock;
+				return false;
 			}
 		});
-
+		if (!fetchResult) {
+			loader.hide();
+			return;
+		}
 		this.innateSpells = {
 			0: this.data.spellcasting.innateSpells.spellList[0].map((spell) => spell.spell),
 			1: this.data.spellcasting.innateSpells.spellList[1].map((spell) => spell.spell),
@@ -1168,6 +1173,7 @@ export default defineComponent({
 		loader.hide();
 
 		window.addEventListener("beforeunload", (event) => {
+			console.log(this.madeChanges);
 			if (this.madeChanges) {
 				event.preventDefault();
 				event.returnValue = true;
@@ -1177,6 +1183,7 @@ export default defineComponent({
 	watch: {
 		data: {
 			handler() {
+				console.log("Data!");
 				this.madeChanges = true;
 			},
 			deep: true
