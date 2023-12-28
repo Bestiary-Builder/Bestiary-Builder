@@ -1,20 +1,21 @@
 <template>
-<Breadcrumbs :routes="[
-{
-	path: '',
-	text: 'Public Bestiaries',
-	isCurrent: true
-}
-]" 
-> 
-<template #right-button>
-	<select v-model="viewMode">
-		<option>Recent</option>
-		<option>Popular</option>
-		<option>Bookmarked</option>
-	</select>
-</template>
-</Breadcrumbs> 
+	<Breadcrumbs
+		:routes="[
+			{
+				path: '',
+				text: 'Public Bestiaries',
+				isCurrent: true
+			}
+		]"
+	>
+		<template #right-button>
+			<select v-model="viewMode">
+				<option>Recent</option>
+				<option>Popular</option>
+				<option>Bookmarked</option>
+			</select>
+		</template>
+	</Breadcrumbs>
 	<div class="content" v-if="viewMode != 'Bookmarked'">
 		<div class="tile-container">
 			<div class="content-tile search-tile">
@@ -50,7 +51,7 @@
 			</TransitionGroup>
 		</div>
 	</div>
-	<BookmarkedBestiaryList v-else/>
+	<BookmarkedBestiaryList v-else />
 </template>
 
 <script lang="ts">
@@ -76,7 +77,7 @@ export default defineComponent({
 			selectedTags: [] as string[],
 			tags: [] as string[],
 			lastInput: 0,
-			viewMode: 'Popular'
+			viewMode: "Popular"
 		};
 	},
 	components: {
@@ -99,15 +100,15 @@ export default defineComponent({
 		},
 		viewMode(newValue, oldValue) {
 			if (newValue != "Bookmarked") {
-				console.log("yayayy!")
-				this.searchBestiaries()
+				console.log("yayayy!");
+				this.searchBestiaries();
 			}
 		}
 	},
 	methods: {
 		async searchBestiaries() {
 			//Request bestiary info
-			await fetch(`/api/search/${this.viewMode.toLowerCase()}`, {
+			await fetch(`/api/search`, {
 				method: "POST",
 				headers: {
 					Accept: "application/json",
@@ -118,7 +119,7 @@ export default defineComponent({
 						search: this.search,
 						page: this.page - 1,
 						tags: this.selectedTags,
-						mode: "popular"
+						mode: this.viewMode.toLowerCase()
 					}
 				})
 			}).then(async (response) => {

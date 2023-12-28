@@ -20,7 +20,7 @@ app.post("/api/search", async (req, res) => {
 		if (searchOptions.page < 0) return res.status(400).json({error: "Page out of bounds"});
 		//Filter
 		let filter = {
-			//status: "public",
+			status: "public",
 			$or: [{name: {$regex: "(?i)" + searchOptions.search + "(?-i)"}}, {description: {$regex: "(?i)" + searchOptions.search + "(?-i)"}}]
 		} as Filter<Bestiary>;
 		if (searchOptions.tags && searchOptions.tags.length > 0) filter.tags = {$elemMatch: {$in: searchOptions.tags}};
