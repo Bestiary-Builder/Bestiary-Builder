@@ -1,6 +1,17 @@
 <template>
+	<Breadcrumbs v-if="bestiary" :routes="[
+	{
+		path: isOwner || isEditor ? '../my-bestiaries/' : '../bestiaries',
+		text: isOwner || isEditor ? 'My Bestiaries' : 'Bestiaries',
+		isCurrent: false
+	},
+	{
+		path: '',
+		text: bestiary?.name,
+		isCurrent: true
+	}
+	]" /> 
 	<div class="content">
-		<h1><span>Bestiary Viewer </span></h1>
 		<div class="bestiary" v-if="bestiary">
 			<div class="tile-container list-tiles" id="tile-container">
 				<div class="content-tile header-tile">
@@ -43,7 +54,7 @@
 				<TransitionGroup name="slide-fade" mode="out-in">
 					<template v-for="creature in creatures" :key="creature._id">
 						<div class="content-tile creature-tile" @mouseover="lastHoveredCreature = creature.stats" @click="lastClickedCreature = creature.stats" 
-							v-if="creature.stats.description.name.toLowerCase().includes(searchText.toLowerCase().trim())" autofocus>
+							v-if="creature.stats.description.name.toLowerCase().includes(searchText.toLowerCase().trim())">
 							<div class="left-side">
 								<h3>{{ creature.stats?.description?.name }}</h3>
 								<span>{{ creature.stats?.core?.size }} {{ creature.stats?.core?.race }}{{ creature.stats?.description?.alignment ? ", " + creature.stats?.description?.alignment : "" }}</span>
@@ -175,31 +186,6 @@
 		</Transition>
 	</Teleport>
 </template>
-<script setup lang="ts">
-import {ref} from "vue";
-import {onClickOutside} from "@vueuse/core";
-const isEditorModalOpen = ref(false);
-const editModal = ref<HTMLDivElement | null>(null);
-// @ts-ignore
-onClickOutside(editModal, () => (isEditorModalOpen.value = false));
-
-const selectedCreature = ref<Creature | null>(null);
-
-const isDeleteModalOpen = ref(false);
-const deleteModal = ref<HTMLDivElement | null>(null);
-// @ts-ignore
-onClickOutside(deleteModal, () => (isDeleteModalOpen.value = false));
-
-const openDeleteModal = (creature: Creature) => {
-	selectedCreature.value = creature;
-	isDeleteModalOpen.value = true;
-};
-
-const isImportModalOpen = ref(false);
-const importModal = ref<HTMLDivElement | null>(null);
-// @ts-ignore
-onClickOutside(deleteModal, () => (isImportModalOpen.value = false));
-</script>
 
 <script lang="ts">
 import {RouterLink} from "vue-router";
@@ -207,11 +193,50 @@ import {defineComponent} from "vue";
 import {defaultStatblock} from "@/generic/types";
 import type {User, Bestiary, Creature, Statblock} from "@/generic/types";
 import UserBanner from "@/components/UserBanner.vue";
+import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import {handleApiResponse, user, type error, toast, tags, type limitsType, asyncLimits} from "@/main";
 import StatblockRenderer from "@/components/StatblockRenderer.vue";
 import {parseFromCritterDB} from "@/parser/parseFromCritterDB";
 import {statusEmoji, displayCR} from "@/generic/displayFunctions";
+import {ref} from "vue";
+import {onClickOutside} from "@vueuse/core";
+
 export default defineComponent({
+	setup() {
+		const isEditorModalOpen = ref(false);
+		const editModal = ref<HTMLDivElement | null>(null);
+		// @ts-ignore
+		onClickOutside(editModal, () => (isEditorModalOpen.value = false));
+
+		const selectedCreature = ref<Creature | null>(null);
+
+		const isDeleteModalOpen = ref(false);
+		const deleteModal = ref<HTMLDivElement | null>(null);
+		// @ts-ignore
+		onClickOutside(deleteModal, () => (isDeleteModalOpen.value = false));
+
+		const openDeleteModal = (creature: Creature) => {
+			selectedCreature.value = creature;
+			isDeleteModalOpen.value = true;
+		};
+
+		const isImportModalOpen = ref(false);
+		const importModal = ref<HTMLDivElement | null>(null);
+		// @ts-ignore
+		onClickOutside(deleteModal, () => (isImportModalOpen.value = false));
+
+		return {
+			editModal,
+			deleteModal,
+			importModal,
+			isEditorModalOpen,
+			isDeleteModalOpen,
+			isImportModalOpen,
+
+			selectedCreature,
+			openDeleteModal
+		}
+	},
 	data() {
 		return {
 			bestiary: null as Bestiary | null,
@@ -230,12 +255,15 @@ export default defineComponent({
 			editorToAdd: "" as string,
 			showWarning: false as boolean,
 			critterDbId: "" as string,
-			searchText: "" as string
+			searchText: "" as string,
+			statusEmoji,
+			displayCR
 		};
 	},
 	components: {
 		UserBanner,
-		StatblockRenderer
+		StatblockRenderer,
+		Breadcrumbs
 	},
 	async created() {
 		this.limits = (await asyncLimits) ?? ({} as limitsType);
@@ -256,7 +284,7 @@ export default defineComponent({
 			let link = this.critterDbId.trim();
 			let isPublic = link.includes("publishedbestiary");
 			if (!link.startsWith("https://critterdb.com") && !link.startsWith("critterdb.com")) {
-				toast.error("Are you sure this is a link to a critterDB bestiary?");
+				toast.error("Could not recognize link as a link to a CritterDB bestiary");
 				return;
 			}
 
@@ -285,6 +313,7 @@ export default defineComponent({
 
 			if (hasFailed) {
 				return;
+				loader.hide()
 			}
 
 			loader = this.$loading.show();
@@ -294,7 +323,7 @@ export default defineComponent({
 				let stats;
 				try {
 					stats = parseFromCritterDB(creature);
-					await this.createCreature(stats[0], false);
+					await this.createCreature(stats[0], false, false);
 				} catch (e) {
 					console.error(e);
 				}
@@ -303,9 +332,13 @@ export default defineComponent({
 			await this.getBestiary();
 			loader.hide();
 			toast.success("Importing has finished!");
+			this.isImportModalOpen = false;
 		},
-		async createCreature(stats = defaultStatblock, shouldRefresh = true) {
-			const loader = this.$loading.show()
+		async createCreature(stats = defaultStatblock, shouldRefresh = true, shouldHaveLoader = true) {
+			let loader;
+			if (shouldHaveLoader) {
+				loader = this.$loading.show()
+			}
 			//Replace for actual creation data:
 			let data = {
 				stats: stats,
@@ -331,7 +364,10 @@ export default defineComponent({
 				const tileContainer = document.getElementById("tile-container") as HTMLDivElement;
 				tileContainer.scrollTop = tileContainer.scrollHeight;
 			}
-			loader.hide()
+			if (shouldHaveLoader && loader) {
+				loader.hide()
+
+			}
 
 		},
 		async deleteCreature(creature: Creature) {
@@ -340,6 +376,7 @@ export default defineComponent({
 				let result = await handleApiResponse(response);
 				if (result.success) {
 					toast.success("Deleted creature succesfully");
+					this.isDeleteModalOpen = false
 				} else {
 					toast.error((result.data as error).error);
 				}
@@ -447,6 +484,7 @@ export default defineComponent({
 				if (result.success) {
 					toast.success("Saved bestiary");
 					this.savedBestiary = this.bestiary;
+					this.isEditorModalOpen = false;
 				} else {
 					toast.error((result.data as error).error);
 				}

@@ -1,4 +1,25 @@
 <template>
+	<Breadcrumbs v-if="bestiary" :routes="[
+		{
+			path: '../my-bestiaries/',
+			text: 'My Bestiaries',
+			isCurrent: false
+		},
+		{
+			path: '../bestiary-viewer/' + bestiary?._id,
+			text: bestiary?.name,
+			isCurrent: false
+		},
+	 	{
+			path: '',
+			text: data.description.name,
+			isCurrent: true
+	 	}
+	]"> 
+	<template #right-button>
+		<button> Export </button>
+	</template>
+	</Breadcrumbs>
 	<div class="content">
 		<div class="content-container__inner editor">
 			<div class="editor-nav">
@@ -882,7 +903,7 @@
 
 					<div class="modal-desc">
 						<p>
-							<b>CritterDB json input: </b>
+							<b>5e.tools json input: </b>
 							<input type="text" v-model="toolsjson" />
 						</p>
 
@@ -909,39 +930,43 @@
 		</Transition>
 	</Teleport>
 </template>
-<script setup lang="ts">
-import {ref} from "vue";
-import {onClickOutside} from "@vueuse/core";
-
-const isModalOpen = ref(false);
-const modal = ref<HTMLDivElement | null>(null);
-// @ts-ignore
-onClickOutside(modal, () => (isModalOpen.value = false));
-</script>
-
 <script lang="ts">
-import {RouterLink, RouterView} from "vue-router";
-import {defineComponent, watch} from "vue";
+import {defineComponent} from "vue";
 import StatblockRenderer from "../components/StatblockRenderer.vue";
-import type {InnateSpellsEntity, InnateSpellsList, SkillsEntity, Statblock, Creature} from "@/generic/types";
+import Breadcrumbs from "../components/Breadcrumbs.vue"
+import type {InnateSpellsEntity, InnateSpellsList, SkillsEntity, Statblock, Creature, Bestiary} from "@/generic/types";
 import {defaultStatblock, getSpellSlots, spellList, spellListFlattened} from "@/generic/types";
 import {handleApiResponse, type error, toast, asyncLimits, type limitsType} from "@/main";
 import FeatureWidget from "@/components/FeatureWidget.vue";
 import {parseFrom5eTools} from "../parser/parseFrom5eTools";
-import { watchAtMost } from "@vueuse/core"
+import {ref} from "vue";
+import {onClickOutside} from "@vueuse/core";
 export default defineComponent({
+	setup() {
+		const isModalOpen = ref(false);
+		const modal = ref<HTMLDivElement | null>(null);
+		// @ts-ignore
+		onClickOutside(modal, () => (isModalOpen.value = false));
+
+		return {
+			isModalOpen
+		}
+	},
 	components: {
 		StatblockRenderer,
-		FeatureWidget
+		FeatureWidget,
+		Breadcrumbs
 	},
 	data() {
 		return {
 			slideIndex: 2,
 			data: defaultStatblock as Statblock,
 			rawInfo: null as Creature | null,
+			bestiary: null as Bestiary | null,
 			list: [] as string[],
 			getSpellSlots: getSpellSlots,
 			spellListFlattened: spellListFlattened,
+			spellList: spellList,
 			innateSpells: {
 				0: [] as string[],
 				1: [] as string[],
@@ -999,6 +1024,7 @@ export default defineComponent({
 				[this.data, this.notices] = parseFrom5eTools(JSON.parse(this.toolsjson));
 				this.toolsjson = "";
 				toast.success("Successfully imported " + this.data.description.name);
+				this.isModalOpen = false;
 			} catch (e) {
 				console.error(e);
 				toast.error("Failed to import this creature");
@@ -1144,7 +1170,7 @@ export default defineComponent({
 				}
 			});
 			loader.hide();
-		}
+		},
 	},
 	async mounted() {
 		const loader = this.$loading.show();
@@ -1170,6 +1196,18 @@ export default defineComponent({
 			loader.hide();
 			return;
 		}
+
+		// get bestiary info this creature belongs to so we can get the name of the bestiary
+		await fetch("/api/bestiary/" + this.rawInfo?.bestiary).then(async (response) => {
+			let result = await handleApiResponse<Bestiary>(response);
+			if (result.success) {
+				this.bestiary = result.data as Bestiary;
+			} else {
+				this.bestiary = null;
+				toast.error((result.data as error).error);
+			}
+		});
+
 		this.innateSpells = {
 			0: this.data.spellcasting.innateSpells.spellList[0].map((spell) => spell.spell),
 			1: this.data.spellcasting.innateSpells.spellList[1].map((spell) => spell.spell),
@@ -1179,8 +1217,9 @@ export default defineComponent({
 
 		// if the user had changes without saving, stop them from closing the page without confirming.
 		window.addEventListener("beforeunload", (event) => {
-			console.log(this.madeChanges);
-			if (this.madeChanges) {
+			// haven't figured out yet how to destroy the event listener upon unmount so for now this confirms that the 
+			// warning only shows if they are in the statblock editor
+			if (this.madeChanges && location.pathname.split('/')[1] == "statblock-editor") {
 				event.preventDefault();
 				event.returnValue = true;
 			}
@@ -1189,16 +1228,16 @@ export default defineComponent({
 		// watch data only once, as traversing the object deeply is expensive.
 		// re-registered upon saving.
 		// need a set time out otherwise it triggers upon mounting for some reason
-		// setTimeout( () => {
-			const unwatch = this.$watch('data', (newValue, oldValue) => {
-				debugger;
+		setTimeout( () => {
+			let unwatch = this.$watch('data', (newValue, oldValue) => {
 				this.madeChanges = true;
 				unwatch()
 			}, { deep: true } )
-		// }, 1) 
+		}, 1) 
 
 		loader.hide();
 	},
+
 	watch: {
 		"data.spellcasting.casterSpells.castingClass"(newValue, oldValue) {
 			if (newValue == null || newValue == undefined) {
@@ -1266,6 +1305,20 @@ export default defineComponent({
 		"data.description.cr"() {
 			this.data.core.proficiencyBonus = Math.max(2, Math.min(9, Math.floor((this.data.description.cr + 3) / 4)) + 1);
 		}
+	},
+	beforeRouteUpdate() {
+		// just in case the user manages to navigate to a page that also uses StatblockEditorView
+		if (this.madeChanges) {
+			const answer = window.confirm('Do you really want to leave? you have unsaved changes!')
+  			if (!answer) return false
+		} 
+	},
+	beforeRouteLeave() {
+		// when the user leaves this route 
+		if (this.madeChanges)  {
+			const answer = window.confirm('Do you really want to leave? you have unsaved changes!')
+  			if (!answer) return false
+		} 
 	},
 });
 </script>

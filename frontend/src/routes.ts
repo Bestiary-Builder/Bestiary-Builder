@@ -97,6 +97,7 @@ export const defaultMetaTags = [
 	}
 ] as metaTag[];
 
+
 const routes = [
 	//Home
 	{
