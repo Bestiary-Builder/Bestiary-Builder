@@ -928,6 +928,7 @@ import {defaultStatblock, getSpellSlots, spellList, spellListFlattened} from "@/
 import {handleApiResponse, type error, toast, asyncLimits, type limitsType} from "@/main";
 import FeatureWidget from "@/components/FeatureWidget.vue";
 import {parseFrom5eTools} from "../parser/parseFrom5eTools";
+import { watchAtMost } from "@vueuse/core"
 export default defineComponent({
 	components: {
 		StatblockRenderer,
@@ -1133,6 +1134,11 @@ export default defineComponent({
 				if (result.success) {
 					toast.success("Saved stat block");
 					this.madeChanges = false;
+					// watch data only once, as traversing the object deeply is expensive.
+					const unwatch = this.$watch('data', (newValue, oldValue) => {
+						this.madeChanges = true;
+						unwatch()
+					}, { deep: true} )
 				} else {
 					toast.error("Error: " + (result.data as error).error);
 				}
@@ -1170,8 +1176,8 @@ export default defineComponent({
 			2: this.data.spellcasting.innateSpells.spellList[2].map((spell) => spell.spell),
 			3: this.data.spellcasting.innateSpells.spellList[3].map((spell) => spell.spell)
 		};
-		loader.hide();
 
+		// if the user had changes without saving, stop them from closing the page without confirming.
 		window.addEventListener("beforeunload", (event) => {
 			console.log(this.madeChanges);
 			if (this.madeChanges) {
@@ -1179,15 +1185,21 @@ export default defineComponent({
 				event.returnValue = true;
 			}
 		});
+
+		// watch data only once, as traversing the object deeply is expensive.
+		// re-registered upon saving.
+		// need a set time out otherwise it triggers upon mounting for some reason
+		// setTimeout( () => {
+			const unwatch = this.$watch('data', (newValue, oldValue) => {
+				debugger;
+				this.madeChanges = true;
+				unwatch()
+			}, { deep: true } )
+		// }, 1) 
+
+		loader.hide();
 	},
 	watch: {
-		data: {
-			handler() {
-				console.log("Data!");
-				this.madeChanges = true;
-			},
-			deep: true
-		},
 		"data.spellcasting.casterSpells.castingClass"(newValue, oldValue) {
 			if (newValue == null || newValue == undefined) {
 				this.clearCasting();
@@ -1254,7 +1266,7 @@ export default defineComponent({
 		"data.description.cr"() {
 			this.data.core.proficiencyBonus = Math.max(2, Math.min(9, Math.floor((this.data.description.cr + 3) / 4)) + 1);
 		}
-	}
+	},
 });
 </script>
 

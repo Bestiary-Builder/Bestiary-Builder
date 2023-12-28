@@ -29,11 +29,11 @@
 						📌
 					</div>
 					<hr />
-					<div class="footer" :class="{'three-wide': isOwner || isEditor}">
+					<div class="footer" :class="{'three-wide': isOwner}">
 						<UserBanner :id="bestiary.owner" />
 						<div>{{ statusEmoji(bestiary.status) }}{{ bestiary.status }}</div>
 						<div>{{ bestiary.creatures.length }}🐉</div>
-						<div role="button" aria-label="bookmark" @click.prevent="toggleBookmark" class="bookmark" v-if="!isOwner && !isEditor">
+						<div role="button" aria-label="bookmark" @click.prevent="toggleBookmark" class="bookmark" v-if="!isOwner">
 							<span v-if="bookmarked" v-tooltip="'Unbookmark this bestiary'" class="bookmark-enabled">⭐</span>
 							<span v-else v-tooltip="'Bookmark this bestiary'" class="bookmark-disabled">⭐</span>
 						</div>

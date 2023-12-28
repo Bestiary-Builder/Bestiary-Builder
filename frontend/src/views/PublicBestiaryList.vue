@@ -1,6 +1,6 @@
 <template>
 	<div class="content">
-		<h1><span>Public Bestiaries </span></h1>
+		<h1><span>Public Bestiariesasfds </span></h1>
 
 		<div class="tile-container">
 			<div class="content-tile search-tile">

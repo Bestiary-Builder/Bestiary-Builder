@@ -1,24 +1,27 @@
 <template>
-	<div class="content">
-		<h1><span>Bookmarked Bestiaries</span></h1>
-		<div class="tile-container">
-			<TransitionGroup name="popin">
-				<RouterLink class="content-tile bestiary-tile" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" v-if="bestiaries">
-					<h2 class="tile-header">{{ bestiary.name }}</h2>
-					<div class="tile-content">
-						<div class="tags">
-							<span class="tag" v-for="tag in bestiary.tags">{{ tag }}</span>
-						</div>
-						<p class="description">{{ bestiary.description }}</p>
+<div class="content">
+	<h1><span>Bookmarked Bestiaries</span></h1>
+	<div class="tile-container" v-if="bestiaries.length > 0">
+		<TransitionGroup name="popin" >
+			<RouterLink class="content-tile bestiary-tile" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" v-if="bestiaries">
+				<h2 class="tile-header">{{ bestiary.name }}</h2>
+				<div class="tile-content">
+					<div class="tags">
+						<span class="tag" v-for="tag in bestiary.tags">{{ tag }}</span>
 					</div>
-					<div class="tile-footer">
-						<UserBanner :id="bestiary.owner" />
-						<span>{{ bestiary.creatures.length }}🐉</span>
-					</div>
-				</RouterLink>
-			</TransitionGroup>
-		</div>
+					<p class="description">{{ bestiary.description }}</p>
+				</div>
+				<div class="tile-footer">
+					<UserBanner :id="bestiary.owner" />
+					<span>{{ bestiary.creatures.length }}🐉</span>
+				</div>
+			</RouterLink>
+		</TransitionGroup>
 	</div>
+	<div v-else class="no-bookmarks-notice">
+		<p> You do not have any bookmarked bestiaries. View a Bestiary and click on the ⭐ icon to bookmark it.</p>
+	</div>
+</div>
 </template>
 
 <script lang="ts">
@@ -43,7 +46,7 @@ export default defineComponent({
 		const loader = this.$loading.show();
 
 		this.user = await user;
-		this.getBestiaries();
+		await this.getBestiaries();
 		loader.hide();
 	},
 	methods: {
@@ -75,5 +78,10 @@ export default defineComponent({
 	span:last-of-type {
 		text-align: right;
 	}
+}
+
+.no-bookmarks-notice {
+	display: flex;
+	justify-content: center;
 }
 </style>
