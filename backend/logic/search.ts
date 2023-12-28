@@ -1,5 +1,5 @@
 import {Bestiary, collections} from "../database";
-import type {Filter, FindOptions} from "mongodb";
+import type {Filter, FindOptions, Sort} from "mongodb";
 import {app, log} from "../server";
 import allTags from "../staticData/tags.json";
 
@@ -11,27 +11,69 @@ app.post("/api/search", async (req, res) => {
 		let searchOptions = req.body.options as {
 			search: string;
 			page: number;
+			mode: "popular" | "recent";
 			tags: string[];
 		};
 		if (!searchOptions) return res.status(400).json({error: "No search options were found"});
 		if (!searchOptions.search) searchOptions.search = ".";
 		if (!searchOptions.page) searchOptions.page = 0;
 		if (searchOptions.page < 0) return res.status(400).json({error: "Page out of bounds"});
-		//Do the search
+		//Filter
 		let filter = {
-			status: "public",
+			//status: "public",
 			$or: [{name: {$regex: "(?i)" + searchOptions.search + "(?-i)"}}, {description: {$regex: "(?i)" + searchOptions.search + "(?-i)"}}]
 		} as Filter<Bestiary>;
 		if (searchOptions.tags && searchOptions.tags.length > 0) filter.tags = {$elemMatch: {$in: searchOptions.tags}};
-		let finder = collections.bestiaries?.find(filter).sort({bookmarks: -1, viewCount: -1, lastUpdated: -1, name: 1});
-		let amountFound = (await finder?.count()) ?? 0;
-		if (amountFound == 0) amountFound = 1;
-		let results = await finder
-			?.skip(searchOptions.page * amountPerPage)
-			.limit(amountPerPage)
+		//Sort
+		let sort: Sort;
+		if (searchOptions.mode === "popular") {
+			sort = {popularityScore: -1, lastUpdated: -1, name: 1};
+		} else sort = {lastUpdated: -1, name: 1};
+		//Aggregate:
+		let finder = await collections.bestiaries
+			?.aggregate([
+				{
+					$match: filter
+				},
+				{
+					$addFields: {
+						popularityScore: {
+							$sum: [
+								{
+									$multiply: ["$bookmarks", 10]
+								},
+								"$viewCount"
+							]
+						}
+					}
+				},
+				{
+					$sort: sort
+				},
+				{
+					$facet: {
+						totalCount: [
+							{
+								$count: "count"
+							}
+						],
+						results: [{$skip: searchOptions.page * amountPerPage}, {$limit: amountPerPage}]
+					}
+				}
+			])
 			.toArray();
-		log.info(`Search completed with ${amountFound} results`);
-		return res.json({results: results, totalAmount: Math.ceil(amountFound / amountPerPage)});
+		//Return the final search results
+		let output;
+		if (!finder) output = {results: [], pageAmount: 1};
+		else {
+			output = {
+				results: finder[0].results,
+				pageAmount: Math.ceil(finder[0].totalCount[0].count / amountPerPage)
+			};
+		}
+		//console.log(output.results.map((x: any) => ({name: x.name, creatureAmount: x.creatures.length, popularityScore: x.popularityScore, bookmarks: x.bookmarks, viewCount: x.viewCount})));
+		log.info(`Search completed with ${output.pageAmount} pages`);
+		return res.json(output);
 	} catch (err) {
 		log.error(err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});

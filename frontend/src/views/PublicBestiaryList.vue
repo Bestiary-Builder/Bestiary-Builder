@@ -91,19 +91,20 @@ export default defineComponent({
 					options: {
 						search: this.search,
 						page: this.page - 1,
-						tags: this.selectedTags
+						tags: this.selectedTags,
+						mode: "popular"
 					}
 				})
 			}).then(async (response) => {
-				let result = await handleApiResponse<{results: Bestiary[]; totalAmount: number}>(response);
+				let result = await handleApiResponse<{results: Bestiary[]; pageAmount: number}>(response);
 				if (result.success) {
-					let data = result.data as {results: Bestiary[]; totalAmount: number};
+					let data = result.data as {results: Bestiary[]; pageAmount: number};
 					this.bestiaries = data.results;
-					this.page = 1;
-					this.total = data.totalAmount;
+					//this.page = 1;
+					this.total = data.pageAmount;
 				} else {
 					this.bestiaries = [];
-					this.total = 0;
+					this.total = 1;
 					toast.error((result.data as error).error);
 				}
 			});
