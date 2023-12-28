@@ -1,21 +1,20 @@
 <template>
-	<Breadcrumbs
-		:routes="[
-			{
-				path: '',
-				text: 'Public Bestiaries',
-				isCurrent: true
-			}
-		]"
-	>
-		<template #right-button>
-			<select v-model="viewMode">
-				<option>Recent</option>
-				<option>Popular</option>
-				<option>Bookmarked</option>
-			</select>
-		</template>
-	</Breadcrumbs>
+<Breadcrumbs :routes="[
+{
+	path: '',
+	text: 'Public Bestiaries',
+	isCurrent: true
+}
+]" 
+> 
+<template #right-button>
+	<select v-model="viewMode" aria-label="Select public bestiary list mode">
+		<option>Recent</option>
+		<option>Popular</option>
+		<option>Bookmarked</option>
+	</select>
+</template>
+</Breadcrumbs> 
 	<div class="content" v-if="viewMode != 'Bookmarked'">
 		<div class="tile-container">
 			<div class="content-tile search-tile">
@@ -57,7 +56,7 @@
 <script lang="ts">
 import {RouterLink} from "vue-router";
 import {defineComponent} from "vue";
-import type {User, Bestiary, Creature} from "@/generic/types";
+import type {Bestiary} from "@/generic/types";
 import UserBanner from "@/components/UserBanner.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import {handleApiResponse, toast, tags, type error} from "@/main";

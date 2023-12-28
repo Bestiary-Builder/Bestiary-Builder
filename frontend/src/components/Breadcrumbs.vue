@@ -10,7 +10,7 @@
 
     <div class="right-buttons">
         <slot name="right-button"></slot>
-        <button :disabled="!isSupported" @click="startShare" v-tooltip="'Share this page!'">
+        <button :disabled="!isSupported" @click="startShare" v-tooltip="'Share this page!'" aria-label="Share this page">
             <font-awesome-icon :icon="['fas', 'share-nodes']" />
         </button>
     </div>
@@ -81,16 +81,30 @@ export default defineComponent({
             height: 1.8rem;
             width: 1.8rem;
             color: orangered;
+            transition: all ease .3s;
 
             svg {
                 scale: 1.2
             }
-            transition: all ease .3s;
             &:hover {
                 background-color: orangered;
                 color: rgb(59, 55, 54)
             }
             
+        }
+
+        & select {
+            border: 2px solid orangered;
+            background: transparent;
+            color: orangered;
+            border-radius: .2rem;
+            padding: 0 .2rem;
+            outline: none;
+
+            & option {
+                background-color: rgb(59, 55, 54);
+                color: orangered;
+            }
         }
     }
 }
