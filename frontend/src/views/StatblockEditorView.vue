@@ -1119,7 +1119,7 @@ export default defineComponent({
 			///console.log(this.data);
 			if (!this.rawInfo) return;
 			this.rawInfo.stats = this.data;
-			const loader = this.$loading.show()
+			const loader = this.$loading.show();
 			//Send to backend
 			fetch(`/api/creature/${this.rawInfo._id}/update`, {
 				method: "POST",
@@ -1137,7 +1137,7 @@ export default defineComponent({
 					toast.error("Error: " + (result.data as error).error);
 				}
 			});
-			loader.hide()
+			loader.hide();
 		}
 	},
 	async mounted() {
@@ -1153,7 +1153,8 @@ export default defineComponent({
 				this.data = (result.data as Creature).stats;
 				this.rawInfo = result.data as Creature;
 			} else {
-				console.error("Error: " + (result.data as error).error);
+				toast.error("Error: " + (result.data as error).error);
+				this.$router.push("/error");
 				this.data = defaultStatblock;
 			}
 		});
