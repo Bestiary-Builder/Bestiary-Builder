@@ -1,6 +1,5 @@
 <template>
 <div class="content">
-	<h1><span>Bookmarked Bestiaries</span></h1>
 	<div class="tile-container" v-if="bestiaries.length > 0">
 		<TransitionGroup name="popin" >
 			<RouterLink class="content-tile bestiary-tile" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" v-if="bestiaries">

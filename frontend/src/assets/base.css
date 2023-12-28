@@ -74,7 +74,7 @@ body {
 	padding: 0;
 	margin: 0;
 	accent-color: var(--color-base--subtle);
-	background: black;
+	background: rgb(14, 14, 14);
 	color: var(--color-base);
 }
 

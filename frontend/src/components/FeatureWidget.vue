@@ -38,38 +38,41 @@
 	</Teleport>
 </template>
 
-<script setup lang="ts">
+
+<script lang="ts">
+// @ts-ignore
+import CodeEditor from "simple-code-editor";
 import {ref} from "vue";
 import {onClickOutside} from "@vueuse/core";
 // highlight.js
 import "highlight.js";
 import "highlight.js/styles/obsidian.css";
 
-// @ts-ignore
-import CodeEditor from "simple-code-editor";
-const isModalOpen = ref(false);
-const modal = ref<HTMLDivElement | null>(null);
-// @ts-ignore
-onClickOutside(modal, () => (isModalOpen.value = false));
-defineEmits(["createFeature"]);
-
-const openModal = () => {
-	isModalOpen.value = true;
-	let els = document.querySelectorAll(".language-yaml") as NodeListOf<HTMLElement>;
-	for (let e in els) {
-		if (els[e].dataset?.highlighted == "yes") els[e].dataset.highlighted = "";
-	}
-};
-</script>
-
-<script lang="ts">
 import {defineComponent} from "vue";
 import YAML from "yaml";
-// @ts-ignore
-import CodeEditor from "simple-code-editor";
 import {toast, handleApiResponse, type error} from "@/main";
 import {type FeatureEntity} from "../generic/types";
 export default defineComponent({
+	setup() {
+		const isModalOpen = ref(false);
+		const modal = ref<HTMLDivElement | null>(null);
+
+		const outside = onClickOutside(modal, () => (isModalOpen.value = false));
+
+		const openModal = () => {
+			isModalOpen.value = true;
+			let els = document.querySelectorAll(".language-yaml") as NodeListOf<HTMLElement>;
+			for (let e in els) {
+				if (els[e].dataset?.highlighted == "yes") els[e].dataset.highlighted = "";
+			}
+		};
+
+		return {
+			modal,
+			isModalOpen,
+			openModal,
+		}
+	},
 	props: ["type", "index", "data"],
 	data() {
 		return {
