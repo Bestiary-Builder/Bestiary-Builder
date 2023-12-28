@@ -17,7 +17,9 @@
 	 	}
 	]"> 
 	<template #right-button>
-		<button> Export </button>
+		<button @click="exportStatblock" v-tooltip="'Export this creature as JSON to your clipboard.'"> 
+			<font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" /> 
+		</button>
 	</template>
 	</Breadcrumbs>
 	<div class="content">
@@ -1019,6 +1021,10 @@ export default defineComponent({
 		};
 	},
 	methods: {
+		exportStatblock() : void {
+			navigator.clipboard.writeText(JSON.stringify(this.data))
+			toast.info("Exported this statblock to your clipboard.")
+		},
 		import5etools(): void {
 			try {
 				[this.data, this.notices] = parseFrom5eTools(JSON.parse(this.toolsjson));

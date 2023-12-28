@@ -10,8 +10,8 @@
 
     <div class="right-buttons">
         <slot name="right-button"></slot>
-        <button :disabled="!isSupported" @click="startShare">
-        {{ isSupported ? 'Share' : 'Web share is not supported in your browser' }}
+        <button :disabled="!isSupported" @click="startShare" v-tooltip="'Share this page!'">
+            <font-awesome-icon :icon="['fas', 'share-nodes']" />
         </button>
     </div>
 </section>
@@ -38,7 +38,7 @@ export default defineComponent({
 
         const { share, isSupported } = useShare(options)
 
-        function startShare() {
+        async function startShare() {
             return share().catch(err => err)
         }
         return {
@@ -55,9 +55,9 @@ export default defineComponent({
 })
 </script>
 
-<style scoped lang="less">
+<style lang="less">
 .breadcrumbs__container {
-    background-color: #3b3736;
+    background-color: rgb(59, 55, 54);
     padding: .7rem 6vw;
 	box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
 
@@ -67,7 +67,31 @@ export default defineComponent({
 
     .right-buttons {
         display: flex;
-        gap: 1rem
+        gap: 1rem;
+
+        & button {
+            padding: 0;
+            border: unset;
+            background: unset;
+
+            cursor: pointer;
+            background: transparent;
+            border-radius: 50%;
+            padding: .3rem;
+            height: 1.8rem;
+            width: 1.8rem;
+            color: orangered;
+
+            svg {
+                scale: 1.2
+            }
+            transition: all ease .3s;
+            &:hover {
+                background-color: orangered;
+                color: rgb(59, 55, 54)
+            }
+            
+        }
     }
 }
 

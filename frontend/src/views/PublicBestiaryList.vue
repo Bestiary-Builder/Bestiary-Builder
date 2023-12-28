@@ -8,7 +8,6 @@
 ]" 
 > 
 <template #right-button>
-	<button> Test </button>
 	<select v-model="viewMode">
 		<option>Recent</option>
 		<option>Popular</option>
