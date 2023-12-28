@@ -55,9 +55,10 @@
 	& div {
 		display: flex;
 		flex-direction: row;
-		justify-content: space-evenly;
+		justify-content: center;
 		align-items: start;
 		width: 100%;
+		max-width: 75rem;
 		& .person {
 			width: 40%;
 			display: flex;
@@ -70,8 +71,9 @@
 				color: var(--color-base--emphasized);
 			}
 			& img {
-				aspect-ratio: 1;
 				width: 90%;
+				max-height: 25rem;
+				object-fit: contain;
 			}
 		}
 	}

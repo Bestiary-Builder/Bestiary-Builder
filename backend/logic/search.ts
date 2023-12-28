@@ -66,9 +66,11 @@ app.post("/api/search", async (req, res) => {
 		let output;
 		if (!finder) output = {results: [], pageAmount: 1};
 		else {
+			let pageAmount = Math.ceil(finder[0].totalCount[0]?.count / amountPerPage);
+			if (Number.isNaN(pageAmount)) pageAmount = 1;
 			output = {
 				results: finder[0].results,
-				pageAmount: Math.ceil(finder[0].totalCount[0].count / amountPerPage)
+				pageAmount
 			};
 		}
 		//console.log(output.results.map((x: any) => ({name: x.name, creatureAmount: x.creatures.length, popularityScore: x.popularityScore, bookmarks: x.bookmarks, viewCount: x.viewCount})));
