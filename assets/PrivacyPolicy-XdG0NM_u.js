@@ -1,4 +1,4 @@
-import{M as o}from"./index-3c6563bf.js";import{d as a,_ as s,o as n,c as t,f as r,p as l,g as c,a as i}from"./index-b6edea71.js";const d=`## General scope
+import{M as o}from"./index-5Jdbla-E.js";import{B as s}from"./Breadcrumbs-kLWXRXMo.js";import{e as a,_ as r,r as l,o as n,c as t,a as c,d,j as u,F as h}from"./index-lS7YA8mf.js";const y=`## General scope
 
 This policy covers personally identifiable information collected or
 stored by Bestiary Builder on its servers in relation to the service it
@@ -188,4 +188,4 @@ individuals may still develop data-mining and other methods to uncover
 such information and disclose it. For this reason, Bestiary Builder can make no guarantee against unauthorized access to information
 provided in the course of participating in Bestiary Builder
 pages or related communities.
-`,h=o(),u=a({data(){return{content:h.render(d)}}});const y=e=>(l("data-v-a170dede"),e=e(),c(),e),p={class:"content privacy"},m=y(()=>i("h1",null,[i("span",null,"Privacy Policy")],-1)),f=["innerHTML"];function b(e,v,g,w,B,_){return n(),t("div",p,[m,e.content?(n(),t("div",{key:0,innerHTML:e.content},null,8,f)):r("",!0)])}const I=s(u,[["render",b],["__scopeId","data-v-a170dede"]]);export{I as default};
+`,m=o(),p=a({data(){return{content:m.render(y)}},components:{Breadcrumbs:s}}),f={class:"content markdown less-wide"},b=["innerHTML"];function v(e,g,w,B,k,P){const i=l("Breadcrumbs");return n(),t(h,null,[c(i,{routes:[{path:"",text:"Privacy Policy",isCurrent:!0}],isLessWide:!0}),d("div",f,[e.content?(n(),t("div",{key:0,innerHTML:e.content},null,8,b)):u("",!0)])],64)}const _=r(p,[["render",v]]);export{_ as default};

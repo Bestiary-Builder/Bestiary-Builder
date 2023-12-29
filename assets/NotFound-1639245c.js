@@ -1,1 +1,0 @@
-import{d as o,_ as e,o as n,c as t}from"./index-b6edea71.js";const r=o({mounted(){}});function c(s,a,d,p,_,f){return n(),t("h1",null,"Eror 404 - Page not found")}const l=e(r,[["render",c]]);export{l as default};
