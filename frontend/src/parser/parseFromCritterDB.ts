@@ -1,5 +1,5 @@
-import { toast } from "@/main";
-import { type CasterSpells, type Statblock, defaultStatblock, spellListFlattened, type SpellSlotEntity, type SkillsEntity, type Stat, type SpellCasting, type InnateSpellsEntity } from "../generic/types";
+import {toast} from "@/main";
+import {type CasterSpells, type Statblock, defaultStatblock, spellListFlattened, type SpellSlotEntity, type SkillsEntity, type Stat, type SpellCasting, type InnateSpellsEntity} from "../generic/types";
 
 import {abilityParser, descParser, parseDescIntoAutomation, capitalizeFirstLetter} from "./utils";
 
@@ -12,7 +12,7 @@ export function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: s
 	}
 	outputData.description = {
 		name: data.name,
-		description: data.flavor.description,
+		description: data.flavor.description.replaceAll("<i>", "*").replaceAll("</i>", "*").replaceAll("<b>", "**").replaceAll("</b>", "**"),
 		isProperNoun: data.flavor.nameIsProper,
 		faction: data.flavor.faction,
 		environment: data.flavor.environment,
@@ -28,33 +28,33 @@ export function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: s
 		languages: data.stats.languages,
 		senses: {
 			darkvision: (() => {
-				for (let s of data?.stats.senses ?? []) {
+				for (let s of data.stats.senses ?? []) {
 					if (s.toLowerCase().includes("dark")) return parseInt(s.replace(/[a-zA-Z]/g, ""));
 				}
 				return 0;
 			})(),
 			blindsight: (() => {
-				for (let s of data?.stats.senses ?? []) {
+				for (let s of data.stats.senses ?? []) {
 					if (s.toLowerCase().includes("blind")) return parseInt(s.replace(/[a-zA-Z]/g, ""));
 				}
 				return 0;
 			})(),
-			isBlind: !!(data?.stats?.senses ?? []).find((str: string) => str.includes("blind beyond this radius")) ?? false,
+			isBlind: !!(data.stats.senses ?? []).find((str: string) => str.includes("blind beyond this radius")),
 			truesight: (() => {
-				for (let s of data?.stats.senses ?? []) {
+				for (let s of data.stats.senses ?? []) {
 					if (s.toLowerCase().includes("true")) return parseInt(s.replace(/[a-zA-Z]/g, ""));
 				}
 				return 0;
 			})(),
 			tremorsense: (() => {
-				for (let s of data?.stats.senses ?? []) {
+				for (let s of data.stats.senses ?? []) {
 					if (s.toLowerCase().includes("tremor")) return parseInt(s.replace(/[a-zA-Z]/g, ""));
 				}
 				return 0;
 			})(),
 			telepathy: (() => {
 				if (!data.stats.languages) return 0;
-				for (let s of data?.stats.languages ?? []) {
+				for (let s of data.stats.languages ?? []) {
 					if (s.toLowerCase().includes("telepathy")) return parseInt(s.replace(/[a-zA-Z]/g, ""));
 				}
 				return 0;

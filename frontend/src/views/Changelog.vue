@@ -1,26 +1,32 @@
 <template>
-	<Breadcrumbs :routes="[
+<Breadcrumbs :routes="[
 {
 	path: '',
-	text: 'Terms and Conditions',
+	text: 'Changelog',
 	isCurrent: true
 }
 ]" :isLessWide="true"/> 
-	<div class="content markdown less-wide">
-		<div v-if="content" v-html="content"></div>
-	</div>
+
+<div class="content markdown less-wide">
+	<div v-if="content" v-html="content"></div>
+</div>
 </template>
 
 <script lang="ts">
 import {defineComponent} from "vue";
+// @ts-ignore
 import markdownit from "markdown-it";
 const md = markdownit();
-import dataFile from "@/assets/terms-and-conditions.md";
+import dataFile from "@/assets/changelog.md";
+import Breadcrumbs from "@/components/Breadcrumbs.vue";
 export default defineComponent({
 	data() {
 		return {
 			content: md.render(dataFile)
 		};
+	},
+	components: {
+		Breadcrumbs
 	}
 });
 </script>

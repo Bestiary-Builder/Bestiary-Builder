@@ -265,6 +265,10 @@
             </p>
         </div>
     </div>
+    <div v-if="data.description.description">
+        <h2 class="feature-container__title"> Description </h2>
+        <div v-html="md.render(data.description.description)"></div>
+    </div>
 </div>
 </template>
 
@@ -273,7 +277,8 @@ import { defineComponent } from 'vue';
 import type { Stat, SaveEntity, SkillsEntity, Statblock, InnateSpells, CasterSpells } from '../generic/types'
 import { stringify } from 'yaml'
 import { displayCR } from '@/generic/displayFunctions';
-
+import markdownit from "markdown-it"
+const md = markdownit()
 export default defineComponent({
     props: {
         data: {
@@ -283,7 +288,8 @@ export default defineComponent({
     },
     data() {
         return {
-            displayCR: displayCR
+            displayCR: displayCR,
+            md
         }
     },
     methods: {
@@ -513,7 +519,7 @@ export default defineComponent({
 .stat-block {
     width: 100%;
 
-    background-color: rgb(59, 55, 54);
+    background-color: var(--color-surface-1);
     box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
     padding: .4rem;
 
@@ -528,9 +534,9 @@ export default defineComponent({
 .stat-block__row {
     display: block;
     width: 100%;
-    border-bottom: 2px solid orangered;
     margin-bottom: .6rem;
     margin-top: .6rem;
+    border-bottom: 2px solid orangered;
 
     &:first-of-type {
         margin-top: 0;

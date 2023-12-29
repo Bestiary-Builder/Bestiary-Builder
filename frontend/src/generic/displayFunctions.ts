@@ -1,7 +1,4 @@
 // Simple global functions used in several places in the UI
-export function statusEmoji(status: "public" | "private" | "unlisted"): string {
-    return status == "public" ? "🌍" : status == "private" ? "🔒" : "🔗";
-}
 
 export function displayCR(cr: number) : string {
     if (cr == 0.125) return "1/8"

@@ -44,7 +44,7 @@
 					</div>
 					<div class="tile-footer">
 						<UserBanner :id="bestiary.owner" />
-						<span>{{ bestiary.creatures.length }}🐉</span>
+						<span>{{ bestiary.creatures.length }}<font-awesome-icon :icon="['fas', 'skull']" /></span>
 					</div>
 				</RouterLink>
 				<p v-else class="zero-found">

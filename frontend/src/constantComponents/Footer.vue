@@ -22,7 +22,7 @@
 				<nav id="footer-places">
 					<ul>
 						<li id="footer-places-privacy">
-							<a href="/privacy-policy" title="Privacy policy">Privacy Policy<font-awesome-icon icon="fa-solid fa-user-lock" /></a>
+							<a href="/privacy-policy" title="Privacy policy">Privacy Policy<font-awesome-icon :icon="['fas', 'user-lock']" /></a>
 						</li>
 						<li id="footer-places-terms">
 							<a href="/terms-and-conditions" title="Terms And Conditions">Terms And Conditions<font-awesome-icon icon="fa-solid fa-scale-balanced" /></a>
@@ -45,8 +45,8 @@ export default defineComponent({
 </script>
 <style scoped lang="less">
 .citizen-footer {
-	padding: var(--space-xl) var(--padding-page);
-	background-color: #1a1919;
+	padding: 2rem 5vw;
+	background-color: var(--color-surface-0);
 	clear: both;
 	color: orangered;
 	direction: ltr;

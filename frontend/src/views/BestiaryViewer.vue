@@ -12,7 +12,7 @@
 	}
 	]">
 	<template #right-button>
-		<button @click="exportBestiary" v-tooltip="'Export this bestiary as JSON to your clipboard.'"> 
+		<button @click="isExportModalOpen = true" v-tooltip="'Export bestiary'"> 
 			<font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" /> 
 		</button>
 	</template>
@@ -22,7 +22,8 @@
 			<div class="tile-container list-tiles" id="tile-container">
 				<div class="content-tile header-tile">
 					<h2>{{ bestiary.name }}</h2>
-					<p class="description">{{ bestiary.description }}</p>
+					<p class="description" :class="{'expanded': isExpanded}" v-html="md.render(bestiary.description)"></p>
+					<button class="expand-btn" v-tooltip="'Expand description'" @click="isExpanded = !isExpanded">{{ isExpanded ? '▲' : '▼' }}</button>
 					<hr />
 					<div class="controls-container">
 						<div class="flow-vertically">
@@ -48,11 +49,11 @@
 					<hr />
 					<div class="footer" :class="{'three-wide': isOwner}">
 						<UserBanner :id="bestiary.owner" />
-						<div>{{ statusEmoji(bestiary.status) }}{{ bestiary.status }}</div>
-						<div>{{ bestiary.creatures.length }}🐉</div>
+						<div> <StatusIcon :icon="bestiary.status" /> {{ bestiary.status }}</div>
+						<div>{{ bestiary.creatures.length }}<font-awesome-icon :icon="['fas', 'skull']" /></div>
 						<div role="button" aria-label="bookmark" @click.prevent="toggleBookmark" class="bookmark" v-if="!isOwner">
-							<span v-if="bookmarked" v-tooltip="'Unbookmark this bestiary'" class="bookmark-enabled">⭐</span>
-							<span v-else v-tooltip="'Bookmark this bestiary'" class="bookmark-disabled">⭐</span>
+							<span v-if="bookmarked" v-tooltip="'Unbookmark this bestiary'" class="bookmark-enabled"><font-awesome-icon :icon="['fas', 'star']" /></span>
+							<span v-else v-tooltip="'Bookmark this bestiary'" class="bookmark-disabled"><font-awesome-icon :icon="['fas', 'star']" /></span>
 						</div>
 					</div>
 				</div>
@@ -66,8 +67,8 @@
 								<span>{{ creature.stats?.core?.size }} {{ creature.stats?.core?.race }}{{ creature.stats?.description?.alignment ? ", " + creature.stats?.description?.alignment : "" }}</span>
 							</div>
 							<div class="right-side">
-								<span v-if="isOwner || isEditor" role="button" @click.stop="openDeleteModal(creature)" class="delete-creature"> <span>🗑️</span> </span>
-								<span v-if="isOwner || isEditor" class="edit-creature" @click.stop="() => {}"> <RouterLink class="creature" :to="'/statblock-editor/' + creature._id"> ✏️ </RouterLink> </span>
+								<span v-if="isOwner || isEditor" role="button"  v-tooltip="'Delete creature'" aria-label="Delete creature" @click.stop="openDeleteModal(creature)" class="delete-creature"><font-awesome-icon :icon="['fas', 'trash']" /> </span>
+								<span v-if="isOwner || isEditor" v-tooltip="'Edit creature'" aria-label="Edit creature" class="edit-creature" @click.stop="() => {}"> <RouterLink class="creature" :to="'/statblock-editor/' + creature._id"> <font-awesome-icon :icon="['fas', 'pen-to-square']" /> </RouterLink> </span>
 								<span class="cr"> CR {{ displayCR(creature.stats.description.cr) }}</span>
 							</div>
 						</div>
@@ -102,7 +103,8 @@
 			<div class="modal__bg" v-if="isImportModalOpen">
 				<section class="modal__content modal__small" ref="importModal" v-if="bestiary && isOwner">
 					<button @click="isImportModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
-					<h2 class="modal-header">Import</h2>
+					<h2 class="modal-header">Import creatures</h2>
+					<p> This might take a while for large bestiaries.</p>
 					<div class="flow-vertically">
 						<label for="critterdblink">CritterDB bestiary link </label>
 						<p> Insert a link to a critterDB bestiary to import all its creatures. Make sure the bestiary is public or has link sharing enabled.</p>
@@ -122,7 +124,7 @@
 					</div>
 
 					<div class="modal-buttons">
-						<button class="btn" @click="isImportModalOpen = false "> Cancel</button>
+						<button class="btn" @click="isImportModalOpen = false "> Close </button>
 					</div>
 				</section>
 			</div>
@@ -133,13 +135,13 @@
 		<Transition name="modal">
 			<div class="modal__bg" v-if="isDeleteModalOpen">
 				<section class="modal__content modal__small" ref="deleteModal" v-if="bestiary && (isOwner || isEditor)">
-					<button @click="isDeleteModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
+					<button autofocus @click="isDeleteModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
 					<h2 class="modal-header">
 						Are you sure you want to delete <u>{{ selectedCreature?.stats.description.name }}</u
 						>?
 					</h2>
 					<div class="modal-buttons">
-						<button class="btn" @click="isDeleteModalOpen = false">Cancel</button>
+						<button class="btn" @click="isDeleteModalOpen = false">Close</button>
 						<button v-if="selectedCreature" class="btn danger" @click.prevent="deleteCreature(selectedCreature)">Delete Creature</button>
 					</div>
 				</section>
@@ -149,27 +151,50 @@
 
 	<Teleport to="#modal">
 		<Transition name="modal">
+			<div class="modal__bg" v-if="isExportModalOpen">
+				<section class="modal__content modal__small" ref="exportModal" >
+					<button autofocus @click="isExportModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
+					<h2 class="modal-header">
+						Export Bestiary to JSON
+					</h2>
+					<p> Export this Bestiary to JSON as Bestiary Builder JSON. You can use this to copy a bestiary by importing it into your own bestiary.</p>
+					<div class="modal-buttons">
+						<button class="btn" @click="isExportModalOpen = false">Close</button>
+						<button class="btn confirm" @click="exportBestiary(false)"> Copy to Clipboard </button>
+						<button class="btn confirm" @click="exportBestiary(true)"> Download as File</button>
+
+					</div>
+				</section>
+			</div>
+		</Transition>
+	</Teleport>
+
+
+	<Teleport to="#modal">
+		<Transition name="modal">
 			<div class="modal__bg" v-if="isEditorModalOpen">
 				<section class="modal__content modal__small" ref="editModal" v-if="bestiary && (isOwner || isEditor)">
 					<button @click="isEditorModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
-					<h2 class="modal-header">edit bestiary</h2>
+					<h2 class="modal-header">Edit Bestiary</h2>
 					<div class="flow-vertically">
 						<label for="nameinput">Name</label>
 						<input type="text" v-model="bestiary.name" :minlength="limits.nameMin" :maxlength="limits.nameLength" id="nameinput" />
 					</div>
 					<div class="flow-vertically">
 						<label for="descinput">Description</label>
+						<p> Supports markdown </p>
 						<textarea v-model="bestiary.description" :maxlength="limits.descriptionLength" id="descinput" />
 					</div>
-					<div v-if="isOwner" class="flow-vertically">
-						<label for="statusinput">Status</label>
-						<v-select v-model="bestiary.status" :options="['public', 'unlisted', 'private']" inputId="statusinput" />
+					<div class="two-wide">
+						<div v-if="isOwner" class="flow-vertically">
+							<label for="statusinput">Status</label>
+							<v-select v-model="bestiary.status" :options="['public', 'unlisted', 'private']" inputId="statusinput" />
+						</div>
+						<div  v-if="isOwner" class="flow-vertically">
+							<label for="tagsInput">Tags</label>
+							<v-select placeholder="Select Tags" v-model="bestiary.tags" multiple :options="allTags" inputId="tagsInput" />
+						</div>
 					</div>
-					<div  v-if="isOwner" class="flow-vertically">
-						<label for="tagsInput">Tags</label>
-						<v-select placeholder="Select Tags" v-model="bestiary.tags" multiple :options="allTags" inputId="tagsInput" />
-					</div>
-
 					<div class="editor-block">
 						<h3><span>editors</span></h3>
 						<p v-if="isOwner" class="flow-vertically">
@@ -182,17 +207,17 @@
 									<span v-if="isOwner" role="button" @click="removeEditor(editor._id)" class="delete-creature"> <span>🗑️</span> </span>
 								</p>
 							</div>
-							<div class="flow-vertically">
-								<label for="addeditor">Add editor</label>
-								<div class="button-container">
-									<input type="text" v-model="editorToAdd" inputmode="numeric" placeholder="Discord user ID" />
-									<button class="btn" @click="addEditor()" id="add">Add</button>
-								</div>
+						</div>
+						<div class="flow-vertically">
+							<label for="addeditor">Add editor</label>
+							<div class="button-container">
+								<input type="text" v-model="editorToAdd" inputmode="numeric" placeholder="Discord user ID" />
+								<button class="btn" @click="addEditor()" id="add">Add</button>
 							</div>
 						</div>
 					</div>
 					<p class="warning" v-if="showWarning">
-						By changing the bestiary status to public I confirm that I am the copyright holder of the content within, or that I have permission from the copyright holder to share this content. I hereby agree to the (CONTENT POLICY) and agree to be fully liable for the content within. I
+						By changing the bestiary status to public I confirm that I am the copyright holder of the content within, or that I have permission from the copyright holder to share this content. I hereby agree to the <RouterLink to="../content-policy">Content Policy</RouterLink> and agree to be fully liable for the content within. I
 						affirm that the content does not include any official non-free D&D content. Bestiaries that breach these terms may have their status changed to private or be outright removed, and may result in a ban if the content breaches our content policy.
 					</p>
 
@@ -213,25 +238,25 @@ import {defaultStatblock} from "@/generic/types";
 import type {User, Bestiary, Creature, Statblock} from "@/generic/types";
 import UserBanner from "@/components/UserBanner.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
+import StatusIcon from "@/components/StatusIcon.vue";
 import {handleApiResponse, user, type error, toast, tags, type limitsType, asyncLimits} from "@/main";
 import StatblockRenderer from "@/components/StatblockRenderer.vue";
 import {parseFromCritterDB} from "@/parser/parseFromCritterDB";
-import {statusEmoji, displayCR} from "@/generic/displayFunctions";
+import {displayCR} from "@/generic/displayFunctions";
 import {ref} from "vue";
 import {onClickOutside} from "@vueuse/core";
-
+import markdownit from "markdown-it";
+const md = markdownit();
 export default defineComponent({
 	setup() {
 		const isEditorModalOpen = ref(false);
 		const editModal = ref<HTMLDivElement | null>(null);
-		// @ts-ignore
 		onClickOutside(editModal, () => (isEditorModalOpen.value = false));
 
 		const selectedCreature = ref<Creature | null>(null);
 
 		const isDeleteModalOpen = ref(false);
 		const deleteModal = ref<HTMLDivElement | null>(null);
-		// @ts-ignore
 		onClickOutside(deleteModal, () => (isDeleteModalOpen.value = false));
 
 		const openDeleteModal = (creature: Creature) => {
@@ -241,17 +266,21 @@ export default defineComponent({
 
 		const isImportModalOpen = ref(false);
 		const importModal = ref<HTMLDivElement | null>(null);
-		// @ts-ignore
-		onClickOutside(deleteModal, () => (isImportModalOpen.value = false));
+		onClickOutside(importModal, () => (isImportModalOpen.value = false));
+
+		const isExportModalOpen = ref(false);
+		const exportModal = ref<HTMLDivElement | null>(null);
+		onClickOutside(exportModal, () => (isExportModalOpen.value = false));
 
 		return {
 			editModal,
 			deleteModal,
 			importModal,
+			exportModal,
 			isEditorModalOpen,
 			isDeleteModalOpen,
 			isImportModalOpen,
-
+			isExportModalOpen,
 			selectedCreature,
 			openDeleteModal
 		}
@@ -276,14 +305,16 @@ export default defineComponent({
 			critterDbId: "" as string,
 			bestiaryBuilderJson: "" as string,
 			searchText: "" as string,
-			statusEmoji,
-			displayCR
+			displayCR,
+			md,
+			isExpanded: false
 		};
 	},
 	components: {
 		UserBanner,
 		StatblockRenderer,
-		Breadcrumbs
+		Breadcrumbs,
+		StatusIcon
 	},
 	async created() {
 		this.limits = (await asyncLimits) ?? ({} as limitsType);
@@ -300,9 +331,29 @@ export default defineComponent({
 		loader.hide();
 	},
 	methods: {
-		exportBestiary() : void {
-			navigator.clipboard.writeText(JSON.stringify(this.creatures?.map(obj => obj.stats), null, 2))
-			toast.info("Exported this bestiary to your clipboard.")
+		exportBestiary(asFile : boolean) : void {
+			if (asFile) {
+				const file = new File([JSON.stringify(this.creatures?.map(obj => obj.stats), null, 2)], 'Creatures.txt', {
+				type: 'text/plain',
+				})
+
+				// https://javascript.plainenglish.io/javascript-create-file-c36f8bccb3be
+				const link = document.createElement('a')
+				const url = URL.createObjectURL(file)
+
+				link.href = url
+				link.download = file.name
+				document.body.appendChild(link)
+				link.click()
+
+				document.body.removeChild(link)
+				window.URL.revokeObjectURL(url)
+					
+			}
+			else {
+				navigator.clipboard.writeText(JSON.stringify(this.creatures?.map(obj => obj.stats), null, 2))
+				toast.info("Exported this bestiary to your clipboard.")
+			}
 		},
 		async importBestiaryFromCritterDB() {
 			let link = this.critterDbId.trim();
@@ -582,7 +633,7 @@ export default defineComponent({
 	display: flex;
 	flex-direction: column;
 	gap: 0.3rem;
-	margin: 1rem 0;
+	margin: .5rem 0;
 	label {
 		font-weight: bold;
 		text-decoration: underline;
@@ -595,16 +646,36 @@ export default defineComponent({
 	gap: 1rem;
 }
 
-.controls-container {
+.two-wide {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	gap: 1rem;
+}
+.controls-container {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: .5rem;
 
 	& .btn-container {
-		display: grid;
-		grid-template-columns: 1fr 1fr 1fr;
-		gap: 1rem;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: .5rem;
+
+		& button {
+			width: fit-content;
+			flex: 1 1 0;
+
+		}
 	}
+}
+
+@media screen and (max-width: 1300px) {
+	.controls-container {
+		grid-template-columns: 1fr;
+	}
+
+
 }
 .list-tiles {
 	display: flex;
@@ -613,12 +684,12 @@ export default defineComponent({
 	position: relative;
 	overflow: scroll;
 	max-height: 80vh;
-	padding: 0 1rem 1rem;
-	overflow-x: hidden;
+	padding: 0 2rem 1rem;
+	overflow-x: clip;
 	overscroll-behavior: contain;
 	.content-tile {
 		height: fit-content !important;
-		background: rgb(59, 55, 54);
+		background: var(--color-surface-1);
 		color: white;
 		padding: 1rem;
 		box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
@@ -656,6 +727,10 @@ export default defineComponent({
 					align-items: center;
 					height: 100%;
 
+					svg {
+						color: #536d8c
+					}
+
 					&.cr {
 						width: 5rem;
 					}
@@ -671,7 +746,6 @@ export default defineComponent({
 
 	.header-tile {
 		background-color: var(--color-surface-2);
-		position: sticky;
 		z-index: 1;
 		top: 0;
 		cursor: unset;
@@ -685,9 +759,18 @@ export default defineComponent({
 
 		.description {
 			max-height: 8rem;
-			font-size: smaller;
-			color: rgb(229, 229, 229);
-			overflow-y: scroll;
+			font-size: small;
+			color: rgb(205, 205, 205);
+			overflow-y: hidden;
+
+			&.expanded {
+				max-height: unset;
+			}
+		}
+
+		.description:not(.expanded) {
+			-webkit-mask-image: linear-gradient(180deg, #000 80%, transparent);
+			mask-image: linear-gradient(180deg, #000 80%, transparent);
 		}
 		.footer {
 			display: grid;
@@ -711,6 +794,10 @@ export default defineComponent({
 		}
 	}
 
+	.header-tile:not(.description.expanded) {
+		position: sticky;
+	}
+
 	.create-tile {
 		text-align: center;
 		text-decoration: underline;
@@ -724,6 +811,20 @@ export default defineComponent({
 	grid-template-columns: 1fr 1fr;
 }
 
+@media screen and (max-width: 1080px) {
+	.list-tiles {
+		padding: 0;
+
+		& .content-tile.creature-tile:hover {
+			background-color: #464343;
+			scale: 1;
+		}
+	}
+	.bestiary {
+		grid-template-columns: 1fr;
+	}
+}
+
 .delete-creature,
 .edit-creature,
 .edit-bestiary {
@@ -735,7 +836,8 @@ export default defineComponent({
 	}
 }
 
-.pin-notice {
+.pin-notice,
+.expand-btn {
 	float: right;
 	cursor: pointer;
 }
@@ -749,6 +851,19 @@ export default defineComponent({
 	}
 }
 
+.expand-btn {
+	border: none;
+	background: none;
+	color: orangered;
+	font-size: 1.6rem;
+	translate: 0 -20px;
+
+	transition: background-color .3s ease-in-out;
+
+	&:hover {
+		background-color: var(--color-surface-0);
+	}
+}
 .no-creature-text {
 	font-size: 1.3rem;
 	text-align: center;
@@ -758,6 +873,7 @@ export default defineComponent({
 .bookmark {
 	cursor: pointer;
 	font-size: 1.2rem;
+	color: goldenrod;
 
 	.bookmark-disabled {
 		filter: grayscale(100%);

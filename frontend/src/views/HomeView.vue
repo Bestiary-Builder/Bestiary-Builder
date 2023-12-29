@@ -1,6 +1,13 @@
 <template>
-	<div class="content">
-		<h1><span>Bestiary Builder</span></h1>
+	<Breadcrumbs :routes="[
+{
+	path: '',
+	text: 'Home',
+	isCurrent: true
+}
+]" :isLessWide="true"/> 
+
+	<div class="content less-wide">
 		<div class="description">
 			<img class="logo" src="/logo-text.svg" />
 			<p>bla bla bla...</p>
@@ -20,14 +27,16 @@
 		</div>
 	</div>
 </template>
-
+<script lang="ts">
+import Breadcrumbs from '@/components/Breadcrumbs.vue';
+export default {
+	components: {
+		Breadcrumbs
+	}
+}
+</script>
 <style scoped lang="less">
 .content {
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-	align-items: center;
-
 	& div {
 		display: flex;
 		flex-direction: column;

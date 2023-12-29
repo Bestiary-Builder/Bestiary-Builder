@@ -1,4 +1,5 @@
-import {log, isProduction} from "../server";
+import {isProduction} from "../server";
+import {log} from "../logger";
 import discord, {PresenceUpdateStatus, Status} from "discord.js";
 import {collections, getUser, type User} from "../database";
 const client = new discord.Client({
@@ -61,9 +62,9 @@ async function checkUserStatuses(guild: discord.Guild) {
 	log.info("Tier 1: " + tier1Ids);
 	log.info("Tier 2: " + tier2Ids);
 	//Update database
-	collections.users?.updateMany({$and: [{_id: {$nin: tier1Ids}}, {_id: {$nin: tier2Ids}}]}, {$set: {supporter: 0}});
-	collections.users?.updateMany({_id: {$in: tier1Ids}}, {$set: {supporter: 1}});
-	collections.users?.updateMany({_id: {$in: tier2Ids}}, {$set: {supporter: 2}});
+	await collections.users?.updateMany({$and: [{_id: {$nin: tier1Ids}}, {_id: {$nin: tier2Ids}}]}, {$set: {supporter: 0}});
+	await collections.users?.updateMany({_id: {$in: tier1Ids}}, {$set: {supporter: 1}});
+	await collections.users?.updateMany({_id: {$in: tier2Ids}}, {$set: {supporter: 2}});
 }
 
 //Public discord logging

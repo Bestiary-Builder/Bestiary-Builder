@@ -1,4 +1,5 @@
-import {app, log} from "../server";
+import {app} from "../server";
+import {log} from "../logger";
 import fetch from "node-fetch";
 
 app.get("/api/critterdb/:id/:published", async (req, res) => {

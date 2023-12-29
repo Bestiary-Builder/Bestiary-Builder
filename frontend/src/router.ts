@@ -3,7 +3,7 @@ import {createRouter, createWebHistory} from "vue-router";
 /*@ts-ignore*/
 import fileRoutes from "~pages";
 import relevantRoutes, {defaultMetaTags} from "./routes";
-import {user, loginLink} from "@/main";
+import {user, sendToLogin} from "@/main";
 const routes = relevantRoutes.map((route) => {
 	return {
 		...route,
@@ -28,7 +28,7 @@ router.beforeEach(async (to, from, next) => {
 	if (routes.find((a) => a.path == to.path)?.loggedIn) {
 		let loggedIn = await user;
 		if (!loggedIn) {
-			window.location.href = loginLink;
+			sendToLogin(to.path);
 			return;
 		}
 	}

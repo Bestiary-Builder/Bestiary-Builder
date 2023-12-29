@@ -4,50 +4,28 @@
 	gap: 1.5em;
 }
 
-@media screen and (max-width: 1800px) {
+@media screen and (max-width: 1600px) {
 	.tile-container {
 		grid-template-columns: 1fr 1fr 1fr;
 	}
-
-	.content-tile.bestiary-tile .bestiary-tile-content {
-		height: 25rem;
-		.description {
-			height: 23rem;
-		}
-	}
 }
 
-@media screen and (max-width: 1550px) {
+@media screen and (max-width: 1200px) {
 	.tile-container {
 		grid-template-columns: 1fr 1fr;
 	}
-
-	.content-tile.bestiary-tile .bestiary-tile-content {
-		height: 30rem;
-
-		.description {
-			max-height: 28rem;
-		}
-	}
+	
 }
 
-@media screen and (max-width: 1050px) {
+@media screen and (max-width: 800px) {
 	.tile-container {
 		grid-template-columns: 1fr;
-	}
-
-	.content-tile.bestiary-tile .bestiary-tile-content {
-		height: 35rem;
-
-		.description {
-			max-height: 33rem;
-		}
 	}
 }
 
 .content-tile {
 	aspect-ratio: 1 / 1;
-	background: var(--color-surface-2);
+	background: var(--color-surface-1);
 	color: #cbcbcb;
 	padding: 1rem;
 	box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
@@ -99,5 +77,38 @@ a.content-tile:hover,
 }
 
 .bestiary-tile:hover {
-	background-color: #2b3f58;
+	background-color: #454241;
+}
+
+
+.popin-enter-active {
+	animation: bounce-in 0.7s ease;
+}
+.popin-leave-active {
+	animation: bounce-in 0.7s ease reverse;
+}
+
+.popin-enter-from,
+.popin-leave-to {
+	scale: 0;
+}
+
+/* ensure leaving items are taken out of layout flow so that moving
+   animations can be calculated correctly. */
+
+.popin-leave-active {
+	position: absolute;
+}
+
+@keyframes bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale(.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% { transform: scale(.9); }
+  100% { transform: scale(1); }
 }

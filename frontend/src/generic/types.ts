@@ -362,6 +362,7 @@ export interface User {
 	bestiaries: string[];
 	bookmarks: string[];
 	supporter: 0 | 1 | 2;
+	joinedAt: number;
 	_id: string;
 }
 
@@ -373,11 +374,12 @@ export interface Bestiary {
 	description: string;
 	creatures: string[];
 	tags: string[];
+	lastUpdated: number;
 	_id: string;
 }
 
 export interface Creature {
-	lastUpdated: Date;
+	lastUpdated: number;
 	stats: Statblock;
 	bestiary: string;
 	_id: string;

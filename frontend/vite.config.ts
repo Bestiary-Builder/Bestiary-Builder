@@ -1,13 +1,11 @@
 import {fileURLToPath, URL} from "node:url";
 
-//@ts-expect-error
 import {defineConfig} from "vite";
 import vue from "@vitejs/plugin-vue";
 //@ts-ignore
 import {siteMapRoutes} from "./src/routes";
 import Pages from "vite-plugin-pages";
 import generateSitemap from "vite-plugin-pages-sitemap";
-//@ts-expect-error
 import FontAwesome from "unplugin-vue-fontawesome/vite";
 import rawloader from "vite-raw-plugin";
 
@@ -18,6 +16,7 @@ export default defineConfig({
 		Pages({
 			dirs: "src/views",
 			onRoutesGenerated: (fileroutes) => {
+				//@ts-expect-error
 				generateSitemap({
 					routes: siteMapRoutes,
 					readable: true,
@@ -26,6 +25,7 @@ export default defineConfig({
 				console.log("\nSitemap generated");
 			}
 		}),
+		//@ts-expect-error
 		rawloader({
 			fileRegex: /\.md$/
 		}),
@@ -53,11 +53,11 @@ export default defineConfig({
 		}
 	},
 	build: {
-		chunkSizeWarningLimit: 1000,
+		chunkSizeWarningLimit: 1250
 	},
 	server: {
 		proxy: {
-			'/api': 'http://localhost:5000'		
-		},
+			"/api": "http://localhost:5000"
+		}
 	}
 });

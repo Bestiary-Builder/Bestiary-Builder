@@ -7,70 +7,8 @@ dotenv.config();
 export const isProduction = (process.env.NODE_ENV == "production") as boolean;
 const frontendPath = path.join(__dirname, process.env.frontendPath as string);
 
-//Setup logging
-import winston from "winston";
-const format = winston.format.printf((info) => {
-	return `[${info.timestamp}]-(${info.label}) ${info.level} > ${info.message}${info.stack ? "\n" + info.stack : ""}`;
-});
-const winstonLevels = {
-	levels: {
-		error: 0,
-		warning: 1,
-		info: 2,
-		request: 3
-	},
-	colors: {
-		error: "red",
-		warning: "yellow",
-		info: "white",
-		request: "grey"
-	}
-};
-winston.addColors(winstonLevels.colors);
-export const log = winston.createLogger({
-	levels: winstonLevels.levels,
-	format: winston.format.combine(
-		winston.format.json(),
-		winston.format.timestamp({
-			format: "YYYY-MM-DD HH:mm:ss"
-		}),
-		winston.format.errors({stack: true}),
-		winston.format.label({label: "Bestiary Builder"})
-	),
-	transports: [
-		new winston.transports.Console({
-			level: "info",
-			format: winston.format.combine(
-				winston.format((info) => {
-					info.level = info.level.toUpperCase();
-					return info;
-				})(),
-				winston.format.timestamp({
-					format: "DD-MM-YYYY HH:mm:ss"
-				}),
-				winston.format.label({label: "Bestiary Builder"}),
-				winston.format.colorize({all: true}),
-				format
-			)
-		})
-	]
-});
-if (isProduction) {
-	log.add(
-		new winston.transports.File({
-			level: "request",
-			filename: "logs/combined.log",
-			format: log.format
-		})
-	);
-	log.add(
-		new winston.transports.File({
-			level: "error",
-			filename: "logs/error.log",
-			format: log.format
-		})
-	);
-}
+//Logging
+import {log} from "./logger";
 
 //Setup express server with settings
 import express, {NextFunction, Request, Response} from "express";
