@@ -1,5 +1,5 @@
-import { toast } from "@/main";
-import { type CasterSpells, type Statblock, defaultStatblock, spellListFlattened, type SpellSlotEntity, type SkillsEntity, type Stat, type SpellCasting, type InnateSpellsEntity } from "../generic/types";
+import {toast} from "@/main";
+import {type CasterSpells, type Statblock, defaultStatblock, spellListFlattened, type SpellSlotEntity, type SkillsEntity, type Stat, type SpellCasting, type InnateSpellsEntity} from "../generic/types";
 
 import {abilityParser, descParser, parseDescIntoAutomation, capitalizeFirstLetter} from "./utils";
 
@@ -39,7 +39,7 @@ export function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: s
 				}
 				return 0;
 			})(),
-			isBlind: !!(data.stats.senses ?? []).find((str: string) => str.includes("blind beyond this radius")) ?? false,
+			isBlind: !!(data.stats.senses ?? []).find((str: string) => str.includes("blind beyond this radius")),
 			truesight: (() => {
 				for (let s of data.stats.senses ?? []) {
 					if (s.toLowerCase().includes("true")) return parseInt(s.replace(/[a-zA-Z]/g, ""));

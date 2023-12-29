@@ -1,26 +1,29 @@
 <template>
-	<Breadcrumbs v-if="bestiary" :routes="[
-		{
-			path: '../my-bestiaries/',
-			text: 'My Bestiaries',
-			isCurrent: false
-		},
-		{
-			path: '../bestiary-viewer/' + bestiary?._id,
-			text: bestiary?.name,
-			isCurrent: false
-		},
-	 	{
-			path: '',
-			text: data.description.name,
-			isCurrent: true
-	 	}
-	]"> 
-	<template #right-button>
-		<button @click="exportStatblock" v-tooltip="'Export this creature as JSON to your clipboard.'"> 
-			<font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" /> 
-		</button>
-	</template>
+	<Breadcrumbs
+		v-if="bestiary"
+		:routes="[
+			{
+				path: '../my-bestiaries/',
+				text: 'My Bestiaries',
+				isCurrent: false
+			},
+			{
+				path: '../bestiary-viewer/' + bestiary?._id,
+				text: bestiary?.name,
+				isCurrent: false
+			},
+			{
+				path: '',
+				text: data.description.name,
+				isCurrent: true
+			}
+		]"
+	>
+		<template #right-button>
+			<button @click="exportStatblock" v-tooltip="'Export this creature as JSON to your clipboard.'">
+				<font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" />
+			</button>
+		</template>
 	</Breadcrumbs>
 	<div class="content">
 		<div class="content-container__inner editor">
@@ -135,13 +138,12 @@
 							<div class="quantity">
 								<input type="number" v-model="data.core.proficiencyBonus" min="0" max="30" inputmode="numeric" id="proficiencybonus" />
 								<div class="quantity-nav">
-									<div class="quantity-button quantity-up" @click="Math.min(30, data.core.proficiencyBonus = data.core.proficiencyBonus +1)" aria-label="Increase CR">+</div>
-									<div class="quantity-button quantity-down" @click="Math.max(0, data.core.proficiencyBonus = data.core.proficiencyBonus -1)" aria-label="Decrease CR">-</div>
+									<div class="quantity-button quantity-up" @click="Math.min(30, (data.core.proficiencyBonus = data.core.proficiencyBonus + 1))" aria-label="Increase CR">+</div>
+									<div class="quantity-button quantity-down" @click="Math.max(0, (data.core.proficiencyBonus = data.core.proficiencyBonus - 1))" aria-label="Decrease CR">-</div>
 								</div>
 							</div>
 						</div>
 					</div>
-
 				</div>
 				<div class="editor-content__tab-inner scale-in">
 					<div class="editor-field__container two-wide">
@@ -946,7 +948,7 @@
 <script lang="ts">
 import {defineComponent} from "vue";
 import StatblockRenderer from "../components/StatblockRenderer.vue";
-import Breadcrumbs from "../components/Breadcrumbs.vue"
+import Breadcrumbs from "../components/Breadcrumbs.vue";
 import type {InnateSpellsEntity, InnateSpellsList, SkillsEntity, Statblock, Creature, Bestiary} from "@/generic/types";
 import {defaultStatblock, getSpellSlots, spellList, spellListFlattened} from "@/generic/types";
 import {handleApiResponse, type error, toast, asyncLimits, type limitsType} from "@/main";
@@ -963,7 +965,7 @@ export default defineComponent({
 
 		return {
 			isModalOpen
-		}
+		};
 	},
 	components: {
 		StatblockRenderer,
@@ -1032,9 +1034,9 @@ export default defineComponent({
 		};
 	},
 	methods: {
-		exportStatblock() : void {
-			navigator.clipboard.writeText(JSON.stringify(this.data, null, 2))
-			toast.info("Exported this statblock to your clipboard.")
+		exportStatblock(): void {
+			navigator.clipboard.writeText(JSON.stringify(this.data, null, 2));
+			toast.info("Exported this statblock to your clipboard.");
 		},
 		import5etools(): void {
 			try {
@@ -1178,16 +1180,20 @@ export default defineComponent({
 					toast.success("Saved stat block");
 					this.madeChanges = false;
 					// watch data only once, as traversing the object deeply is expensive.
-					const unwatch = this.$watch('data', (newValue, oldValue) => {
-						this.madeChanges = true;
-						unwatch()
-					}, { deep: true} )
+					const unwatch = this.$watch(
+						"data",
+						(newValue, oldValue) => {
+							this.madeChanges = true;
+							unwatch();
+						},
+						{deep: true}
+					);
 				} else {
 					toast.error("Error: " + (result.data as error).error);
 				}
 			});
 			loader.hide();
-		},
+		}
 	},
 	async mounted() {
 		const loader = this.$loading.show();
@@ -1234,9 +1240,9 @@ export default defineComponent({
 
 		// if the user had changes without saving, stop them from closing the page without confirming.
 		window.addEventListener("beforeunload", (event) => {
-			// haven't figured out yet how to destroy the event listener upon unmount so for now this confirms that the 
+			// haven't figured out yet how to destroy the event listener upon unmount so for now this confirms that the
 			// warning only shows if they are in the statblock editor
-			if (this.madeChanges && location.pathname.split('/')[1] == "statblock-editor") {
+			if (this.madeChanges && location.pathname.split("/")[1] == "statblock-editor") {
 				event.preventDefault();
 				event.returnValue = true;
 			}
@@ -1245,12 +1251,16 @@ export default defineComponent({
 		// watch data only once, as traversing the object deeply is expensive.
 		// re-registered upon saving.
 		// need a set time out otherwise it triggers upon mounting for some reason
-		setTimeout( () => {
-			let unwatch = this.$watch('data', (newValue, oldValue) => {
-				this.madeChanges = true;
-				unwatch()
-			}, { deep: true } )
-		}, 1) 
+		setTimeout(() => {
+			let unwatch = this.$watch(
+				"data",
+				(newValue, oldValue) => {
+					this.madeChanges = true;
+					unwatch();
+				},
+				{deep: true}
+			);
+		}, 1);
 
 		loader.hide();
 	},
@@ -1326,17 +1336,17 @@ export default defineComponent({
 	beforeRouteUpdate() {
 		// just in case the user manages to navigate to a page that also uses StatblockEditorView
 		if (this.madeChanges) {
-			const answer = window.confirm('Do you really want to leave? you have unsaved changes!')
-  			if (!answer) return false
-		} 
+			const answer = window.confirm("Do you really want to leave? you have unsaved changes!");
+			if (!answer) return false;
+		}
 	},
 	beforeRouteLeave() {
-		// when the user leaves this route 
-		if (this.madeChanges)  {
-			const answer = window.confirm('Do you really want to leave? you have unsaved changes!')
-  			if (!answer) return false
-		} 
-	},
+		// when the user leaves this route
+		if (this.madeChanges) {
+			const answer = window.confirm("Do you really want to leave? you have unsaved changes!");
+			if (!answer) return false;
+		}
+	}
 });
 </script>
 
