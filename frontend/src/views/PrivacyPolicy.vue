@@ -1,6 +1,12 @@
 <template>
+<Breadcrumbs :routes="[
+{
+	path: '',
+	text: 'Privacy Policy',
+	isCurrent: true
+}
+]" :isLessWide="true"/> 
 	<div class="content privacy">
-		<h1><span>Privacy Policy</span></h1>
 		<div v-if="content" v-html="content"></div>
 	</div>
 </template>
@@ -11,11 +17,15 @@ import {defineComponent} from "vue";
 import markdownit from "markdown-it";
 const md = markdownit();
 import dataFile from "@/assets/privacy-policy.md";
+import Breadcrumbs from "@/components/Breadcrumbs.vue";
 export default defineComponent({
 	data() {
 		return {
 			content: md.render(dataFile)
 		};
+	},
+	components: {
+		Breadcrumbs
 	}
 });
 </script>

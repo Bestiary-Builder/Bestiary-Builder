@@ -177,6 +177,15 @@ const routes = [
 		file: "TermsAndConditions.vue",
 		meta: {}
 	},
+	// changelog
+	{
+		path: "/changelog",
+		navbar: true,
+		loggedIn: false,
+		name: "Changelog",
+		file: "Changelog.vue",
+		meta: {}
+	},
 	// 404 not found page
 	{
 		path: "/:notfound",

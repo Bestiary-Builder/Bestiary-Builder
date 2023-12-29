@@ -1,9 +1,9 @@
 <template>
-<section class="breadcrumbs__container">
+<section class="breadcrumbs__container" :class="{'less-wide': isLessWide}">
     <div class="breadcrumbs__links">
         <template v-for="route, index in routes" :key="index">
             <RouterLink v-if="!route.isCurrent" :to="route.path"> {{ route.text }} </RouterLink>
-            <span v-else class="current-page"> {{ route.text  }}</span>
+            <h1 v-else class="current-page"> {{ route.text  }}</h1>
             <span v-if="index+1 != routes.length" class="seperator">></span>
         </template>
     </div>
@@ -50,6 +50,10 @@ export default defineComponent({
         routes: {
             type: Array as ()=>links,
             required: true
+        },
+        isLessWide: {
+            type: Boolean,
+            required: false
         }
     },
 })
@@ -64,6 +68,10 @@ export default defineComponent({
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
+
+    &.less-wide {
+        padding: .7rem 27.5vw
+    }
 
     .right-buttons {
         display: flex;
@@ -118,6 +126,7 @@ export default defineComponent({
 
     & .current-page {
         font-weight: bold;
+        font-size: 1.3rem;
     }
 }
 </style>

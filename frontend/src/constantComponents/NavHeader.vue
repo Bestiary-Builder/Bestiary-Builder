@@ -17,7 +17,7 @@
 
 		<div class="navbar-right">
 			<RouterLink class="user" v-if="user" to="/user">
-				<span>@{{ user.username }}</span>
+				<span>{{ user.username }}</span>
 				<img alt="avatar" :src="'https://cdn.discordapp.com/avatars/' + user._id + '/' + user.avatar + '.png'" />
 			</RouterLink>
 			<div v-else class="user login" @click.prevent="LoginClick">Login</div>
@@ -56,19 +56,15 @@ export default defineComponent({
 .user {
 	display: flex;
 	align-items: center;
-	padding: .7rem;
+
 	gap: 0.3rem;
-	text-decoration: none;
-	color: var(--color-base);
 	& img {
 		height: 1.5rem;
-		border-radius: 50rem;
+		border-radius: 50%;
 		scale: 1.1;
 	}
 }
-.user img {
-	border-radius: 50rem;
-}
+
 .login {
 	cursor: pointer;
 }
@@ -77,33 +73,31 @@ export default defineComponent({
 
 	background: var(--color-surface-2);
 
-	display: flex;
-	flex: 1;
-	justify-content: space-between;
+	display: grid;
+	grid-template-columns: 2fr 6fr 2fr;
 
 	box-shadow: rgba(0, 0, 0, 0.19) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 2px 2px;
 }
 
 .navbar-left {
 	display: flex;
-	flex-direction: row;
-	flex-wrap: nowrap;
 }
-
 .navbar-right {
-	display: inline-flex;
+	display: flex;
+	align-items: center;
+	justify-content: right;
+	padding: 0 2rem;
 }
 
 .navbar-center {
 	display: flex;
-	flex-direction: row;
-	flex-wrap: nowrap;
-	gap: 3vw;
+	justify-content: center;
+	padding: 0.3rem 1rem;
+	gap: .3rem;
 }
-
 .navbar-brand,
 .navbar .nav-link {
-	color: White;
+	color: white;
 	padding: .7rem;
 	display: flex;
 	flex-direction: column;
@@ -113,19 +107,18 @@ export default defineComponent({
 
 .navbar-brand {
 	font-weight: bold;
-	padding-left: 2rem;
-	padding-right: 2rem;
-
+	padding: 0 2rem;
 	flex-direction: row;
 }
+
 .navbar-brand img {
 	margin-right: 10px;
 	height: 2.25rem;
-	//filter: invert(42%) sepia(93%) saturate(1352%) hue-rotate(87deg) brightness(119%) contrast(119%);
 }
 .nav-link {
-	min-width: 10vw;
+	width: 20%;
 	text-align: center;
+	font-weight: bold;
 }
 
 .navbar-collapse,
