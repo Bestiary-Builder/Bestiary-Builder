@@ -246,7 +246,7 @@
 
 						<div class="flow-vertically">
 							<label class="editor-field__title" for="canhover"><span class="text">Blind beyond</span></label>
-							<span>this radius? <input type="checkbox" step="5" v-model="data.core.speed.isHover" id="canhover" /></span>
+							<span>this radius? <input type="checkbox" step="5" v-model="data.core.senses.isBlind" id="canhover" /></span>
 						</div>
 					</div>
 
@@ -281,12 +281,12 @@
 									<div class="quantity-button quantity-up" @click="data.core.senses.passivePerceptionOverride = (data.core.senses.passivePerceptionOverride ?? 0) + 1" aria-label="Increase passive perception override">+</div>
 									<div class="quantity-button quantity-down" @click="data.core.senses.passivePerceptionOverride = Math.max(0, (data.core.senses.passivePerceptionOverride ?? 0) - 1)" aria-label="Decrease passive perception override">-</div>
 								</div>
-								<span class="delete-button" @click="data.core.senses.passivePerceptionOverride = null" aria-label="Delete passive perception override">🗑️</span>
+								<span class="delete-button" @click="data.core.senses.passivePerceptionOverride = null" aria-label="Delete passive perception override"><font-awesome-icon :icon="['fas', 'trash']" /></span>
 							</div>
 						</div>
 					</div>
 					<hr />
-					<div class="editor-field__container three-wide">
+					<div class="editor-field__container two-wide">
 						<div class="flow-vertically">
 							<label class="editor-field__title" for="languages"><span class="text" v-tooltip="'Takes custom text input'">Languages*</span></label>
 							<v-select placeholder="Select a Language or type one yourself" v-model="data.core.languages" multiple :deselectFromDropdown="true" :closeOnSelect="false" :options="languages" :taggable="true" :pushTags="true" inputId="languages" />
@@ -308,7 +308,7 @@
 					<h2 class="group-header">Ability Scores</h2>
 					<div class="editor-field__container three-wide">
 						<div class="flow-vertically">
-							<label class="editor-field__title" for="strstat"><span class="text">Strength</span>💪</label>
+							<label class="editor-field__title" for="strstat"><span class="text">Strength</span></label>
 							<div class="quantity">
 								<input type="number" v-model="data.abilities.stats.str" min="1" step="30" inputmode="numeric" id="strstat" />
 								<div class="quantity-nav">
@@ -318,7 +318,7 @@
 							</div>
 						</div>
 						<div class="flow-vertically">
-							<label class="editor-field__title" for="dexstat"><span class="text">Dexterity</span>🤸</label>
+							<label class="editor-field__title" for="dexstat"><span class="text">Dexterity</span></label>
 							<div class="quantity">
 								<input type="number" v-model="data.abilities.stats.dex" min="1" step="30" inputmode="numeric" id="dexstat" />
 								<div class="quantity-nav">
@@ -328,7 +328,7 @@
 							</div>
 						</div>
 						<div class="flow-vertically">
-							<label class="editor-field__title" for="constat"><span class="text">Constitution</span>💗</label>
+							<label class="editor-field__title" for="constat"><span class="text">Constitution</span></label>
 							<div class="quantity">
 								<input type="number" v-model="data.abilities.stats.con" min="1" step="30" inputmode="numeric" id="constat" />
 								<div class="quantity-nav">
@@ -340,7 +340,7 @@
 					</div>
 					<div class="editor-field__container three-wide">
 						<div class="flow-vertically">
-							<label class="editor-field__title" for="intstat"><span class="text">Intelligence</span>🧠</label>
+							<label class="editor-field__title" for="intstat"><span class="text">Intelligence</span></label>
 							<div class="quantity">
 								<input type="number" v-model="data.abilities.stats.int" min="1" step="30" inputmode="numeric" id="intstat" />
 								<div class="quantity-nav">
@@ -350,7 +350,7 @@
 							</div>
 						</div>
 						<div class="flow-vertically">
-							<label class="editor-field__title" for="wisstat"><span class="text">Wisdom</span>🦉</label>
+							<label class="editor-field__title" for="wisstat"><span class="text">Wisdom</span></label>
 							<div class="quantity">
 								<input type="number" v-model="data.abilities.stats.wis" min="1" step="30" inputmode="numeric" id="wisstat" />
 								<div class="quantity-nav">
@@ -360,7 +360,7 @@
 							</div>
 						</div>
 						<div class="flow-vertically">
-							<label class="editor-field__title" for="chastat"><span class="text">Charisma</span>🎭</label>
+							<label class="editor-field__title" for="chastat"><span class="text">Charisma</span></label>
 							<div class="quantity">
 								<input type="number" v-model="data.abilities.stats.cha" min="1" step="30" inputmode="numeric" id="chastat" />
 								<div class="quantity-nav">
@@ -374,7 +374,7 @@
 					<h2 class="group-header">Saving Throws</h2>
 					<div class="editor-field__container three-wide">
 						<div class="flow-vertically">
-							<span class="editor-field__title"><span class="text">Strength</span>💪</span>
+							<span class="editor-field__title"><span class="text">Strength</span></span>
 							<div>
 								<p>
 									<label for="strsaveprof" aria-label="strength save proficiency">Proficient</label>
@@ -389,13 +389,13 @@
 											<div class="quantity-button quantity-up" @click="data.abilities.saves.str.override = (data.abilities.saves.str.override ?? 0) + 1" aria-label="Increase strength save override">+</div>
 											<div class="quantity-button quantity-down" @click="data.abilities.saves.str.override = (data.abilities.saves.str.override ?? 0) - 1" aria-label="Decrease strength save override">-</div>
 										</div>
-										<span class="delete-button" @click="data.abilities.saves.str.override = null" aria-label="Delete strength save override">🗑️</span>
+										<span class="delete-button" @click="data.abilities.saves.str.override = null" aria-label="Delete strength save override"><font-awesome-icon :icon="['fas', 'trash']" /></span>
 									</div>
 								</div>
 							</div>
 						</div>
 						<div class="flow-vertically">
-							<span class="editor-field__title"> <span class="text">Dexterity</span>🤸</span>
+							<span class="editor-field__title"> <span class="text">Dexterity</span></span>
 							<div>
 								<p>
 									<label for="dexsaveprof" aria-label="dexterity save proficiency">Proficient</label>
@@ -410,13 +410,13 @@
 											<div class="quantity-button quantity-up" @click="data.abilities.saves.dex.override = (data.abilities.saves.dex.override ?? 0) + 1" aria-label="Increase dexterity save override">+</div>
 											<div class="quantity-button quantity-down" @click="data.abilities.saves.dex.override = (data.abilities.saves.dex.override ?? 0) - 1" aria-label="Decrease dexterity save override">-</div>
 										</div>
-										<span class="delete-button" @click="data.abilities.saves.dex.override = null" aria-label="Delete dexterity save override">🗑️</span>
+										<span class="delete-button" @click="data.abilities.saves.dex.override = null" aria-label="Delete dexterity save override"><font-awesome-icon :icon="['fas', 'trash']" /></span>
 									</div>
 								</div>
 							</div>
 						</div>
 						<div class="flow-vertically">
-							<label class="editor-field__title"> <span class="text">Constitution</span>💗</label>
+							<label class="editor-field__title"> <span class="text">Constitution</span></label>
 							<div>
 								<p>
 									<label for="consaveprof" aria-label="constitution save proficiency">Proficient</label>
@@ -431,7 +431,7 @@
 											<div class="quantity-button quantity-up" @click="data.abilities.saves.con.override = (data.abilities.saves.con.override ?? 0) + 1" aria-label="Increase constitution save override">+</div>
 											<div class="quantity-button quantity-down" @click="data.abilities.saves.con.override = (data.abilities.saves.con.override ?? 0) - 1" aria-label="Decrease constitution save override">-</div>
 										</div>
-										<span class="delete-button" @click="data.abilities.saves.con.override = null" aria-label="Delete constitution save override">🗑️</span>
+										<span class="delete-button" @click="data.abilities.saves.con.override = null" aria-label="Delete constitution save override"><font-awesome-icon :icon="['fas', 'trash']" /></span>
 									</div>
 								</div>
 							</div>
@@ -439,7 +439,7 @@
 					</div>
 					<div class="editor-field__container three-wide">
 						<div class="flow-vertically">
-							<span class="editor-field__title"><span class="text">Intelligence</span>🧠</span>
+							<span class="editor-field__title"><span class="text">Intelligence</span></span>
 							<div>
 								<p>
 									<label for="intsaveprof" aria-label="intelligence save proficiency">Proficient</label>
@@ -454,13 +454,13 @@
 											<div class="quantity-button quantity-up" @click="data.abilities.saves.int.override = (data.abilities.saves.int.override ?? 0) + 1" aria-label="Increase intelligence save override">+</div>
 											<div class="quantity-button quantity-down" @click="data.abilities.saves.int.override = (data.abilities.saves.int.override ?? 0) - 1" aria-label="Decrease intelligence save override">-</div>
 										</div>
-										<span class="delete-button" @click="data.abilities.saves.int.override = null" aria-label="Delete intelligence save override">🗑️</span>
+										<span class="delete-button" @click="data.abilities.saves.int.override = null" aria-label="Delete intelligence save override"><font-awesome-icon :icon="['fas', 'trash']" /></span>
 									</div>
 								</div>
 							</div>
 						</div>
 						<div class="flow-vertically">
-							<span class="editor-field__title"><span class="text">Wisdom</span>🦉</span>
+							<span class="editor-field__title"><span class="text">Wisdom</span></span>
 							<div>
 								<p>
 									<label for="wissaveprof" aria-label="wisdom save proficiency">Proficient</label>
@@ -475,13 +475,13 @@
 											<div class="quantity-button quantity-up" @click="data.abilities.saves.wis.override = (data.abilities.saves.wis.override ?? 0) + 1" aria-label="Increase wisdom save override">+</div>
 											<div class="quantity-button quantity-down" @click="data.abilities.saves.wis.override = (data.abilities.saves.wis.override ?? 0) - 1" aria-label="Decrease wisdom save override">-</div>
 										</div>
-										<span class="delete-button" @click="data.abilities.saves.wis.override = null" aria-label="Delete wisdom save override">🗑️</span>
+										<span class="delete-button" @click="data.abilities.saves.wis.override = null" aria-label="Delete wisdom save override"><font-awesome-icon :icon="['fas', 'trash']" /></span>
 									</div>
 								</div>
 							</div>
 						</div>
 						<div class="flow-vertically">
-							<span class="editor-field__title"><span class="text">Charisma</span>🎭</span>
+							<span class="editor-field__title"><span class="text">Charisma</span></span>
 							<div>
 								<p>
 									<label for="chasaveprof" aria-label="charisma save proficiency">Proficient</label>
@@ -495,7 +495,7 @@
 											<div class="quantity-button quantity-up" @click="data.abilities.saves.cha.override = (data.abilities.saves.cha.override ?? 0) + 1" aria-label="Increase charisma save override">+</div>
 											<div class="quantity-button quantity-down" @click="data.abilities.saves.cha.override = (data.abilities.saves.cha.override ?? 0) - 1" aria-label="Decrease charisma save override">-</div>
 										</div>
-										<span class="delete-button" @click="data.abilities.saves.cha.override = null" aria-label="Delete charisma save override">🗑️</span>
+										<span class="delete-button" @click="data.abilities.saves.cha.override = null" aria-label="Delete charisma save override"><font-awesome-icon :icon="['fas', 'trash']" /></span>
 									</div>
 								</div>
 							</div>
@@ -524,7 +524,7 @@
 										<div class="quantity-button quantity-up" @click="skill.override = (skill.override ?? 0) + 1" :aria-label="'Increase ' + skill.skillName + ' check override'">+</div>
 										<div class="quantity-button quantity-down" @click="skill.override = Math.max(0, (skill.override ?? 0) - 1)" :aria-label="'Decrease ' + skill.skillName + ' check override'">-</div>
 									</div>
-									<span class="delete-button" @click="skill.override = null" :aria-label="'Delete ' + skill.skillName + ' override'">🗑️</span>
+									<span class="delete-button" @click="skill.override = null" :aria-label="'Delete ' + skill.skillName + ' override'"><font-awesome-icon :icon="['fas', 'trash']" /></span>
 								</div>
 							</div>
 							<button class="btn" @click="deleteSkill(index)">delete</button>
@@ -538,7 +538,7 @@
 				<div class="editor-content__tab-inner scale-in">
 					<div class="editor-field__container three-wide">
 						<div class="flow-vertically">
-							<label class="editor-field__title" for="hitdiesize"><span class="text">Hit Die Size</span>🎲</label>
+							<label class="editor-field__title" for="hitdiesize"><span class="text">Hit Die Size</span></label>
 							<div class="quantity">
 								<input type="number" v-model="data.defenses.hp.sizeOfHitDie" min="0" step="2" inputmode="numeric" id="hitdiesize" />
 								<div class="quantity-nav">
@@ -548,7 +548,7 @@
 							</div>
 						</div>
 						<div class="flow-vertically">
-							<label class="editor-field__title" for="hitdienum"><span class="text">Hit Die Number</span>🔢</label>
+							<label class="editor-field__title" for="hitdienum"><span class="text">Hit Die Number</span></label>
 							<div class="quantity">
 								<input type="number" v-model="data.defenses.hp.numOfHitDie" min="1" inputmode="numeric" id="hitdienum" />
 								<div class="quantity-nav">
@@ -558,21 +558,21 @@
 							</div>
 						</div>
 						<div class="flow-vertically">
-							<label class="editor-field__title" for="hpoverride"><span class="text">HP Override</span>💗</label>
+							<label class="editor-field__title" for="hpoverride"><span class="text">HP Override</span></label>
 							<div class="quantity">
 								<input type="number" v-model="data.defenses.hp.override" min="1" step="1" inputmode="numeric" id="hpoverride" />
 								<div class="quantity-nav">
 									<div class="quantity-button quantity-up" @click="data.defenses.hp.override = (data.defenses.hp.override ?? 0) + 1" aria-label="Increase hit die number">+</div>
 									<div class="quantity-button quantity-down" @click="data.defenses.hp.override = Math.max(1, (data.defenses.hp.override ?? 0) - 1)" aria-label="Decrease hit die number">-</div>
 								</div>
-								<span class="delete-button" @click="data.defenses.hp.override = null" aria-label="Delete HP override">🗑️</span>
+								<span class="delete-button" @click="data.defenses.hp.override = null" aria-label="Delete HP override"><font-awesome-icon :icon="['fas', 'trash']" /></span>
 							</div>
 						</div>
 					</div>
 					<hr />
 					<div class="editor-field__container two-wide">
 						<div class="flow-vertically">
-							<label class="editor-field__title" for="ac"><span class="text">Armor Class</span>🛡️</label>
+							<label class="editor-field__title" for="ac"><span class="text">Armor Class</span></label>
 							<div class="quantity">
 								<input type="number" v-model="data.defenses.ac.ac" min="0" step="1" inputmode="numeric" id="ac" />
 								<div class="quantity-nav">
@@ -716,7 +716,7 @@
 								>
 								<div class="feature-button__container">
 									<FeatureWidget :index="index" :type="fType" :data="data" />
-									<span class="delete-button" @click="deleteFeature(fType, index)" aria-label="Delete feature">🗑️</span>
+									<span class="delete-button" @click="deleteFeature(fType, index)" aria-label="Delete feature"><font-awesome-icon :icon="['fas', 'trash']" /></span>
 									<div class="moving-buttons">
 										<span @click="moveFeature(true, fType, index)">▲</span>
 										<span @click="moveFeature(false, fType, index)">▼</span>
@@ -757,7 +757,7 @@
 							<label class="editor-field__title" for="innateability"><span class="text">Spellcasting Ability</span></label>
 							<p>
 								<v-select :options="['str', 'dex', 'con', 'wis', 'int', 'cha']" v-model="data.spellcasting.innateSpells.spellCastingAbility" inputId="innateability" />
-								<span class="delete-button" @click="data.spellcasting.innateSpells.spellCastingAbility = null" aria-label="Delete innate spellcasting ability">🗑️</span>
+								<span class="delete-button" @click="data.spellcasting.innateSpells.spellCastingAbility = null" aria-label="Delete innate spellcasting ability"><font-awesome-icon :icon="['fas', 'trash']" /></span>
 							</p>
 						</div>
 						<div class="flow-vertically">
@@ -774,7 +774,7 @@
 									<div class="quantity-button quantity-up" @click="data.spellcasting.innateSpells.spellDcOverride = (data.spellcasting.innateSpells.spellDcOverride ?? 0) + 1" aria-label="Increase innate spellcasting dc override">+</div>
 									<div class="quantity-button quantity-down" @click="data.spellcasting.innateSpells.spellDcOverride = Math.max(0, (data.spellcasting.innateSpells.spellDcOverride ?? 0) - 1)" aria-label="Decrease innate spellcasting dc override">-</div>
 								</div>
-								<span class="delete-button" @click="data.spellcasting.innateSpells.spellDcOverride = null" aria-label="Delete innate spellcasting dc override">🗑️</span>
+								<span class="delete-button" @click="data.spellcasting.innateSpells.spellDcOverride = null" aria-label="Delete innate spellcasting dc override"><font-awesome-icon :icon="['fas', 'trash']" /></span>
 							</div>
 						</div>
 						<div class="flow-vertically">
@@ -785,7 +785,7 @@
 									<div class="quantity-button quantity-up" @click="data.spellcasting.innateSpells.spellBonusOverride = (data.spellcasting.innateSpells.spellBonusOverride ?? 0) + 1" aria-label="Increase innate spellcasting attack bonus override">+</div>
 									<div class="quantity-button quantity-down" @click="data.spellcasting.innateSpells.spellBonusOverride = (data.spellcasting.innateSpells.spellBonusOverride ?? 0) - 1" aria-label="Decrease innate spellcasting attack bonus override">-</div>
 								</div>
-								<span class="delete-button" @click="data.spellcasting.innateSpells.spellBonusOverride = null" aria-label="Delete innate spellcasting dc override">🗑️</span>
+								<span class="delete-button" @click="data.spellcasting.innateSpells.spellBonusOverride = null" aria-label="Delete innate spellcasting dc override"><font-awesome-icon :icon="['fas', 'trash']" /></span>
 							</div>
 						</div>
 						<div class="flow-vertically">
@@ -853,7 +853,7 @@
 									<div class="quantity-button quantity-up" @click="data.spellcasting.casterSpells.spellDcOverride = (data.spellcasting.casterSpells.spellDcOverride ?? 0) + 1" aria-label="Increase spellcasting dc override">+</div>
 									<div class="quantity-button quantity-down" @click="data.spellcasting.casterSpells.spellDcOverride = Math.max(0, (data.spellcasting.casterSpells.spellDcOverride ?? 0) - 1)" aria-label="Decrease spellcasting dc override">-</div>
 								</div>
-								<span class="delete-button" @click="data.spellcasting.casterSpells.spellDcOverride = null" aria-label="Delete spellcasting dc override">🗑️</span>
+								<span class="delete-button" @click="data.spellcasting.casterSpells.spellDcOverride = null" aria-label="Delete spellcasting dc override"><font-awesome-icon :icon="['fas', 'trash']" /></span>
 							</div>
 						</div>
 
@@ -865,7 +865,7 @@
 									<div class="quantity-button quantity-up" @click="data.spellcasting.casterSpells.spellBonusOverride = (data.spellcasting.casterSpells.spellBonusOverride ?? 0) + 1" aria-label="Increase spellcasting attack bonus override">+</div>
 									<div class="quantity-button quantity-down" @click="data.spellcasting.casterSpells.spellBonusOverride = (data.spellcasting.casterSpells.spellBonusOverride ?? 0) - 1" aria-label="Decrease spellcasting attack bonus override">-</div>
 								</div>
-								<span class="delete-button" @click="data.spellcasting.casterSpells.spellBonusOverride = null" aria-label="Delete spellcasting dc override">🗑️</span>
+								<span class="delete-button" @click="data.spellcasting.casterSpells.spellBonusOverride = null" aria-label="Delete spellcasting dc override"><font-awesome-icon :icon="['fas', 'trash']" /></span>
 							</div>
 						</div>
 
@@ -873,7 +873,7 @@
 							<label class="editor-field__title" for="castingabilityoverride"><span class="text">ability override</span></label>
 							<p>
 								<v-select :options="['str', 'dex', 'con', 'wis', 'int', 'cha']" v-model="data.spellcasting.casterSpells.spellCastingAbilityOverride" inputId="castingabilityoverride" />
-								<span class="delete-button" @click="data.spellcasting.casterSpells.spellCastingAbilityOverride = null" aria-label="Delete spellcasting ability override">🗑️</span>
+								<span class="delete-button" @click="data.spellcasting.casterSpells.spellCastingAbilityOverride = null" aria-label="Delete spellcasting ability override"><font-awesome-icon :icon="['fas', 'trash']" /></span>
 							</p>
 						</div>
 					</div>
@@ -1487,13 +1487,29 @@ export default defineComponent({
 	white-space: nowrap;
 }
 
-.delete-button {
-	translate: 0 7px;
+.quantity .delete-button {
+	translate: 0 11px;
 	transition: scale 0.3s ease;
 	cursor: pointer;
 	display: flex;
 	height: fit-content;
+	color: orangered;
+	justify-content: center;
+	align-items: center;
+	&:hover {
+		scale: 1.1;
+	}
+}
 
+.feature-button__container .delete-button {
+	translate: 0 11px;
+	transition: scale 0.3s ease;
+	cursor: pointer;
+	display: flex;
+	height: fit-content;
+	color: orangered;
+	justify-content: center;
+	align-items: center;
 	&:hover {
 		scale: 1.1;
 	}

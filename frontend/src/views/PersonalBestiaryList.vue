@@ -27,12 +27,12 @@
 						<p>{{ bestiary.description }}</p>
 					</div>
 					<div class="tile-footer">
-						<span>{{ statusEmoji(bestiary.status) }}{{ bestiary.status }}</span>
-						<span role="button" @click.stop.prevent="openDeleteModal(bestiary)" class="edit-button" v-if="bestiary.owner == userData?._id">🗑️</span>
+						<span><StatusIcon :icon="bestiary.status" />{{ bestiary.status }}</span>
+						<span role="button" @click.stop.prevent="openDeleteModal(bestiary)" class="edit-button" v-tooltip="'Delete bestiary'" v-if="bestiary.owner == userData?._id"><font-awesome-icon :icon="['fas', 'trash']" /></span>
 						<span v-else>
 							<UserBanner :id="bestiary.owner"/>
 						</span>
-						<span>{{ bestiary.creatures.length }}🐉</span>
+						<span>{{ bestiary.creatures.length }}<font-awesome-icon :icon="['fas', 'skull']" /></span>
 					</div>
 				</RouterLink>
 			</TransitionGroup>
@@ -67,10 +67,10 @@ import {RouterLink} from "vue-router";
 import {defineComponent} from "vue";
 import {handleApiResponse, toast, user} from "@/main";
 import type {User, Bestiary, Creature} from "@/generic/types";
-import {statusEmoji} from "@/generic/displayFunctions";
 import type {error} from "@/main";
 import UserBanner from "@/components/UserBanner.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
+import StatusIcon from "@/components/StatusIcon.vue";
 export default defineComponent({
 	setup() {
 		const isDeleteModalOpen = ref(false);
@@ -94,15 +94,14 @@ export default defineComponent({
 	},
 	components: {
 		UserBanner,
-		Breadcrumbs
+		Breadcrumbs,
+		StatusIcon
 	},
 	data() {
 		return {
 			bestiaries: [] as Bestiary[],
 			userData: null as User | null,
 			deleteId: "" as string,
-			statusEmoji,
-
 		};
 	},
 	async beforeMount() {
@@ -195,9 +194,10 @@ export default defineComponent({
 
 .edit-button {
 	margin: auto;
-	transition: scale 0.3s ease;
+	transition: all 1s ease;
+	color: orangered;
 	& :hover {
-		scale: 1.1;
+		transform: scale(1.1);
 	}
 }
 

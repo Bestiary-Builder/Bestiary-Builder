@@ -48,11 +48,11 @@
 					<hr />
 					<div class="footer" :class="{'three-wide': isOwner}">
 						<UserBanner :id="bestiary.owner" />
-						<div>{{ statusEmoji(bestiary.status) }}{{ bestiary.status }}</div>
-						<div>{{ bestiary.creatures.length }}🐉</div>
+						<div> <StatusIcon :icon="bestiary.status" /> {{ bestiary.status }}</div>
+						<div>{{ bestiary.creatures.length }}<font-awesome-icon :icon="['fas', 'skull']" /></div>
 						<div role="button" aria-label="bookmark" @click.prevent="toggleBookmark" class="bookmark" v-if="!isOwner">
-							<span v-if="bookmarked" v-tooltip="'Unbookmark this bestiary'" class="bookmark-enabled">⭐</span>
-							<span v-else v-tooltip="'Bookmark this bestiary'" class="bookmark-disabled">⭐</span>
+							<span v-if="bookmarked" v-tooltip="'Unbookmark this bestiary'" class="bookmark-enabled"><font-awesome-icon :icon="['fas', 'star']" /></span>
+							<span v-else v-tooltip="'Bookmark this bestiary'" class="bookmark-disabled"><font-awesome-icon :icon="['fas', 'star']" /></span>
 						</div>
 					</div>
 				</div>
@@ -66,8 +66,8 @@
 								<span>{{ creature.stats?.core?.size }} {{ creature.stats?.core?.race }}{{ creature.stats?.description?.alignment ? ", " + creature.stats?.description?.alignment : "" }}</span>
 							</div>
 							<div class="right-side">
-								<span v-if="isOwner || isEditor" role="button" @click.stop="openDeleteModal(creature)" class="delete-creature"> <span>🗑️</span> </span>
-								<span v-if="isOwner || isEditor" class="edit-creature" @click.stop="() => {}"> <RouterLink class="creature" :to="'/statblock-editor/' + creature._id"> ✏️ </RouterLink> </span>
+								<span v-if="isOwner || isEditor" role="button"  v-tooltip="'Delete creature'" aria-label="Delete creature" @click.stop="openDeleteModal(creature)" class="delete-creature"><font-awesome-icon :icon="['fas', 'trash']" /> </span>
+								<span v-if="isOwner || isEditor" v-tooltip="'Edit creature'" aria-label="Edit creature" class="edit-creature" @click.stop="() => {}"> <RouterLink class="creature" :to="'/statblock-editor/' + creature._id"> <font-awesome-icon :icon="['fas', 'pen-to-square']" /> </RouterLink> </span>
 								<span class="cr"> CR {{ displayCR(creature.stats.description.cr) }}</span>
 							</div>
 						</div>
@@ -213,10 +213,11 @@ import {defaultStatblock} from "@/generic/types";
 import type {User, Bestiary, Creature, Statblock} from "@/generic/types";
 import UserBanner from "@/components/UserBanner.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
+import StatusIcon from "@/components/StatusIcon.vue";
 import {handleApiResponse, user, type error, toast, tags, type limitsType, asyncLimits} from "@/main";
 import StatblockRenderer from "@/components/StatblockRenderer.vue";
 import {parseFromCritterDB} from "@/parser/parseFromCritterDB";
-import {statusEmoji, displayCR} from "@/generic/displayFunctions";
+import {displayCR} from "@/generic/displayFunctions";
 import {ref} from "vue";
 import {onClickOutside} from "@vueuse/core";
 
@@ -276,14 +277,14 @@ export default defineComponent({
 			critterDbId: "" as string,
 			bestiaryBuilderJson: "" as string,
 			searchText: "" as string,
-			statusEmoji,
 			displayCR
 		};
 	},
 	components: {
 		UserBanner,
 		StatblockRenderer,
-		Breadcrumbs
+		Breadcrumbs,
+		StatusIcon
 	},
 	async created() {
 		this.limits = (await asyncLimits) ?? ({} as limitsType);
@@ -656,6 +657,10 @@ export default defineComponent({
 					align-items: center;
 					height: 100%;
 
+					svg {
+						color: #536d8c
+					}
+
 					&.cr {
 						width: 5rem;
 					}
@@ -758,6 +763,7 @@ export default defineComponent({
 .bookmark {
 	cursor: pointer;
 	font-size: 1.2rem;
+	color: goldenrod;
 
 	.bookmark-disabled {
 		filter: grayscale(100%);

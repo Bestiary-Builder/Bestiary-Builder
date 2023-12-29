@@ -22,7 +22,7 @@
 				<nav id="footer-places">
 					<ul>
 						<li id="footer-places-privacy">
-							<a href="/privacy-policy" title="Privacy policy">Privacy Policy<font-awesome-icon icon="fa-solid fa-user-lock" /></a>
+							<a href="/privacy-policy" title="Privacy policy">Privacy Policy<font-awesome-icon :icon="['fas', 'user-lock']" /></a>
 						</li>
 						<li id="footer-places-terms">
 							<a href="/terms-and-conditions" title="Terms And Conditions">Terms And Conditions<font-awesome-icon icon="fa-solid fa-scale-balanced" /></a>

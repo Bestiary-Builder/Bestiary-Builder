@@ -57,7 +57,7 @@ export default defineComponent({
 		const isModalOpen = ref(false);
 		const modal = ref<HTMLDivElement | null>(null);
 
-		const outside = onClickOutside(modal, () => (isModalOpen.value = false));
+		onClickOutside(modal, () => (isModalOpen.value = false));
 
 		const openModal = () => {
 			isModalOpen.value = true;
