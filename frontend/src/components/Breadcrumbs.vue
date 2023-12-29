@@ -10,7 +10,7 @@
 
     <div class="right-buttons">
         <slot name="right-button"></slot>
-        <button :disabled="!isSupported" @click="startShare" v-tooltip="'Share this page!'" aria-label="Share this page">
+        <button @click="startShare" v-tooltip="'Share this page!'" aria-label="Share this page">
             <font-awesome-icon :icon="['fas', 'share-nodes']" />
         </button>
     </div>
