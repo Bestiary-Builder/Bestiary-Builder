@@ -80,9 +80,9 @@ app.use(LoadingPlugin, {
 //Font-Awesome-Icons
 import {library} from "@fortawesome/fontawesome-svg-core";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-import {faTrash, faLock, faSkull, faPenToSquare, faStopwatch, faMap, faLocationPin, faClock, faRuler, faStar, faHashtag, faArrowDown19, faHourglass, faUserLock, faScaleBalanced, faShareNodes, faArrowRightFromBracket, faLink, faEarthEurope} from "@fortawesome/free-solid-svg-icons";
+import {faTrash, faLock, faSkull, faPenToSquare, faStopwatch, faMap, faLocationPin, faClock, faRuler, faStar, faHashtag, faArrowDown19, faHourglass, faUserLock, faScaleBalanced, faShareNodes, faArrowRightFromBracket, faLink, faEarthEurope, faXmark} from "@fortawesome/free-solid-svg-icons";
 import {faTwitter, faFacebook, faDiscord, faInstagram, faPatreon, faGithub} from "@fortawesome/free-brands-svg-icons";
-library.add(faTrash, faStar, faLock, faLink, faSkull, faEarthEurope, faTwitter, faPenToSquare, faFacebook, faDiscord, faInstagram, faStopwatch, faMap, faLocationPin, faClock, faRuler, faStar, faHashtag, faArrowDown19, faHourglass, faUserLock, faScaleBalanced, faShareNodes, faArrowRightFromBracket,  faPatreon, faGithub);
+library.add(faTrash, faXmark, faStar, faLock, faLink, faSkull, faEarthEurope, faTwitter, faPenToSquare, faFacebook, faDiscord, faInstagram, faStopwatch, faMap, faLocationPin, faClock, faRuler, faStar, faHashtag, faArrowDown19, faHourglass, faUserLock, faScaleBalanced, faShareNodes, faArrowRightFromBracket,  faPatreon, faGithub);
 
 app.component("font-awesome-icon", FontAwesomeIcon);
 // @ts-ignore Vue Select

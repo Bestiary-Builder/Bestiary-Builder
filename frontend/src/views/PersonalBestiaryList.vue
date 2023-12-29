@@ -148,6 +148,7 @@ export default defineComponent({
 				let result = await handleApiResponse(response);
 				if (result.success) {
 					toast.success("Deleted bestiary succesfully");
+					this.isDeleteModalOpen = false
 				} else {
 					toast.error((result.data as error).error);
 				}
