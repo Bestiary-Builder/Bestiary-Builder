@@ -1,6 +1,13 @@
 <template>
+	<Breadcrumbs :routes="[
+		{
+			path: '',
+			text: 'My Bestiaries',
+			isCurrent: true
+		}
+		]" 
+	/> 
 	<div class="content">
-		<h1><span>My Bestiaries </span></h1>
 		<div class="tile-container">
 			<div class="content-tile create-tile" @click.prevent="createBestiary">
 				<button class="create-button">+</button>
@@ -52,22 +59,10 @@
 	</Teleport>
 </template>
 
-<script setup lang="ts">
-import {ref} from "vue";
-import {onClickOutside} from "@vueuse/core";
-const isDeleteModalOpen = ref(false);
-const deleteModal = ref<HTMLDivElement | null>(null);
-
-const selectedBestiary = ref<Bestiary | null>(null);
-const openDeleteModal = (bestiary: Bestiary) => {
-	selectedBestiary.value = bestiary;
-	isDeleteModalOpen.value = true;
-};
-// @ts-ignore
-onClickOutside(deleteModal, () => (isDeleteModalOpen.value = false));
-</script>
 
 <script lang="ts">
+import {ref} from "vue";
+import {onClickOutside} from "@vueuse/core";
 import {RouterLink} from "vue-router";
 import {defineComponent} from "vue";
 import {handleApiResponse, toast, user} from "@/main";
@@ -75,15 +70,39 @@ import type {User, Bestiary, Creature} from "@/generic/types";
 import {statusEmoji} from "@/generic/displayFunctions";
 import type {error} from "@/main";
 import UserBanner from "@/components/UserBanner.vue";
+import Breadcrumbs from "@/components/Breadcrumbs.vue";
 export default defineComponent({
+	setup() {
+		const isDeleteModalOpen = ref(false);
+		const deleteModal = ref<HTMLDivElement | null>(null);
+
+		const selectedBestiary = ref<Bestiary | null>(null);
+		const openDeleteModal = (bestiary: Bestiary) => {
+			selectedBestiary.value = bestiary;
+			isDeleteModalOpen.value = true;
+		};
+			// @ts-ignore
+		onClickOutside(deleteModal, () => (isDeleteModalOpen.value = false));
+
+		return {
+			deleteModal,
+			isDeleteModalOpen,
+
+			openDeleteModal,
+			selectedBestiary,
+		}
+	},
 	components: {
-		UserBanner
+		UserBanner,
+		Breadcrumbs
 	},
 	data() {
 		return {
 			bestiaries: [] as Bestiary[],
 			userData: null as User | null,
-			deleteId: "" as string
+			deleteId: "" as string,
+			statusEmoji,
+
 		};
 	},
 	async beforeMount() {

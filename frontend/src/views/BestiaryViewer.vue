@@ -1,6 +1,23 @@
 <template>
+	<Breadcrumbs v-if="bestiary" :routes="[
+	{
+		path: isOwner || isEditor ? '../my-bestiaries/' : '../bestiaries',
+		text: isOwner || isEditor ? 'My Bestiaries' : 'Bestiaries',
+		isCurrent: false
+	},
+	{
+		path: '',
+		text: bestiary?.name,
+		isCurrent: true
+	}
+	]">
+	<template #right-button>
+		<button @click="exportBestiary" v-tooltip="'Export this bestiary as JSON to your clipboard.'"> 
+			<font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" /> 
+		</button>
+	</template>
+	</Breadcrumbs>
 	<div class="content">
-		<h1><span>Bestiary Viewer </span></h1>
 		<div class="bestiary" v-if="bestiary">
 			<div class="tile-container list-tiles" id="tile-container">
 				<div class="content-tile header-tile">
@@ -29,11 +46,11 @@
 						📌
 					</div>
 					<hr />
-					<div class="footer" :class="{'three-wide': isOwner || isEditor}">
+					<div class="footer" :class="{'three-wide': isOwner}">
 						<UserBanner :id="bestiary.owner" />
 						<div>{{ statusEmoji(bestiary.status) }}{{ bestiary.status }}</div>
 						<div>{{ bestiary.creatures.length }}🐉</div>
-						<div role="button" aria-label="bookmark" @click.prevent="toggleBookmark" class="bookmark" v-if="!isOwner && !isEditor">
+						<div role="button" aria-label="bookmark" @click.prevent="toggleBookmark" class="bookmark" v-if="!isOwner">
 							<span v-if="bookmarked" v-tooltip="'Unbookmark this bestiary'" class="bookmark-enabled">⭐</span>
 							<span v-else v-tooltip="'Bookmark this bestiary'" class="bookmark-disabled">⭐</span>
 						</div>
@@ -43,7 +60,7 @@
 				<TransitionGroup name="slide-fade" mode="out-in">
 					<template v-for="creature in creatures" :key="creature._id">
 						<div class="content-tile creature-tile" @mouseover="lastHoveredCreature = creature.stats" @click="lastClickedCreature = creature.stats" 
-							v-if="creature.stats.description.name.toLowerCase().includes(searchText.toLowerCase().trim())" autofocus>
+							v-if="creature.stats.description.name.toLowerCase().includes(searchText.toLowerCase().trim())">
 							<div class="left-side">
 								<h3>{{ creature.stats?.description?.name }}</h3>
 								<span>{{ creature.stats?.core?.size }} {{ creature.stats?.core?.race }}{{ creature.stats?.description?.alignment ? ", " + creature.stats?.description?.alignment : "" }}</span>
@@ -85,14 +102,27 @@
 			<div class="modal__bg" v-if="isImportModalOpen">
 				<section class="modal__content modal__small" ref="importModal" v-if="bestiary && isOwner">
 					<button @click="isImportModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
-					<h2 class="modal-header">Import from CritterDB</h2>
+					<h2 class="modal-header">Import</h2>
 					<div class="flow-vertically">
 						<label for="critterdblink">CritterDB bestiary link </label>
-						<input type="text" v-model="critterDbId" id="critterdblink" style="width: 100%" placeholder="" />
+						<p> Insert a link to a critterDB bestiary to import all its creatures. Make sure the bestiary is public or has link sharing enabled.</p>
+						<div class="flow-horizontally">
+							<input type="text" v-model="critterDbId" id="critterdblink" placeholder="" />
+							<button class="btn confirm" @click.prevent="importBestiaryFromCritterDB">Import from CritterDB</button>
+						</div>
 					</div>
+					<div class="flow-vertically">
+						<label for="bestiarybuilderjson">Bestiary Builder JSON </label>
+						<p> Insert the JSON as text gotten from clicking export on another bestiary within Bestiary Builder.</p>
+
+						<div class="flow-horizontally">
+							<input type="text" v-model="bestiaryBuilderJson" id="bestiarybuilderjson" placeholder="" />
+							<button class="btn confirm" @click.prevent="importCreaturesFromBestiaryBuilder">Import from Bestiary Builder JSON</button>
+						</div>
+					</div>
+
 					<div class="modal-buttons">
-						<button class="btn" @click="isImportModalOpen = false">Cancel</button>
-						<button class="btn confirm" @click.prevent="importBestiaryFromCritterDB">Import Bestiary</button>
+						<button class="btn" @click="isImportModalOpen = false "> Cancel</button>
 					</div>
 				</section>
 			</div>
@@ -175,31 +205,6 @@
 		</Transition>
 	</Teleport>
 </template>
-<script setup lang="ts">
-import {ref} from "vue";
-import {onClickOutside} from "@vueuse/core";
-const isEditorModalOpen = ref(false);
-const editModal = ref<HTMLDivElement | null>(null);
-// @ts-ignore
-onClickOutside(editModal, () => (isEditorModalOpen.value = false));
-
-const selectedCreature = ref<Creature | null>(null);
-
-const isDeleteModalOpen = ref(false);
-const deleteModal = ref<HTMLDivElement | null>(null);
-// @ts-ignore
-onClickOutside(deleteModal, () => (isDeleteModalOpen.value = false));
-
-const openDeleteModal = (creature: Creature) => {
-	selectedCreature.value = creature;
-	isDeleteModalOpen.value = true;
-};
-
-const isImportModalOpen = ref(false);
-const importModal = ref<HTMLDivElement | null>(null);
-// @ts-ignore
-onClickOutside(deleteModal, () => (isImportModalOpen.value = false));
-</script>
 
 <script lang="ts">
 import {RouterLink} from "vue-router";
@@ -207,11 +212,50 @@ import {defineComponent} from "vue";
 import {defaultStatblock} from "@/generic/types";
 import type {User, Bestiary, Creature, Statblock} from "@/generic/types";
 import UserBanner from "@/components/UserBanner.vue";
+import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import {handleApiResponse, user, type error, toast, tags, type limitsType, asyncLimits} from "@/main";
 import StatblockRenderer from "@/components/StatblockRenderer.vue";
 import {parseFromCritterDB} from "@/parser/parseFromCritterDB";
 import {statusEmoji, displayCR} from "@/generic/displayFunctions";
+import {ref} from "vue";
+import {onClickOutside} from "@vueuse/core";
+
 export default defineComponent({
+	setup() {
+		const isEditorModalOpen = ref(false);
+		const editModal = ref<HTMLDivElement | null>(null);
+		// @ts-ignore
+		onClickOutside(editModal, () => (isEditorModalOpen.value = false));
+
+		const selectedCreature = ref<Creature | null>(null);
+
+		const isDeleteModalOpen = ref(false);
+		const deleteModal = ref<HTMLDivElement | null>(null);
+		// @ts-ignore
+		onClickOutside(deleteModal, () => (isDeleteModalOpen.value = false));
+
+		const openDeleteModal = (creature: Creature) => {
+			selectedCreature.value = creature;
+			isDeleteModalOpen.value = true;
+		};
+
+		const isImportModalOpen = ref(false);
+		const importModal = ref<HTMLDivElement | null>(null);
+		// @ts-ignore
+		onClickOutside(deleteModal, () => (isImportModalOpen.value = false));
+
+		return {
+			editModal,
+			deleteModal,
+			importModal,
+			isEditorModalOpen,
+			isDeleteModalOpen,
+			isImportModalOpen,
+
+			selectedCreature,
+			openDeleteModal
+		}
+	},
 	data() {
 		return {
 			bestiary: null as Bestiary | null,
@@ -230,12 +274,16 @@ export default defineComponent({
 			editorToAdd: "" as string,
 			showWarning: false as boolean,
 			critterDbId: "" as string,
-			searchText: "" as string
+			bestiaryBuilderJson: "" as string,
+			searchText: "" as string,
+			statusEmoji,
+			displayCR
 		};
 	},
 	components: {
 		UserBanner,
-		StatblockRenderer
+		StatblockRenderer,
+		Breadcrumbs
 	},
 	async created() {
 		this.limits = (await asyncLimits) ?? ({} as limitsType);
@@ -252,11 +300,15 @@ export default defineComponent({
 		loader.hide();
 	},
 	methods: {
+		exportBestiary() : void {
+			navigator.clipboard.writeText(JSON.stringify(this.creatures?.map(obj => obj.stats), null, 2))
+			toast.info("Exported this bestiary to your clipboard.")
+		},
 		async importBestiaryFromCritterDB() {
 			let link = this.critterDbId.trim();
 			let isPublic = link.includes("publishedbestiary");
 			if (!link.startsWith("https://critterdb.com") && !link.startsWith("critterdb.com")) {
-				toast.error("Are you sure this is a link to a critterDB bestiary?");
+				toast.error("Could not recognize link as a link to a CritterDB bestiary");
 				return;
 			}
 
@@ -285,27 +337,57 @@ export default defineComponent({
 
 			if (hasFailed) {
 				return;
+				loader.hide()
 			}
 
 			loader = this.$loading.show();
 			toast.info("Importing creatures has started. This may take a while.");
-			let index = 0;
 			for (let creature of data.creatures) {
 				let stats;
 				try {
 					stats = parseFromCritterDB(creature);
-					await this.createCreature(stats[0], false);
+					await this.createCreature(stats[0], false, false);
 				} catch (e) {
 					console.error(e);
 				}
-				index++;
 			}
 			await this.getBestiary();
 			loader.hide();
 			toast.success("Importing has finished!");
+			this.isImportModalOpen = false;
 		},
-		async createCreature(stats = defaultStatblock, shouldRefresh = true) {
-			const loader = this.$loading.show()
+		async importCreaturesFromBestiaryBuilder() {
+			let creatures; 
+			const loader = this.$loading.show();
+
+			try {
+				creatures = JSON.parse(this.bestiaryBuilderJson)
+			} catch(e) {
+				console.error(e)
+				toast.error("Something is wrong with the format of your JSON")
+				loader.hide()
+				return;
+			}
+
+			toast.info("Importing creatures has started. This may take a while.");
+			for (let creature of JSON.parse(this.bestiaryBuilderJson)) {
+				try {
+					await this.createCreature(creature, false, false);
+				} catch (e) {
+					console.error(e);
+				}
+			}
+
+			await this.getBestiary();
+			loader.hide();
+			toast.success("Importing has finished!");
+			this.isImportModalOpen = false;
+		},
+		async createCreature(stats = defaultStatblock, shouldRefresh = true, shouldHaveLoader = true) {
+			let loader;
+			if (shouldHaveLoader) {
+				loader = this.$loading.show()
+			}
 			//Replace for actual creation data:
 			let data = {
 				stats: stats,
@@ -331,7 +413,10 @@ export default defineComponent({
 				const tileContainer = document.getElementById("tile-container") as HTMLDivElement;
 				tileContainer.scrollTop = tileContainer.scrollHeight;
 			}
-			loader.hide()
+			if (shouldHaveLoader && loader) {
+				loader.hide()
+
+			}
 
 		},
 		async deleteCreature(creature: Creature) {
@@ -340,6 +425,7 @@ export default defineComponent({
 				let result = await handleApiResponse(response);
 				if (result.success) {
 					toast.success("Deleted creature succesfully");
+					this.isDeleteModalOpen = false
 				} else {
 					toast.error((result.data as error).error);
 				}
@@ -447,6 +533,7 @@ export default defineComponent({
 				if (result.success) {
 					toast.success("Saved bestiary");
 					this.savedBestiary = this.bestiary;
+					this.isEditorModalOpen = false;
 				} else {
 					toast.error((result.data as error).error);
 				}
@@ -495,11 +582,17 @@ export default defineComponent({
 	display: flex;
 	flex-direction: column;
 	gap: 0.3rem;
-
+	margin: 1rem 0;
 	label {
 		font-weight: bold;
 		text-decoration: underline;
 	}
+}
+
+.flow-horizontally {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 1rem;
 }
 
 .controls-container {

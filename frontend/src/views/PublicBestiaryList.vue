@@ -1,7 +1,21 @@
 <template>
-	<div class="content">
-		<h1><span>Public Bestiaries </span></h1>
-
+<Breadcrumbs :routes="[
+{
+	path: '',
+	text: 'Public Bestiaries',
+	isCurrent: true
+}
+]" 
+> 
+<template #right-button>
+	<select v-model="viewMode" aria-label="Select public bestiary list mode">
+		<option>Recent</option>
+		<option>Popular</option>
+		<option>Bookmarked</option>
+	</select>
+</template>
+</Breadcrumbs> 
+	<div class="content" v-if="viewMode != 'Bookmarked'">
 		<div class="tile-container">
 			<div class="content-tile search-tile">
 				<h2 class="tile-header"><label for="searchinput">search</label></h2>
@@ -20,7 +34,7 @@
 			</div>
 
 			<TransitionGroup name="popin">
-				<RouterLink v-if="bestiaries && bestiaries.length > 0" class="content-tile bestiary-tile" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id">
+				<RouterLink v-if="bestiaries && bestiaries.length > 0" class="content-tile bestiary-tile" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" :key="bestiary._id">
 					<h2 class="tile-header">{{ bestiary.name }}</h2>
 					<div class="tile-content">
 						<div class="tags">
@@ -33,19 +47,26 @@
 						<span>{{ bestiary.creatures.length }}🐉</span>
 					</div>
 				</RouterLink>
+				<p v-else class="zero-found">
+					Did not find any Bestiaries with that name or tags.
+				</p>
 			</TransitionGroup>
+
 		</div>
 	</div>
+	<BookmarkedBestiaryList v-else />
 </template>
 
 <script lang="ts">
 import {RouterLink} from "vue-router";
 import {defineComponent} from "vue";
-import type {User, Bestiary, Creature} from "@/generic/types";
+import type {Bestiary} from "@/generic/types";
 import UserBanner from "@/components/UserBanner.vue";
+import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import {handleApiResponse, toast, tags, type error} from "@/main";
 // @ts-ignore
 import {vue3Debounce} from "vue-debounce";
+import BookmarkedBestiaryList from "./BookmarkedBestiaryList.vue";
 export default defineComponent({
 	directives: {
 		debounce: vue3Debounce({lock: true})
@@ -58,11 +79,14 @@ export default defineComponent({
 			search: "" as string,
 			selectedTags: [] as string[],
 			tags: [] as string[],
-			lastInput: 0
+			lastInput: 0,
+			viewMode: "Popular"
 		};
 	},
 	components: {
-		UserBanner
+		UserBanner,
+		Breadcrumbs,
+		BookmarkedBestiaryList
 	},
 	async beforeMount() {
 		const loader = this.$loading.show();
@@ -76,6 +100,14 @@ export default defineComponent({
 		},
 		selectedTags() {
 			this.searchBestiaries();
+		},
+		async viewMode(newValue) {
+			if (newValue != "Bookmarked") {
+				const loader = this.$loading.show()
+				await this.searchBestiaries();
+				loader.hide()
+
+			}
 		}
 	},
 	methods: {
@@ -91,19 +123,20 @@ export default defineComponent({
 					options: {
 						search: this.search,
 						page: this.page - 1,
-						tags: this.selectedTags
+						tags: this.selectedTags,
+						mode: this.viewMode.toLowerCase()
 					}
 				})
 			}).then(async (response) => {
-				let result = await handleApiResponse<{results: Bestiary[]; totalAmount: number}>(response);
+				let result = await handleApiResponse<{results: Bestiary[]; pageAmount: number}>(response);
 				if (result.success) {
-					let data = result.data as {results: Bestiary[]; totalAmount: number};
+					let data = result.data as {results: Bestiary[]; pageAmount: number};
 					this.bestiaries = data.results;
-					this.page = 1;
-					this.total = data.totalAmount;
+					//this.page = 1;
+					this.total = data.pageAmount;
 				} else {
 					this.bestiaries = [];
-					this.total = 0;
+					this.total = 1;
 					toast.error((result.data as error).error);
 				}
 			});
@@ -158,5 +191,11 @@ export default defineComponent({
 	& span[role="button"] {
 		cursor: pointer;
 	}
+}
+
+.zero-found {
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 </style>

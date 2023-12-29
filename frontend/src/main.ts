@@ -70,7 +70,7 @@ export const toast = app.config.globalProperties.$toast;
 import {LoadingPlugin} from "vue-loading-overlay";
 import "vue-loading-overlay/dist/css/index.css";
 app.use(LoadingPlugin, {
-	loader: "bars",
+	loader: "dots",
 	color: "orangered",
 	backgroundColor: "black",
 	height: 128,

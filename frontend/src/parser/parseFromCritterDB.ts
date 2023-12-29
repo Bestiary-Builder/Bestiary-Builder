@@ -22,7 +22,7 @@ export function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: s
 	};
 
 	outputData.core = {
-		proficiencyBonus: Math.max(2, Math.min(9, Math.floor((outputData.description.cr + 3) / 4)) + 1),
+		proficiencyBonus: data.stats.proficiencyBonus || Math.max(2, Math.min(9, Math.floor((outputData.description.cr + 3) / 4)) + 1),
 		race: data.stats.race,
 		size: data.stats.size,
 		languages: data.stats.languages,

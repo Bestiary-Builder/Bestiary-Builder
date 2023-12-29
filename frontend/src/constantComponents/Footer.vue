@@ -9,7 +9,7 @@
 				<nav id="footer-places">
 					<ul>
 						<li id="footer-places-github">
-							<a href="https://github.com/Stevnbak/Bestiary-Builder" target="_blank" title="Edit on Github">Github<font-awesome-icon icon="fa-brands fa-github" /></a>
+							<a href="https://github.com/Bestiary-Builder/Bestiary-Builder" target="_blank" title="Edit on Github">Github<font-awesome-icon icon="fa-brands fa-github" /></a>
 						</li>
 						<li id="footer-places-patreon">
 							<a href="https://patreon.com/BestiaryBuilder" target="_blank" title="Support us on Patreon">Patreon<font-awesome-icon icon="fa-brands fa-patreon" /></a>

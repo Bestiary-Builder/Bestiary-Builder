@@ -6,7 +6,7 @@
 			"type": "shell",
 			"group": "test",
 			"dependsOrder": "sequence",
-			"dependsOn": ["build-frontend", "start-backend"]
+			"dependsOn": ["start-backend", "debug-frontend"]
 		},
 		{
 			"label": "debug-frontend",

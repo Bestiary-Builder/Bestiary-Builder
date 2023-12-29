@@ -33,7 +33,12 @@ h2 {
 }
 
 a {
-	color: var(--color-link);
+	color: rgb(205, 205, 205);
+	text-decoration: underline 0.1em rgba(205, 205, 205, 0);
+	transition: all .3s ease;
+	&:hover {
+		text-decoration-color: rgba(205, 205, 205, 1);
+	}
 }
 
 .btn {
@@ -90,7 +95,7 @@ textarea {
 
 //Header
 .content {
-	padding: 1rem 5vw;
+	padding: 2rem 5vw;
 	background-image: url("/bg_black.png");
 	min-height: 100vh;
 	& h1 {

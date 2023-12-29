@@ -6,15 +6,13 @@
 				<img src="/logo.svg" />
 				<span>BESTIARY BUILDER</span>
 			</RouterLink>
-			<RouterLink v-for="route in $router.options.routes.filter((a: any) => a.navbar)" :to="route.path" class="nav-link">
-				<div class="header-item">{{ route.name }}</div>
-			</RouterLink>
+
 		</div>
 
 		<div class="navbar-center">
-			<!-- <RouterLink v-for="route in $router.options.routes.filter((a: any) => a.navbar)" :to="route.path" class="nav-link">
-			<div class="header-item"> {{   route.name  }}</div>
-		</RouterLink> -->
+			<RouterLink v-for="route in $router.options.routes.filter((a: any) => a.navbar)" :to="route.path" class="nav-link">
+				<span class="header-item">{{ route.name }}</span>
+			</RouterLink>
 		</div>
 
 		<div class="navbar-right">
@@ -58,7 +56,7 @@ export default defineComponent({
 .user {
 	display: flex;
 	align-items: center;
-	padding: 1rem;
+	padding: .7rem;
 	gap: 0.3rem;
 	text-decoration: none;
 	color: var(--color-base);
@@ -77,13 +75,13 @@ export default defineComponent({
 .navbar {
 	position: relative;
 
-	background: rgb(26, 25, 25);
+	background: var(--color-surface-2);
 
 	display: flex;
 	flex: 1;
 	justify-content: space-between;
 
-	box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+	box-shadow: rgba(0, 0, 0, 0.19) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 2px 2px;
 }
 
 .navbar-left {
@@ -93,19 +91,20 @@ export default defineComponent({
 }
 
 .navbar-right {
-	display: inline-block;
 	display: inline-flex;
 }
 
 .navbar-center {
-	display: inline-block;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	gap: 3vw;
 }
 
 .navbar-brand,
 .navbar .nav-link {
 	color: White;
-	text-decoration: none;
-	padding: 1rem;
+	padding: .7rem;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -114,11 +113,8 @@ export default defineComponent({
 
 .navbar-brand {
 	font-weight: bold;
-
 	padding-left: 2rem;
 	padding-right: 2rem;
-
-	background: rgb(48, 46, 46);
 
 	flex-direction: row;
 }
@@ -130,13 +126,6 @@ export default defineComponent({
 .nav-link {
 	min-width: 10vw;
 	text-align: center;
-	border-left: 1px solid orangered;
-}
-.nav-link:last-of-type {
-	border-right: 1px solid orangered;
-}
-.navbar .nav-link:hover {
-	color: LightGray;
 }
 
 .navbar-collapse,
