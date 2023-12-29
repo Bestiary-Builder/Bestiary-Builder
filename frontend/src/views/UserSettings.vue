@@ -14,7 +14,7 @@
 	</div>
 	<div v-else>
 		<p> You are logged in to Bestiary Builder with Discord as <b> {{ user.username }} </b>.</p>
-		<p> You have been a user of Bestiary Builder since <b>DATE</b>.</p>
+		<p> You have been a user of Bestiary Builder since <b>{{ user.joinedAt ? new Date(user.joinedAt).toDateString() : "Not Found" }}</b>.</p>
 		<p> You have created <b>{{ user.bestiaries.length }}</b> bestiaries since then.</p>
 		<p v-if="user.supporter == 0">
 			<p> 

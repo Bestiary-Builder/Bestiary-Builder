@@ -43,6 +43,7 @@ export class User {
 		public bestiaries: ObjectId[] = [],
 		public bookmarks: ObjectId[] = [],
 		public supporter: 0 | 1 | 2,
+		public joinedAt: number,
 		public _id: string,
 		public secret?: string
 	) {}
@@ -58,24 +59,21 @@ export class Bestiary {
 		public tags: string[],
 		public viewCount: number,
 		public bookmarks: number,
-		public lastUpdated: Date,
+		public lastUpdated: number,
 		public _id?: ObjectId
 	) {}
 }
 export class Creature {
-	constructor(public lastUpdated: Date, public stats: any, public bestiary: ObjectId, public _id?: ObjectId) {}
+	constructor(public lastUpdated: number, public stats: any, public bestiary: ObjectId, public _id?: ObjectId) {}
 }
 export const collections: {users?: Collection<User>; bestiaries?: Collection<Bestiary>; creatures?: Collection<Creature>} = {};
 
 //User cache
 let userCache = {} as {[key: string]: User};
-export function resetUserCache(id: string) {
+function resetUserCache(id: string) {
 	delete userCache[id];
 }
 let userSecretCache = {} as {[key: string]: string};
-export function resetUserSecretCache(id: string) {
-	delete userSecretCache[id];
-}
 //User functions
 export async function getUser(id: string) {
 	try {
@@ -111,11 +109,13 @@ export async function updateUser(data: {_id: string; username: string; avatar: s
 		if (await getUser(data._id)) {
 			log.log("database", "Updating user with id " + data._id.toString());
 			await collections.users?.updateOne({_id: data._id}, {$set: data});
+			resetUserCache(data._id);
 			return (await getUser(data._id))?.secret ?? null;
 		} else {
 			log.log("database", "Adding new user to collection with id " + data._id.toString());
 			let userData = data as User;
 			userData._id = data._id;
+			userData.joinedAt = Date.now();
 			userData.secret = generateUserSecret();
 			userData.bestiaries = [];
 			await collections.users?.insertOne(userData);
@@ -160,7 +160,7 @@ export async function getBestiary(id: ObjectId) {
 }
 export async function updateBestiary(data: Bestiary, id?: ObjectId) {
 	try {
-		data.lastUpdated = new Date(Date.now());
+		data.lastUpdated = Date.now();
 		if (id) {
 			if (await getBestiary(id)) {
 				log.log("database", "Updating bestiary with id " + id.toString());
@@ -225,7 +225,7 @@ export async function getCreature(id: ObjectId) {
 }
 export async function updateCreature(data: Creature, id?: ObjectId) {
 	try {
-		data.lastUpdated = new Date(Date.now());
+		data.lastUpdated = Date.now();
 		if (id) {
 			if (await getBestiary(data.bestiary)) {
 				log.log("database", `Updating creature with the id ${id}.`);
