@@ -1,4 +1,5 @@
-import {app, badwords, log} from "../server";
+import {app, badwords} from "../server";
+import {log} from "../logger";
 import {requireUser, possibleUser} from "./login";
 import {publicLog, colors} from "./discord";
 import {type Bestiary, type User, Creature, addBestiaryToUser, getBestiary, getUser, incrementBestiaryViewCount, updateBestiary, deleteBestiary, getCreature, collections, addBookmark, removeBookmark} from "../database";

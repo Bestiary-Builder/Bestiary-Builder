@@ -1,4 +1,5 @@
-import {log, isProduction} from "../server";
+import {isProduction} from "../server";
+import {log} from "../logger";
 import discord, {PresenceUpdateStatus, Status} from "discord.js";
 import {collections, getUser, type User} from "../database";
 const client = new discord.Client({
