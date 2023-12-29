@@ -1,4 +1,5 @@
-import {app, badwords, log} from "../server";
+import {app, badwords} from "../server";
+import {log} from "../logger";
 import {requireUser, possibleUser} from "./login";
 import {addCreatureToBestiary, collections, getBestiary, getCreature, getUser, updateCreature, Creature, deleteCreature} from "../database";
 import {checkBestiaryPermission} from "./bestiaries";

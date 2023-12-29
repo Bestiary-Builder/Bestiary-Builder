@@ -2,6 +2,7 @@
 	"name": "bestiary-builder",
 	"version": "0.0.0",
 	"private": true,
+	"type": "module",
 	"scripts": {
 		"dev": "vite",
 		"build": "run-p type-check build-only",
@@ -32,6 +33,7 @@
 	"devDependencies": {
 		"@tsconfig/node18": "^18.2.2",
 		"@types/markdown-it": "^13.0.7",
+		"@types/node": "^20.10.5",
 		"@types/vue-select": "^3.16.8",
 		"@vitejs/plugin-vue": "^5.0.0",
 		"@vue/tsconfig": "^0.5.1",

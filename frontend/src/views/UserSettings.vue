@@ -14,7 +14,7 @@
 	</div>
 	<div v-else>
 		<p> You are logged in to Bestiary Builder with Discord as <b> {{ user.username }} </b>.</p>
-		<p> You have been a user of Bestiary Builder since <b>DATE</b>.</p>
+		<p> You have been a user of Bestiary Builder since <b>{{ user.joinedAt ? new Date(user.joinedAt).toDateString() : "Not Found" }}</b>.</p>
 		<p> You have created <b>{{ user.bestiaries.length }}</b> bestiaries since then.</p>
 		<p v-if="user.supporter == 0" class="patreon">
 			<p> 
@@ -40,7 +40,7 @@
 import {defineComponent} from "vue";
 import type {User, Bestiary, Creature} from "@/generic/types";
 import UserBanner from "@/components/UserBanner.vue";
-import {user, loginLink, handleApiResponse, toast, type error} from "@/main";
+import {user, sendToLogin, getLoginRoute, handleApiResponse, toast, type error} from "@/main";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import JoinPatreon from "@/components/JoinPatreon.vue"
 export default defineComponent({
@@ -58,7 +58,7 @@ export default defineComponent({
 				let result = await handleApiResponse(response);
 				if (result.success) {
 					toast.success("Succesfully logged in");
-					window.location.href = "/";
+					window.location.href = getLoginRoute();
 				} else {
 					toast.error((result.data as error).error);
 				}
@@ -75,7 +75,7 @@ export default defineComponent({
 	},
 	methods: {
 		LoginClick() {
-			window.location.href = loginLink;
+			sendToLogin(this.$route.path);
 		},
 		async LogoutClick() {
 			await fetch("/api/logout").then(async (response) => {

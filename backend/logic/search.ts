@@ -1,7 +1,7 @@
 import {Bestiary, collections} from "../database";
 import type {Filter, FindOptions, Sort} from "mongodb";
-import {app, log} from "../server";
-import allTags from "../staticData/tags.json";
+import {app} from "../server";
+import {log} from "../logger";
 
 const amountPerPage = 11;
 

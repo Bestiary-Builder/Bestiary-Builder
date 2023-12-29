@@ -1,4 +1,5 @@
-import {app, log} from "../server";
+import {app} from "../server";
+import {log} from "../logger";
 import {requireUser, possibleUser} from "./login";
 import {getUser, collections, type User, type Bestiary} from "../database";
 

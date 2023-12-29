@@ -1,4 +1,5 @@
-import {app, JWTKey, log} from "../server";
+import {app, JWTKey} from "../server";
+import {log} from "../logger";
 import fetch from "node-fetch";
 import jwt from "jsonwebtoken";
 import {getUser, getUserFromSecret, updateUser, User} from "../database";
@@ -89,7 +90,7 @@ export const requireUser = async (req: Request, res: Response, next: NextFunctio
 			if (!user) {
 				return res.status(401).send({error: "User token doesn't correspond to any user."});
 			}
-			req.body.id = user._id;
+			req.body.id = user;
 		} catch (err) {
 			return res.status(401).send({error: "Invalid user token."});
 		}
@@ -108,7 +109,7 @@ export const possibleUser = async (req: Request, res: Response, next: NextFuncti
 				const decoded = jwt.verify(token, JWTKey) as any;
 				let user = await getUserFromSecret(decoded.id);
 				if (user) {
-					req.body.id = user._id;
+					req.body.id = user;
 				}
 			} catch (err) {}
 		}
