@@ -28,7 +28,6 @@ h6 {
 }
 
 h2 {
-	font-size: 2rem;
 	font-weight: 300;
 }
 
@@ -43,8 +42,8 @@ a {
 
 .btn {
 	padding: 6px 12px;
-	background: rgb(31, 32, 35);
-	border: 1px solid rgb(60, 63, 68);
+	background: var(--color-surface-0);
+	border: 1px solid var(--color-surface-1);
 	border-radius: 4px;
 	font-size: 13px;
 	color: rgb(247, 248, 248);
@@ -53,11 +52,13 @@ a {
 	transition: background-color 0.3s ease;
 	cursor: pointer;
 	&:hover {
-		background-color: rgb(44, 45, 47);
+		background-color: #272727;
 	}
 
 	&.confirm {
 		background-color: var(--color-success);
+		color: black;
+		font-weight: 600;
 	}
 
 	&.danger {
@@ -72,8 +73,8 @@ hr {
 input[type="text"],
 textarea {
 	padding: 6px 12px;
-	background: rgb(31, 32, 35);
-	border: 1px solid rgb(60, 63, 68);
+	background: var(--color-surface-0);
+	border: 1px solid var(--color-surface-1);
 	border-radius: 4px;
 	font-size: 13px;
 	color: rgb(247, 248, 248);
@@ -93,74 +94,32 @@ textarea {
 	height: unset;
 }
 
-//Header
 .content {
 	padding: 2rem 5vw;
 	background-image: url("/bg_black.png");
 	min-height: 100vh;
-	& h1 {
-		text-align: center;
-		margin-bottom: 2rem;
-		font-size: 3rem;
-		& span {
-			border-bottom: 4px solid orangered;
-			padding: 0 10rem;
+
+	&.markdown {
+		& h2 {
+			text-align: center;
+			margin-bottom: 1rem;
+			margin-top: 1.5rem;
+			font-size: 2rem;
+			border-bottom: 1px solid orangered;
 		}
 	}
 }
-@media screen and (max-width: 1800px) {
-	.content h1 span {
-		padding: 0 7rem;
+@media screen and (max-width: 1080px) {
+	.content {
+		padding: 1rem 2vw;
 	}
 }
-@media screen and (max-width: 1550px) {
-	.content h1 span {
-		padding: 0 4rem;
-	}
-}
-@media screen and (max-width: 1050px) {
-	.content h1 {
-		font-size: 2rem;
-		span {
-			padding: 0 2rem;
-		}
+@media screen and (min-width: 1080px) {
+	.content.less-wide {
+		padding: 2rem 25vw;
 	}
 }
 
-/* LOADING */
-
-#loading {
-	position: fixed;
-	left: 50%;
-	top: 50%;
-	z-index: 1;
-	width: 120px;
-	height: 120px;
-	margin: -76px 0 0 -76px;
-	border: 1rem solid var(--border-color-base);
-	border-radius: 50%;
-	border-top: 1rem solid var(--color-primary);
-	-webkit-animation: spin 2s linear infinite;
-	animation: spin 1.5s linear infinite;
-}
-
-@-webkit-keyframes spin {
-	0% {
-		-webkit-transform: rotate(0deg);
-	}
-	100% {
-		-webkit-transform: rotate(360deg);
-	}
-}
-
-@keyframes spin {
-	0% {
-		transform: rotate(0deg);
-	}
-	100% {
-		transform: rotate(360deg);
-	}
-}
 
 .modal__bg {
 	position: fixed;
@@ -170,7 +129,7 @@ textarea {
 	height: 100%;
 
 	background-color: rgba(0, 0, 0, 0.5);
-	backdrop-filter: blur(0px);
+	backdrop-filter: blur(10px);
 
 	display: flex;
 	justify-content: center;
@@ -184,10 +143,11 @@ textarea {
 	width: 80%;
 	height: 90%;
 	padding: 2rem;
-	background-color: var(--color-surface-3);
-	border: 2px solid #ff4500;
+	background-color: var(--color-surface-1);
+	border-radius: 1rem;
 	overflow-y: scroll;
 	overscroll-behavior: contain;
+	box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
 }
 
 .modal__small {
@@ -261,14 +221,7 @@ textarea {
 	scale: 0;
 }
 
-.header-item svg {
-	scale: 0.6;
-	aspect-ratio: 1 / 1;
-	fill: var(--color-base);
 
-	margin: auto;
-	display: block;
-}
 
 .scale-in-enter-active {
 	animation: bounce-in 0.5s;
@@ -287,43 +240,6 @@ textarea {
 	100% {
 		transform: scale(1);
 		opacity: 1;
-	}
-}
-
-.scale-in-dramatically-enter-active {
-	animation: bounce-in-dramatically 0.5s;
-}
-.scale-in-dramatically-leave-active {
-	animation: bounce-in-dramatically 0.5s reverse;
-}
-
-@keyframes bounce-in-dramatically {
-	0% {
-		transform: scale(0);
-		opacity: 0;
-	}
-	25% {
-		rotate: -10deg;
-	}
-	50% {
-		transform: scale(1.1);
-		rotate: 10deg;
-	}
-	75% {
-		rotate: -5deg;
-	}
-	100% {
-		transform: scale(1);
-		opacity: 1;
-		rotate: 0;
-	}
-}
-.mobile-only {
-	display: block;
-}
-@media screen and (min-width: 1100px) {
-	.mobile-only {
-		display: none !important;
 	}
 }
 
@@ -399,37 +315,6 @@ textarea {
 	}
 }
 
-.popin-enter-active {
-	animation: bounce-in 0.7s ease;
-}
-.popin-leave-active {
-	animation: bounce-in 0.7s ease reverse;
-}
-
-.popin-enter-from,
-.popin-leave-to {
-	scale: 0;
-}
-
-/* ensure leaving items are taken out of layout flow so that moving
-   animations can be calculated correctly. */
-
-.popin-leave-active {
-	position: absolute;
-}
-
-@keyframes bounce-in {
-  0% {
-    opacity: 0;
-    transform: scale(.3);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.05);
-  }
-  70% { transform: scale(.9); }
-  100% { transform: scale(1); }
-}
 
 b.indent {
 	margin-left: 1.5rem;

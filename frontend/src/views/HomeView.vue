@@ -7,7 +7,7 @@
 }
 ]" :isLessWide="true"/> 
 
-	<div class="content">
+	<div class="content less-wide">
 		<div class="description">
 			<img class="logo" src="/logo-text.svg" />
 			<p>bla bla bla...</p>
@@ -37,11 +37,6 @@ export default {
 </script>
 <style scoped lang="less">
 .content {
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-	align-items: center;
-
 	& div {
 		display: flex;
 		flex-direction: column;

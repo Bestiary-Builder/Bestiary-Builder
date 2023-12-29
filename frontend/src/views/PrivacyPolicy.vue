@@ -6,7 +6,7 @@
 	isCurrent: true
 }
 ]" :isLessWide="true"/> 
-	<div class="content privacy">
+	<div class="content markdown less-wide">
 		<div v-if="content" v-html="content"></div>
 	</div>
 </template>
@@ -29,32 +29,3 @@ export default defineComponent({
 	}
 });
 </script>
-
-<style scoped lang="less">
-.content {
-	display: flex;
-	flex-direction: column;
-	justify-content: start;
-	align-items: center;
-	padding-bottom: 5rem;
-}
-
-@media screen and (min-width: 1080px) {
-	.content div {
-		min-width: 50rem;
-		width: 50%;
-	}
-}
-</style>
-
-<style lang="less">
-.privacy.content {
-	& h2 {
-		text-align: center;
-		margin-bottom: 1rem;
-		margin-top: 1.5rem;
-		font-size: 2rem;
-		border-bottom: 1px solid orangered;
-	}
-}
-</style>

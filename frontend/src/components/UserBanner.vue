@@ -65,12 +65,12 @@ export default defineComponent({
 
 .supporter-tier-1 {
 	color: #29cf29;
-    text-shadow: black 2px 2px;
+    text-shadow: var(--color-surface-0) 2px 2px;
 }
 
 .supporter-tier-2 {
 	color: #ca2020;
-    text-shadow: black 2px 2px;
+    text-shadow: var(--color-surface-0) 2px 2px;
 }
 
 .loading {

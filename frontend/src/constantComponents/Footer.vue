@@ -45,8 +45,8 @@ export default defineComponent({
 </script>
 <style scoped lang="less">
 .citizen-footer {
-	padding: var(--space-xl) var(--padding-page);
-	background-color: #1a1919;
+	padding: 2rem 5vw;
+	background-color: var(--color-surface-0);
 	clear: both;
 	color: orangered;
 	direction: ltr;

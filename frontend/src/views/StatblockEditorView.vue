@@ -1346,8 +1346,15 @@ export default defineComponent({
 	gap: 2rem;
 	grid-template-columns: 1fr 1fr;
 }
+
+@media screen and (max-width: 1200px) {
+	.content {
+		grid-template-columns: 1fr;
+	}
+}
+
 .content-container__inner:first-of-type {
-	background-color: rgb(59, 55, 54);
+	background-color: var(--color-surface-1);
 }
 
 .editor-nav {
@@ -1378,7 +1385,7 @@ export default defineComponent({
 	padding: 0.5rem 1rem;
 
 	&__tab-inner {
-		background-color: rgb(59, 55, 54);
+		background-color: var(--color-surface-1);
 
 		.group-header {
 			text-align: center;
@@ -1421,7 +1428,7 @@ export default defineComponent({
 							transition: background-color 0.3s ease;
 
 							&:hover {
-								background-color: rgb(60, 63, 68);
+								background-color: var(--color-surface-0);
 							}
 						}
 					}
@@ -1526,7 +1533,7 @@ input[type="number"] {
 }
 
 .quantity input {
-	background-color: rgb(31, 32, 35);
+	background-color: var(--color-surface-0);
 	width: 100%;
 	height: 42px;
 	line-height: 1.65;

@@ -6,7 +6,7 @@
 	isCurrent: true
 }
 ]" :isLessWide="true"/> 
-<div class="content">
+<div class="content less-wide">
 	<div v-if="!user">
 		<p> You are not logged in. Login with Discord to log in.</p>
 		<hr />
@@ -16,7 +16,7 @@
 		<p> You are logged in to Bestiary Builder with Discord as <b> {{ user.username }} </b>.</p>
 		<p> You have been a user of Bestiary Builder since <b>DATE</b>.</p>
 		<p> You have created <b>{{ user.bestiaries.length }}</b> bestiaries since then.</p>
-		<p v-if="user.supporter == 0">
+		<p v-if="user.supporter == 0" class="patreon">
 			<p> 
 				If you enjoy using our site, consider supporting us on Patreon! 
 				As a Patreon, you will have several benefits and your support will help Bestiary Builder stay online.
@@ -93,26 +93,15 @@ export default defineComponent({
 
 
 <style scoped lang="less">
-.content {
-	display: flex;
-	flex-direction: column;
-	justify-content: start;
-	align-items: center;
-	padding-bottom: 5rem;
-}
-
-@media screen and (min-width: 1080px) {
-	.content div {
-		min-width: 50rem;
-		width: 50%;
-	}
-}
-
 .content div {
 	display: flex;
 	flex-direction: column;
-	gap: .5rem;
+	gap: 0.2rem;
 	
+	.patreon {
+		margin-top: 1rem;
+		color: orangered;
+	}
 	.center {
 		display: flex;
 		justify-content: center;
@@ -120,7 +109,7 @@ export default defineComponent({
 
 	& .btn {
 		width: fit-content;
-		margin: auto;	
+		margin: 1rem auto;	
 	}
 }
 

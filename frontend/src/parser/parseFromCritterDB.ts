@@ -12,7 +12,7 @@ export function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: s
 	}
 	outputData.description = {
 		name: data.name,
-		description: data.flavor.description,
+		description: data.flavor.description.replaceAll("<i>", "*").replaceAll("</i>", "*").replaceAll("<b>", "**").replaceAll("</b>", "**"),
 		isProperNoun: data.flavor.nameIsProper,
 		faction: data.flavor.faction,
 		environment: data.flavor.environment,

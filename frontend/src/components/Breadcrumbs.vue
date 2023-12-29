@@ -22,6 +22,7 @@ import { defineComponent } from 'vue';
 import { ref } from 'vue'
 import { isClient } from '@vueuse/shared'
 import { useShare } from '@vueuse/core'
+import { toast } from '@/main';
 
 type links = {
     path: string;
@@ -39,7 +40,10 @@ export default defineComponent({
         const { share, isSupported } = useShare(options)
 
         async function startShare() {
-            return share().catch(err => err)
+            if (isSupported) return share().catch(err => err)
+            // webshare API is not supported
+            navigator.clipboard.writeText(options.value.url)
+            toast.success("Copied link to clipboard!")
         }
         return {
             isSupported,
@@ -61,17 +65,13 @@ export default defineComponent({
 
 <style lang="less">
 .breadcrumbs__container {
-    background-color: rgb(59, 55, 54);
-    padding: .7rem 6vw;
+    background-color: var(--color-surface-0);
+    padding: .7rem 5vw;
 	box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
 
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
-
-    &.less-wide {
-        padding: .7rem 27.5vw
-    }
 
     .right-buttons {
         display: flex;
@@ -92,11 +92,11 @@ export default defineComponent({
             transition: all ease .3s;
 
             svg {
-                scale: 1.2
+                scale: 1.1
             }
             &:hover {
                 background-color: orangered;
-                color: rgb(59, 55, 54)
+                color: var(--color-surface-0)
             }
             
         }
@@ -110,10 +110,21 @@ export default defineComponent({
             outline: none;
 
             & option {
-                background-color: rgb(59, 55, 54);
+                background-color: var(--color-surface-0);
                 color: orangered;
             }
         }
+    }
+}
+@media screen and (max-width: 1080px) {
+	.breadcrumbs__container {
+		padding: 1rem 2vw;
+	}
+}
+
+@media screen and (min-width: 1080px) {
+    &.breadcrumbs__container.less-wide {
+        padding: .7rem 25vw;
     }
 }
 
