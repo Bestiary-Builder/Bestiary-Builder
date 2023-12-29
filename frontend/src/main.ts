@@ -38,8 +38,30 @@ export const tags = fetch("/api/tags").then(async (response: any) =>
 	})
 );
 const clientId = "1183362236509601813";
-const loginBase = "https://discord.com/api/oauth2/authorize?client_id=" + clientId + "&response_type=code&scope=identify+email";
-export const loginLink = loginBase + "&redirect_uri=" + encodeURIComponent(window.location.origin + "/user");
+const loginLink = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&response_type=code&scope=identify+email&redirect_uri=${encodeURIComponent(window.location.origin + "/user")}`;
+
+export function sendToLogin(route: string) {
+	console.log(route);
+	window.document.cookie = "route=" + route;
+	window.location.href = loginLink;
+}
+export function getLoginRoute() {
+	let name = "route=";
+	let decodedCookie = decodeURIComponent(document.cookie);
+	let ca = decodedCookie.split(";");
+	//Reset cookie
+	document.cookie = "route=;";
+	for (let i = 0; i < ca.length; i++) {
+		let c = ca[i];
+		while (c.charAt(0) == " ") {
+			c = c.substring(1);
+		}
+		if (c.indexOf(name) == 0) {
+			return c.substring(name.length, c.length);
+		}
+	}
+	return "";
+}
 
 //Style sheet
 import "@/assets/main.less";
@@ -82,7 +104,35 @@ import {library} from "@fortawesome/fontawesome-svg-core";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faTrash, faLock, faSkull, faPenToSquare, faStopwatch, faMap, faLocationPin, faClock, faRuler, faStar, faHashtag, faArrowDown19, faHourglass, faUserLock, faScaleBalanced, faShareNodes, faArrowRightFromBracket, faLink, faEarthEurope, faXmark} from "@fortawesome/free-solid-svg-icons";
 import {faTwitter, faFacebook, faDiscord, faInstagram, faPatreon, faGithub} from "@fortawesome/free-brands-svg-icons";
-library.add(faTrash, faXmark, faStar, faLock, faLink, faSkull, faEarthEurope, faTwitter, faPenToSquare, faFacebook, faDiscord, faInstagram, faStopwatch, faMap, faLocationPin, faClock, faRuler, faStar, faHashtag, faArrowDown19, faHourglass, faUserLock, faScaleBalanced, faShareNodes, faArrowRightFromBracket,  faPatreon, faGithub);
+library.add(
+	faTrash,
+	faXmark,
+	faStar,
+	faLock,
+	faLink,
+	faSkull,
+	faEarthEurope,
+	faTwitter,
+	faPenToSquare,
+	faFacebook,
+	faDiscord,
+	faInstagram,
+	faStopwatch,
+	faMap,
+	faLocationPin,
+	faClock,
+	faRuler,
+	faStar,
+	faHashtag,
+	faArrowDown19,
+	faHourglass,
+	faUserLock,
+	faScaleBalanced,
+	faShareNodes,
+	faArrowRightFromBracket,
+	faPatreon,
+	faGithub
+);
 
 app.component("font-awesome-icon", FontAwesomeIcon);
 // @ts-ignore Vue Select

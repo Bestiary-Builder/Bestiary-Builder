@@ -18,7 +18,7 @@ const winstonLevels = {
 		error: "red",
 		warning: "yellow",
 		info: "white",
-		database: "green",
+		database: "blue",
 		request: "grey"
 	}
 };

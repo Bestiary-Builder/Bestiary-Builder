@@ -6,7 +6,6 @@
 				<img src="/logo.svg" />
 				<span>BESTIARY BUILDER</span>
 			</RouterLink>
-
 		</div>
 
 		<div class="navbar-center">
@@ -29,7 +28,7 @@
 <script lang="ts">
 import {RouterLink, RouterView} from "vue-router";
 import UserBanner from "@/components/UserBanner.vue";
-import {user, loginLink} from "@/main";
+import {user, sendToLogin} from "@/main";
 import type {User} from "@/generic/types";
 import {defineComponent} from "vue";
 export default defineComponent({
@@ -47,7 +46,7 @@ export default defineComponent({
 	},
 	methods: {
 		LoginClick() {
-			window.location.href = loginLink;
+			sendToLogin(this.$route.path);
 		}
 	}
 });
@@ -93,12 +92,12 @@ export default defineComponent({
 	display: flex;
 	justify-content: center;
 	padding: 0.3rem 1rem;
-	gap: .3rem;
+	gap: 0.3rem;
 }
 .navbar-brand,
 .navbar .nav-link {
 	color: white;
-	padding: .7rem;
+	padding: 0.7rem;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;

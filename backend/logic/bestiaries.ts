@@ -124,8 +124,11 @@ app.post("/api/bestiary/:id?/update", requireUser, async (req, res) => {
 			if (badwords.check(data.description)) {
 				return res.status(400).json({error: "Bestiary description includes blocked words or phrases."});
 			}
-			///data.name = badwords.filter(data.name);
-			///data.description = badwords.filter(data.description);
+		}
+		//Public?
+		if (data.status == "public") {
+			if (data.creatures.length == 0) return res.status(400).json({error: "A bestiary must include at least 1 creature to be made public."});
+			if (data.name.toLowerCase().includes("new bestiary")) return res.status(400).json({error: "A bestiary must have a non default name."});
 		}
 		//Add or update
 		if (data._id) {

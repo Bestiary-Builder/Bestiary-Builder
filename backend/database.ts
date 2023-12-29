@@ -203,9 +203,7 @@ export async function deleteBestiary(bestiaryId: ObjectId) {
 		if (!bestiary) return false;
 		log.log("database", `Deleting bestiary with the id ${bestiaryId}.`);
 		await collections.users?.updateOne({_id: bestiary.owner}, {$pull: {bestiaries: bestiaryId}});
-		for (let creatureId of bestiary.creatures) {
-			await collections.creatures?.deleteOne({_id: creatureId});
-		}
+		await collections.creatures?.deleteMany({bestiary: bestiaryId});
 		await collections.bestiaries?.deleteOne({_id: bestiaryId});
 		return true;
 	} catch (err) {
