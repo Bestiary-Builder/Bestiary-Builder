@@ -1,7 +1,7 @@
 <template>
 <section class="breadcrumbs__container">
     <div class="breadcrumbs__links">
-        <template v-for="route, index in routes">
+        <template v-for="route, index in routes" :key="index">
             <RouterLink v-if="!route.isCurrent" :to="route.path"> {{ route.text }} </RouterLink>
             <span v-else class="current-page"> {{ route.text  }}</span>
             <span v-if="index+1 != routes.length" class="seperator">></span>

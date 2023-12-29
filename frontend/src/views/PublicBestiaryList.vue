@@ -34,7 +34,7 @@
 			</div>
 
 			<TransitionGroup name="popin">
-				<RouterLink v-if="bestiaries && bestiaries.length > 0" class="content-tile bestiary-tile" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id">
+				<RouterLink v-if="bestiaries && bestiaries.length > 0" class="content-tile bestiary-tile" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" :key="bestiary._id">
 					<h2 class="tile-header">{{ bestiary.name }}</h2>
 					<div class="tile-content">
 						<div class="tags">
@@ -47,7 +47,11 @@
 						<span>{{ bestiary.creatures.length }}🐉</span>
 					</div>
 				</RouterLink>
+				<p v-else class="zero-found">
+					Did not find any Bestiaries with that name or tags.
+				</p>
 			</TransitionGroup>
+
 		</div>
 	</div>
 	<BookmarkedBestiaryList v-else />
@@ -185,5 +189,11 @@ export default defineComponent({
 	& span[role="button"] {
 		cursor: pointer;
 	}
+}
+
+.zero-found {
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 </style>

@@ -128,9 +128,20 @@
 									<div class="quantity-button quantity-down" @click="changeCR(false)" aria-label="Decrease CR">-</div>
 								</div>
 							</div>
-							<span> This determines Proficiency Bonus too. </span>
+						</div>
+
+						<div class="flow-vertically">
+							<label class="editor-field__title" for="proficiencybonus"><span class="text"> Proficiency Bonus</span></label>
+							<div class="quantity">
+								<input type="number" v-model="data.core.proficiencyBonus" min="0" max="30" inputmode="numeric" id="proficiencybonus" />
+								<div class="quantity-nav">
+									<div class="quantity-button quantity-up" @click="Math.min(30, data.core.proficiencyBonus = data.core.proficiencyBonus +1)" aria-label="Increase CR">+</div>
+									<div class="quantity-button quantity-down" @click="Math.max(0, data.core.proficiencyBonus = data.core.proficiencyBonus -1)" aria-label="Decrease CR">-</div>
+								</div>
+							</div>
 						</div>
 					</div>
+
 				</div>
 				<div class="editor-content__tab-inner scale-in">
 					<div class="editor-field__container two-wide">
@@ -1022,7 +1033,7 @@ export default defineComponent({
 	},
 	methods: {
 		exportStatblock() : void {
-			navigator.clipboard.writeText(JSON.stringify(this.data))
+			navigator.clipboard.writeText(JSON.stringify(this.data, null, 2))
 			toast.info("Exported this statblock to your clipboard.")
 		},
 		import5etools(): void {

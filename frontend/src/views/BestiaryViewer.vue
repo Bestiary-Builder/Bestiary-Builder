@@ -10,7 +10,13 @@
 		text: bestiary?.name,
 		isCurrent: true
 	}
-	]" /> 
+	]">
+	<template #right-button>
+		<button @click="exportBestiary" v-tooltip="'Export this bestiary as JSON to your clipboard.'"> 
+			<font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" /> 
+		</button>
+	</template>
+	</Breadcrumbs>
 	<div class="content">
 		<div class="bestiary" v-if="bestiary">
 			<div class="tile-container list-tiles" id="tile-container">
@@ -96,14 +102,27 @@
 			<div class="modal__bg" v-if="isImportModalOpen">
 				<section class="modal__content modal__small" ref="importModal" v-if="bestiary && isOwner">
 					<button @click="isImportModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
-					<h2 class="modal-header">Import from CritterDB</h2>
+					<h2 class="modal-header">Import</h2>
 					<div class="flow-vertically">
 						<label for="critterdblink">CritterDB bestiary link </label>
-						<input type="text" v-model="critterDbId" id="critterdblink" style="width: 100%" placeholder="" />
+						<p> Insert a link to a critterDB bestiary to import all its creatures. Make sure the bestiary is public or has link sharing enabled.</p>
+						<div class="flow-horizontally">
+							<input type="text" v-model="critterDbId" id="critterdblink" placeholder="" />
+							<button class="btn confirm" @click.prevent="importBestiaryFromCritterDB">Import from CritterDB</button>
+						</div>
 					</div>
+					<div class="flow-vertically">
+						<label for="bestiarybuilderjson">Bestiary Builder JSON </label>
+						<p> Insert the JSON as text gotten from clicking export on another bestiary within Bestiary Builder.</p>
+
+						<div class="flow-horizontally">
+							<input type="text" v-model="bestiaryBuilderJson" id="bestiarybuilderjson" placeholder="" />
+							<button class="btn confirm" @click.prevent="importCreaturesFromBestiaryBuilder">Import from Bestiary Builder JSON</button>
+						</div>
+					</div>
+
 					<div class="modal-buttons">
-						<button class="btn" @click="isImportModalOpen = false">Cancel</button>
-						<button class="btn confirm" @click.prevent="importBestiaryFromCritterDB">Import Bestiary</button>
+						<button class="btn" @click="isImportModalOpen = false "> Cancel</button>
 					</div>
 				</section>
 			</div>
@@ -255,6 +274,7 @@ export default defineComponent({
 			editorToAdd: "" as string,
 			showWarning: false as boolean,
 			critterDbId: "" as string,
+			bestiaryBuilderJson: "" as string,
 			searchText: "" as string,
 			statusEmoji,
 			displayCR
@@ -280,6 +300,10 @@ export default defineComponent({
 		loader.hide();
 	},
 	methods: {
+		exportBestiary() : void {
+			navigator.clipboard.writeText(JSON.stringify(this.creatures?.map(obj => obj.stats), null, 2))
+			toast.info("Exported this bestiary to your clipboard.")
+		},
 		async importBestiaryFromCritterDB() {
 			let link = this.critterDbId.trim();
 			let isPublic = link.includes("publishedbestiary");
@@ -318,7 +342,6 @@ export default defineComponent({
 
 			loader = this.$loading.show();
 			toast.info("Importing creatures has started. This may take a while.");
-			let index = 0;
 			for (let creature of data.creatures) {
 				let stats;
 				try {
@@ -327,8 +350,34 @@ export default defineComponent({
 				} catch (e) {
 					console.error(e);
 				}
-				index++;
 			}
+			await this.getBestiary();
+			loader.hide();
+			toast.success("Importing has finished!");
+			this.isImportModalOpen = false;
+		},
+		async importCreaturesFromBestiaryBuilder() {
+			let creatures; 
+			const loader = this.$loading.show();
+
+			try {
+				creatures = JSON.parse(this.bestiaryBuilderJson)
+			} catch(e) {
+				console.error(e)
+				toast.error("Something is wrong with the format of your JSON")
+				loader.hide()
+				return;
+			}
+
+			toast.info("Importing creatures has started. This may take a while.");
+			for (let creature of JSON.parse(this.bestiaryBuilderJson)) {
+				try {
+					await this.createCreature(creature, false, false);
+				} catch (e) {
+					console.error(e);
+				}
+			}
+
 			await this.getBestiary();
 			loader.hide();
 			toast.success("Importing has finished!");
@@ -533,11 +582,17 @@ export default defineComponent({
 	display: flex;
 	flex-direction: column;
 	gap: 0.3rem;
-
+	margin: 1rem 0;
 	label {
 		font-weight: bold;
 		text-decoration: underline;
 	}
+}
+
+.flow-horizontally {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 1rem;
 }
 
 .controls-container {
