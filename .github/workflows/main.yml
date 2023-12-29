@@ -31,7 +31,7 @@ jobs:
               with:
                   host: ${{ secrets.HOST }}
                   username: ${{ secrets.USERNAME }}
-                  key: ${{ secrets.KEY }}
+                  key: ${{ secrets.KEY }} 
                   port: ${{ secrets.PORT }}
                   #fingerprint: ${{ secrets.FINGERPRINT }}
                   script: bash update.sh
