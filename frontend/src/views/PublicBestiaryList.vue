@@ -101,10 +101,12 @@ export default defineComponent({
 		selectedTags() {
 			this.searchBestiaries();
 		},
-		viewMode(newValue, oldValue) {
+		async viewMode(newValue) {
 			if (newValue != "Bookmarked") {
-				console.log("yayayy!");
-				this.searchBestiaries();
+				const loader = this.$loading.show()
+				await this.searchBestiaries();
+				loader.hide()
+
 			}
 		}
 	},
