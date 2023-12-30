@@ -111,21 +111,22 @@
 						<p> Insert a link to a critterDB bestiary to import all its creatures. Make sure the bestiary is public or has link sharing enabled.</p>
 						<div class="flow-horizontally">
 							<input type="text" v-model="critterDbId" id="critterdblink" placeholder="" />
-							<button class="btn confirm" @click.prevent="importBestiaryFromCritterDB">Import from CritterDB</button>
+							<button class="btn confirm" @click.prevent="importBestiaryFromCritterDB">Import</button>
 						</div>
 					</div>
+					<hr />
 					<div class="flow-vertically">
 						<label for="bestiarybuilderjson">Bestiary Builder JSON </label>
 						<p> Insert the JSON as text gotten from clicking export on another bestiary within Bestiary Builder.</p>
 
 						<div class="flow-horizontally">
 							<input type="text" v-model="bestiaryBuilderJson" id="bestiarybuilderjson" placeholder="" />
-							<button class="btn confirm" @click.prevent="importCreaturesFromBestiaryBuilder">Import from Bestiary Builder JSON</button>
+							<button class="btn confirm" @click.prevent="importCreaturesFromBestiaryBuilder">Import</button>
 						</div>
 					</div>
 
 					<div class="modal-buttons">
-						<button class="btn" @click="isImportModalOpen = false "> Close </button>
+						<button class="btn" @click="isImportModalOpen = false ">Close</button>
 					</div>
 				</section>
 			</div>
@@ -163,7 +164,6 @@
 						<button class="btn" @click="isExportModalOpen = false">Close</button>
 						<button class="btn confirm" @click="exportBestiary(false)"> Copy to Clipboard </button>
 						<button class="btn confirm" @click="exportBestiary(true)"> Download as File</button>
-
 					</div>
 				</section>
 			</div>

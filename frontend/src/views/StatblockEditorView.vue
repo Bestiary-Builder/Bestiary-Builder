@@ -20,7 +20,10 @@
 		]"
 	>
 		<template #right-button>
-			<button @click="exportStatblock" v-tooltip="'Export this creature as JSON to your clipboard.'">
+			<button @click="isImportModalOpen = true" v-tooltip="'Import a creature\'s statblock'">
+				<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
+			</button>
+			<button @click="exportStatblock()" v-tooltip="'Export this creature as JSON to your clipboard.'">
 				<font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" />
 			</button>
 		</template>
@@ -52,8 +55,8 @@
 				<div class="editor-content__tab-inner scale-in">
 					<div class="editor-field__container two-wide">
 						<div class="flow-vertically">
-							<label class="editor-field__title" for="name"><span class="text">Name</span></label>
-							<input type="text" :maxlength="limits.nameLength" v-model="data.description.name" id="name" />
+							<label class="editor-field__title" for="creaturename"><span class="text">Name</span></label>
+							<input type="text" :maxlength="limits.nameLength" v-model="data.description.name" id="creaturename" />
 						</div>
 						<div class="flow-vertically">
 							<label class="editor-field__title" for="propernoun"><span class="text">Proper noun</span></label>
@@ -64,9 +67,9 @@
 					<div class="editor-field__container one-wide">
 						<div class="flow-vertically">
 							<label class="editor-field__title" for="description">
-								<span class="text">Description</span>
+								<span class="text" v-toolti="'Supports markdown'">Description*</span>
 							</label>
-							<textarea rows="20" :maxlength="limits.descriptionLength" v-model="data.description.description" />
+							<textarea rows="20" :maxlength="limits.descriptionLength" v-model="data.description.description" id="description"/>
 						</div>
 					</div>
 					<div class="editor-field__container two-wide">
@@ -245,8 +248,8 @@
 						</div>
 
 						<div class="flow-vertically">
-							<label class="editor-field__title" for="canhover"><span class="text">Blind beyond</span></label>
-							<span>this radius? <input type="checkbox" step="5" v-model="data.core.senses.isBlind" id="canhover" /></span>
+							<label class="editor-field__title" for="isblind"><span class="text">Blind beyond</span></label>
+							<span>this radius? <input type="checkbox" step="5" v-model="data.core.senses.isBlind" id="isblind" /></span>
 						</div>
 					</div>
 
@@ -328,9 +331,9 @@
 							</div>
 						</div>
 						<div class="flow-vertically">
-							<label class="editor-field__title" for="constat"><span class="text">Constitution</span></label>
+							<label class="editor-field__title" for="constitutionstat"><span class="text">Constitution</span></label>
 							<div class="quantity">
-								<input type="number" v-model="data.abilities.stats.con" min="1" step="30" inputmode="numeric" id="constat" />
+								<input type="number" v-model="data.abilities.stats.con" min="1" step="30" inputmode="numeric" id="constitutionstat" />
 								<div class="quantity-nav">
 									<div class="quantity-button quantity-up" @click="data.abilities.stats.con = Math.min(30, data.abilities.stats.con + 1)" aria-label="Increase constitution stat">+</div>
 									<div class="quantity-button quantity-down" @click="data.abilities.stats.con = Math.max(1, data.abilities.stats.con - 1)" aria-label="Decrease constitution stat">-</div>
@@ -422,9 +425,9 @@
 								</p>
 
 								<div>
-									<label for="consave" aria-label="constitution save override"> Override </label>
+									<label for="consaveoverride" aria-label="constitution save override"> Override </label>
 									<div class="quantity">
-										<input type="number" v-model="data.abilities.saves.con.override" inputmode="numeric" id="consave" />
+										<input type="number" v-model="data.abilities.saves.con.override" inputmode="numeric" id="consaveoverride" />
 										<div class="quantity-nav">
 											<div class="quantity-button quantity-up" @click="data.abilities.saves.con.override = (data.abilities.saves.con.override ?? 0) + 1" aria-label="Increase constitution save override">+</div>
 											<div class="quantity-button quantity-down" @click="data.abilities.saves.con.override = (data.abilities.saves.con.override ?? 0) - 1" aria-label="Decrease constitution save override">-</div>
@@ -579,7 +582,7 @@
 						</div>
 						<div class="flow-vertically">
 							<label class="editor-field__title" for="acsource"><span class="text">Armor Class Source</span></label>
-							<input type="text" v-model="data.defenses.ac.acSource" />
+							<input type="text" v-model="data.defenses.ac.acSource" id="acsource"/>
 						</div>
 					</div>
 					<hr />
@@ -615,7 +618,7 @@
 								]"
 								:taggable="true"
 								:pushTags="true"
-								id="vulnerabilities"
+								inputId="vulnerabilities"
 							/>
 						</div>
 						<div class="flow-vertically">
@@ -649,7 +652,7 @@
 								]"
 								:taggable="true"
 								:pushTags="true"
-								id="resistances"
+								inputId="resistances"
 							/>
 						</div>
 						<div class="flow-vertically">
@@ -683,7 +686,7 @@
 								]"
 								:taggable="true"
 								:pushTags="true"
-								id="immunities"
+								inputId="immunities"
 							/>
 						</div>
 						<div class="flow-vertically">
@@ -697,7 +700,7 @@
 								:options="['Blinded', 'Charmed', 'Deafened', 'Disease', 'Exhaustion', 'Frightened', 'Grappled', 'Incapacitated', 'Invisible', 'Paralyzed', 'Petrified', 'Poisoned', 'Prone', 'Restrained', 'Stunned', 'Unconscious']"
 								:taggable="true"
 								:pushTags="true"
-								id="conimmunities"
+								inputId="conimmunities"
 							/>
 						</div>
 					</div>
@@ -803,7 +806,7 @@
 
 						<div class="flow-vertically">
 							<label class="editor-field__title" for="ispionics"> <span class="text">is psionics? </span></label>
-							<span> display as psionics? <input type="checkbox" v-model="data.spellcasting.innateSpells.isPsionics" id="ispsionics" /> </span>
+							<span> display as psionics? <input type="checkbox" v-model="data.spellcasting.innateSpells.isPsionics" id="ispionics" /> </span>
 						</div>
 
 						<div class="flow-vertically">
@@ -813,24 +816,24 @@
 
 						<div class="flow-vertically">
 							<label class="editor-field__title" for="openspelldialog"> <span class="text">edit specific spells</span></label>
-							<button class="btn" @click="isSpellModalOpen = true">Edit cast level/add comment</button>
+							<button class="btn" @click="isSpellModalOpen = true" id="openspelldialog">Edit cast level/add comment</button>
 						</div>
 					</div>
 
 					<hr />
-					<h2 class="group-header">class spellcasting</h2>
+					<h2 class="group-header">Class spellcasting</h2>
 					<div class="editor-field__container two-wide">
 						<div class="flow-vertically">
-							<label class="editor-field__title" for="castingclass"><span class="text">class</span></label>
+							<label class="editor-field__title" for="castingclass"><span class="text">Class</span></label>
 							<v-select v-model="data.spellcasting.casterSpells.castingClass" :options="['Artificer', 'Bard', 'Cleric', 'Druid', 'Paladin', 'Ranger', 'Sorcerer', 'Warlock', 'Wizard']" inputId="castingclass" />
 						</div>
 						<div class="flow-vertically">
-							<label class="editor-field__title" for="castinglevel"><span class="text">class level</span></label>
+							<label class="editor-field__title" for="castinglevel"><span class="text">Class level</span></label>
 							<v-select v-model="data.spellcasting.casterSpells.casterLevel" :options="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]" inputId="castinglevel" />
 						</div>
 
 						<div class="flow-vertically">
-							<label class="editor-field__title" for="casterDcOverride"><span class="text">dc override</span> </label>
+							<label class="editor-field__title" for="casterDcOverride"><span class="text">DC Override</span> </label>
 							<div class="quantity">
 								<input type="number" v-model="data.spellcasting.casterSpells.spellDcOverride" min="0" step="1" inputmode="numeric" id="casterDcOverride" />
 								<div class="quantity-nav">
@@ -842,7 +845,7 @@
 						</div>
 
 						<div class="flow-vertically">
-							<label class="editor-field__title" for="casterBonusOverride"><span class="text">attack bonus override</span> </label>
+							<label class="editor-field__title" for="casterBonusOverride"><span class="text">Attack bonus override</span> </label>
 							<div class="quantity">
 								<input type="number" v-model="data.spellcasting.casterSpells.spellBonusOverride" step="1" inputmode="numeric" id="casterBonusOverride" />
 								<div class="quantity-nav">
@@ -854,7 +857,7 @@
 						</div>
 
 						<div class="flow-vertically">
-							<label class="editor-field__title" for="castingabilityoverride"><span class="text">ability override</span></label>
+							<label class="editor-field__title" for="castingabilityoverride"><span class="text">Ability override</span></label>
 							<p>
 								<v-select :options="['str', 'dex', 'con', 'wis', 'int', 'cha']" v-model="data.spellcasting.casterSpells.spellCastingAbilityOverride" inputId="castingabilityoverride" />
 								<span class="delete-button" @click="data.spellcasting.casterSpells.spellCastingAbilityOverride = null" aria-label="Delete spellcasting ability override"><font-awesome-icon :icon="['fas', 'trash']" /></span>
@@ -880,7 +883,6 @@
 			<hr />
 
 			<div class="buttons">
-				<button class="btn" @click="isImportModalOpen = true">Import</button>
 				<button class="btn confirm" @click="saveStatblock()">Save statblock</button>
 			</div>
 		</div>
@@ -894,13 +896,25 @@
 			<div class="modal__bg" v-if="isImportModalOpen">
 				<section class="modal__content modal__small" ref="importModal">
 					<button @click="isImportModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
-					<h2 class="modal-header">import from 5e tools</h2>
-
-					<div class="modal-desc">
-						<p>
-							<b>5e.tools json input: </b>
+					<h2 class="modal-header">Import creature</h2>
+					<div class="flow-vertically">
+						<label for="bestiarybuilderjson">Bestiary Builder</label>
+						<p> Insert the JSON as text gotten from clicking export on another creature within Bestiary Builder.</p>
+						<div class="two-wide">
+							<input type="text" v-model="bestiaryBuilderJson" />
+							<button class="btn confirm" @click="importBestiaryBuilder">Import</button>
+						</div>
+					</div>
+					<hr />
+					<div class="flow-vertically">
+						<label for="5etoolsinput">5e Tools JSON</label>
+						<p> Insert 5e.tools JSON as text into this field, gotten from clicking export on 5e.tools and copying the JSON.</p>
+						<div class="two-wide">
 							<input type="text" v-model="toolsjson" />
-						</p>
+							<button class="btn confirm" @click.prevent="import5etools">Import</button>
+						</div>
+					</div>
+
 
 						<div v-if="JSON.stringify(notices) !== '{}'">
 							<p class="warning"><b>Please note the following for this import:</b></p>
@@ -917,9 +931,7 @@
 
 						<div class="modal-buttons">
 							<button class="btn" @click="isImportModalOpen = false">Close</button>
-							<button class="btn confirm" @click.prevent="import5etools()">Import</button>
 						</div>
-					</div>
 				</section>
 			</div>
 		</Transition>
@@ -955,7 +967,7 @@
 import {defineComponent} from "vue";
 import StatblockRenderer from "../components/StatblockRenderer.vue";
 import Breadcrumbs from "../components/Breadcrumbs.vue";
-import type {InnateSpellsEntity, InnateSpellsList, SkillsEntity, Statblock, Creature, Bestiary} from "@/generic/types";
+import type {SkillsEntity, Statblock, Creature, Bestiary} from "@/generic/types";
 import {defaultStatblock, getSpellSlots, spellList, spellListFlattened} from "@/generic/types";
 import {handleApiResponse, type error, toast, asyncLimits, type limitsType} from "@/main";
 import FeatureWidget from "@/components/FeatureWidget.vue";
@@ -1042,6 +1054,7 @@ export default defineComponent({
 				regional: "New Regional Effect"
 			},
 			toolsjson: "" as string,
+			bestiaryBuilderJson: "" as string,
 			notices: {} as {[key: string]: string[]},
 			madeChanges: false
 		};
@@ -1055,6 +1068,19 @@ export default defineComponent({
 			try {
 				[this.data, this.notices] = parseFrom5eTools(JSON.parse(this.toolsjson));
 				this.toolsjson = "";
+				toast.success("Successfully imported " + this.data.description.name);
+				this.isImportModalOpen = false;
+			} catch (e) {
+				console.error(e);
+				toast.error("Failed to import this creature");
+			}
+		},
+		importBestiaryBuilder(): void {
+			try {
+				let creature = JSON.parse(this.bestiaryBuilderJson)
+				if (Array.isArray(creature)) creature = creature[0]
+				this.data = creature;
+				this.bestiaryBuilderJson = "";
 				toast.success("Successfully imported " + this.data.description.name);
 				this.isImportModalOpen = false;
 			} catch (e) {
@@ -1650,14 +1676,14 @@ input[type="number"] {
 	height: 50%;
 }
 
-hr {
+.editor hr {
 	border-color: orangered;
 }
 
 .buttons {
 	display: grid;
 	gap: 1rem;
-	grid-template-columns: 1fr 1fr;
+	grid-template-columns: 1fr;
 	margin: 1rem 25%;
 }
 

@@ -102,7 +102,7 @@ app.use(LoadingPlugin, {
 //Font-Awesome-Icons
 import {library} from "@fortawesome/fontawesome-svg-core";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-import {faTrash, faLock, faSkull, faBars, faPenToSquare, faStopwatch, faMap, faLocationPin, faClock, faRuler, faStar, faHashtag, faArrowDown19, faHourglass, faUserLock, faScaleBalanced, faShareNodes, faArrowRightFromBracket, faLink, faEarthEurope, faXmark} from "@fortawesome/free-solid-svg-icons";
+import {faTrash, faLock, faSkull, faBars, faPenToSquare, faStopwatch, faMap, faLocationPin, faClock, faRuler, faStar, faHashtag, faArrowDown19, faHourglass, faUserLock, faScaleBalanced, faShareNodes, faArrowRightFromBracket, faArrowRightToBracket, faLink, faEarthEurope, faXmark} from "@fortawesome/free-solid-svg-icons";
 import {faTwitter, faFacebook, faDiscord, faInstagram, faPatreon, faGithub} from "@fortawesome/free-brands-svg-icons";
 library.add(
 	faTrash,
@@ -130,6 +130,7 @@ library.add(
 	faScaleBalanced,
 	faShareNodes,
 	faArrowRightFromBracket,
+	faArrowRightToBracket,
 	faPatreon,
 	faGithub,
 	faBars
