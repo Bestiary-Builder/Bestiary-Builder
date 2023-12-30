@@ -12,37 +12,52 @@
 	}
 	]">
 	<template #right-button>
-		<button @click="isExportModalOpen = true" v-tooltip="'Export bestiary'"> 
-			<font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" /> 
+		<button @click="createCreature()" v-tooltip="'Create creature!'"  class="inverted">
+			<font-awesome-icon :icon="['fas', 'plus']" /> 
 		</button>
+		<button v-if="lastClickedCreature" @click="lastClickedCreature = null" v-tooltip="'Unpin currently pinned creature!'" style="rotate: 45deg;">
+			<font-awesome-icon :icon="['fas', 'thumbtack']" />
+		</button>
+		<button @click="isEditorModalOpen = true" v-tooltip="'Edit bestiary!'">
+			<font-awesome-icon :icon="['fas', 'pen-to-square']" /> 
+		</button>
+		<VDropdown :distance="6">
+			<button v-tooltip="'Filter bestiaries'">
+				<font-awesome-icon :icon="['fas', 'magnifying-glass']" />			
+			</button>
+			<template #popper>
+				<div class="v-popper__custom-menu">
+					<span> Search creatures by name </span>
+					<input type="text" v-model="searchText" id="searchtext" placeholder="Search by name..." v-debounce:600ms.fireonempty="searchCreatures">				
+				</div>
+			</template>
+		</VDropdown>
+
+		<VDropdown :distance="6">
+			<button v-tooltip="'Export bestiaries'">
+				<font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" /> 
+			</button>
+			<template #popper>
+				<div class="v-popper__custom-menu">
+					<span> Export this Bestiary as JSON<br> to clipboard or to file </span>
+					<button class="btn confirm" v-close-popper @click="exportBestiary(false)"> Clipboard </button>
+					<button class="btn confirm" v-close-popper @click="exportBestiary(true)"> File</button>				
+				</div>
+			</template>
+		</VDropdown>
+
+		<button @click="isImportModalOpen = true" v-tooltip="'Import bestiary'"> 
+			<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" /> 
+		</button>
+
 	</template>
 	</Breadcrumbs>
 	<div class="content">
 		<div class="bestiary" v-if="bestiary">
 			<div class="left-side-container">
 				<div class="content-tile header-tile">
-					<h2>{{ bestiary.name }}</h2>
-					<p class="description" :class="{'expanded': isExpanded}" v-html="md.render(bestiary.description)"></p>
-					<button class="expand-btn" v-tooltip="'Expand description'" @click="isExpanded = !isExpanded">{{ isExpanded ? '▲' : '▼' }}</button>
-					<hr />
-					<div class="controls-container">
-						<div class="flow-vertically">
-							<label for="searchtext"> Filter </label>
-							<input type="text" v-model="searchText" id="searchtext" placeholder="Search by name...">
-						</div>
-						<div class="flow-vertically" v-if="isOwner || isEditor">
-							<label> Options </label>
-							<div class="btn-container">
-								<button class="btn" @click="isEditorModalOpen = true"> Edit </button> 
-								<button class="btn" @click="createCreature()"> Add creature </button> 
-								<button class="btn" v-if="isOwner" @click="isImportModalOpen = true"> Import </button>
-							</div>
-						</div>
-					</div>
-					<div class="unpin" v-if="lastClickedCreature">
-						<span class="unpin-button" @click="lastClickedCreature = null" role="button" aria-label="unpin currently pinned creature">unpin</span>
-						📌
-					</div>
+					<p class="description" :class="{'expanded': isExpanded}" v-html="md.render(bestiary.description || 'No description set.')"></p>
+					<button v-if="bestiary.description.length > 0" class="expand-btn" v-tooltip="'Expand description'" @click="isExpanded = !isExpanded">{{ isExpanded ? '▲' : '▼' }}</button>
 					<hr />
 					<div class="footer" :class="{'three-wide': isOwner}">
 						<UserBanner :id="bestiary.owner" />
@@ -57,15 +72,26 @@
 
 			<div class="tile-container list-tiles" id="tile-container">
 				<TransitionGroup name="slide-fade" mode="out-in">
-					<template v-for="creature in creatures" :key="creature._id">
+					<template v-for="creature in searchCreatureList" :key="creature._id">
 						<div class="content-tile creature-tile" @mouseover="lastHoveredCreature = creature.stats" @click="lastClickedCreature = creature.stats" 
-							v-if="creature.stats.description.name.toLowerCase().includes(searchText.toLowerCase().trim())">
+							v-if="true || creature.stats.description.name.toLowerCase().includes(searchText.toLowerCase().trim())">
 							<div class="left-side">
 								<h3>{{ creature.stats?.description?.name }}</h3>
 								<span>{{ creature.stats?.core?.size }} {{ creature.stats?.core?.race }}{{ creature.stats?.description?.alignment ? ", " + creature.stats?.description?.alignment : "" }}</span>
 							</div>
 							<div class="right-side">
-								<span v-if="isOwner || isEditor" role="button"  v-tooltip="'Delete creature'" aria-label="Delete creature" @click.stop="openDeleteModal(creature)" class="delete-creature"><font-awesome-icon :icon="['fas', 'trash']" /> </span>
+								<VDropdown :distance="6" v-if="isOwner || isEditor">
+									<button v-tooltip="'Delete creature'" @click.stop="">
+										<font-awesome-icon :icon="['fas', 'trash']" />			
+									</button>
+									<template #popper>
+										<div class="v-popper__custom-menu">
+											<span> Are you sure you want to delete this creature? </span>
+											<button class="btn danger" @click.stop="deleteCreature(creature)" v-close-popper>Confirm</button>
+										</div>
+									</template>
+								</VDropdown>
+
 								<span v-if="isOwner || isEditor" v-tooltip="'Edit creature'" aria-label="Edit creature" class="edit-creature" @click.stop="() => {}"> <RouterLink class="creature" :to="'/statblock-editor/' + creature._id"> <font-awesome-icon :icon="['fas', 'pen-to-square']" /> </RouterLink> </span>
 								<span class="cr"> CR {{ displayCR(creature.stats.description.cr) }}</span>
 							</div>
@@ -73,15 +99,12 @@
 					</template>
 				</TransitionGroup>
 
-				
 				<div class="create-tile" v-if="isOwner">
 					<span role="button" class="create-text" @click="createCreature()">add creature</span>
 				</div>
 			</div>
 			</div>
 			
-
-
 			<div class="statblock-container" v-if="creatures && lastHoveredCreature">
 				<span v-if="lastClickedCreature" class="pin-notice">
 					<span class="unpin-button" @click="lastClickedCreature = null" role="button" aria-label="unpin currently pinned creature"><b>unpin</b></span
@@ -133,42 +156,6 @@
 		</Transition>
 	</Teleport>
 
-	<Teleport to="#modal">
-		<Transition name="modal">
-			<div class="modal__bg" v-if="isDeleteModalOpen">
-				<section class="modal__content modal__small" ref="deleteModal" v-if="bestiary && (isOwner || isEditor)">
-					<button @click="isDeleteModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
-					<h2 class="modal-header">
-						Are you sure you want to delete <u>{{ selectedCreature?.stats.description.name }}</u
-						>?
-					</h2>
-					<div class="modal-buttons">
-						<button class="btn" @click="isDeleteModalOpen = false">Close</button>
-						<button v-if="selectedCreature" class="btn danger" @click.prevent="deleteCreature(selectedCreature)">Delete Creature</button>
-					</div>
-				</section>
-			</div>
-		</Transition>
-	</Teleport>
-
-	<Teleport to="#modal">
-		<Transition name="modal">
-			<div class="modal__bg" v-if="isExportModalOpen">
-				<section class="modal__content modal__small" ref="exportModal" >
-					<button @click="isExportModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
-					<h2 class="modal-header">
-						Export Bestiary to JSON
-					</h2>
-					<p> Export this Bestiary to JSON as Bestiary Builder JSON. You can use this to copy a bestiary by importing it into your own bestiary.</p>
-					<div class="modal-buttons">
-						<button class="btn" @click="isExportModalOpen = false">Close</button>
-						<button class="btn confirm" @click="exportBestiary(false)"> Copy to Clipboard </button>
-						<button class="btn confirm" @click="exportBestiary(true)"> Download as File</button>
-					</div>
-				</section>
-			</div>
-		</Transition>
-	</Teleport>
 
 
 	<Teleport to="#modal">
@@ -246,7 +233,12 @@ import {parseFromCritterDB} from "@/parser/parseFromCritterDB";
 import {displayCR} from "@/generic/displayFunctions";
 import {ref} from "vue";
 import {onClickOutside} from "@vueuse/core";
+// @ts-ignore
+import {vue3Debounce} from "vue-debounce";
 import markdownit from "markdown-it";
+
+import { hideAllPoppers } from 'floating-vue'
+
 const md = markdownit();
 export default defineComponent({
 	setup() {
@@ -255,15 +247,6 @@ export default defineComponent({
 		onClickOutside(editModal, () => (isEditorModalOpen.value = false));
 
 		const selectedCreature = ref<Creature | null>(null);
-
-		const isDeleteModalOpen = ref(false);
-		const deleteModal = ref<HTMLDivElement | null>(null);
-		onClickOutside(deleteModal, () => (isDeleteModalOpen.value = false));
-
-		const openDeleteModal = (creature: Creature) => {
-			selectedCreature.value = creature;
-			isDeleteModalOpen.value = true;
-		};
 
 		const isImportModalOpen = ref(false);
 		const importModal = ref<HTMLDivElement | null>(null);
@@ -275,15 +258,12 @@ export default defineComponent({
 
 		return {
 			editModal,
-			deleteModal,
 			importModal,
 			exportModal,
 			isEditorModalOpen,
-			isDeleteModalOpen,
 			isImportModalOpen,
 			isExportModalOpen,
 			selectedCreature,
-			openDeleteModal
 		}
 	},
 	data() {
@@ -291,6 +271,7 @@ export default defineComponent({
 			bestiary: null as Bestiary | null,
 			savedBestiary: null as Bestiary | null,
 			creatures: null as Creature[] | null,
+			searchCreatureList: [] as Creature[] | null,
 			editors: [] as User[],
 			user: null as User | null,
 			lastHoveredCreature: null as null | Statblock,
@@ -317,6 +298,9 @@ export default defineComponent({
 		Breadcrumbs,
 		StatusIcon
 	},
+	directives: {
+		debounce: vue3Debounce({lock: true})
+	},
 	async created() {
 		this.limits = (await asyncLimits) ?? ({} as limitsType);
 		tags.then((t) => {
@@ -329,9 +313,18 @@ export default defineComponent({
 		this.user = await user;
 
 		await this.getBestiary();
+		this.searchCreatures()
 		loader.hide();
 	},
 	methods: {
+		searchCreatures() : void {
+			if (this.searchText == "") this.searchCreatureList = this.creatures 
+			else {
+				const loader = this.$loading.show()
+				this.searchCreatureList = this.creatures?.filter((creature) => creature.stats.description.name.toLowerCase().includes(this.searchText.toLowerCase().trim())) || []
+				loader.hide()
+			}
+		},
 		exportBestiary(asFile : boolean) : void {
 			if (asFile) {
 				const file = new File([JSON.stringify(this.creatures?.map(obj => obj.stats), null, 2)], 'Creatures.txt', {
@@ -477,7 +470,6 @@ export default defineComponent({
 				let result = await handleApiResponse(response);
 				if (result.success) {
 					toast.success("Deleted creature succesfully");
-					this.isDeleteModalOpen = false
 				} else {
 					toast.error((result.data as error).error);
 				}
@@ -531,6 +523,7 @@ export default defineComponent({
 						let creatureResult = await handleApiResponse<Creature[]>(creatureResponse);
 						if (creatureResult.success) {
 							this.creatures = creatureResult.data as Creature[];
+							this.searchCreatures()
 						} else {
 							this.creatures = null;
 							toast.error((creatureResult.data as error).error);
@@ -653,13 +646,6 @@ export default defineComponent({
 	gap: 1rem;
 }
 
-@media screen and (max-width: 1300px) {
-	.controls-container {
-		grid-template-columns: 1fr;
-	}
-
-
-}
 .list-tiles {
 	display: flex;
 	flex-direction: column;
@@ -703,12 +689,20 @@ export default defineComponent({
 					text-decoration: none;
 				}
 
-				span {
+				span, button {
+					background: none;
+					border: none;
 					color: orangered;
 					font-size: 1.2rem;
 					display: flex;
 					align-items: center;
 					height: 100%;
+					cursor: pointer;
+
+					&:hover {
+						scale: 1.02;
+						overflow: visible;
+					}
 
 					svg {
 						color: #536d8c
@@ -720,11 +714,7 @@ export default defineComponent({
 				}
 			}
 
-			&:hover {
-				scale: 1.02;
-				overflow: visible;
-				background-color: rgb(56, 53, 52);
-			}
+
 		}
 	}
 
@@ -784,30 +774,12 @@ export default defineComponent({
 		font-size: small;
 		color: rgb(205, 205, 205);
 		overflow-y: hidden;
-
+		overflow-wrap: anywhere;
 		&.expanded {
 			max-height: unset;
 		}
 	}
 
-	.controls-container {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	gap: .5rem;
-
-		& .btn-container {
-			display: flex;
-			flex-wrap: wrap;
-			justify-content: space-between;
-			gap: .5rem;
-
-			& button {
-				width: fit-content;
-				flex: 1 1 0;
-
-			}
-		}
-	}
 
 	.description:not(.expanded) {
 		-webkit-mask-image: linear-gradient(180deg, #000 80%, transparent);

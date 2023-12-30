@@ -264,7 +264,7 @@
             </p>
         </div>
     </div>
-    <div v-if="data.description.description">
+    <div v-if="data.description.description" class="description">
         <h2 class="feature-container__title"> Description </h2>
         <div v-html="md.render(data.description.description)"></div>
     </div>
@@ -601,10 +601,15 @@ export default defineComponent({
 .feature-container__desc {
     margin-left: .3rem;
     white-space: pre-line;
+    overflow-wrap: anywhere;
 }
 
 .challenge-prof {
     display: flex;
     justify-content: space-between;
+}
+
+.description {
+    overflow-wrap: anywhere;
 }
 </style>

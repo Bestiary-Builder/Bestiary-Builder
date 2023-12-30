@@ -67,7 +67,7 @@ export default defineComponent({
 <style lang="less">
 .breadcrumbs__container {
 	background-color: var(--color-surface-0);
-	padding: 0.7rem 5vw;
+	padding: 0.7rem 9.5vw;
 	box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
 
 	display: flex;
@@ -82,22 +82,34 @@ export default defineComponent({
 			padding: 0;
 			border: unset;
 			background: unset;
-
+			position: relative;
 			cursor: pointer;
 			background: transparent;
 			border-radius: 50%;
 			padding: 0.3rem;
 			height: 1.8rem;
 			width: 1.8rem;
+			aspect-ratio: 1;
 			color: orangered;
 			transition: all ease 0.3s;
 
 			svg {
 				scale: 1.1;
+				translate: 0 -2px;
 			}
 			&:hover {
 				background-color: orangered;
 				color: var(--color-surface-0);
+			}
+
+			&.inverted {
+				background-color: orangered;
+				color: var(--color-surface-0);
+
+				&:hover {
+					background-color: var(--color-surface-0);
+					color: orangered;
+				}
 			}
 		}
 
@@ -154,6 +166,5 @@ export default defineComponent({
             font-size: .8rem;
         }
     }
-
 }
 </style>
