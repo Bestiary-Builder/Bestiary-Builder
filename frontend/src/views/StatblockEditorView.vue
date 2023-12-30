@@ -66,7 +66,7 @@
 							<label class="editor-field__title" for="description">
 								<span class="text">Description</span>
 							</label>
-							<textarea rows="10" :maxlength="limits.descriptionLength" v-model="data.description.description" />
+							<textarea rows="20" :maxlength="limits.descriptionLength" v-model="data.description.description" />
 						</div>
 					</div>
 					<div class="editor-field__container two-wide">
@@ -813,22 +813,10 @@
 
 						<div class="flow-vertically">
 							<label class="editor-field__title" for="openspelldialog"> <span class="text">edit specific spells</span></label>
-							<button class="btn">Edit cast level/add comment</button>
+							<button class="btn" @click="isSpellModalOpen = true">Edit cast level/add comment</button>
 						</div>
 					</div>
 
-					<!-- TODO: Implement this in a modal 
-                    <p> spell list
-                    <div v-for="times in data.spellcasting.innateSpells.spellList">
-                        <div v-if="times.length>0">
-                            <div v-for="spell in times">
-                                <b>{{ spell.spell }}</b> override level <input type="number" min=0 max="20" v-model="spell.upcastLevel"> <button class="btn"@click="spell.upcastLevel = null"> reset </button>
-
-                                <input type="text" v-model="spell.comment" placeholder="comment" />
-                            </div>
-                        </div>
-                    </div>
-                </p> -->
 					<hr />
 					<h2 class="group-header">class spellcasting</h2>
 					<div class="editor-field__container two-wide">
@@ -892,7 +880,7 @@
 			<hr />
 
 			<div class="buttons">
-				<button class="btn" @click="isModalOpen = true">Import</button>
+				<button class="btn" @click="isImportModalOpen = true">Import</button>
 				<button class="btn confirm" @click="saveStatblock()">Save statblock</button>
 			</div>
 		</div>
@@ -903,9 +891,9 @@
 
 	<Teleport to="#modal">
 		<Transition name="modal">
-			<div class="modal__bg" v-if="isModalOpen">
-				<section class="modal__content modal__small" ref="modal">
-					<button @click="isModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
+			<div class="modal__bg" v-if="isImportModalOpen">
+				<section class="modal__content modal__small" ref="importModal">
+					<button @click="isImportModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
 					<h2 class="modal-header">import from 5e tools</h2>
 
 					<div class="modal-desc">
@@ -928,9 +916,34 @@
 						</div>
 
 						<div class="modal-buttons">
-							<button class="btn" @click="isModalOpen = false">Cancel</button>
+							<button class="btn" @click="isImportModalOpen = false">Close</button>
 							<button class="btn confirm" @click.prevent="import5etools()">Import</button>
 						</div>
+					</div>
+				</section>
+			</div>
+		</Transition>
+	</Teleport>
+
+	<Teleport to="#modal">
+		<Transition name="modal">
+			<div class="modal__bg" v-if="isSpellModalOpen">
+				<section class="modal__content modal__small" ref="spellModal">
+					<button @click="isSpellModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
+					<h2 class="modal-header">Edit innate spellcasting list</h2>
+					<p> You can use this to add text to specific spells such as "self only" or "at 5th level". </p>
+
+					<div class="two-wide">
+						<template v-for="times in data.spellcasting.innateSpells.spellList"  :key="times">
+							<p v-for="spell, index in times" v-if="times.length > 0" class="flow-vertically" :key="index">
+								<label :for="'comment'+spell.spell">{{ spell.spell }}</label> 
+								<input type="text" v-model="spell.comment" placeholder="comment" :id="'comment'+spell.spell"/>
+							</p>
+						</template>
+					</div>
+
+					<div class="modal-buttons">
+						<button class="btn" @click="isSpellModalOpen = false">Close</button>
 					</div>
 				</section>
 			</div>
@@ -951,13 +964,20 @@ import {ref} from "vue";
 import {onClickOutside} from "@vueuse/core";
 export default defineComponent({
 	setup() {
-		const isModalOpen = ref(false);
-		const modal = ref<HTMLDivElement | null>(null);
-		// @ts-ignore
-		onClickOutside(modal, () => (isModalOpen.value = false));
+		const isImportModalOpen = ref(false);
+		const importModal = ref<HTMLDivElement | null>(null);
+		onClickOutside(importModal, () => (isImportModalOpen.value = false));
+
+		const isSpellModalOpen = ref(false);
+		const spellModal = ref<HTMLDivElement | null>(null);
+		onClickOutside(spellModal, () => (isSpellModalOpen.value = false));
 
 		return {
-			isModalOpen
+			isImportModalOpen,
+			isSpellModalOpen,
+			importModal,
+			spellModal
+			
 		};
 	},
 	components: {
@@ -1036,7 +1056,7 @@ export default defineComponent({
 				[this.data, this.notices] = parseFrom5eTools(JSON.parse(this.toolsjson));
 				this.toolsjson = "";
 				toast.success("Successfully imported " + this.data.description.name);
-				this.isModalOpen = false;
+				this.isImportModalOpen = false;
 			} catch (e) {
 				console.error(e);
 				toast.error("Failed to import this creature");
@@ -1344,6 +1364,15 @@ export default defineComponent({
 </script>
 
 <style scoped lang="less">
+.spell-comment__container {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: .5rem 2rem;
+
+	& .spell-comment__spell {
+		display: grid;
+	}
+}
 .content {
 	display: grid;
 	gap: 2rem;
@@ -1387,6 +1416,22 @@ export default defineComponent({
 @media screen and (max-width: 1080px) {
 	.editor-nav {
 		grid-template-columns: 1fr 1fr 1fr;
+	}
+}
+.two-wide {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 1rem;
+}
+
+.modal__content .flow-vertically {
+	display: flex;
+	flex-direction: column;
+	gap: 0.3rem;
+	margin: .5rem 0;
+	label {
+		font-weight: bold;
+		text-decoration: underline;
 	}
 }
 

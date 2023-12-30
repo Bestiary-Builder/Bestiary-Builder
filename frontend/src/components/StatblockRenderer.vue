@@ -135,22 +135,21 @@
                     <span v-else> {{ componentsString() }} </span>
 
                     <div class="spell-list">
-
                         <div v-if="data.spellcasting.innateSpells.spellList[0].length > 0"> 
                             <span> At will: </span>
-                            <i> {{ data.spellcasting.innateSpells.spellList[0].map(x => x.spell).sort().join(", ") }} </i> 
+                            <i> {{ data.spellcasting.innateSpells.spellList[0].map(x => x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell).sort().join(", ").toLowerCase() }} </i> 
                         </div>
                         <div v-if="data.spellcasting.innateSpells.spellList[3].length > 0"> 
                             <span> 3/day each: </span>
-                            <i> {{ data.spellcasting.innateSpells.spellList[3].map(x => x.spell).sort().join(", ") }} </i> 
+                            <i> {{ data.spellcasting.innateSpells.spellList[3].map(x => x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell).sort().join(", ").toLowerCase() }} </i> 
                         </div>
                         <div v-if="data.spellcasting.innateSpells.spellList[2].length > 0"> 
                             <span> 2/day each: </span>
-                            <i> {{ data.spellcasting.innateSpells.spellList[2].map(x => x.spell).sort().join(", ") }} </i> 
+                            <i> {{ data.spellcasting.innateSpells.spellList[2].map(x => x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell).sort().join(", ").toLowerCase() }} </i> 
                         </div>
                         <div v-if="data.spellcasting.innateSpells.spellList[1].length > 0"> 
                             <span> 1/day each: </span>
-                            <i> {{ data.spellcasting.innateSpells.spellList[1].map(x => x.spell).sort().join(", ") }} </i> 
+                            <i> {{ data.spellcasting.innateSpells.spellList[1].map(x => x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell).sort().join(", ").toLowerCase() }} </i> 
                         </div>
                     </div>
                 </span>
@@ -192,19 +191,19 @@
                     <div class="spell-list">
                         <div v-if="data.spellcasting.innateSpells.spellList[0].length > 0"> 
                             <span> At will: </span>
-                            <i> {{ data.spellcasting.innateSpells.spellList[0].map(x => x.spell).sort().join(", ") }} </i> 
+                            <i> {{ data.spellcasting.innateSpells.spellList[0].map(x => x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell).sort().join(", ").toLowerCase() }} </i> 
                         </div>
                         <div v-if="data.spellcasting.innateSpells.spellList[3].length > 0"> 
                             <span> 3/day each: </span>
-                            <i> {{ data.spellcasting.innateSpells.spellList[3].map(x => x.spell).sort().join(", ") }} </i> 
+                            <i> {{ data.spellcasting.innateSpells.spellList[3].map(x => x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell).sort().join(", ").toLowerCase() }} </i> 
                         </div>
                         <div v-if="data.spellcasting.innateSpells.spellList[2].length > 0"> 
                             <span> 2/day each: </span>
-                            <i> {{ data.spellcasting.innateSpells.spellList[2].map(x => x.spell).sort().join(", ") }} </i> 
+                            <i> {{ data.spellcasting.innateSpells.spellList[2].map(x => x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell).sort().join(", ").toLowerCase() }} </i> 
                         </div>
                         <div v-if="data.spellcasting.innateSpells.spellList[1].length > 0"> 
                             <span> 1/day each: </span>
-                            <i> {{ data.spellcasting.innateSpells.spellList[1].map(x => x.spell).sort().join(", ") }} </i> 
+                            <i> {{ data.spellcasting.innateSpells.spellList[1].map(x => x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell).sort().join(", ").toLowerCase() }} </i> 
                         </div>
                     </div>
                 </span>
