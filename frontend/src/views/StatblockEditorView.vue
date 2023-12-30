@@ -1,6 +1,6 @@
 <template>
 	<Breadcrumbs
-		v-if="bestiary"
+		v-if="bestiary && (data.description.name || data.description.name === '')"
 		:routes="[
 			{
 				path: '../my-bestiaries/',
@@ -14,7 +14,7 @@
 			},
 			{
 				path: '',
-				text: data.description.name,
+				text: data?.description.name || 'unnamed creature',
 				isCurrent: true
 			}
 		]"

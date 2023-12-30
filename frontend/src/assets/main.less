@@ -107,6 +107,15 @@ textarea {
 			font-size: 2rem;
 			border-bottom: 1px solid orangered;
 		}
+
+		& a {
+			color: orangered;
+			text-decoration-color: rgba(255, 69, 0, 0);
+
+			&:hover {
+				text-decoration-color: rgba(255, 69, 0, 1);
+			}
+		}
 	}
 }
 @media screen and (max-width: 1080px) {
@@ -322,4 +331,34 @@ b.indent {
 
 .warning {
 	color: var(--color-destructive)
+}
+
+.patreon {
+    background-color: #F1465A;
+	color: white !important;
+    display: block;
+    width: 240px;
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: .5rem;
+    font-weight: bold;
+    text-decoration: unset;
+	svg {
+		color: white !important;
+		translate: 0 3px;;
+	}
+    & span {
+        margin-left: .6rem;
+    }
+    &:hover {
+        background-color: #ed2139;
+    }
+}
+
+.discord {
+	background-color: #5865f2;
+
+	&:hover {
+		background-color: #434fd3;
+	}
 }
