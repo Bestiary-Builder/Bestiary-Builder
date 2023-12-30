@@ -1,6 +1,5 @@
 <template>
-	<input id="navbar-indicator" class="navbar-collapse" type="checkbox" checked />
-	<nav class="navbar">
+	<nav class="navbar" :class="{'expanded': isExpanded}">
 		<div class="navbar-left">
 			<RouterLink :to="$router.options.routes[0].path" class="navbar-brand">
 				<img src="/logo.svg" />
@@ -9,20 +8,20 @@
 		</div>
 
 		<div class="navbar-center">
-			<RouterLink v-for="route in $router.options.routes.filter((a: any) => a.navbar)" :to="route.path" class="nav-link">
+			<RouterLink v-for="route in $router.options.routes.filter((a: any) => a.navbar)" :to="route.path" class="nav-link" @click="isExpanded = false">
 				<span class="header-item">{{ route.name }}</span>
 			</RouterLink>
 		</div>
 
 		<div class="navbar-right">
-			<RouterLink class="user" v-if="user" to="/user">
+			<RouterLink class="user" v-if="user" to="/user" @click="isExpanded = false">
 				<span>{{ user.username }}</span>
 				<img alt="avatar" :src="'https://cdn.discordapp.com/avatars/' + user._id + '/' + user.avatar + '.png'" />
 			</RouterLink>
 			<div v-else class="user login" @click.prevent="LoginClick">Login</div>
 		</div>
 
-		<label class="navbar-toggler" for="navbar-indicator"> + </label>
+		<label class="navbar-toggler" for="navbar-indicator" @click="isExpanded = !isExpanded"> <font-awesome-icon :icon="['fas', 'bars']" /> </label>
 	</nav>
 </template>
 <script lang="ts">
@@ -38,7 +37,8 @@ export default defineComponent({
 	},
 	data() {
 		return {
-			user: null as User | null
+			user: null as User | null,
+			isExpanded: false
 		};
 	},
 	async mounted() {
@@ -47,8 +47,8 @@ export default defineComponent({
 	methods: {
 		LoginClick() {
 			sendToLogin(this.$route.path);
-		}
-	}
+		},
+	},
 });
 </script>
 <style scoped lang="less">
@@ -92,7 +92,11 @@ export default defineComponent({
 	display: flex;
 	justify-content: center;
 	padding: 0.3rem 1rem;
-	gap: 0.3rem;
+	gap: 0.7rem;
+
+	& .nav-link {
+		width: fit-content;
+	}
 }
 .navbar-brand,
 .navbar .nav-link {
@@ -130,35 +134,74 @@ export default defineComponent({
  */
 
 @media (max-width: 842px) {
-	.navbar-right,
-	.navbar-left {
-		display: block;
-
-		border-top: 1px solid DimGray;
+	.navbar {
+		grid-template-columns: 8fr 2fr;	
+	}
+	.navbar-center, .navbar-right, .user {
+		display: none;
 	}
 
-	.navbar-right {
-		position: static;
+	.navbar-brand {
+		width: fit-content;
+		padding: .5rem 1rem
 	}
-
-	.navbar-collapse:checked + .navbar {
-		max-height: 50px;
-		overflow: hidden;
-	}
-
 	.navbar-toggler {
-		color: White;
+		color: white;
 
 		display: inline-block;
-		padding: 15px 25px;
+		padding: .9rem 1.3rem;
 
 		position: absolute;
 		top: 0;
 		right: 0;
 
-		border-left: 1px solid DimGray;
-
 		cursor: pointer;
+	}
+
+	.navbar.expanded {
+		grid-template-columns: 8fr;
+		position: absolute;
+		width: 100vw;
+		z-index: 100;
+		.navbar-left {
+			display: none;
+		}
+		.navbar-center {
+			display: block;
+			margin: auto;
+		}
+
+		.navbar-right {
+			padding: 0;
+			display: block;
+		}
+
+		.nav-link {
+			width: 100%;
+		}
+
+		.user {
+			display: flex;
+			justify-content: center;
+			padding-bottom: 1rem;
+		}
+	}
+}
+</style>
+
+<style lang="less">
+// not scoped styles
+@media screen and (max-width: 842px) {
+	body:has(.navbar.expanded) main::before {
+		content: "";
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(0, 0, 0, .5);
+		pointer-events: none;
+		z-index: 1;
 	}
 }
 </style>

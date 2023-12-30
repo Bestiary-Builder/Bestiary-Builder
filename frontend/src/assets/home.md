@@ -32,7 +32,7 @@ It is possible to import a bestiary from [CritterDB](https://critterdb.com):
 5. (optional) Publish your bestiary by changing its status to public
 6. (optional) Import your bestiary into [Avrae](https://avrae.io/) by typing `!bestiary import <url>` into Discord
 ### Caveats
-1. CritterDB stores immunities/resistances/vulnerabilities in a weird manner. It may fail to import these correctly
+1. CritterDB stores damage resistances in a weird manner. It may fail to import these correctly
 2. Since CritterDB does not have fields for bonus actions, mythic actions, lair actions, and regional effects, they will be imported as the action type you set on CritterDB
 3. It will generate automation for attacks that did not already have automation set through the <code>\<avrae hidden\></code> tag. However, this automation might be incomplete for more complicated attacks, such as attacks that apply an effect on hit
 
@@ -69,15 +69,13 @@ Sincere thanks go out to the developers of [Avrae](https://avrae.io/), specifica
 You can leave feedback and issues by joining our [Disord Server](https://discord.gg/a6bwXCSymN) or by creating an issue on [Github](https://github.com/Bestiary-Builder/Bestiary-Builder/issues)
 
 ## Developers
-<div style="display: grid; gap: 6rem; grid-template-columns: 1fr 1fr; margin-top: 1rem; width: 50%; margin: auto; ">
-<div>
-
-![VeryGreatFrog](/VeryGreatFrog.png)
-### VeryGreatFrog
-</div>
-<div>
-
-![Stevnbak](/Stevnbak.png)
-### Stevnbak
-</div>
+<div style="display: grid; gap: 2rem; grid-template-columns: 1fr 1fr; margin-top: 1rem; width: 90%; margin: auto; ">
+    <div>
+        <img src="/VeryGreatFrog.png" alt="VeryGreatFrog" style="width: 25vw;  aspect-ratio: 1; margin: auto;"/>
+        <div style="text-align: center">VeryGreatFrog</div>
+    </div>
+    <div>
+        <img src="/Stevnbak.png" alt="Stevnbak" style="width: 25vw; aspect-ratio: 1; margin: auto;">
+        <div style="text-align: center">Stevnbak</div>
+    </div>
 </div>

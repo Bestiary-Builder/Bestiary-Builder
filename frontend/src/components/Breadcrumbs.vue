@@ -3,7 +3,7 @@
     <div class="breadcrumbs__links">
         <template v-for="route, index in routes" :key="index">
             <RouterLink v-if="!route.isCurrent" :to="route.path"> {{ route.text }} </RouterLink>
-            <h1 v-else class="current-page"> {{ route.text  }}</h1>
+            <h1 v-else class="current-page" aria-current="page"> {{ route.text  }}</h1>
             <span v-if="index+1 != routes.length" class="seperator">></span>
         </template>
     </div>
@@ -139,5 +139,15 @@ export default defineComponent({
         font-weight: bold;
         font-size: 1.3rem;
     }
+}
+
+@media (max-width: 842px) {
+    .breadcrumbs__links {
+        font-size: .8rem;
+        & .current-page {
+            font-size: .8rem;
+        }
+    }
+
 }
 </style>

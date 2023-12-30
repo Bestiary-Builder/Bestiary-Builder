@@ -19,7 +19,7 @@
 	</Breadcrumbs>
 	<div class="content">
 		<div class="bestiary" v-if="bestiary">
-			<div class="tile-container list-tiles" id="tile-container">
+			<div class="left-side-container">
 				<div class="content-tile header-tile">
 					<h2>{{ bestiary.name }}</h2>
 					<p class="description" :class="{'expanded': isExpanded}" v-html="md.render(bestiary.description)"></p>
@@ -58,6 +58,7 @@
 					</div>
 				</div>
 
+			<div class="tile-container list-tiles" id="tile-container">
 				<TransitionGroup name="slide-fade" mode="out-in">
 					<template v-for="creature in creatures" :key="creature._id">
 						<div class="content-tile creature-tile" @mouseover="lastHoveredCreature = creature.stats" @click="lastClickedCreature = creature.stats" 
@@ -75,10 +76,14 @@
 					</template>
 				</TransitionGroup>
 
+				
 				<div class="create-tile" v-if="isOwner">
 					<span role="button" class="create-text" @click="createCreature()">add creature</span>
 				</div>
 			</div>
+			</div>
+			
+
 
 			<div class="statblock-container" v-if="creatures && lastHoveredCreature">
 				<span v-if="lastClickedCreature" class="pin-notice">
@@ -91,8 +96,7 @@
 			</div>
 			<div class="statblock-container" v-else>
 				<div class="no-creature-text">
-					<p>hover over a creature to see its statblock</p>
-					<p>click on a creature to pin it to the right side</p>
+					<p>Hover or click on a creature to see its statblock</p>
 				</div>
 			</div>
 		</div>
@@ -135,7 +139,7 @@
 		<Transition name="modal">
 			<div class="modal__bg" v-if="isDeleteModalOpen">
 				<section class="modal__content modal__small" ref="deleteModal" v-if="bestiary && (isOwner || isEditor)">
-					<button autofocus @click="isDeleteModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
+					<button @click="isDeleteModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
 					<h2 class="modal-header">
 						Are you sure you want to delete <u>{{ selectedCreature?.stats.description.name }}</u
 						>?
@@ -153,7 +157,7 @@
 		<Transition name="modal">
 			<div class="modal__bg" v-if="isExportModalOpen">
 				<section class="modal__content modal__small" ref="exportModal" >
-					<button autofocus @click="isExportModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
+					<button @click="isExportModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
 					<h2 class="modal-header">
 						Export Bestiary to JSON
 					</h2>
@@ -684,9 +688,9 @@ export default defineComponent({
 	position: relative;
 	overflow: scroll;
 	max-height: 80vh;
-	padding: 0 2rem 1rem;
 	overflow-x: clip;
-	overscroll-behavior: contain;
+	padding: 0rem;
+	margin-top: 1rem;
 	.content-tile {
 		height: fit-content !important;
 		background: var(--color-surface-1);
@@ -738,64 +742,11 @@ export default defineComponent({
 			}
 
 			&:hover {
-				scale: 1.05;
+				scale: 1.02;
+				overflow: visible;
 				background-color: rgb(56, 53, 52);
 			}
 		}
-	}
-
-	.header-tile {
-		background-color: var(--color-surface-2);
-		z-index: 1;
-		top: 0;
-		cursor: unset;
-
-		& h2 {
-			text-align: center;
-			text-wrap: nowrap;
-			overflow: hidden;
-			color: white;
-		}
-
-		.description {
-			max-height: 8rem;
-			font-size: small;
-			color: rgb(205, 205, 205);
-			overflow-y: hidden;
-
-			&.expanded {
-				max-height: unset;
-			}
-		}
-
-		.description:not(.expanded) {
-			-webkit-mask-image: linear-gradient(180deg, #000 80%, transparent);
-			mask-image: linear-gradient(180deg, #000 80%, transparent);
-		}
-		.footer {
-			display: grid;
-			grid-template-columns: 1fr 1fr 1fr 1fr;
-			font-size: 1rem;
-
-			margin-top: 0.5rem;
-
-			&.three-wide {
-				grid-template-columns: 1fr 1fr 1fr;
-			}
-			div {
-				text-align: center;
-			}
-			div:first-of-type {
-				text-align: left;
-			}
-			div:last-of-type {
-				text-align: right;
-			}
-		}
-	}
-
-	.header-tile:not(.description.expanded) {
-		position: sticky;
 	}
 
 	.create-tile {
@@ -804,6 +755,86 @@ export default defineComponent({
 		cursor: pointer;
 	}
 }
+
+@media screen and (max-width: 842px) {
+	.list-tiles {
+		.content-tile {
+			padding: .5rem;
+			h3 {
+				font-size: 1rem;
+			}
+			&.creature-tile {
+				.left-side span {
+					font-size: .6rem;
+				}
+
+				.right-side {
+					width: 30%;
+					gap: .3rem;
+					justify-content: space-evenly;
+
+					span {
+						font-size: .9rem;
+
+						&.cr {
+							width: 4rem;
+							justify-content: right;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+.header-tile {
+	background-color: var(--color-surface-2);
+	cursor: unset;
+	margin: 0 0rem 1rem;
+	padding: 1rem;
+	& h2 {
+		text-align: center;
+		text-wrap: nowrap;
+		overflow: hidden;
+		color: white;
+	}
+
+	.description {
+		max-height: 8rem;
+		font-size: small;
+		color: rgb(205, 205, 205);
+		overflow-y: hidden;
+
+		&.expanded {
+			max-height: unset;
+		}
+	}
+
+	.description:not(.expanded) {
+		-webkit-mask-image: linear-gradient(180deg, #000 80%, transparent);
+		mask-image: linear-gradient(180deg, #000 80%, transparent);
+	}
+	.footer {
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr 1fr;
+		font-size: 1rem;
+
+		margin-top: 0.5rem;
+
+		&.three-wide {
+			grid-template-columns: 1fr 1fr 1fr;
+		}
+		div {
+			text-align: center;
+		}
+		div:first-of-type {
+			text-align: left;
+		}
+		div:last-of-type {
+			text-align: right;
+		}
+	}
+	}
 
 .bestiary {
 	display: grid;
