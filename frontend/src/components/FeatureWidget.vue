@@ -1,36 +1,46 @@
 <template>
-	<button class="btn" @click="openModal" :id="type + index">Edit Feature</button>
+	<button class="btn open-btn" @click="openModal" :id="type + index">Edit Feature</button>
 	<Teleport to="#modal">
 		<Transition name="modal">
 			<div class="modal__bg" v-if="isModalOpen">
 				<section class="modal__content" ref="modal">
 					<button @click="isModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
-					<p>NAME:</p>
-					<input type="text" placeholder="Enter name" v-model="feat.name" @change="hasEditedName = true" />
-					<hr />
-					<p>DESCRIPTION:</p>
-					<!-- <textarea rows="4" type="text" placeholder="Enter description" v-model="feat.description" /> -->
-					<CodeEditor height="100px" v-model="feat.description" width="100%" :wrap="true" :languages="[['markdown', 'Markdown']]" theme="obsidian" />
-					<hr />
-					<div class="import-container">
-						<span class="import-container__title"> Import Basic Example </span>
-						<div class="import-container__selector"><v-select :options="basicExamples" label="name" v-model="importedBasicExample" /></div>
-						<button class="import-container__button" @click="importExample">Load</button>
+					<div class="two-wide uneven">
+						<div class="flow-vertically">
+							<label for="featurename"> Name </label>
+							<input type="text" id="featurename" placeholder="Enter name" v-model="feat.name" @change="hasEditedName = true" />
+						</div>
+						<div class="flow-vertically">
+							<label for="featuredesc"> Description </label>
+							<textarea rows="4" id="featuredesc" placeholder="Enter description" v-model="feat.description" /> 
+						</div>
 					</div>
 					<hr />
-					<div class="import-container">
-						<span class="import-container__title"> Import SRD Feature </span>
-						<div class="import-container__selector"><v-select :options="srdFeatures" label="name" v-model="importedSrdFeature" /></div>
-						<button class="import-container__button" @click="importSrdAction">Load</button>
+					<div class="three-wide">
+						<div class="flow-vertically">
+							<label>Automation</label>
+							<div class="buttons">
+								<button class="btn confirm" @click="saveAutomation(true)">Save Automation!</button>
+								<button class="btn danger" @click="automationString = 'null'">Clear</button>
+							</div>
+						</div>
+
+						<div class="flow-vertically">
+							<label for="importbasic"> Import Basic Example </label>
+							<v-select :options="basicExamples" v-model="importedBasicExample" inputId="importbasic"/>
+							<button class="btn move-down" @click="importExample">Load</button>
+						</div>
+						<div class="flow-vertically">
+							<label for="importsrd"> Import SRD Feature </label>
+							<v-select :options="srdFeatures"  v-model="importedSrdFeature" inputId="importsrd"/>
+							<button class="btn move-down" @click="importSrdAction">Load</button>
+						</div>
 					</div>
-					<hr />
-					<p>AUTOMATION</p>
-					<button @click="saveAutomation(true)">Save Automation!</button>
-					<button @click="automationString = 'null'">Clear</button>
+
 					<hr />
 					<div class="automation-editor">
 						<span class="error"> {{ errorMessage }} </span>
-						<CodeEditor width="100%" :wrap="true" :languages="[['yaml', 'YAML']]" v-model="automationString" theme="obsidian" height="600px" font-size="12px"> </CodeEditor>
+						<CodeEditor width="100%" :wrap="true" :languages="[['yaml', 'YAML']]" v-model="automationString" theme="obsidian" height="380px" font-size="12px"> </CodeEditor>
 					</div>
 				</section>
 			</div>
@@ -228,8 +238,12 @@ export default defineComponent({
 </script>
 
 <style scoped lang="less">
-.btn {
+.open-btn {
 	width: 100%;
+}
+.btn {
+	padding-left: 2rem;
+	padding-right: 2rem;
 }
 
 .error {
@@ -259,5 +273,51 @@ input {
 }
 .selector-container {
 	width: 20rem;
+}
+.two-wide {
+	display: grid;
+	gap: 2rem;
+	grid-template-columns: 1fr 1fr;
+
+	&.uneven {
+		grid-template-columns: .48fr 1fr;
+	}
+}
+
+.three-wide {
+	display: grid;
+	gap: 2rem;
+	grid-template-columns: 1fr 1fr 1fr;
+}
+@media screen and (max-width: 1080px) {
+	.editor-content__tab-inner .editor-field__container.three-wide {
+		grid-template-columns: 1fr 1fr;
+	}
+}
+
+@media screen and (max-width: 950px) {
+	.editor-content__tab-inner .editor-field__container:is(.two-wide, .three-wide) {
+		grid-template-columns: 1fr;
+	}
+}
+.flow-vertically {
+	display: flex;
+	flex-direction: column;
+	gap: 0.3rem;
+	margin: .5rem 0;
+	label {
+		font-weight: bold;
+		text-decoration: underline;
+	}
+}
+
+.buttons {
+	display: grid;
+	gap: .5rem;
+	grid-template-columns: 1fr;
+}
+
+.move-down {
+	margin-top: .4rem;
 }
 </style>

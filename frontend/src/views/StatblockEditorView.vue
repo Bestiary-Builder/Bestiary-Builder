@@ -185,9 +185,7 @@
 							<label class="editor-field__title" for="canhover"> <span class="text">Hover</span></label>
 							<span>Hover yes/no <input type="checkbox" step="5" v-model="data.core.speed.isHover" id="canhover" /></span>
 						</div>
-					</div>
 
-					<div class="editor-field__container three-wide">
 						<div class="flow-vertically">
 							<label class="editor-field__title" for="swimspeed"> <span class="text">Swim speed</span> </label>
 							<div class="quantity">
@@ -291,7 +289,7 @@
 					<div class="editor-field__container two-wide">
 						<div class="flow-vertically">
 							<label class="editor-field__title" for="languages"><span class="text" v-tooltip="'Takes custom text input'">Languages*</span></label>
-							<v-select placeholder="Select a Language or type one yourself" v-model="data.core.languages" multiple :deselectFromDropdown="true" :closeOnSelect="false" :options="languages" :taggable="true" :pushTags="true" inputId="languages" />
+							<v-select placeholder="Select a Language or type one" v-model="data.core.languages" multiple :deselectFromDropdown="true" :closeOnSelect="false" :options="languages" :taggable="true" :pushTags="true" inputId="languages" />
 						</div>
 						<div class="flow-vertically">
 							<label class="editor-field__title" for="telepathy"><span class="text">Telepathy</span></label>
@@ -339,8 +337,6 @@
 								</div>
 							</div>
 						</div>
-					</div>
-					<div class="editor-field__container three-wide">
 						<div class="flow-vertically">
 							<label class="editor-field__title" for="intstat"><span class="text">Intelligence</span></label>
 							<div class="quantity">
@@ -438,8 +434,6 @@
 								</div>
 							</div>
 						</div>
-					</div>
-					<div class="editor-field__container three-wide">
 						<div class="flow-vertically">
 							<span class="editor-field__title"><span class="text">Intelligence</span></span>
 							<div>
@@ -819,7 +813,7 @@
 
 						<div class="flow-vertically">
 							<label class="editor-field__title" for="openspelldialog"> <span class="text">edit specific spells</span></label>
-							<button>Edit cast level/add comment</button>
+							<button class="btn">Edit cast level/add comment</button>
 						</div>
 					</div>
 
@@ -897,11 +891,9 @@
 
 			<hr />
 
-			<div class="save-button">
-				<button class="btn" @click="isModalOpen = true">Import from 5e.tools</button>
-			</div>
-			<div class="save-button">
-				<button class="btn" @click="saveStatblock()">Save statblock</button>
+			<div class="buttons">
+				<button class="btn" @click="isModalOpen = true">Import</button>
+				<button class="btn confirm" @click="saveStatblock()">Save statblock</button>
 			</div>
 		</div>
 		<div class="content-container__inner">
@@ -945,6 +937,7 @@
 		</Transition>
 	</Teleport>
 </template>
+
 <script lang="ts">
 import {defineComponent} from "vue";
 import StatblockRenderer from "../components/StatblockRenderer.vue";
@@ -1391,6 +1384,12 @@ export default defineComponent({
 	}
 }
 
+@media screen and (max-width: 1080px) {
+	.editor-nav {
+		grid-template-columns: 1fr 1fr 1fr;
+	}
+}
+
 .editor-content {
 	padding: 0.5rem 1rem;
 
@@ -1466,10 +1465,6 @@ export default defineComponent({
 				grid-template-columns: 1fr 1fr 1fr;
 			}
 
-			&.six-wide {
-				grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
-			}
-
 			textarea {
 				min-height: 46px;
 				height: 46px;
@@ -1478,6 +1473,17 @@ export default defineComponent({
 	}
 }
 
+@media screen and (max-width: 1080px) {
+	.editor-content__tab-inner .editor-field__container.three-wide {
+		grid-template-columns: 1fr 1fr;
+	}
+}
+
+@media screen and (max-width: 950px) {
+	.editor-content__tab-inner .editor-field__container:is(.two-wide, .three-wide) {
+		grid-template-columns: 1fr;
+	}
+}
 .scale-in {
 	-webkit-animation: scale-in 0.2s ease-in-out;
 	-moz-animation: scale-in 0.2s ease-in-out;
@@ -1603,19 +1609,11 @@ hr {
 	border-color: orangered;
 }
 
-.save-button {
-	width: 100%;
-	display: flex;
-	margin: 2rem 0;
-	justify-content: center;
-	button {
-		background-color: var(--color-success);
-		font-size: 1.2rem;
-
-		&:hover {
-			background-color: rgb(46, 124, 9);
-		}
-	}
+.buttons {
+	display: grid;
+	gap: 1rem;
+	grid-template-columns: 1fr 1fr;
+	margin: 1rem 25%;
 }
 
 .modal-desc {

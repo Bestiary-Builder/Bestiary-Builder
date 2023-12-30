@@ -527,7 +527,7 @@ export default defineComponent({
 }
 
 .stat-block__image {
-    margin: auto;
+    margin: 1rem auto;
     max-height: 300px;
 }
 
@@ -585,7 +585,6 @@ export default defineComponent({
     display: none;
 }
 
-
 .feature-container {
     &__title {
         color: orangered;
@@ -594,10 +593,6 @@ export default defineComponent({
         border-bottom: 1px solid orangered;
         margin-top: .3rem;
     }
-
-    // :has(.feature__automation-icon)&__desc {
-    //     margin-left: .2rem;
-    // }
 
     p:not(:last-of-type) {
         margin-bottom: .2rem;
@@ -613,6 +608,4 @@ export default defineComponent({
     display: flex;
     justify-content: space-between;
 }
-
-
 </style>
