@@ -1,20 +1,21 @@
 <template>
-<Breadcrumbs :routes="[
-{
-	path: '',
-	text: 'Public Bestiaries',
-	isCurrent: true
-}
-]" 
-> 
-<template #right-button>
-	<select v-model="viewMode" aria-label="Select public bestiary list mode">
-		<option>Recent</option>
-		<option>Popular</option>
-		<option>Bookmarked</option>
-	</select>
-</template>
-</Breadcrumbs> 
+	<Breadcrumbs
+		:routes="[
+			{
+				path: '',
+				text: 'Public Bestiaries',
+				isCurrent: true
+			}
+		]"
+	>
+		<template #right-button>
+			<select v-model="viewMode" aria-label="Select public bestiary list mode">
+				<option>Recent</option>
+				<option>Popular</option>
+				<option>Bookmarked</option>
+			</select>
+		</template>
+	</Breadcrumbs>
 	<div class="content" v-if="viewMode != 'Bookmarked'">
 		<div class="tile-container">
 			<div class="content-tile search-tile">
@@ -47,11 +48,8 @@
 						<span>{{ bestiary.creatures.length }}<font-awesome-icon :icon="['fas', 'skull']" /></span>
 					</div>
 				</RouterLink>
-				<p v-else class="zero-found">
-					Did not find any Bestiaries with that name or tags.
-				</p>
+				<p v-else class="zero-found">Did not find any Bestiaries with that name or tags.</p>
 			</TransitionGroup>
-
 		</div>
 	</div>
 	<BookmarkedBestiaryList v-else />
@@ -103,10 +101,9 @@ export default defineComponent({
 		},
 		async viewMode(newValue) {
 			if (newValue != "Bookmarked") {
-				const loader = this.$loading.show()
+				const loader = this.$loading.show();
 				await this.searchBestiaries();
-				loader.hide()
-
+				loader.hide();
 			}
 		}
 	},

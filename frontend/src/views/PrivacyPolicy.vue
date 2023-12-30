@@ -1,11 +1,14 @@
 <template>
-<Breadcrumbs :routes="[
-{
-	path: '',
-	text: 'Privacy Policy',
-	isCurrent: true
-}
-]" :isLessWide="true"/> 
+	<Breadcrumbs
+		:routes="[
+			{
+				path: '',
+				text: 'Privacy Policy',
+				isCurrent: true
+			}
+		]"
+		:isLessWide="true"
+	/>
 	<div class="content markdown less-wide">
 		<div v-if="content" v-html="content"></div>
 	</div>
