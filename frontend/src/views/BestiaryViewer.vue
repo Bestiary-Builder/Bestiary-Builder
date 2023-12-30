@@ -619,7 +619,7 @@ export default defineComponent({
 			if (this.hasPinnedBefore) return;
 			if (!this.hasPinnedBefore) this.hasPinnedBefore = true;
 
-			toast.info("Pinned creature to the right side. Click unpin there to go back to hover behaviour.");
+			toast.info("Pinned creature to the view. Click unpin there to go back to hover behaviour.");
 		},
 		"bestiary.status"(newValue, oldValue): void {
 			if (newValue == "private") this.showWarning = false;
@@ -737,6 +737,7 @@ export default defineComponent({
 
 @media screen and (max-width: 842px) {
 	.list-tiles {
+		max-height: 40vh;
 		.content-tile {
 			padding: .5rem;
 			h3 {

@@ -45,6 +45,7 @@ export default defineComponent({
 			navigator.clipboard.writeText(options.value.url);
 			toast.success("Copied link to clipboard!");
 		}
+		
 		return {
 			isSupported,
 			startShare

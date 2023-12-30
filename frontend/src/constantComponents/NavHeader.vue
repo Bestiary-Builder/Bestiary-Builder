@@ -1,5 +1,5 @@
 <template>
-	<nav class="navbar" :class="{'expanded': isExpanded}">
+	<nav class="navbar" :class="{'expanded': isExpanded}" ref="navbar">
 		<div class="navbar-left">
 			<RouterLink :to="$router.options.routes[0].path" class="navbar-brand">
 				<img src="/logo.svg" />
@@ -30,6 +30,8 @@ import UserBanner from "@/components/UserBanner.vue";
 import {user, sendToLogin} from "@/main";
 import type {User} from "@/generic/types";
 import {defineComponent} from "vue";
+import { onClickOutside } from "@vueuse/core";
+import { ref } from "vue";
 export default defineComponent({
 	name: "NavHeader",
 	components: {
@@ -38,7 +40,6 @@ export default defineComponent({
 	data() {
 		return {
 			user: null as User | null,
-			isExpanded: false
 		};
 	},
 	async mounted() {
@@ -49,6 +50,23 @@ export default defineComponent({
 			sendToLogin(this.$route.path);
 		},
 	},
+	setup() {
+		const isExpanded = ref(false)
+		const navbar = ref<HTMLDivElement | null>(null);
+
+		// only register this handler if on mobile device.
+		// this is crude but works fine
+		if (window.screen.availWidth < 900) {
+			onClickOutside(navbar, () => {
+				if (isExpanded.value) isExpanded.value = false
+			})
+		}
+		
+		return {
+			isExpanded,
+			navbar
+		}
+	}
 });
 </script>
 <style scoped lang="less">
@@ -200,7 +218,6 @@ export default defineComponent({
 		width: 100%;
 		height: 100%;
 		background-color: rgba(0, 0, 0, .5);
-		pointer-events: none;
 		z-index: 1;
 	}
 }
