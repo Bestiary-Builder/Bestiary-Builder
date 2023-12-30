@@ -141,8 +141,14 @@ export default defineComponent({
 }
 
 @media (max-width: 842px) {
+    .breadcrumbs__container {
+        padding: .5rem;
+    }
+
     .breadcrumbs__links {
         font-size: .8rem;
+        display: flex;
+        align-items: center;
         & .current-page {
             font-size: .8rem;
         }

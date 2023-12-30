@@ -21,7 +21,7 @@
 			<div v-else class="user login" @click.prevent="LoginClick">Login</div>
 		</div>
 
-		<label class="navbar-toggler" for="navbar-indicator" @click="isExpanded = !isExpanded"> <font-awesome-icon :icon="['fas', 'bars']" /> </label>
+		<span class="navbar-toggler" @click="isExpanded = !isExpanded" aria-label="Toggle navbar"> <font-awesome-icon :icon="['fas', 'bars']" /> </span>
 	</nav>
 </template>
 <script lang="ts">

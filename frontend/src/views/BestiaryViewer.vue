@@ -39,9 +39,6 @@
 							</div>
 						</div>
 					</div>
-					<div class="tags">
-						<span class="tag" v-for="tag in bestiary.tags">{{ tag }}</span>
-					</div>
 					<div class="unpin" v-if="lastClickedCreature">
 						<span class="unpin-button" @click="lastClickedCreature = null" role="button" aria-label="unpin currently pinned creature">unpin</span>
 						📌
@@ -215,7 +212,7 @@
 						<div class="flow-vertically">
 							<label for="addeditor">Add editor</label>
 							<div class="button-container">
-								<input type="text" v-model="editorToAdd" inputmode="numeric" placeholder="Discord user ID" />
+								<input type="text" v-model="editorToAdd" inputmode="numeric" placeholder="Discord user ID" id="addeditor"/>
 								<button class="btn" @click="addEditor()" id="add">Add</button>
 							</div>
 						</div>
@@ -655,24 +652,6 @@ export default defineComponent({
 	grid-template-columns: 1fr 1fr;
 	gap: 1rem;
 }
-.controls-container {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	gap: .5rem;
-
-	& .btn-container {
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: space-between;
-		gap: .5rem;
-
-		& button {
-			width: fit-content;
-			flex: 1 1 0;
-
-		}
-	}
-}
 
 @media screen and (max-width: 1300px) {
 	.controls-container {
@@ -810,6 +789,25 @@ export default defineComponent({
 		}
 	}
 
+	.controls-container {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: .5rem;
+
+		& .btn-container {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: space-between;
+			gap: .5rem;
+
+			& button {
+				width: fit-content;
+				flex: 1 1 0;
+
+			}
+		}
+	}
+
 	.description:not(.expanded) {
 		-webkit-mask-image: linear-gradient(180deg, #000 80%, transparent);
 		mask-image: linear-gradient(180deg, #000 80%, transparent);
@@ -835,7 +833,38 @@ export default defineComponent({
 		}
 	}
 	}
+@media screen and (max-width: 842px) {
+	.header-tile {
+		.description {
+			font-size: xx-small;
+		}
 
+		.controls-container {
+			.btn {
+				font-size: .7rem;
+				padding: .5rem;
+			}
+
+			input {
+				font-size: .6rem;
+			}
+
+			label {
+				font-size: .8rem;
+			}
+		}
+		.footer {
+			font-size: .7rem;
+			grid-template-columns: 2fr 1fr 1fr 1fr;
+
+			&.three-wide {
+				grid-template-columns: 2fr 1fr 1fr;
+			}
+		}	
+	}
+
+
+}
 .bestiary {
 	display: grid;
 	gap: 2rem;

@@ -171,7 +171,7 @@ textarea {
 	top: 0rem;
 	right: 0.1rem;
 
-	font-size: 3rem;
+	font-size: 2rem;
 	color: var(--rarity-color-exotic);
 	background: none;
 	border: none;
@@ -201,21 +201,28 @@ textarea {
 	}
 }
 
-@media screen and (max-width: 900px) {
+@media screen and (max-width: 842px) {
+	// disable overscrolling when there is a modal;
+	body:has(#modal .modal__bg) {
+		overflow: hidden;
+	}
 	.modal__bg {
-		top: 6%;
+		top: 0%;
 		z-index: 100;
 	}
 	.modal__content,
 	.modal__small {
-		width: 100%;
-		height: 100%;
+		width: 95%;
+		height: fit-content;
+		max-height: 98%;
+		border-radius: 0;
+		padding: 2rem .8rem;
 	}
 
 	.modal__close-button {
-		font-size: 3rem;
-		top: 1.6%;
-		right: 5%;
+		font-size: 2rem;
+		top: -2%;
+		right: 0;
 		color: var(--rarity-color-exotic);
 	}
 }
