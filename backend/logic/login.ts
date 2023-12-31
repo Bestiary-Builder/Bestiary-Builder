@@ -70,7 +70,7 @@ app.get("/api/login/:code", async (req, res) => {
 			return res.status(401).json({error: "Failed to authenticate discord login."});
 		}
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return res.status(500).json({error: "Unknown server error occured, please try again"});
 	}
 });
@@ -96,7 +96,7 @@ export const requireUser = async (req: Request, res: Response, next: NextFunctio
 		}
 		return next();
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 };
@@ -115,7 +115,7 @@ export const possibleUser = async (req: Request, res: Response, next: NextFuncti
 		}
 		return next();
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 };

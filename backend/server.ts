@@ -143,7 +143,7 @@ app.use("/*", express.static(frontendPath));
 
 //Error handling
 function errorHandler(err: Error, req: Request, res: Response, next: NextFunction) {
-	log.error(err);
+	log.log("critical", err);
 	res.status(500).json({error: "An unknown error occured."});
 }
 app.use(errorHandler);

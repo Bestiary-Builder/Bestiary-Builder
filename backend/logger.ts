@@ -8,13 +8,15 @@ const format = winston.format.printf((info) => {
 //Levels
 const winstonLevels = {
 	levels: {
-		error: 0,
-		warning: 1,
-		info: 2,
-		database: 3,
-		request: 4
+		critical: 0,
+		error: 1,
+		warning: 2,
+		info: 3,
+		database: 4,
+		request: 5
 	},
 	colors: {
+		critical: "red",
 		error: "red",
 		warning: "yellow",
 		info: "white",

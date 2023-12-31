@@ -42,7 +42,7 @@ app.get("/api/bestiary/:id", possibleUser, async (req, res) => {
 			return res.status(401).json({error: "You don't have access to this bestiary."});
 		}
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
@@ -54,7 +54,7 @@ app.get("/api/my-bestiaries", requireUser, async (req, res) => {
 		log.info(`Retrieved all bestiaries from the current user with the id ${req.params.userid}`);
 		return res.json(allBestiaries);
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
@@ -72,7 +72,7 @@ app.get("/api/user/:userid/bestiaries", possibleUser, async (req, res) => {
 		log.info(`Retrieved all bestiaries from the user with the id ${req.params.userid}`);
 		return res.json(allBestiaries);
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
@@ -178,7 +178,7 @@ app.post("/api/bestiary/:id?/update", requireUser, async (req, res) => {
 			return res.status(201).json(data);
 		}
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
@@ -205,7 +205,7 @@ app.get("/api/bestiary/:id/delete", requireUser, async (req, res) => {
 			res.status(500).json({error: "Failed to delete creature."});
 		}
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
@@ -238,7 +238,7 @@ app.get("/api/bestiary/:bestiaryid/editors/add/:userid", requireUser, async (req
 		log.info(`Removed user with the id ${newEditor._id} as editor of bestiary with the id ${bestiary._id}`);
 		return res.json({});
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
@@ -269,7 +269,7 @@ app.get("/api/bestiary/:bestiaryid/editors/remove/:userid", requireUser, async (
 		log.info(`Removed user with the id ${newEditor._id} as editor of bestiary with the id ${bestiary._id}`);
 		return res.json({});
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
@@ -311,7 +311,7 @@ app.get("/api/bestiary/:id/bookmark/toggle", requireUser, async (req, res) => {
 			return res.status(500).json({error: "Server failed to toggle bookmark, please try again."});
 		}
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
@@ -339,7 +339,7 @@ app.get("/api/bestiary/:id/bookmark/get", requireUser, async (req, res) => {
 			return res.json({state: false});
 		}
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
@@ -454,7 +454,7 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 		log.info(`Public - Retrieved bestiary with the id ${id}`);
 		return res.json(creatures);
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return res.status(500).json({error: "Unknown server error occured."});
 	}
 });

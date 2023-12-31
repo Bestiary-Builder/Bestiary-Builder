@@ -30,7 +30,7 @@ app.get("/api/creature/:id", possibleUser, async (req, res) => {
 			return res.status(404).json({error: "No creature with that id found-"});
 		}
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
@@ -51,7 +51,7 @@ app.get("/api/bestiary/:id/creatures", possibleUser, async (req, res) => {
 			return res.status(404).json({error: "No bestiary with that id found."});
 		}
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
@@ -175,7 +175,7 @@ app.post("/api/creature/:id?/update", requireUser, async (req, res) => {
 			return res.status(201).json(data);
 		}
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
@@ -205,7 +205,7 @@ app.get("/api/creature/:id/delete", requireUser, async (req, res) => {
 			res.status(500).json({error: "Failed to delete creature."});
 		}
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
