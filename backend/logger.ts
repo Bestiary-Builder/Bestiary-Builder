@@ -1,5 +1,6 @@
 import {isProduction} from "./server";
 import winston from "winston";
+import fs from "fs";
 
 //Format
 const format = winston.format.printf((info) => {
@@ -57,6 +58,14 @@ export const log = winston.createLogger({
 setTimeout(() => {
 	//Save to file in production
 	if (isProduction) {
+		//Save old files
+		if (fs.existsSync("logs/combined.log")) {
+			let date = new Date();
+			let dateString = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}_${date.getUTCHours()}.${date.getUTCMinutes()}.${date.getUTCSeconds()}`;
+			fs.renameSync("logs/combined.log", "logs/combined_old_" + dateString + ".log");
+			fs.renameSync("logs/error.log", "logs/error_old_" + dateString + ".log");
+		}
+		//Add new transports
 		log.add(
 			new winston.transports.File({
 				level: "request",
