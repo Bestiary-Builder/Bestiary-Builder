@@ -12,13 +12,13 @@
 	}
 	]">
 	<template #right-button>
-		<button @click="createCreature()" v-tooltip="'Create creature!'"  class="inverted">
+		<button @click="createCreature()" v-tooltip="'Create creature!'"  class="inverted" v-if="isOwner || isEditor">
 			<font-awesome-icon :icon="['fas', 'plus']" /> 
 		</button>
 		<button v-if="lastClickedCreature" @click="lastClickedCreature = null" v-tooltip="'Unpin currently pinned creature!'" style="rotate: 45deg;">
 			<font-awesome-icon :icon="['fas', 'thumbtack']" />
 		</button>
-		<button @click="isEditorModalOpen = true" v-tooltip="'Edit bestiary!'">
+		<button @click="isEditorModalOpen = true" v-tooltip="'Edit bestiary!'" v-if="isOwner || isEditor">
 			<font-awesome-icon :icon="['fas', 'pen-to-square']" /> 
 		</button>
 		<VDropdown :distance="6">
@@ -46,7 +46,7 @@
 			</template>
 		</VDropdown>
 
-		<button @click="isImportModalOpen = true" v-tooltip="'Import bestiary'"> 
+		<button @click="isImportModalOpen = true" v-tooltip="'Import bestiary'" v-if="isOwner"> 
 			<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" /> 
 		</button>
 
@@ -251,18 +251,12 @@ export default defineComponent({
 		const isImportModalOpen = ref(false);
 		const importModal = ref<HTMLDivElement | null>(null);
 		onClickOutside(importModal, () => (isImportModalOpen.value = false));
-
-		const isExportModalOpen = ref(false);
-		const exportModal = ref<HTMLDivElement | null>(null);
-		onClickOutside(exportModal, () => (isExportModalOpen.value = false));
-
+		
 		return {
 			editModal,
 			importModal,
-			exportModal,
 			isEditorModalOpen,
 			isImportModalOpen,
-			isExportModalOpen,
 			selectedCreature,
 		}
 	},
