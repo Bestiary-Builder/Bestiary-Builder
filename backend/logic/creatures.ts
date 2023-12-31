@@ -41,11 +41,7 @@ app.get("/api/bestiary/:id/creatures", possibleUser, async (req, res) => {
 		let bestiary = await getBestiary(bestiaryId);
 		if (bestiary) {
 			if (checkBestiaryPermission(bestiary, user) != "none") {
-				let creatures = [];
-				for (let creatureId of bestiary.creatures) {
-					let creature = await collections.creatures?.findOne({_id: new ObjectId(creatureId)});
-					if (creature) creatures.push(creature);
-				}
+				let creatures = (await collections.creatures?.find({_id: {$in: bestiary.creatures}}).toArray()) ?? [];
 				log.info(`Retrieved creatures from bestiary with the id ${bestiaryId}`);
 				return res.json(creatures);
 			} else {
@@ -140,8 +136,6 @@ app.post("/api/creature/:id?/update", requireUser, async (req, res) => {
 			if (bestiary.status != "private") {
 				if (badwords.check(data.stats.description.name)) return res.status(400).json({error: "Creature name includes blocked words or phrases. Remove the badwords or make the bestiary private."});
 				if (badwords.check(data.stats.description.description)) return res.status(400).json({error: "Creature description includes blocked words or phrases. Remove the badwords or make the bestiary private."});
-				///data.stats.description.name = badwords.filter(data.stats.description.name);
-				///data.stats.description.description = badwords.filter(data.stats.description.description);
 			}
 			//Update creature
 			let updatedId = await updateCreature(data, _id);
@@ -170,8 +164,6 @@ app.post("/api/creature/:id?/update", requireUser, async (req, res) => {
 				if (badwords.check(data.stats.description.description)) {
 					return res.status(400).json({error: "Creature description includes blocked words or phrases. Remove the badwords or make the bestiary private."});
 				}
-				///data.stats.description.name = badwords.filter(data.stats.description.name);
-				///data.stats.description.description = badwords.filter(data.stats.description.description);
 			}
 			let _id = await updateCreature(data);
 			if (!_id) return res.status(500).json({error: "Failed to create creature."});
