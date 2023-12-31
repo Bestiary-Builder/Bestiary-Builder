@@ -55,15 +55,18 @@ export const log = winston.createLogger({
 		})
 	]
 });
+
+const splitFiles = false;
 setTimeout(() => {
 	//Save to file in production
 	if (isProduction) {
 		//Save old files
-		if (fs.existsSync("logs/combined.log")) {
+		if (splitFiles && fs.existsSync("logs/combined.log")) {
+			if (!fs.existsSync("logs/old")) fs.mkdirSync("logs/old");
 			let date = new Date();
 			let dateString = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}_${date.getUTCHours()}.${date.getUTCMinutes()}.${date.getUTCSeconds()}`;
-			fs.renameSync("logs/combined.log", "logs/combined_old_" + dateString + ".log");
-			fs.renameSync("logs/error.log", "logs/error_old_" + dateString + ".log");
+			fs.renameSync("logs/combined.log", "logs/old/combined_" + dateString + ".log");
+			fs.renameSync("logs/error.log", "logs/old/error_" + dateString + ".log");
 		}
 		//Add new transports
 		log.add(
