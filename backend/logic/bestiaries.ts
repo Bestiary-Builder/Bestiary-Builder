@@ -522,7 +522,6 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 					value: value
 				};
 			}
-
 			//Final data
 			let creatureData = {
 				name: creature.stats.description.name,
@@ -533,10 +532,18 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 				armortype: creature.stats.defenses.ac.acSource,
 				hp: hp,
 				hitdice: hitdice,
-				speed: creature.stats.core.speed,
-				ability_scores: creature.stats.abilities.stats,
+				speed: speedCalc(creature.stats.core.speed),
+				ability_scores: {
+					prof_bonus: creature.stats.core.proficiencyBonus,
+					strength: creature.stats.abilities.str,
+					dexterity: creature.stats.abilities.dex,
+					constitution: creature.stats.abilities.constitution,
+					intelligence: creature.stats.abilities.int,
+					wisdom: creature.stats.abilities.wis,
+					charisma: creature.stats.abilities.cha
+				},
 				saves: saves,
-				skills: creature.stats.abilities.skills,
+				skills: calcSkills(creature.stats),
 				senses: getSenses(creature.stats.core.senses),
 				resistances: creature.stats.defenses.resistances,
 				display_resists: creature.stats.defenses.resistances,
@@ -566,7 +573,7 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 			},
 			creatures
 		};
-		log.info(`Public - Retrieved bestiary with the id ${id}`);
+		log.info(`Export - Retrieved bestiary with the id ${id}`);
 		return res.json(data);
 	} catch (err) {
 		log.log("critical", err);
@@ -585,7 +592,7 @@ function spellDc(innate = false, data: any): number {
 	}
 }
 function hpCalc(data: any): number {
-	return Math.floor(data.defenses.hp.numOfHitDie * ((data.defenses.hp.sizeOfHitDie + 1) / 2 + statCalc("con", data)));
+	return data.defenses.hp.override ?? Math.floor(data.defenses.hp.numOfHitDie * ((data.defenses.hp.sizeOfHitDie + 1) / 2 + statCalc("con", data)));
 }
 function statCalc(stat: string, data: any): number {
 	return Math.floor(data.abilities.stats[stat] / 2) - 5;
@@ -614,3 +621,61 @@ function getSenses(data: any) {
 	if (data.telepathy) str += `telepathy ${data.telepathy}ft., `;
 	return str.slice(0, str.length - 2);
 }
+function speedCalc(data: any): string {
+	let speeds = [];
+	for (let key in data) {
+		if (key == "isHover") continue;
+		let addon = "";
+		if (key == "fly" && data.isHover) addon = " (hover)";
+		if (data[key]) speeds.push(`${key} ${data[key]} ft.${addon}`);
+	}
+	return speeds.join(", ");
+}
+export interface SkillsEntity {
+	skillName: string;
+	isHalfProficient: boolean;
+	isProficient: boolean;
+	isExpertise: boolean;
+	override: number | null;
+}
+function calcSkills(data: any) {
+	let skillData = data.abilities.skills as SkillsEntity[];
+	let output = {} as {[key: string]: {value: number; prof?: boolean}};
+	for (let stat in SKILLS_BY_STAT) {
+		for (let skill of SKILLS_BY_STAT[stat]) {
+			let value, prof;
+			let raw = skillData.find((a) => a.skillName.toLowerCase() == skill);
+			if (!raw) value = statCalc(stat, data);
+			else {
+				if (raw.override != null) value = raw.override;
+				else {
+					value = statCalc(stat, data);
+					if (raw.isHalfProficient) {
+						value += Math.floor(data.core.proficiencyBonus / 2);
+					} else if (raw.isProficient) {
+						value += data.core.proficiencyBonus;
+						prof = true;
+					} else if (raw.isExpertise) {
+						value += data.core.proficiencyBonus * 2;
+					}
+				}
+			}
+			let out = {value: value ?? 0} as any;
+			if (prof) out["prof"] = 1;
+			output[skill] = out;
+		}
+	}
+	return output;
+}
+const SKILLS_BY_STAT = {
+	str: ["athletics", "strength"],
+	dex: ["acrobatics", "sleightofhand", "stealth", "initiative", "dexterity"],
+	con: ["constitution"],
+	int: ["arcana", "history", "investigation", "nature", "religion", "intelligence"],
+	wis: ["animalhandling", "insight", "medicine", "perception", "survival", "wisdom"],
+	cha: ["deception", "intimidation", "performance", "persuasion", "charisma"]
+} as {[key: string]: string[]};
+const allSkills = {
+	animalhandling: "animalHandling",
+	sleightofhand: "sleightOfHand"
+};
