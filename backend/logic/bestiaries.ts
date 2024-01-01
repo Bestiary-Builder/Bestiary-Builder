@@ -286,12 +286,8 @@ app.post("/api/bestiary/:id?/addcreatures", requireUser, async (req, res) => {
 			}
 			//Remove bad words
 			if (bestiary.status != "private") {
-				if (badwords.check(creature.stats.description.name)) {
-					return res.status(400).json({error: "Creature name includes blocked words or phrases. Remove the badwords or make the bestiary private."});
-				}
-				if (badwords.check(creature.stats.description.description)) {
-					return res.status(400).json({error: "Creature description includes blocked words or phrases. Remove the badwords or make the bestiary private."});
-				}
+				if (badwords.check(creature.stats.description.name)) continue;
+				if (badwords.check(creature.stats.description.description)) continue;
 			}
 			//Push data
 			fixedData.push(creature);
