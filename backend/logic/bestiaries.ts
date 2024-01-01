@@ -286,12 +286,8 @@ app.post("/api/bestiary/:id?/addcreatures", requireUser, async (req, res) => {
 			}
 			//Remove bad words
 			if (bestiary.status != "private") {
-				if (badwords.check(creature.stats.description.name)) {
-					return res.status(400).json({error: "Creature name includes blocked words or phrases. Remove the badwords or make the bestiary private."});
-				}
-				if (badwords.check(creature.stats.description.description)) {
-					return res.status(400).json({error: "Creature description includes blocked words or phrases. Remove the badwords or make the bestiary private."});
-				}
+				if (badwords.check(creature.stats.description.name)) continue;
+				if (badwords.check(creature.stats.description.description)) continue;
 			}
 			//Push data
 			fixedData.push(creature);
@@ -543,7 +539,7 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 					charisma: creature.stats.abilities.stats.cha
 				},
 				saves: saves,
-				skills: calcSkills(creature.stats),
+				skills: fixSkillNames(creature.stats.abilities.skills),
 				senses: getSenses(creature.stats.core.senses),
 				resistances: creature.stats.defenses.resistances,
 				immunities: creature.stats.defenses.immunities,
@@ -559,7 +555,7 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 				la_per_round: 3,
 				attacks: creature.stats.features.actions,
 				proper: creature.stats.description.isProperNoun,
-				image_url: creature.stats.description.empty,
+				image_url: creature.stats.description.image,
 				spellcasting: spellcasting,
 				homebrew: true,
 				source: bestiary.name
@@ -639,11 +635,17 @@ export interface SkillsEntity {
 	isExpertise: boolean;
 	override: number | null;
 }
+function fixSkillNames(skills: SkillsEntity[]) {
+	return skills.map((a) => {
+		a.skillName = skillNames[a.skillName.toLowerCase()] ?? a.skillName.toLowerCase();
+		return a;
+	});
+}
 function calcSkills(data: any) {
 	let skillData = data.abilities.skills as SkillsEntity[];
 	let output = {} as {[key: string]: {value: number; prof?: boolean}};
-	for (let stat in SKILLS_BY_STAT) {
-		for (let skill of SKILLS_BY_STAT[stat]) {
+	for (let stat in skillsByStat) {
+		for (let skill of skillsByStat[stat]) {
 			let value, prof;
 			let raw = skillData.find((a) => a.skillName.toLowerCase() == skill);
 			if (!raw) value = statCalc(stat, data);
@@ -663,13 +665,13 @@ function calcSkills(data: any) {
 			}
 			let out = {value: value ?? 0} as any;
 			if (prof) out["prof"] = 1;
-			skill = allSkills[skill] ?? skill;
+			skill = skillNames[skill] ?? skill;
 			output[skill] = out;
 		}
 	}
 	return output;
 }
-const SKILLS_BY_STAT = {
+const skillsByStat = {
 	str: ["athletics", "strength"],
 	dex: ["acrobatics", "sleightofhand", "stealth", "initiative", "dexterity"],
 	con: ["constitution"],
@@ -677,7 +679,7 @@ const SKILLS_BY_STAT = {
 	wis: ["animalhandling", "insight", "medicine", "perception", "survival", "wisdom"],
 	cha: ["deception", "intimidation", "performance", "persuasion", "charisma"]
 } as {[key: string]: string[]};
-const allSkills = {
+const skillNames = {
 	animalhandling: "animalHandling",
 	sleightofhand: "sleightOfHand"
 } as {[key: string]: string};
