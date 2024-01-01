@@ -470,7 +470,7 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 			//HP:
 			let hpObject = creature.stats.defenses.hp;
 			let hp = hpCalc(creature.stats);
-			let hitdice = hpObject.numOfHitDie + "d" + hpObject.sizeOfHitDie + hpObject.numOfHitDie * statCalc("con", creature.stats);
+			let hitdice = `${hpObject.numOfHitDie + "d" + hpObject.sizeOfHitDie} + ${hpObject.numOfHitDie * statCalc("con", creature.stats)}`;
 
 			//Spellcastin:
 			let spellcastInnateObj = creature.stats.spellcasting.innateSpells;
@@ -699,7 +699,7 @@ function calcSkills(data: any) {
 
 const SKILLS_BY_STAT = {
 	str: ["athletics", "strength"],
-	dex: ["acrobatics", "sleightOfhand", "stealth", "initiative", "dexterity"],
+	dex: ["acrobatics", "sleightOfHand", "stealth", "initiative", "dexterity"],
 	con: ["constitution"],
 	int: ["arcana", "history", "investigation", "nature", "religion", "intelligence"],
 	wis: ["animalHandling", "insight", "medicine", "perception", "survival", "wisdom"],
