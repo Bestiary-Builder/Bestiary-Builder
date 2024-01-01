@@ -699,10 +699,10 @@ function calcSkills(data: any) {
 
 const SKILLS_BY_STAT = {
 	str: ["athletics", "strength"],
-	dex: ["acrobatics", "sleightofhand", "stealth", "initiative", "dexterity"],
+	dex: ["acrobatics", "sleightOfhand", "stealth", "initiative", "dexterity"],
 	con: ["constitution"],
 	int: ["arcana", "history", "investigation", "nature", "religion", "intelligence"],
-	wis: ["animalhandling", "insight", "medicine", "perception", "survival", "wisdom"],
+	wis: ["animalHandling", "insight", "medicine", "perception", "survival", "wisdom"],
 	cha: ["deception", "intimidation", "performance", "persuasion", "charisma"]
 } as {[key: string]: string[]};
 const skillNames = {
