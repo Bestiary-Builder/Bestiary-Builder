@@ -537,7 +537,7 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 					prof_bonus: creature.stats.core.proficiencyBonus,
 					strength: creature.stats.abilities.stats.str,
 					dexterity: creature.stats.abilities.stats.dex,
-					constitution: creature.stats.abilities.stats.constitution,
+					constitution: creature.stats.abilities.stats.con,
 					intelligence: creature.stats.abilities.stats.int,
 					wisdom: creature.stats.abilities.stats.wis,
 					charisma: creature.stats.abilities.stats.cha
