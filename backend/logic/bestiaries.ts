@@ -534,7 +534,15 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 				hp: hp,
 				hitdice: hitdice,
 				speed: speedCalc(creature.stats.core.speed),
-				ability_scores: creature.stats.abilities.stats,
+				ability_scores: {
+					prof_bonus: creature.stats.core.proficiencyBonus,
+					strength: creature.stats.abilities.str,
+					dexterity: creature.stats.abilities.dex,
+					constitution: creature.stats.abilities.constitution,
+					intelligence: creature.stats.abilities.int,
+					wisdom: creature.stats.abilities.wis,
+					charisma: creature.stats.abilities.cha
+				},
 				saves: saves,
 				skills: creature.stats.abilities.skills,
 				senses: getSenses(creature.stats.core.senses),
@@ -585,7 +593,7 @@ function spellDc(innate = false, data: any): number {
 	}
 }
 function hpCalc(data: any): number {
-	return Math.floor(data.defenses.hp.numOfHitDie * ((data.defenses.hp.sizeOfHitDie + 1) / 2 + statCalc("con", data)));
+	return data.defenses.hp.override ?? Math.floor(data.defenses.hp.numOfHitDie * ((data.defenses.hp.sizeOfHitDie + 1) / 2 + statCalc("con", data)));
 }
 function statCalc(stat: string, data: any): number {
 	return Math.floor(data.abilities.stats[stat] / 2) - 5;
