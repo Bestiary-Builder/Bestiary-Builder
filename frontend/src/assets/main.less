@@ -414,9 +414,10 @@ body .v-popper--theme-dropdown :is(.v-popper__arrow-outer, .v-popper__arrow-inne
 	gap: 1rem;
 }
 
-body.no-scroll {
+// disable scroll when a mobile popper is enabled
+body:has(.v-popper__popper--no-positioning[aria-hidden=false]) {
 	overflow: hidden;
-  }
+}
   
 .v-popper__popper--no-positioning {
 position: fixed;
