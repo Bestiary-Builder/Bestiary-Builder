@@ -539,7 +539,7 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 					charisma: creature.stats.abilities.stats.cha
 				},
 				saves: saves,
-				skills: getSkills(creature.stats.abilities.skills),
+				skills: calcSkills(creature.stats),
 				senses: getSenses(creature.stats.core.senses),
 				resistances: creature.stats.defenses.resistances,
 				immunities: creature.stats.defenses.immunities,
@@ -577,6 +577,7 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 		return res.status(500).json({error: "Unknown server error occured."});
 	}
 });
+
 //Statblock functions:
 function spellDc(innate = false, data: any): number {
 	let castingData;
@@ -588,12 +589,15 @@ function spellDc(innate = false, data: any): number {
 		else return 8 + statCalc(castingData.spellCastingAbilityOveride ?? castingData.spellCastingAbility, data) + data.core.proficiencyBonus;
 	}
 }
+
 function hpCalc(data: any): number {
 	return data.defenses.hp.override ?? Math.floor(data.defenses.hp.numOfHitDie * ((data.defenses.hp.sizeOfHitDie + 1) / 2 + statCalc("con", data)));
 }
+
 function statCalc(stat: string, data: any): number {
 	return Math.floor(data.abilities.stats[stat] / 2) - 5;
 }
+
 function spellAttackBonus(innate = false, data: any): string {
 	let castingData;
 	if (innate) castingData = data.spellcasting.innateSpells;
@@ -609,6 +613,7 @@ function spellAttackBonus(innate = false, data: any): string {
 	if (bonus >= 0) return "+" + bonus;
 	return bonus.toString();
 }
+
 function getSenses(data: any) {
 	let str = "";
 	if (data.darkvision) str += `darkvision ${data.darkvision}ft., `;
@@ -618,6 +623,7 @@ function getSenses(data: any) {
 	if (data.telepathy) str += `telepathy ${data.telepathy}ft., `;
 	return str.slice(0, str.length - 2);
 }
+
 function speedCalc(data: any): string {
 	let speeds = [];
 	for (let key in data) {
@@ -636,47 +642,62 @@ export interface SkillsEntity {
 	override: number | null;
 }
 
-function getSkills(skills: SkillsEntity[]) {
-	let output = {} as {[key: string]: any}
-	for (let skill of skills) {
-		let skillName = skillNames[skill.skillName.toLowerCase()] ?? skill.skillName.toLowerCase();
-		output[skillName] = {...skill}
-
-		delete output[skillName]["skillName"]
-	}
-	return output
-}
 function calcSkills(data: any) {
 	let skillData = data.abilities.skills as SkillsEntity[];
-	let output = {} as {[key: string]: {value: number; prof?: boolean}};
-	for (let stat in skillsByStat) {
-		for (let skill of skillsByStat[stat]) {
-			let value, prof;
+	let output = {} as {[key: string]: {value: number; prof?: number, bonus: number, adv: number | null}};
+	for (let stat in SKILLS_BY_STAT) {
+		for (let skill of SKILLS_BY_STAT[stat]) {
 			let raw = skillData.find((a) => a.skillName.toLowerCase() == skill);
-			if (!raw) value = statCalc(stat, data);
+			console.log(raw)
+			if (raw == undefined)  {
+				output[skill] = {
+					value: statCalc(stat, data),
+					prof: 0,
+					bonus: 0,
+					adv: null
+				}
+			}
 			else {
-				if (raw.override != null) value = raw.override;
+				if (raw.override != null) {
+					output[skill] = {
+						value: raw.override,
+						prof: 0,
+						bonus: 0,
+						adv: null
+					}
+				}
 				else {
-					value = statCalc(stat, data);
+					let base = statCalc(stat, data);
 					if (raw.isHalfProficient) {
-						value += Math.floor(data.core.proficiencyBonus / 2);
+						output[skill] = {
+							value: base + Math.floor(data.core.proficiencyBonus / 2),
+							prof: 0.5,
+							bonus: 0,
+							adv: null
+						}
 					} else if (raw.isProficient) {
-						value += data.core.proficiencyBonus;
-						prof = true;
+						output[skill] = {
+							value: base + data.core.proficiencyBonus,
+							prof: 1,
+							bonus: 0,
+							adv: null
+						}
 					} else if (raw.isExpertise) {
-						value += data.core.proficiencyBonus * 2;
+						output[skill] = {
+							value: base + (data.core.proficiencyBonus * 2),
+							prof: 2,
+							bonus: 0,
+							adv: null
+						}
 					}
 				}
 			}
-			let out = {value: value ?? 0} as any;
-			if (prof) out["prof"] = 1;
-			skill = skillNames[skill] ?? skill;
-			output[skill] = out;
 		}
 	}
 	return output;
 }
-const skillsByStat = {
+
+const SKILLS_BY_STAT = {
 	str: ["athletics", "strength"],
 	dex: ["acrobatics", "sleightofhand", "stealth", "initiative", "dexterity"],
 	con: ["constitution"],
