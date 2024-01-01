@@ -640,7 +640,7 @@ function statCalc(stat: string, data: any): number {
 	return Math.floor(data.abilities.stats[stat] / 2) - 5;
 }
 
-function spellAttackBonus(innate = false, data: any): string {
+function spellAttackBonus(innate = false, data: any) {
 	let castingData;
 	if (innate) castingData = data.spellcasting.innateSpells;
 	else castingData = data.spellcasting.casterSpells;
@@ -651,9 +651,7 @@ function spellAttackBonus(innate = false, data: any): string {
 		if (innate && castingData.spellCastingAbility) bonus = statCalc(castingData.spellCastingAbility, data) + data.core.proficiencyBonus;
 		else bonus = statCalc(castingData.spellCastingAbilityOveride ?? castingData.spellCastingAbility, data) + data.core.proficiencyBonus;
 	}
-
-	if (bonus >= 0) return "+" + bonus;
-	return bonus.toString();
+	return bonus
 }
 
 function getSenses(data: any) {
