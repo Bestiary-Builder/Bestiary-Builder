@@ -4,6 +4,7 @@ import {requireUser, possibleUser} from "./login";
 import {publicLog, colors} from "./discord";
 import {type Bestiary, type User, Creature, addBestiaryToUser, getBestiary, getUser, incrementBestiaryViewCount, updateBestiary, deleteBestiary, getCreature, collections, addBookmark, removeBookmark} from "../database";
 import {ObjectId} from "mongodb";
+import {type CreatureInput, defaultStatblock} from "./creatures";
 import limits from "../staticData/limits.json";
 import tags from "../staticData/tags.json";
 
@@ -204,6 +205,114 @@ app.get("/api/bestiary/:id/delete", requireUser, async (req, res) => {
 		} else {
 			res.status(500).json({error: "Failed to delete creature."});
 		}
+	} catch (err) {
+		log.log("critical", err);
+		return res.status(500).json({error: "Unknown server error occured, please try again."});
+	}
+});
+
+//Add many creatures
+app.post("/api/bestiary/:id?/addcreatures", requireUser, async (req, res) => {
+	try {
+		//Get bestiary
+		let id = req.params.id;
+		if (!id || id.length != 24) {
+			return res.status(400).json({error: "Bestiary id not valid."});
+		}
+		let _id = new ObjectId(id);
+		let bestiary = await getBestiary(_id);
+		if (!bestiary) return res.status(404).json({error: "Bestiary not found"});
+		//Check owner
+		let user = await getUser(req.body.id);
+		if (!user) {
+			return res.status(404).json({error: "Couldn't find current user."});
+		}
+		let bestiaryPermissionLevel = checkBestiaryPermission(bestiary, user);
+		if (["none", "view"].includes(bestiaryPermissionLevel)) return res.status(401).json({error: "You don't have permission to add creatures to this bestiary."});
+		//Get creature input
+		let data;
+		try {
+			let inputData = req.body.data as CreatureInput[];
+			data = inputData.map((a) => ({stats: a} as Creature));
+		} catch {
+			data = null;
+		}
+		if (!data) {
+			return res.status(400).json({error: "Failed to parse creature data."});
+		}
+		let now = Date.now();
+		//Make sure all fields are present in all creatures
+		let fixedData = [] as Creature[];
+		for (let creature of data) {
+			if (!creature) continue;
+			let oldStats = creature.stats;
+			creature.stats = {};
+			for (let key in defaultStatblock) {
+				//@ts-expect-error
+				creature.stats[key] = {...defaultStatblock[key], ...oldStats[key]};
+			}
+			//Set bestiary id
+			creature.bestiary = _id;
+			//Remove creature id
+			delete creature._id;
+			//Set last updated
+			creature.lastUpdated = now;
+			//Check limits
+			if (creature.stats.description.name.length > limits.nameLength) continue;
+			if (creature.stats.description.name.length < limits.nameMin) continue;
+			if (creature.stats.description.description.length > limits.descriptionLength) continue;
+			//Check image link
+			let image = creature.stats.description.image as string;
+			// remove any url parameters from the string
+			if (image) {
+				image = new URL(image).origin + new URL(image).pathname;
+				creature.stats.description.image = image;
+			}
+			let failedToImportImage = false;
+			if (image && image != "") {
+				if (!image.startsWith("https")) {
+					creature.stats.description.image = "";
+					failedToImportImage = true;
+				}
+				let isApproved = false;
+				if (!failedToImportImage)
+					for (let format of limits.imageFormats) {
+						if (image.endsWith("." + format)) isApproved = true;
+					}
+				if (!isApproved) {
+					creature.stats.description.image = "";
+					failedToImportImage = true;
+				}
+			}
+			//Remove bad words
+			if (bestiary.status != "private") {
+				if (badwords.check(creature.stats.description.name)) {
+					return res.status(400).json({error: "Creature name includes blocked words or phrases. Remove the badwords or make the bestiary private."});
+				}
+				if (badwords.check(creature.stats.description.description)) {
+					return res.status(400).json({error: "Creature description includes blocked words or phrases. Remove the badwords or make the bestiary private."});
+				}
+			}
+			//Push data
+			fixedData.push(creature);
+		}
+		let error;
+		//Check amount of creatures:
+		if (bestiary.creatures.length + fixedData.length > limits.creatureAmount) {
+			fixedData.length = limits.creatureAmount - bestiary.creatures.length;
+			error = `Number of creatures exceeds the limit of ${limits.creatureAmount}, only creatures up to this limit was added.`;
+		}
+		//Add all creatures
+		let result = ((await collections.creatures?.insertMany(fixedData, {ordered: false})) ?? {}) as {
+			acknowledged: boolean;
+			insertedIds: {[key: string]: ObjectId};
+		};
+		let ids = Object.values(result.insertedIds);
+		log.log("database", `Created ${ids.length} creatures.`);
+		await collections.bestiaries?.updateOne({_id: _id}, {$push: {creatures: {$each: ids}}, $set: {lastUpdated: now}});
+		log.log("database", `Updated bestiary ${_id} with ${ids.length} creatures.`);
+		log.info(`Added ${ids.length} creatures to bestiary with the id: ${_id}`);
+		return res.status(201).json({error: error});
 	} catch (err) {
 		log.log("critical", err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
@@ -450,9 +559,15 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 			creatures.push(creatureData);
 		}
 		//Return bestiary in specific format
-		///let data = {};
+		let data = {
+			metadata: {
+				name: bestiary.name,
+				description: bestiary.description
+			},
+			creatures
+		};
 		log.info(`Public - Retrieved bestiary with the id ${id}`);
-		return res.json(creatures);
+		return res.json(data);
 	} catch (err) {
 		log.log("critical", err);
 		return res.status(500).json({error: "Unknown server error occured."});

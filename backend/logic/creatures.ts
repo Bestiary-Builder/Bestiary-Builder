@@ -57,7 +57,7 @@ app.get("/api/bestiary/:id/creatures", possibleUser, async (req, res) => {
 });
 
 //Update info
-type CreatureInput = Omit<Omit<Creature, "_id">, "bestiary"> & {bestiary: string; _id?: string};
+export type CreatureInput = Omit<Omit<Creature, "_id">, "bestiary"> & {bestiary: string; _id?: string};
 function convertInput(input: CreatureInput): Creature | null {
 	if (input._id && input._id.length != 24) {
 		return null;
@@ -77,7 +77,7 @@ app.post("/api/creature/:id?/update", requireUser, async (req, res) => {
 		let inputData = req.body.data as CreatureInput;
 		let data = convertInput(inputData);
 		if (!data) {
-			return res.status(400).json({error: "Bestiary id not valid."});
+			return res.status(400).json({error: "Creature id not valid."});
 		}
 		let user = await getUser(req.body.id);
 		if (!user) {
@@ -155,7 +155,7 @@ app.post("/api/creature/:id?/update", requireUser, async (req, res) => {
 			let bestiaryPermissionLevel = checkBestiaryPermission(bestiary, user);
 			if (["none", "view"].includes(bestiaryPermissionLevel)) return res.status(401).json({error: "You don't have permission to add creature to this bestiary."});
 			//Check amount of creatures:
-			if (bestiary.creatures.length > limits.creatureAmount) return res.status(400).json({error: `Number of creatures exceeds the limit of ${limits.creatureAmount}.`});
+			if (bestiary.creatures.length >= limits.creatureAmount) return res.status(400).json({error: `Number of creatures exceeds the limit of ${limits.creatureAmount}.`});
 			//Remove bad words
 			if (bestiary.status != "private") {
 				if (badwords.check(data.stats.description.name)) {
@@ -211,7 +211,7 @@ app.get("/api/creature/:id/delete", requireUser, async (req, res) => {
 });
 
 //Default stat block. Make sure to align with frontend/public/types -> defaultStatblock
-const defaultStatblock = {
+export const defaultStatblock = {
 	description: {
 		name: "New Creature",
 		isProperNoun: false,

@@ -400,14 +400,6 @@ export function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: s
 				}
 			}
 		}
-		console.log({
-			spellList: {
-				0: innateSpellListConstructor(atWillMatch?.groups?.spells || ""),
-				1: oncePerDay,
-				2: twicePerDay,
-				3: thricePerDay
-			}
-		});
 		return {
 			spellList: {
 				0: innateSpellListConstructor(atWillMatch?.groups?.spells || "") || [],
