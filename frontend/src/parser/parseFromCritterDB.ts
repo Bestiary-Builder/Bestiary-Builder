@@ -458,10 +458,10 @@ function parseDamageTypes(data: string[]): string[] {
 			let modifiers = "";
 			if (type.includes("nonmagical")) modifiers += "Nonmagical ";
 			if (type.includes("nonsilvered")) modifiers += "Nonsilvered ";
-			if (type.includes("nonadamantine")) modifiers += "Nonadamantine";
+			if (type.includes("nonadamantine")) modifiers += "Nonadamantine ";
 			if (type.includes(" aren't magical")) modifiers += "Nonmagical ";
 			if (type.includes(" aren't silvered")) modifiers += "Nonsilvered ";
-			if (type.includes(" aren't adamantine")) modifiers += "Nonadamantine";
+			if (type.includes(" aren't adamantine")) modifiers += "Nonadamantine ";
 			for (let i of ["Bludgeoning", "Piercing", "Slashing"]) {
 				output.push(`${modifiers}${i}`);
 			}

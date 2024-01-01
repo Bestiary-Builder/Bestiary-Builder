@@ -477,15 +477,13 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 			let spellcastInnateObj = creature.stats.spellcasting.innateSpells;
 			let spellcastCasterObj = creature.stats.spellcasting.casterSpells;
 			let spellcasting = {
-				slots: spellcastCasterObj.spellSlotList,
-				max_slots: spellcastCasterObj.spellSlotList,
-				spells: spellcastCasterObj.spellList.flat().map((a: any) => ({name: a, strict: true})),
-				dc: spellDc(false, creature.stats),
-				sab: spellAttackBonus(false, creature.stats),
 				caster_level: spellcastCasterObj.casterLevel,
-				spell_mod: statCalc(spellcastCasterObj.spellCastingAbilityOverride ?? spellcastCasterObj.spellCastingAbility, creature.stats),
-				at_will: [],
-				daily: {}
+				slots: spellcastCasterObj.spellSlotList,
+				known_spells: knownSpells(creature.stats.spellcasting),
+				caster_dc: spellDc(false, creature.stats),
+				caster_sab: spellAttackBonus(false, creature.stats),
+				caster_mod: statCalc(spellcastCasterObj.spellCastingAbilityOverride ?? spellcastCasterObj.spellCastingAbility, creature.stats),
+
 			};
 
 			//Saves/stats
@@ -596,6 +594,7 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 	}
 });
 
+//Statblock functions:
 function displayCR(cr: number) : string {
     if (cr == 0.125) return "1/8"
     if (cr == 0.25) return "1/4"
@@ -603,17 +602,34 @@ function displayCR(cr: number) : string {
     return cr.toString()
 }
 
-
-//Statblock functions:
 function spellDc(innate = false, data: any): number {
 	let castingData;
 	if (innate) castingData = data.spellcasting.innateSpells;
 	else castingData = data.spellcasting.casterSpells;
 	if (castingData.spellDcOverride) return castingData.spellDcOverride;
 	else {
-		if (innate && castingData.spellCastingAbility) return statCalc(castingData.spellCastingAbility, data) + data.core.proficiencyBonus;
+		if (innate && castingData.spellCastingAbility) return 8 + statCalc(castingData.spellCastingAbility, data) + data.core.proficiencyBonus;
 		else return 8 + statCalc(castingData.spellCastingAbilityOveride ?? castingData.spellCastingAbility, data) + data.core.proficiencyBonus;
 	}
+}
+
+function knownSpells(data: any): any {
+	let dailySpells = {};
+
+	for (let times in data.innateSpells.spellList) {
+		if (times == "0") continue
+		console.log(data.innateSpells.spellList[times])
+		for (let sp of data.innateSpells.spellList[times]) {
+			// @ts-ignore
+			dailySpells[sp.spell] = parseInt(times)
+		}
+	}
+	let output = {
+		caster_spells: data.casterSpells.spellList.flat(),
+		at_will: data.innateSpells.spellList[0].map((sp : any) => (sp.spell)),
+		daily_spells: dailySpells,
+	}
+	return output
 }
 
 function hpCalc(data: any): number {
