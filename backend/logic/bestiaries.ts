@@ -560,7 +560,7 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 				vulnerabilities: creature.stats.defenses.vulnerabilities,
 				condition_immune: creature.stats.defenses.conditionImmunities,
 				languages: creature.stats.core.languages,
-				cr: creature.stats.description.cr,
+				cr: displayCR(creature.stats.description.cr),
 				xp: 1000,
 				traits: creature.stats.features.features,
 				actions: creature.stats.features.actions,
@@ -595,6 +595,14 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 		return res.status(500).json({error: "Unknown server error occured."});
 	}
 });
+
+function displayCR(cr: number) : string {
+    if (cr == 0.125) return "1/8"
+    if (cr == 0.25) return "1/4"
+    if (cr == 0.5) return "1/2"
+    return cr.toString()
+}
+
 
 //Statblock functions:
 function spellDc(innate = false, data: any): number {
