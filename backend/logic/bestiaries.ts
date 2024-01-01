@@ -554,7 +554,7 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 				la_per_round: 3,
 				attacks: creature.stats.features.actions,
 				proper: creature.stats.description.isProperNoun,
-				image_url: creature.stats.description.empty,
+				image_url: creature.stats.description.image,
 				spellcasting: spellcasting,
 				homebrew: true,
 				source: bestiary.name
