@@ -661,7 +661,8 @@ function calcSkills(data: any) {
 				if (raw.override != null) {
 					output[skill] = {
 						value: raw.override,
-						prof: 0,
+						// set prof to 1, as skills do not display in avrae without prof = 1|2
+						prof: 1,
 						bonus: 0,
 						adv: null
 					}
