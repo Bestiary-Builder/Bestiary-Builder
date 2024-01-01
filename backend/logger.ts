@@ -1,5 +1,6 @@
 import {isProduction} from "./server";
 import winston from "winston";
+import fs from "fs";
 
 //Format
 const format = winston.format.printf((info) => {
@@ -8,13 +9,15 @@ const format = winston.format.printf((info) => {
 //Levels
 const winstonLevels = {
 	levels: {
-		error: 0,
-		warning: 1,
-		info: 2,
-		database: 3,
-		request: 4
+		critical: 0,
+		error: 1,
+		warning: 2,
+		info: 3,
+		database: 4,
+		request: 5
 	},
 	colors: {
+		critical: "red",
 		error: "red",
 		warning: "yellow",
 		info: "white",
@@ -52,9 +55,20 @@ export const log = winston.createLogger({
 		})
 	]
 });
+
+const splitFiles = false;
 setTimeout(() => {
 	//Save to file in production
 	if (isProduction) {
+		//Save old files
+		if (splitFiles && fs.existsSync("logs/combined.log")) {
+			if (!fs.existsSync("logs/old")) fs.mkdirSync("logs/old");
+			let date = new Date();
+			let dateString = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}_${date.getUTCHours()}.${date.getUTCMinutes()}.${date.getUTCSeconds()}`;
+			fs.renameSync("logs/combined.log", "logs/old/combined_" + dateString + ".log");
+			fs.renameSync("logs/error.log", "logs/old/error_" + dateString + ".log");
+		}
+		//Add new transports
 		log.add(
 			new winston.transports.File({
 				level: "request",

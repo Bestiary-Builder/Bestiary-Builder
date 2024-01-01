@@ -77,7 +77,7 @@ app.post("/api/search", async (req, res) => {
 		log.info(`Search completed with ${output.pageAmount} pages`);
 		return res.json(output);
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });

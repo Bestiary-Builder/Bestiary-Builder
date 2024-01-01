@@ -38,7 +38,8 @@ if (isProduction) {
 		let message = `[${info.timestamp}]-(${info.label}) ${info.level.toUpperCase()} > ${info.message}${info.stack ? "\n" + info.stack : ""}`;
 		///channels.combinedLogs?.send(message);
 		///channels.combinedLogs?.sendTyping();
-		if (info.level == "error" || info.level == "warn") {
+		if (log.levels[info.level] < log.levels["warning"]) {
+			if (info.level == "critical") message += "\n||<@307900989455859723>||";
 			channels.errorLogs?.send(message);
 			channels.errorLogs?.sendTyping();
 		}

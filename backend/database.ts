@@ -25,7 +25,7 @@ export async function startConnection() {
 		log.info(`Successfully connected to the database.`);
 		log.log("database", `Established connection to ${database.databaseName} with ${(await database.collections()).length} collections.`);
 	} catch (err: any) {
-		log.error(err);
+		log.log("critical", err);
 		// Ensures that the client will close on error
 		await client.close();
 	}
@@ -85,7 +85,7 @@ export async function getUser(id: string) {
 		}
 		return user;
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return null;
 	}
 }
@@ -100,7 +100,7 @@ export async function getUserFromSecret(secret: string) {
 		}
 		return user;
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return null;
 	}
 }
@@ -122,7 +122,7 @@ export async function updateUser(data: {_id: string; username: string; avatar: s
 			return userData.secret;
 		}
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return null;
 	}
 }
@@ -133,7 +133,7 @@ export async function addBookmark(userId: string, bestiaryId: ObjectId) {
 		await collections.bestiaries?.updateOne({_id: bestiaryId}, {$inc: {bookmarks: 1}});
 		return true;
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return false;
 	}
 }
@@ -144,7 +144,7 @@ export async function removeBookmark(userId: string, bestiaryId: ObjectId) {
 		await collections.bestiaries?.updateOne({_id: bestiaryId}, {$inc: {bookmarks: -1}});
 		return true;
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return false;
 	}
 }
@@ -154,7 +154,7 @@ export async function getBestiary(id: ObjectId) {
 		log.log("database", `Reading bestiary with the id ${id}.`);
 		return (await collections.bestiaries?.findOne({_id: id})) as Bestiary | null;
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return null;
 	}
 }
@@ -178,7 +178,7 @@ export async function updateBestiary(data: Bestiary, id?: ObjectId) {
 			return _id;
 		}
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return null;
 	}
 }
@@ -193,7 +193,7 @@ export async function addBestiaryToUser(bestiaryId: ObjectId, userId: string) {
 		await collections.bestiaries?.updateOne({_id: bestiaryId}, {$set: {owner: userId}});
 		return true;
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return false;
 	}
 }
@@ -207,7 +207,7 @@ export async function deleteBestiary(bestiaryId: ObjectId) {
 		await collections.bestiaries?.deleteOne({_id: bestiaryId});
 		return true;
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return false;
 	}
 }
@@ -217,7 +217,7 @@ export async function getCreature(id: ObjectId) {
 		log.log("database", `Getting creature with the id ${id}.`);
 		return (await collections.creatures?.findOne({_id: id})) as Creature | null;
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return null;
 	}
 }
@@ -243,7 +243,7 @@ export async function updateCreature(data: Creature, id?: ObjectId) {
 			return _id;
 		}
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return null;
 	}
 }
@@ -253,7 +253,7 @@ export async function addCreatureToBestiary(creatureId: ObjectId, bestiaryId: Ob
 		await collections.bestiaries?.updateOne({_id: bestiaryId}, {$push: {creatures: creatureId}});
 		return true;
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return false;
 	}
 }
@@ -266,7 +266,7 @@ export async function deleteCreature(creatureId: ObjectId) {
 		await collections.creatures?.deleteOne({_id: creature._id});
 		return true;
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return false;
 	}
 }

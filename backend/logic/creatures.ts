@@ -30,7 +30,7 @@ app.get("/api/creature/:id", possibleUser, async (req, res) => {
 			return res.status(404).json({error: "No creature with that id found-"});
 		}
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
@@ -41,11 +41,7 @@ app.get("/api/bestiary/:id/creatures", possibleUser, async (req, res) => {
 		let bestiary = await getBestiary(bestiaryId);
 		if (bestiary) {
 			if (checkBestiaryPermission(bestiary, user) != "none") {
-				let creatures = [];
-				for (let creatureId of bestiary.creatures) {
-					let creature = await collections.creatures?.findOne({_id: new ObjectId(creatureId)});
-					if (creature) creatures.push(creature);
-				}
+				let creatures = (await collections.creatures?.find({_id: {$in: bestiary.creatures}}).toArray()) ?? [];
 				log.info(`Retrieved creatures from bestiary with the id ${bestiaryId}`);
 				return res.json(creatures);
 			} else {
@@ -55,13 +51,13 @@ app.get("/api/bestiary/:id/creatures", possibleUser, async (req, res) => {
 			return res.status(404).json({error: "No bestiary with that id found."});
 		}
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
 
 //Update info
-type CreatureInput = Omit<Omit<Creature, "_id">, "bestiary"> & {bestiary: string; _id?: string};
+export type CreatureInput = Omit<Omit<Creature, "_id">, "bestiary"> & {bestiary: string; _id?: string};
 function convertInput(input: CreatureInput): Creature | null {
 	if (input._id && input._id.length != 24) {
 		return null;
@@ -81,7 +77,7 @@ app.post("/api/creature/:id?/update", requireUser, async (req, res) => {
 		let inputData = req.body.data as CreatureInput;
 		let data = convertInput(inputData);
 		if (!data) {
-			return res.status(400).json({error: "Bestiary id not valid."});
+			return res.status(400).json({error: "Creature id not valid."});
 		}
 		let user = await getUser(req.body.id);
 		if (!user) {
@@ -140,8 +136,6 @@ app.post("/api/creature/:id?/update", requireUser, async (req, res) => {
 			if (bestiary.status != "private") {
 				if (badwords.check(data.stats.description.name)) return res.status(400).json({error: "Creature name includes blocked words or phrases. Remove the badwords or make the bestiary private."});
 				if (badwords.check(data.stats.description.description)) return res.status(400).json({error: "Creature description includes blocked words or phrases. Remove the badwords or make the bestiary private."});
-				///data.stats.description.name = badwords.filter(data.stats.description.name);
-				///data.stats.description.description = badwords.filter(data.stats.description.description);
 			}
 			//Update creature
 			let updatedId = await updateCreature(data, _id);
@@ -161,7 +155,7 @@ app.post("/api/creature/:id?/update", requireUser, async (req, res) => {
 			let bestiaryPermissionLevel = checkBestiaryPermission(bestiary, user);
 			if (["none", "view"].includes(bestiaryPermissionLevel)) return res.status(401).json({error: "You don't have permission to add creature to this bestiary."});
 			//Check amount of creatures:
-			if (bestiary.creatures.length > limits.creatureAmount) return res.status(400).json({error: `Number of creatures exceeds the limit of ${limits.creatureAmount}.`});
+			if (bestiary.creatures.length >= limits.creatureAmount) return res.status(400).json({error: `Number of creatures exceeds the limit of ${limits.creatureAmount}.`});
 			//Remove bad words
 			if (bestiary.status != "private") {
 				if (badwords.check(data.stats.description.name)) {
@@ -170,8 +164,6 @@ app.post("/api/creature/:id?/update", requireUser, async (req, res) => {
 				if (badwords.check(data.stats.description.description)) {
 					return res.status(400).json({error: "Creature description includes blocked words or phrases. Remove the badwords or make the bestiary private."});
 				}
-				///data.stats.description.name = badwords.filter(data.stats.description.name);
-				///data.stats.description.description = badwords.filter(data.stats.description.description);
 			}
 			let _id = await updateCreature(data);
 			if (!_id) return res.status(500).json({error: "Failed to create creature."});
@@ -183,7 +175,7 @@ app.post("/api/creature/:id?/update", requireUser, async (req, res) => {
 			return res.status(201).json(data);
 		}
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
@@ -213,13 +205,13 @@ app.get("/api/creature/:id/delete", requireUser, async (req, res) => {
 			res.status(500).json({error: "Failed to delete creature."});
 		}
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
 
 //Default stat block. Make sure to align with frontend/public/types -> defaultStatblock
-const defaultStatblock = {
+export const defaultStatblock = {
 	description: {
 		name: "New Creature",
 		isProperNoun: false,

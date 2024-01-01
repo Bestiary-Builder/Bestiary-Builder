@@ -24,7 +24,7 @@ app.get("/api/user/bookmarks", requireUser, async (req, res) => {
 			return res.status(401).json({error: "Not logged in."});
 		}
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
@@ -38,7 +38,7 @@ app.get("/api/user", requireUser, async (req, res) => {
 			return res.json(userData);
 		} else return res.status(404).json({error: "User not found."});
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
@@ -60,7 +60,7 @@ app.get("/api/user/:id", async (req, res) => {
 			return res.status(404).json({error: "User not found."});
 		}
 	} catch (err) {
-		log.error(err);
+		log.log("critical", err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });

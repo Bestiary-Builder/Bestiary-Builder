@@ -6,10 +6,7 @@ import srdFeatures from "../staticData/srdFeatures.json";
 
 //Basic example
 app.get("/api/basic-examples/list", async (req, res) => {
-	let names = [] as string[];
-	for (let example of basicExamples) {
-		names.push(example.name);
-	}
+	let names = basicExamples.map((a) => a.name);
 	return res.json(names);
 });
 app.get("/api/basic-example/:name", async (req, res) => {
@@ -23,10 +20,7 @@ app.get("/api/basic-example/:name", async (req, res) => {
 });
 //Features
 app.get("/api/srd-features/list", async (req, res) => {
-	let names = [] as string[];
-	for (let example of srdFeatures) {
-		names.push(example.name);
-	}
+	let names = srdFeatures.map((a) => a.name) ?? [];
 	return res.json(names);
 });
 app.get("/api/srd-feature/:name", async (req, res) => {

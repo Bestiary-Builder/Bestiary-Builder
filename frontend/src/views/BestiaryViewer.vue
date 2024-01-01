@@ -1,67 +1,72 @@
 <template>
-	<Breadcrumbs v-if="bestiary" :routes="[
-	{
-		path: isOwner || isEditor ? '../my-bestiaries/' : '../bestiaries',
-		text: isOwner || isEditor ? 'My Bestiaries' : 'Bestiaries',
-		isCurrent: false
-	},
-	{
-		path: '',
-		text: bestiary?.name,
-		isCurrent: true
-	}
-	]">
-	<template #right-button>
-		<button @click="createCreature()" v-tooltip="'Create creature!'"  class="inverted" v-if="isOwner || isEditor">
-			<font-awesome-icon :icon="['fas', 'plus']" /> 
-		</button>
-		<button v-if="lastClickedCreature" @click="lastClickedCreature = null" v-tooltip="'Unpin currently pinned creature!'" style="rotate: 45deg;">
-			<font-awesome-icon :icon="['fas', 'thumbtack']" />
-		</button>
-		<button @click="isEditorModalOpen = true" v-tooltip="'Edit bestiary!'" v-if="isOwner || isEditor">
-			<font-awesome-icon :icon="['fas', 'pen-to-square']" /> 
-		</button>
-		<VDropdown :distance="6">
-			<button v-tooltip="'Filter bestiaries'">
-				<font-awesome-icon :icon="['fas', 'magnifying-glass']" />			
+	<Breadcrumbs
+		v-if="bestiary"
+		:routes="[
+			{
+				path: isOwner || isEditor ? '../my-bestiaries/' : '../bestiaries',
+				text: isOwner || isEditor ? 'My Bestiaries' : 'Bestiaries',
+				isCurrent: false
+			},
+			{
+				path: '',
+				text: bestiary?.name,
+				isCurrent: true
+			}
+		]"
+	>
+		<template #right-button>
+			<button @click="createCreature()" v-tooltip="'Create creature!'" class="inverted" v-if="isOwner || isEditor">
+				<font-awesome-icon :icon="['fas', 'plus']" />
 			</button>
-			<template #popper>
-				<div class="v-popper__custom-menu">
-					<span> Search creatures by name </span>
-					<input type="text" v-model="searchText" id="searchtext" placeholder="Search by name..." v-debounce:600ms.fireonempty="searchCreatures">				
-				</div>
-			</template>
-		</VDropdown>
-
-		<VDropdown :distance="6">
-			<button v-tooltip="'Export bestiaries'">
-				<font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" /> 
+			<button v-if="lastClickedCreature" @click="lastClickedCreature = null" v-tooltip="'Unpin currently pinned creature!'" style="rotate: 45deg">
+				<font-awesome-icon :icon="['fas', 'thumbtack']" />
 			</button>
-			<template #popper>
-				<div class="v-popper__custom-menu">
-					<span> Export this Bestiary as JSON<br> to clipboard or to file </span>
-					<button class="btn confirm" v-close-popper @click="exportBestiary(false)"> Clipboard </button>
-					<button class="btn confirm" v-close-popper @click="exportBestiary(true)"> File</button>				
-				</div>
-			</template>
-		</VDropdown>
+			<button @click="isEditorModalOpen = true" v-tooltip="'Edit bestiary!'" v-if="isOwner || isEditor">
+				<font-awesome-icon :icon="['fas', 'pen-to-square']" />
+			</button>
+			<VDropdown :distance="6" :positioning-disabled="isMobile">
+				<button v-tooltip="'Filter bestiaries'">
+					<font-awesome-icon :icon="['fas', 'magnifying-glass']" />
+				</button>
+				<template #popper>
+					<div class="v-popper__custom-menu">
+						<span> Search creatures by name </span>
+						<input type="text" v-model="searchText" id="searchtext" placeholder="Search by name..." v-debounce:600ms.fireonempty="searchCreatures" />
+					</div>
+				</template>
+			</VDropdown>
 
-		<button @click="isImportModalOpen = true" v-tooltip="'Import bestiary'" v-if="isOwner"> 
-			<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" /> 
-		</button>
+			<VDropdown :distance="6" :positioning-disabled="isMobile">
+				<button v-tooltip="'Export bestiaries'">
+					<font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" />
+				</button>
+				<template #popper>
+					<div class="v-popper__custom-menu">
+						<span>
+							Export this Bestiary as JSON<br />
+							to clipboard or to file
+						</span>
+						<button class="btn confirm" v-close-popper @click="exportBestiary(false)">Clipboard</button>
+						<button class="btn confirm" v-close-popper @click="exportBestiary(true)">File</button>
+					</div>
+				</template>
+			</VDropdown>
 
-	</template>
+			<button @click="isImportModalOpen = true" v-tooltip="'Import bestiary'" v-if="isOwner">
+				<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
+			</button>
+		</template>
 	</Breadcrumbs>
 	<div class="content">
 		<div class="bestiary" v-if="bestiary">
 			<div class="left-side-container">
 				<div class="content-tile header-tile">
-					<p class="description" :class="{'expanded': isExpanded}" v-html="md.render(bestiary.description || 'No description set.')"></p>
-					<button v-if="bestiary.description.length > 0" class="expand-btn" v-tooltip="'Expand description'" @click="isExpanded = !isExpanded">{{ isExpanded ? '▲' : '▼' }}</button>
+					<p class="description" :class="{expanded: isExpanded}" v-html="md.render(bestiary.description || 'No description set.')"></p>
+					<button v-if="bestiary.description.length > 0" class="expand-btn" v-tooltip="'Expand description'" @click="isExpanded = !isExpanded">{{ isExpanded ? "▲" : "▼" }}</button>
 					<hr />
 					<div class="footer" :class="{'three-wide': isOwner}">
 						<UserBanner :id="bestiary.owner" />
-						<div> <StatusIcon :icon="bestiary.status" /> {{ bestiary.status }}</div>
+						<div><StatusIcon :icon="bestiary.status" /> {{ bestiary.status }}</div>
 						<div>{{ bestiary.creatures.length }}<font-awesome-icon :icon="['fas', 'skull']" /></div>
 						<div role="button" aria-label="bookmark" @click.prevent="toggleBookmark" class="bookmark" v-if="!isOwner">
 							<span v-if="bookmarked" v-tooltip="'Unbookmark this bestiary'" class="bookmark-enabled"><font-awesome-icon :icon="['fas', 'star']" /></span>
@@ -70,48 +75,49 @@
 					</div>
 				</div>
 
-			<div class="tile-container list-tiles" id="tile-container">
-				<TransitionGroup name="slide-fade" mode="out-in">
-					<template v-for="creature in searchCreatureList" :key="creature._id">
-						<div class="content-tile creature-tile" @mouseover="lastHoveredCreature = creature.stats" @click="lastClickedCreature = creature.stats" 
-							v-if="true || creature.stats.description.name.toLowerCase().includes(searchText.toLowerCase().trim())">
-							<div class="left-side">
-								<h3>{{ creature.stats?.description?.name }}</h3>
-								<span>{{ creature.stats?.core?.size }} {{ creature.stats?.core?.race }}{{ creature.stats?.description?.alignment ? ", " + creature.stats?.description?.alignment : "" }}</span>
-							</div>
-							<div class="right-side">
-								<VDropdown :distance="6" v-if="isOwner || isEditor">
-									<button v-tooltip="'Delete creature'" @click.stop="">
-										<font-awesome-icon :icon="['fas', 'trash']" />			
-									</button>
-									<template #popper>
-										<div class="v-popper__custom-menu">
-											<span> Are you sure you want to delete this creature? </span>
-											<button class="btn danger" @click.stop="deleteCreature(creature)" v-close-popper>Confirm</button>
-										</div>
-									</template>
-								</VDropdown>
+				<div class="tile-container list-tiles" id="tile-container">
+					<TransitionGroup name="slide-fade" mode="out-in">
+						<template v-for="creature in searchCreatureList" :key="creature._id">
+							<div class="content-tile creature-tile" @mouseover="lastHoveredCreature = creature.stats" @click="lastClickedCreature = creature.stats" v-if="true || creature.stats.description.name.toLowerCase().includes(searchText.toLowerCase().trim())">
+								<div class="left-side">
+									<h3>{{ creature.stats?.description?.name }}</h3>
+									<span>{{ creature.stats?.core?.size }} {{ creature.stats?.core?.race }}{{ creature.stats?.description?.alignment ? ", " + creature.stats?.description?.alignment : "" }}</span>
+								</div>
+								<div class="right-side">
+									<VDropdown :distance="6" v-if="isOwner || isEditor" :positioning-disabled="isMobile">
+										<button v-tooltip="'Delete creature'" @click.stop.prevent="">
+											<font-awesome-icon :icon="['fas', 'trash']" />
+										</button>
+										<template #popper>
+											<div class="v-popper__custom-menu">
+												<span> Are you sure you want to delete this creature? </span>
+												<button class="btn danger" @click.stop="deleteCreature(creature)" v-close-popper>Confirm</button>
+											</div>
+										</template>
+									</VDropdown>
 
-								<span v-if="isOwner || isEditor" v-tooltip="'Edit creature'" aria-label="Edit creature" class="edit-creature" @click.stop="() => {}"> <RouterLink class="creature" :to="'/statblock-editor/' + creature._id"> <font-awesome-icon :icon="['fas', 'pen-to-square']" /> </RouterLink> </span>
-								<span class="cr"> CR {{ displayCR(creature.stats.description.cr) }}</span>
+									<span v-if="isOwner || isEditor" v-tooltip="'Edit creature'" aria-label="Edit creature" class="edit-creature" @click.stop="() => {}">
+										<RouterLink class="creature" :to="'/statblock-editor/' + creature._id"> <font-awesome-icon :icon="['fas', 'pen-to-square']" /> </RouterLink>
+									</span>
+									<span class="cr"> CR {{ displayCR(creature.stats.description.cr) }}</span>
+								</div>
 							</div>
-						</div>
-					</template>
-				</TransitionGroup>
+						</template>
+					</TransitionGroup>
 
-				<div class="create-tile" v-if="isOwner">
-					<span role="button" class="create-text" @click="createCreature()">add creature</span>
+					<div class="create-tile" v-if="isOwner">
+						<span role="button" class="create-text" @click="createCreature()">add creature</span>
+					</div>
 				</div>
 			</div>
-			</div>
-			
+
 			<div class="statblock-container" v-if="creatures && lastHoveredCreature">
 				<span v-if="lastClickedCreature" class="pin-notice">
 					<span class="unpin-button" @click="lastClickedCreature = null" role="button" aria-label="unpin currently pinned creature"><b>unpin</b></span
 					>📌
 				</span>
 				<Transition name="fade" mode="out-in">
-					<StatblockRenderer :data="lastClickedCreature || lastHoveredCreature" :key="lastClickedCreature?.description.name || lastHoveredCreature.description.name"/>
+					<StatblockRenderer :data="lastClickedCreature || lastHoveredCreature" :key="lastClickedCreature?.description.name || lastHoveredCreature.description.name" />
 				</Transition>
 			</div>
 			<div class="statblock-container" v-else>
@@ -128,10 +134,10 @@
 				<section class="modal__content modal__small" ref="importModal" v-if="bestiary && isOwner">
 					<button @click="isImportModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
 					<h2 class="modal-header">Import creatures</h2>
-					<p> This might take a while for large bestiaries.</p>
+					<p>This might take a while for large bestiaries.</p>
 					<div class="flow-vertically">
 						<label for="critterdblink">CritterDB bestiary link </label>
-						<p> Insert a link to a critterDB bestiary to import all its creatures. Make sure the bestiary is public or has link sharing enabled.</p>
+						<p>Insert a link to a critterDB bestiary to import all its creatures. Make sure the bestiary is public or has link sharing enabled.</p>
 						<div class="flow-horizontally">
 							<input type="text" v-model="critterDbId" id="critterdblink" placeholder="" />
 							<button class="btn confirm" @click.prevent="importBestiaryFromCritterDB">Import</button>
@@ -140,7 +146,7 @@
 					<hr />
 					<div class="flow-vertically">
 						<label for="bestiarybuilderjson">Bestiary Builder JSON </label>
-						<p> Insert the JSON as text gotten from clicking export on another bestiary within Bestiary Builder.</p>
+						<p>Insert the JSON as text gotten from clicking export on another bestiary within Bestiary Builder.</p>
 
 						<div class="flow-horizontally">
 							<input type="text" v-model="bestiaryBuilderJson" id="bestiarybuilderjson" placeholder="" />
@@ -149,14 +155,12 @@
 					</div>
 
 					<div class="modal-buttons">
-						<button class="btn" @click="isImportModalOpen = false ">Close</button>
+						<button class="btn" @click="isImportModalOpen = false">Close</button>
 					</div>
 				</section>
 			</div>
 		</Transition>
 	</Teleport>
-
-
 
 	<Teleport to="#modal">
 		<Transition name="modal">
@@ -170,7 +174,7 @@
 					</div>
 					<div class="flow-vertically">
 						<label for="descinput">Description</label>
-						<p> Supports markdown </p>
+						<p>Supports markdown</p>
 						<textarea v-model="bestiary.description" :maxlength="limits.descriptionLength" id="descinput" />
 					</div>
 					<div class="two-wide">
@@ -178,7 +182,7 @@
 							<label for="statusinput">Status</label>
 							<v-select v-model="bestiary.status" :options="['public', 'unlisted', 'private']" inputId="statusinput" />
 						</div>
-						<div  v-if="isOwner" class="flow-vertically">
+						<div v-if="isOwner" class="flow-vertically">
 							<label for="tagsInput">Tags</label>
 							<v-select placeholder="Select Tags" v-model="bestiary.tags" multiple :options="allTags" inputId="tagsInput" />
 						</div>
@@ -199,14 +203,15 @@
 						<div class="flow-vertically">
 							<label for="addeditor">Add editor</label>
 							<div class="button-container">
-								<input type="text" v-model="editorToAdd" inputmode="numeric" placeholder="Discord user ID" id="addeditor"/>
+								<input type="text" v-model="editorToAdd" inputmode="numeric" placeholder="Discord user ID" id="addeditor" />
 								<button class="btn" @click="addEditor()" id="add">Add</button>
 							</div>
 						</div>
 					</div>
 					<p class="warning" v-if="showWarning">
-						By changing the bestiary status to public I confirm that I am the copyright holder of the content within, or that I have permission from the copyright holder to share this content. I hereby agree to the <RouterLink to="../content-policy">Content Policy</RouterLink> and agree to be fully liable for the content within. I
-						affirm that the content does not include any official non-free D&D content. Bestiaries that breach these terms may have their status changed to private or be outright removed, and may result in a ban if the content breaches our content policy.
+						By changing the bestiary status to public I confirm that I am the copyright holder of the content within, or that I have permission from the copyright holder to share this content. I hereby agree to the <RouterLink to="../content-policy">Content Policy</RouterLink> and agree
+						to be fully liable for the content within. I affirm that the content does not include any official non-free D&D content. Bestiaries that breach these terms may have their status changed to private or be outright removed, and may result in a ban if the content breaches our
+						content policy.
 					</p>
 
 					<div class="modal-buttons">
@@ -227,7 +232,7 @@ import type {User, Bestiary, Creature, Statblock} from "@/generic/types";
 import UserBanner from "@/components/UserBanner.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import StatusIcon from "@/components/StatusIcon.vue";
-import {handleApiResponse, user, type error, toast, tags, type limitsType, asyncLimits} from "@/main";
+import {handleApiResponse, user, type error, toast, tags, type limitsType, asyncLimits, isMobile} from "@/main";
 import StatblockRenderer from "@/components/StatblockRenderer.vue";
 import {parseFromCritterDB} from "@/parser/parseFromCritterDB";
 import {displayCR} from "@/generic/displayFunctions";
@@ -236,8 +241,6 @@ import {onClickOutside} from "@vueuse/core";
 // @ts-ignore
 import {vue3Debounce} from "vue-debounce";
 import markdownit from "markdown-it";
-
-import { hideAllPoppers } from 'floating-vue'
 
 const md = markdownit();
 export default defineComponent({
@@ -251,14 +254,14 @@ export default defineComponent({
 		const isImportModalOpen = ref(false);
 		const importModal = ref<HTMLDivElement | null>(null);
 		onClickOutside(importModal, () => (isImportModalOpen.value = false));
-		
+
 		return {
 			editModal,
 			importModal,
 			isEditorModalOpen,
 			isImportModalOpen,
-			selectedCreature,
-		}
+			selectedCreature
+		};
 	},
 	data() {
 		return {
@@ -283,6 +286,7 @@ export default defineComponent({
 			searchText: "" as string,
 			displayCR,
 			md,
+			isMobile,
 			isExpanded: false
 		};
 	},
@@ -303,44 +307,55 @@ export default defineComponent({
 	},
 	async beforeMount() {
 		const loader = this.$loading.show();
-
 		this.user = await user;
-
 		await this.getBestiary();
-		this.searchCreatures()
 		loader.hide();
 	},
 	methods: {
-		searchCreatures() : void {
-			if (this.searchText == "") this.searchCreatureList = this.creatures 
+		searchCreatures(): void {
+			if (this.searchText == "") this.searchCreatureList = this.creatures;
 			else {
-				const loader = this.$loading.show()
-				this.searchCreatureList = this.creatures?.filter((creature) => creature.stats.description.name.toLowerCase().includes(this.searchText.toLowerCase().trim())) || []
-				loader.hide()
+				const loader = this.$loading.show();
+				this.searchCreatureList = this.creatures?.filter((creature) => creature.stats.description.name.toLowerCase().includes(this.searchText.toLowerCase().trim())) || [];
+				loader.hide();
 			}
 		},
-		exportBestiary(asFile : boolean) : void {
+		exportBestiary(asFile: boolean): void {
 			if (asFile) {
-				const file = new File([JSON.stringify(this.creatures?.map(obj => obj.stats), null, 2)], 'Creatures.txt', {
-				type: 'text/plain',
-				})
+				const file = new File(
+					[
+						JSON.stringify(
+							this.creatures?.map((obj) => obj.stats),
+							null,
+							2
+						)
+					],
+					"Creatures.txt",
+					{
+						type: "text/plain"
+					}
+				);
 
 				// https://javascript.plainenglish.io/javascript-create-file-c36f8bccb3be
-				const link = document.createElement('a')
-				const url = URL.createObjectURL(file)
+				const link = document.createElement("a");
+				const url = URL.createObjectURL(file);
 
-				link.href = url
-				link.download = file.name
-				document.body.appendChild(link)
-				link.click()
+				link.href = url;
+				link.download = file.name;
+				document.body.appendChild(link);
+				link.click();
 
-				document.body.removeChild(link)
-				window.URL.revokeObjectURL(url)
-					
-			}
-			else {
-				navigator.clipboard.writeText(JSON.stringify(this.creatures?.map(obj => obj.stats), null, 2))
-				toast.info("Exported this bestiary to your clipboard.")
+				document.body.removeChild(link);
+				window.URL.revokeObjectURL(url);
+			} else {
+				navigator.clipboard.writeText(
+					JSON.stringify(
+						this.creatures?.map((obj) => obj.stats),
+						null,
+						2
+					)
+				);
+				toast.info("Exported this bestiary to your clipboard.");
 			}
 		},
 		async importBestiaryFromCritterDB() {
@@ -350,10 +365,8 @@ export default defineComponent({
 				toast.error("Could not recognize link as a link to a CritterDB bestiary");
 				return;
 			}
-
 			let linkEls = link.split("/");
 			link = linkEls[linkEls.length - 1];
-
 			let data = {} as {
 				name: string;
 				description: string;
@@ -367,65 +380,70 @@ export default defineComponent({
 				.then((result) => {
 					if (result.success) {
 						data = result.data;
-						loader.hide();
 					} else {
 						toast.error((result.data as error).error);
 						hasFailed = true;
 					}
+					loader.hide();
 				});
-
 			if (hasFailed) {
 				return;
-				loader.hide()
 			}
-
 			loader = this.$loading.show();
 			toast.info("Importing creatures has started. This may take a while.");
-			for (let creature of data.creatures) {
-				let stats;
-				try {
-					stats = parseFromCritterDB(creature);
-					await this.createCreature(stats[0], false, false);
-				} catch (e) {
-					console.error(e);
-				}
-			}
+			let creatures = data.creatures.map((a) => parseFromCritterDB(a)[0]);
+			await fetch("/api/bestiary/" + this.bestiary?._id + "/addcreatures", {
+				method: "POST",
+				headers: {
+					Accept: "application/json",
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({data: creatures})
+			})
+				.then((response) => handleApiResponse<{error?: string}>(response))
+				.then((result) => {
+					if (result.data.error) toast.error(result.data.error);
+				});
 			await this.getBestiary();
 			loader.hide();
 			toast.success("Importing has finished!");
 			this.isImportModalOpen = false;
 		},
 		async importCreaturesFromBestiaryBuilder() {
-			let creatures; 
+			let creatures;
 			const loader = this.$loading.show();
-
 			try {
-				creatures = JSON.parse(this.bestiaryBuilderJson)
-			} catch(e) {
-				console.error(e)
-				toast.error("Something is wrong with the format of your JSON")
-				loader.hide()
+				creatures = JSON.parse(this.bestiaryBuilderJson);
+			} catch (e) {
+				console.error(e);
+				toast.error("Something is wrong with the format of your JSON");
+				loader.hide();
 				return;
 			}
-
 			toast.info("Importing creatures has started. This may take a while.");
-			for (let creature of JSON.parse(this.bestiaryBuilderJson)) {
-				try {
-					await this.createCreature(creature, false, false);
-				} catch (e) {
-					console.error(e);
-				}
-			}
-
+			await fetch("/api/bestiary/" + this.bestiary?._id + "/addcreatures", {
+				method: "POST",
+				headers: {
+					Accept: "application/json",
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({data: creatures})
+			})
+				.then((response) => handleApiResponse<{error?: string}>(response))
+				.then((result) => {
+					if (result.data.error) toast.error(result.data.error);
+					if (result.success) {
+						toast.success("Importing has finished!");
+					}
+				});
 			await this.getBestiary();
 			loader.hide();
-			toast.success("Importing has finished!");
 			this.isImportModalOpen = false;
 		},
 		async createCreature(stats = defaultStatblock, shouldRefresh = true, shouldHaveLoader = true) {
 			let loader;
 			if (shouldHaveLoader) {
-				loader = this.$loading.show()
+				loader = this.$loading.show();
 			}
 			//Replace for actual creation data:
 			let data = {
@@ -441,40 +459,44 @@ export default defineComponent({
 				},
 				body: JSON.stringify({data: data})
 			}).then(async (response) => {
-				let result = await handleApiResponse(response);
+				let result = await handleApiResponse<Creature>(response);
 				if (result.success) {
+					let data = result.data as Creature;
+					this.bestiary?.creatures.push(data._id);
+					this.creatures?.push(data);
 				} else {
 					toast.error((result.data as error).error);
 				}
 			});
-			if (shouldRefresh) { 
-				await this.getBestiary();
+			if (shouldRefresh) {
+				this.searchCreatures();
 				const tileContainer = document.getElementById("tile-container") as HTMLDivElement;
 				tileContainer.scrollTop = tileContainer.scrollHeight;
 			}
 			if (shouldHaveLoader && loader) {
-				loader.hide()
-
+				loader.hide();
 			}
-
 		},
 		async deleteCreature(creature: Creature) {
-			const loader = this.$loading.show()
+			const loader = this.$loading.show();
 			await fetch(`/api/creature/${creature._id}/delete`).then(async (response) => {
 				let result = await handleApiResponse(response);
 				if (result.success) {
 					toast.success("Deleted creature succesfully");
+					if (!this.bestiary) return;
+					this.bestiary.creatures = this.bestiary.creatures.filter((c) => c != creature._id);
+					this.creatures = this.creatures?.filter((c) => c._id != creature._id) ?? [];
+					this.searchCreatures();
 				} else {
 					toast.error((result.data as error).error);
 				}
 			});
-			await this.getBestiary();
-			loader.hide()
+			loader.hide();
 		},
 		async addEditor() {
 			if (!this.bestiary) return;
 			let id = this.editorToAdd;
-			const loader = this.$loading.show()
+			const loader = this.$loading.show();
 
 			await fetch(`/api/bestiary/${this.bestiary._id}/editors/add/${id}`).then(async (response) => {
 				let result = await handleApiResponse(response);
@@ -485,11 +507,11 @@ export default defineComponent({
 				}
 			});
 			await this.getBestiary();
-			loader.hide()
+			loader.hide();
 		},
 		async removeEditor(id: string) {
 			if (!this.bestiary) return;
-			const loader = this.$loading.show()
+			const loader = this.$loading.show();
 			await fetch(`/api/bestiary/${this.bestiary._id}/editors/remove/${id}`).then(async (response) => {
 				let result = await handleApiResponse(response);
 				if (result.success) {
@@ -499,7 +521,7 @@ export default defineComponent({
 				}
 			});
 			await this.getBestiary();
-			loader.hide()
+			loader.hide();
 		},
 		async getBestiary() {
 			//Get id
@@ -517,7 +539,7 @@ export default defineComponent({
 						let creatureResult = await handleApiResponse<Creature[]>(creatureResponse);
 						if (creatureResult.success) {
 							this.creatures = creatureResult.data as Creature[];
-							this.searchCreatures()
+							this.searchCreatures();
 						} else {
 							this.creatures = null;
 							toast.error((creatureResult.data as error).error);
@@ -558,7 +580,7 @@ export default defineComponent({
 		},
 		async updateBestiary() {
 			if (!this.bestiary) return;
-			const loader = this.$loading.show()
+			const loader = this.$loading.show();
 			//Send to backend
 			fetch(`/api/bestiary/${this.bestiary._id}/update`, {
 				method: "POST",
@@ -577,12 +599,11 @@ export default defineComponent({
 					toast.error((result.data as error).error);
 				}
 			});
-			loader.hide()
-
+			loader.hide();
 		},
 		async toggleBookmark() {
 			if (!this.bestiary) return;
-			const loader = this.$loading.show()
+			const loader = this.$loading.show();
 
 			await fetch(`/api/bestiary/${this.bestiary._id}/bookmark/toggle`).then(async (bookmarkResponse) => {
 				let bookmarkResult = await handleApiResponse<{state: boolean}>(bookmarkResponse);
@@ -595,7 +616,7 @@ export default defineComponent({
 					toast.error((bookmarkResult.data as error).error);
 				}
 			});
-			loader.hide()
+			loader.hide();
 		},
 		setSelectedCreature(creature: any) {
 			this.lastHoveredCreature = creature;
@@ -621,7 +642,7 @@ export default defineComponent({
 	display: flex;
 	flex-direction: column;
 	gap: 0.3rem;
-	margin: .5rem 0;
+	margin: 0.5rem 0;
 	label {
 		font-weight: bold;
 		text-decoration: underline;
@@ -683,7 +704,8 @@ export default defineComponent({
 					text-decoration: none;
 				}
 
-				span, button {
+				span,
+				button {
 					background: none;
 					border: none;
 					color: orangered;
@@ -699,7 +721,7 @@ export default defineComponent({
 					}
 
 					svg {
-						color: #536d8c
+						color: #536d8c;
 					}
 
 					&.cr {
@@ -707,15 +729,15 @@ export default defineComponent({
 					}
 				}
 			}
-
-
 		}
 	}
 
 	.create-tile {
 		text-align: center;
 		text-decoration: underline;
-		cursor: pointer;
+		& span {
+			cursor: pointer;
+		}
 	}
 }
 
@@ -723,22 +745,22 @@ export default defineComponent({
 	.list-tiles {
 		max-height: 40vh;
 		.content-tile {
-			padding: .5rem;
+			padding: 0.5rem;
 			h3 {
 				font-size: 1rem;
 			}
 			&.creature-tile {
 				.left-side span {
-					font-size: .6rem;
+					font-size: 0.6rem;
 				}
 
 				.right-side {
 					width: 30%;
-					gap: .3rem;
+					gap: 0.3rem;
 					justify-content: space-evenly;
 
 					span {
-						font-size: .9rem;
+						font-size: 0.9rem;
 
 						&.cr {
 							width: 4rem;
@@ -774,7 +796,6 @@ export default defineComponent({
 		}
 	}
 
-
 	.description:not(.expanded) {
 		-webkit-mask-image: linear-gradient(180deg, #000 80%, transparent);
 		mask-image: linear-gradient(180deg, #000 80%, transparent);
@@ -799,38 +820,22 @@ export default defineComponent({
 			text-align: right;
 		}
 	}
-	}
+}
 @media screen and (max-width: 842px) {
 	.header-tile {
 		.description {
 			font-size: xx-small;
 		}
 
-		.controls-container {
-			.btn {
-				font-size: .7rem;
-				padding: .5rem;
-			}
-
-			input {
-				font-size: .6rem;
-			}
-
-			label {
-				font-size: .8rem;
-			}
-		}
 		.footer {
-			font-size: .7rem;
+			font-size: 0.7rem;
 			grid-template-columns: 2fr 1fr 1fr 1fr;
 
 			&.three-wide {
 				grid-template-columns: 2fr 1fr 1fr;
 			}
-		}	
+		}
 	}
-
-
 }
 .bestiary {
 	display: grid;
@@ -852,30 +857,15 @@ export default defineComponent({
 	}
 }
 
-.delete-creature,
-.edit-creature,
-.edit-bestiary {
-	cursor: pointer;
-	transition: scale 0.3s ease;
-
-	:hover {
-		scale: 1.08;
-	}
-}
-
 .pin-notice,
 .expand-btn {
 	float: right;
 	cursor: pointer;
 }
 
-.unpin {
-	text-align: center;
-	margin: 0.5rem;
-	.unpin-button {
-		text-decoration: underline;
-		cursor: pointer;
-	}
+.unpin-button {
+	text-decoration: underline;
+	cursor: pointer;
 }
 
 .expand-btn {
@@ -885,7 +875,7 @@ export default defineComponent({
 	font-size: 1.6rem;
 	translate: 0 -20px;
 
-	transition: background-color .3s ease-in-out;
+	transition: background-color 0.3s ease-in-out;
 
 	&:hover {
 		background-color: var(--color-surface-0);

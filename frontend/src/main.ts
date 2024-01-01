@@ -41,7 +41,6 @@ const clientId = "1183362236509601813";
 const loginLink = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&response_type=code&scope=identify+email&redirect_uri=${encodeURIComponent(window.location.origin + "/user")}`;
 
 export function sendToLogin(route: string) {
-	console.log(route);
 	window.document.cookie = "route=" + route;
 	window.location.href = loginLink;
 }
@@ -102,7 +101,35 @@ app.use(LoadingPlugin, {
 //Font-Awesome-Icons
 import {library} from "@fortawesome/fontawesome-svg-core";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-import {faTrash, faLock, faSkull, faBars, faPenToSquare, faStopwatch, faMap, faLocationPin, faClock, faRuler, faStar, faHashtag, faArrowDown19, faHourglass, faUserLock, faScaleBalanced, faShareNodes, faArrowRightFromBracket, faArrowRightToBracket, faLink, faEarthEurope, faXmark, faPlus, faThumbTack, faFilter, faMagnifyingGlass} from "@fortawesome/free-solid-svg-icons";
+import {
+	faTrash,
+	faLock,
+	faSkull,
+	faBars,
+	faPenToSquare,
+	faStopwatch,
+	faMap,
+	faLocationPin,
+	faClock,
+	faRuler,
+	faStar,
+	faHashtag,
+	faArrowDown19,
+	faHourglass,
+	faUserLock,
+	faScaleBalanced,
+	faShareNodes,
+	faArrowRightFromBracket,
+	faArrowRightToBracket,
+	faLink,
+	faEarthEurope,
+	faXmark,
+	faPlus,
+	faThumbTack,
+	faFilter,
+	faMagnifyingGlass,
+	faTag
+} from "@fortawesome/free-solid-svg-icons";
 import {faTwitter, faFacebook, faDiscord, faInstagram, faPatreon, faGithub} from "@fortawesome/free-brands-svg-icons";
 library.add(
 	faTrash,
@@ -137,7 +164,8 @@ library.add(
 	faPlus,
 	faThumbTack,
 	faFilter,
-	faMagnifyingGlass
+	faMagnifyingGlass,
+	faTag
 );
 
 app.component("font-awesome-icon", FontAwesomeIcon);
@@ -148,3 +176,6 @@ app.component("v-select", vSelect);
 
 //Mount
 app.mount("body");
+
+// global isMobile for use with VDropdown
+export const isMobile = screen.width < 900;

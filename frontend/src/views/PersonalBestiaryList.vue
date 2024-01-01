@@ -6,15 +6,17 @@
 			isCurrent: true
 		}
 		]" 
-	/> 
+	>
+	<template #right-button>
+		<button @click="createBestiary" v-tooltip="'Create bestiary!'" class="inverted">
+			<font-awesome-icon :icon="['fas', 'plus']" />
+		</button>
+	</template>
+	</Breadcrumbs>
 	<div class="content">
-		<div class="tile-container">
-			<div class="content-tile create-tile" @click.prevent="createBestiary">
-				<button class="create-button">+</button>
-			</div>
-
+		<div class="tile-container" v-if="bestiaries">
 			<TransitionGroup name="popin">
-				<RouterLink class="content-tile bestiary-tile" v-if="bestiaries" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" :key="bestiary._id"
+				<RouterLink class="content-tile bestiary-tile" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" :key="bestiary._id"
 					:class="{'four-tall': bestiary.owner != userData?._id}">
 					<div class="tile-header" >
 						<h2>{{ bestiary.name }}</h2>
@@ -35,7 +37,12 @@
 						<span>{{ bestiary.creatures.length }}<font-awesome-icon :icon="['fas', 'skull']" /></span>
 					</div>
 				</RouterLink>
+
 			</TransitionGroup>
+		</div>
+		<div v-else class="zero-found">
+			<span> You do not have any bestiaries. </span>
+			<button class="btn confirm" @click="createBestiary">Create a bestiary</button>
 		</div>
 	</div>
 
@@ -174,25 +181,6 @@ export default defineComponent({
 
 <style scoped lang="less">
 @import url("@/assets/bestiary-list.less");
-.create-tile:first-of-type {
-	background-color: orangered;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	user-select: none;
-	cursor: pointer;
-
-	& .create-button {
-		background-color: transparent;
-		color: white;
-		border: none;
-		outline: none;
-		font-size: 25rem;
-		line-height: 0;
-		pointer-events: none;
-	}
-}
-
 .edit-button {
 	margin: auto;
 	transition: all 1s ease;
