@@ -735,7 +735,9 @@ export default defineComponent({
 	.create-tile {
 		text-align: center;
 		text-decoration: underline;
-		cursor: pointer;
+		& span {
+			cursor: pointer;
+		}
 	}
 }
 
@@ -825,20 +827,6 @@ export default defineComponent({
 			font-size: xx-small;
 		}
 
-		.controls-container {
-			.btn {
-				font-size: 0.7rem;
-				padding: 0.5rem;
-			}
-
-			input {
-				font-size: 0.6rem;
-			}
-
-			label {
-				font-size: 0.8rem;
-			}
-		}
 		.footer {
 			font-size: 0.7rem;
 			grid-template-columns: 2fr 1fr 1fr 1fr;
@@ -869,16 +857,6 @@ export default defineComponent({
 	}
 }
 
-.delete-creature,
-.edit-creature,
-.edit-bestiary {
-	cursor: pointer;
-	transition: scale 0.3s ease;
-
-	:hover {
-		scale: 1.08;
-	}
-}
 
 .pin-notice,
 .expand-btn {
@@ -886,14 +864,11 @@ export default defineComponent({
 	cursor: pointer;
 }
 
-.unpin {
-	text-align: center;
-	margin: 0.5rem;
-	.unpin-button {
-		text-decoration: underline;
-		cursor: pointer;
-	}
+.unpin-button {
+	text-decoration: underline;
+	cursor: pointer;
 }
+
 
 .expand-btn {
 	border: none;

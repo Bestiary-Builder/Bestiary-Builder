@@ -181,25 +181,6 @@ export default defineComponent({
 
 <style scoped lang="less">
 @import url("@/assets/bestiary-list.less");
-.create-tile:first-of-type {
-	background-color: orangered;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	user-select: none;
-	cursor: pointer;
-
-	& .create-button {
-		background-color: transparent;
-		color: white;
-		border: none;
-		outline: none;
-		font-size: 25rem;
-		line-height: 0;
-		pointer-events: none;
-	}
-}
-
 .edit-button {
 	margin: auto;
 	transition: all 1s ease;
