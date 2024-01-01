@@ -539,7 +539,7 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 					charisma: creature.stats.abilities.stats.cha
 				},
 				saves: saves,
-				skills: fixSkillNames(creature.stats.abilities.skills),
+				skills: getSkills(creature.stats.abilities.skills),
 				senses: getSenses(creature.stats.core.senses),
 				resistances: creature.stats.defenses.resistances,
 				immunities: creature.stats.defenses.immunities,
@@ -635,11 +635,16 @@ export interface SkillsEntity {
 	isExpertise: boolean;
 	override: number | null;
 }
-function fixSkillNames(skills: SkillsEntity[]) {
-	return skills.map((a) => {
-		a.skillName = skillNames[a.skillName.toLowerCase()] ?? a.skillName.toLowerCase();
-		return a;
-	});
+
+function getSkills(skills: SkillsEntity[]) {
+	let output = {} as {[key: string]: any}
+	for (let skill of skills) {
+		let skillName = skillNames[skill.skillName.toLowerCase()] ?? skill.skillName.toLowerCase();
+		output[skillName] = {...skill}
+
+		delete output[skillName]["skillName"]
+	}
+	return output
 }
 function calcSkills(data: any) {
 	let skillData = data.abilities.skills as SkillsEntity[];
