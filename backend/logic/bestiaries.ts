@@ -7,6 +7,7 @@ import {ObjectId} from "mongodb";
 import {type CreatureInput, defaultStatblock} from "./creatures";
 import limits from "../staticData/limits.json";
 import tags from "../staticData/tags.json";
+import { ReactionUserManager } from "discord.js";
 
 //Permission checks
 export function checkBestiaryPermission(bestiary: Bestiary, user: User | null): "none" | "view" | "owner" | "editor" {
@@ -513,9 +514,22 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 					default:
 						continue;
 				}
+				let override = creature.stats.abilities.saves[key].override
 				let value = statCalc(key, creature.stats);
+				let prof = 0;
+				if (override != null) {
+					value = override
+					prof = 1
+				} else if (creature.stats.abilities.saves[key].isProficient) {
+					value += creature.stats.core.proficiencyBonus
+					prof = 1
+				} 
+				 
 				saves[newKey] = {
-					value: value
+					value: value,
+					prof: prof,
+					adv: null,
+					bonus: 0
 				};
 			}
 			//Final data
@@ -648,7 +662,6 @@ function calcSkills(data: any) {
 	for (let stat in SKILLS_BY_STAT) {
 		for (let skill of SKILLS_BY_STAT[stat]) {
 			let raw = skillData.find((a) => a.skillName.toLowerCase() == skill);
-			console.log(raw)
 			if (raw == undefined)  {
 				output[skill] = {
 					value: statCalc(stat, data),
