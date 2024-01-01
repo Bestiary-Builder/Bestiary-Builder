@@ -531,12 +531,12 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 				speed: speedCalc(creature.stats.core.speed),
 				ability_scores: {
 					prof_bonus: creature.stats.core.proficiencyBonus,
-					strength: creature.stats.abilities.str,
-					dexterity: creature.stats.abilities.dex,
-					constitution: creature.stats.abilities.constitution,
-					intelligence: creature.stats.abilities.int,
-					wisdom: creature.stats.abilities.wis,
-					charisma: creature.stats.abilities.cha
+					strength: creature.stats.abilities.stats.str,
+					dexterity: creature.stats.abilities.stats.dex,
+					constitution: creature.stats.abilities.stats.con,
+					intelligence: creature.stats.abilities.stats.int,
+					wisdom: creature.stats.abilities.stats.wis,
+					charisma: creature.stats.abilities.stats.cha
 				},
 				saves: saves,
 				skills: fixSkillNames(creature.stats.abilities.skills),
