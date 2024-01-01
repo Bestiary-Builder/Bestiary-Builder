@@ -546,7 +546,8 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 				skills: calcSkills(creature.stats),
 				senses: getSenses(creature.stats.core.senses),
 				resistances: creature.stats.defenses.resistances,
-				display_resists: creature.stats.defenses.resistances,
+				immunities: creature.stats.defenses.immunities,
+				vulnerabilities: creature.stats.defenses.vulnerabilities,
 				condition_immune: creature.stats.defenses.conditionImmunities,
 				languages: creature.stats.core.languages,
 				cr: creature.stats.description.cr,
@@ -627,7 +628,7 @@ function speedCalc(data: any): string {
 		if (key == "isHover") continue;
 		let addon = "";
 		if (key == "fly" && data.isHover) addon = " (hover)";
-		if (data[key]) speeds.push(`${key} ${data[key]} ft.${addon}`);
+		if (data[key]) speeds.push(`${key == "walk" ? "" : ` ${key}`}${data[key]} ft.${addon}`);
 	}
 	return speeds.join(", ");
 }
