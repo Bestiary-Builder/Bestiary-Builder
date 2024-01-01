@@ -662,6 +662,7 @@ function calcSkills(data: any) {
 			}
 			let out = {value: value ?? 0} as any;
 			if (prof) out["prof"] = 1;
+			skill = allSkills[skill] ?? skill;
 			output[skill] = out;
 		}
 	}
@@ -678,4 +679,4 @@ const SKILLS_BY_STAT = {
 const allSkills = {
 	animalhandling: "animalHandling",
 	sleightofhand: "sleightOfHand"
-};
+} as {[key: string]: string};
