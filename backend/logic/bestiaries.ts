@@ -533,7 +533,7 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 				armortype: creature.stats.defenses.ac.acSource,
 				hp: hp,
 				hitdice: hitdice,
-				speed: creature.stats.core.speed,
+				speed: speedCalc(creature.stats.core.speed),
 				ability_scores: creature.stats.abilities.stats,
 				saves: saves,
 				skills: creature.stats.abilities.skills,
@@ -613,4 +613,11 @@ function getSenses(data: any) {
 	if (data.tremorsense) str += `tremorsense ${data.tremorsense}ft., `;
 	if (data.telepathy) str += `telepathy ${data.telepathy}ft., `;
 	return str.slice(0, str.length - 2);
+}
+function speedCalc(data: any): string {
+	let speeds = [];
+	for (let key in data) {
+		if (data[key]) speeds.push(`${key} ${data[key]} ft.`);
+	}
+	return speeds.join(", ");
 }
