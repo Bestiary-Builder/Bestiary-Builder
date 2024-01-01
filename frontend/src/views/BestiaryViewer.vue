@@ -307,11 +307,8 @@ export default defineComponent({
 	},
 	async beforeMount() {
 		const loader = this.$loading.show();
-
 		this.user = await user;
-
 		await this.getBestiary();
-		this.searchCreatures();
 		loader.hide();
 	},
 	methods: {
@@ -368,10 +365,8 @@ export default defineComponent({
 				toast.error("Could not recognize link as a link to a CritterDB bestiary");
 				return;
 			}
-
 			let linkEls = link.split("/");
 			link = linkEls[linkEls.length - 1];
-
 			let data = {} as {
 				name: string;
 				description: string;
@@ -385,29 +380,30 @@ export default defineComponent({
 				.then((result) => {
 					if (result.success) {
 						data = result.data;
-						loader.hide();
 					} else {
 						toast.error((result.data as error).error);
 						hasFailed = true;
 					}
+					loader.hide();
 				});
-
 			if (hasFailed) {
 				return;
-				loader.hide();
 			}
-
 			loader = this.$loading.show();
 			toast.info("Importing creatures has started. This may take a while.");
-			for (let creature of data.creatures) {
-				let stats;
-				try {
-					stats = parseFromCritterDB(creature);
-					await this.createCreature(stats[0], false, false);
-				} catch (e) {
-					console.error(e);
-				}
-			}
+			let creatures = data.creatures.map((a) => parseFromCritterDB(a)[0]);
+			await fetch("/api/bestiary/" + this.bestiary?._id + "/addcreatures", {
+				method: "POST",
+				headers: {
+					Accept: "application/json",
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({data: creatures})
+			})
+				.then((response) => handleApiResponse<{error?: string}>(response))
+				.then((result) => {
+					if (result.data.error) toast.error(result.data.error);
+				});
 			await this.getBestiary();
 			loader.hide();
 			toast.success("Importing has finished!");
@@ -416,7 +412,6 @@ export default defineComponent({
 		async importCreaturesFromBestiaryBuilder() {
 			let creatures;
 			const loader = this.$loading.show();
-
 			try {
 				creatures = JSON.parse(this.bestiaryBuilderJson);
 			} catch (e) {
@@ -425,19 +420,24 @@ export default defineComponent({
 				loader.hide();
 				return;
 			}
-
 			toast.info("Importing creatures has started. This may take a while.");
-			for (let creature of JSON.parse(this.bestiaryBuilderJson)) {
-				try {
-					await this.createCreature(creature, false, false);
-				} catch (e) {
-					console.error(e);
-				}
-			}
-
+			await fetch("/api/bestiary/" + this.bestiary?._id + "/addcreatures", {
+				method: "POST",
+				headers: {
+					Accept: "application/json",
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({data: creatures})
+			})
+				.then((response) => handleApiResponse<{error?: string}>(response))
+				.then((result) => {
+					if (result.data.error) toast.error(result.data.error);
+					if (result.success) {
+						toast.success("Importing has finished!");
+					}
+				});
 			await this.getBestiary();
 			loader.hide();
-			toast.success("Importing has finished!");
 			this.isImportModalOpen = false;
 		},
 		async createCreature(stats = defaultStatblock, shouldRefresh = true, shouldHaveLoader = true) {
@@ -857,7 +857,6 @@ export default defineComponent({
 	}
 }
 
-
 .pin-notice,
 .expand-btn {
 	float: right;
@@ -868,7 +867,6 @@ export default defineComponent({
 	text-decoration: underline;
 	cursor: pointer;
 }
-
 
 .expand-btn {
 	border: none;
