@@ -559,9 +559,15 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 			creatures.push(creatureData);
 		}
 		//Return bestiary in specific format
-		///let data = {};
+		let data = {
+			metadata: {
+				name: bestiary.name,
+				description: bestiary.description
+			},
+			creatures
+		};
 		log.info(`Public - Retrieved bestiary with the id ${id}`);
-		return res.json(creatures);
+		return res.json(data);
 	} catch (err) {
 		log.log("critical", err);
 		return res.status(500).json({error: "Unknown server error occured."});
