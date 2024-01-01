@@ -1,1 +1,16 @@
-["Example", "Dragons!"]
+[
+    "Aberrations", 
+    "Beasts",
+    "Celestials",
+    "Constructs",
+    "Dragons",
+    "Elementals",
+    "Fey",
+    "Fiends",
+    "Giants",
+    "Humanoids",
+    "Monstrosities",
+    "Oozes",
+    "Plants",
+    "Undead"
+]

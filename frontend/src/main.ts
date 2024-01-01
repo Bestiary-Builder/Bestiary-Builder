@@ -102,7 +102,7 @@ app.use(LoadingPlugin, {
 //Font-Awesome-Icons
 import {library} from "@fortawesome/fontawesome-svg-core";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-import {faTrash, faLock, faSkull, faBars, faPenToSquare, faStopwatch, faMap, faLocationPin, faClock, faRuler, faStar, faHashtag, faArrowDown19, faHourglass, faUserLock, faScaleBalanced, faShareNodes, faArrowRightFromBracket, faArrowRightToBracket, faLink, faEarthEurope, faXmark, faPlus, faThumbTack, faFilter, faMagnifyingGlass} from "@fortawesome/free-solid-svg-icons";
+import {faTrash, faLock, faSkull, faBars, faPenToSquare, faStopwatch, faMap, faLocationPin, faClock, faRuler, faStar, faHashtag, faArrowDown19, faHourglass, faUserLock, faScaleBalanced, faShareNodes, faArrowRightFromBracket, faArrowRightToBracket, faLink, faEarthEurope, faXmark, faPlus, faThumbTack, faFilter, faMagnifyingGlass, faTag} from "@fortawesome/free-solid-svg-icons";
 import {faTwitter, faFacebook, faDiscord, faInstagram, faPatreon, faGithub} from "@fortawesome/free-brands-svg-icons";
 library.add(
 	faTrash,
@@ -137,7 +137,8 @@ library.add(
 	faPlus,
 	faThumbTack,
 	faFilter,
-	faMagnifyingGlass
+	faMagnifyingGlass,
+	faTag
 );
 
 app.component("font-awesome-icon", FontAwesomeIcon);
@@ -148,3 +149,6 @@ app.component("v-select", vSelect);
 
 //Mount
 app.mount("body");
+
+// global isMobile for use with VDropdown
+export const isMobile = screen.width < 900

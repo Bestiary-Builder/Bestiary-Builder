@@ -1,5 +1,5 @@
 <template>
-	<Breadcrumbs
+<Breadcrumbs
 		:routes="[
 			{
 				path: '',
@@ -8,34 +8,43 @@
 			}
 		]"
 	>
-		<template #right-button>
-			<select v-model="viewMode" aria-label="Select public bestiary list mode">
-				<option>Recent</option>
-				<option>Popular</option>
-				<option>Bookmarked</option>
-			</select>
-		</template>
-	</Breadcrumbs>
-	<div class="content" v-if="viewMode != 'Bookmarked'">
-		<div class="tile-container">
-			<div class="content-tile search-tile">
-				<h2 class="tile-header"><label for="searchinput">search</label></h2>
-				<div class="tile-content">
-					<input id="searchinput" type="text" v-model="search" placeholder="Search by bestiary name or description" v-debounce:600ms.fireonempty="searchBestiaries" />
-					<div class="page-nav-container" v-if="total > 1">
-						<span role="button" aria-label="Decrease page number" @click="page = Math.max(1, page - 1)">-</span>
-						<span>{{ page }}/{{ total }}</span>
-						<span role="button" aria-label="Increase page number" @click="page = Math.min(total, page + 1)">+</span>
-					</div>
-					<div class="tags">
-						<label for="tagsInput">tags</label>
-						<v-select placeholder="Select Tags" v-model="selectedTags" multiple :options="tags" inputId="tagsInput" />
-					</div>
-				</div>
-			</div>
+	
+	<template #right-button>
+		<select v-model="viewMode" aria-label="Select public bestiary list mode">
+			<option>Recent</option>
+			<option>Popular</option>
+			<option>Bookmarked</option>
+		</select>
 
-			<TransitionGroup name="popin">
-				<RouterLink v-if="bestiaries && bestiaries.length > 0" class="content-tile bestiary-tile" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" :key="bestiary._id">
+		<VDropdown :distance="6" :positioning-disabled="false">
+			<button v-tooltip="'Filter bestiaries'">
+				<font-awesome-icon :icon="['fas', 'tag']" />
+			</button>
+			<template #popper>
+				<div class="v-popper__custom-menu">
+					<span><label for="tagsInput">Filter by tags</label></span>
+					<v-select placeholder="Select Tags" v-model="selectedTags" multiple :options="tags" inputId="tagsInput" />
+				</div>
+			</template>
+		</VDropdown>
+
+		<VDropdown :distance="6" :positioning-disabled="isMobile">
+			<button v-tooltip="'Search bestiaries'">
+				<font-awesome-icon :icon="['fas', 'magnifying-glass']" />
+			</button>
+			<template #popper>
+				<div class="v-popper__custom-menu">
+					<span> Search bestiaries by name or description</span>
+					<input id="searchinput" type="text" v-model="search" placeholder="Search by bestiary name or description" v-debounce:600ms.fireonempty="searchBestiaries" />
+				</div>
+			</template>
+		</VDropdown>
+	</template>
+</Breadcrumbs>
+	<div class="content" v-if="viewMode != 'Bookmarked'">
+		<div class="tile-container" v-if="bestiaries && bestiaries.length > 0">
+			<TransitionGroup name="popin" mode="in-out">
+				<RouterLink class="content-tile bestiary-tile" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" :key="bestiary._id">
 					<h2 class="tile-header">{{ bestiary.name }}</h2>
 					<div class="tile-content">
 						<div class="tags">
@@ -48,8 +57,15 @@
 						<span>{{ bestiary.creatures.length }}<font-awesome-icon :icon="['fas', 'skull']" /></span>
 					</div>
 				</RouterLink>
-				<p v-else class="zero-found">Did not find any Bestiaries with that name or tags.</p>
 			</TransitionGroup>
+		</div>
+		<div v-else class="zero-found">
+			<span> Did not find any Bestiaries with that name or tags.</span>
+		</div>
+		<div class="page-nav__container" v-if="total > 1">
+			<button aria-label="Decrease page number" @click="page = Math.max(1, page - 1)" v-tooltip="'Decrease page number'">-</button>
+			<span>{{ page }}/{{ total }}</span>
+			<button aria-label="Increase page number" @click="page = Math.min(total, page + 1)" v-tooltip="'Increase page number'">+</button>
 		</div>
 	</div>
 	<BookmarkedBestiaryList v-else />
@@ -61,7 +77,7 @@ import {defineComponent} from "vue";
 import type {Bestiary} from "@/generic/types";
 import UserBanner from "@/components/UserBanner.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
-import {handleApiResponse, toast, tags, type error} from "@/main";
+import {handleApiResponse, toast, tags, type error, isMobile} from "@/main";
 // @ts-ignore
 import {vue3Debounce} from "vue-debounce";
 import BookmarkedBestiaryList from "./BookmarkedBestiaryList.vue";
@@ -78,7 +94,8 @@ export default defineComponent({
 			selectedTags: [] as string[],
 			tags: [] as string[],
 			lastInput: 0,
-			viewMode: "Popular"
+			viewMode: "Popular",
+			isMobile
 		};
 	},
 	components: {
@@ -145,24 +162,6 @@ export default defineComponent({
 
 <style scoped lang="less">
 @import url("@/assets/bestiary-list.less");
-.search-tile {
-	background-color: orangered;
-
-	& .tile-header {
-		border-bottom-color: white;
-	}
-
-	& .tile-content input {
-		width: 100%;
-		margin-top: 0.5rem;
-	}
-}
-
-.settings {
-	display: flex;
-	flex-direction: column;
-	gap: 1rem;
-}
 
 .content-tile .tile-footer {
 	display: grid;
@@ -176,23 +175,19 @@ export default defineComponent({
 	}
 }
 
-.page-nav-container {
+.page-nav__container {
 	display: flex;
 	justify-content: center;
 	gap: 1rem;
 	align-items: center;
-	margin-top: 1rem;
 	font-size: 1.3rem;
-	color: white;
+	padding-top: 1rem;
 
-	& span[role="button"] {
+	& button {
+		background-color: unset;
+		border: unset;
+		color: white;
 		cursor: pointer;
 	}
-}
-
-.zero-found {
-	display: flex;
-	justify-content: center;
-	align-items: center;
 }
 </style>

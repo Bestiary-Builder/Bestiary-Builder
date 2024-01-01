@@ -24,7 +24,7 @@
 			<button @click="isEditorModalOpen = true" v-tooltip="'Edit bestiary!'" v-if="isOwner || isEditor">
 				<font-awesome-icon :icon="['fas', 'pen-to-square']" />
 			</button>
-			<VDropdown :distance="6">
+			<VDropdown :distance="6" :positioning-disabled="isMobile">
 				<button v-tooltip="'Filter bestiaries'">
 					<font-awesome-icon :icon="['fas', 'magnifying-glass']" />
 				</button>
@@ -36,7 +36,7 @@
 				</template>
 			</VDropdown>
 
-			<VDropdown :distance="6">
+			<VDropdown :distance="6" :positioning-disabled="isMobile">
 				<button v-tooltip="'Export bestiaries'">
 					<font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" />
 				</button>
@@ -84,8 +84,8 @@
 									<span>{{ creature.stats?.core?.size }} {{ creature.stats?.core?.race }}{{ creature.stats?.description?.alignment ? ", " + creature.stats?.description?.alignment : "" }}</span>
 								</div>
 								<div class="right-side">
-									<VDropdown :distance="6" v-if="isOwner || isEditor">
-										<button v-tooltip="'Delete creature'" @click.stop="">
+									<VDropdown :distance="6" v-if="isOwner || isEditor" :positioning-disabled="isMobile">
+										<button v-tooltip="'Delete creature'" @click.stop.prevent="">
 											<font-awesome-icon :icon="['fas', 'trash']" />
 										</button>
 										<template #popper>
@@ -232,7 +232,7 @@ import type {User, Bestiary, Creature, Statblock} from "@/generic/types";
 import UserBanner from "@/components/UserBanner.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import StatusIcon from "@/components/StatusIcon.vue";
-import {handleApiResponse, user, type error, toast, tags, type limitsType, asyncLimits} from "@/main";
+import {handleApiResponse, user, type error, toast, tags, type limitsType, asyncLimits, isMobile} from "@/main";
 import StatblockRenderer from "@/components/StatblockRenderer.vue";
 import {parseFromCritterDB} from "@/parser/parseFromCritterDB";
 import {displayCR} from "@/generic/displayFunctions";
@@ -241,8 +241,6 @@ import {onClickOutside} from "@vueuse/core";
 // @ts-ignore
 import {vue3Debounce} from "vue-debounce";
 import markdownit from "markdown-it";
-
-import {hideAllPoppers} from "floating-vue";
 
 const md = markdownit();
 export default defineComponent({
@@ -288,6 +286,7 @@ export default defineComponent({
 			searchText: "" as string,
 			displayCR,
 			md,
+			isMobile,
 			isExpanded: false
 		};
 	},
