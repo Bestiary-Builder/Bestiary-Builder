@@ -574,6 +574,8 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 				homebrew: true,
 				source: bestiary.name
 			};
+			// @ts-ignore
+			creatureData.passiveperc = calcPP(creature.stats.core.senses.passivePerceptionOverride, creatureData)
 			creatures.push(creatureData);
 		}
 		//Return bestiary in specific format
@@ -711,6 +713,11 @@ function calcSkills(data: any) {
 	return output;
 }
 
+function calcPP(override: null | number, finishedData: any) : number {
+	if (override != null) return override
+	return 10 + finishedData["skills"]["perception"]["value"]
+}
+
 const SKILLS_BY_STAT = {
 	str: ["athletics", "strength"],
 	dex: ["acrobatics", "sleightOfHand", "stealth", "initiative", "dexterity"],
@@ -719,7 +726,5 @@ const SKILLS_BY_STAT = {
 	wis: ["animalHandling", "insight", "medicine", "perception", "survival", "wisdom"],
 	cha: ["deception", "intimidation", "performance", "persuasion", "charisma"]
 } as {[key: string]: string[]};
-const skillNames = {
-	animalhandling: "animalHandling",
-	sleightofhand: "sleightOfHand"
-} as {[key: string]: string};
+
+
