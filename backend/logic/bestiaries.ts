@@ -483,7 +483,9 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 				caster_dc: spellDc(false, creature.stats),
 				caster_sab: spellAttackBonus(false, creature.stats),
 				caster_mod: statCalc(spellcastCasterObj.spellCastingAbilityOverride ?? spellcastCasterObj.spellCastingAbility, creature.stats),
-
+				innate_dc: spellDc(true, creature.stats),
+				innate_sab: spellAttackBonus(true, creature.stats),
+				innate_mod: statCalc(spellcastInnateObj.spellCastingAbilityOverride ?? spellcastInnateObj.spellCastingAbility, creature.stats),
 			};
 
 			//Saves/stats
