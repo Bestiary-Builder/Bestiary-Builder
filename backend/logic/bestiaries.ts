@@ -578,7 +578,26 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 			};
 			// @ts-ignore
 			creatureData.passiveperc = calcPP(creature.stats.core.senses.passivePerceptionOverride, creatureData)
+			let caster = creature.stats["spellcasting"]["casterSpells"]
+			let isNoun = creature.stats["description"]["isProperNoun"]
+			let name = creature.stats["description"]["name"]
+			if (caster.casterLevel && caster.castingClass && caster.spellList.flat().length > 0) {
+				let output = `${isNoun ? "" : "The "}${name} is a ${nthSuffix(caster.casterLevel)}-level spellcaster. ${isNoun ? "Their" : "Its"} spellcasting ability is ${fullSpellAbilityName(caster.spellCastingAbilityOverride ?? caster.spellCastingAbility)} (spell save DC ${spellDc(false, creature.stats)}, ${spellAttackBonus(false, creature.stats) >= 0 ? "+" : "" }${spellAttackBonus(false, creature.stats)} to hit with spell attacks.) ${isNoun ? name : "It"} ${["Sorcerer", "Bard", "Ranger", "Warlock"].includes(caster.castingClass) ? `knowns the following ${caster.castingClass.toLowerCase()} spells` : `has the following ${caster.castingClass.toLowerCase()} prepared`}:${!['Ranger', 'Paladin'].includes(caster.castingClass) && caster.spellList[0].length > 0 ? `\nCantrips (at will): ${caster.spellList[0].sort().join(", ")}` : ""}${caster.spellList[1].length > 0 ? `\n1st level (${caster.spellSlotList[1]} slots): ${caster.spellList[1].sort().join(", ")}` : ""}${caster.spellList[2].length > 0 ? `\n2nd level (${caster.spellSlotList[2]} slots): ${caster.spellList[2].sort().join(", ")}` : ""}${caster.spellList[3].length > 0 ? `\n3rd level (${caster.spellSlotList[3]} slots): ${caster.spellList[3].sort().join(", ")}` : ""}${caster.spellList[4].length > 0 ? `\n4th level (${caster.spellSlotList[4]} slots): ${caster.spellList[4].sort().join(", ")}` : ""}${caster.spellList[5].length > 0 ? `\n5th level (${caster.spellSlotList[5]} slots): ${caster.spellList[5].sort().join(", ")}` : ""}${caster.spellList[6].length > 0 ? `\n6th level (${caster.spellSlotList[6]} slots): ${caster.spellList[6].sort().join(", ")}` : ""}${caster.spellList[7].length > 0 ? `\n7th level (${caster.spellSlotList[7]} slots): ${caster.spellList[7].sort().join(", ")}` : ""}${caster.spellList[8].length > 0 ? `\n8th level (${caster.spellSlotList[8]} slots): ${caster.spellList[8].sort().join(", ")}` : ""}${caster.spellList[9].length > 0 ? `\n9th level (${caster.spellSlotList[9]} slots): ${caster.spellList[9].sort().join(", ")}` : ""}
+				`.replaceAll("\t", "")
+
+				let lastIndex = output.lastIndexOf("\n");
+				// remove last \n
+				if (lastIndex !== -1) output = output.substring(0, lastIndex) + output.substring(lastIndex + 1);
+				
+				creatureData.traits.push({
+					name: "Spellcasting",
+					description: output,
+					automation: null
+				})
+			}
 			creatures.push(creatureData);
+
+
 		}
 		//Return bestiary in specific format
 		let data = {
@@ -624,7 +643,6 @@ function knownSpells(data: any): any {
 
 	for (let times in data.innateSpells.spellList) {
 		if (times == "0") continue
-		console.log(data.innateSpells.spellList[times])
 		for (let sp of data.innateSpells.spellList[times]) {
 			// @ts-ignore
 			dailySpells[times].push(sp.spell)
@@ -637,7 +655,34 @@ function knownSpells(data: any): any {
 	}
 	return output
 }
+// <span v-if="!data.description.isProperNoun"> The </span> {{ data.description.name }} is a {{ nthSuffix(data.spellcasting.casterSpells.casterLevel) }}-level spellcaster. <span v-if="data.description.isProperNoun"> Their </span><span v-else> Its </span> spellcasting ability is {{ fullSpellAbilityName() }} (spell save DC {{ spellDc() }}, {{ spellAttackBonus() }} to hit with spell attacks). <span v-if="!data.description.isProperNoun"> It </span><span v-else> {{ data.description.name }}</span><span v-if='["Sorcerer", "Bard", "Ranger", "Warlock"].includes(data.spellcasting.casterSpells.castingClass)'> knows the following {{ data.spellcasting.casterSpells.castingClass.toLowerCase()}} spells: </span> 
+// <span v-else> has the following {{ data.spellcasting.casterSpells.castingClass.toLowerCase()}} spells prepared: </span>
 
+// <div class="spell-list">
+// <p v-for="spells, level in data.spellcasting.casterSpells.spellList"> 
+// 	<div v-if="(level == 0 && !['Ranger', 'Paladin'].includes(data.spellcasting.casterSpells.castingClass) )|| Object.keys(data.spellcasting.casterSpells.spellSlotList).includes(level.toString())"> 
+// 		<span v-if="level==0 && spells.length > 0"> Cantrips (at will): </span>
+// 		<span v-else-if="spells.length > 0"> {{ nthSuffix(level) }} level ({{ data.spellcasting.casterSpells.spellSlotList[level] }} slots): </span>
+// 		<i> {{ spells.sort().join(", ") }} </i>
+// 	</div>
+// </p>
+// </div>
+// generate text representations of spellcasting as avrae doesnt do that for us
+function spellcastingFeatures(data : any, newData : any) {
+	let caster = data["spellcasting"]["casterSpells"]
+	let isNoun = data["description"]["isProperNoun"]
+	let name = data["description"]["name"]
+	if (caster.casterLevel && caster.castingClass && caster.spellList.flat().length > 0) {
+		const output = `${isNoun ? "" : "The "}${name} is a ${nthSuffix(caster.casterLevel)}-level spellcaster. ${isNoun ? "Their" : "Its"} spellcasting ability is ${fullSpellAbilityName(caster.spellCastingAbilityOverride ?? caster.spellCastingAbility)} (spell save DC ${spellDc(false, data)}, ${spellAttackBonus(false, data) >= 0 ? "+" : "" }${spellAttackBonus(false, data)} to hit with spell attacks.) ${isNoun ? name : "It"} ${["Sorcerer", "Bard", "Ranger", "Warlock"].includes(caster.castingClass) ? `knowns the following ${caster.castingClass.toLowerCase()} spells` : `has the following ${caster.castingClass.toLowerCase()} prepared`}:${!['Ranger', 'Paladin'].includes(caster.castingClass) && caster.spellList[0].length > 0 ? `\nCantrips (at will): ${caster.spellList[0].sort().join(", ")}` : ""}${caster.spellList[1].length > 0 ? `\n1st level (${caster.spellSlotList[1]} slots): ${caster.spellList[1].sort().join(", ")}` : ""}${caster.spellList[2].length > 0 ? `\n2nd level (${caster.spellSlotList[2]} slots): ${caster.spellList[2].sort().join(", ")}` : ""}${caster.spellList[3].length > 0 ? `\n3rd level (${caster.spellSlotList[3]} slots): ${caster.spellList[3].sort().join(", ")}` : ""}${caster.spellList[4].length > 0 ? `\n4th level (${caster.spellSlotList[4]} slots): ${caster.spellList[4].sort().join(", ")}` : ""}${caster.spellList[5].length > 0 ? `\n5th level (${caster.spellSlotList[5]} slots): ${caster.spellList[5].sort().join(", ")}` : ""}${caster.spellList[6].length > 0 ? `\n6th level (${caster.spellSlotList[6]} slots): ${caster.spellList[6].sort().join(", ")}` : ""}${caster.spellList[7].length > 0 ? `\n7th level (${caster.spellSlotList[7]} slots): ${caster.spellList[7].sort().join(", ")}` : ""}${caster.spellList[8].length > 0 ? `\n8th level (${caster.spellSlotList[8]} slots): ${caster.spellList[8].sort().join(", ")}` : ""}${caster.spellList[9].length > 0 ? `\n9th level (${caster.spellSlotList[9]} slots): ${caster.spellList[9].sort().join(", ")}` : ""}
+		`
+		newData.traits.push({
+			name: "Spellcasting",
+			description: output,
+			automation: null
+		})
+	}
+}
+// 75249
 function hpCalc(data: any): number {
 	return data.defenses.hp.override ?? Math.floor(data.defenses.hp.numOfHitDie * ((data.defenses.hp.sizeOfHitDie + 1) / 2 + statCalc("con", data)));
 }
@@ -758,3 +803,28 @@ const SKILLS_BY_STAT = {
 } as {[key: string]: string[]};
 
 
+function nthSuffix(number: number) : string {
+	switch (number) {
+		case 1:
+			return '1st'
+		case 2:
+			return '2nd'
+		case 3:
+			return '3rd'
+		default:
+			return number.toString() + 'th'
+	}
+}
+
+function fullSpellAbilityName(abi: string) : string {
+	// if (innate) abi = this.data.spellcasting.innateSpells.spellCastingAbility
+	// else abi = this.data.spellcasting.casterSpells.spellCastingAbilityOverride ?? this.data.spellcasting.casterSpells.spellCastingAbility
+
+	if (abi == 'str') return "Strength"
+	if (abi == 'dex') return "Dexterity"
+	if (abi == 'con') return "Constitution"
+	if (abi == 'wis') return "Wisdom"
+	if (abi == 'int') return "Intelligence"
+	if (abi == 'cha') return "Charisma"
+	return "Spellcasting Ability not found."
+}
