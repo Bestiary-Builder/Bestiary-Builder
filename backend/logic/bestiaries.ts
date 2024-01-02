@@ -596,7 +596,7 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 
 			caster = creature.stats["spellcasting"]["innateSpells"]
 			console.log(caster)
-			if (caster.spellCastingAbility && (caster.spellList[0].length > 1 || caster.spellList[1].length > 1 || caster.spellList[2].length > 1 || caster.spellList[3].length > 1) ) {
+			if (caster.spellCastingAbility && (caster.spellList[0].length > 0 || caster.spellList[1].length > 0 || caster.spellList[2].length > 0 || caster.spellList[3].length > 0) ) {
 				console.log("yay")
 				let fName = `Innate Spellcasting${caster.isPsionics ? " (Psionics)" : ""}`
 				let output = ""
