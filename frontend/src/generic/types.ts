@@ -122,6 +122,14 @@ export const XPbyCR = [
 	// skips 1/8 1/4 1/2
 	0, 200, 450, 700, 1100, 1800, 2300, 2900, 3900, 5000, 5900, 7200, 8400, 10000, 11500, 13000, 15000, 18000, 20000, 22000, 25000, 33000, 41000, 50000, 62000, 75000, 90000, 105000, 120000, 135000, 255000,
 ]
+
+export function getXPbyCR(cr: number) {
+	if (cr == 0.125)    return 25
+	else if (cr == 0.25)return 50
+	else if (cr == 0.5 ) return 100
+	else return XPbyCR[cr] ?? 0
+}
+
 export function getSpellSlots(sClass: string | null, level: number | null): SpellSlotEntity | undefined {
 	if (!sClass || !level) return {};
 	if (sClass == "Warlock") {
