@@ -81,7 +81,7 @@ app.use(router);
 import ToastPlugin from "vue-toast-notification";
 import "vue-toast-notification/dist/theme-default.css";
 app.use(ToastPlugin, {
-	position: "top-right",
+	position: "top-left",
 	duration: 4000,
 	dismissible: true
 });

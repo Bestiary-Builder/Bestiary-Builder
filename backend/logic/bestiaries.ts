@@ -572,7 +572,6 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 				legactions: creature.stats.features.legendary,
 				mythic: creature.stats.features.mythic,
 				la_per_round: 3,
-				attacks: creature.stats.features.actions,
 				proper: creature.stats.description.isProperNoun,
 				image_url: creature.stats.description.image,
 				spellcasting: spellcasting,
@@ -596,8 +595,35 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 					automation: null
 				})
 			}
+
+			caster = creature.stats["spellcasting"]["innateSpells"]
+			console.log(caster)
+			if (caster.spellCastingAbility && (caster.spellList[0].length > 1 || caster.spellList[1].length > 1 || caster.spellList[2].length > 1 || caster.spellList[3].length > 1) ) {
+				console.log("yay")
+				let fName = `Innate Spellcasting${caster.isPsionics ? " (Psionics)" : ""}`
+				let output = ""
+
+				if (!caster.displayAsAction) {
+					output += `${isNoun ? "" : "The "}${name}'s spellcasting ability is ${fullSpellAbilityName(caster.spellCastingAbility)} (spell save DC ${spellDc(true, creature.stats)}, ${spellAttackBonus(true, creature.stats) >= 0 ? "+" : "" }${spellAttackBonus(true, creature.stats)} to hit with spell attacks). ${isNoun ? name : "It"} can innately cast the following spells${componentsString(caster.noComponentsOfType)}:`
+				} else {
+					output += `${isNoun ? "" : "The "}${name} casts one of the following spells${componentsString(caster.noComponentsOfType)} and using ${fullSpellAbilityName(caster.spellCastingAbility)} as the spellcasting ability (spell save DC ${spellDc(true, creature.stats)}, ${spellAttackBonus(true, creature.stats) >= 0 ? "+" : "" }${spellAttackBonus(true, creature.stats)} to hit with spell attacks):`
+				}
+				
+				if (caster.spellList[0].length > 0) output += `\n\nAt will: ${caster.spellList[0].map((x : any) => x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell).sort().join(", ").toLowerCase()}`
+				if (caster.spellList[3].length > 0) output += `\n\n3/day each: ${caster.spellList[3].map((x : any) => x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell).sort().join(", ").toLowerCase()}`
+				if (caster.spellList[2].length > 0) output += `\n\n2/day each: ${caster.spellList[2].map((x : any) => x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell).sort().join(", ").toLowerCase()}`
+				if (caster.spellList[1].length > 0) output += `\n\n1/day each: ${caster.spellList[1].map((x : any) => x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell).sort().join(", ").toLowerCase()}`
+
+
+				creatureData[caster.displayAsAction ? "actions" : "traits"].push({
+					name: fName,
+					description: output,
+					automation: null
+				})
+			}
 			creatures.push(creatureData);
 
+			//  <span v-if="!data.description.isProperNoun"> The </span> {{ data.description.name }} casts one of the following spells{{ componentsString(false) }}, using {{ fullSpellAbilityName(true) }} as the spellcasting ability, (spell save DC {{ spellDc(true) }}, {{ spellAttackBonus(true) }} to hit with spell attacks).
 
 		}
 		//Return bestiary in specific format
@@ -656,34 +682,7 @@ function knownSpells(data: any): any {
 	}
 	return output
 }
-// <span v-if="!data.description.isProperNoun"> The </span> {{ data.description.name }} is a {{ nthSuffix(data.spellcasting.casterSpells.casterLevel) }}-level spellcaster. <span v-if="data.description.isProperNoun"> Their </span><span v-else> Its </span> spellcasting ability is {{ fullSpellAbilityName() }} (spell save DC {{ spellDc() }}, {{ spellAttackBonus() }} to hit with spell attacks). <span v-if="!data.description.isProperNoun"> It </span><span v-else> {{ data.description.name }}</span><span v-if='["Sorcerer", "Bard", "Ranger", "Warlock"].includes(data.spellcasting.casterSpells.castingClass)'> knows the following {{ data.spellcasting.casterSpells.castingClass.toLowerCase()}} spells: </span> 
-// <span v-else> has the following {{ data.spellcasting.casterSpells.castingClass.toLowerCase()}} spells prepared: </span>
 
-// <div class="spell-list">
-// <p v-for="spells, level in data.spellcasting.casterSpells.spellList"> 
-// 	<div v-if="(level == 0 && !['Ranger', 'Paladin'].includes(data.spellcasting.casterSpells.castingClass) )|| Object.keys(data.spellcasting.casterSpells.spellSlotList).includes(level.toString())"> 
-// 		<span v-if="level==0 && spells.length > 0"> Cantrips (at will): </span>
-// 		<span v-else-if="spells.length > 0"> {{ nthSuffix(level) }} level ({{ data.spellcasting.casterSpells.spellSlotList[level] }} slots): </span>
-// 		<i> {{ spells.sort().join(", ").toLowerCase() }} </i>
-// 	</div>
-// </p>
-// </div>
-// generate text representations of spellcasting as avrae doesnt do that for us
-function spellcastingFeatures(data : any, newData : any) {
-	let caster = data["spellcasting"]["casterSpells"]
-	let isNoun = data["description"]["isProperNoun"]
-	let name = data["description"]["name"]
-	if (caster.casterLevel && caster.castingClass && caster.spellList.flat().length > 0) {
-		const output = `${isNoun ? "" : "The "}${name} is a ${nthSuffix(caster.casterLevel)}-level spellcaster. ${isNoun ? "Their" : "Its"} spellcasting ability is ${fullSpellAbilityName(caster.spellCastingAbilityOverride ?? caster.spellCastingAbility)} (spell save DC ${spellDc(false, data)}, ${spellAttackBonus(false, data) >= 0 ? "+" : "" }${spellAttackBonus(false, data)} to hit with spell attacks.) ${isNoun ? name : "It"} ${["Sorcerer", "Bard", "Ranger", "Warlock"].includes(caster.castingClass) ? `knowns the following ${caster.castingClass.toLowerCase()} spells` : `has the following ${caster.castingClass.toLowerCase()} prepared`}:${!['Ranger', 'Paladin'].includes(caster.castingClass) && caster.spellList[0].length > 0 ? `\nCantrips (at will): ${caster.spellList[0].sort().join(", ").toLowerCase()}` : ""}${caster.spellList[1].length > 0 ? `\n1st level ${slots(caster.spellSlotList[1])}: ${caster.spellList[1].sort().join(", ").toLowerCase()}` : ""}${caster.spellList[2].length > 0 ? `\n2nd level ${slots(caster.spellSlotList[2])}: ${caster.spellList[2].sort().join(", ").toLowerCase()}` : ""}${caster.spellList[3].length > 0 ? `\n3rd level ${slots(caster.spellSlotList[3])}: ${caster.spellList[3].sort().join(", ").toLowerCase()}` : ""}${caster.spellList[4].length > 0 ? `\n4th level ${slots(caster.spellSlotList[4])}: ${caster.spellList[4].sort().join(", ").toLowerCase()}` : ""}${caster.spellList[5].length > 0 ? `\n5th level ${slots(caster.spellSlotList[5])}: ${caster.spellList[5].sort().join(", ").toLowerCase()}` : ""}${caster.spellList[6].length > 0 ? `\n6th level ${slots(caster.spellSlotList[6])}: ${caster.spellList[6].sort().join(", ").toLowerCase()}` : ""}${caster.spellList[7].length > 0 ? `\n7th level ${slots(caster.spellSlotList[7])}: ${caster.spellList[7].sort().join(", ").toLowerCase()}` : ""}${caster.spellList[8].length > 0 ? `\n8th level ${slots(caster.spellSlotList[8])}: ${caster.spellList[8].sort().join(", ").toLowerCase()}` : ""}${caster.spellList[9].length > 0 ? `\n9th level ${slots(caster.spellSlotList[9])}: ${caster.spellList[9].sort().join(", ").toLowerCase()}` : ""}
-		`
-		newData.traits.push({
-			name: "Spellcasting",
-			description: output,
-			automation: null
-		})
-	}
-}
-// 75249
 function hpCalc(data: any): number {
 	return data.defenses.hp.override ?? Math.floor(data.defenses.hp.numOfHitDie * ((data.defenses.hp.sizeOfHitDie + 1) / 2 + statCalc("con", data)));
 }
@@ -833,4 +832,18 @@ function fullSpellAbilityName(abi: string) : string {
 function slots(num: number) {
 	if (num > 1) return `(${num} slots)`
 	return `(${num} slot)`
+}
+
+function componentsString(comp: string[]) : string {
+	comp.sort()
+	if (comp.length == 0) return ""
+	if (comp.length == 3) return ", requiring no components"
+	if (comp.length == 2) {
+		let only = "material";
+		if (!comp.includes("Verbal")) only = "verbal"
+		if (!comp.includes("Somatic")) only = "somatic"
+
+		return `, requiring only ${only} components`
+	}
+	return `, requiring no ${comp[0].toLowerCase()} components`
 }
