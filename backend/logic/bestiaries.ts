@@ -538,9 +538,14 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 			//Final data
 			let creatureData = {
 				name: creature.stats.description.name,
+				proper: creature.stats.description.isProperNoun,
+				image_url: creature.stats.description.image || null,
+				languages: creature.stats.core.languages,
+				cr: displayCR(creature.stats.description.cr),
+				xp: 1000,
+				alignment: creature.stats.description.alignment,
 				size: creature.stats.core.size,
 				race: creature.stats.core.race,
-				alignment: creature.stats.description.alignment,
 				ac: creature.stats.defenses.ac.ac,
 				armortype: creature.stats.defenses.ac.acSource,
 				hp: hp,
@@ -562,9 +567,6 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 				immunities: creature.stats.defenses.immunities,
 				vulnerabilities: creature.stats.defenses.vulnerabilities,
 				condition_immune: creature.stats.defenses.conditionImmunities,
-				languages: creature.stats.core.languages,
-				cr: displayCR(creature.stats.description.cr),
-				xp: 1000,
 				traits: creature.stats.features.features,
 				actions: creature.stats.features.actions,
 				bonus_actions: creature.stats.features.bonus,
@@ -572,11 +574,7 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 				legactions: creature.stats.features.legendary,
 				mythic: creature.stats.features.mythic,
 				la_per_round: 3,
-				proper: creature.stats.description.isProperNoun,
-				image_url: creature.stats.description.image,
 				spellcasting: spellcasting,
-				homebrew: true,
-				source: bestiary.name
 			};
 			// @ts-ignore
 			creatureData.passiveperc = calcPP(creature.stats.core.senses.passivePerceptionOverride, creatureData)
