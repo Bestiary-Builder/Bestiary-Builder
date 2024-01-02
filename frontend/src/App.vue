@@ -1,5 +1,5 @@
 <script lang="ts">
-import {RouterLink, RouterView} from "vue-router";
+import {RouterView} from "vue-router";
 import Footer from "@/constantComponents/Footer.vue";
 import NavHeader from "@/constantComponents/NavHeader.vue";
 import {defineComponent} from "vue";
