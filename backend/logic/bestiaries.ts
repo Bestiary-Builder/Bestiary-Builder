@@ -614,14 +614,18 @@ function spellDc(innate = false, data: any): number {
 }
 
 function knownSpells(data: any): any {
-	let dailySpells = {};
+	let dailySpells = {
+		"1": [],
+		"2": [],
+		"3": []
+	};
 
 	for (let times in data.innateSpells.spellList) {
 		if (times == "0") continue
 		console.log(data.innateSpells.spellList[times])
 		for (let sp of data.innateSpells.spellList[times]) {
 			// @ts-ignore
-			dailySpells[sp.spell] = parseInt(times)
+			dailySpells[times].push(sp.spell)
 		}
 	}
 	let output = {
