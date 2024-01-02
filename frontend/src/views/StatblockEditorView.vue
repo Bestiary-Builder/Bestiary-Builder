@@ -975,7 +975,7 @@ import {defineComponent} from "vue";
 import StatblockRenderer from "../components/StatblockRenderer.vue";
 import Breadcrumbs from "../components/Breadcrumbs.vue";
 import type {SkillsEntity, Statblock, Creature, Bestiary} from "@/generic/types";
-import {defaultStatblock, getSpellSlots, spellList, spellListFlattened, XPbyCR} from "@/generic/types";
+import {defaultStatblock, getSpellSlots, spellList, spellListFlattened, getXPbyCR} from "@/generic/types";
 import {handleApiResponse, type error, toast, asyncLimits, type limitsType} from "@/main";
 import FeatureWidget from "@/components/FeatureWidget.vue";
 import {parseFrom5eTools} from "../parser/parseFrom5eTools";
@@ -1378,10 +1378,7 @@ export default defineComponent({
 		"data.description.cr"() {
 			this.data.core.proficiencyBonus = Math.max(2, Math.min(9, Math.floor((this.data.description.cr + 3) / 4)) + 1);
 
-			if (this.data.description.cr == 0.125) this.data.description.xp = 25
-			else if (this.data.description.cr == 0.25) this.data.description.xp  = 50
-			else if (this.data.description.cr == 0.5) this.data.description.xp   = 100
-			else this.data.description.xp = XPbyCR[this.data.description.cr] ?? 0
+			this.data.description.xp = getXPbyCR(this.data.description.cr)
 		}
 	},
 	beforeRouteUpdate() {

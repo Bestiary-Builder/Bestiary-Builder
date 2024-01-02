@@ -18,7 +18,8 @@ export function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: s
 		environment: data.flavor.environment,
 		image: data.flavor.imageUrl,
 		alignment: data.stats.alignment,
-		cr: data.stats.challengeRating
+		cr: data.stats.challengeRating,
+		xp: data.stats.experiencePoints
 	};
 
 	outputData.core = {
