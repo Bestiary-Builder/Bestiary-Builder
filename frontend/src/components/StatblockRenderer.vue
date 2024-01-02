@@ -118,7 +118,7 @@
             <span> <b> Proficiency Bonus </b> +{{ data.core.proficiencyBonus }}</span>
         </div>
     </div>
-    <div class="stat-block__row" v-if="showFeatures() || showCasting() || (showInnateCasting() && !data.spellcasting.innateSpells.displayAsAction)">
+    <div class="stat-block__row" v-if="showFeatures() || showCasting() || showInnateCasting()">
         <div class="feature-container"  v-if="data.features.features.length > 0 || showCasting() || showInnateCasting()">
             <p v-for="feature in data.features.features">
                 <p v-if="data.misc.featureHeaderTexts.features"> {{ data.misc.featureHeaderTexts.features }} </p>
@@ -174,7 +174,6 @@
             </p>
         </div>
 
-
         <div class="feature-container" v-if="data.features.actions.length > 0 || (showInnateCasting() && data.spellcasting.innateSpells.displayAsAction)">
             <h3 class="feature-container__title"> Actions </h3>
             <p v-if="data.misc.featureHeaderTexts.actions"> {{ data.misc.featureHeaderTexts.actions }} </p>
@@ -183,10 +182,10 @@
                 <span class="feature-container__desc" v-html="sanitizeAndFormat(feature.description)"> </span>
             </p>
 
-            <p v-if="showInnateCasting() && data.spellcasting.innateSpells.displayAsAction ">
+            <p v-if="showInnateCasting() && data.spellcasting.innateSpells.displayAsAction">
                 <b><i>Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics"> (Psionics)</span> </i></b> 
                 <span class="feature-container__desc">
-                    <span v-if="!data.description.isProperNoun"> The </span> {{ data.description.name }}'s casts one of the following spells{{ componentsString(false) }}, using {{ fullSpellAbilityName(true) }} as the spellcasting ability, (spell save DC {{ spellDc(true) }}, {{ spellAttackBonus(true) }} to hit with spell attacks).
+                    <span v-if="!data.description.isProperNoun"> The </span> {{ data.description.name }} casts one of the following spells{{ componentsString(false) }} and using {{ fullSpellAbilityName(true) }} as the spellcasting ability (spell save DC {{ spellDc(true) }}, {{ spellAttackBonus(true) }} to hit with spell attacks).
 
                     <div class="spell-list">
                         <div v-if="data.spellcasting.innateSpells.spellList[0].length > 0"> 
@@ -407,7 +406,7 @@ export default defineComponent({
 
         },
         showInnateCasting() : boolean {
-            return !!this.data.spellcasting.innateSpells.spellCastingAbility && (
+            return (this.data.spellcasting.innateSpells.spellCastingAbility != null) && (
                 this.data.spellcasting.innateSpells.spellList[0].length>0 ||
                 this.data.spellcasting.innateSpells.spellList[1].length>0 ||
                 this.data.spellcasting.innateSpells.spellList[2].length>0 ||
