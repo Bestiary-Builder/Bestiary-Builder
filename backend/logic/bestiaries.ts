@@ -7,7 +7,7 @@ import {ObjectId} from "mongodb";
 import {type CreatureInput, defaultStatblock} from "./creatures";
 import limits from "../staticData/limits.json";
 import tags from "../staticData/tags.json";
-import { ReactionUserManager } from "discord.js";
+import {ReactionUserManager} from "discord.js";
 
 //Permission checks
 export function checkBestiaryPermission(bestiary: Bestiary, user: User | null): "none" | "view" | "owner" | "editor" {
@@ -482,8 +482,7 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 				known_spells: knownSpells(creature.stats.spellcasting),
 				caster_dc: spellDc(false, creature.stats),
 				caster_sab: spellAttackBonus(false, creature.stats),
-				caster_mod: statCalc(spellcastCasterObj.spellCastingAbilityOverride ?? spellcastCasterObj.spellCastingAbility, creature.stats),
-
+				caster_mod: statCalc(spellcastCasterObj.spellCastingAbilityOverride ?? spellcastCasterObj.spellCastingAbility, creature.stats)
 			};
 
 			//Saves/stats
@@ -512,17 +511,16 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 					default:
 						continue;
 				}
-				let override = creature.stats.abilities.saves[key].override
+				let override = creature.stats.abilities.saves[key].override;
 				let value = statCalc(key, creature.stats);
 				let prof = 0;
 				if (override != null) {
-					value = override
-					prof = 1
+					value = override;
+					prof = 1;
 				} else if (creature.stats.abilities.saves[key].isProficient) {
-					value += creature.stats.core.proficiencyBonus
-					prof = 1
-				} 
-				 
+					value += creature.stats.core.proficiencyBonus;
+					prof = 1;
+				}
 				saves[newKey] = {
 					value: value,
 					prof: prof,
@@ -575,7 +573,7 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 				source: bestiary.name
 			};
 			// @ts-ignore
-			creatureData.passiveperc = calcPP(creature.stats.core.senses.passivePerceptionOverride, creatureData)
+			creatureData.passiveperc = calcPP(creature.stats.core.senses.passivePerceptionOverride, creatureData);
 			creatures.push(creatureData);
 		}
 		//Return bestiary in specific format
@@ -595,11 +593,11 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 });
 
 //Statblock functions:
-function displayCR(cr: number) : string {
-    if (cr == 0.125) return "1/8"
-    if (cr == 0.25) return "1/4"
-    if (cr == 0.5) return "1/2"
-    return cr.toString()
+function displayCR(cr: number): string {
+	if (cr == 0.125) return "1/8";
+	if (cr == 0.25) return "1/4";
+	if (cr == 0.5) return "1/2";
+	return cr.toString();
 }
 
 function spellDc(innate = false, data: any): number {
@@ -617,19 +615,19 @@ function knownSpells(data: any): any {
 	let dailySpells = {};
 
 	for (let times in data.innateSpells.spellList) {
-		if (times == "0") continue
-		console.log(data.innateSpells.spellList[times])
+		if (times == "0") continue;
+		console.log(data.innateSpells.spellList[times]);
 		for (let sp of data.innateSpells.spellList[times]) {
 			// @ts-ignore
-			dailySpells[sp.spell] = parseInt(times)
+			dailySpells[sp.spell] = parseInt(times);
 		}
 	}
 	let output = {
 		caster_spells: data.casterSpells.spellList.flat(),
-		at_will: data.innateSpells.spellList[0].map((sp : any) => (sp.spell)),
-		daily_spells: dailySpells,
-	}
-	return output
+		at_will: data.innateSpells.spellList[0].map((sp: any) => sp.spell),
+		daily_spells: dailySpells
+	};
+	return output;
 }
 
 function hpCalc(data: any): number {
@@ -651,7 +649,7 @@ function spellAttackBonus(innate = false, data: any) {
 		if (innate && castingData.spellCastingAbility) bonus = statCalc(castingData.spellCastingAbility, data) + data.core.proficiencyBonus;
 		else bonus = statCalc(castingData.spellCastingAbilityOveride ?? castingData.spellCastingAbility, data) + data.core.proficiencyBonus;
 	}
-	return bonus
+	return bonus;
 }
 
 function getSenses(data: any) {
@@ -684,19 +682,18 @@ export interface SkillsEntity {
 
 function calcSkills(data: any) {
 	let skillData = data.abilities.skills as SkillsEntity[];
-	let output = {} as {[key: string]: {value: number; prof?: number, bonus: number, adv: number | null}};
+	let output = {} as {[key: string]: {value: number; prof?: number; bonus: number; adv: number | null}};
 	for (let stat in SKILLS_BY_STAT) {
 		for (let skill of SKILLS_BY_STAT[stat]) {
 			let raw = skillData.find((a) => a.skillName.toLowerCase() == skill);
-			if (raw == undefined)  {
+			if (raw == undefined) {
 				output[skill] = {
 					value: statCalc(stat, data),
 					prof: 0,
 					bonus: 0,
 					adv: null
-				}
-			}
-			else {
+				};
+			} else {
 				if (raw.override != null) {
 					output[skill] = {
 						value: raw.override,
@@ -704,9 +701,8 @@ function calcSkills(data: any) {
 						prof: 1,
 						bonus: 0,
 						adv: null
-					}
-				}
-				else {
+					};
+				} else {
 					let base = statCalc(stat, data);
 					if (raw.isHalfProficient) {
 						output[skill] = {
@@ -714,21 +710,21 @@ function calcSkills(data: any) {
 							prof: 0.5,
 							bonus: 0,
 							adv: null
-						}
+						};
 					} else if (raw.isProficient) {
 						output[skill] = {
 							value: base + data.core.proficiencyBonus,
 							prof: 1,
 							bonus: 0,
 							adv: null
-						}
+						};
 					} else if (raw.isExpertise) {
 						output[skill] = {
-							value: base + (data.core.proficiencyBonus * 2),
+							value: base + data.core.proficiencyBonus * 2,
 							prof: 2,
 							bonus: 0,
 							adv: null
-						}
+						};
 					}
 				}
 			}
@@ -737,9 +733,9 @@ function calcSkills(data: any) {
 	return output;
 }
 
-function calcPP(override: null | number, finishedData: any) : number {
-	if (override != null) return override
-	return 10 + finishedData["skills"]["perception"]["value"]
+function calcPP(override: null | number, finishedData: any): number {
+	if (override != null) return override;
+	return 10 + finishedData["skills"]["perception"]["value"];
 }
 
 const SKILLS_BY_STAT = {
@@ -750,5 +746,3 @@ const SKILLS_BY_STAT = {
 	wis: ["animalHandling", "insight", "medicine", "perception", "survival", "wisdom"],
 	cha: ["deception", "intimidation", "performance", "persuasion", "charisma"]
 } as {[key: string]: string[]};
-
-

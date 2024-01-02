@@ -1,6 +1,6 @@
 # Bestiary Builder
 
-Description bla bla bla...
+Bestiary Builder, the convenient Bestiary Creator for D&D 5e, designed for incredible integration with Avrae and convenience of use!
 
 Currently available at [bestiary.stevnbak.dk](https://bestiary.stevnbak.dk)
 

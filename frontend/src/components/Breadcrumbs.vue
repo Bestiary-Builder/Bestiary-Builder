@@ -1,12 +1,12 @@
 <template>
-<section class="breadcrumbs__container" :class="{'less-wide': isLessWide}">
-    <div class="breadcrumbs__links">
-        <template v-for="route, index in routes" :key="index">
-            <RouterLink v-if="!route.isCurrent" :to="route.path"> {{ route.text }} </RouterLink>
-            <h1 v-else class="current-page" aria-current="page"> {{ route.text  }}</h1>
-            <span v-if="index+1 != routes.length" class="seperator">></span>
-        </template>
-    </div>
+	<section class="breadcrumbs__container" :class="{'less-wide': isLessWide}">
+		<div class="breadcrumbs__links">
+			<template v-for="(route, index) in routes" :key="index">
+				<RouterLink v-if="!route.isCurrent" :to="route.path"> {{ route.text }} </RouterLink>
+				<h1 v-else class="current-page" aria-current="page">{{ route.text }}</h1>
+				<span v-if="index + 1 != routes.length" class="seperator">></span>
+			</template>
+		</div>
 
 		<div class="right-buttons">
 			<slot name="right-button"></slot>
@@ -45,7 +45,7 @@ export default defineComponent({
 			navigator.clipboard.writeText(options.value.url);
 			toast.success("Copied link to clipboard!");
 		}
-		
+
 		return {
 			isSupported,
 			startShare
@@ -58,6 +58,7 @@ export default defineComponent({
 		},
 		isLessWide: {
 			type: Boolean,
+			default: false,
 			required: false
 		}
 	}
@@ -154,17 +155,17 @@ export default defineComponent({
 }
 
 @media (max-width: 842px) {
-    .breadcrumbs__container {
-        padding: .5rem;
-    }
+	.breadcrumbs__container {
+		padding: 0.5rem;
+	}
 
-    .breadcrumbs__links {
-        font-size: .8rem;
-        display: flex;
-        align-items: center;
-        & .current-page {
-            font-size: .8rem;
-        }
-    }
+	.breadcrumbs__links {
+		font-size: 0.8rem;
+		display: flex;
+		align-items: center;
+		& .current-page {
+			font-size: 0.8rem;
+		}
+	}
 }
 </style>
