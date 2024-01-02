@@ -114,7 +114,7 @@
 
         </div>
         <div class="challenge-prof">
-            <span> <b> Challenge </b> {{ displayCR(data.description.cr) }} (1000 xp) </span>
+            <span> <b> Challenge </b> {{ displayCR(data.description.cr) }} ({{ data.description.xp}} xp) </span>
             <span> <b> Proficiency Bonus </b> +{{ data.core.proficiencyBonus }}</span>
         </div>
     </div>

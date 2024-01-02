@@ -453,6 +453,9 @@ app.get("/api/bestiary/:id/bookmark/get", requireUser, async (req, res) => {
 //Export data
 app.get("/api/public/bestiary/:id", (req, res) => res.redirect("/api/export/bestiary/" + req.params.id));
 app.get("/api/export/bestiary/:id", async (req, res) => {
+	/////////////////////////////////////////////////////////////////////////////////////
+	//// STOP. EDITING THIS FUNCTION CAN BREAK AVRAE IMPORTS. TEST BEFORE CHANGING  ////
+	///////////////////////////////////////////////////////////////////////////////////
 	try {
 		let id = req.params.id;
 		if (id.length != 24) return res.status(400).json({error: "Bestiary id not valid."});
@@ -587,10 +590,6 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 			if (caster.casterLevel && caster.castingClass && caster.spellList.flat().length > 0) {
 				let output = `${isNoun ? "" : "The "}${name} is a ${nthSuffix(caster.casterLevel)}-level spellcaster. ${isNoun ? "Their" : "Its"} spellcasting ability is ${fullSpellAbilityName(caster.spellCastingAbilityOverride ?? caster.spellCastingAbility)} (spell save DC ${spellDc(false, creature.stats)}, ${spellAttackBonus(false, creature.stats) >= 0 ? "+" : "" }${spellAttackBonus(false, creature.stats)} to hit with spell attacks). ${isNoun ? name : "It"} ${["Sorcerer", "Bard", "Ranger", "Warlock"].includes(caster.castingClass) ? `knowns the following ${caster.castingClass.toLowerCase()} spells` : `has the following ${caster.castingClass.toLowerCase()} spells prepared`}:${!['Ranger', 'Paladin'].includes(caster.castingClass) && caster.spellList[0].length > 0 ? `\n\nCantrips (at will): ${caster.spellList[0].sort().join(", ").toLowerCase()}` : ""}${caster.spellList[1].length > 0 ? `\n\n1st level ${slots(caster.spellSlotList[1])}: ${caster.spellList[1].sort().join(", ").toLowerCase()}` : ""}${caster.spellList[2].length > 0 ? `\n\n2nd level ${slots(caster.spellSlotList[2])}: ${caster.spellList[2].sort().join(", ").toLowerCase()}` : ""}${caster.spellList[3].length > 0 ? `\n\n3rd level ${slots(caster.spellSlotList[3])}: ${caster.spellList[3].sort().join(", ").toLowerCase()}` : ""}${caster.spellList[4].length > 0 ? `\n\n4th level ${slots(caster.spellSlotList[4])}: ${caster.spellList[4].sort().join(", ").toLowerCase()}` : ""}${caster.spellList[5].length > 0 ? `\n\n5th level ${slots(caster.spellSlotList[5])}: ${caster.spellList[5].sort().join(", ").toLowerCase()}` : ""}${caster.spellList[6].length > 0 ? `\n\n6th level ${slots(caster.spellSlotList[6])}: ${caster.spellList[6].sort().join(", ").toLowerCase()}` : ""}${caster.spellList[7].length > 0 ? `\n\n7th level ${slots(caster.spellSlotList[7])}: ${caster.spellList[7].sort().join(", ").toLowerCase()}` : ""}${caster.spellList[8].length > 0 ? `\n\n8th level ${slots(caster.spellSlotList[8])}: ${caster.spellList[8].sort().join(", ").toLowerCase()}` : ""}${caster.spellList[9].length > 0 ? `\n\n9th level ${slots(caster.spellSlotList[9])}: ${caster.spellList[9].sort().join(", ").toLowerCase()}` : ""}`.replaceAll("\t", "")
 
-				// let lastIndex = output.lastIndexOf("\n\n");
-				// // remove last \n\n
-				// if (lastIndex !== -1) output = output.substring(0, lastIndex) + output.substring(lastIndex + 1);
-				
 				creatureData.traits.push({
 					name: "Spellcasting",
 					description: output,
