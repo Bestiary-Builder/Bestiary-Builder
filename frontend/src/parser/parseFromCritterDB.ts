@@ -512,11 +512,13 @@ function innateSpellListConstructor(spellString: string): InnateSpellsEntity[] {
 						.trim()
 						.replace(/[.$*_]/g, "")
 						.replace(/\(.+\)/, "")
+						.trim()
 			) ||
 			sp
 				.trim()
 				.replace(/[.$*_]/g, "")
-				.replace(/\(.+\)/, "");
+				.replace(/\(.+\)/, "")
+				.trim()
 		output.push({
 			spell: spell,
 			comment: comment
