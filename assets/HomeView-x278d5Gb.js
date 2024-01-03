@@ -1,4 +1,4 @@
-import{M as o}from"./index-5Jdbla-E.js";import{B as r}from"./Breadcrumbs-fyMmhWSg.js";import{d as i,_ as s,r as c,o as e,c as n,a as d,b as p,i as l,F as h}from"./index-Ik_8Pjef.js";const u=`<img src="/logo-text.svg" width="75%" style="margin: auto">
+import{M as o}from"./index-5Jdbla-E.js";import{B as r}from"./Breadcrumbs-f7xu2j4b.js";import{d as i,_ as s,r as c,o as e,c as n,a as d,b as p,i as l,F as h}from"./index-b9snduBZ.js";const u=`<img src="/logo-text.svg" width="75%" style="margin: auto">
 
 ---
 
