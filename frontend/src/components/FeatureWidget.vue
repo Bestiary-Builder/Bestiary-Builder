@@ -15,10 +15,11 @@
 					</div>
 					<hr />
 					<div class="three-wide">
-						<LabelledComponent title="Automation">
+						<LabelledComponent title="Options">
 							<div class="buttons">
 								<button class="btn confirm" @click="saveAutomation(true)">Save Automation!</button>
 								<button class="btn danger" @click="automationString = 'null'">Clear</button>
+								<button class="btn" @click="generateAutomation" v-tooltip="'Generate automation from description. May be incomplete or inaccurate.'">Generate from description</button>
 							</div>
 						</LabelledComponent>
 						<LabelledComponent title="Import basic example">
@@ -57,6 +58,7 @@ import YAML from "yaml";
 import {toast, handleApiResponse, type error} from "@/main";
 import {type FeatureEntity} from "../generic/types";
 import LabelledComponent from "./LabelledComponent.vue";
+import { parseDescIntoAutomation } from "@/parser/utils";
 export default defineComponent({
 	setup() {
 		const isModalOpen = ref(false);
@@ -187,6 +189,17 @@ export default defineComponent({
 			}, 100);
 
 			toast.success("Successfully loaded: " + feature.name);
+		},
+		generateAutomation() {
+			const result  = parseDescIntoAutomation(this.feat.description, this.feat.name, 0)[0]
+			if (result) {
+				try {
+					this.automationString = YAML.stringify(result);
+					this.saveAutomation(false);
+				} catch {
+					toast.error("Something went when generating automation!")
+				}
+			}
 		}
 	},
 	watch: {
@@ -281,17 +294,6 @@ input {
 		grid-template-columns: 1fr;
 	}
 }
-.flow-vertically {
-	display: flex;
-	flex-direction: column;
-	gap: 0.3rem;
-	margin: .5rem 0;
-	label {
-		font-weight: bold;
-		text-decoration: underline;
-	}
-}
-
 .buttons {
 	display: grid;
 	gap: .5rem;

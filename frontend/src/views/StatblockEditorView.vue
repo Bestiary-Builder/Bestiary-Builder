@@ -1062,6 +1062,20 @@ export default defineComponent({
 			}
 		}
 	}
+
+	.delete-button {
+		translate: 0 11px;
+		transition: scale 0.3s ease;
+		cursor: pointer;
+		display: flex;
+		height: fit-content;
+		color: orangered;
+		justify-content: center;
+		align-items: center;
+		&:hover {
+			scale: 1.1;
+		}
+	}
 }
 
 @media screen and (max-width: 1080px) {
