@@ -249,6 +249,7 @@ export function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: s
 
 	outputData.spellcasting = {} as SpellCasting;
 	outputData.spellcasting.casterSpells = (() => {
+		console.log(outputData.description.name)
 		// adapted from https://github.com/avrae/avrae/blob/master/cogs5e/models/homebrew/bestiary.py#L501
 		let displayAsAction = false;
 		let sData = null;
@@ -256,7 +257,7 @@ export function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: s
 		for (let a of data.stats.actions) {
 			if (a.name.toLowerCase().includes("spellcasting") && !a.name.toLowerCase().includes("innate")) {
 				sData = a.description;
-				displayAsAction = true;
+				displayAsAction = false;
 			}
 		}
 
@@ -275,8 +276,8 @@ export function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: s
 		let dc = typeMatch ? parseInt(typeMatch[2]) : null;
 		let bonus = typeMatch ? parseInt(typeMatch[3]) : null;
 		const ability: Stat = typeMatch ? typeMatch[1].toLowerCase().slice(0, 3) : null;
-		const casterLevel: number | null = sData.match(/(\d+)[stndrh]{2}-level/)[1] || null;
-
+		const casterLevel: number | null = sData.match(/(\d+)[stndrh]{2}-level/);
+		if (!casterLevel) return defaultStatblock.spellcasting.casterSpells;
 		let casterClass: null | CasterSpells["castingClass"] = null;
 		if (sData.toLowerCase().includes("wizard")) casterClass = "Wizard";
 		else if (sData.toLowerCase().includes("sorcerer")) casterClass = "Sorcerer";
@@ -339,7 +340,7 @@ export function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: s
 		let sData = null;
 
 		for (let a of data.stats.actions) {
-			if (a.name.toLowerCase().includes("innate spellcasting")) {
+			if (a.name.toLowerCase().includes("innate spellcasting") || a.name.toLowerCase().includes("spellcasting") && !a.description.match(/(\d+)[stndrh]{2}-level/)) {
 				sData = a.description;
 				isPsionics = a.name.toLowerCase().includes("psionics");
 				displayAsAction = true;
@@ -362,6 +363,7 @@ export function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: s
 		// figure out dc/bonus/abilities
 		let dc = typeMatch ? parseInt(typeMatch[2]) : null;
 		let bonus = typeMatch ? parseInt(typeMatch[3]) : null;
+		console.log(dc, bonus)
 		const ability: Stat = typeMatch ? typeMatch[1].toLowerCase().slice(0, 3) : null;
 
 		// figure out which components they don't cast with, defaulting to no components
@@ -411,8 +413,8 @@ export function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: s
 			displayAsAction: displayAsAction,
 			isPsionics: isPsionics,
 			spellCastingAbility: ability,
-			spellBonusOverride: dc,
-			spellDcOverride: bonus,
+			spellBonusOverride: bonus,
+			spellDcOverride: dc,
 			noComponentsOfType: noComponentsOfType
 		};
 	})();
