@@ -11,9 +11,9 @@
 	isCurrent: true
 },
 ]" :isLessWide="true"/> 
-<section class="content">
+<div class="content">
 	<p> Error 404 - page not found. </p>
-</section>
+</div>
 </template>
 <script lang="ts">
 import Breadcrumbs from "@/components/Breadcrumbs.vue";

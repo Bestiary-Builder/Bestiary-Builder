@@ -104,7 +104,6 @@ export default defineComponent({
         },
         setValue(value: number | null) {
             if (value == null) {
-                console.log("yay!")
                 const oldValue = this.value;
                 let newValue = null
                 this.value = newValue

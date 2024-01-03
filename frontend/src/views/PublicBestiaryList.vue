@@ -1,13 +1,13 @@
 <template>
 <Breadcrumbs
-		:routes="[
-			{
-				path: '',
-				text: 'Public Bestiaries',
-				isCurrent: true
-			}
-		]"
-	>
+	:routes="[
+		{
+			path: '',
+			text: 'Public Bestiaries',
+			isCurrent: true
+		}
+	]"
+>
 	
 	<select v-model="viewMode" aria-label="Select public bestiary list mode">
 		<option>Recent</option>
@@ -39,34 +39,34 @@
 		</template>
 	</VDropdown>
 </Breadcrumbs>
-	<div class="content" v-if="viewMode != 'Bookmarked'">
-		<div class="tile-container" v-if="bestiaries && bestiaries.length > 0">
-			<TransitionGroup name="popin">
-				<RouterLink class="content-tile bestiary-tile" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" :key="bestiary._id">
-					<h2 class="tile-header">{{ bestiary.name }}</h2>
-					<div class="tile-content">
-						<div class="tags">
-							<span class="tag" v-for="tag in bestiary.tags">{{ tag }}</span>
-						</div>
-						<p class="description">{{ bestiary.description }}</p>
+<div class="content" v-if="viewMode != 'Bookmarked'">
+	<div class="tile-container" v-if="bestiaries && bestiaries.length > 0">
+		<TransitionGroup name="popin">
+			<RouterLink class="content-tile bestiary-tile" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" :key="bestiary._id">
+				<h2 class="tile-header">{{ bestiary.name }}</h2>
+				<div class="tile-content">
+					<div class="tags">
+						<span class="tag" v-for="tag in bestiary.tags">{{ tag }}</span>
 					</div>
-					<div class="tile-footer">
-						<UserBanner :id="bestiary.owner" />
-						<span>{{ bestiary.creatures.length }}<font-awesome-icon :icon="['fas', 'skull']" /></span>
-					</div>
-				</RouterLink>
-			</TransitionGroup>
-		</div>
-		<div v-else class="zero-found">
-			<span> Did not find any Bestiaries with that name or tags.</span>
-		</div>
-		<div class="page-nav__container" v-if="total > 1">
-			<button aria-label="Decrease page number" @click="page = Math.max(1, page - 1)" v-tooltip="'Decrease page number'">-</button>
-			<span>{{ page }}/{{ total }}</span>
-			<button aria-label="Increase page number" @click="page = Math.min(total, page + 1)" v-tooltip="'Increase page number'">+</button>
-		</div>
+					<p class="description">{{ bestiary.description }}</p>
+				</div>
+				<div class="tile-footer">
+					<UserBanner :id="bestiary.owner" />
+					<span>{{ bestiary.creatures.length }}<font-awesome-icon :icon="['fas', 'skull']" /></span>
+				</div>
+			</RouterLink>
+		</TransitionGroup>
 	</div>
-	<BookmarkedBestiaryList v-else />
+	<div v-else class="zero-found">
+		<span> Did not find any Bestiaries with that name or tags.</span>
+	</div>
+	<div class="page-nav__container" v-if="total > 1">
+		<button aria-label="Decrease page number" @click="page = Math.max(1, page - 1)" v-tooltip="'Decrease page number'">-</button>
+		<span>{{ page }}/{{ total }}</span>
+		<button aria-label="Increase page number" @click="page = Math.min(total, page + 1)" v-tooltip="'Increase page number'">+</button>
+	</div>
+</div>
+<BookmarkedBestiaryList v-else />
 
 </template>
 

@@ -26,9 +26,11 @@
 		</p>
 		<p v-if="user.supporter == 1">
 			You support us on Patreon as a <b> Wyrmling </b> Tier supporter. Thank you so much for your pledge!
+			If you cannot see your name display change on the website yet, make sure to join our discord.
 		</p>
 		<p v-if="user.supporter == 2">
 			You support us on Patreon as a <b> Greatwyrm </b> Tier supporter. Thank you so much for your support!
+			If you cannot see your name display change on the website yet, make sure to join our discord.
 		</p>
 		<hr />
 		<button @click.prevent="LogoutClick" class="btn">Log out of Bestiary Builder </button>
