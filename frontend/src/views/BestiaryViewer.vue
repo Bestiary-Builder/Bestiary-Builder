@@ -460,12 +460,10 @@ export default defineComponent({
 			});
 			if (shouldRefresh) {
 				this.searchCreatures();
-				const tileContainer = document.getElementById("tile-container") as HTMLDivElement;
+				const tileContainer = document.getElementsByClassName("tile-container")[0] as HTMLDivElement;
 				tileContainer.scrollTop = tileContainer.scrollHeight;
 			}
-			if (shouldHaveLoader && loader) {
-				loader.hide();
-			}
+			if (shouldHaveLoader && loader) loader.hide()
 		},
 		async deleteCreature(creature: Creature) {
 			const loader = this.$loading.show();
