@@ -35,7 +35,15 @@ app.get("/api/bestiary/:id", possibleUser, async (req, res) => {
 		let permissionLevel = checkBestiaryPermission(bestiary, user);
 		if (permissionLevel != "none") {
 			//Increment view count
-			incrementBestiaryViewCount(_id);
+			if (req.cookies.lastViewed != _id.toString()) {
+				incrementBestiaryViewCount(_id);
+				res.cookie("lastViewed", _id.toString(), {
+					httpOnly: true,
+					sameSite: "strict",
+					secure: true,
+					maxAge: 1000 * 60 * 15
+				});
+			}
 			//Return bestiary
 			log.info(`Retrieved bestiary with the id ${id}`);
 			if (!bestiary.tags) bestiary.tags = [];
