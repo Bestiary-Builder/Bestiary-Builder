@@ -45,7 +45,7 @@ app.disable("x-powered-by");
 app.use(
 	rateLimit({
 		windowMs: 1000, // 1 second
-		max: !isProduction ? 50 : 1000 // limit each IP to 50/1000 requests per windowMs
+		max: isProduction ? 100 : 1000 // limit each IP to 50/1000 requests per windowMs
 	})
 );
 //CORS
@@ -99,29 +99,9 @@ startConnection();
 //Setup http server
 import http from "http";
 const httpServer = http.createServer(app);
-httpServer.listen(isProduction ? 80 : 5000, () => {
-	log.info("Server listening to port 80 (HTTP)");
+httpServer.listen(5000, () => {
+	log.info("Server listening to port 5000");
 });
-
-//Setup https server
-import https from "https";
-if (isProduction) {
-	//Certificate
-	const privateKey = fs.readFileSync("/etc/letsencrypt/live/bestiarybuilder.com/privkey.pem", "utf8");
-	const certificate = fs.readFileSync("/etc/letsencrypt/live/bestiarybuilder.com/cert.pem", "utf8");
-	const ca = fs.readFileSync("/etc/letsencrypt/live/bestiarybuilder.com/chain.pem", "utf8");
-	const credentials = {
-		key: privateKey,
-		cert: certificate,
-		ca: ca
-	};
-
-	//Start server
-	const httpsServer = https.createServer(credentials, app);
-	httpsServer.listen(443, () => {
-		log.info("Server listening to port 443 (HTTPS)");
-	});
-}
 
 //Load logic
 const logicPath = path.join(__dirname, "logic");
