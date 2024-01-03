@@ -526,10 +526,8 @@ export default defineComponent({
 					await fetch("/api/bestiary/" + this.bestiary._id + "/creatures").then(async (creatureResponse) => {
 						let creatureResult = await handleApiResponse<Creature[]>(creatureResponse);
 						if (creatureResult.success) {
-							console.log(creatureResult)
 							this.creatures = creatureResult.data as Creature[];
 							this.searchCreatures();
-							console.log(this.creatures)
 						} else {
 							this.creatures = null;
 							toast.error((creatureResult.data as error).error);
@@ -718,6 +716,10 @@ export default defineComponent({
 						width: 5rem;
 					}
 				}
+			}
+
+			&:hover {
+				background-color: #484544;
 			}
 		}
 	}
