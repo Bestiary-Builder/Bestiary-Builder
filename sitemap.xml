@@ -2,10 +2,10 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
     <url>
         <loc>
-            https://bestiary.stevnbak.dk/
+            https://bestiarybuilder.com/
         </loc>
         <lastmod>
-            2024-01-02T20:32:49.615Z
+            2024-01-03T09:23:14.022Z
         </lastmod>
         <changefreq>
             daily
@@ -16,10 +16,10 @@
     </url>
     <url>
         <loc>
-            https://bestiary.stevnbak.dk/my-bestiaries
+            https://bestiarybuilder.com/my-bestiaries
         </loc>
         <lastmod>
-            2024-01-02T20:32:49.615Z
+            2024-01-03T09:23:14.022Z
         </lastmod>
         <changefreq>
             daily
@@ -30,10 +30,10 @@
     </url>
     <url>
         <loc>
-            https://bestiary.stevnbak.dk/bestiaries
+            https://bestiarybuilder.com/bestiaries
         </loc>
         <lastmod>
-            2024-01-02T20:32:49.615Z
+            2024-01-03T09:23:14.022Z
         </lastmod>
         <changefreq>
             daily
@@ -44,10 +44,10 @@
     </url>
     <url>
         <loc>
-            https://bestiary.stevnbak.dk/bestiary-viewer/:id
+            https://bestiarybuilder.com/bestiary-viewer/:id
         </loc>
         <lastmod>
-            2024-01-02T20:32:49.615Z
+            2024-01-03T09:23:14.022Z
         </lastmod>
         <changefreq>
             daily
@@ -58,10 +58,10 @@
     </url>
     <url>
         <loc>
-            https://bestiary.stevnbak.dk/statblock-editor/:id
+            https://bestiarybuilder.com/statblock-editor/:id
         </loc>
         <lastmod>
-            2024-01-02T20:32:49.615Z
+            2024-01-03T09:23:14.022Z
         </lastmod>
         <changefreq>
             daily
@@ -72,10 +72,10 @@
     </url>
     <url>
         <loc>
-            https://bestiary.stevnbak.dk/user
+            https://bestiarybuilder.com/user
         </loc>
         <lastmod>
-            2024-01-02T20:32:49.615Z
+            2024-01-03T09:23:14.022Z
         </lastmod>
         <changefreq>
             daily
@@ -86,10 +86,10 @@
     </url>
     <url>
         <loc>
-            https://bestiary.stevnbak.dk/privacy-policy
+            https://bestiarybuilder.com/privacy-policy
         </loc>
         <lastmod>
-            2024-01-02T20:32:49.615Z
+            2024-01-03T09:23:14.022Z
         </lastmod>
         <changefreq>
             daily
@@ -100,10 +100,10 @@
     </url>
     <url>
         <loc>
-            https://bestiary.stevnbak.dk/terms-and-conditions
+            https://bestiarybuilder.com/terms-and-conditions
         </loc>
         <lastmod>
-            2024-01-02T20:32:49.615Z
+            2024-01-03T09:23:14.022Z
         </lastmod>
         <changefreq>
             daily
@@ -114,10 +114,10 @@
     </url>
     <url>
         <loc>
-            https://bestiary.stevnbak.dk/changelog
+            https://bestiarybuilder.com/changelog
         </loc>
         <lastmod>
-            2024-01-02T20:32:49.615Z
+            2024-01-03T09:23:14.022Z
         </lastmod>
         <changefreq>
             daily
@@ -128,10 +128,10 @@
     </url>
     <url>
         <loc>
-            https://bestiary.stevnbak.dk/:notfound
+            https://bestiarybuilder.com/:notfound
         </loc>
         <lastmod>
-            2024-01-02T20:32:49.615Z
+            2024-01-03T09:23:14.022Z
         </lastmod>
         <changefreq>
             daily
