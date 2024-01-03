@@ -3,13 +3,11 @@ import path from "path";
 //Setup environment variables
 import dotenv from "dotenv";
 dotenv.config();
+//Logging
+import {log} from "./logger";
 //Get info
 export const isProduction = (process.env.NODE_ENV == "production") as boolean;
 const frontendPath = path.join(__dirname, process.env.frontendPath as string);
-
-//Logging
-import {log} from "./logger";
-
 //Setup express server with settings
 import express, {NextFunction, Request, Response} from "express";
 import bodyParser from "body-parser";
@@ -83,12 +81,6 @@ app.use(async (req, res, next) => {
 	log.log("request", `Request for URL "${req.url}" recieved.`);
 	//Set Permissions Policy
 	res.setHeader("Permissions-Polict", "fullscreen: 'self'; accelerometer: ; autoplay: ; camera: ; geolocation: 'self'; gyroscope: ; interest-cohort: ; magnetometer: ; microphone: ; payment: ; sync-xhr: ;");
-	//Redirect http to https
-	if (isProduction) {
-		if (!req.secure) {
-			return res.redirect("https://" + req.headers.host + req.url);
-		}
-	}
 	next();
 });
 
