@@ -6,7 +6,7 @@
 	"main": "server.ts",
 	"scripts": {
 		"start": "npx nodemon",
-		"start-pm2": "npx tsx ./server.ts"
+		"build": "npx tsc"
 	},
 	"engines": {
 		"node": ">=21.4.0"
@@ -34,14 +34,14 @@
 	},
 	"devDependencies": {
 		"@types/compression": "^1.7.2",
+		"@types/cookie-parser": "^1.4.6",
 		"@types/cors": "^2.8.17",
 		"@types/express": "^4.17.17",
-		"@types/node": "^20.2.5",
-		"@types/cookie-parser": "^1.4.6",
 		"@types/jsonwebtoken": "^9.0.5",
+		"@types/node": "^20.2.5",
 		"@types/node-fetch": "^2.6.9",
 		"nodemon": "^3.0.2",
 		"tsx": "^4.6.2",
-		"typescript": "^5.0.4"
+		"typescript": "^5.3.3"
 	}
 }
