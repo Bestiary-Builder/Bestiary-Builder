@@ -101,20 +101,24 @@ httpServer.listen(5000, () => {
 //Load logic
 const logicPath = path.join(__dirname, "logic");
 const logicFiles = fs.readdirSync(logicPath);
-for (const file of logicFiles) {
-	if (fs.lstatSync(path.join(logicPath, file)).isDirectory()) {
-		if (fs.existsSync(path.join(logicPath, file, "main.ts"))) {
-			import(path.join(logicPath, file, "main.ts"));
+async function importLogic() {
+	for (const file of logicFiles) {
+		if (fs.lstatSync(path.join(logicPath, file)).isDirectory()) {
+			if (fs.existsSync(path.join(logicPath, file, "main.ts"))) {
+				import(path.join(logicPath, file, "main.ts"));
+			}
+		} else {
+			import(path.join(logicPath, file));
 		}
-	} else {
-		import(path.join(logicPath, file));
 	}
 }
+importLogic().then(() => {
+	//Redirect everything else to frontend
+	app.use("/*", express.static(frontendPath));
+});
 
 //Static files
 app.use(express.static(frontendPath));
-//Redirect everything else to dist
-app.use("/*", express.static(frontendPath));
 
 //Error handling
 function errorHandler(err: Error, req: Request, res: Response, next: NextFunction) {
