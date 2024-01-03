@@ -249,7 +249,6 @@ export function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: s
 
 	outputData.spellcasting = {} as SpellCasting;
 	outputData.spellcasting.casterSpells = (() => {
-		console.log(outputData.description.name)
 		// adapted from https://github.com/avrae/avrae/blob/master/cogs5e/models/homebrew/bestiary.py#L501
 		let displayAsAction = false;
 		let sData = null;
@@ -273,11 +272,15 @@ export function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: s
 
 		const typeMatch = sData.match(/spellcasting ability is (\w+) \(spell save DC (\d+), [+\-](\d+) to hit/);
 		if (!typeMatch) return defaultStatblock.spellcasting.casterSpells;
+		
 		let dc = typeMatch ? parseInt(typeMatch[2]) : null;
 		let bonus = typeMatch ? parseInt(typeMatch[3]) : null;
 		const ability: Stat = typeMatch ? typeMatch[1].toLowerCase().slice(0, 3) : null;
-		const casterLevel: number | null = sData.match(/(\d+)[stndrh]{2}-level/);
+
+		let casterLevel = sData.match(/(\d+)[stndrh]{2}-level/);
 		if (!casterLevel) return defaultStatblock.spellcasting.casterSpells;
+		casterLevel = parseInt(casterLevel[1])
+
 		let casterClass: null | CasterSpells["castingClass"] = null;
 		if (sData.toLowerCase().includes("wizard")) casterClass = "Wizard";
 		else if (sData.toLowerCase().includes("sorcerer")) casterClass = "Sorcerer";
@@ -363,7 +366,7 @@ export function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: s
 		// figure out dc/bonus/abilities
 		let dc = typeMatch ? parseInt(typeMatch[2]) : null;
 		let bonus = typeMatch ? parseInt(typeMatch[3]) : null;
-		console.log(dc, bonus)
+
 		const ability: Stat = typeMatch ? typeMatch[1].toLowerCase().slice(0, 3) : null;
 
 		// figure out which components they don't cast with, defaulting to no components
