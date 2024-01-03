@@ -6,7 +6,8 @@
 	"main": "server.ts",
 	"scripts": {
 		"start": "npx nodemon",
-		"build": "npx tsc"
+		"build": "npx tsc",
+		"postbuild": "cpy 'staticData/badwordsData/**/*.json' 'build/staticData/badwordsData'"
 	},
 	"engines": {
 		"node": ">=21.4.0"
@@ -20,6 +21,7 @@
 		"compression": "^1.7.4",
 		"cookie-parser": "^1.4.6",
 		"cors": "^2.8.5",
+		"cpy-cli": "^5.0.0",
 		"discord.js": "^14.14.1",
 		"dotenv": "^16.1.4",
 		"express": "^4.18.2",
@@ -29,7 +31,7 @@
 		"jsonwebtoken": "^9.0.2",
 		"mongodb": "^6.3.0",
 		"naughty-words": "^1.2.0",
-		"node-fetch": "^3.3.2",
+		"node-fetch": "^2.7.0",
 		"winston": "^3.11.0"
 	},
 	"devDependencies": {

@@ -72,8 +72,11 @@ export const badwords = new BadWordsNext({placeholder: ""});
 let dataFiles = fs.readdirSync("./staticData/badwordsData/");
 for (let file of dataFiles) {
 	///log.info("Loading bad words data file: ", file);
-	let data = require("./staticData/badwordsData/" + file);
-	badwords.add(data);
+	///let data = JSON.parse(fs.readFileSync("./staticData/badwordsData/" + file).toString("utf-8"));
+	///badwords.add(data);
+	import("./staticData/badwordsData/" + file).then((data) => {
+		badwords.add(data);
+	});
 }
 
 //Function to run on all requests
@@ -101,10 +104,10 @@ const logicFiles = fs.readdirSync(logicPath);
 for (const file of logicFiles) {
 	if (fs.lstatSync(path.join(logicPath, file)).isDirectory()) {
 		if (fs.existsSync(path.join(logicPath, file, "main.ts"))) {
-			require(path.join(logicPath, file, "main.ts"));
+			import(path.join(logicPath, file, "main.ts"));
 		}
 	} else {
-		require(path.join(logicPath, file));
+		import(path.join(logicPath, file));
 	}
 }
 
