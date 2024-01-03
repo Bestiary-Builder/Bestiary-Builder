@@ -11,7 +11,7 @@ export function abilityParser(fData: any, activationType: number): [FeatureEntit
 		if (f.description && name.toLowerCase().includes("spellcasting")) continue;
 
 		//f.entries for 5etools, f.description for critterdb
-		let description = descParser(f.entries || f.description.replace("<i>", "*").replace("<b>", "**").replace("</i>", "*").replace("</b>", "**"));
+		let description = descParser(f.entries || f.description.replaceAll("<i>", "*").replaceAll("<b>", "**").replaceAll("</i>", "*").replaceAll("</b>", "**"));
 		let [automation, notice] = parseDescIntoAutomation(description, name, activationType);
 		if (notice) notices.push(notice);
 		output.push({

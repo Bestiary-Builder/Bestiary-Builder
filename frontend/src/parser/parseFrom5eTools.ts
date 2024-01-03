@@ -1,4 +1,4 @@
-import {type CasterSpells, type Statblock, type InnateSpellsList, defaultStatblock, spellListFlattened, type SpellSlotEntity, type SkillsEntity} from "../generic/types";
+import {type CasterSpells, type Statblock, type InnateSpellsList, defaultStatblock, getXPbyCR, spellListFlattened, type SpellSlotEntity, type SkillsEntity} from "../generic/types";
 import {abilityParser, capitalizeFirstLetter} from "./utils";
 
 export function parseFrom5eTools(data: any): [Statblock, {[key: string]: string[]}] {
@@ -25,7 +25,8 @@ export function parseFrom5eTools(data: any): [Statblock, {[key: string]: string[
 			};
 			// @ts-ignore
 			return (data?.alignmentPrefix ?? "") + (data.alignment ?? []).map((a) => nameMap[a]).join(" ");
-		})()
+		})(),
+		xp: getXPbyCR(parseInt(data.cr?.cr ?? data.cr))
 	};
 
 	outputData.core = {

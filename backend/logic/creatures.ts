@@ -220,7 +220,8 @@ export const defaultStatblock = {
 		faction: "",
 		environment: "",
 		alignment: "Unaligned",
-		cr: 0
+		cr: 0,
+		xp: 0
 	},
 	core: {
 		proficiencyBonus: 2,
