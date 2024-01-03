@@ -30,7 +30,7 @@ export const defaultMetaTags = [
 	},
 	{
 		name: "image",
-		content: "https://bestiary.stevnbak.dk/logo.svg"
+		content: "https://bestiarybuilder.com/logo.svg"
 	},
 	{
 		name: "description",
@@ -47,7 +47,7 @@ export const defaultMetaTags = [
 	},
 	{
 		itemprop: "image",
-		content: "https://bestiary.stevnbak.dk/logo.svg"
+		content: "https://bestiarybuilder.com/logo.svg"
 	},
 	//Twitter
 	{
@@ -68,7 +68,7 @@ export const defaultMetaTags = [
 	},
 	{
 		name: "twitter:image:src",
-		content: "https://bestiary.stevnbak.dk/logo.svg"
+		content: "https://bestiarybuilder.com/logo.svg"
 	},
 	//Open Graph general (Facebook, Pinterest & Google+)
 	{
@@ -81,11 +81,11 @@ export const defaultMetaTags = [
 	},
 	{
 		name: "og:image",
-		content: "https://bestiary.stevnbak.dk/logo.svg"
+		content: "https://bestiarybuilder.com/logo.svg"
 	},
 	{
 		name: "og:url",
-		content: "https://bestiary.stevnbak.dk"
+		content: "https://bestiarybuilder.com"
 	},
 	{
 		name: "og:site_name",

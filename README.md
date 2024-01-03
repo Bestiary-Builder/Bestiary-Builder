@@ -2,7 +2,7 @@
 
 Description bla bla bla...
 
-Currently available at [bestiary.stevnbak.dk](https://bestiary.stevnbak.dk)
+Currently available at [bestiarybuilder.com](https://bestiarybuilder.com)
 
 ## Support
 

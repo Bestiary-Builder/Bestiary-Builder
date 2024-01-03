@@ -107,9 +107,9 @@ httpServer.listen(isProduction ? 80 : 5000, () => {
 import https from "https";
 if (isProduction) {
 	//Certificate
-	const privateKey = fs.readFileSync("/etc/letsencrypt/live/bestiary.stevnbak.dk/privkey.pem", "utf8");
-	const certificate = fs.readFileSync("/etc/letsencrypt/live/bestiary.stevnbak.dk/cert.pem", "utf8");
-	const ca = fs.readFileSync("/etc/letsencrypt/live/bestiary.stevnbak.dk/chain.pem", "utf8");
+	const privateKey = fs.readFileSync("/etc/letsencrypt/live/bestiarybuilder.com/privkey.pem", "utf8");
+	const certificate = fs.readFileSync("/etc/letsencrypt/live/bestiarybuilder.com/cert.pem", "utf8");
+	const ca = fs.readFileSync("/etc/letsencrypt/live/bestiarybuilder.com/chain.pem", "utf8");
 	const credentials = {
 		key: privateKey,
 		cert: certificate,
