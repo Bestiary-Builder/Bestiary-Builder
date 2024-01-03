@@ -1,0 +1,86 @@
+.quantity {
+	position: relative;
+	white-space: nowrap;
+}
+
+.quantity .delete-button {
+	translate: 0 11px;
+	transition: scale 0.3s ease;
+	cursor: pointer;
+	display: flex;
+	height: fit-content;
+	color: orangered;
+	justify-content: center;
+	align-items: center;
+	&:hover {
+		scale: 1.1;
+	}
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+input[type="number"] {
+	-moz-appearance: textfield;
+	appearance: textfield;
+}
+
+.quantity input {
+	background-color: var(--color-surface-0);
+	width: 100%;
+	height: 42px;
+	line-height: 1.65;
+	float: left;
+	display: block;
+	padding: 0;
+	margin: 0;
+	padding-left: 10px;
+	border: 1px solid rgb(60, 63, 68);
+	color: white;
+}
+.quantity:has(.delete-button) input {
+	width: 90%;
+}
+
+.quantity input:focus {
+	outline: 0;
+}
+
+.quantity-nav {
+	float: left;
+	position: relative;
+	height: 42px;
+}
+
+.quantity-button {
+	position: relative;
+	cursor: pointer;
+	border-left: 1px solid rgb(60, 63, 68);
+	width: 20px;
+	text-align: center;
+	font-size: 13px;
+	line-height: 1.7;
+	-webkit-transform: translateX(-100%);
+	transform: translateX(-100%);
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+}
+
+.quantity-button.quantity-up {
+	position: absolute;
+	height: 50%;
+	top: 0;
+	border-bottom: 1px solid rgb(60, 63, 68);
+}
+
+.quantity-button.quantity-down {
+	position: absolute;
+	bottom: -1px;
+	height: 50%;
+}

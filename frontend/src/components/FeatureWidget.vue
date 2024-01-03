@@ -6,35 +6,29 @@
 				<section class="modal__content" ref="modal">
 					<button @click="isModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
 					<div class="two-wide uneven">
-						<div class="flow-vertically">
-							<label for="featurename"> Name </label>
+						<LabelledComponent title="Feature name">
 							<input type="text" id="featurename" placeholder="Enter name" v-model="feat.name" @change="hasEditedName = true" />
-						</div>
-						<div class="flow-vertically">
-							<label for="featuredesc"> Description </label>
-							<textarea rows="4" id="featuredesc" placeholder="Enter description" v-model="feat.description" /> 
-						</div>
+						</LabelledComponent>
+						<LabelledComponent title="Feature description">
+							<textarea rows="4" id="featuredescription" placeholder="Enter description" v-model="feat.description" /> 
+						</LabelledComponent>
 					</div>
 					<hr />
 					<div class="three-wide">
-						<div class="flow-vertically">
-							<label>Automation</label>
+						<LabelledComponent title="Automation">
 							<div class="buttons">
 								<button class="btn confirm" @click="saveAutomation(true)">Save Automation!</button>
 								<button class="btn danger" @click="automationString = 'null'">Clear</button>
 							</div>
-						</div>
-
-						<div class="flow-vertically">
-							<label for="importbasic"> Import Basic Example </label>
-							<v-select :options="basicExamples" v-model="importedBasicExample" inputId="importbasic"/>
+						</LabelledComponent>
+						<LabelledComponent title="Import basic example">
+							<v-select :options="basicExamples" v-model="importedBasicExample" inputId="importbasicexample"/>
 							<button class="btn move-down" @click="importExample">Load</button>
-						</div>
-						<div class="flow-vertically">
-							<label for="importsrd"> Import SRD Feature </label>
-							<v-select :options="srdFeatures"  v-model="importedSrdFeature" inputId="importsrd"/>
+						</LabelledComponent>
+						<LabelledComponent title="Import SRD feature">
+							<v-select :options="srdFeatures" v-model="importedSrdFeature" inputId="importsrdfeature"/>
 							<button class="btn move-down" @click="importSrdAction">Load</button>
-						</div>
+						</LabelledComponent>
 					</div>
 
 					<hr />
@@ -62,6 +56,7 @@ import {defineComponent} from "vue";
 import YAML from "yaml";
 import {toast, handleApiResponse, type error} from "@/main";
 import {type FeatureEntity} from "../generic/types";
+import LabelledComponent from "./LabelledComponent.vue";
 export default defineComponent({
 	setup() {
 		const isModalOpen = ref(false);
@@ -99,7 +94,8 @@ export default defineComponent({
 		};
 	},
 	components: {
-		CodeEditor
+		CodeEditor,
+		LabelledComponent
 	},
 	mounted() {
 		this.automationString = YAML.stringify(this.feat.automation) ?? YAML.stringify(null);
@@ -258,21 +254,6 @@ textarea {
 input {
 	min-width: 20rem;
 	width: fit-content;
-}
-
-.import-container {
-	display: flex;
-	gap: 1rem;
-
-	&__title {
-		width: 10rem;
-	}
-	&__selector {
-		width: 30rem;
-	}
-}
-.selector-container {
-	width: 20rem;
 }
 .two-wide {
 	display: grid;

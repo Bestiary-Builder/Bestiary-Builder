@@ -20,14 +20,12 @@
 			}
 		]"
 	>
-		<template #right-button>
-			<button @click="isImportModalOpen = true" v-tooltip="'Import a creature\'s statblock'">
-				<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
-			</button>
-			<button @click="exportStatblock()" v-tooltip="'Export this creature as JSON to your clipboard.'">
-				<font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" />
-			</button>
-		</template>
+		<button @click="isImportModalOpen = true" v-tooltip="'Import a creature\'s statblock'">
+			<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
+		</button>
+		<button @click="exportStatblock()" v-tooltip="'Export this creature as JSON to your clipboard.'">
+			<font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" />
+		</button>
 	</Breadcrumbs>
 	<div class="content">
 		<div class="content-container__inner editor">
@@ -55,41 +53,31 @@
 			<div class="editor-content">
 				<div class="editor-content__tab-inner scale-in">
 					<div class="editor-field__container two-wide">
-						<div class="flow-vertically">
-							<label class="editor-field__title" for="creaturename"><span class="text">Name</span></label>
-							<input type="text" :maxlength="limits.nameLength" v-model="data.description.name" id="creaturename" />
-						</div>
-						<div class="flow-vertically">
-							<label class="editor-field__title" for="propernoun"><span class="text">Proper noun</span></label>
+						<LabelledComponent title="Name">
+							<input type="text" :maxlength="limits.nameLength" v-model="data.description.name" id="name" />
+						</LabelledComponent>
+
+						<LabelledComponent title="Proper Noun">
 							<span> display as "{{ data.description.name }}" instead of "the {{ data.description.name }}" <input type="checkbox" v-model="data.description.isProperNoun" id="propernoun" /> </span>
-						</div>
+						</LabelledComponent>
 					</div>
 
 					<div class="editor-field__container one-wide">
-						<div class="flow-vertically">
-							<label class="editor-field__title" for="description">
-								<span class="text" v-toolti="'Supports markdown'">Description*</span>
-							</label>
+						<LabelledComponent title="Description">
 							<textarea rows="20" :maxlength="limits.descriptionLength" v-model="data.description.description" id="description"/>
-						</div>
+						</LabelledComponent>
 					</div>
 					<div class="editor-field__container two-wide">
-						<div class="flow-vertically">
-							<label class="editor-field__title" for="image"><span class="text">Image URL</span></label>
+						<LabelledComponent title="Image URL">
 							<input type="text" v-model="data.description.image" id="image" :pattern="limits.imageFormats ? `(https:\/\/)(.+)(\\.${limits.imageFormats.join('|\\.')})` : ''" />
-						</div>
-						<div class="flow-vertically">
-							<label class="editor-field__title" for="environment"><span class="text">Environment</span></label>
+						</LabelledComponent>
+						<LabelledComponent title="Environment">
 							<input type="text" v-model="data.description.environment" id="environment" />
-						</div>
-					</div>
-					<div class="editor-field__container two-wide">
-						<div class="flow-vertically">
-							<label class="editor-field__title" for="faction"><span class="text">Faction</span></label>
+						</LabelledComponent>
+						<LabelledComponent title="Faction">
 							<input type="text" v-model="data.description.faction" id="faction" />
-						</div>
-						<div class="flow-vertically">
-							<label class="editor-field__title" for="alignment"><span class="text" v-tooltip="'Takes custom text input'">Alignment*</span></label>
+						</LabelledComponent>
+						<LabelledComponent title="Alignment">
 							<v-select
 								v-model="data.description.alignment"
 								:options="[
@@ -123,7 +111,8 @@
 								:pushTags="true"
 								inputId="alignment"
 							/>
-						</div>
+						</LabelledComponent>
+			
 					</div>
 					<div class="editor-field__container three-wide">
 						<div class="flow-vertically">
@@ -143,24 +132,21 @@
 				</div>
 				<div class="editor-content__tab-inner scale-in">
 					<div class="editor-field__container two-wide">
-						<div class="flow-vertically">
-							<label class="editor-field__title" for="race"><span class="text" v-tooltip="'Takes custom text input'">Race*</span></label>
+						<LabelledComponent title="Race">
 							<v-select v-model="data.core.race" :options="['Aberration', 'Beast', 'Celestial', 'Construct', 'Dragon', 'Elemental', 'Fey', 'Fiend', 'Giant', 'Humanoid', 'Monstrosity', 'Ooze', 'Plant', 'Undead']" :taggable="true" :pushTags="true" inputId="race" />
-						</div>
-						<div class="flow-vertically">
-							<label class="editor-field__title" for="size"><span class="text" v-tooltip="'Takes custom text input'">Size*</span> </label>
+						</LabelledComponent>
+						<LabelledComponent title="Size">
 							<v-select v-model="data.core.size" :options="['Tiny', 'Small', 'Medium', 'Large', 'Huge', 'Gargantuan']" :taggable="true" :pushTags="true" inputId="size" />
-						</div>
+						</LabelledComponent>
 					</div>
 					<hr />
 					<h2 class="group-header">Speed</h2>
 					<div class="editor-field__container three-wide">
 						<LabelledNumberInput v-model="data.core.speed.walk" title="Walk speed" />
 						<LabelledNumberInput v-model="data.core.speed.fly" title="Fly speed" />
-						<div class="flow-vertically">
-							<label class="editor-field__title" for="canhover">Hover</label>
-							<span>Hover yes/no <input type="checkbox" step="5" v-model="data.core.speed.isHover" id="canhover" /></span>
-						</div>
+						<LabelledComponent title="Hover">
+							<span>Hover yes/no <input type="checkbox" step="5" v-model="data.core.speed.isHover" id="hover" /></span>
+						</LabelledComponent>
 						<LabelledNumberInput v-model="data.core.speed.swim" title="Swim speed" />
 						<LabelledNumberInput v-model="data.core.speed.burrow" title="Burrow speed" />
 						<LabelledNumberInput v-model="data.core.speed.climb" title="Climb speed" />
@@ -170,20 +156,18 @@
 					<div class="editor-field__container three-wide">
 						<LabelledNumberInput v-model="data.core.senses.darkvision" title="Darkvision" />
 						<LabelledNumberInput v-model="data.core.senses.blindsight" title="Blindsight" />
-						<div class="flow-vertically">
-							<label class="editor-field__title" for="isblind"><span class="text">Blind beyond</span></label>
-							<span>this radius? <input type="checkbox" step="5" v-model="data.core.senses.isBlind" id="isblind" /></span>
-						</div>
+						<LabelledComponent title="Blind beyond">
+							<span>this radius? <input type="checkbox" step="5" v-model="data.core.senses.isBlind" id="blindbeyond" /></span>
+						</LabelledComponent>
 						<LabelledNumberInput v-model="data.core.senses.truesight" title="Truesight" />
 						<LabelledNumberInput v-model="data.core.senses.tremorsense" title="Tremorsense" />
 						<LabelledNumberInput v-model="data.core.senses.passivePerceptionOverride" title="Passive perc ovverride" :step=1 :is-clearable="true" />
 					</div>
 					<hr />
 					<div class="editor-field__container two-wide">
-						<div class="flow-vertically">
-							<label class="editor-field__title" for="languages"><span class="text" v-tooltip="'Takes custom text input'">Languages*</span></label>
+						<LabelledComponent title="Languages">
 							<v-select placeholder="Select a Language or type one" v-model="data.core.languages" multiple :deselectFromDropdown="true" :closeOnSelect="false" :options="languages" :taggable="true" :pushTags="true" inputId="languages" />
-						</div>
+						</LabelledComponent>
 						<LabelledNumberInput v-model="data.core.senses.telepathy" title="Telepathy" />
 					</div>
 				</div>
@@ -202,53 +186,40 @@
 					<h2 class="group-header">Saving Throws</h2>
 					<div class="editor-field__container three-wide">
 						<LabelledNumberInput v-model="data.abilities.saves.str.override" title="Strength" :max="30" :step="1" :is-clearable="true"> 
-							<template #above-slot>
-								<p>
-									<label for="strsaveprof" aria-label="strength save proficiency">Proficient</label>
-									<input type="checkbox" v-model="data.abilities.saves.str.isProficient" id="strsaveprof" :is-clearable="true"/>
-								</p>
-							</template>
+							<p>
+								<label for="strsaveprof" aria-label="strength save proficiency">Proficient</label>
+								<input type="checkbox" v-model="data.abilities.saves.str.isProficient" id="strsaveprof" :is-clearable="true"/>
+							</p>
 						</LabelledNumberInput>
 						<LabelledNumberInput v-model="data.abilities.saves.dex.override" title="Dexterity" :max="30" :step="1" :is-clearable="true"> 
-							<template #above-slot>
-								<p>
-									<label for="dexsaveprof" aria-label="dexterity save proficiency">Proficient</label>
-									<input type="checkbox" v-model="data.abilities.saves.dex.isProficient" id="dexsaveprof">
-								</p>
-
-							</template>
+							<p>
+								<label for="dexsaveprof" aria-label="dexterity save proficiency">Proficient</label>
+								<input type="checkbox" v-model="data.abilities.saves.dex.isProficient" id="dexsaveprof">
+							</p>
 						</LabelledNumberInput>
 						<LabelledNumberInput v-model="data.abilities.saves.con.override" title="Constitution" :max="30" :step="1" :is-clearable="true"> 
-							<template #above-slot>
-								<p>
-									<label for="consaveprof" aria-label="constitution save proficiency">Proficient</label>
-									<input type="checkbox" v-model="data.abilities.saves.con.isProficient" id="consaveprof" />
-								</p>
-							</template>
+							<p>
+								<label for="consaveprof" aria-label="constitution save proficiency">Proficient</label>
+								<input type="checkbox" v-model="data.abilities.saves.con.isProficient" id="consaveprof" />
+							</p>
 						</LabelledNumberInput>
 						<LabelledNumberInput v-model="data.abilities.saves.int.override" title="Intelligence" :max="30" :step="1" :is-clearable="true"> 
-							<template #above-slot>
-								<p>
-									<label for="intsaveprof" aria-label="intelligence save proficiency">Proficient</label>
-									<input type="checkbox" v-model="data.abilities.saves.int.isProficient" id="intsaveprof" />
-								</p>
-							</template>
+							<p>
+								<label for="intsaveprof" aria-label="intelligence save proficiency">Proficient</label>
+								<input type="checkbox" v-model="data.abilities.saves.int.isProficient" id="intsaveprof" />
+							</p>
 						</LabelledNumberInput>
 						<LabelledNumberInput v-model="data.abilities.saves.wis.override" title="Wisdom"  :max="30" :step="1" :is-clearable="true"> 
-							<template #above-slot>
-								<p>
-									<label for="wissaveprof" aria-label="wisdom save proficiency">Proficient</label>
-									<input type="checkbox" v-model="data.abilities.saves.wis.isProficient" id="wissaveprof" />
-								</p>
-							</template>
+							<p>
+								<label for="wissaveprof" aria-label="wisdom save proficiency">Proficient</label>
+								<input type="checkbox" v-model="data.abilities.saves.wis.isProficient" id="wissaveprof" />
+							</p>
 						</LabelledNumberInput>
 						<LabelledNumberInput v-model="data.abilities.saves.cha.override" title="Charisma" :max="30" :step="1" :is-clearable="true"> 
-							<template #above-slot>
-								<p>
-									<label for="chasaveprof" aria-label="charisma save proficiency">Proficient</label>
-									<input type="checkbox" v-model="data.abilities.saves.cha.isProficient" id="chasaveprof" />
-								</p>
-							</template>
+							<p>
+								<label for="chasaveprof" aria-label="charisma save proficiency">Proficient</label>
+								<input type="checkbox" v-model="data.abilities.saves.cha.isProficient" id="chasaveprof" />
+							</p>
 						</LabelledNumberInput>
 					</div>
 					<hr />
@@ -271,10 +242,9 @@
 							</div>
 							<button class="btn" @click="deleteSkill(index)">delete</button>
 						</div>
-						<div class="flow-vertically">
-							<label class="editor-field__title" for="addnewskill"><span class="text">Add New Skill</span></label>
+						<LabelledComponent title="Add new skill">
 							<button class="btn editor-field__plus-button" id="addnewskill" @click="addNewSkill()">New Skill</button>
-						</div>
+						</LabelledComponent>
 					</div>
 				</div>
 				<div class="editor-content__tab-inner scale-in">
@@ -286,139 +256,58 @@
 					<hr />
 					<div class="editor-field__container two-wide">
 						<LabelledNumberInput v-model="data.defenses.ac.ac" title="Armor Class" :step="1"/>
-						<div class="flow-vertically">
-							<label class="editor-field__title" for="acsource"><span class="text">Armor Class Source</span></label>
-							<input type="text" v-model="data.defenses.ac.acSource" id="acsource"/>
-						</div>
+						<LabelledComponent title="Armor Class source">
+							<input type="text" v-model="data.defenses.ac.acSource" id="armorclasssource"/>
+						</LabelledComponent>
 					</div>
 					<hr />
 					<div class="editor-field__container two-wide">
-						<div class="flow-vertically">
-							<label for="vulnerabilities" class="editor-field__title"><span class="text" v-tooltip="'Takes custom text input'">Vulnerabilities*</span></label>
+						<LabelledComponent title="Vulnerabilities">
 							<v-select
 								placeholder="type vulnerabilities..."
 								v-model="data.defenses.vulnerabilities"
 								multiple
 								:deselectFromDropdown="true"
 								:closeOnSelect="false"
-								:options="[
-									'Acid',
-									'Bludgeoning',
-									'Cold',
-									'Fire',
-									'Force',
-									'Lightning',
-									'Necrotic',
-									'Piercing',
-									'Poison',
-									'Psychic',
-									'Radiant',
-									'Slashing',
-									'Thunder',
-									'Nonmagical Bludgeoning',
-									'Nonmagical Piercing',
-									'Nonmagical Slashing',
-									'Nonmagical Nonsilvered Bludgeoning',
-									'Nonmagical Nonsilvered Piercing',
-									'Nonmagical Nonsilvered Slashing'
-								]"
+								:options="resistanceList"
 								:taggable="true"
 								:pushTags="true"
 								inputId="vulnerabilities"
 							/>
-						</div>
-						<div class="flow-vertically">
-							<label for="resistances" class="editor-field__title"><span class="text" v-tooltip="'Takes custom text input'">Resistances*</span></label>
+						</LabelledComponent>
+						<LabelledComponent title="Resistances">
 							<v-select
 								placeholder="type resistances..."
 								v-model="data.defenses.resistances"
 								multiple
 								:deselectFromDropdown="true"
 								:closeOnSelect="false"
-								:options="[
-									'Acid',
-									'Bludgeoning',
-									'Cold',
-									'Fire',
-									'Force',
-									'Lightning',
-									'Necrotic',
-									'Piercing',
-									'Poison',
-									'Psychic',
-									'Radiant',
-									'Slashing',
-									'Thunder',
-									'Nonmagical Bludgeoning',
-									'Nonmagical Piercing',
-									'Nonmagical Slashing',
-									'Nonmagical Nonsilvered Bludgeoning',
-									'Nonmagical Nonsilvered Piercing',
-									'Nonmagical Nonsilvered Slashing'
-								]"
+								:options="resistanceList"
 								:taggable="true"
 								:pushTags="true"
 								inputId="resistances"
 							/>
-						</div>
-						<div class="flow-vertically">
-							<label for="immunities" class="editor-field__title"><span class="text" v-tooltip="'Takes custom text input'">Immunities*</span></label>
+						</LabelledComponent>
+						<LabelledComponent title="Immunities">
 							<v-select
 								placeholder="type immunities..."
 								v-model="data.defenses.immunities"
 								multiple
 								:deselectFromDropdown="true"
 								:closeOnSelect="false"
-								:options="[
-									'Acid',
-									'Bludgeoning',
-									'Cold',
-									'Fire',
-									'Force',
-									'Lightning',
-									'Necrotic',
-									'Piercing',
-									'Poison',
-									'Psychic',
-									'Radiant',
-									'Slashing',
-									'Thunder',
-									'Nonmagical Bludgeoning',
-									'Nonmagical Piercing',
-									'Nonmagical Slashing',
-									'Nonmagical Nonsilvered Bludgeoning',
-									'Nonmagical Nonsilvered Piercing',
-									'Nonmagical Nonsilvered Slashing'
-								]"
+								:options="resistanceList"
 								:taggable="true"
 								:pushTags="true"
 								inputId="immunities"
 							/>
-						</div>
-						<div class="flow-vertically">
-							<label for="conimmunities" class="editor-field__title"><span class="text" v-tooltip="'Takes custom text input'">Condition Immunities*</span></label>
-							<v-select
-								placeholder="type condition immunities..."
-								v-model="data.defenses.conditionImmunities"
-								multiple
-								:deselectFromDropdown="true"
-								:closeOnSelect="false"
-								:options="['Blinded', 'Charmed', 'Deafened', 'Disease', 'Exhaustion', 'Frightened', 'Grappled', 'Incapacitated', 'Invisible', 'Paralyzed', 'Petrified', 'Poisoned', 'Prone', 'Restrained', 'Stunned', 'Unconscious']"
-								:taggable="true"
-								:pushTags="true"
-								inputId="conimmunities"
-							/>
-						</div>
+						</LabelledComponent>
 					</div>
 				</div>
 				<div class="editor-content__tab-inner scale-in">
 					<div v-for="(descText, fType) in featureGenerator">
 						<h2 class="group-header">{{ descText.replace("New ", "") }}s</h2>
 						<div class="editor-field__container two-wide">
-							<div class="flow-vertically" v-for="(feature, index) in data.features[fType]">
-								<label class="editor-field__title" :for="fType + index"
-									><span class="text">{{ feature.name }}</span></label
-								>
+							<LabelledComponent v-for="(feature, index) in data.features[fType]" :title="feature.name">
 								<div class="feature-button__container">
 									<FeatureWidget :index="index" :type="fType" :data="data" />
 									<span class="delete-button" @click="deleteFeature(fType, index)" aria-label="Delete feature"><font-awesome-icon :icon="['fas', 'trash']" /></span>
@@ -427,30 +316,16 @@
 										<span @click="moveFeature(false, fType, index)">▼</span>
 									</div>
 								</div>
-							</div>
+							</LabelledComponent>
+							<LabelledComponent :title="descText">
+								<button class="btn" @click="createNewFeature(fType)" :id="descText">Create</button>
+							</LabelledComponent>
 
-							<div class="flow-vertically">
-								<label class="editor-field__title" :for="'new' + fType"
-									><span class="text">{{ descText }}</span></label
-								>
-								<button class="btn" @click="createNewFeature(fType)" :id="'new' + fType">Create</button>
-							</div>
-
-							<div class="flow-vertically" v-if="data.features[fType].length > 0">
-								<label class="editor-field__title" :for="'headertext' + fType"><span class="text"> Section Header </span></label>
+							<LabelledComponent title="Section Header">
 								<textarea v-model="data.misc.featureHeaderTexts[fType]" />
-							</div>
-
-							<div class="flow-vertically" v-if="fType == 'legendary' && data.features[fType].length > 0">
-								<label class="editor-field__title" for="legactionsperround"><span class="text">Legendary Actions / Round</span></label>
-								<div class="quantity">
-									<input type="number" v-model="data.misc.legActionsPerRound" min="1" step="1" inputmode="numeric" id="legactionsperround" />
-									<div class="quantity-nav">
-										<div class="quantity-button quantity-up" @click="data.misc.legActionsPerRound = data.misc.legActionsPerRound + 1" aria-label="Increase legendary actions per round">+</div>
-										<div class="quantity-button quantity-down" @click="data.misc.legActionsPerRound = Math.max(1, data.misc.legActionsPerRound - 1)" aria-label="Decrease legendary actions per round">-</div>
-									</div>
-								</div>
-							</div>
+							</LabelledComponent>
+							
+							<LabelledNumberInput v-model="data.misc.legActionsPerRound" v-if="fType == 'legendary' && data.features[fType].length > 0" title="Legendary Actions per round" :min="0" :step="1" />
 						</div>
 						<hr v-if="fType !== 'regional'" />
 					</div>
@@ -458,80 +333,67 @@
 				<div class="editor-content__tab-inner scale-in">
 					<h2 class="group-header">Innate Spellcasting</h2>
 					<div class="editor-field__container two-wide">
-						<div class="flow-vertically">
-							<label class="editor-field__title" for="innateability"><span class="text">Spellcasting Ability</span></label>
+						<LabelledComponent title="Casting ability">
 							<p>
-								<v-select :options="['str', 'dex', 'con', 'wis', 'int', 'cha']" v-model="data.spellcasting.innateSpells.spellCastingAbility" inputId="innateability" />
+								<v-select :options="['str', 'dex', 'con', 'wis', 'int', 'cha']" v-model="data.spellcasting.innateSpells.spellCastingAbility" inputId="castingability" />
 								<span class="delete-button" @click="data.spellcasting.innateSpells.spellCastingAbility = null" aria-label="Delete innate spellcasting ability"><font-awesome-icon :icon="['fas', 'trash']" /></span>
 							</p>
-						</div>
-						<div class="flow-vertically">
-							<label for="notcomponents" class="editor-field__title"><span class="text">Not these components</span></label>
-							<v-select :options="['Material', 'Verbal', 'Somatic']" v-model="data.spellcasting.innateSpells.noComponentsOfType" multiple :deselectFromDropdown="true" :closeOnSelect="false" inputId="notcomponents" />
-						</div>
+						</LabelledComponent>
+						<LabelledComponent title="Not these components">
+							<v-select :options="['Material', 'Verbal', 'Somatic']" v-model="data.spellcasting.innateSpells.noComponentsOfType" multiple :deselectFromDropdown="true" :closeOnSelect="false" inputId="notthesecomponents" />
+						</LabelledComponent>
+
 					</div>
 					<div class="editor-field__container two-wide">
 						<LabelledNumberInput v-model="data.spellcasting.innateSpells.spellDcOverride" title="DC override" :step="1" :is-clearable="true"/>
 						<LabelledNumberInput v-model="data.spellcasting.innateSpells.spellBonusOverride" title="Attack bonus override" :step="1" :is-clearable="true"/>
-						<div class="flow-vertically">
-							<label class="editor-field__title" for="atwillspells"><span class="text">At will</span></label>
-							<v-select :options="spellListFlattened" v-model="innateSpells[0]" multiple :deselectFromDropdown="true" :closeOnSelect="false" inputId="atwillspells" />
-						</div>
-						<div class="flow-vertically">
-							<label class="editor-field__title" for="onceperday"><span class="text">1/day</span></label>
-							<v-select :options="spellListFlattened" v-model="innateSpells[1]" multiple :deselectFromDropdown="true" :closeOnSelect="false" inputId="onceperday" />
-						</div>
-						<div class="flow-vertically">
-							<label class="editor-field__title" for="twiceperday"><span class="text">2/day</span></label>
-							<v-select :options="spellListFlattened" v-model="innateSpells[2]" multiple :deselectFromDropdown="true" :closeOnSelect="false" inputId="twiceperday" />
-						</div>
-						<div class="flow-vertically">
-							<label class="editor-field__title" for="thriceperday"><span class="text">3/day</span></label>
-							<v-select :options="spellListFlattened" v-model="innateSpells[3]" multiple :deselectFromDropdown="true" :closeOnSelect="false" inputId="thriceperday" />
-						</div>
+						<LabelledComponent title="At will">
+							<v-select :options="spellListFlattened" v-model="innateSpells[0]" multiple :deselectFromDropdown="true" :closeOnSelect="false" inputId="atwill" />
+						</LabelledComponent>
+						<LabelledComponent title="1/day">
+							<v-select :options="spellListFlattened" v-model="innateSpells[1]" multiple :deselectFromDropdown="true" :closeOnSelect="false" inputId="1/day" />
+						</LabelledComponent>
+						<LabelledComponent title="2/day">
+							<v-select :options="spellListFlattened" v-model="innateSpells[2]" multiple :deselectFromDropdown="true" :closeOnSelect="false" inputId="2/day" />
+						</LabelledComponent>
+						<LabelledComponent title="3/day">
+							<v-select :options="spellListFlattened" v-model="innateSpells[3]" multiple :deselectFromDropdown="true" :closeOnSelect="false" inputId="3/day" />
+						</LabelledComponent>
 
-						<div class="flow-vertically">
-							<label class="editor-field__title" for="ispionics"> <span class="text">is psionics? </span></label>
-							<span> display as psionics? <input type="checkbox" v-model="data.spellcasting.innateSpells.isPsionics" id="ispionics" /> </span>
-						</div>
+						<LabelledComponent title="Is psionics?">
+							<span> display as psionics? <input type="checkbox" v-model="data.spellcasting.innateSpells.isPsionics" id="ispsionics?" /> </span>
+						</LabelledComponent>
+						<LabelledComponent title="Display as action?">
+							<span> should this display as an action? <input type="checkbox" v-model="data.spellcasting.innateSpells.displayAsAction" id="displayasaction?" /> </span>
+						</LabelledComponent>
 
-						<div class="flow-vertically">
-							<label class="editor-field__title" for="innatedisplayasaction"> <span class="text">display as action? </span></label>
-							<span> should this display as an action? <input type="checkbox" v-model="data.spellcasting.innateSpells.displayAsAction" id="innatedisplayasaction" /> </span>
-						</div>
-
-						<div class="flow-vertically">
-							<label class="editor-field__title" for="openspelldialog"> <span class="text">edit specific spells</span></label>
-							<button class="btn" @click="isSpellModalOpen = true" id="openspelldialog">Edit cast level/add comment</button>
-						</div>
+						<LabelledComponent title="Edit specific spells">
+							<button class="btn" @click="isSpellModalOpen = true" id="editspecificspells">Edit cast level/add comment</button>
+						</LabelledComponent>
 					</div>
 
 					<hr />
 					<h2 class="group-header">Class spellcasting</h2>
 					<div class="editor-field__container two-wide">
-						<div class="flow-vertically">
-							<label class="editor-field__title" for="castingclass"><span class="text">Class</span></label>
-							<v-select v-model="data.spellcasting.casterSpells.castingClass" :options="['Artificer', 'Bard', 'Cleric', 'Druid', 'Paladin', 'Ranger', 'Sorcerer', 'Warlock', 'Wizard']" inputId="castingclass" />
-						</div>
-						<div class="flow-vertically">
-							<label class="editor-field__title" for="castinglevel"><span class="text">Class level</span></label>
-							<v-select v-model="data.spellcasting.casterSpells.casterLevel" :options="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]" inputId="castinglevel" />
-						</div>
+						<LabelledComponent title="Class">
+							<v-select v-model="data.spellcasting.casterSpells.castingClass" :options="['Artificer', 'Bard', 'Cleric', 'Druid', 'Paladin', 'Ranger', 'Sorcerer', 'Warlock', 'Wizard']" inputId="class" />
+						</LabelledComponent>
+						<LabelledComponent title="Class level">
+							<v-select v-model="data.spellcasting.casterSpells.casterLevel" :options="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]" inputId="classlevel" />
+						</LabelledComponent>
+
 						<LabelledNumberInput v-model="data.spellcasting.casterSpells.spellDcOverride" title="DC override" :step="1" :is-clearable="true"/>
 						<LabelledNumberInput v-model="data.spellcasting.casterSpells.spellBonusOverride" title="Attack bonus override" :step="1" />
 					</div>
 
 					<div v-if="data.spellcasting.casterSpells.castingClass" class="editor-field__container two-wide">
-						<div class="flow-vertically" v-if="!['Ranger', 'Paladin'].includes(data.spellcasting.casterSpells.castingClass)">
-							<label class="edit-field__title" for="cantrips"> <span class="text">cantrips</span> </label>
+						<LabelledComponent title="Cantrips" v-if="!['Ranger', 'Paladin'].includes(data.spellcasting.casterSpells.castingClass)">
 							<v-select v-model="data.spellcasting.casterSpells.spellList[0]" :options="spellList[0]" multiple :deselectFromDropdown="true" :closeOnSelect="false" :taggable="true" :pushTags="true" inputId="cantrips" />
-						</div>
-						<div class="flow-vertically" v-for="level in spellLevelList()">
-							<label class="edit-field__title" :for="'levelspells' + level"
-								><span class="text">level {{ level }}</span></label
-							>
-							<v-select v-model="data.spellcasting.casterSpells.spellList[level]" :options="getSpellsByLevel(level)" multiple :deselectFromDropdown="true" :closeOnSelect="false" :taggable="true" :pushTags="true" :inputId="'levelspells' + level" />
-						</div>
+						</LabelledComponent>
+						<LabelledComponent v-for="level in spellLevelList()" :title="'Level ' + level">
+							<v-select v-model="data.spellcasting.casterSpells.spellList[level]" :options="getSpellsByLevel(level)" multiple :deselectFromDropdown="true" :closeOnSelect="false" :taggable="true" :pushTags="true" :title="'Level ' + level" />
+						</LabelledComponent>
+
 					</div>
 				</div>
 			</div>
@@ -553,41 +415,38 @@
 				<section class="modal__content modal__small" ref="importModal">
 					<button @click="isImportModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
 					<h2 class="modal-header">Import creature</h2>
-					<div class="flow-vertically">
-						<label for="bestiarybuilderjson">Bestiary Builder</label>
+					<LabelledComponent title="Bestiary Builder JSON">
 						<p> Insert the JSON as text gotten from clicking export on another creature within Bestiary Builder.</p>
 						<div class="two-wide">
-							<input type="text" v-model="bestiaryBuilderJson" />
+							<input type="text" v-model="bestiaryBuilderJson" id="bestiarybuilderjson"/>
 							<button class="btn confirm" @click="importBestiaryBuilder">Import</button>
 						</div>
-					</div>
+					</LabelledComponent>
 					<hr />
-					<div class="flow-vertically">
-						<label for="5etoolsinput">5e Tools JSON</label>
+					<LabelledComponent title="5e Tools JSON">
 						<p> Insert 5e.tools JSON as text into this field, gotten from clicking export on 5e.tools and copying the JSON.</p>
 						<div class="two-wide">
-							<input type="text" v-model="toolsjson" />
+							<input type="text" v-model="toolsjson" id="5etoolsjson" />
 							<button class="btn confirm" @click.prevent="import5etools">Import</button>
+						</div>
+					</LabelledComponent>
+
+					<div v-if="JSON.stringify(notices) !== '{}'">
+						<p class="warning"><b>Please note the following for this import:</b></p>
+						<p>Some features may not have automation as they should, aka description only features, but some might not have imported correctly or are missing certain parts. It is recommended to review.</p>
+						<div v-for="(type, index) in notices">
+							<h3 v-if="type.length > 0">{{ index }}</h3>
+							<ul v-if="type.length > 0">
+								<li v-for="notice in type">
+									{{ notice }}
+								</li>
+							</ul>
 						</div>
 					</div>
 
-
-						<div v-if="JSON.stringify(notices) !== '{}'">
-							<p class="warning"><b>Please note the following for this import:</b></p>
-							<p>Some features may not have automation as they should, aka description only features, but some might not have imported correctly or are missing certain parts. It is recommended to review.</p>
-							<div v-for="(type, index) in notices">
-								<h3 v-if="type.length > 0">{{ index }}</h3>
-								<ul v-if="type.length > 0">
-									<li v-for="notice in type">
-										{{ notice }}
-									</li>
-								</ul>
-							</div>
-						</div>
-
-						<div class="modal-buttons">
-							<button class="btn" @click="isImportModalOpen = false">Close</button>
-						</div>
+					<div class="modal-buttons">
+						<button class="btn" @click="isImportModalOpen = false">Close</button>
+					</div>
 				</section>
 			</div>
 		</Transition>
@@ -603,10 +462,9 @@
 
 					<div class="two-wide">
 						<template v-for="times in data.spellcasting.innateSpells.spellList"  :key="times">
-							<p v-for="spell, index in times" v-if="times.length > 0" class="flow-vertically" :key="index">
-								<label :for="'comment'+spell.spell">{{ spell.spell }}</label> 
-								<input type="text" v-model="spell.comment" placeholder="comment" :id="'comment'+spell.spell"/>
-							</p>
+							<LabelledComponent v-for="spell, index in times" v-if="times.length > 0" :key="index" :title="spell.spell">
+								<input type="text" v-model="spell.comment" placeholder="comment" :id="spell.spell"/>
+							</LabelledComponent>
 						</template>
 					</div>
 
@@ -625,6 +483,7 @@ import {defineComponent} from "vue";
 import StatblockRenderer from "../components/StatblockRenderer.vue";
 import Breadcrumbs from "../components/Breadcrumbs.vue";
 import LabelledNumberInput from "@/components/LabelledNumberInput.vue";
+import LabelledComponent from "@/components/LabelledComponent.vue";
 import type {SkillsEntity, Statblock, Creature, Bestiary} from "@/generic/types";
 import {defaultStatblock, getSpellSlots, spellList, spellListFlattened, getXPbyCR} from "@/generic/types";
 import {handleApiResponse, type error, toast, asyncLimits, type limitsType} from "@/main";
@@ -654,7 +513,8 @@ export default defineComponent({
 		StatblockRenderer,
 		FeatureWidget,
 		Breadcrumbs,
-		LabelledNumberInput
+		LabelledNumberInput,
+		LabelledComponent
 	},
 	data() {
 		return {
@@ -673,6 +533,41 @@ export default defineComponent({
 				3: [] as string[]
 			} as {[key: number]: string[]},
 			limits: {} as limitsType,
+			featureGenerator: {
+				features: "New Feature",
+				actions: "New Action",
+				bonus: "New Bonus Action",
+				reactions: "New Reaction",
+				legendary: "New Legendary Action",
+				lair: "New Lair Action",
+				mythic: "New Mythic Action",
+				regional: "New Regional Effect"
+			},
+			toolsjson: "" as string,
+			bestiaryBuilderJson: "" as string,
+			notices: {} as {[key: string]: string[]},
+			madeChanges: false,
+			resistanceList: [
+				'Acid',
+				'Bludgeoning',
+				'Cold',
+				'Fire',
+				'Force',
+				'Lightning',
+				'Necrotic',
+				'Piercing',
+				'Poison',
+				'Psychic',
+				'Radiant',
+				'Slashing',
+				'Thunder',
+				'Nonmagical Bludgeoning',
+				'Nonmagical Piercing',
+				'Nonmagical Slashing',
+				'Nonmagical Nonsilvered Bludgeoning',
+				'Nonmagical Nonsilvered Piercing',
+				'Nonmagical Nonsilvered Slashing'
+			],
 			languages: [
 				"All",
 				"All languages it knew in life",
@@ -702,20 +597,6 @@ export default defineComponent({
 				"Undercommon",
 				"Understands the languages of its creator but can't speak"
 			],
-			featureGenerator: {
-				features: "New Feature",
-				actions: "New Action",
-				bonus: "New Bonus Action",
-				reactions: "New Reaction",
-				legendary: "New Legendary Action",
-				lair: "New Lair Action",
-				mythic: "New Mythic Action",
-				regional: "New Regional Effect"
-			},
-			toolsjson: "" as string,
-			bestiaryBuilderJson: "" as string,
-			notices: {} as {[key: string]: string[]},
-			madeChanges: false
 		};
 	},
 	methods: {
@@ -1051,15 +932,7 @@ export default defineComponent({
 </script>
 
 <style scoped lang="less">
-.spell-comment__container {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	gap: .5rem 2rem;
-
-	& .spell-comment__spell {
-		display: grid;
-	}
-}
+@import url("@/assets/number-input.less");
 .content {
 	display: grid;
 	gap: 2rem;
@@ -1111,16 +984,7 @@ export default defineComponent({
 	gap: 1rem;
 }
 
-.modal__content .flow-vertically {
-	display: flex;
-	flex-direction: column;
-	gap: 0.3rem;
-	margin: .5rem 0;
-	label {
-		font-weight: bold;
-		text-decoration: underline;
-	}
-}
+
 
 .editor-content {
 	padding: 0.5rem 1rem;
@@ -1148,37 +1012,6 @@ export default defineComponent({
 					display: flex;
 					justify-content: space-between;
 				}
-
-				.feature-button__container {
-					display: flex;
-					gap: 0.5rem;
-					justify-content: space-between;
-
-					& .moving-buttons {
-						display: grid;
-						grid-template-rows: 1fr 1fr;
-						cursor: pointer;
-
-						span {
-							border-radius: 50rem;
-							width: 20px;
-							height: 20px;
-							text-align: center;
-							display: inline-block;
-							line-height: 20px;
-							transition: background-color 0.3s ease;
-
-							&:hover {
-								background-color: var(--color-surface-0);
-							}
-						}
-					}
-				}
-			}
-
-			.center-vertically {
-				display: flex;
-				justify-content: center;
 			}
 
 			.editor-field__title .text {
@@ -1200,6 +1033,32 @@ export default defineComponent({
 			textarea {
 				min-height: 46px;
 				height: 46px;
+			}
+		}
+	}
+}
+
+.feature-button__container {
+	display: flex;
+	gap: 0.5rem;
+	justify-content: space-between;
+
+	& .moving-buttons {
+		display: grid;
+		grid-template-rows: 1fr 1fr;
+		cursor: pointer;
+
+		span {
+			border-radius: 50rem;
+			width: 20px;
+			height: 20px;
+			text-align: center;
+			display: inline-block;
+			line-height: 20px;
+			transition: background-color 0.3s ease;
+
+			&:hover {
+				background-color: var(--color-surface-0);
 			}
 		}
 	}
@@ -1237,106 +1096,6 @@ export default defineComponent({
 	}
 }
 
-.quantity {
-	position: relative;
-	white-space: nowrap;
-}
-
-.quantity .delete-button {
-	translate: 0 11px;
-	transition: scale 0.3s ease;
-	cursor: pointer;
-	display: flex;
-	height: fit-content;
-	color: orangered;
-	justify-content: center;
-	align-items: center;
-	&:hover {
-		scale: 1.1;
-	}
-}
-
-.feature-button__container .delete-button {
-	translate: 0 11px;
-	transition: scale 0.3s ease;
-	cursor: pointer;
-	display: flex;
-	height: fit-content;
-	color: orangered;
-	justify-content: center;
-	align-items: center;
-	&:hover {
-		scale: 1.1;
-	}
-}
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-	-webkit-appearance: none;
-	margin: 0;
-}
-
-input[type="number"] {
-	-moz-appearance: textfield;
-	appearance: textfield;
-}
-
-.quantity input {
-	background-color: var(--color-surface-0);
-	width: 100%;
-	height: 42px;
-	line-height: 1.65;
-	float: left;
-	display: block;
-	padding: 0;
-	margin: 0;
-	padding-left: 10px;
-	border: 1px solid rgb(60, 63, 68);
-	color: white;
-}
-.quantity:has(.delete-button) input {
-	width: 90%;
-}
-
-.quantity input:focus {
-	outline: 0;
-}
-
-.quantity-nav {
-	float: left;
-	position: relative;
-	height: 42px;
-}
-
-.quantity-button {
-	position: relative;
-	cursor: pointer;
-	border-left: 1px solid rgb(60, 63, 68);
-	width: 20px;
-	text-align: center;
-	font-size: 13px;
-	line-height: 1.7;
-	-webkit-transform: translateX(-100%);
-	transform: translateX(-100%);
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	-o-user-select: none;
-	user-select: none;
-}
-
-.quantity-button.quantity-up {
-	position: absolute;
-	height: 50%;
-	top: 0;
-	border-bottom: 1px solid rgb(60, 63, 68);
-}
-
-.quantity-button.quantity-down {
-	position: absolute;
-	bottom: -1px;
-	height: 50%;
-}
-
 .editor hr {
 	border-color: orangered;
 }
@@ -1346,13 +1105,6 @@ input[type="number"] {
 	gap: 1rem;
 	grid-template-columns: 1fr;
 	margin: 1rem 25%;
-}
-
-.modal-desc {
-	margin-top: 1rem;
-	display: flex;
-	flex-direction: column;
-	gap: 1rem;
 }
 
 .modal-buttons {

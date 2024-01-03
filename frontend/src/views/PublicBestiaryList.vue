@@ -9,37 +9,35 @@
 		]"
 	>
 	
-	<template #right-button>
-		<select v-model="viewMode" aria-label="Select public bestiary list mode">
-			<option>Recent</option>
-			<option>Popular</option>
-			<option>Bookmarked</option>
-		</select>
+	<select v-model="viewMode" aria-label="Select public bestiary list mode">
+		<option>Recent</option>
+		<option>Popular</option>
+		<option>Bookmarked</option>
+	</select>
 
-		<VDropdown :distance="6" :positioning-disabled="false">
-			<button v-tooltip="'Filter bestiaries'">
-				<font-awesome-icon :icon="['fas', 'tag']" />
-			</button>
-			<template #popper>
-				<div class="v-popper__custom-menu">
-					<span><label for="tagsInput">Filter by tags</label></span>
-					<v-select placeholder="Select Tags" v-model="selectedTags" multiple :options="tags" inputId="tagsInput" />
-				</div>
-			</template>
-		</VDropdown>
+	<VDropdown :distance="6" :positioning-disabled="false">
+		<button v-tooltip="'Filter bestiaries'">
+			<font-awesome-icon :icon="['fas', 'tag']" />
+		</button>
+		<template #popper>
+			<div class="v-popper__custom-menu">
+				<span><label for="tagsInput">Filter by tags</label></span>
+				<v-select placeholder="Select Tags" v-model="selectedTags" multiple :options="tags" inputId="tagsInput" />
+			</div>
+		</template>
+	</VDropdown>
 
-		<VDropdown :distance="6" :positioning-disabled="isMobile">
-			<button v-tooltip="'Search bestiaries'">
-				<font-awesome-icon :icon="['fas', 'magnifying-glass']" />
-			</button>
-			<template #popper>
-				<div class="v-popper__custom-menu">
-					<span> Search bestiaries by name or description</span>
-					<input id="searchinput" type="text" v-model="search" placeholder="Search by bestiary name or description" v-debounce:600ms.fireonempty="searchBestiaries" />
-				</div>
-			</template>
-		</VDropdown>
-	</template>
+	<VDropdown :distance="6" :positioning-disabled="isMobile">
+		<button v-tooltip="'Search bestiaries'">
+			<font-awesome-icon :icon="['fas', 'magnifying-glass']" />
+		</button>
+		<template #popper>
+			<div class="v-popper__custom-menu">
+				<span> Search bestiaries by name or description</span>
+				<input id="searchinput" type="text" v-model="search" placeholder="Search by bestiary name or description" v-debounce:600ms.fireonempty="searchBestiaries" />
+			</div>
+		</template>
+	</VDropdown>
 </Breadcrumbs>
 	<div class="content" v-if="viewMode != 'Bookmarked'">
 		<div class="tile-container" v-if="bestiaries && bestiaries.length > 0">
@@ -163,7 +161,6 @@ export default defineComponent({
 
 <style scoped lang="less">
 @import url("@/assets/bestiary-list.less");
-
 .content-tile .tile-footer {
 	display: grid;
 	grid-template-columns: 1fr 1fr;

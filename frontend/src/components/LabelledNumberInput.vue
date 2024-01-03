@@ -1,7 +1,6 @@
 <template>
-<div class="container">
-    <label class="editor-field__title" :for="id">{{ title }}</label>
-    <slot name="above-slot"></slot>
+<LabelledComponent :title="title">
+    <slot></slot>
     <div class="quantity">
         <input 
             ref="input"
@@ -12,24 +11,27 @@
             :max="max" 
             :step="step"
             inputmode="numeric" 
-            :id="id" 
+            :id="title.toLowerCase()" 
             @change="change"
             :placeholder="placeholder"
-      />
+        />
         <div class="quantity-nav">
             <div class="quantity-button quantity-up" @click.prevent="increase" :aria-label="`Increase ${title} by ${step}`">+</div>
             <div class="quantity-button quantity-down" @click.prevent="decrease" :aria-label="`Decrease ${title} by ${step}`">-</div>
         </div>
         <span v-if="isClearable" class="delete-button" @click="clear" :aria-label="`Clear override of ${title}`"><font-awesome-icon :icon="['fas', 'trash']" /></span>
     </div>
-</div>
+</LabelledComponent>
 </template>
 
 <script lang="ts">
 import { defineComponent, type Prop, type PropType } from 'vue';
+import LabelledComponent from './LabelledComponent.vue';
 const isNaN = Number.isNaN || window.isNaN;
-type test = Number | null
 export default defineComponent({
+    components: {
+        LabelledComponent
+    },
     props: {
         isClearable: {
             type: Boolean,
@@ -54,7 +56,7 @@ export default defineComponent({
             required: true
         },
         modelValue: {
-            type: Number as PropType<test>,
+            type: Number as PropType<Number | null>,
             default: NaN
         }
     },
@@ -63,7 +65,6 @@ export default defineComponent({
     ],
     data() {
         return {
-            id: this.$.uid.toString(),
             value: NaN as any
         }
     },
@@ -168,17 +169,7 @@ export default defineComponent({
 
 </script>
 
-<style scoped>
-.container {
-	display: flex;
-	flex-direction: column;
-	gap: 0.3rem;
-	label {
-		font-weight: bold;
-		text-decoration: underline;
-	}
-}
-
+<style scoped lang="less">
 .quantity {
 	position: relative;
 	white-space: nowrap;

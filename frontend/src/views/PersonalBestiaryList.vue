@@ -7,11 +7,9 @@
 		}
 		]" 
 	>
-	<template #right-button>
-		<button @click="createBestiary" v-tooltip="'Create bestiary!'" class="inverted">
-			<font-awesome-icon :icon="['fas', 'plus']" />
-		</button>
-	</template>
+	<button @click="createBestiary" v-tooltip="'Create bestiary!'" class="inverted">
+		<font-awesome-icon :icon="['fas', 'plus']" />
+	</button>
 	</Breadcrumbs>
 	<div class="content">
 		<div class="tile-container" v-if="bestiaries">
