@@ -43,7 +43,7 @@
 </Breadcrumbs>
 	<div class="content" v-if="viewMode != 'Bookmarked'">
 		<div class="tile-container" v-if="bestiaries && bestiaries.length > 0">
-			<TransitionGroup name="popin" mode="in-out">
+			<TransitionGroup name="popin">
 				<RouterLink class="content-tile bestiary-tile" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" :key="bestiary._id">
 					<h2 class="tile-header">{{ bestiary.name }}</h2>
 					<div class="tile-content">
@@ -69,6 +69,7 @@
 		</div>
 	</div>
 	<BookmarkedBestiaryList v-else />
+
 </template>
 
 <script lang="ts">

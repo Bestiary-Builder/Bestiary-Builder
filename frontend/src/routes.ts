@@ -34,7 +34,7 @@ export const defaultMetaTags = [
 	},
 	{
 		name: "description",
-		content: ""
+		content: "Bestiary Builder, the convenient Bestiary Creator for D&D 5e, designed for incredible integration with Avrae and convenience of use!"
 	},
 	//Schema.org for Google
 	{
@@ -43,7 +43,7 @@ export const defaultMetaTags = [
 	},
 	{
 		itemprop: "description",
-		content: ""
+		content: "Bestiary Builder, the convenient Bestiary Creator for D&D 5e, designed for incredible integration with Avrae and convenience of use!"
 	},
 	{
 		itemprop: "image",
@@ -60,7 +60,7 @@ export const defaultMetaTags = [
 	},
 	{
 		name: "twitter:description",
-		content: ""
+		content: "Bestiary Builder, the convenient Bestiary Creator for D&D 5e, designed for incredible integration with Avrae and convenience of use!"
 	},
 	{
 		name: "twitter:site",
@@ -77,7 +77,7 @@ export const defaultMetaTags = [
 	},
 	{
 		name: "og:description",
-		content: ""
+		content: "Bestiary Builder, the convenient Bestiary Creator for D&D 5e, designed for incredible integration with Avrae and convenience of use!"
 	},
 	{
 		name: "og:image",
@@ -96,7 +96,6 @@ export const defaultMetaTags = [
 		content: "website"
 	}
 ] as metaTag[];
-
 
 const routes = [
 	//Home

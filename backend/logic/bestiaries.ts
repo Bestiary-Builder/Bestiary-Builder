@@ -525,7 +525,6 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 					value += creature.stats.core.proficiencyBonus;
 					prof = 1;
 				}
-
 				saves[newKey] = {
 					value: value,
 					prof: prof,
@@ -703,9 +702,10 @@ function knownSpells(data: any): any {
 
 	for (let times in data.innateSpells.spellList) {
 		if (times == "0") continue;
+		console.log(data.innateSpells.spellList[times]);
 		for (let sp of data.innateSpells.spellList[times]) {
 			// @ts-ignore
-			dailySpells[times].push(sp.spell);
+			dailySpells[sp.spell] = parseInt(times);
 		}
 	}
 	let output = {
