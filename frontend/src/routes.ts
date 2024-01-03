@@ -1,6 +1,7 @@
 interface metaTag {
 	name?: string;
 	itemprop?: string;
+	property?: string;
 	content: string;
 }
 interface Route {
@@ -72,27 +73,27 @@ export const defaultMetaTags = [
 	},
 	//Open Graph general (Facebook, Pinterest & Google+)
 	{
-		name: "og:title",
+		property: "og:title",
 		content: "Bestiary Builder"
 	},
 	{
-		name: "og:description",
+		property: "og:description",
 		content: "Bestiary Builder, the convenient Bestiary Creator for D&D 5e, designed for incredible integration with Avrae and convenience of use!"
 	},
 	{
-		name: "og:image",
+		property: "og:image",
 		content: "https://bestiarybuilder.com/logo.svg"
 	},
 	{
-		name: "og:url",
+		property: "og:url",
 		content: "https://bestiarybuilder.com"
 	},
 	{
-		name: "og:site_name",
+		property: "og:site_name",
 		content: "Bestiary Builder"
 	},
 	{
-		name: "og:type",
+		property: "og:type",
 		content: "website"
 	}
 ] as metaTag[];
