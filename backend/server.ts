@@ -3,13 +3,11 @@ import path from "path";
 //Setup environment variables
 import dotenv from "dotenv";
 dotenv.config();
+//Logging
+import {log} from "./logger";
 //Get info
 export const isProduction = (process.env.NODE_ENV == "production") as boolean;
 const frontendPath = path.join(__dirname, process.env.frontendPath as string);
-
-//Logging
-import {log} from "./logger";
-
 //Setup express server with settings
 import express, {NextFunction, Request, Response} from "express";
 import bodyParser from "body-parser";
