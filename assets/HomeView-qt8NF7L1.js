@@ -1,4 +1,4 @@
-import{M as o}from"./index-5Jdbla-E.js";import{B as r}from"./Breadcrumbs-ZNzGPKNV.js";import{d as i,_ as s,r as c,o as e,c as a,a as d,b as p,i as l,F as h}from"./index-iHTj0MGC.js";const u=`<img src="/logo-text.svg" width="75%" style="margin: auto">
+import{M as o}from"./index-5Jdbla-E.js";import{B as r}from"./Breadcrumbs-4BYKAB47.js";import{d as i,_ as s,r as c,o as e,c as n,a as d,b as p,i as l,F as h}from"./index-VI9g4t46.js";const u=`<img src="/logo-text.svg" width="75%" style="margin: auto">
 
 ---
 
@@ -37,6 +37,7 @@ It is possible to import a bestiary from [CritterDB](https://critterdb.com):
 6. (optional) Import your bestiary into [Avrae](https://avrae.io/) by typing \`!bestiary import <url>\` into Discord
 
 ### Caveats
+
 1. CritterDB stores damage resistances in a weird manner. It may fail to import these correctly
 2. Since CritterDB does not have fields for bonus actions, mythic actions, lair actions, and regional effects, they will be imported as the action type you set on CritterDB
 3. It will generate automation for attacks that did not already have automation set through the <code>\\<avrae hidden\\></code> tag. However, this automation might be incomplete for more complicated attacks, such as attacks that apply an effect on hit
@@ -83,9 +84,10 @@ Sincere thanks go out to the developers of [Avrae](https://avrae.io/), specifica
 
 ## Feedback and issues
 
-You can leave feedback and issues by joining our [Disord Server](https://discord.gg/a6bwXCSymN) or by creating an issue on [Github](https://github.com/Bestiary-Builder/Bestiary-Builder/issues)
+You can leave feedback and issues by joining our [Discord Server](https://discord.gg/a6bwXCSymN) or by creating an issue on [Github](https://github.com/Bestiary-Builder/Bestiary-Builder/issues)
 
 ## Developers
+
 <div style="display: grid; gap: 2rem; grid-template-columns: 1fr 1fr; margin-top: 1rem; width: 90%; margin: auto; ">
     <div>
         <img src="/VeryGreatFrog.png" alt="VeryGreatFrog" style="width: 25vw;  aspect-ratio: 1; margin: auto;"/>
@@ -96,4 +98,4 @@ You can leave feedback and issues by joining our [Disord Server](https://discord
         <div style="text-align: center">Stevnbak</div>
     </div>
 </div>
-`,m=o({html:!0,linkify:!0,typographer:!0}),g=i({data(){return{content:m.render(u)}},components:{Breadcrumbs:r}}),y={class:"content markdown less-wide"},b=["innerHTML"];function f(t,v,w,B,C,k){const n=c("Breadcrumbs");return e(),a(h,null,[d(n,{routes:[{path:"",text:"Home",isCurrent:!0}],isLessWide:!0}),p("div",y,[t.content?(e(),a("div",{key:0,innerHTML:t.content},null,8,b)):l("",!0)])],64)}const D=s(g,[["render",f]]);export{D as default};
+`,m=o({html:!0,linkify:!0,typographer:!0}),g=i({data(){return{content:m.render(u)}},components:{Breadcrumbs:r}}),y={class:"content markdown less-wide"},b=["innerHTML"];function f(t,v,w,B,C,k){const a=c("Breadcrumbs");return e(),n(h,null,[d(a,{routes:[{path:"",text:"Home",isCurrent:!0}],isLessWide:!0}),p("div",y,[t.content?(e(),n("div",{key:0,innerHTML:t.content},null,8,b)):l("",!0)])],64)}const D=s(g,[["render",f]]);export{D as default};
