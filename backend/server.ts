@@ -81,12 +81,6 @@ app.use(async (req, res, next) => {
 	log.log("request", `Request for URL "${req.url}" recieved.`);
 	//Set Permissions Policy
 	res.setHeader("Permissions-Polict", "fullscreen: 'self'; accelerometer: ; autoplay: ; camera: ; geolocation: 'self'; gyroscope: ; interest-cohort: ; magnetometer: ; microphone: ; payment: ; sync-xhr: ;");
-	//Redirect http to https
-	if (isProduction) {
-		if (!req.secure) {
-			return res.redirect("https://" + req.headers.host + req.url);
-		}
-	}
 	next();
 });
 
