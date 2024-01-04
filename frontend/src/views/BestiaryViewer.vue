@@ -194,16 +194,19 @@
 </template>
 
 <script lang="ts">
-import {RouterLink} from "vue-router";
-import {defineComponent} from "vue";
-import {defaultStatblock} from "@/generic/types";
-import type {User, Bestiary, Creature, Statblock} from "@/generic/types";
 import UserBanner from "@/components/UserBanner.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import StatusIcon from "@/components/StatusIcon.vue";
 import LabelledComponent from "@/components/LabelledComponent.vue";
-import {handleApiResponse, user, type error, toast, tags, type limitsType, asyncLimits, isMobile} from "@/main";
+import Modal from "@/components/Modal.vue";
 import StatblockRenderer from "@/components/StatblockRenderer.vue";
+
+import {RouterLink} from "vue-router";
+import {defineComponent} from "vue";
+
+import {defaultStatblock} from "@/generic/types";
+import type {User, Bestiary, Creature, Statblock} from "@/generic/types";
+import {handleApiResponse, user, type error, toast, tags, type limitsType, asyncLimits, isMobile} from "@/main";
 import {parseFromCritterDB} from "@/parser/parseFromCritterDB";
 import {displayCR} from "@/generic/displayFunctions";
 // @ts-ignore
@@ -247,7 +250,8 @@ export default defineComponent({
 		StatblockRenderer,
 		Breadcrumbs,
 		StatusIcon,
-		LabelledComponent
+		LabelledComponent,
+		Modal
 	},
 	directives: {
 		debounce: vue3Debounce({lock: true})

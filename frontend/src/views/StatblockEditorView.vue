@@ -460,15 +460,18 @@
 </template>
 
 <script lang="ts">
-import {defineComponent} from "vue";
+import FeatureWidget from "@/components/FeatureWidget.vue";
+import Modal from "@/components/Modal.vue";
 import StatblockRenderer from "../components/StatblockRenderer.vue";
 import Breadcrumbs from "../components/Breadcrumbs.vue";
 import LabelledNumberInput from "@/components/LabelledNumberInput.vue";
 import LabelledComponent from "@/components/LabelledComponent.vue";
+
+import {defineComponent} from "vue";
+
 import type {SkillsEntity, Statblock, Creature, Bestiary} from "@/generic/types";
 import {defaultStatblock, getSpellSlots, spellList, spellListFlattened, getXPbyCR} from "@/generic/types";
 import {handleApiResponse, type error, toast, asyncLimits, type limitsType} from "@/main";
-import FeatureWidget from "@/components/FeatureWidget.vue";
 import {parseFrom5eTools} from "../parser/parseFrom5eTools";
 
 export default defineComponent({
@@ -477,7 +480,8 @@ export default defineComponent({
 		FeatureWidget,
 		Breadcrumbs,
 		LabelledNumberInput,
-		LabelledComponent
+		LabelledComponent,
+		Modal
 	},
 	data() {
 		return {

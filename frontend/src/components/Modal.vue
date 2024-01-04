@@ -1,7 +1,7 @@
 <template>
 <Teleport to="#modal">
   	<Transition name="modal">
-		<div class="modal__bg" @click="$emit('close')" v-show="show" ref="modal">
+		<div class="modal__bg" @click="$emit('close')" v-show="show" ref="target">
 			<div class="modal__content" @click.stop role="dialog" aria-modal="true" :aria-labelledby="`dialog${id}_label`">
 				<div class="modal__header">
 					<h2 :id="`dialog${id}_label`"><slot name="header"></slot> </h2>
@@ -11,7 +11,6 @@
 						><font-awesome-icon icon="fa-solid fa-xmark" />
 					</button>
 				</div>
-
 				<div class="modal__body">
 				<slot name="body">default body</slot>
 				</div>
@@ -30,20 +29,20 @@
 </Teleport>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, nextTick } from 'vue';
 export default defineComponent({
-  props: {
-    show: {
-        type: Boolean,
-        required: true
-    }
-  },
-  emits: ['close'],
-  data() {
-    return {
-      id: this.$.uid
-    }
-  },
+  	props: {
+    	show: {
+			type: Boolean,
+			required: true
+		}
+  	},
+  	emits: ['close'],
+  	data() {
+    	return {
+      		id: this.$.uid
+    	}
+  	},
 })
 </script>
 

@@ -66,14 +66,16 @@ import {RouterLink} from "vue-router";
 import {defineComponent} from "vue";
 
 import {handleApiResponse, toast, user} from "@/main";
-import type {User, Bestiary, Creature} from "@/generic/types";
+import type {User, Bestiary} from "@/generic/types";
 import type {error} from "@/main";
+
 
 export default defineComponent({
 	components: {
 		UserBanner,
 		Breadcrumbs,
-		StatusIcon
+		StatusIcon,
+		Modal
 	},
 	data() {
 		return {
