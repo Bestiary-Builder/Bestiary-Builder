@@ -36,67 +36,40 @@
 					</div>
 				</RouterLink>
 
-			</TransitionGroup>
-		</div>
-		<div v-else class="zero-found">
-			<span> You do not have any bestiaries. </span>
-			<button class="btn confirm" @click="createBestiary">Create a bestiary</button>
-		</div>
+		</TransitionGroup>
 	</div>
-
-	<Teleport to="#modal">
-		<Transition name="modal">
-			<div class="modal__bg" v-if="isDeleteModalOpen">
-				<section class="modal__content modal__small" ref="deleteModal" v-if="isDeleteModalOpen">
-					<button @click="isDeleteModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
-					<h2 class="modal-header">
-						Are you sure you want to delete <u> {{ selectedBestiary?.name }}</u
-						>?
-					</h2>
-					<p class="modal-desc">Please confirm you want to permanently delete this bestiary. This action is not reversible.</p>
-					<div class="modal-buttons">
-						<button class="btn" @click="isDeleteModalOpen = false">Cancel</button>
-						<button class="btn danger" @click.prevent="() => deleteBestiary(selectedBestiary)">Confirm</button>
-					</div>
-				</section>
-			</div>
-		</Transition>
-	</Teleport>
+	<div v-else class="zero-found">
+		<span> You do not have any bestiaries. </span>
+		<button class="btn confirm" @click="createBestiary">Create a bestiary</button>
+	</div>
+</div>
+<Modal :show="showDeleteModal" @close="showDeleteModal = false">
+	<template #header>Are you sure you want to delete {{ selectedBestiary?.name }}</template>
+	<template #body>
+		<p class="modal-desc">Please confirm you want to permanently delete this bestiary. This action is not reversible.</p>
+	</template>
+	<template #footer>
+		<button class="btn" @click="showDeleteModal = false">Cancel</button>
+		<button class="btn danger" @click.prevent="() => deleteBestiary(selectedBestiary)">Confirm</button>
+	</template>
+</Modal>
 </template>
 
 
 <script lang="ts">
-import {ref} from "vue";
-import {onClickOutside} from "@vueuse/core";
-import {RouterLink} from "vue-router";
-import {defineComponent} from "vue";
-import {handleApiResponse, toast, user} from "@/main";
-import type {User, Bestiary, Creature} from "@/generic/types";
-import type {error} from "@/main";
 import UserBanner from "@/components/UserBanner.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import StatusIcon from "@/components/StatusIcon.vue";
+import Modal from "@/components/Modal.vue";
+
+import {RouterLink} from "vue-router";
+import {defineComponent} from "vue";
+
+import {handleApiResponse, toast, user} from "@/main";
+import type {User, Bestiary, Creature} from "@/generic/types";
+import type {error} from "@/main";
+
 export default defineComponent({
-	setup() {
-		const isDeleteModalOpen = ref(false);
-		const deleteModal = ref<HTMLDivElement | null>(null);
-
-		const selectedBestiary = ref<Bestiary | null>(null);
-		const openDeleteModal = (bestiary: Bestiary) => {
-			selectedBestiary.value = bestiary;
-			isDeleteModalOpen.value = true;
-		};
-			// @ts-ignore
-		onClickOutside(deleteModal, () => (isDeleteModalOpen.value = false));
-
-		return {
-			deleteModal,
-			isDeleteModalOpen,
-
-			openDeleteModal,
-			selectedBestiary,
-		}
-	},
 	components: {
 		UserBanner,
 		Breadcrumbs,
@@ -107,6 +80,8 @@ export default defineComponent({
 			bestiaries: [] as Bestiary[],
 			userData: null as User | null,
 			deleteId: "" as string,
+			showDeleteModal: false,
+			selectedBestiary: null as Bestiary | null
 		};
 	},
 	async beforeMount() {
@@ -153,7 +128,7 @@ export default defineComponent({
 				let result = await handleApiResponse(response);
 				if (result.success) {
 					toast.success("Deleted bestiary succesfully");
-					this.isDeleteModalOpen = false
+					this.showDeleteModal = false
 				} else {
 					toast.error((result.data as error).error);
 				}
@@ -172,6 +147,10 @@ export default defineComponent({
 				}
 			});
 			///console.log(this.bestiaries);
+		},
+		openDeleteModal(bestiary: Bestiary) {
+			this.selectedBestiary = bestiary;
+			this.showDeleteModal  = true;
 		}
 	}
 });

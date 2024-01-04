@@ -21,7 +21,7 @@
 			<button v-if="lastClickedCreature" @click="lastClickedCreature = null" v-tooltip="'Unpin currently pinned creature!'" style="rotate: 45deg">
 				<font-awesome-icon :icon="['fas', 'thumbtack']" />
 			</button>
-			<button @click="isEditorModalOpen = true" v-tooltip="'Edit bestiary!'" v-if="isOwner || isEditor">
+			<button @click="showEditorModal = true" v-tooltip="'Edit bestiary!'" v-if="isOwner || isEditor">
 				<font-awesome-icon :icon="['fas', 'pen-to-square']" />
 			</button>
 			<VDropdown :distance="6" :positioning-disabled="isMobile">
@@ -50,7 +50,7 @@
 					</div>
 				</template>
 			</VDropdown>
-			<button @click="isImportModalOpen = true" v-tooltip="'Import bestiary'" v-if="isOwner">
+			<button @click="showImportModal = true" v-tooltip="'Import bestiary'" v-if="isOwner">
 				<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
 			</button>
 	</Breadcrumbs>
@@ -118,93 +118,78 @@
 			</div>
 		</div>
 	</div>
-	<Teleport to="#modal">
-		<Transition name="modal">
-			<div class="modal__bg" v-if="isImportModalOpen">
-				<section class="modal__content modal__small" ref="importModal" v-if="bestiary && isOwner">
-					<button @click="isImportModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
-					<h2 class="modal-header">Import creatures</h2>
-					<p>This might take a while for large bestiaries.</p>
-
-					<LabelledComponent title="CritterDB bestiary link">
-						<p>Insert a link to a critterDB bestiary to import all its creatures. Make sure the bestiary is public or has link sharing enabled.</p>
-						<div class="flow-horizontally">
-							<input type="text" v-model="critterDbId" id="critterdbbestiarylink" placeholder="CritterDB bestiary link" />
-							<button class="btn confirm" @click.prevent="importBestiaryFromCritterDB">Import</button>
-						</div>
-					</LabelledComponent>
-
-					<hr />
-
-					<LabelledComponent title="Bestiary Builder JSON">
-						<p>Insert the JSON as text gotten from clicking export on another bestiary within Bestiary Builder.</p>
-						<div class="flow-horizontally">
-							<input type="text" v-model="bestiaryBuilderJson" id="bestiarybuilderjson" placeholder="" />
-							<button class="btn confirm" @click.prevent="importCreaturesFromBestiaryBuilder">Import</button>
-						</div>
-					</LabelledComponent>
-
-					<div class="modal-buttons">
-						<button class="btn" @click="isImportModalOpen = false">Close</button>
-					</div>
-				</section>
+	<Modal :show="showImportModal" @close="showImportModal = false" v-if="bestiary && isOwner">
+      <template #header>Import Creatures</template>
+	  <template #body>
+		<LabelledComponent title="CritterDB bestiary link">
+			<p>Insert a link to a critterDB bestiary to import all its creatures.</p>
+			<p> Make sure the bestiary is public or has link sharing enabled.</p>
+			<div class="flow-horizontally">
+				<input type="text" v-model="critterDbId" id="critterdbbestiarylink" placeholder="CritterDB bestiary link" />
+				<button class="btn confirm" @click.prevent="importBestiaryFromCritterDB">Import</button>
 			</div>
-		</Transition>
-	</Teleport>
-	<Teleport to="#modal">
-		<Transition name="modal">
-			<div class="modal__bg" v-if="isEditorModalOpen">
-				<section class="modal__content modal__small" ref="editModal" v-if="bestiary && (isOwner || isEditor)">
-					<button @click="isEditorModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
-					<h2 class="modal-header">Edit Bestiary</h2>
-					<LabelledComponent title="Bestiary name">
-						<input type="text" v-model="bestiary.name" :minlength="limits.nameMin" :maxlength="limits.nameLength" id="bestiaryname" />
-					</LabelledComponent>
-					<LabelledComponent title="Description">
-						<p>Supports markdown</p>
-						<textarea v-model="bestiary.description" :maxlength="limits.descriptionLength" id="description" />
-					</LabelledComponent>
-					<div class="two-wide" v-if="isOwner">
-						<LabelledComponent title="Status">
-							<v-select v-model="bestiary.status" :options="['public', 'unlisted', 'private']" inputId="status" />
-						</LabelledComponent>
-						<LabelledComponent title="Tags">
-							<v-select placeholder="Select Tags" v-model="bestiary.tags" multiple :options="allTags" inputId="tags" />
-						</LabelledComponent>
-					</div>
-					<div class="editor-block">
-						<h3>Editors</h3>
-						<p v-if="isOwner">
-							Editors can add, edit, and remove creatures. They can edit the name of the bestiary and its description. Editors cannot change the status of the bestiary or delete the bestiary. Editors cannot add other editors. The owner can remove editors at any time.
-						</p>
-						<div class="editor-container">
-							<div v-for="editor in editors" class="editor-list">
-								<p>
-									<UserBanner :id="editor._id" />
-									<span v-if="isOwner" role="button" @click="removeEditor(editor._id)" class="delete-creature"> <span>🗑️</span> </span>
-								</p>
-							</div>
-						</div>
-						<LabelledComponent title="Add editor">
-							<div class="button-container">
-								<input type="text" v-model="editorToAdd" inputmode="numeric" placeholder="Discord user ID" id="addeditor" />
-								<button class="btn" @click="addEditor()" id="add">Add</button>
-							</div>
-						</LabelledComponent>
-					</div>
-					<p class="warning" v-if="showWarning">
-						By changing the bestiary status to public I confirm that I am the copyright holder of the content within, or that I have permission from the copyright holder to share this content. I hereby agree to the <RouterLink to="../content-policy">Content Policy</RouterLink> and agree
-						to be fully liable for the content within. I affirm that the content does not include any official non-free D&D content. Bestiaries that breach these terms may have their status changed to private or be outright removed, and may result in a ban if the content breaches our
-						content policy.
+		</LabelledComponent>
+
+		<hr />
+
+		<LabelledComponent title="Bestiary Builder JSON">
+			<p>Insert the JSON as text gotten from clicking export on another bestiary within Bestiary Builder.</p>
+			<div class="flow-horizontally">
+				<input type="text" v-model="bestiaryBuilderJson" id="bestiarybuilderjson" placeholder="" />
+				<button class="btn confirm" @click.prevent="importCreaturesFromBestiaryBuilder">Import</button>
+			</div>
+		</LabelledComponent>
+	  </template>
+    </Modal>
+
+	<Modal :show="showEditorModal" @close="showEditorModal = false" v-if="bestiary && isOwner">
+      <template #header>Edit Bestiary</template>
+	  <template #body>
+		<LabelledComponent title="Bestiary name">
+			<input type="text" v-model="bestiary.name" :minlength="limits.nameMin" :maxlength="limits.nameLength" id="bestiaryname" />
+		</LabelledComponent>
+		<LabelledComponent title="Description">
+			<p>Supports markdown</p>
+			<textarea v-model="bestiary.description" :maxlength="limits.descriptionLength" id="description" />
+		</LabelledComponent>
+		<div class="two-wide" v-if="isOwner">
+			<LabelledComponent title="Status">
+				<v-select v-model="bestiary.status" :options="['public', 'unlisted', 'private']" inputId="status" />
+			</LabelledComponent>
+			<LabelledComponent title="Tags">
+				<v-select placeholder="Select Tags" v-model="bestiary.tags" multiple :options="allTags" inputId="tags" />
+			</LabelledComponent>
+		</div>
+		<div class="editor-block">
+			<h3>Editors</h3>
+			<p v-if="isOwner">
+				Editors can add, edit, and remove creatures. They can edit the name of the bestiary and its description. Editors cannot change the status of the bestiary or delete the bestiary. Editors cannot add other editors. The owner can remove editors at any time.
+			</p>
+			<div class="editor-container">
+				<div v-for="editor in editors" class="editor-list">
+					<p>
+						<UserBanner :id="editor._id" />
+						<span v-if="isOwner" role="button" @click="removeEditor(editor._id)" class="delete-creature"> <span>🗑️</span> </span>
 					</p>
-					<div class="modal-buttons">
-						<button class="btn" @click="isEditorModalOpen = false">Cancel</button>
-						<button class="btn confirm" @click.prevent="updateBestiary">Save changes</button>
-					</div>
-				</section>
+				</div>
 			</div>
-		</Transition>
-	</Teleport>
+			<LabelledComponent title="Add editor">
+				<div class="button-container">
+					<input type="text" v-model="editorToAdd" inputmode="numeric" placeholder="Discord user ID" id="addeditor" />
+					<button class="btn" @click="addEditor()" id="add">Add</button>
+				</div>
+			</LabelledComponent>
+		</div>
+		<p class="warning" v-if="showWarning">
+			By changing the bestiary status to public I confirm that I am the copyright holder of the content within, or that I have permission from the copyright holder to share this content. I hereby agree to the <RouterLink to="../content-policy">Content Policy</RouterLink> and agree
+			to be fully liable for the content within. I affirm that the content does not include any official non-free D&D content. Bestiaries that breach these terms may have their status changed to private or be outright removed, and may result in a ban if the content breaches our
+			content policy.
+		</p>
+	  </template>
+	  <template #footer>
+		<button class="btn confirm" @click.prevent="updateBestiary">Save changes</button>
+	  </template>
+    </Modal>
 </div>
 </template>
 
@@ -221,33 +206,12 @@ import {handleApiResponse, user, type error, toast, tags, type limitsType, async
 import StatblockRenderer from "@/components/StatblockRenderer.vue";
 import {parseFromCritterDB} from "@/parser/parseFromCritterDB";
 import {displayCR} from "@/generic/displayFunctions";
-import {ref} from "vue";
-import {onClickOutside} from "@vueuse/core";
 // @ts-ignore
 import {vue3Debounce} from "vue-debounce";
 import markdownit from "markdown-it";
 
 const md = markdownit();
 export default defineComponent({
-	setup() {
-		const isEditorModalOpen = ref(false);
-		const editModal = ref<HTMLDivElement | null>(null);
-		onClickOutside(editModal, () => (isEditorModalOpen.value = false));
-
-		const selectedCreature = ref<Creature | null>(null);
-
-		const isImportModalOpen = ref(false);
-		const importModal = ref<HTMLDivElement | null>(null);
-		onClickOutside(importModal, () => (isImportModalOpen.value = false));
-
-		return {
-			editModal,
-			importModal,
-			isEditorModalOpen,
-			isImportModalOpen,
-			selectedCreature
-		};
-	},
 	data() {
 		return {
 			bestiary: null as Bestiary | null,
@@ -272,7 +236,10 @@ export default defineComponent({
 			displayCR,
 			md,
 			isMobile,
-			isExpanded: false
+			isExpanded: false,
+			showEditorModal: false,
+			showImportModal: false,
+			selectedCreature: null as Creature | null
 		};
 	},
 	components: {
@@ -394,7 +361,7 @@ export default defineComponent({
 			await this.getBestiary();
 			loader.hide();
 			toast.success("Importing has finished!");
-			this.isImportModalOpen = false;
+			this.showImportModal = false;
 		},
 		async importCreaturesFromBestiaryBuilder() {
 			let creatures;
@@ -425,7 +392,7 @@ export default defineComponent({
 				});
 			await this.getBestiary();
 			loader.hide();
-			this.isImportModalOpen = false;
+			this.showImportModal = false;
 		},
 		async createCreature(stats = defaultStatblock, shouldRefresh = true, shouldHaveLoader = true) {
 			let loader;
@@ -579,7 +546,7 @@ export default defineComponent({
 				if (result.success) {
 					toast.success("Saved bestiary");
 					this.savedBestiary = this.bestiary;
-					this.isEditorModalOpen = false;
+					this.showEditorModal = false;
 				} else {
 					toast.error((result.data as error).error);
 				}

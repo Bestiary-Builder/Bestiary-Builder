@@ -20,7 +20,7 @@
 			}
 		]"
 	>
-		<button @click="isImportModalOpen = true" v-tooltip="'Import a creature\'s statblock'">
+		<button @click="showImportModal = true" v-tooltip="'Import a creature\'s statblock'">
 			<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
 		</button>
 		<button @click="exportStatblock()" v-tooltip="'Export this creature as JSON to your clipboard.'">
@@ -368,7 +368,7 @@
 						</LabelledComponent>
 
 						<LabelledComponent title="Edit specific spells">
-							<button class="btn" @click="isSpellModalOpen = true" id="editspecificspells">Edit cast level/add comment</button>
+							<button class="btn" @click="showSpellModal = true" id="editspecificspells">Edit cast level/add comment</button>
 						</LabelledComponent>
 					</div>
 
@@ -409,72 +409,53 @@
 		</div>
 	</div>
 
-	<Teleport to="#modal">
-		<Transition name="modal">
-			<div class="modal__bg" v-if="isImportModalOpen">
-				<section class="modal__content modal__small" ref="importModal">
-					<button @click="isImportModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
-					<h2 class="modal-header">Import creature</h2>
-					<LabelledComponent title="Bestiary Builder JSON">
-						<p> Insert the JSON as text gotten from clicking export on another creature within Bestiary Builder.</p>
-						<div class="two-wide">
-							<input type="text" v-model="bestiaryBuilderJson" id="bestiarybuilderjson"/>
-							<button class="btn confirm" @click="importBestiaryBuilder">Import</button>
-						</div>
-					</LabelledComponent>
-					<hr />
-					<LabelledComponent title="5e Tools JSON">
-						<p> Insert 5e.tools JSON as text into this field, gotten from clicking export on 5e.tools and copying the JSON.</p>
-						<div class="two-wide">
-							<input type="text" v-model="toolsjson" id="5etoolsjson" />
-							<button class="btn confirm" @click.prevent="import5etools">Import</button>
-						</div>
-					</LabelledComponent>
-
-					<div v-if="JSON.stringify(notices) !== '{}'">
-						<p class="warning"><b>Please note the following for this import:</b></p>
-						<p>Some features may not have automation as they should, aka description only features, but some might not have imported correctly or are missing certain parts. It is recommended to review.</p>
-						<div v-for="(type, index) in notices">
-							<h3 v-if="type.length > 0">{{ index }}</h3>
-							<ul v-if="type.length > 0">
-								<li v-for="notice in type">
-									{{ notice }}
-								</li>
-							</ul>
-						</div>
-					</div>
-
-					<div class="modal-buttons">
-						<button class="btn" @click="isImportModalOpen = false">Close</button>
-					</div>
-				</section>
+<Modal :show="showImportModal" @close="showImportModal = false">
+	<template #header>Import Creatures</template>
+	<template #body>
+		<LabelledComponent title="Bestiary Builder JSON">
+			<p> Insert the JSON as text gotten from clicking export on another creature within Bestiary Builder.</p>
+			<div class="two-wide">
+				<input type="text" v-model="bestiaryBuilderJson" id="bestiarybuilderjson"/>
+				<button class="btn confirm" @click="importBestiaryBuilder">Import</button>
 			</div>
-		</Transition>
-	</Teleport>
-
-	<Teleport to="#modal">
-		<Transition name="modal">
-			<div class="modal__bg" v-if="isSpellModalOpen">
-				<section class="modal__content modal__small" ref="spellModal">
-					<button @click="isSpellModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
-					<h2 class="modal-header">Edit innate spellcasting list</h2>
-					<p> You can use this to add text to specific spells such as "self only" or "at 5th level". </p>
-
-					<div class="two-wide">
-						<template v-for="times in data.spellcasting.innateSpells.spellList"  :key="times">
-							<LabelledComponent v-for="spell, index in times" v-if="times.length > 0" :key="index" :title="spell.spell">
-								<input type="text" v-model="spell.comment" placeholder="comment" :id="spell.spell"/>
-							</LabelledComponent>
-						</template>
-					</div>
-
-					<div class="modal-buttons">
-						<button class="btn" @click="isSpellModalOpen = false">Close</button>
-					</div>
-				</section>
+		</LabelledComponent>
+		<hr />
+		<LabelledComponent title="5e Tools JSON">
+			<p> Insert 5e.tools JSON as text into this field, gotten from clicking export on 5e.tools and copying the JSON.</p>
+			<div class="two-wide">
+				<input type="text" v-model="toolsjson" id="5etoolsjson" />
+				<button class="btn confirm" @click.prevent="import5etools">Import</button>
 			</div>
-		</Transition>
-	</Teleport>
+		</LabelledComponent>
+
+		<div v-if="JSON.stringify(notices) !== '{}'">
+			<p class="warning"><b>Please note the following for this import:</b></p>
+			<p>Some features may not have automation as they should, aka description only features, but some might not have imported correctly or are missing certain parts. It is recommended to review.</p>
+			<div v-for="(type, index) in notices">
+				<h3 v-if="type.length > 0">{{ index }}</h3>
+				<ul v-if="type.length > 0">
+					<li v-for="notice in type">
+						{{ notice }}
+					</li>
+				</ul>
+			</div>
+		</div>
+	</template>
+</Modal>
+
+<Modal :show="showSpellModal" @close="showSpellModal = false">
+	<template #header>Edit Innate Spellcasting list</template>
+	<template #body>
+		<p> You can use this to add text to specific spells such as "self only" or "at 5th level". </p>
+		<div class="two-wide">
+			<template v-for="times in data.spellcasting.innateSpells.spellList"  :key="times">
+				<LabelledComponent v-for="spell, index in times" v-if="times.length > 0" :key="index" :title="spell.spell">
+					<input type="text" v-model="spell.comment" placeholder="comment" :id="spell.spell"/>
+				</LabelledComponent>
+			</template>
+		</div>
+	</template>
+</Modal>
 </div>
 </template>
 
@@ -489,26 +470,8 @@ import {defaultStatblock, getSpellSlots, spellList, spellListFlattened, getXPbyC
 import {handleApiResponse, type error, toast, asyncLimits, type limitsType} from "@/main";
 import FeatureWidget from "@/components/FeatureWidget.vue";
 import {parseFrom5eTools} from "../parser/parseFrom5eTools";
-import {ref} from "vue";
-import {onClickOutside} from "@vueuse/core";
+
 export default defineComponent({
-	setup() {
-		const isImportModalOpen = ref(false);
-		const importModal = ref<HTMLDivElement | null>(null);
-		onClickOutside(importModal, () => (isImportModalOpen.value = false));
-
-		const isSpellModalOpen = ref(false);
-		const spellModal = ref<HTMLDivElement | null>(null);
-		onClickOutside(spellModal, () => (isSpellModalOpen.value = false));
-
-		return {
-			isImportModalOpen,
-			isSpellModalOpen,
-			importModal,
-			spellModal
-			
-		};
-	},
 	components: {
 		StatblockRenderer,
 		FeatureWidget,
@@ -597,6 +560,8 @@ export default defineComponent({
 				"Undercommon",
 				"Understands the languages of its creator but can't speak"
 			],
+			showImportModal: false,
+			showSpellModal: false
 		};
 	},
 	methods: {
@@ -609,7 +574,7 @@ export default defineComponent({
 				[this.data, this.notices] = parseFrom5eTools(JSON.parse(this.toolsjson));
 				this.toolsjson = "";
 				toast.success("Successfully imported " + this.data.description.name);
-				this.isImportModalOpen = false;
+				this.showImportModal = false;
 			} catch (e) {
 				console.error(e);
 				toast.error("Failed to import this creature");
@@ -622,7 +587,7 @@ export default defineComponent({
 				this.data = creature;
 				this.bestiaryBuilderJson = "";
 				toast.success("Successfully imported " + this.data.description.name);
-				this.isImportModalOpen = false;
+				this.showImportModal = false;
 			} catch (e) {
 				console.error(e);
 				toast.error("Failed to import this creature");
