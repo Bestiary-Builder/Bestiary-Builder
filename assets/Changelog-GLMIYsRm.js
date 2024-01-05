@@ -1,4 +1,4 @@
-import{M as s}from"./index-5Jdbla-E.js";import{B as r}from"./Breadcrumbs-QDmMf9r_.js";import{d as a,_ as d,r as i,o as t,c as n,a as c,b as m,i as h,F as p}from"./index--pCCCWyf.js";const u=`## v1.0.0
+import{M as s}from"./index-5Jdbla-E.js";import{B as r}from"./Breadcrumbs-v_AhjImO.js";import{d as a,_ as d,r as i,o as t,c as n,a as c,b as m,i as h,F as p}from"./index-UkN1H5bj.js";const u=`## v1.0.0
 *January 2nd, 2024*
 - This is the first thing we added
 - This is the second thing we added
