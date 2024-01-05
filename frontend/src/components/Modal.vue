@@ -11,17 +11,11 @@
 						><font-awesome-icon icon="fa-solid fa-xmark" />
 					</button>
 				</div>
-				<div class="modal__body">
-				<slot name="body">default body</slot>
+				<div class="modal__body"> 
+					<slot name="body"></slot>
 				</div>
-
 				<div class="modal__footer modal__buttons">
-					<slot name="footer">
-						<!-- <button
-						class="btn"
-						@click="$emit('close')"
-						>Close</button> -->
-					</slot>
+					<slot name="footer"></slot>
 				</div>
 			</div>
 		</div>
@@ -29,7 +23,9 @@
 </Teleport>
 </template>
 <script lang="ts">
-import { defineComponent, nextTick } from 'vue';
+import { defineComponent, nextTick, ref, watch } from 'vue';
+import { useFocusTrap } from '@vueuse/integrations/useFocusTrap'
+
 export default defineComponent({
   	props: {
     	show: {
@@ -37,12 +33,41 @@ export default defineComponent({
 			required: true
 		}
   	},
+	name: "Modal",
   	emits: ['close'],
   	data() {
     	return {
       		id: this.$.uid
     	}
   	},
+	setup(props) {
+        const target = ref()
+        const { hasFocus, activate, deactivate } = useFocusTrap(target)
+
+        watch(() => props.show, async (newValue, oldValue) => {
+            if (newValue === oldValue) return
+            if (newValue === true) {
+				await nextTick()
+				activate()
+			} 
+            if (newValue === false) {
+				await nextTick()
+				deactivate()
+			} 
+        });
+
+		return {
+			hasFocus,
+			target
+		}
+    },
+	mounted() {
+		document.addEventListener("keydown", (e) => {
+			if (e.key == "Escape" && this.show) {
+				this.$emit('close')
+			}
+		})
+	}
 })
 </script>
 
