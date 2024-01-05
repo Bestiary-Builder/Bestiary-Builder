@@ -85,7 +85,6 @@ export function parseDescIntoAutomation(text: string, name = "", activationType:
 			}
 		}
 	} else if (attack_match?.groups) {
-		if (activationType == 1) activationType = 0
 		let attacks = [];
 		// again adapted from avrae repo above
 		const groups = attack_match.groups;
