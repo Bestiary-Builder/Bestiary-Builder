@@ -201,7 +201,6 @@ export function parseDescIntoAutomation(text: string, name = "", activationType:
 		if (attacks.length == 1) return [attacks[0], null];
 		return [attacks, null];
 	} else if (just_damage_match) {
-		if (activationType == 1) activationType = 0
 		if (text.includes(" DC ")) return [null, `${name}: Cannot generate automation for save-based attacks.`];
 		return [
 			{
