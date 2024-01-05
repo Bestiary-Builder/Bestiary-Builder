@@ -7,7 +7,7 @@
 		}
 		]" 
 	>
-	<button @click="createBestiary" v-tooltip="'Create bestiary!'" class="inverted">
+	<button @click="createBestiary" v-tooltip="'Create bestiary!'" class="inverted" aria-label="Create bestiary">
 		<font-awesome-icon :icon="['fas', 'plus']" />
 	</button>
 	</Breadcrumbs>
@@ -15,7 +15,7 @@
 		<div class="tile-container" v-if="bestiaries">
 			<TransitionGroup name="popin">
 				<RouterLink class="content-tile bestiary-tile" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" :key="bestiary._id"
-					:class="{'four-tall': bestiary.owner != userData?._id}">
+					:class="{'four-tall': bestiary.owner != userData?._id}" :aria-label="`Open Bestiary ${bestiary.name}`">
 					<div class="tile-header" >
 						<h2>{{ bestiary.name }}</h2>
 					</div>
@@ -28,14 +28,13 @@
 					</div>
 					<div class="tile-footer">
 						<span><StatusIcon :icon="bestiary.status" />{{ bestiary.status }}</span>
-						<span role="button" @click.stop.prevent="openDeleteModal(bestiary)" class="edit-button" v-tooltip="'Delete bestiary'" v-if="bestiary.owner == userData?._id"><font-awesome-icon :icon="['fas', 'trash']" /></span>
+						<span role="button" @click.stop.prevent="openDeleteModal(bestiary)" class="edit-button" v-tooltip="'Delete bestiary'" v-if="bestiary.owner == userData?._id" aria-label="Delete bestiary"><font-awesome-icon :icon="['fas', 'trash']" /></span>
 						<span v-else>
 							<UserBanner :id="bestiary.owner"/>
 						</span>
 						<span>{{ bestiary.creatures.length }}<font-awesome-icon :icon="['fas', 'skull']" /></span>
 					</div>
 				</RouterLink>
-
 		</TransitionGroup>
 	</div>
 	<div v-else class="zero-found">

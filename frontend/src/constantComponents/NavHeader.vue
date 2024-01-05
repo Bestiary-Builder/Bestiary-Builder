@@ -2,7 +2,7 @@
 	<nav class="navbar" :class="{'expanded': isExpanded}" ref="navbar">
 		<div class="navbar-left">
 			<RouterLink :to="$router.options.routes[0].path" class="navbar-brand">
-				<img src="/logo.svg" />
+				<img src="/logo.svg" alt="Site logo" />
 				<span>BESTIARY BUILDER</span>
 			</RouterLink>
 		</div>

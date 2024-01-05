@@ -15,17 +15,17 @@
 			}
 		]"
 	>
-			<button @click="createCreature()" v-tooltip="'Create creature!'" class="inverted" v-if="isOwner || isEditor">
+			<button @click="createCreature()" v-tooltip="'Create creature!'" class="inverted" v-if="isOwner || isEditor" aria-label="Create creature">
 				<font-awesome-icon :icon="['fas', 'plus']" />
 			</button>
-			<button v-if="lastClickedCreature" @click="lastClickedCreature = null" v-tooltip="'Unpin currently pinned creature!'" style="rotate: 45deg">
+			<button v-if="lastClickedCreature" @click="lastClickedCreature = null" v-tooltip="'Unpin currently pinned creature!'" style="rotate: 45deg" aria-label="Unpin currently pinned creature">
 				<font-awesome-icon :icon="['fas', 'thumbtack']" />
 			</button>
-			<button @click="showEditorModal = true" v-tooltip="'Edit bestiary!'" v-if="isOwner || isEditor">
+			<button @click="showEditorModal = true" v-tooltip="'Edit bestiary!'" v-if="isOwner || isEditor" aria-label="Edit bestiary">
 				<font-awesome-icon :icon="['fas', 'pen-to-square']" />
 			</button>
 			<VDropdown :distance="6" :positioning-disabled="isMobile">
-				<button v-tooltip="'Filter bestiaries'">
+				<button v-tooltip="'Filter bestiary'" aria-label="Filter bestiary">
 					<font-awesome-icon :icon="['fas', 'magnifying-glass']" />
 				</button>
 				<template #popper>
@@ -36,7 +36,7 @@
 				</template>
 			</VDropdown>
 			<VDropdown :distance="6" :positioning-disabled="isMobile">
-				<button v-tooltip="'Export bestiaries'">
+				<button v-tooltip="'Export bestiary'" aria-label="Export bestiary">
 					<font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" />
 				</button>
 				<template #popper>
@@ -50,7 +50,7 @@
 					</div>
 				</template>
 			</VDropdown>
-			<button @click="showImportModal = true" v-tooltip="'Import bestiary'" v-if="isOwner">
+			<button @click="showImportModal = true" v-tooltip="'Import bestiary'" v-if="isOwner" aria-label="Import bestiary">
 				<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
 			</button>
 	</Breadcrumbs>
@@ -58,14 +58,15 @@
 		<div class="bestiary" v-if="bestiary">
 			<div class="left-side-container">
 				<div class="content-tile header-tile">
+					<h2> {{ bestiary.name ? bestiary.name : "..." }} </h2>
 					<p class="description" :class="{expanded: isExpanded}" v-html="md.render(bestiary.description || 'No description set.')"></p>
-					<button v-if="bestiary.description.length > 0" class="expand-btn" v-tooltip="'Expand description'" @click="isExpanded = !isExpanded">{{ isExpanded ? "▲" : "▼" }}</button>
+					<button v-if="bestiary.description.length > 0" class="expand-btn" v-tooltip="'Expand description'" @click="isExpanded = !isExpanded" aria-label="Expand description">{{ isExpanded ? "▲" : "▼" }}</button>
 					<hr />
 					<div class="footer" :class="{'three-wide': isOwner}">
 						<UserBanner :id="bestiary.owner" />
 						<div><StatusIcon :icon="bestiary.status" /> {{ bestiary.status }}</div>
 						<div>{{ bestiary.creatures.length }}<font-awesome-icon :icon="['fas', 'skull']" /></div>
-						<div role="button" aria-label="bookmark" @click.prevent="toggleBookmark" class="bookmark" v-if="!isOwner">
+						<div role="button" aria-label="Toggle bookmark status" @click.prevent="toggleBookmark" class="bookmark" v-if="!isOwner">
 							<span v-if="bookmarked" v-tooltip="'Unbookmark this bestiary'" class="bookmark-enabled"><font-awesome-icon :icon="['fas', 'star']" /></span>
 							<span v-else v-tooltip="'Bookmark this bestiary'" class="bookmark-disabled"><font-awesome-icon :icon="['fas', 'star']" /></span>
 						</div>
@@ -80,7 +81,7 @@
 							</div>
 							<div class="right-side">
 								<VDropdown :distance="6" v-if="isOwner || isEditor" :positioning-disabled="isMobile">
-									<button v-tooltip="'Delete creature'" @click.stop.prevent="">
+									<button v-tooltip="'Delete creature'" @click.stop.prevent="" :aria-label="`Delete ${creature.stats.description.name}`">
 										<font-awesome-icon :icon="['fas', 'trash']" />
 									</button>
 									<template #popper>
@@ -90,8 +91,8 @@
 										</div>
 									</template>
 								</VDropdown>
-								<span v-if="isOwner || isEditor" v-tooltip="'Edit creature'" aria-label="Edit creature" class="edit-creature" @click.stop="() => {}">
-									<RouterLink class="creature" :to="'/statblock-editor/' + creature._id"> <font-awesome-icon :icon="['fas', 'pen-to-square']" /> </RouterLink>
+								<span v-if="isOwner || isEditor" v-tooltip="'Edit creature'" :aria-label="`Edit ${creature.stats.description.name}`" class="edit-creature" @click.stop="() => {}">
+									<RouterLink class="creature" :to="'/statblock-editor/' + creature._id" aria-label="Edit creature"> <font-awesome-icon :icon="['fas', 'pen-to-square']" /> </RouterLink>
 								</span>
 								<span class="cr"> CR {{ displayCR(creature.stats.description.cr) }}</span>
 							</div>

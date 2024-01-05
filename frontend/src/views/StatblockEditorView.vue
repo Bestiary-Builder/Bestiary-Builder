@@ -20,10 +20,10 @@
 			}
 		]"
 	>
-		<button @click="showImportModal = true" v-tooltip="'Import a creature\'s statblock'">
+		<button @click="showImportModal = true" v-tooltip="'Import a creature\'s statblock'" aria-label="Import a creature's statblock">
 			<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
 		</button>
-		<button @click="exportStatblock()" v-tooltip="'Export this creature as JSON to your clipboard.'">
+		<button @click="exportStatblock()" v-tooltip="'Export this creature as JSON to your clipboard.'" aria-label="Export a creature's statblock">
 			<font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" />
 		</button>
 	</Breadcrumbs>
