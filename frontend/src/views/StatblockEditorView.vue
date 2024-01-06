@@ -983,19 +983,24 @@ export default defineComponent({
 		border-bottom: 1px solid grey;
 		color: rgb(201, 201, 201);
 		
-		&.active-slide {
-			border-bottom-color: orangered;
-			border-bottom-width: 3px;
-			color: white;
-		}
 		&:focus{
-			outline: none;
 			border-color: orangered
 		}
 		&:hover {
 			background-color: var(--color-surface-0);
 			color: white;
 		}
+
+		&.active-slide {
+			border-bottom-color: orangered;
+			border-bottom-width: 3px;
+			color: white;
+
+			&:focus {
+				// outline: 3px solid white
+			}
+		}
+
 	}
 }
 
