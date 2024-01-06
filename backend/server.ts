@@ -105,10 +105,10 @@ async function importLogic() {
 	for (const file of logicFiles) {
 		if (fs.lstatSync(path.join(logicPath, file)).isDirectory()) {
 			if (fs.existsSync(path.join(logicPath, file, "main.ts"))) {
-				import(path.join(logicPath, file, "main.ts"));
+				await import(path.join(logicPath, file, "main.ts"));
 			}
 		} else {
-			import(path.join(logicPath, file));
+			await import(path.join(logicPath, file));
 		}
 	}
 }
