@@ -995,10 +995,6 @@ export default defineComponent({
 			border-bottom-color: orangered;
 			border-bottom-width: 3px;
 			color: white;
-
-			&:focus {
-				// outline: 3px solid white
-			}
 		}
 
 	}

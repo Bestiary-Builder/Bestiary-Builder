@@ -1,12 +1,12 @@
 <template>
-	<section class="breadcrumbs__container" :class="{'less-wide': isLessWide}">
-		<div class="breadcrumbs__links">
-			<template v-for="(route, index) in routes" :key="index">
+	<nav class="breadcrumbs__container" :class="{'less-wide': isLessWide}" aria-label="Header">
+		<ol class="breadcrumbs__links" aria-label="Breadcrumbs">
+			<li v-for="(route, index) in routes" :key="index">
 				<RouterLink v-if="!route.isCurrent" :to="route.path"> {{ route.text }} </RouterLink>
 				<h1 v-else class="current-page" aria-current="page">{{ route.text }}</h1>
-				<span v-if="index + 1 != routes.length" class="seperator">></span>
-			</template>
-		</div>
+				<span v-if="index + 1 != routes.length" class="seperator"> ></span>
+			</li>
+		</ol>
 
 		<div class="right-buttons">
 			<slot></slot>
@@ -14,7 +14,7 @@
 				<font-awesome-icon :icon="['fas', 'share-nodes']" />
 			</button>
 		</div>
-	</section>
+	</nav>
 </template>
 
 <script lang="ts">
@@ -147,7 +147,9 @@ export default defineComponent({
 	flex-wrap: wrap;
 	gap: 0.7rem;
 	font-size: 1.3rem;
-
+	margin: 0;
+ 	padding-left: 0;
+  	list-style: none;
 	& .current-page {
 		font-weight: bold;
 		font-size: 1.3rem;
