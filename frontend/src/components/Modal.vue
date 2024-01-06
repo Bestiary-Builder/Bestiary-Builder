@@ -91,21 +91,15 @@ export default defineComponent({
 
 .modal__content {
 	position: relative;
-	width: fit-content;
-  max-width: 80%;
+	width: 80%;
+ 	max-width: 80%;
 	padding: 2rem;
-  max-height: 80%;
+ 	max-height: 80%;
 	background-color: var(--color-surface-1);
 	border-radius: 1rem;
 	overflow-y: scroll;
 	overscroll-behavior: contain;
 	box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
-}
-
-.modal__small {
-	width: 50%;
-	height: fit-content;
-	max-height: 90%;
 }
 
 .modal__close-button {
@@ -153,27 +147,15 @@ export default defineComponent({
 		top: 0%;
 		z-index: 100;
 	}
-	.modal__content,
-	.modal__small {
+	.modal__content {
 		max-width: 100%;
-    width: 100%;
+		width: 100%;
 		height: 100%;
-    max-height: 100%;
+		max-height: 100%;
 		border-radius: 0;
 		padding: 2rem .8rem;
 	}
 }
-// .modal-enter-active,
-// .modal-leave-active {
-// 	transition: all 0.3s ease-out;
-// }
-
-// .modal-enter-from,
-// .modal-leave-to {
-// 	opacity: 0;
-// 	/* scale: 1.1 !important; */
-// 	scale: 0;
-// }
 
 .modal-enter-active {
 	animation: slideIn 0.4s;
