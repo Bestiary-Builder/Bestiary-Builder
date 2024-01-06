@@ -1,5 +1,5 @@
 <template>
-<LabelledComponent :title="title">
+<LabelledComponent :title="title" :id="id">
     <slot></slot>
     <div class="quantity">
         <input 
@@ -11,7 +11,7 @@
             :max="max" 
             :step="step"
             inputmode="numeric" 
-            :id="title.toLowerCase()" 
+            :id="title.toLowerCase().replaceAll(' ', '')+id" 
             @change="change"
             :placeholder="placeholder"
         />
@@ -65,7 +65,8 @@ export default defineComponent({
     ],
     data() {
         return {
-            value: NaN as any
+            value: NaN as any,
+            id: this.$.uid
         }
     },
     methods: {

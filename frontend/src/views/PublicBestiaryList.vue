@@ -9,7 +9,7 @@
 		]"
 	>
 	
-	<select v-model="viewMode" aria-label="Select public bestiary list mode">
+	<select v-model="viewMode" aria-label="Select public bestiary list mode" name="Select public bestiary list mode">
 		<option>Recent</option>
 		<option>Popular</option>
 		<option>Bookmarked</option>

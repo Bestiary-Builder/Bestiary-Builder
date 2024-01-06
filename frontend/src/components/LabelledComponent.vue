@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <label class="editor-field__title" :for="title.toLowerCase().replaceAll(' ', '')">{{ title }}</label>
+        <label class="editor-field__title" :for="elId">{{ title }}</label>
         <slot></slot>
     </div>
     </template>
@@ -14,7 +14,21 @@ export default defineComponent({
             type: String,
             required: true
         },
+        id: {
+            type: Number,
+            required: false
+        }
     },
+    data() {
+        return {
+            elId: ""
+        }
+    },
+    mounted() {
+        if (this.id) this.elId = this.title.toLowerCase().replaceAll(' ', '')+this.id
+        else this.elId = this.title.toLowerCase().replaceAll(' ', '')
+    }
+    
 })
 </script>
 
