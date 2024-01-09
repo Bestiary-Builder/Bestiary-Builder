@@ -20,41 +20,41 @@
 			}
 		]"
 	>
-		<button @click="showImportModal = true" v-tooltip="'Import a creature\'s statblock'">
+		<button @click="showImportModal = true" v-tooltip="'Import a creature\'s statblock'" aria-label="Import a creature's statblock">
 			<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
 		</button>
-		<button @click="exportStatblock()" v-tooltip="'Export this creature as JSON to your clipboard.'">
+		<button @click="exportStatblock()" v-tooltip="'Export this creature as JSON to your clipboard.'" aria-label="Export a creature's statblock">
 			<font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" />
 		</button>
 	</Breadcrumbs>
 	<div class="content">
 		<div class="content-container__inner editor">
-			<div class="editor-nav">
-				<div @click="showSlides(1)" :class="{'active-slide': slideIndex === 1}" class="editor-nav__tab">
-					<span> Description </span>
-				</div>
-				<div @click="showSlides(2)" :class="{'active-slide': slideIndex === 2}" class="editor-nav__tab">
-					<span> Core </span>
-				</div>
-				<div @click="showSlides(3)" :class="{'active-slide': slideIndex === 3}" class="editor-nav__tab">
-					<span> Stats </span>
-				</div>
-				<div @click="showSlides(4)" :class="{'active-slide': slideIndex === 4}" class="editor-nav__tab">
-					<span> Defenses </span>
-				</div>
-				<div @click="showSlides(5)" :class="{'active-slide': slideIndex === 5}" class="editor-nav__tab">
-					<span> Features </span>
-				</div>
-				<div @click="showSlides(6)" :class="{'active-slide': slideIndex === 6}" class="editor-nav__tab">
-					<span> Spells </span>
-				</div>
+			<div class="editor-nav" role="tablist" aria-label="Statblock editor tabs">
+				<button @click="showSlides(1)" @keydown="moveSlide" :class="{'active-slide': slideIndex === 1}" class="editor-nav__tab" role="tab" aria-controls="tabpanel-1" id="tab-1">
+					Description
+				</button>
+				<button @click="showSlides(2)" @keydown="moveSlide" :class="{'active-slide': slideIndex === 2}" class="editor-nav__tab" role="tab" aria-controls="tabpanel-1" id="tab-2">
+					Core 
+				</button>
+				<button @click="showSlides(3)" @keydown="moveSlide" :class="{'active-slide': slideIndex === 3}" class="editor-nav__tab" role="tab" aria-controls="tabpanel-1" id="tab-3">
+					Stats 
+				</button>
+				<button @click="showSlides(4)" @keydown="moveSlide" :class="{'active-slide': slideIndex === 4}" class="editor-nav__tab" role="tab" aria-controls="tabpanel-1" id="tab-4">
+					Defenses 
+				</button>
+				<button @click="showSlides(5)" @keydown="moveSlide" :class="{'active-slide': slideIndex === 5}" class="editor-nav__tab" role="tab" aria-controls="tabpanel-1" id="tab-5">
+					Features 
+				</button>
+				<button @click="showSlides(6)" @keydown="moveSlide" :class="{'active-slide': slideIndex === 6}" class="editor-nav__tab" role="tab" aria-controls="tabpanel-1" id="tab-6">
+					Spells 
+				</button>
 			</div>
 
 			<div class="editor-content">
-				<div class="editor-content__tab-inner scale-in">
+				<div class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-1" id="tabpanel-1">
 					<div class="editor-field__container two-wide">
-						<LabelledComponent title="Name">
-							<input type="text" :maxlength="limits.nameLength" v-model="data.description.name" id="name" />
+						<LabelledComponent title="Creature name">
+							<input type="text" :maxlength="limits.nameLength" v-model="data.description.name" id="creaturename" />
 						</LabelledComponent>
 
 						<LabelledComponent title="Proper Noun">
@@ -69,7 +69,7 @@
 					</div>
 					<div class="editor-field__container two-wide">
 						<LabelledComponent title="Image URL">
-							<input type="text" v-model="data.description.image" id="image" :pattern="limits.imageFormats ? `(https:\/\/)(.+)(\\.${limits.imageFormats.join('|\\.')})` : ''" />
+							<input type="text" v-model="data.description.image" id="imageurl" :pattern="limits.imageFormats ? `(https:\/\/)(.+)(\\.${limits.imageFormats.join('|\\.')})` : ''" />
 						</LabelledComponent>
 						<LabelledComponent title="Environment">
 							<input type="text" v-model="data.description.environment" id="environment" />
@@ -130,7 +130,7 @@
 						<LabelledNumberInput v-model="data.description.xp" :min="0" :step="1" title="Experience Points" />
 					</div>
 				</div>
-				<div class="editor-content__tab-inner scale-in">
+				<div class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-2"  id="tabpanel-2">
 					<div class="editor-field__container two-wide">
 						<LabelledComponent title="Race">
 							<v-select v-model="data.core.race" :options="['Aberration', 'Beast', 'Celestial', 'Construct', 'Dragon', 'Elemental', 'Fey', 'Fiend', 'Giant', 'Humanoid', 'Monstrosity', 'Ooze', 'Plant', 'Undead']" :taggable="true" :pushTags="true" inputId="race" />
@@ -172,7 +172,7 @@
 					</div>
 				</div>
 
-				<div class="editor-content__tab-inner scale-in">
+				<div class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-3"  id="tabpanel-3">
 					<h2 class="group-header">Ability Scores</h2>
 					<div class="editor-field__container three-wide">
 						<LabelledNumberInput v-model="data.abilities.stats.str" title="Strength"     :max="30" :step="1"/>
@@ -247,7 +247,7 @@
 						</LabelledComponent>
 					</div>
 				</div>
-				<div class="editor-content__tab-inner scale-in">
+				<div class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-4"  id="tabpanel-4">
 					<div class="editor-field__container three-wide">
 						<LabelledNumberInput v-model="data.defenses.hp.sizeOfHitDie" title="Hit Die Size" :step="2"/>
 						<LabelledNumberInput v-model="data.defenses.hp.numOfHitDie" title="Hit Die Number" :step="1"/>
@@ -303,7 +303,7 @@
 						</LabelledComponent>
 					</div>
 				</div>
-				<div class="editor-content__tab-inner scale-in">
+				<div class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-5"  id="tabpanel-5">
 					<div v-for="(descText, fType) in featureGenerator">
 						<h2 class="group-header">{{ descText.replace("New ", "") }}s</h2>
 						<div class="editor-field__container two-wide">
@@ -318,11 +318,11 @@
 								</div>
 							</LabelledComponent>
 							<LabelledComponent :title="descText">
-								<button class="btn" @click="createNewFeature(fType)" :id="descText">Create</button>
+								<button class="btn" @click="createNewFeature(fType)" :id="descText.toLowerCase().replaceAll(' ', '')">Create</button>
 							</LabelledComponent>
 
-							<LabelledComponent title="Section Header">
-								<textarea v-model="data.misc.featureHeaderTexts[fType]" />
+							<LabelledComponent :title="capitalizeFirstLetter(fType) + ' Header'">
+								<textarea v-model="data.misc.featureHeaderTexts[fType]" :id="(fType + ' Header').toLowerCase().replaceAll(' ', '')"/>
 							</LabelledComponent>
 							
 							<LabelledNumberInput v-model="data.misc.legActionsPerRound" v-if="fType == 'legendary' && data.features[fType].length > 0" title="Legendary Actions per round" :min="0" :step="1" />
@@ -330,7 +330,7 @@
 						<hr v-if="fType !== 'regional'" />
 					</div>
 				</div>
-				<div class="editor-content__tab-inner scale-in">
+				<div class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-6"  id="tabpanel-6">
 					<h2 class="group-header">Innate Spellcasting</h2>
 					<div class="editor-field__container two-wide">
 						<LabelledComponent title="Casting ability">
@@ -410,9 +410,7 @@
 	</div>
 
 <Modal :show="showImportModal" @close="showImportModal = false">
-	<template #header>
-		<h3>Import Creatures</h3>
-	</template>
+	<template #header>Import Creatures</template>
 	<template #body>
 		<LabelledComponent title="Bestiary Builder JSON">
 			<p> Insert the JSON as text gotten from clicking export on another creature within Bestiary Builder.</p>
@@ -446,9 +444,7 @@
 </Modal>
 
 <Modal :show="showSpellModal" @close="showSpellModal = false">
-	<template #header>
-		<h3>Edit Innate Spellcasting list</h3>
-	</template>
+	<template #header>Edit Innate Spellcasting list</template>
 	<template #body>
 		<p> You can use this to add text to specific spells such as "self only" or "at 5th level". </p>
 		<div class="two-wide">
@@ -464,18 +460,22 @@
 </template>
 
 <script lang="ts">
+import FeatureWidget from "@/components/FeatureWidget.vue";
+import Modal from "@/components/Modal.vue";
 import StatblockRenderer from "../components/StatblockRenderer.vue";
 import Breadcrumbs from "../components/Breadcrumbs.vue";
 import LabelledNumberInput from "@/components/LabelledNumberInput.vue";
 import LabelledComponent from "@/components/LabelledComponent.vue";
-import FeatureWidget from "@/components/FeatureWidget.vue";
-import Modal from "@/components/Modal.vue";
+
 import {defineComponent} from "vue";
 
 import type {SkillsEntity, Statblock, Creature, Bestiary} from "@/generic/types";
 import {defaultStatblock, getSpellSlots, spellList, spellListFlattened, getXPbyCR} from "@/generic/types";
 import {handleApiResponse, type error, toast, asyncLimits, type limitsType} from "@/main";
 import {parseFrom5eTools} from "../parser/parseFrom5eTools";
+import { capitalizeFirstLetter } from "@/parser/utils";
+const tabs        = document.getElementsByClassName("editor-nav__tab") as HTMLCollectionOf<HTMLElement>;
+const tabsContent = document.getElementsByClassName("editor-content__tab-inner") as HTMLCollectionOf<HTMLElement>;
 
 export default defineComponent({
 	components: {
@@ -568,7 +568,8 @@ export default defineComponent({
 				"Understands the languages of its creator but can't speak"
 			],
 			showImportModal: false,
-			showSpellModal: false
+			showSpellModal: false,
+			capitalizeFirstLetter
 		};
 	},
 	methods: {
@@ -603,14 +604,58 @@ export default defineComponent({
 		showSlides(n: number): void {
 			if (this.slideIndex == n) return;
 
-			let slides = document.getElementsByClassName("editor-content__tab-inner") as HTMLCollectionOf<HTMLElement>;
-
-			for (let i = 0; i < slides.length; i++) {
-				if (i != n - 1) slides[i].style.display = "none";
+			for (let i = 0; i < tabs.length; i++) {
+				let tab = tabs[i]
+				if (i != n - 1) {
+					tab.setAttribute('aria-selected', 'false')
+					tab.tabIndex = -1
+				} 
+				else {
+					tab.setAttribute('aria-selected', 'true')
+					tab.removeAttribute('tabindex')
+					tab.focus()
+				}
 			}
-			slides[n - 1].style.display = "block";
+
+			for (let i = 0; i < tabsContent.length; i++) {
+				if (i != n - 1) {
+					tabsContent[i].style.display = "none"
+				} 
+				else {
+					tabsContent[i].style.display = "block"
+				}
+			}
 
 			this.slideIndex = n;
+		},
+		moveSlide(event: KeyboardEvent) : void {
+			let currentSlide = this.slideIndex;
+			let moveToSlide = 0;
+			switch (event.key) {	
+				case 'ArrowLeft':
+					if (currentSlide == 1) moveToSlide = tabs.length
+					else moveToSlide = currentSlide -1
+					break;
+				
+				case 'ArrowRight':
+					if (currentSlide == tabs.length) moveToSlide = 1
+					else moveToSlide = currentSlide + 1
+					break;
+				
+				case 'Home':
+					moveToSlide = 1
+					break;
+
+				case 'End':
+					moveToSlide = tabs.length
+					break;
+			}
+
+			if (moveToSlide) {
+				event.stopPropagation()
+				event.preventDefault()
+				this.showSlides(moveToSlide)
+			}
 		},
 		moveFeature(isUp: boolean, type: "features" | "actions" | "bonus" | "reactions" | "legendary" | "mythic" | "lair" | "regional", index: number): void {
 			// isUp is true if they want to move it higher in the statblock, e.g. earlier in the array
@@ -925,23 +970,33 @@ export default defineComponent({
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
 	text-align: center;
-	gap: 0.5rem;
 	height: fit-content;
+	margin: 0 1px;
+	background-color: rgb(48, 47, 47);
 	&__tab {
-		background: var(--color-surface-2);
-		padding: 0.3rem;
+		padding: .4rem 1rem;
 		cursor: pointer;
-		border-bottom: 2px solid;
-		border-color: transparent;
-
-		transition: border-color 0.3s ease-in-out;
+		transition:  0.3s ease-in-out;
+		transition-property: color background-color;
+		background-color: unset;
+		border: unset;
+		border-bottom: 1px solid grey;
+		color: rgb(201, 201, 201);
+		
+		&:focus{
+			border-color: orangered
+		}
+		&:hover {
+			background-color: var(--color-surface-0);
+			color: white;
+		}
 
 		&.active-slide {
-			border-color: orangered;
+			border-bottom-color: orangered;
+			border-bottom-width: 3px;
+			color: white;
 		}
-		& span {
-			font-size: 1.2rem;
-		}
+
 	}
 }
 

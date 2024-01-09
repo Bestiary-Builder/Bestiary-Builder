@@ -1,41 +1,40 @@
 <template>
-<Breadcrumbs :routes="[
-	{
-		path: '',
-		text: 'My Bestiaries',
-		isCurrent: true
-	}
-	]" 
->
-<button @click="createBestiary" v-tooltip="'Create bestiary!'" class="inverted">
-	<font-awesome-icon :icon="['fas', 'plus']" />
-</button>
-</Breadcrumbs>
-<div class="content">
-	<div class="tile-container" v-if="bestiaries">
-		<TransitionGroup name="popin">
-			<RouterLink class="content-tile bestiary-tile" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" :key="bestiary._id"
-				:class="{'four-tall': bestiary.owner != userData?._id}">
-				<div class="tile-header" >
-					<h2>{{ bestiary.name }}</h2>
-				</div>
-				<span class="shared-notice" v-if="bestiary.owner != userData?._id">(shared)</span>
-				<div class="tile-content">
-					<div class="tags">
-						<span class="tag" v-for="tag in bestiary.tags">{{ tag }}</span>
+	<Breadcrumbs :routes="[
+		{
+			path: '',
+			text: 'My Bestiaries',
+			isCurrent: true
+		}
+		]" 
+	>
+	<button @click="createBestiary" v-tooltip="'Create bestiary!'" class="inverted" aria-label="Create bestiary">
+		<font-awesome-icon :icon="['fas', 'plus']" />
+	</button>
+	</Breadcrumbs>
+	<div class="content">
+		<div class="tile-container" v-if="bestiaries">
+			<TransitionGroup name="popin">
+				<RouterLink class="content-tile bestiary-tile" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" :key="bestiary._id"
+					:class="{'four-tall': bestiary.owner != userData?._id}" :aria-label="`Open Bestiary ${bestiary.name}`">
+					<div class="tile-header" >
+						<h2>{{ bestiary.name }}</h2>
 					</div>
-					<p>{{ bestiary.description }}</p>
-				</div>
-				<div class="tile-footer">
-					<span><StatusIcon :icon="bestiary.status" />{{ bestiary.status }}</span>
-					<span role="button" @click.stop.prevent="openDeleteModal(bestiary)" class="edit-button" v-tooltip="'Delete bestiary'" v-if="bestiary.owner == userData?._id"><font-awesome-icon :icon="['fas', 'trash']" /></span>
-					<span v-else>
-						<UserBanner :id="bestiary.owner"/>
-					</span>
-					<span>{{ bestiary.creatures.length }}<font-awesome-icon :icon="['fas', 'skull']" /></span>
-				</div>
-			</RouterLink>
-
+					<span class="shared-notice" v-if="bestiary.owner != userData?._id">(shared)</span>
+					<div class="tile-content">
+						<div class="tags">
+							<span class="tag" v-for="tag in bestiary.tags">{{ tag }}</span>
+						</div>
+						<p>{{ bestiary.description }}</p>
+					</div>
+					<div class="tile-footer">
+						<span><StatusIcon :icon="bestiary.status" />{{ bestiary.status }}</span>
+						<span role="button" @click.stop.prevent="openDeleteModal(bestiary)" class="edit-button" v-tooltip="'Delete bestiary'" v-if="bestiary.owner == userData?._id" aria-label="Delete bestiary"><font-awesome-icon :icon="['fas', 'trash']" /></span>
+						<span v-else>
+							<UserBanner :id="bestiary.owner"/>
+						</span>
+						<span>{{ bestiary.creatures.length }}<font-awesome-icon :icon="['fas', 'skull']" /></span>
+					</div>
+				</RouterLink>
 		</TransitionGroup>
 	</div>
 	<div v-else class="zero-found">
@@ -44,9 +43,7 @@
 	</div>
 </div>
 <Modal :show="showDeleteModal" @close="showDeleteModal = false">
-	<template #header>
-		<h3>Are you sure you want to delete {{ selectedBestiary?.name }}</h3>
-	</template>
+	<template #header>Are you sure you want to delete {{ selectedBestiary?.name }}</template>
 	<template #body>
 		<p class="modal-desc">Please confirm you want to permanently delete this bestiary. This action is not reversible.</p>
 	</template>
@@ -59,15 +56,19 @@
 
 
 <script lang="ts">
-import {RouterLink} from "vue-router";
-import {defineComponent} from "vue";
-import {handleApiResponse, toast, user} from "@/main";
-import type {User, Bestiary, Creature} from "@/generic/types";
-import type {error} from "@/main";
 import UserBanner from "@/components/UserBanner.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import StatusIcon from "@/components/StatusIcon.vue";
 import Modal from "@/components/Modal.vue";
+
+import {RouterLink} from "vue-router";
+import {defineComponent} from "vue";
+
+import {handleApiResponse, toast, user} from "@/main";
+import type {User, Bestiary} from "@/generic/types";
+import type {error} from "@/main";
+
+
 export default defineComponent({
 	components: {
 		UserBanner,

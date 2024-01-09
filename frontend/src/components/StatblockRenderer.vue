@@ -120,9 +120,8 @@
     </div>
     <div class="stat-block__row" v-if="showFeatures() || showCasting() || showInnateCasting()">
         <div class="feature-container"  v-if="data.features.features.length > 0 || showCasting() || showInnateCasting()">
+            <p v-if="data.misc.featureHeaderTexts.features"> {{ data.misc.featureHeaderTexts.features }} </p>w
             <p v-for="feature in data.features.features">
-                <p v-if="data.misc.featureHeaderTexts.features"> {{ data.misc.featureHeaderTexts.features }} </p>
-
                 <b> <i>{{ feature.name }} </i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup> </b>
                 <span class="feature-container__desc" v-html="sanitizeAndFormat(feature.description)"> </span>
             </p>

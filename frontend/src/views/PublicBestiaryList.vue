@@ -9,14 +9,14 @@
 	]"
 >
 	
-	<select v-model="viewMode" aria-label="Select public bestiary list mode">
+	<select v-model="viewMode" aria-label="Select public bestiary list mode" name="Select public bestiary list mode">
 		<option>Recent</option>
 		<option>Popular</option>
 		<option>Bookmarked</option>
 	</select>
 
 	<VDropdown :distance="6" :positioning-disabled="false">
-		<button v-tooltip="'Filter bestiaries'">
+		<button v-tooltip="'Filter bestiaries'" aria-label="Filter bestiaries">
 			<font-awesome-icon :icon="['fas', 'tag']" />
 		</button>
 		<template #popper>
@@ -28,7 +28,7 @@
 	</VDropdown>
 
 	<VDropdown :distance="6" :positioning-disabled="isMobile">
-		<button v-tooltip="'Search bestiaries'">
+		<button v-tooltip="'Search bestiaries'" aria-label="Search bestiaries">
 			<font-awesome-icon :icon="['fas', 'magnifying-glass']" />
 		</button>
 		<template #popper>
@@ -42,7 +42,7 @@
 <div class="content" v-if="viewMode != 'Bookmarked'">
 	<div class="tile-container" v-if="bestiaries && bestiaries.length > 0">
 		<TransitionGroup name="popin">
-			<RouterLink class="content-tile bestiary-tile" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" :key="bestiary._id">
+			<RouterLink class="content-tile bestiary-tile" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" :key="bestiary._id" :aria-label="`Open ${bestiary.name}`">
 				<h2 class="tile-header">{{ bestiary.name }}</h2>
 				<div class="tile-content">
 					<div class="tags">

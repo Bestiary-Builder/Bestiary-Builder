@@ -1,44 +1,73 @@
 <template>
 <Teleport to="#modal">
-  <Transition name="modal">
-    <div v-if="show" class="modal__bg" @click="$emit('close')">
-      <div class="modal__content" @click.stop>
-        <div class="modal__header">
-          <slot name="header">default header</slot>
-          <button
-              class="modal__close-button"
-              @click="$emit('close')"
-            ><font-awesome-icon icon="fa-solid fa-xmark" /></button>
-        </div>
-
-        <div class="modal__body">
-          <slot name="body">default body</slot>
-        </div>
-
-        <div class="modal__footer modal__buttons">
-          <slot name="footer">
-            <!-- <button
-              class="btn"
-              @click="$emit('close')"
-            >Close</button> -->
-          </slot>
-        </div>
-      </div>
-    </div>
-  </Transition>
+  	<Transition name="modal">
+		<div class="modal__bg" @click="$emit('close')" v-show="show" ref="target">
+			<div class="modal__content" @click.stop role="dialog" aria-modal="true" :aria-labelledby="`dialog${id}_label`">
+				<div class="modal__header">
+					<h2 :id="`dialog${id}_label`"><slot name="header"></slot> </h2>
+					<button
+						class="modal__close-button"
+						@click="$emit('close')"
+						><font-awesome-icon icon="fa-solid fa-xmark" />
+					</button>
+				</div>
+				<div class="modal__body"> 
+					<slot name="body"></slot>
+				</div>
+				<div class="modal__footer modal__buttons">
+					<slot name="footer"></slot>
+				</div>
+			</div>
+		</div>
+  	</Transition>
 </Teleport>
 </template>
-
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, nextTick, ref, watch } from 'vue';
+import { useFocusTrap } from '@vueuse/integrations/useFocusTrap'
+
 export default defineComponent({
-  props: {
-    show: {
-        type: Boolean,
-        required: true
-    }
-  },
-  emits: ['close']
+  	props: {
+    	show: {
+			type: Boolean,
+			required: true
+		}
+  	},
+	name: "Modal",
+  	emits: ['close'],
+  	data() {
+    	return {
+      		id: this.$.uid
+    	}
+  	},
+	setup(props) {
+        const target = ref()
+        const { hasFocus, activate, deactivate } = useFocusTrap(target)
+
+        watch(() => props.show, async (newValue, oldValue) => {
+            if (newValue === oldValue) return
+            if (newValue === true) {
+				await nextTick()
+				activate()
+			} 
+            if (newValue === false) {
+				await nextTick()
+				deactivate()
+			} 
+        });
+
+		return {
+			hasFocus,
+			target
+		}
+    },
+	mounted() {
+		document.addEventListener("keydown", (e) => {
+			if (e.key == "Escape" && this.show) {
+				this.$emit('close')
+			}
+		})
+	}
 })
 </script>
 
@@ -62,21 +91,15 @@ export default defineComponent({
 
 .modal__content {
 	position: relative;
-	width: fit-content;
-  max-width: 80%;
+	width: 80%;
+ 	max-width: 80%;
 	padding: 2rem;
-  max-height: 80%;
+ 	max-height: 80%;
 	background-color: var(--color-surface-1);
 	border-radius: 1rem;
 	overflow-y: scroll;
 	overscroll-behavior: contain;
 	box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
-}
-
-.modal__small {
-	width: 50%;
-	height: fit-content;
-	max-height: 90%;
 }
 
 .modal__close-button {
@@ -124,33 +147,15 @@ export default defineComponent({
 		top: 0%;
 		z-index: 100;
 	}
-	.modal__content,
-	.modal__small {
-		width: 95%;
-		height: fit-content;
-		max-height: 98%;
+	.modal__content {
+		max-width: 100%;
+		width: 100%;
+		height: 100%;
+		max-height: 100%;
 		border-radius: 0;
 		padding: 2rem .8rem;
 	}
-
-	.modal__close-button {
-		font-size: 2rem;
-		top: -2%;
-		right: 0;
-		color: var(--rarity-color-exotic);
-	}
 }
-// .modal-enter-active,
-// .modal-leave-active {
-// 	transition: all 0.3s ease-out;
-// }
-
-// .modal-enter-from,
-// .modal-leave-to {
-// 	opacity: 0;
-// 	/* scale: 1.1 !important; */
-// 	scale: 0;
-// }
 
 .modal-enter-active {
 	animation: slideIn 0.4s;
