@@ -14,7 +14,7 @@
 			"options": {
 				"cwd": "${workspaceFolder}/frontend"
 			},
-			"command": "npm run dev",
+			"command": "bun run dev",
 			"isBackground": true,
 			"group": "test",
 			"problemMatcher": [
@@ -46,7 +46,7 @@
 			"options": {
 				"cwd": "${workspaceFolder}/backend"
 			},
-			"command": "npm run start",
+			"command": "bun run start",
 			"isBackground": true,
 			"group": "test",
 			"problemMatcher": [
@@ -78,7 +78,7 @@
 			"options": {
 				"cwd": "${workspaceFolder}/frontend"
 			},
-			"command": "npm run build",
+			"command": "bun run build",
 			"isBackground": false,
 			"group": "build"
 		},
@@ -86,7 +86,7 @@
 			"label": "startup",
 			"type": "shell",
 			"group": "none",
-			"command": "cd frontend;npm i;cd ../backend;npm i",
+			"command": "cd frontend;bun i;cd ../backend;bun i",
 			"options": {
 				"cwd": "${workspaceFolder}"
 			},
