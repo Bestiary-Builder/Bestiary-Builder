@@ -1,4 +1,4 @@
-import {app, JWTKey} from "../server";
+import {app, isProduction, JWTKey} from "../server";
 import {log} from "../logger";
 import fetch from "node-fetch";
 import jwt from "jsonwebtoken";
@@ -8,6 +8,9 @@ import {NextFunction, Response, Request} from "express";
 app.get("/api/login/:code", async (req, res) => {
 	try {
 		let code = req.params.code;
+		let redirectUrl = req.protocol + "://" + req.get("host") + "/user";
+		if (!isProduction) redirectUrl = redirectUrl.replace("5000", "5173");
+
 		const tokenResponseData = await fetch("https://discord.com/api/oauth2/token", {
 			method: "POST",
 			body: new URLSearchParams({
@@ -15,7 +18,7 @@ app.get("/api/login/:code", async (req, res) => {
 				client_secret: process.env.clientSecret ?? "",
 				code,
 				grant_type: "authorization_code",
-				redirect_uri: process.env.discordRedirectURI ?? "",
+				redirect_uri: redirectUrl,
 				scope: "identify+email"
 			}).toString(),
 			headers: {
