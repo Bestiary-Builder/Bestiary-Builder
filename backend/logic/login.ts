@@ -8,7 +8,7 @@ import {NextFunction, Response, Request} from "express";
 app.get("/api/login/:code", async (req, res) => {
 	try {
 		let code = req.params.code;
-		let redirectUrl = req.protocol + "://" + req.get("host") + "/user";
+		let redirectUrl = (isProduction ? "https" : "http") + "://" + req.get("host") + "/user";
 		if (!isProduction) redirectUrl = redirectUrl.replace("5000", "5173");
 
 		const tokenResponseData = await fetch("https://discord.com/api/oauth2/token", {
