@@ -301,6 +301,19 @@
 								inputId="immunities"
 							/>
 						</LabelledComponent>
+						<LabelledComponent title="Condition Immunities">
+							<v-select
+								placeholder="type condition immunities..."
+								v-model="data.defenses.conditionImmunities"
+								multiple
+								:deselectFromDropdown="true"
+								:closeOnSelect="false"
+								:options="['Blinded', 'Charmed', 'Deafened', 'Disease', 'Exhaustion', 'Frightened', 'Grappled', 'Incapacitated', 'Invisible', 'Paralyzed', 'Petrified', 'Poisoned', 'Prone', 'Restrained', 'Stunned', 'Unconscious']"
+								:taggable="true"
+								:pushTags="true"
+								inputId="conditionimmunities"
+							/>
+						</LabelledComponent>
 					</div>
 				</div>
 				<div class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-5"  id="tabpanel-5">
