@@ -577,6 +577,8 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 				reactions: creature.stats.features.reactions,
 				legactions: creature.stats.features.legendary,
 				mythic: creature.stats.features.mythic,
+				lair: creature.stats.features.lair,
+				regional: creature.stats.features.regional,
 				la_per_round: 3,
 				spellcasting: spellcasting
 			};
