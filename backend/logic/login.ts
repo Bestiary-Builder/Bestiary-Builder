@@ -5,6 +5,9 @@ import jwt from "jsonwebtoken";
 import {getUser, getUserFromSecret, updateUser, User} from "../database";
 import {NextFunction, Response, Request} from "express";
 
+app.head("/api/login/:code", async (req, res) => {
+	return res.sendStatus(200);
+});
 app.get("/api/login/:code", async (req, res) => {
 	try {
 		let code = req.params.code;
@@ -22,7 +25,8 @@ app.get("/api/login/:code", async (req, res) => {
 				scope: "identify+email"
 			}).toString(),
 			headers: {
-				"Content-Type": "application/x-www-form-urlencoded"
+				"Content-Type": "application/x-www-form-urlencoded",
+				Accept: "application/json"
 			}
 		});
 		const oauthData = (await tokenResponseData.json()) as {
@@ -69,7 +73,7 @@ app.get("/api/login/:code", async (req, res) => {
 				return res.status(400).json({error: "No user recieved from discord."});
 			}
 		} else {
-			log.error("Discord login failed: " + oauthData.error + " - " + oauthData.error_description);
+			log.error("Discord login failed: " + oauthData.error_description + " | Code: " + code);
 			return res.status(401).json({error: "Failed to authenticate discord login."});
 		}
 	} catch (err) {
