@@ -579,7 +579,7 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 				mythic: creature.stats.features.mythic,
 				lair: creature.stats.features.lair,
 				regional: creature.stats.features.regional,
-				la_per_round: 3,
+				la_per_round: creature.stats.misc.legActionsPerRound,
 				spellcasting: spellcasting
 			};
 			// @ts-ignore
