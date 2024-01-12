@@ -179,3 +179,6 @@ app.mount("body");
 
 // global isMobile for use with VDropdown
 export const isMobile = screen.width < 900;
+
+//Gtag
+import "./generic/gtag";
