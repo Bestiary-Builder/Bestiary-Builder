@@ -1,5 +1,5 @@
 <template>
-	<nav class="navbar" :class="{'expanded': isExpanded}" ref="navbar">
+	<nav class="navbar" :class="{expanded: isExpanded}" ref="navbar">
 		<div class="navbar-left">
 			<RouterLink :to="$router.options.routes[0].path" class="navbar-brand">
 				<img src="/logo.svg" alt="Site logo" />
@@ -8,7 +8,7 @@
 		</div>
 
 		<div class="navbar-center">
-			<RouterLink v-for="route in $router.options.routes.filter((a: any) => a.navbar)" :to="route.path" class="nav-link" @click="isExpanded = false">
+			<RouterLink v-for="route in $router.options.routes.filter((a: any) => a.meta.navbar)" :to="route.path" class="nav-link" @click="isExpanded = false">
 				<span class="header-item">{{ route.name }}</span>
 			</RouterLink>
 		</div>
@@ -30,8 +30,8 @@ import UserBanner from "@/components/UserBanner.vue";
 import {user, sendToLogin} from "@/main";
 import type {User} from "@/generic/types";
 import {defineComponent} from "vue";
-import { onClickOutside } from "@vueuse/core";
-import { ref } from "vue";
+import {onClickOutside} from "@vueuse/core";
+import {ref} from "vue";
 export default defineComponent({
 	name: "NavHeader",
 	components: {
@@ -39,7 +39,7 @@ export default defineComponent({
 	},
 	data() {
 		return {
-			user: null as User | null,
+			user: null as User | null
 		};
 	},
 	async mounted() {
@@ -48,24 +48,24 @@ export default defineComponent({
 	methods: {
 		LoginClick() {
 			sendToLogin(this.$route.path);
-		},
+		}
 	},
 	setup() {
-		const isExpanded = ref(false)
+		const isExpanded = ref(false);
 		const navbar = ref<HTMLDivElement | null>(null);
 
 		// only register this handler if on mobile device.
 		// this is crude but works fine
 		if (window.screen.availWidth < 900) {
 			onClickOutside(navbar, () => {
-				if (isExpanded.value) isExpanded.value = false
-			})
+				if (isExpanded.value) isExpanded.value = false;
+			});
 		}
-		
+
 		return {
 			isExpanded,
 			navbar
-		}
+		};
 	}
 });
 </script>
@@ -153,21 +153,23 @@ export default defineComponent({
 
 @media (max-width: 842px) {
 	.navbar {
-		grid-template-columns: 8fr 2fr;	
+		grid-template-columns: 8fr 2fr;
 	}
-	.navbar-center, .navbar-right, .user {
+	.navbar-center,
+	.navbar-right,
+	.user {
 		display: none;
 	}
 
 	.navbar-brand {
 		width: fit-content;
-		padding: .5rem 1rem
+		padding: 0.5rem 1rem;
 	}
 	.navbar-toggler {
 		color: white;
 
 		display: inline-block;
-		padding: .9rem 1.3rem;
+		padding: 0.9rem 1.3rem;
 
 		position: absolute;
 		top: 0;
@@ -217,7 +219,7 @@ export default defineComponent({
 		left: 0;
 		width: 100%;
 		height: 100%;
-		background-color: rgba(0, 0, 0, .5);
+		background-color: rgba(0, 0, 0, 0.5);
 		z-index: 1;
 	}
 }

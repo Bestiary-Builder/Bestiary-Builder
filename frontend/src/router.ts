@@ -17,22 +17,8 @@ const router = createRouter({
 	routes: routes
 });
 
-//Before each
-router.beforeEach(async (to, from, next) => {
-	//Reload page on route switch
-	if (from.name && to.name != from.name) {
-		///window.location.pathname = to.path;
-	}
-
-	//Requires being logged in?
-	if (routes.find((a) => a.path == to.path)?.loggedIn) {
-		let loggedIn = await user;
-		if (!loggedIn) {
-			sendToLogin(to.path);
-			return;
-		}
-	}
-
+//Meta tags
+router.beforeEach((to, from, next) => {
 	//Meta tags
 	let current = to.matched[0];
 	// If a route with a title was found, set the document (page) title to that value.
@@ -63,8 +49,19 @@ router.beforeEach(async (to, from, next) => {
 		})
 		// Add the meta tags to the document head.
 		.forEach((tag: any) => document.head.appendChild(tag));
+	next();
+});
 
-	//Continue
+//Check logged in
+router.beforeEach(async (to, from, next) => {
+	//Requires being logged in?
+	if (to.meta.loggedIn) {
+		let loggedIn = await user;
+		if (!loggedIn) {
+			sendToLogin(to.path);
+			return;
+		}
+	}
 	next();
 });
 
