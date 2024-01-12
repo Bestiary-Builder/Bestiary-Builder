@@ -8,7 +8,7 @@ import {log} from "./logger";
 //Get info
 export const isProduction = (process.env.NODE_ENV == "production") as boolean;
 const frontendPath = path.join(__dirname, process.env.frontendPath as string);
-//Setup express server with settings
+//Setup express settings
 import express, {NextFunction, Request, Response} from "express";
 import bodyParser from "body-parser";
 import helmet from "helmet";
@@ -16,10 +16,17 @@ import rateLimit from "express-rate-limit";
 import cors from "cors";
 import compression from "compression";
 import cookieParser from "cookie-parser";
+//@ts-ignore
+import prerender from "prerender-node";
+
+//Create express ap
 export const app = express();
+
+//Pre render
+app.use(prerender);
 //Body parsing
 app.use(bodyParser.urlencoded({extended: false}));
-app.use(bodyParser.json({limit: "2mb"}));
+app.use(bodyParser.json({limit: "50mb"}));
 //Cookies
 app.use(cookieParser());
 //Security stuff
