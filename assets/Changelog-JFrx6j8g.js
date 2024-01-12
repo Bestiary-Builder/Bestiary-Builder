@@ -1,4 +1,4 @@
-import{M as r}from"./index-5Jdbla-E.js";import{B as a}from"./Breadcrumbs-q68XckMI.js";import{d as s,_ as i,r as m,o as n,c as t,a as d,b as c,i as p,F as l}from"./index-cyxXTXmC.js";const _=`## v1.0.2
+import{M as r}from"./index-5Jdbla-E.js";import{B as a}from"./Breadcrumbs-UVF53ptE.js";import{d as s,_ as i,r as m,o as n,c as t,a as d,b as c,i as p,F as l}from"./index-fXuZAoO9.js";const _=`## v1.0.2
 
 _January 12th, 2024_
 
