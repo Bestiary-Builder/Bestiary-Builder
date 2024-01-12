@@ -25,7 +25,7 @@ async function from_critterdb(url: string, published: boolean) {
 			data.name = raw["name"];
 			data.description = raw["description"];
 		} catch (error) {
-			log.error("CritterDB | Error importing bestiary metadata. Are you sure the link is right?");
+			log.error(`CritterDB | Error importing bestiary metadata. Id: "${url}" Published: ${published}`);
 			errored = true;
 		}
 	});
@@ -44,7 +44,7 @@ async function get_published_bestiary_creatures(id: string, api_base: string) {
 		log.info(`CritterDB | Getting page ${index} of ${id}...`);
 		let raw_creatures = (await fetch(`${api_base}/${id}/creatures/${index}`).then(async (resp) => {
 			if (!(resp.status >= 200 && resp.status < 300)) {
-				log.error("CritterDB | Error importing bestiary: HTTP error. Are you sure the link is right?");
+				log.error(`CritterDB | Error importing published bestiary creatures. Id: "${id}".`);
 				return null;
 			}
 			return resp.json();
@@ -59,9 +59,9 @@ async function get_link_shared_bestiary_creatures(id: string, api_base: string) 
 	log.info(`CritterDB | Getting link shared bestiary ${id}...`);
 	let creatures = await fetch(`${api_base}/${id}/creatures`).then(async (resp) => {
 		if (resp.status == 400) {
-			log.error("CritterDB | Error importing bestiary: Cannot access bestiary. Please ensure link sharing is enabled!");
+			log.error(`CritterDB | Permission error importing link shared bestiary creatures. Id: "${id}".`);
 		} else if (!(resp.status >= 200 && resp.status < 300)) {
-			log.error("CritterDB | Error importing bestiary: HTTP error. Are you sure the link is right?");
+			log.error(`CritterDB | Unkown error importing link shared bestiary creatures. Id: "${id}".`);
 			return null;
 		}
 		return (await resp.json()) as any[];

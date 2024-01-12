@@ -17,12 +17,12 @@
 		<p> You have been a user of Bestiary Builder since <b>{{ user.joinedAt ? new Date(user.joinedAt).toDateString() : "Not Found" }}</b>.</p>
 		<p> You have created <b>{{ user.bestiaries.length }}</b> bestiaries since then.</p>
 		<p> Your user id is <code>{{ user._id }}</code>.</p>
-		<p v-if="user.supporter == 0" class="patreon">
+		<p v-if="user.supporter == 0" class="patreon" >
 			<p> 
 				If you enjoy using our site, consider supporting us on Patreon! 
 				As a Patreon, you will have several benefits and your support will help Bestiary Builder stay online.
 			</p>
-			<p class="center"> <JoinPatreon /></p>
+			<span class="center"> <JoinPatreon /></span>
 		</p>
 		<p v-if="user.supporter == 1">
 			You support us on Patreon as a <b> Wyrmling </b> Tier supporter. Thank you so much for your pledge!
@@ -64,8 +64,9 @@ export default defineComponent({
 					window.location.href = getLoginRoute();
 				} else {
 					toast.error((result.data as error).error);
+					this.$router.push("/user");
 				}
-			});
+			}); 
 		} else {
 			this.user = await user;
 			///console.log(this.user);
