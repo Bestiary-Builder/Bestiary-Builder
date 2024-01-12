@@ -18,6 +18,13 @@ import cookieParser from "cookie-parser";
 //Create express app
 export const app = express();
 
+//Function to run on all requests
+app.use(async (req, res, next) => {
+	log.log("request", `Request for URL "${req.url}" recieved.`);
+	//Set Permissions Policy
+	res.setHeader("Permissions-Policy", "fullscreen=('self'), accelerometer=(), autoplay=(), camera=(), geolocation=('self'), gyroscope=(), interest-cohort=(), magnetometer=(), microphone=(), payment=(), sync-xhr=()");
+	next();
+});
 //Body parsing
 app.use(express.json({limit: "50mb"}));
 app.use(express.urlencoded({limit: "50mb", extended: true}));
@@ -30,7 +37,7 @@ app.use(
 			directives: {
 				"default-src": ["'self'"],
 				"img-src": ["https://cdn.discordapp.com", "*", "'self'", "data: 'self'"],
-				"script-src": ["'self'", "'sha256-reBsRZd5I88opZSwT59Ir+QlBhrEhdRJ1aQUr4GXhyw='", "'inline'", "https://www.googletagmanager.com"],
+				"script-src": ["'self'", "'sha256-reBsRZd5I88opZSwT59Ir+QlBhrEhdRJ1aQUr4GXhyw='", "https://www.googletagmanager.com"],
 				"style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
 				"font-src": ["'self'", "data: https://fonts.gstatic.com"],
 				"connect-src": ["'self'", "https://discord.com", "*.google-analytics.com"]

@@ -233,8 +233,8 @@ import Modal from "@/components/Modal.vue";
 import StatblockRenderer from "@/components/StatblockRenderer.vue";
 
 import {RouterLink} from "vue-router";
-import {defineComponent, ref, watch} from "vue";
-import { refDebounced } from '@vueuse/core'
+import {defineComponent, ref} from "vue";
+import { refDebounced, useTitle } from '@vueuse/core'
 
 import {defaultStatblock} from "@/generic/types";
 import type {User, Bestiary, Creature, Statblock} from "@/generic/types";
@@ -304,6 +304,12 @@ export default defineComponent({
 		this.user = await user;
 		await this.getBestiary();
 		loader.hide();
+
+		if (this?.bestiary?.name) {
+			document.title = `${this?.bestiary?.name.substring(0,16)} | Bestiary Builder`
+		}
+	},
+	mounted() {
 	},
 	setup() {
 		const searchText = ref('')
@@ -314,6 +320,7 @@ export default defineComponent({
 
 		const searchFaction= ref('')
 		const debouncedFaction= refDebounced(searchFaction, 500)
+
 		return {
 			searchText,
 			debouncedSearch,
@@ -705,6 +712,9 @@ export default defineComponent({
 		"bestiary.status"(newValue, oldValue): void {
 			if (newValue == "private") this.showWarning = false;
 			if (newValue == "public") this.showWarning = true;
+		},
+		"bestiary.name"() : void {
+			document.title = `${this?.bestiary?.name.substring(0,16)} | Bestiary Builder`
 		},
 		debouncedSearch() {
 			this.searchOptions.text = this.searchText
