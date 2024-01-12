@@ -29,6 +29,7 @@ By creating an account with us, you agree to our [Terms and Conditions](/terms-a
 
 Sincere thanks go out to the developers of [Avrae](https://avrae.io/), specifically zhudotexe and Croebh. Their code to parse attacks from CritterDB has been modified and used within Bestiary Builder. Without their work, parsing attacks would not have been possible!
 
+Front page image from the Monster Manual, illustrated by Raymond Swanland.
 ## Feedback and issues
 
 You can leave feedback and issues by joining our [Discord Server](https://discord.gg/a6bwXCSymN) or by creating an issue on [Github](https://github.com/Bestiary-Builder/Bestiary-Builder/issues)
