@@ -10,7 +10,6 @@ export const isProduction = (process.env.NODE_ENV == "production") as boolean;
 const frontendPath = path.join(__dirname, process.env.frontendPath as string);
 //Setup express settings
 import express, {NextFunction, Request, Response} from "express";
-import bodyParser from "body-parser";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import cors from "cors";
@@ -25,8 +24,8 @@ export const app = express();
 //Pre render
 app.use(prerender);
 //Body parsing
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(bodyParser.json({limit: "50mb"}));
+app.use(express.json({limit: "50mb"}));
+app.use(express.urlencoded({limit: "50mb"}));
 //Cookies
 app.use(cookieParser());
 //Security stuff
@@ -87,7 +86,7 @@ for (let file of dataFiles) {
 app.use(async (req, res, next) => {
 	log.log("request", `Request for URL "${req.url}" recieved.`);
 	//Set Permissions Policy
-	res.setHeader("Permissions-Policy", "fullscreen: 'self'; accelerometer: ; autoplay: ; camera: ; geolocation: 'self'; gyroscope: ; interest-cohort: ; magnetometer: ; microphone: ; payment: ; sync-xhr: ;");
+	res.setHeader("Permissions-Policy", "fullscreen=('self'); accelerometer=(); autoplay=(); camera=(); geolocation=('self'); gyroscope=(); interest-cohort=(); magnetometer=(); microphone=(); payment=(); sync-xhr=();");
 	next();
 });
 
