@@ -96,6 +96,20 @@ textarea {
 	height: unset;
 }
 
+select {
+	border: 2px solid orangered;
+	background: transparent;
+	color: orangered;
+	border-radius: 0.2rem;
+	padding: 0 0.2rem;
+	outline: none;
+
+	& option {
+		background-color: var(--color-surface-0);
+		color: orangered;
+	}
+}
+
 .content {
 	padding: 2rem 10vw;
 	background-image: url("/bg_black.png");
@@ -259,7 +273,6 @@ body .v-popper--theme-dropdown .v-popper__inner {
 	box-shadow: none;
 	box-shadow: rgba(0, 0, 0, .5) 0px 10px 20px, rgba(0, 0, 0, .5) 0px 6px 6px;
 	overflow-y: visible;
-
 }
 
 body .v-popper--theme-dropdown :is(.v-popper__arrow-outer, .v-popper__arrow-inner) {
@@ -274,6 +287,9 @@ body .v-popper--theme-dropdown :is(.v-popper__arrow-outer, .v-popper__arrow-inne
 	display: flex;
 	flex-direction: column;
 	gap: 1rem;
+	& select {
+		border-width: 1px;
+	}
 }
 
 // disable scroll when a mobile popper is enabled

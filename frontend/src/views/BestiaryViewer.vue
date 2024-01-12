@@ -15,26 +15,55 @@
 			}
 		]"
 	>
+
 			<button @click="createCreature()" v-tooltip="'Create creature!'" class="inverted" v-if="isOwner || isEditor" aria-label="Create creature">
 				<font-awesome-icon :icon="['fas', 'plus']" />
 			</button>
 			<button v-if="lastClickedCreature" @click="lastClickedCreature = null" v-tooltip="'Unpin currently pinned creature!'" style="rotate: 45deg" aria-label="Unpin currently pinned creature">
 				<font-awesome-icon :icon="['fas', 'thumbtack']" />
 			</button>
-			<button @click="showEditorModal = true" v-tooltip="'Edit bestiary!'" v-if="isOwner || isEditor" aria-label="Edit bestiary">
+			<button @click="showEditorModal = true" v-tooltip="'Edit bestiary!'" v-if="isOwner" aria-label="Edit bestiary">
 				<font-awesome-icon :icon="['fas', 'pen-to-square']" />
 			</button>
 			<VDropdown :distance="6" :positioning-disabled="isMobile">
 				<button v-tooltip="'Filter bestiary'" aria-label="Filter bestiary">
-					<font-awesome-icon :icon="['fas', 'magnifying-glass']" />
+					<font-awesome-icon :icon="['fas', 'tag']" />
 				</button>
 				<template #popper>
 					<div class="v-popper__custom-menu">
-						<span> Search creatures by name </span>
-						<input type="text" v-model="searchText" id="searchtext" placeholder="Search by name..." v-debounce:600ms.fireonempty="searchCreatures" />
+						<LabelledComponent title="Sort creatures">
+							<select v-model="sortMode" name="Sort bestiary by attribute" id="sortcreatures">
+								<option>Alphabetically</option>
+								<option>CR Ascending</option>
+								<option>CR Descending</option>
+								<option>Creature Type</option>
+							</select>
+						</LabelledComponent>
+						<LabelledComponent title="Filter">
+							<input type="text" v-model="searchText" id="searchtext" placeholder="Search by name..." />
+						</LabelledComponent>
+						<LabelledComponent title="Creature type">
+							<div style="min-width: 300px;">
+							<v-select placeholder="Search by creature type" v-model="searchOptions.tags" multiple :options="['Aberration', 'Beast', 'Celestial', 'Construct', 'Dragon', 'Elemental', 'Fey', 'Fiend', 'Giant', 'Humanoid', 'Monstrosity', 'Ooze', 'Plant', 'Undead']" inputId="taaaags"/>
+						</div>
+						</LabelledComponent>
+						<div class="two-wide">
+							<LabelledNumberInput v-model="searchOptions.minCr" :min="0" :max="30" title="Minimum CR" :step="1"/>
+							<LabelledNumberInput v-model="searchOptions.maxCr" :min="0" :max="30" title="Maximum CR" :step="1"/>
+						</div>
+						<span class="warning" v-if="searchOptions.minCr > searchOptions.maxCr" style="text-align: center;">
+							Min is bigger than max
+						</span>
+						<LabelledComponent title="Environment">
+							<input type="text" v-model="searchEnv" id="environment" placeholder="Search by name..." />
+						</LabelledComponent>						
+						<LabelledComponent title="Faction">
+							<input type="text" v-model="searchFaction" id="faction" placeholder="Search by name..." />
+						</LabelledComponent>
 					</div>
 				</template>
 			</VDropdown>
+
 			<VDropdown :distance="6" :positioning-disabled="isMobile">
 				<button v-tooltip="'Export bestiary'" aria-label="Export bestiary">
 					<font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" />
@@ -74,7 +103,7 @@
 				</div>
 				<div class="tile-container list-tiles">
 					<TransitionGroup name="slide-fade">
-						<div v-for="creature in searchCreatureList" :key="creature._id" class="content-tile creature-tile" @mouseover="lastHoveredCreature = creature.stats" @click="lastClickedCreature = creature.stats">
+						<div v-for="creature in searchCreatures" :key="creature._id" class="content-tile creature-tile" @mouseover="lastHoveredCreature = creature.stats" @click="lastClickedCreature = creature.stats">
 							<div class="left-side">
 								<h3>{{ creature.stats?.description?.name }}</h3>
 								<span>{{ creature.stats?.core?.size }} {{ creature.stats?.core?.race }}{{ creature.stats?.description?.alignment ? ", " + creature.stats?.description?.alignment : "" }}</span>
@@ -199,19 +228,20 @@ import UserBanner from "@/components/UserBanner.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import StatusIcon from "@/components/StatusIcon.vue";
 import LabelledComponent from "@/components/LabelledComponent.vue";
+import LabelledNumberInput from "@/components/LabelledNumberInput.vue";
 import Modal from "@/components/Modal.vue";
 import StatblockRenderer from "@/components/StatblockRenderer.vue";
 
 import {RouterLink} from "vue-router";
-import {defineComponent} from "vue";
+import {defineComponent, ref, watch} from "vue";
+import { refDebounced } from '@vueuse/core'
 
 import {defaultStatblock} from "@/generic/types";
 import type {User, Bestiary, Creature, Statblock} from "@/generic/types";
 import {handleApiResponse, user, type error, toast, tags, type limitsType, asyncLimits, isMobile} from "@/main";
 import {parseFromCritterDB} from "@/parser/parseFromCritterDB";
 import {displayCR} from "@/generic/displayFunctions";
-// @ts-ignore
-import {vue3Debounce} from "vue-debounce";
+
 import markdownit from "markdown-it";
 
 const md = markdownit();
@@ -236,7 +266,15 @@ export default defineComponent({
 			showWarning: false as boolean,
 			critterDbId: "" as string,
 			bestiaryBuilderJson: "" as string,
-			searchText: "" as string,
+			searchOptions: {
+				text: "",
+				tags: [] as string[],
+				minCr: 0,
+				maxCr: 30,
+				env: "",
+				faction: ""
+			},
+			sortMode: "Alphabetically",
 			displayCR,
 			md,
 			isMobile,
@@ -252,10 +290,8 @@ export default defineComponent({
 		Breadcrumbs,
 		StatusIcon,
 		LabelledComponent,
+		LabelledNumberInput,
 		Modal
-	},
-	directives: {
-		debounce: vue3Debounce({lock: true})
 	},
 	async created() {
 		this.limits = (await asyncLimits) ?? ({} as limitsType);
@@ -267,17 +303,100 @@ export default defineComponent({
 		const loader = this.$loading.show();
 		this.user = await user;
 		await this.getBestiary();
-		this.searchCreatures()
 		loader.hide();
 	},
-	methods: {
-		searchCreatures(): void {
-			if (this.searchText == "") this.searchCreatureList = this.creatures;
-			else {
-				const loader = this.$loading.show();
-				this.searchCreatureList = this.creatures?.filter((creature) => creature.stats.description.name.toLowerCase().includes(this.searchText.toLowerCase().trim())) || [];
-				loader.hide();
+	setup() {
+		const searchText = ref('')
+		const debouncedSearch = refDebounced(searchText, 500)
+
+		const searchEnv = ref('')
+		const debouncedEnv = refDebounced(searchEnv, 500)
+
+		const searchFaction= ref('')
+		const debouncedFaction= refDebounced(searchFaction, 500)
+		return {
+			searchText,
+			debouncedSearch,
+			searchEnv,
+			debouncedEnv,
+			searchFaction,
+			debouncedFaction
+		}
+	},
+	computed: {
+		searchCreatures() : Creature[] | null {
+			if (this.creatures == null) return null
+			const loader = this.$loading.show()
+
+			let response = this.creatures?.filter(this.filterCreature) || null
+
+			if (this.sortMode == "Alphabetically") {
+				response.sort((a, b) => {
+					const nameA = a.stats.description.name.toLowerCase()
+					const nameB = b.stats.description.name.toLowerCase()
+					if (nameA < nameB) return -1
+					if (nameA > nameB) return 1
+					return 0
+				})
 			}
+			else if (this.sortMode == "Creature Type") {
+				response.sort((a, b) => {
+					const nameA = a.stats.core.race.toLowerCase()
+					const nameB = b.stats.core.race.toLowerCase()
+					if (nameA < nameB) return -1
+					if (nameA > nameB) return 1
+					return 0
+				})
+			}
+			else if (this.sortMode == "CR Descending") {
+				response.sort((a, b) => {
+					return b.stats.description.cr - a.stats.description.cr
+				})
+			}
+			else if (this.sortMode == "CR Ascending") {
+				response.sort((a, b) => {
+					return a.stats.description.cr - b.stats.description.cr
+				})
+			}
+			loader.hide()
+
+
+			return response
+		}
+	},
+	methods: {
+		filterCreature(data : Creature) {
+			let filterChecks : boolean[] = []
+			if (this.searchOptions.text != "") {
+				filterChecks.push(
+					data.stats.description.name.toLowerCase().includes(this.searchOptions.text.toLowerCase().trim())
+				)
+			}
+
+			if (this.searchOptions.env != "") {
+				filterChecks.push(
+					data.stats.description.environment.toLowerCase().includes(this.searchOptions.env.toLowerCase().trim())
+				)
+			}
+
+			if (this.searchOptions.faction != "") {
+				filterChecks.push(
+					data.stats.description.faction.toLowerCase().includes(this.searchOptions.faction.toLowerCase().trim())
+				)
+			}
+
+			if (this.searchOptions.tags.length > 0) {
+				filterChecks.push(
+					this.searchOptions.tags.map(str => str.toLowerCase()).includes(data.stats.core.race.trim().split(' ')[0].toLowerCase())
+				)
+			}
+
+			if (this.searchOptions.minCr != 0 || this.searchOptions.maxCr != 30) {
+				filterChecks.push(
+					this.searchOptions.minCr <= data.stats.description.cr && data.stats.description.cr <= this.searchOptions.maxCr
+				)
+			}
+			return filterChecks.every(_ => _)
 		},
 		exportBestiary(asFile: boolean): void {
 			if (asFile) {
@@ -428,7 +547,6 @@ export default defineComponent({
 				}
 			});
 			if (shouldRefresh) {
-				this.searchCreatures();
 				const tileContainer = document.getElementsByClassName("tile-container")[0] as HTMLDivElement;
 				tileContainer.scrollTop = tileContainer.scrollHeight;
 			}
@@ -443,7 +561,6 @@ export default defineComponent({
 					if (!this.bestiary) return;
 					this.bestiary.creatures = this.bestiary.creatures.filter((c) => c != creature._id);
 					this.creatures = this.creatures?.filter((c) => c._id != creature._id) ?? [];
-					this.searchCreatures();
 				} else {
 					toast.error((result.data as error).error);
 				}
@@ -496,7 +613,6 @@ export default defineComponent({
 						let creatureResult = await handleApiResponse<Creature[]>(creatureResponse);
 						if (creatureResult.success) {
 							this.creatures = creatureResult.data as Creature[];
-							this.searchCreatures();
 						} else {
 							this.creatures = null;
 							toast.error((creatureResult.data as error).error);
@@ -589,6 +705,15 @@ export default defineComponent({
 		"bestiary.status"(newValue, oldValue): void {
 			if (newValue == "private") this.showWarning = false;
 			if (newValue == "public") this.showWarning = true;
+		},
+		debouncedSearch() {
+			this.searchOptions.text = this.searchText
+		},
+		debouncedEnv() {
+			this.searchOptions.env = this.searchEnv
+		},
+		debouncedFaction() {
+			this.searchOptions.faction = this.searchFaction
 		}
 	}
 });
