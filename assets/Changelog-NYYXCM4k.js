@@ -1,4 +1,4 @@
-import{M as r}from"./index-5Jdbla-E.js";import{B as s}from"./Breadcrumbs-4cYGFKIP.js";import{d as a,_ as c,r as d,o as n,c as t,a as m,b as i,i as _,F as l}from"./index-cS3ov4Bm.js";const p=`## v1.0.0
+import{M as r}from"./index-5Jdbla-E.js";import{B as s}from"./Breadcrumbs-JjDYZcFB.js";import{d as a,_ as c,r as d,o as n,c as t,a as m,b as i,i as _,F as l}from"./index-bwbZjrL1.js";const p=`## v1.0.0
 
 _January 10th, 2024_
 Release
