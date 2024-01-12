@@ -86,7 +86,7 @@ for (let file of dataFiles) {
 app.use(async (req, res, next) => {
 	log.log("request", `Request for URL "${req.url}" recieved.`);
 	//Set Permissions Policy
-	res.setHeader("Permissions-Policy", "fullscreen=('self'); accelerometer=(); autoplay=(); camera=(); geolocation=('self'); gyroscope=(); interest-cohort=(); magnetometer=(); microphone=(); payment=(); sync-xhr=();");
+	res.setHeader("Permissions-Policy", "fullscreen=('self'), accelerometer=(), autoplay=(), camera=(), geolocation=('self'), gyroscope=(), interest-cohort=(), magnetometer=(), microphone=(), payment=(), sync-xhr=()");
 	next();
 });
 
