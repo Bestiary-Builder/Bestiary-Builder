@@ -103,13 +103,7 @@ const logicPath = path.join(__dirname, "logic");
 const logicFiles = fs.readdirSync(logicPath);
 async function importLogic() {
 	for (const file of logicFiles) {
-		if (fs.lstatSync(path.join(logicPath, file)).isDirectory()) {
-			if (fs.existsSync(path.join(logicPath, file, "main.ts"))) {
-				await import(path.join(logicPath, file, "main.ts"));
-			}
-		} else {
-			await import(path.join(logicPath, file));
-		}
+		await import("file://" + path.join(logicPath, file));
 	}
 }
 importLogic().then(() => {
