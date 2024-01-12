@@ -31,7 +31,7 @@ export const defaultMetaTags = [
 	},
 	{
 		name: "image",
-		content: "https://bestiarybuilder.com/logo.png"
+		content: "http://img.bestiarybuilder.com/logo.png"
 	},
 	{
 		name: "description",
@@ -48,7 +48,7 @@ export const defaultMetaTags = [
 	},
 	{
 		itemprop: "image",
-		content: "https://bestiarybuilder.com/logo.png"
+		content: "http://img.bestiarybuilder.com/logo.png"
 	},
 	//Twitter
 	{
@@ -69,7 +69,7 @@ export const defaultMetaTags = [
 	},
 	{
 		name: "twitter:image",
-		content: "https://bestiarybuilder.com/logo.png"
+		content: "http://img.bestiarybuilder.com/logo.png"
 	},
 	//Open Graph general (Facebook, Pinterest & Google+)
 	{
@@ -82,7 +82,7 @@ export const defaultMetaTags = [
 	},
 	{
 		property: "og:image",
-		content: "https://bestiarybuilder.com/logo.png"
+		content: "http://img.bestiarybuilder.com/logo.png"
 	},
 	{
 		property: "og:url",
