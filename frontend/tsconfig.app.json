@@ -8,6 +8,7 @@
 		"module": "esnext",
 		"allowSyntheticDefaultImports": true,
 		"baseUrl": ".",
+		"noEmit": false,
 		"paths": {
 			"@/*": ["./src/*"]
 		},
