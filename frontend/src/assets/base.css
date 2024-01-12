@@ -67,6 +67,10 @@ html {
 	--padding-page--negative: calc(var(--padding-page) * -1);
 }
 
+html {
+	overflow-y: scroll;
+}
+
 html,
 body {
 	min-height: 100vh;
