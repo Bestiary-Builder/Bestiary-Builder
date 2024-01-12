@@ -113,11 +113,12 @@ const routes = [
 	// help
 	{
 		path: "/help",
-		navbar: true,
-		loggedIn: false,
 		name: "Help",
 		file: "HelpView.vue",
-		meta: {}
+		meta: {
+			navbar: true,
+			loggedIn: false
+		}
 	},
 
 	// a list of your bestiaries
