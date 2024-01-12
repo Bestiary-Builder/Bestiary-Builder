@@ -271,8 +271,13 @@ app.post("/api/bestiary/:id?/addcreatures", requireUser, async (req, res) => {
 			let image = creature.stats.description.image as string;
 			// remove any url parameters from the string
 			if (image) {
-				image = new URL(image).origin + new URL(image).pathname;
-				creature.stats.description.image = image;
+				try {
+					image = new URL(image).origin + new URL(image).pathname;
+					creature.stats.description.image = image;
+				} catch (err) {
+					log.error("Image url not recognized. (" + image + ")");
+					continue;
+				}
 			}
 			let failedToImportImage = false;
 			if (image && image != "") {
