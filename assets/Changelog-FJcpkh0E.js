@@ -1,4 +1,4 @@
-import{M as r}from"./index-5Jdbla-E.js";import{B as s}from"./Breadcrumbs-s-NPqfzX.js";import{d as a,_ as c,r as i,o as n,c as t,a as m,b as d,i as l,F as p}from"./index-IjSAY4pc.js";const _=`## v1.0.1 
+import{M as r}from"./index-5Jdbla-E.js";import{B as s}from"./Breadcrumbs-9eWq3uS5.js";import{d as a,_ as c,r as i,o as n,c as t,a as m,b as d,i as l,F as p}from"./index-Doeu7lLO.js";const _=`## v1.0.1 
 
 _January 12th, 2024_
 - Resolves some CritterDB importing as an empty Bestiary
