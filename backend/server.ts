@@ -100,7 +100,7 @@ const logicPath = path.join(__dirname, "logic");
 const logicFiles = fs.readdirSync(logicPath);
 async function importLogic() {
 	for (const file of logicFiles) {
-		await import("file://" + path.join(logicPath, file));
+		await import((isProduction ? "" : "file://") + path.join(logicPath, file));
 	}
 }
 importLogic().then(() => {
