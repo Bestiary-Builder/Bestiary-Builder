@@ -677,7 +677,7 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 		return res.json(data);
 	} catch (err) {
 		log.log("critical", err);
-		return res.status(500).json({error: "Unknown server error occured."});
+		return res.status(500).json({error: "Unknown server error occured. Please contact the developers of Bestiary Builder, not Avrae."});
 	}
 });
 
@@ -814,6 +814,13 @@ function calcSkills(data: any) {
 						output[skill] = {
 							value: base + data.core.proficiencyBonus * 2,
 							prof: 2,
+							bonus: 0,
+							adv: null
+						};
+					} else {
+						output[skill] = {
+							value: base,
+							prof: 0,
 							bonus: 0,
 							adv: null
 						};
