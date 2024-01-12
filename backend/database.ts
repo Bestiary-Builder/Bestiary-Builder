@@ -24,6 +24,20 @@ export async function startConnection() {
 		collections.creatures = database.collection("Creatures");
 		log.info(`Successfully connected to the database.`);
 		log.log("database", `Established connection to ${database.databaseName} with ${(await database.collections()).length} collections.`);
+
+		//Database change
+		const runDataBaseChange = true;
+		if (runDataBaseChange) {
+			//User additions
+			await addValue(collections.users, "joinedAt", Date.now());
+			await addValue(collections.users, "bestiaries", []);
+			await addValue(collections.users, "bookmarks", []);
+			await addValue(collections.users, "supporter", 0);
+			//Bestiary additions
+			await addValue(collections.bestiaries, "bookmarks", 0);
+			await addValue(collections.bestiaries, "viewCount", 0);
+			await addValue(collections.bestiaries, "editors", []);
+		}
 	} catch (err: any) {
 		log.log("critical", err);
 		// Ensures that the client will close on error
@@ -67,6 +81,15 @@ export class Creature {
 	constructor(public lastUpdated: number, public stats: any, public bestiary: ObjectId, public _id?: ObjectId) {}
 }
 export const collections: {users?: Collection<User>; bestiaries?: Collection<Bestiary>; creatures?: Collection<Creature>} = {};
+
+//Add changes to all in database
+export async function addValue(collection: Collection<any>, key: string, value: any) {
+	collection.updateMany({[key]: {$exists: false}}, {$set: {[key]: value}});
+	log.log("database", `Added key "${key}" to all documents in collection "${collection.collectionName}" with the value: ${value}`);
+}
+export async function updateValue(collection: Collection<any>, key: string, value: any) {
+	collection.updateMany({}, {$set: {[key]: value}});
+}
 
 //User cache
 let userCache = {} as {[key: string]: User};
@@ -113,11 +136,7 @@ export async function updateUser(data: {_id: string; username: string; avatar: s
 			return (await getUser(data._id))?.secret ?? null;
 		} else {
 			log.log("database", "Adding new user to collection with id " + data._id.toString());
-			let userData = data as User;
-			userData._id = data._id;
-			userData.joinedAt = Date.now();
-			userData.secret = generateUserSecret();
-			userData.bestiaries = [];
+			let userData = {...(data as User), joinedAt: Date.now(), secret: generateUserSecret(), bestiaries: [], bookmarks: [], supporter: 0} as User;
 			await collections.users?.insertOne(userData);
 			return userData.secret;
 		}
@@ -173,8 +192,16 @@ export async function updateBestiary(data: Bestiary, id?: ObjectId) {
 		} else {
 			log.log("database", "Adding new bestiary to collection");
 			let _id = new ObjectId();
-			data._id = _id;
-			await collections.bestiaries?.insertOne(data);
+			let newData = {
+				...data,
+				...{
+					_id: _id,
+					bookmarks: 0,
+					viewCount: 0,
+					editors: []
+				}
+			};
+			await collections.bestiaries?.insertOne(newData);
 			return _id;
 		}
 	} catch (err) {

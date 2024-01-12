@@ -40,7 +40,7 @@ export default defineComponent({
 	& label {
 		font-weight: bold;
 		text-decoration: underline;
-        text-decoration-color: #8a8a8a;
+        text-decoration-color: color-mix(in srgb, currentColor, rgba(0, 0, 0, .5));
 	}
 }
 

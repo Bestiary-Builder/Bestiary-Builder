@@ -120,20 +120,6 @@ export default defineComponent({
 				}
 			}
 		}
-
-		& select {
-			border: 2px solid orangered;
-			background: transparent;
-			color: orangered;
-			border-radius: 0.2rem;
-			padding: 0 0.2rem;
-			outline: none;
-
-			& option {
-				background-color: var(--color-surface-0);
-				color: orangered;
-			}
-		}
 	}
 }
 @media screen and (max-width: 1080px) {

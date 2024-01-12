@@ -1,3 +1,9 @@
+## v1.0.3
+_January 12th, 2024_
+
+- Add filter options for viewing a bestiary
+- Add sort options for viewing a bestiary
+
 ## v1.0.2
 
 _January 12th, 2024_
