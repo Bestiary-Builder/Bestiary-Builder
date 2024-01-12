@@ -47,7 +47,7 @@ html {
 }
 </style>
 <style scoped lang="less">
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=block');
 .content {
 	z-index: 2;
 	position: relative;

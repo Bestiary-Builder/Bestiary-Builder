@@ -1,5 +1,5 @@
 <template>
-	<nav class="navbar" :class="{expanded: isExpanded}" ref="navbar">
+	<nav class="navbar" :class="{expanded: isExpanded}" ref="navbar" id="navbar">
 		<div class="navbar-left">
 			<RouterLink :to="$router.options.routes[0].path" class="navbar-brand">
 				<img src="/logo.svg" alt="Site logo" />
@@ -73,88 +73,11 @@ export default defineComponent({
 });
 </script>
 <style scoped lang="less">
-.user {
-	display: flex;
-	align-items: center;
-
-	gap: 0.3rem;
-	& .image-wrapper {
-		width: 1.5rem;
-		height: 1.5rem;
-		position: relative;
-		border-radius: 50%;
-		overflow: hidden;
-	}
-	& img {
-		scale: 1;
-		animation: blip-in 50ms forwards;
-	}
-
-	& svg {
-		display: none;
-	}
-}
-
-.login {
-	cursor: pointer;
-}
-
-.settings .user:hover,
-.settings .user:focus {
-	img {
-		animation: blip-out 200ms forwards;
-		overflow: hidden;
-	}
-
-	svg {
-		position: absolute;
-		display: unset;
-		top: 0;
-		fill: white;
-		height: 100%;
-		width: 100%;
-		scale: .9;
-		animation: rotate-in 300ms ease-out forwards;
-	}
-}
-
-@keyframes rotate-in {
-	0% {
-		scale: -.3;
-		rotate: 0;
-	}
-
-	100% {
-		scale: .9;
-		rotate: 420deg;
-	}
-}
-
-@keyframes blip-out {
-	from {
-		opacity: 1;
-		scale: 1;
-	}
-	to {
-		opacity: 0;
-		scale: 0
-	}
-}
-
-@keyframes blip-in {
-	from {
-		opacity: 0;
-		scale: 0;
-	}
-	to {
-		opacity: 1;
-		scale: 1;
-	}
-}
-
-
 .navbar {
-	position: relative;
+	position: fixed;
+	top: 0;
+	width: 100%;
+	z-index: 101;
 
 	background: var(--color-surface-2);
 
@@ -250,7 +173,7 @@ export default defineComponent({
 		grid-template-columns: 8fr;
 		position: absolute;
 		width: 100vw;
-		z-index: 100;
+		z-index: 101;
 		.navbar-left {
 			display: none;
 		}
@@ -275,6 +198,86 @@ export default defineComponent({
 		}
 	}
 }
+
+.user {
+	display: flex;
+	align-items: center;
+
+	gap: 0.3rem;
+	& .image-wrapper {
+		width: 1.5rem;
+		height: 1.5rem;
+		position: relative;
+		border-radius: 50%;
+		overflow: hidden;
+	}
+	& img {
+		scale: 1;
+		animation: blip-in 100ms forwards;
+	}
+
+	& svg {
+		display: none;
+	}
+}
+
+.login {
+	cursor: pointer;
+}
+
+.settings .user:hover,
+.settings .user:focus {
+	img {
+		animation: blip-out 200ms forwards;
+		overflow: hidden;
+	}
+
+	svg {
+		position: absolute;
+		display: unset;
+		top: 0;
+		fill: white;
+		height: 100%;
+		width: 100%;
+		scale: .9;
+		animation: rotate-in 300ms ease-out forwards;
+	}
+}
+
+@keyframes rotate-in {
+	0% {
+		scale: -.3;
+		rotate: 0;
+	}
+
+	100% {
+		scale: .9;
+		rotate: 420deg;
+	}
+}
+
+@keyframes blip-out {
+	from {
+		opacity: 1;
+		scale: 1;
+	}
+	to {
+		opacity: 0;
+		scale: 0
+	}
+}
+
+@keyframes blip-in {
+	from {
+		opacity: 0;
+		scale: 0;
+	}
+	to {
+		opacity: 1;
+		scale: 1;
+	}
+}
+
 </style>
 
 <style lang="less">

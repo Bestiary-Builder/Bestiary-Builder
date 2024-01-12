@@ -1,5 +1,5 @@
 <template>
-	<nav class="breadcrumbs__container" :class="{'less-wide': isLessWide}" aria-label="Header">
+	<nav class="breadcrumbs__container" :class="{'less-wide': isLessWide}" aria-label="Header" id="breadcrumb">
 		<ol class="breadcrumbs__links" aria-label="Breadcrumbs">
 			<li v-for="(route, index) in routes" :key="index">
 				<RouterLink v-if="!route.isCurrent" :to="route.path"> {{ route.text }} </RouterLink>
@@ -61,6 +61,10 @@ export default defineComponent({
 			default: false,
 			required: false
 		}
+	},
+	mounted() {
+		document.body.style.setProperty('--navbar-height', document.getElementById('navbar')!.offsetHeight.toString() + "px") 
+		// document.getElementById("breadcrumb")!.style.marginTop = "1000"
 	}
 });
 </script>
@@ -70,11 +74,14 @@ export default defineComponent({
 	background-color: var(--color-surface-0);
 	padding: 0.7rem 9.5vw;
 	box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
-
+	position: fixed;
+	top: 0;
+	width: 100%;
 	display: flex;
 	justify-content: space-between;
+	margin-top: var(--navbar-height);
 	flex-wrap: wrap;
-
+	z-index: 100;
 	.right-buttons {
 		display: flex;
 		gap: 1rem;
