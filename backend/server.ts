@@ -42,6 +42,12 @@ app.use(
 			},
 			useDefaults: true
 		},
+		crossOriginEmbedderPolicy: {
+			policy: "credentialless"
+		},
+		crossOriginOpenerPolicy: {
+			policy: "unsafe-none"
+		},
 		crossOriginResourcePolicy: {
 			policy: "cross-origin"
 		}
