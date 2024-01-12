@@ -15,14 +15,9 @@ import rateLimit from "express-rate-limit";
 import cors from "cors";
 import compression from "compression";
 import cookieParser from "cookie-parser";
-//@ts-ignore
-import prerender from "prerender-node";
-
-//Create express ap
+//Create express app
 export const app = express();
 
-//Pre render
-app.use(prerender);
 //Body parsing
 app.use(express.json({limit: "50mb"}));
 app.use(express.urlencoded({limit: "50mb"}));
@@ -90,14 +85,6 @@ for (let file of dataFiles) {
 		badwords.add(data);
 	});
 }
-
-//Function to run on all requests
-app.use(async (req, res, next) => {
-	log.log("request", `Request for URL "${req.url}" recieved.`);
-	//Set Permissions Policy
-	res.setHeader("Permissions-Policy", "fullscreen=('self'), accelerometer=(), autoplay=(), camera=(), geolocation=('self'), gyroscope=(), interest-cohort=(), magnetometer=(), microphone=(), payment=(), sync-xhr=()");
-	next();
-});
 
 //Setup database connection
 import {startConnection} from "./database";
