@@ -1,4 +1,4 @@
-import{M as s}from"./index-5Jdbla-E.js";import{d as r,_ as a,r as i,o as n,c as t,a as l,b as c,i as d,F as u}from"./index--PHZaFiV.js";const m=`## General scope
+import{M as s}from"./index-5Jdbla-E.js";import{d as r,_ as a,r as i,o as n,c as t,a as l,b as c,i as d,F as u}from"./index-cyxXTXmC.js";const m=`## General scope
 
 The following are the rules and guidelines for content created or otherwise added to Bestiary Builder.
 You do NOT need to publish your content publicly, but even if the content is private, it is subject to these rules & guidelines.
