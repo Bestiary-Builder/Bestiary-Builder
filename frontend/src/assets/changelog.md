@@ -3,6 +3,7 @@
 _January 12th, 2024_
 - Resolves some CritterDB importing as an empty Bestiary
 - Developer environment fix
+- Fix scrolling sometimes not working on mobile
 
 ## v1.0.0
 
