@@ -3,7 +3,7 @@ import type {Filter, FindOptions, Sort} from "mongodb";
 import {app} from "../server";
 import {log} from "../logger";
 
-const amountPerPage = 11;
+const amountPerPage = 12;
 
 app.post("/api/search", async (req, res) => {
 	try {
