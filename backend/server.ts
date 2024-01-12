@@ -42,7 +42,9 @@ app.use(
 			},
 			useDefaults: true
 		},
-		crossOriginResourcePolicy: false
+		crossOriginResourcePolicy: {
+			policy: "cross-origin"
+		}
 	})
 );
 app.disable("x-powered-by");
