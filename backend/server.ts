@@ -41,7 +41,8 @@ app.use(
 				"connect-src": ["'self'", "https://discord.com"]
 			},
 			useDefaults: true
-		}
+		},
+		crossOriginResourcePolicy: false
 	})
 );
 app.disable("x-powered-by");
