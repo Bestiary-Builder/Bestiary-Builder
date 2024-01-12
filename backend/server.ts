@@ -71,9 +71,6 @@ import BadWordsNext from "bad-words-next";
 export const badwords = new BadWordsNext({placeholder: ""});
 let dataFiles = fs.readdirSync("./staticData/badwordsData/");
 for (let file of dataFiles) {
-	///log.info("Loading bad words data file: ", file);
-	///let data = JSON.parse(fs.readFileSync("./staticData/badwordsData/" + file).toString("utf-8"));
-	///badwords.add(data);
 	import("./staticData/badwordsData/" + file).then((data) => {
 		badwords.add(data);
 	});
@@ -83,7 +80,7 @@ for (let file of dataFiles) {
 app.use(async (req, res, next) => {
 	log.log("request", `Request for URL "${req.url}" recieved.`);
 	//Set Permissions Policy
-	res.setHeader("Permissions-Polict", "fullscreen: 'self'; accelerometer: ; autoplay: ; camera: ; geolocation: 'self'; gyroscope: ; interest-cohort: ; magnetometer: ; microphone: ; payment: ; sync-xhr: ;");
+	res.setHeader("Permissions-Policy", "fullscreen: 'self'; accelerometer: ; autoplay: ; camera: ; geolocation: 'self'; gyroscope: ; interest-cohort: ; magnetometer: ; microphone: ; payment: ; sync-xhr: ;");
 	next();
 });
 
@@ -103,13 +100,7 @@ const logicPath = path.join(__dirname, "logic");
 const logicFiles = fs.readdirSync(logicPath);
 async function importLogic() {
 	for (const file of logicFiles) {
-		if (fs.lstatSync(path.join(logicPath, file)).isDirectory()) {
-			if (fs.existsSync(path.join(logicPath, file, "main.ts"))) {
-				await import(path.join(logicPath, file, "main.ts"));
-			}
-		} else {
-			await import(path.join(logicPath, file));
-		}
+		await import("file://" + path.join(logicPath, file));
 	}
 }
 importLogic().then(() => {
@@ -127,9 +118,8 @@ function errorHandler(err: Error, req: Request, res: Response, next: NextFunctio
 }
 app.use(errorHandler);
 process.on("uncaughtException", (err) => {
-	log.error("Uncaught exception" + err);
+	log.log("critical", "Uncaught exception" + err);
 });
-
 process.on("unhandledRejection", (err) => {
-	log.error("Unhandled rejection" + err);
+	log.log("critical", "Unhandled rejection" + err);
 });
