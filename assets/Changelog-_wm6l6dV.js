@@ -1,4 +1,4 @@
-import{M as r}from"./index-5Jdbla-E.js";import{B as a}from"./Breadcrumbs-Ldg3kDdj.js";import{d as s,_ as i,r as d,o as n,c as t,a as m,b as c,i as p,F as l}from"./index-SP--hdv2.js";const _=`## v1.0.3
+import{M as r}from"./index-5Jdbla-E.js";import{B as a}from"./Breadcrumbs-iRZ6-jYg.js";import{d as s,_ as i,r as d,o as n,c as t,a as m,b as c,i as p,F as l}from"./index-UOu82d6O.js";const _=`## v1.0.3
 _January 12th, 2024_
 
 - Add filter options for viewing a bestiary
