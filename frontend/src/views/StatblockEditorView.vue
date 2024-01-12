@@ -829,6 +829,9 @@ export default defineComponent({
 			return;
 		}
 
+		document.title = `${this?.data.description.name.substring(0,16)} | Bestiary Builder`
+		
+
 		// get bestiary info this creature belongs to so we can get the name of the bestiary
 		await fetch("/api/bestiary/" + this.rawInfo?.bestiary).then(async (response) => {
 			let result = await handleApiResponse<Bestiary>(response);
@@ -942,6 +945,9 @@ export default defineComponent({
 			this.data.core.proficiencyBonus = Math.max(2, Math.min(9, Math.floor((this.data.description.cr + 3) / 4)) + 1);
 
 			this.data.description.xp = getXPbyCR(this.data.description.cr)
+		},
+		"data.description.name"() {
+			document.title = `${this?.data.description.name.substring(0,16)} | Bestiary Builder`
 		}
 	},
 	beforeRouteUpdate() {
