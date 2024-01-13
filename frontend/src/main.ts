@@ -183,4 +183,8 @@ app.mount("body");
 export const isMobile = screen.width < 900;
 
 //Gtag
-import "./generic/gtag";
+if (document.location.href.includes('bestiarybuilder.com')) {
+	// @ts-ignore
+	import("./generic/gtag");
+}
+
