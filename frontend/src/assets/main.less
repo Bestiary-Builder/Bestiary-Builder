@@ -33,10 +33,9 @@ h2 {
 
 a {
 	color: rgb(205, 205, 205);
-	text-decoration: underline 0.1em rgba(205, 205, 205, 0);
-	transition: all 0.3s ease;
+	text-decoration: underline 0.1em rgba(0, 0, 0, 0);
 	&:hover {
-		text-decoration-color: rgba(205, 205, 205, 1);
+		text-decoration-color: color-mix(in srgb, currentColor, rgba(0, 0, 0, .5));
 	}
 }
 

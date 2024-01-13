@@ -8,6 +8,8 @@
 					<div class="two-wide uneven">
 						<LabelledComponent title="Feature name">
 							<input type="text" id="featurename" placeholder="Enter name" v-model="feat.name" @change="hasEditedName = true" />
+							<a href="https://avrae.readthedocs.io/en/stable/automation_ref.html"> Documentation</a>
+							<a href="https://avrae.io/dashboard/characters" v-tooltip="'Edit automation on a character to get access to the full fledged automation builder.'"> Automation Editor</a>
 						</LabelledComponent>
 						<LabelledComponent title="Feature description">
 							<textarea rows="4" id="featuredescription" placeholder="Enter description" v-model="feat.description" /> 
@@ -302,5 +304,9 @@ input {
 
 .move-down {
 	margin-top: .4rem;
+}
+
+a {
+	color: orangered;
 }
 </style>

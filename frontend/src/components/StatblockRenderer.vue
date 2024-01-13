@@ -139,15 +139,15 @@
                             <i> {{ data.spellcasting.innateSpells.spellList[0].map(x => x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell).sort().join(", ").toLowerCase() }} </i> 
                         </div>
                         <div v-if="data.spellcasting.innateSpells.spellList[3].length > 0"> 
-                            <span> 3/day each: </span>
+                            <span> 3/day{{ data.spellcasting.innateSpells.spellList[3].length > 1 ? ' each' : "" }}: </span>
                             <i> {{ data.spellcasting.innateSpells.spellList[3].map(x => x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell).sort().join(", ").toLowerCase() }} </i> 
                         </div>
                         <div v-if="data.spellcasting.innateSpells.spellList[2].length > 0"> 
-                            <span> 2/day each: </span>
+                            <span> 2/day{{ data.spellcasting.innateSpells.spellList[2].length > 1 ? ' each' : "" }}: </span>
                             <i> {{ data.spellcasting.innateSpells.spellList[2].map(x => x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell).sort().join(", ").toLowerCase() }} </i> 
                         </div>
                         <div v-if="data.spellcasting.innateSpells.spellList[1].length > 0"> 
-                            <span> 1/day each: </span>
+                            <span> 1/day{{ data.spellcasting.innateSpells.spellList[1].length > 1 ? ' each' : "" }}: </span>
                             <i> {{ data.spellcasting.innateSpells.spellList[1].map(x => x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell).sort().join(", ").toLowerCase() }} </i> 
                         </div>
                     </div>
@@ -157,7 +157,7 @@
             <p v-if="showCasting() && data.spellcasting.casterSpells.castingClass && data.spellcasting.casterSpells.casterLevel &&  data.spellcasting.casterSpells.spellSlotList">
                 <b><i>Spellcasting</i></b> 
                 <span class="feature-container__desc">
-                    <span v-if="!data.description.isProperNoun"> The </span> {{ data.description.name }} is a {{ nthSuffix(data.spellcasting.casterSpells.casterLevel) }}-level spellcaster. <span v-if="data.description.isProperNoun"> Their </span><span v-else> Its </span> spellcasting ability is {{ fullSpellAbilityName() }} (spell save DC {{ spellDc() }}, {{ spellAttackBonus() }} to hit with spell attacks). <span v-if="!data.description.isProperNoun"> It </span><span v-else> {{ data.description.name }}</span><span v-if='["Sorcerer", "Bard", "Ranger", "Warlock"].includes(data.spellcasting.casterSpells.castingClass)'> knows the following {{ data.spellcasting.casterSpells.castingClass.toLowerCase()}} spells: </span> 
+                    <span v-if="!data.description.isProperNoun"> The </span> {{ data.description.isProperNoun ? data.description.name : data.description.name.toLowerCase() }} is a {{ nthSuffix(data.spellcasting.casterSpells.casterLevel) }}-level spellcaster. <span v-if="data.description.isProperNoun"> Their </span><span v-else> Its </span> spellcasting ability is {{ fullSpellAbilityName() }} (spell save DC {{ spellDc() }}, {{ spellAttackBonus() }} to hit with spell attacks). <span v-if="!data.description.isProperNoun"> It </span><span v-else> {{ data.description.name }}</span><span v-if='["Sorcerer", "Bard", "Ranger", "Warlock"].includes(data.spellcasting.casterSpells.castingClass)'> knows the following {{ data.spellcasting.casterSpells.castingClass.toLowerCase()}} spells: </span> 
                         <span v-else> has the following {{ data.spellcasting.casterSpells.castingClass.toLowerCase()}} spells prepared: </span>
 
                     <div class="spell-list">
@@ -184,24 +184,24 @@
             <p v-if="showInnateCasting() && data.spellcasting.innateSpells.displayAsAction">
                 <b><i>Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics"> (Psionics)</span> </i></b> 
                 <span class="feature-container__desc">
-                    <span v-if="!data.description.isProperNoun"> The </span> {{ data.description.name }} casts one of the following spells{{ componentsString(false) }} and using {{ fullSpellAbilityName(true) }} as the spellcasting ability (spell save DC {{ spellDc(true) }}, {{ spellAttackBonus(true) }} to hit with spell attacks).
+                    <span v-if="!data.description.isProperNoun"> The </span> {{ data.description.isProperNoun ? data.description.name : data.description.name.toLowerCase() }} casts one of the following spells{{ componentsString(false) }} and using {{ fullSpellAbilityName(true) }} as the spellcasting ability (spell save DC {{ spellDc(true) }}, {{ spellAttackBonus(true) }} to hit with spell attacks).
 
                     <div class="spell-list">
                         <div v-if="data.spellcasting.innateSpells.spellList[0].length > 0"> 
                             <span> At will: </span>
-                            <i> {{ data.spellcasting.innateSpells.spellList[0].map(x => x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell).sort().join(", ").toLowerCase() }} </i> 
+                            <i> {{ data.spellcasting.innateSpells.spellList[0].map(x => x.comment.length > 0 ? `${x.spell.toLowerCase()} (${x.comment})` : x.spell.toLowerCase()).sort().join(", ") }} </i> 
                         </div>
                         <div v-if="data.spellcasting.innateSpells.spellList[3].length > 0"> 
-                            <span> 3/day each: </span>
-                            <i> {{ data.spellcasting.innateSpells.spellList[3].map(x => x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell).sort().join(", ").toLowerCase() }} </i> 
+                            <span> 3/day{{ data.spellcasting.innateSpells.spellList[3].length > 1 ? ' each' : "" }}: </span>
+                            <i> {{ data.spellcasting.innateSpells.spellList[3].map(x => x.comment.length > 0 ? `${x.spell.toLowerCase()} (${x.comment})` : x.spell.toLowerCase()).sort().join(", ") }} </i> 
                         </div>
                         <div v-if="data.spellcasting.innateSpells.spellList[2].length > 0"> 
-                            <span> 2/day each: </span>
-                            <i> {{ data.spellcasting.innateSpells.spellList[2].map(x => x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell).sort().join(", ").toLowerCase() }} </i> 
+                            <span> 2/day{{ data.spellcasting.innateSpells.spellList[2].length > 1 ? ' each' : "" }}: </span>
+                            <i> {{ data.spellcasting.innateSpells.spellList[2].map(x => x.comment.length > 0 ? `${x.spell.toLowerCase()} (${x.comment})` : x.spell.toLowerCase()).sort().join(", ") }} </i> 
                         </div>
                         <div v-if="data.spellcasting.innateSpells.spellList[1].length > 0"> 
-                            <span> 1/day each: </span>
-                            <i> {{ data.spellcasting.innateSpells.spellList[1].map(x => x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell).sort().join(", ").toLowerCase() }} </i> 
+                            <span> 1/day{{ data.spellcasting.innateSpells.spellList[1].length > 1 ? ' each' : "" }}: </span>
+                            <i> {{ data.spellcasting.innateSpells.spellList[1].map(x => x.comment.length > 0 ? `${x.spell.toLowerCase()} (${x.comment})` : x.spell.toLowerCase()).sort().join(", ") }} </i> 
                         </div>
                     </div>
                 </span>

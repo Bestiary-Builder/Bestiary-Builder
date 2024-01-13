@@ -86,7 +86,7 @@ export default defineComponent({
 	justify-content: center;
 	align-items: center;
 
-	z-index: 100;
+	z-index: 1000;
 }
 
 .modal__content {

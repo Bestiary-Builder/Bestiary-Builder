@@ -23,17 +23,18 @@ To start editing the project follow these simple steps:
         - Save the client id and client secret, for use later.
         - Go to "OAuth2"->"General" and add "http://localhost:5173/user" to the redirects.
         - Change the constant "clientId" in the file "frontend/main.ts", to match the id for the application.
-5. Rename ".env.template" in the backend folder to ".env", and change it's values to your own environment
+5. Rename ".env.template" in the frontend folder to ".env", and change it's values to your own environment
+    - "VITE_DISCORD_ID" should be changed to your Discord OAuth application id.
+6. Rename ".env.template" in the backend folder to ".env", and change it's values to your own environment
     - "frontendPath" should stay unchanged. (Unless you moved the folder around)
-    - "NODE_ENV" should stay unchanged.
     - "clientId" should be changed to your Discord OAuth application id.
     - "clientSecret" should be changed to your Discord OAuth application secret.
     - "discordRedirectURI" should stay unchanged. (Unless you changed the hostname or port of the local site)
     - "MongoDB" should be changed to the connection URI for your MongoDB database.
-6. Launch the local site.
+7. Launch the local site.
     - In VSCode/VSCodium simply press F5 to start the already created launch tasks.
     - For other code editors, start the backend by running "npm run start" in the backend folder, and build the frontend by running "npm run build" in the frontend folder.
-7. Check that everything is working as it should.
+8. Check that everything is working as it should.
 
 ## Made by
 

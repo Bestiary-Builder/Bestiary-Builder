@@ -37,7 +37,8 @@ export const tags = fetch("/api/tags").then(async (response: any) =>
 		else return null;
 	})
 );
-const clientId = "1183362236509601813";
+const clientId = import.meta.env.VITE_DISCORD_ID ?? "";
+console.log(clientId);
 const loginLink = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&response_type=code&scope=identify+email&redirect_uri=${encodeURIComponent(window.location.origin + "/user")}`;
 
 export function sendToLogin(route: string) {
@@ -183,4 +184,6 @@ app.mount("body");
 export const isMobile = screen.width < 900;
 
 //Gtag
-import "./generic/gtag";
+if (import.meta.env.MODE == "production") {
+	import("./generic/gtag" as any);
+}
