@@ -44,12 +44,6 @@ app.use(
 			},
 			useDefaults: true
 		},
-		crossOriginEmbedderPolicy: {
-			policy: "credentialless"
-		},
-		crossOriginOpenerPolicy: {
-			policy: "unsafe-none"
-		},
 		crossOriginResourcePolicy: {
 			policy: "cross-origin"
 		}
@@ -104,7 +98,46 @@ httpServer.listen(5000, () => {
 	log.info("Server listening to port 5000");
 });
 
-//Load logic
+//Load frontend
+import {routes, defaultMetaTags, Route} from "./routes";
+function getFrontendHtml(route: Route) {
+	//Get information
+	let title = route.name + " | Bestiary Builder";
+	if (title.startsWith(" | ")) title = "Bestiary Builder";
+	//Get index.html
+	let html = null;
+	const filePath = path.join(frontendPath, "index.html");
+	html = fs.readFileSync(filePath, {encoding: "utf-8"});
+	//Create metatags
+	let tags = defaultMetaTags;
+	let metatags = [
+		`<title>${title}</title>`,
+		...tags.map((tagDef) => {
+			//Change content of meta tags:
+			if (tagDef.name.includes("title") || tagDef.name.includes("name")) tagDef.content = title;
+			//Create meta element
+			const tag = `<meta ${tagDef.type}="${tagDef.name}" content="${tagDef.content}">`;
+			return tag;
+		})
+	];
+	//Return index.html with tags
+	return html.replace("<!-- meta tags -->", metatags.join("\n		"));
+}
+for (let route of routes) {
+	app.get(route.path, async (req, res) => {
+		try {
+			let html = getFrontendHtml(route);
+			if (html) return res.send(html);
+		} catch (err) {
+			log.error(err);
+			res.status(500).send("Internal Server Error");
+		}
+	});
+}
+//Static frontend files
+app.use(express.static(frontendPath));
+
+//Logic files
 const logicPath = path.join(__dirname, "logic");
 const logicFiles = fs.readdirSync(logicPath);
 async function importLogic() {
@@ -113,12 +146,20 @@ async function importLogic() {
 	}
 }
 importLogic().then(() => {
-	//Redirect everything else to frontend
-	app.use("/*", express.static(frontendPath));
+	//Everything else is 404
+	app.get("/*", (req, res) => {
+		try {
+			let html = getFrontendHtml({
+				name: "Page not found",
+				path: "/notfound"
+			} as Route);
+			if (html) return res.send(html);
+		} catch (err) {
+			log.error(err);
+			res.status(500).send("Internal Server Error");
+		}
+	});
 });
-
-//Static files
-app.use(express.static(frontendPath));
 
 //Error handling
 function errorHandler(err: Error, req: Request, res: Response, next: NextFunction) {
