@@ -1003,7 +1003,8 @@ export default defineComponent({
 		color: rgb(201, 201, 201);
 		
 		&:focus{
-			border-color: orangered
+			border-color: orangered;
+			outline: 2px solid orangered;
 		}
 		&:hover {
 			background-color: var(--color-surface-0);
@@ -1012,8 +1013,19 @@ export default defineComponent({
 
 		&.active-slide {
 			border-bottom-color: orangered;
-			border-bottom-width: 3px;
+			border-bottom-width: 1px;
 			color: white;
+			position: relative;
+			transition: all .3s ease;
+			&::before {
+				position: absolute;
+				bottom: 0;
+				left: 0;
+				width: 100%;
+				height: 2px;
+				background-color: orangered;
+				content: "";
+			}
 		}
 
 	}
