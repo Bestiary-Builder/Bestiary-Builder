@@ -126,7 +126,7 @@
 							</div>
 						</div>
 
-						<LabelledNumberInput v-model="data.core.proficiencyBonus" :min="0" :max="9" title="Proficiency Bonus" :step="1"/>
+						<LabelledNumberInput v-model="data.core.proficiencyBonus" :min="0" title="Proficiency Bonus" :step="1"/>
 						<LabelledNumberInput v-model="data.description.xp" :min="0" :step="1" title="Experience Points" />
 					</div>
 				</div>
@@ -175,47 +175,47 @@
 				<div class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-3"  id="tabpanel-3">
 					<h2 class="group-header">Ability Scores</h2>
 					<div class="editor-field__container three-wide">
-						<LabelledNumberInput v-model="data.abilities.stats.str" title="Strength"     :max="30" :step="1"/>
-						<LabelledNumberInput v-model="data.abilities.stats.dex" title="Dexterity"    :max="30" :step="1"/>
-						<LabelledNumberInput v-model="data.abilities.stats.con" title="Constitution" :max="30" :step="1"/>
-						<LabelledNumberInput v-model="data.abilities.stats.int" title="Intelligence" :max="30" :step="1"/>
-						<LabelledNumberInput v-model="data.abilities.stats.wis" title="Wisdom"       :max="30" :step="1"/>
-						<LabelledNumberInput v-model="data.abilities.stats.cha" title="Charisma"     :max="30" :step="1"/>
+						<LabelledNumberInput v-model="data.abilities.stats.str" title="Strength"     :step="1"/>
+						<LabelledNumberInput v-model="data.abilities.stats.dex" title="Dexterity"    :step="1"/>
+						<LabelledNumberInput v-model="data.abilities.stats.con" title="Constitution" :step="1"/>
+						<LabelledNumberInput v-model="data.abilities.stats.int" title="Intelligence" :step="1"/>
+						<LabelledNumberInput v-model="data.abilities.stats.wis" title="Wisdom"       :step="1"/>
+						<LabelledNumberInput v-model="data.abilities.stats.cha" title="Charisma"     :step="1"/>
 					</div>
 					<hr />
 					<h2 class="group-header">Saving Throws</h2>
 					<div class="editor-field__container three-wide">
-						<LabelledNumberInput v-model="data.abilities.saves.str.override" title="Strength" :max="30" :step="1" :is-clearable="true"> 
+						<LabelledNumberInput v-model="data.abilities.saves.str.override" title="Strength" :step="1" :is-clearable="true"> 
 							<p>
 								<label for="strsaveprof" aria-label="strength save proficiency">Proficient</label>
 								<input type="checkbox" v-model="data.abilities.saves.str.isProficient" id="strsaveprof" :is-clearable="true"/>
 							</p>
 						</LabelledNumberInput>
-						<LabelledNumberInput v-model="data.abilities.saves.dex.override" title="Dexterity" :max="30" :step="1" :is-clearable="true"> 
+						<LabelledNumberInput v-model="data.abilities.saves.dex.override" title="Dexterity" :step="1" :is-clearable="true"> 
 							<p>
 								<label for="dexsaveprof" aria-label="dexterity save proficiency">Proficient</label>
 								<input type="checkbox" v-model="data.abilities.saves.dex.isProficient" id="dexsaveprof">
 							</p>
 						</LabelledNumberInput>
-						<LabelledNumberInput v-model="data.abilities.saves.con.override" title="Constitution" :max="30" :step="1" :is-clearable="true"> 
+						<LabelledNumberInput v-model="data.abilities.saves.con.override" title="Constitution" :step="1" :is-clearable="true"> 
 							<p>
 								<label for="consaveprof" aria-label="constitution save proficiency">Proficient</label>
 								<input type="checkbox" v-model="data.abilities.saves.con.isProficient" id="consaveprof" />
 							</p>
 						</LabelledNumberInput>
-						<LabelledNumberInput v-model="data.abilities.saves.int.override" title="Intelligence" :max="30" :step="1" :is-clearable="true"> 
+						<LabelledNumberInput v-model="data.abilities.saves.int.override" title="Intelligence" :step="1" :is-clearable="true"> 
 							<p>
 								<label for="intsaveprof" aria-label="intelligence save proficiency">Proficient</label>
 								<input type="checkbox" v-model="data.abilities.saves.int.isProficient" id="intsaveprof" />
 							</p>
 						</LabelledNumberInput>
-						<LabelledNumberInput v-model="data.abilities.saves.wis.override" title="Wisdom"  :max="30" :step="1" :is-clearable="true"> 
+						<LabelledNumberInput v-model="data.abilities.saves.wis.override" title="Wisdom"  :step="1" :is-clearable="true"> 
 							<p>
 								<label for="wissaveprof" aria-label="wisdom save proficiency">Proficient</label>
 								<input type="checkbox" v-model="data.abilities.saves.wis.isProficient" id="wissaveprof" />
 							</p>
 						</LabelledNumberInput>
-						<LabelledNumberInput v-model="data.abilities.saves.cha.override" title="Charisma" :max="30" :step="1" :is-clearable="true"> 
+						<LabelledNumberInput v-model="data.abilities.saves.cha.override" title="Charisma" :step="1" :is-clearable="true"> 
 							<p>
 								<label for="chasaveprof" aria-label="charisma save proficiency">Proficient</label>
 								<input type="checkbox" v-model="data.abilities.saves.cha.isProficient" id="chasaveprof" />
