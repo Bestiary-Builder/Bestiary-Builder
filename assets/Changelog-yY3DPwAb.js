@@ -1,4 +1,4 @@
-import{M as o}from"./index-5Jdbla-E.js";import{B as a}from"./Breadcrumbs-cma25y0A.js";import{d as s,_ as i,r as d,o as n,c as t,a as m,b as c,i as p,F as l}from"./index-Q_fGt7f5.js";const _=`## v1.0.4
+import{M as o}from"./index-5Jdbla-E.js";import{B as a}from"./Breadcrumbs-6l1pFCax.js";import{d as s,_ as i,r as d,o as n,c as t,a as m,b as c,i as p,F as l}from"./index-ofibUTkw.js";const _=`## v1.0.4
 _January 13th, 2024_
 
 - Add dynamic page title for bestiaries and creatures, showing the name of the creature or bestiary reactively.
