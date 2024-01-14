@@ -6,7 +6,6 @@ interface Route {
 	meta: {
 		navbar: boolean;
 		loggedIn: boolean;
-		icon?: string;
 	};
 }
 

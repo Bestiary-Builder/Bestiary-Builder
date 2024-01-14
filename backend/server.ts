@@ -88,7 +88,7 @@ for (let file of dataFiles) {
 }
 
 //Setup database connection
-import {startConnection} from "./database";
+import {getBestiary, getCreature, startConnection} from "./database";
 startConnection();
 
 //Setup http server
@@ -100,10 +100,33 @@ httpServer.listen(5000, () => {
 
 //Load frontend
 import {routes, defaultMetaTags, Route} from "./routes";
-function getFrontendHtml(route: Route) {
+import {ObjectId} from "mongodb";
+async function getFrontendHtml(route: Route, req: Request) {
 	//Get information
-	let title = route.name + " | Bestiary Builder";
-	if (title.startsWith(" | ")) title = "Bestiary Builder";
+	let title = "Bestiary Builder";
+	if (route.name) title = route.name + " | Bestiary Builder";
+	if (route.meta.dynamic) {
+		switch (route.path) {
+			case "/bestiary-viewer/:id":
+				let bId = req.params.id;
+				if (bId.length == 24) {
+					let bestiary = await getBestiary(new ObjectId(bId));
+					if (bestiary) {
+						title = bestiary.name + " | Bestiary Builder";
+					}
+				}
+				break;
+			case "/statblock-editor/:id":
+				let sId = req.params.id;
+				if (sId.length == 24) {
+					let creature = await getCreature(new ObjectId(sId));
+					if (creature) {
+						title = `${creature.stats.description.name.substring(0, 16)} | Bestiary Builder`;
+					}
+				}
+				break;
+		}
+	}
 	//Get index.html
 	let html = null;
 	const filePath = path.join(frontendPath, "index.html");
@@ -115,7 +138,10 @@ function getFrontendHtml(route: Route) {
 		...tags.map((tagDef) => {
 			//Change content of meta tags:
 			if (tagDef.name.includes("title") || tagDef.name.includes("name")) tagDef.content = title;
-			//Create meta element
+			if (tagDef.name.includes("description") && route.meta.description) tagDef.content = route.meta.description;
+			if (tagDef.name.includes("image") && route.meta.image) tagDef.content = route.meta.image;
+			if (tagDef.name.includes("keywords") && route.meta.keywords) tagDef.content = route.meta.keywords;
+			//Return new tag
 			const tag = `<meta ${tagDef.type}="${tagDef.name}" content="${tagDef.content}">`;
 			return tag;
 		})
@@ -126,7 +152,7 @@ function getFrontendHtml(route: Route) {
 for (let route of routes) {
 	app.get(route.path, async (req, res) => {
 		try {
-			let html = getFrontendHtml(route);
+			let html = await getFrontendHtml(route, req);
 			if (html) return res.send(html);
 		} catch (err) {
 			log.error(err);
@@ -149,10 +175,7 @@ importLogic().then(() => {
 	//Everything else is 404
 	app.get("/*", (req, res) => {
 		try {
-			let html = getFrontendHtml({
-				name: "Page not found",
-				path: "/notfound"
-			} as Route);
+			let html = getFrontendHtml(routes.find((r) => r.path == "/notfound")!, req);
 			if (html) return res.send(html);
 		} catch (err) {
 			log.error(err);
