@@ -88,7 +88,7 @@ for (let file of dataFiles) {
 }
 
 //Setup database connection
-import {getBestiary, getCreature, startConnection} from "./database";
+import {getBestiary, getCreature, getUser, startConnection} from "./database";
 startConnection();
 
 //Setup http server
@@ -112,8 +112,16 @@ async function getFrontendHtml(route: Route, req: Request) {
 				if (bId.length == 24) {
 					let bestiary = await getBestiary(new ObjectId(bId));
 					if (bestiary) {
-						title = bestiary.name + " | Bestiary Builder";
-						if (bestiary.description) route.meta.description = bestiary.description;
+						if (bestiary.status == "private") {
+							title = "Private bestiary | Bestiary Builder";
+							route.meta.description = "A bestiary that is unavailable to anyone but it's editors.";
+						} else {
+							title = bestiary.name + " | Bestiary Builder";
+							let description = bestiary.description ? bestiary.description : "No description set.";
+							let owner = await getUser(bestiary.owner);
+							description += (owner ? `\nCreated by ${owner.username}, and contains` : "Contains") + ` ${bestiary.creatures.length} creatures.`;
+							route.meta.description = description;
+						}
 					}
 				}
 				break;
