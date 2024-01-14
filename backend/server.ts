@@ -113,6 +113,7 @@ async function getFrontendHtml(route: Route, req: Request) {
 					let bestiary = await getBestiary(new ObjectId(bId));
 					if (bestiary) {
 						title = bestiary.name + " | Bestiary Builder";
+						if (bestiary.description) route.meta.description = bestiary.description;
 					}
 				}
 				break;
@@ -122,6 +123,7 @@ async function getFrontendHtml(route: Route, req: Request) {
 					let creature = await getCreature(new ObjectId(sId));
 					if (creature) {
 						title = `${creature.stats.description.name.substring(0, 16)} | Bestiary Builder`;
+						if (creature.stats.description.description) route.meta.description = creature.stats.description.description;
 					}
 				}
 				break;
