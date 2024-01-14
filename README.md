@@ -23,7 +23,7 @@ To start editing the project follow these simple steps:
         - Save the client id and client secret, for use later.
         - Go to "OAuth2"->"General" and add "http://localhost:5173/user" to the redirects.
         - Change the constant "clientId" in the file "frontend/main.ts", to match the id for the application.
-5. Rename ".env.template" in the frontend folder to ".env", and change it's values to your own environment
+5. Change the values of ".env" in the frontend folder to your own environment
     - "VITE_DISCORD_ID" should be changed to your Discord OAuth application id.
 6. Rename ".env.template" in the backend folder to ".env", and change it's values to your own environment
     - "frontendPath" should stay unchanged. (Unless you moved the folder around)
