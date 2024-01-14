@@ -1,3 +1,8 @@
+## v1.0.4
+_January 13th, 2024_
+
+- Add dynamic page title for bestiaries and creatures, showing the name of the creature or bestiary reactively.
+
 ## v1.0.3
 _January 12th, 2024_
 
