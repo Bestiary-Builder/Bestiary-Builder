@@ -14,15 +14,16 @@
 	<div class="content">
 		<div class="tile-container" v-if="bestiaries">
 			<TransitionGroup name="popin">
-				<RouterLink class="content-tile bestiary-tile" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" :key="bestiary._id"
+				<RouterLink class="content-tile bestiary-tile" v-for="bestiary, index in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" :key="bestiary._id"
 					:class="{'four-tall': bestiary.owner != userData?._id}" :aria-label="`Open Bestiary ${bestiary.name}`">
 					<div class="tile-header" >
 						<h2>{{ bestiary.name }}</h2>
 					</div>
 					<span class="shared-notice" v-if="bestiary.owner != userData?._id">(shared)</span>
-					<div class="tile-content">
+					<div class="tile-content" :class="{'tile-has-image': bestiaryImages[index]}">
+					<img class="tile-image" v-if="bestiaryImages[index]" :src="bestiaryImages[index]" />		
 						<div class="tags">
-							<span class="tag" v-for="tag in bestiary.tags">{{ tag }}</span>
+							{{ bestiary.tags.join(", ") }}
 						</div>
 						<p>{{ bestiary.description }}</p>
 					</div>
@@ -152,6 +153,18 @@ export default defineComponent({
 		openDeleteModal(bestiary: Bestiary) {
 			this.selectedBestiary = bestiary;
 			this.showDeleteModal  = true;
+		}
+	},
+	computed: {
+		bestiaryImages() : string[] {
+			let bestiaryImages : string[] = []
+			for (let bestiary of this.bestiaries) {
+				const match = bestiary.description.match(/\!\[.*?\]\((.*?)\)/);
+				const firstImageUrl = (match || [])[1];
+				if (match) bestiary.description =  bestiary.description.replace(match[0], '')
+				bestiaryImages.push(firstImageUrl)
+			}
+			return bestiaryImages
 		}
 	}
 });

@@ -48,8 +48,48 @@
 
 	.tile-content {
 		overflow-y: auto;
-	}
 
+		& .tags {
+			font-style: italic;
+		}
+		
+		&.tile-has-image {
+			position: relative;
+			overflow-y: hidden;
+			& .description, .tags {
+				position: absolute;
+				width: 90%;
+				height: 100%;
+				left: 5%;
+				top: 500px;
+				display: inline;
+				z-index: 1;
+				transition: top 300ms ease-out;
+			}
+
+			& .tile-image {
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+				filter: brightness(75%);
+				transition: filter 300ms ease-out;
+			}
+		}
+	}
+	&:hover:has(.tile-has-image) {
+		& .tags {
+			top: 0;
+		}
+
+		& .description {
+			top: 18px;
+			overflow-y: scroll;
+			padding-bottom: 20px;
+		}
+		& .tile-image {
+			filter: brightness(25%)
+		}
+	}
 	.tile-footer {
 		display: grid;
 		grid-template-columns: 1fr 1fr 1fr;
@@ -71,7 +111,7 @@
 	}
 }
 
-a.content-tile:hover,
+a.content-tile:not(:has(.tile-has-image)):hover,
 .create-tile:hover {
 	scale: 1.05;
 }

@@ -321,7 +321,7 @@
 						<h2 class="group-header">{{ descText.replace("New ", "") }}s</h2>
 						<div class="editor-field__container two-wide">
 							<LabelledComponent v-for="(feature, index) in data.features[fType]" :title="feature.name">
-								<div class="feature-button__container">
+								<div class="feature-button__container" :key="index">
 									<FeatureWidget :index="index" :type="fType" :data="data" />
 									<span class="delete-button" @click="deleteFeature(fType, index)" aria-label="Delete feature"><font-awesome-icon :icon="['fas', 'trash']" /></span>
 									<div class="moving-buttons">
@@ -798,7 +798,7 @@ export default defineComponent({
 						{deep: true}
 					);
 				} else {
-					toast.error("Error: " + (result.data as error).error);
+					toast.error("Error: " + (result.data as error).error, {duration: 10000});
 				}
 			});
 			loader.hide();

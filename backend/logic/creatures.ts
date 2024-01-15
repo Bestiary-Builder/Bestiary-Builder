@@ -134,8 +134,15 @@ app.post("/api/creature/:id?/update", requireUser, async (req, res) => {
 			if (["none", "view"].includes(bestiaryPermissionLevel)) return res.status(401).json({error: "You don't have permission to update this creature."});
 			//Remove bad words
 			if (bestiary.status != "private") {
-				if (badwords.check(data.stats.description.name)) return res.status(400).json({error: "Creature name includes blocked words or phrases. Remove the badwords or make the bestiary private."});
-				if (badwords.check(data.stats.description.description)) return res.status(400).json({error: "Creature description includes blocked words or phrases. Remove the badwords or make the bestiary private."});
+				let usedBadwords : string[] = []
+				badwords.filter(data.stats.description.name, badword => {usedBadwords.push(badword)})
+				if (usedBadwords.length > 0) return res.status(400).json({error: `Creature name includes blocked words or phrases. Remove the badwords or make the bestiary private. Matched: ${usedBadwords.join(", ")}. If you think this was a mistake, please file a bug report.`});
+				
+				usedBadwords = []
+				badwords.filter(data.stats.description.description, badword => {usedBadwords.push(badword)})
+				if (usedBadwords.length > 0) {
+					return res.status(400).json({error: `Creature description includes blocked words or phrases. Remove the badwords or make the bestiary private. Matched: ${usedBadwords.join(", ")}. If you think this was a mistake, please file a bug report.`});
+				}
 			}
 			//Update creature
 			let updatedId = await updateCreature(data, _id);
