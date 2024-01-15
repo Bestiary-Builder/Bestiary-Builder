@@ -1,5 +1,4 @@
-import{M as a}from"./index-5Jdbla-E.js";import{B as n}from"./Breadcrumbs-6l1pFCax.js";import{d as i,_ as s,r as c,o as e,c as o,a as p,b as m,i as h,F as d}from"./index-ofibUTkw.js";const l=`
-## Importing a Bestiary from CritterDB
+import{M as a}from"./index-5Jdbla-E.js";import{B as n}from"./Breadcrumbs-QV_0n8bB.js";import{d as i,_ as s,r as p,o as e,c as o,a as c,b as d,i as l,F as h}from"./index-8o-dEuHt.js";const m=`## Importing a Bestiary from CritterDB
 
 It is possible to import a bestiary from [CritterDB](https://critterdb.com):
 
@@ -16,7 +15,7 @@ It is possible to import a bestiary from [CritterDB](https://critterdb.com):
 2. Since CritterDB does not have fields for bonus actions, mythic actions, lair actions, and regional effects, they will be imported as the action type you set on CritterDB
 3. It will generate automation for attacks that did not already have automation set through the <code>\\<avrae hidden\\></code> tag. However, this automation might be incomplete for more complicated attacks, such as attacks that apply an effect on hit
 
-## Importing a creature from 5e.tools
+## Importing a Creature from 5e.tools
 
 It is possible to import a single creature from [5etools](https://5e.tools), to make it easier to create your own:
 
@@ -40,7 +39,7 @@ It is possible to copy creatures or bestiaries from within Bestiary Builder by e
 
 Press the Export button at the top right of the page. You can choose to copy it to your clipboard or export as a file if it is a bestiary
 
-### Importing a creature
+### Importing a Creature
 
 1. Create a creature and open the Statblock Editor.
 2. Press Import at the bottom of the Editor and paste the copied JSOn into the Bestiary Builder input field
@@ -51,4 +50,7 @@ Press the Export button at the top right of the page. You can choose to copy it 
 1. Create a new [Bestiary](/my-bestiaries) (or edit an existing one)
 2. Press the Import button and paste the copied JSON into the Bestiary Builder input field
 3. Press Import again. It will start importing the creatures, which might take a while for larger bestiaries.
-`,u=a({html:!0,linkify:!0,typographer:!0}),y=i({data(){return{content:u.render(l)}},components:{Breadcrumbs:n}}),f={class:"content markdown less-wide"},b=["innerHTML"];function g(t,B,I,w,C,k){const r=c("Breadcrumbs");return e(),o(d,null,[p(r,{routes:[{path:"",text:"Help",isCurrent:!0}],isLessWide:!0}),m("div",f,[t.content?(e(),o("div",{key:0,innerHTML:t.content},null,8,b)):h("",!0)])],64)}const x=s(y,[["render",g]]);export{x as default};
+
+## Markdown Support
+Bestiary, Creature, and Feature descriptions support [Markdown Syntax](https://www.markdownguide.org/basic-syntax/), which will also import into Avrae that way usually. 
+A special case is made for Bestiary descriptions, where the first image will be displayed on the card in the Public, Personal, and Bookmarked bestiary list.`,u=a({html:!0,linkify:!0,typographer:!0}),y=i({data(){return{content:u.render(m)}},components:{Breadcrumbs:n}}),b={class:"content markdown less-wide"},f=["innerHTML"];function g(t,w,B,C,I,k){const r=p("Breadcrumbs");return e(),o(h,null,[c(r,{routes:[{path:"",text:"Help",isCurrent:!0}],isLessWide:!0}),d("div",b,[t.content?(e(),o("div",{key:0,innerHTML:t.content},null,8,f)):l("",!0)])],64)}const x=s(y,[["render",g]]);export{x as default};
