@@ -319,26 +319,37 @@
 				<div class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-5"  id="tabpanel-5">
 					<div v-for="(descText, fType) in featureGenerator">
 						<h2 class="group-header">{{ descText.replace("New ", "") }}s</h2>
-						<div class="editor-field__container two-wide">
-							<LabelledComponent v-for="(feature, index) in data.features[fType]" :title="feature.name">
-								<div class="feature-button__container" :key="index">
-									<FeatureWidget :index="index" :type="fType" :data="data" />
-									<span class="delete-button" @click="deleteFeature(fType, index)" aria-label="Delete feature"><font-awesome-icon :icon="['fas', 'trash']" /></span>
-									<div class="moving-buttons">
-										<span @click="moveFeature(true, fType, index)">▲</span>
-										<span @click="moveFeature(false, fType, index)">▼</span>
-									</div>
-								</div>
-							</LabelledComponent>
-							<LabelledComponent :title="descText">
-								<button class="btn" @click="createNewFeature(fType)" :id="descText.toLowerCase().replaceAll(' ', '')">Create</button>
-							</LabelledComponent>
+							<draggable
+								:list="data.features[fType]"
+								group="features"
+								:itemKey="getDraggableKey()"
+								handle=".handle"
+								class="editor-field__container two-wide"
+								:animation="150"
+							>
+								<template #item="{element, index}">
+									<LabelledComponent :title="element.name">
+										<div class="feature-button__container" :key="index">
+											<font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle" />											
+											<FeatureWidget :index="index" :type="fType" :data="data" />
+											<span class="delete-button" @click="deleteFeature(fType, index)" aria-label="Delete feature"><font-awesome-icon :icon="['fas', 'trash']" /></span>
+										</div>
+									</LabelledComponent>
+								</template>
+								<template #footer>
+									<LabelledComponent :title="descText">
+										<button class="btn" @click="createNewFeature(fType)" :id="descText.toLowerCase().replaceAll(' ', '')">Create</button>
+									</LabelledComponent>
 
-							<LabelledComponent :title="capitalizeFirstLetter(fType) + ' Header'">
-								<textarea v-model="data.misc.featureHeaderTexts[fType]" :id="(fType + ' Header').toLowerCase().replaceAll(' ', '')"/>
-							</LabelledComponent>
-							
-							<LabelledNumberInput v-model="data.misc.legActionsPerRound" v-if="fType == 'legendary' && data.features[fType].length > 0" title="Legendary Actions per round" :min="0" :step="1" />
+									<LabelledComponent :title="capitalizeFirstLetter(fType) + ' Header'">
+										<textarea v-model="data.misc.featureHeaderTexts[fType]" :id="(fType + ' Header').toLowerCase().replaceAll(' ', '')"/>
+									</LabelledComponent>
+									
+									<LabelledNumberInput v-model="data.misc.legActionsPerRound" v-if="fType == 'legendary' && data.features[fType].length > 0" title="Legendary Actions per round" :min="0" :step="1" />
+								</template>
+							</draggable>
+						<div class="two-wide editor-field__container">
+
 						</div>
 						<hr v-if="fType !== 'regional'" />
 					</div>
@@ -479,6 +490,7 @@ import StatblockRenderer from "../components/StatblockRenderer.vue";
 import Breadcrumbs from "../components/Breadcrumbs.vue";
 import LabelledNumberInput from "@/components/LabelledNumberInput.vue";
 import LabelledComponent from "@/components/LabelledComponent.vue";
+import draggable from "vuedraggable";
 
 import {defineComponent} from "vue";
 
@@ -497,7 +509,8 @@ export default defineComponent({
 		Breadcrumbs,
 		LabelledNumberInput,
 		LabelledComponent,
-		Modal
+		Modal,
+		draggable
 	},
 	data() {
 		return {
@@ -582,10 +595,15 @@ export default defineComponent({
 			],
 			showImportModal: false,
 			showSpellModal: false,
-			capitalizeFirstLetter
+			capitalizeFirstLetter,
+			draggableKeyIndex: 0
 		};
 	},
 	methods: {
+		getDraggableKey() : string {
+			this.draggableKeyIndex + 1
+			return this.draggableKeyIndex.toString()
+		},
 		exportStatblock(): void {
 			navigator.clipboard.writeText(JSON.stringify(this.data, null, 2));
 			toast.info("Exported this statblock to your clipboard.");
@@ -669,20 +687,6 @@ export default defineComponent({
 				event.preventDefault()
 				this.showSlides(moveToSlide)
 			}
-		},
-		moveFeature(isUp: boolean, type: "features" | "actions" | "bonus" | "reactions" | "legendary" | "mythic" | "lair" | "regional", index: number): void {
-			// isUp is true if they want to move it higher in the statblock, e.g. earlier in the array
-			let features = this.data.features[type];
-			if (index == 0 && isUp) return;
-			if (index == features.length - 1 && !isUp) return;
-
-			let toSwapIndex = index;
-			if (isUp) toSwapIndex--;
-			else toSwapIndex++;
-
-			var b = features[toSwapIndex];
-			features[toSwapIndex] = features[index];
-			features[index] = b;
 		},
 		changeCR(isIncrease: boolean): void {
 			let cr = this.data.description.cr;
@@ -791,7 +795,7 @@ export default defineComponent({
 					// watch data only once, as traversing the object deeply is expensive.
 					const unwatch = this.$watch(
 						"data",
-						(newValue, oldValue) => {
+						() => {
 							this.madeChanges = true;
 							unwatch();
 						},
@@ -1190,6 +1194,17 @@ export default defineComponent({
 		&.confirm-button {
 			background-color: var(--color-success);
 		}
+	}
+}
+
+.handle {
+	float: left;
+	padding-top: 15px;
+	padding-bottom: 8px;
+	cursor: grab;
+
+	&:active {
+		cursor: grabbing;
 	}
 }
 </style>
