@@ -1,3 +1,11 @@
+## v.1.0.5
+_January 15th, 2024_
+
+- Add dynamic link descriptions for bestiaries, so that the bestiaries description, creator, and creature count will be linked on other sides.
+- Add support for bestiary images (see [Help](/help)).
+- Fix: sleight of hand does now display properly on a statblock.
+- Make banned word filter display which word(s) were matched.
+
 ## v1.0.4
 _January 13th, 2024_
 

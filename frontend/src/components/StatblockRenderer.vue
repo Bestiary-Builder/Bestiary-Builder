@@ -371,7 +371,7 @@ export default defineComponent({
 
                 let bonus = 0
                 for (let stat in SKILLS_BY_STAT) {
-                    if (SKILLS_BY_STAT[stat].includes(skill.skillName.replace(" ", "").toLowerCase())) {
+                    if (SKILLS_BY_STAT[stat].includes(skill.skillName.replaceAll(" ", "").toLowerCase())) {
                         if (skill.override && skill.override !== null) {
                             let over = skill.override
                             output.push(`${skill.skillName} ${over ?? 0 >= 0 ? '+' : ''}${over}`)

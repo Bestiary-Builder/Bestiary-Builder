@@ -127,7 +127,7 @@
 							</div>
 						</div>
 					</TransitionGroup>
-					<div class="create-tile" v-if="isOwner">
+					<div class="create-tile" v-if="isOwner || isEditor">
 						<span role="button" class="create-text" @click="createCreature()">add creature</span>
 					</div>
 				</div>

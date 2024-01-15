@@ -44,12 +44,6 @@ app.use(
 			},
 			useDefaults: true
 		},
-		crossOriginEmbedderPolicy: {
-			policy: "credentialless"
-		},
-		crossOriginOpenerPolicy: {
-			policy: "unsafe-none"
-		},
 		crossOriginResourcePolicy: {
 			policy: "cross-origin"
 		}
@@ -94,7 +88,7 @@ for (let file of dataFiles) {
 }
 
 //Setup database connection
-import {startConnection} from "./database";
+import {getBestiary, getCreature, getUser, startConnection} from "./database";
 startConnection();
 
 //Setup http server
@@ -104,7 +98,83 @@ httpServer.listen(5000, () => {
 	log.info("Server listening to port 5000");
 });
 
-//Load logic
+//Load frontend
+import {routes, defaultMetaTags, Route} from "./routes";
+import {ObjectId} from "mongodb";
+async function getFrontendHtml(route: Route, req: Request) {
+	//Get information
+	let title = "Bestiary Builder";
+	if (route.name) title = route.name + " | Bestiary Builder";
+	if (route.meta.dynamic) {
+		switch (route.path) {
+			case "/bestiary-viewer/:id":
+				let bId = req.params.id;
+				if (bId.length == 24) {
+					let bestiary = await getBestiary(new ObjectId(bId));
+					if (bestiary) {
+						if (bestiary.status == "private") {
+							title = "Private bestiary | Bestiary Builder";
+							route.meta.description = "A bestiary that is unavailable to anyone but its editors.";
+						} else {
+							title = bestiary.name + " | Bestiary Builder";
+							let description = bestiary.description ? bestiary.description : "No description set.";
+							let owner = await getUser(bestiary.owner);
+							description += `\n${bestiary.creatures.length} creature${bestiary.creatures.length > 1 ? "s" : ""}${owner ? ` created by ${owner.username}` : ""}.`
+							route.meta.description = description;
+
+						}
+					}
+				}
+				break;
+			// case "/statblock-editor/:id":
+			// 	let sId = req.params.id;
+			// 	if (sId.length == 24) {
+			// 		let creature = await getCreature(new ObjectId(sId));
+			// 		if (creature) {
+			// 			title = `${creature.stats.description.name.substring(0, 16)} | Bestiary Builder`;
+			// 			if (creature.stats.description.description) route.meta.description = creature.stats.description.description;
+			// 		}
+			// 	}
+			// 	break;
+		}
+	}
+	//Get index.html
+	let html = null;
+	const filePath = path.join(frontendPath, "index.html");
+	html = fs.readFileSync(filePath, {encoding: "utf-8"});
+	//Create metatags
+	let tags = defaultMetaTags;
+	let metatags = [
+		`<title>${title}</title>`,
+		...tags.map((tagDef) => {
+			//Change content of meta tags:
+			if (tagDef.name.includes("title") || tagDef.name.includes("name")) tagDef.content = title;
+			if (tagDef.name.includes("description") && route.meta.description) tagDef.content = route.meta.description;
+			if (tagDef.name.includes("image") && route.meta.image) tagDef.content = route.meta.image;
+			if (tagDef.name.includes("keywords") && route.meta.keywords) tagDef.content = route.meta.keywords;
+			//Return new tag
+			const tag = `<meta ${tagDef.type}="${tagDef.name}" content="${tagDef.content}">`;
+			return tag;
+		})
+	];
+	//Return index.html with tags
+	return html.replace("<!-- meta tags -->", metatags.join("\n		"));
+}
+for (let route of routes) {
+	app.get(route.path, async (req, res) => {
+		try {
+			let html = await getFrontendHtml(route, req);
+			if (html) return res.send(html);
+		} catch (err) {
+			log.error(err);
+			res.status(500).send("Internal Server Error");
+		}
+	});
+}
+//Static frontend files
+app.use(express.static(frontendPath));
+
+//Logic files
 const logicPath = path.join(__dirname, "logic");
 const logicFiles = fs.readdirSync(logicPath);
 async function importLogic() {
@@ -113,12 +183,17 @@ async function importLogic() {
 	}
 }
 importLogic().then(() => {
-	//Redirect everything else to frontend
-	app.use("/*", express.static(frontendPath));
+	//Everything else is 404
+	app.get("/*", (req, res) => {
+		try {
+			let html = getFrontendHtml(routes.find((r) => r.path == "/notfound")!, req);
+			if (html) return res.send(html);
+		} catch (err) {
+			log.error(err);
+			res.status(500).send("Internal Server Error");
+		}
+	});
 });
-
-//Static files
-app.use(express.static(frontendPath));
 
 //Error handling
 function errorHandler(err: Error, req: Request, res: Response, next: NextFunction) {

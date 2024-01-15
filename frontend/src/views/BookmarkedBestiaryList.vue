@@ -2,11 +2,12 @@
 <div class="content">
 	<div class="tile-container" v-if="bestiaries.length > 0">
 		<TransitionGroup name="popin" >
-			<RouterLink class="content-tile bestiary-tile" v-for="bestiary in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" v-if="bestiaries">
+			<RouterLink class="content-tile bestiary-tile" v-for="bestiary, index in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" v-if="bestiaries">
 				<h2 class="tile-header">{{ bestiary.name }}</h2>
-				<div class="tile-content">
+				<div class="tile-content" :class="{'tile-has-image': bestiaryImages[index]}">
+					<img class="tile-image" v-if="bestiaryImages[index]" :src="bestiaryImages[index]" />					
 					<div class="tags">
-						<span class="tag" v-for="tag in bestiary.tags">{{ tag }}</span>
+						{{ bestiary.tags.join(", ") }}
 					</div>
 					<p class="description">{{ bestiary.description }}</p>
 				</div>
@@ -60,6 +61,18 @@ export default defineComponent({
 				}
 			});
 			///console.log(this.bestiaries);
+		}
+	},
+	computed: {
+		bestiaryImages() : string[] {
+			let bestiaryImages : string[] = []
+			for (let bestiary of this.bestiaries) {
+				const match = bestiary.description.match(/\!\[.*?\]\((.*?)\)/);
+				const firstImageUrl = (match || [])[1];
+				if (match) bestiary.description =  bestiary.description.replace(match[0], '')
+				bestiaryImages.push(firstImageUrl)
+			}
+			return bestiaryImages
 		}
 	}
 });
