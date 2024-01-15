@@ -323,9 +323,9 @@
 								<template #item="{element, index}">
 									<LabelledComponent :title="element.name">
 										<div class="feature-button__container" :key="index">
-											<font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle" />											
 											<FeatureWidget :index="index" :type="fType" :data="data" />
 											<span class="delete-button" @click="deleteFeature(fType, index)" aria-label="Delete feature"><font-awesome-icon :icon="['fas', 'trash']" /></span>
+											<font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle" />											
 										</div>
 									</LabelledComponent>
 								</template>
@@ -1089,7 +1089,7 @@ export default defineComponent({
 	justify-content: space-between;
 
 	.delete-button {
-		translate: 0 11px;
+		translate: 0 14.5px;
 		transition: scale 0.3s ease;
 		cursor: pointer;
 		display: flex;
@@ -1151,6 +1151,7 @@ export default defineComponent({
 	padding-top: 15px;
 	padding-bottom: 8px;
 	cursor: grab;
+	color: orangered;
 
 	&:active {
 		cursor: grabbing;
