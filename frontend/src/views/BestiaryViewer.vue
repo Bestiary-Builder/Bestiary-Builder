@@ -48,8 +48,26 @@
 						</div>
 						</LabelledComponent>
 						<div class="two-wide">
-							<LabelledNumberInput v-model="searchOptions.minCr" :min="0" :max="30" title="Minimum CR" :step="1"/>
-							<LabelledNumberInput v-model="searchOptions.maxCr" :min="0" :max="30" title="Maximum CR" :step="1"/>
+							<div class="flow-vertically">
+								<label class="editor-field__title" for="challengerating"><span class="text"> Minimum CR</span></label>
+								<div class="quantity">
+									<input type="number" v-model="searchOptions.minCr" min="0" max="30" inputmode="numeric" id="minimumcr" />
+									<div class="quantity-nav">
+										<div class="quantity-button quantity-up" @click="changeCR(true, true)" aria-label="Increase minimum CR">+</div>
+										<div class="quantity-button quantity-down" @click="changeCR(false, true)" aria-label="Decrease maximum CR">-</div>
+									</div>
+								</div>
+							</div>
+							<div class="flow-vertically">
+								<label class="editor-field__title" for="challengerating"><span class="text"> Maximum CR</span></label>
+								<div class="quantity">
+									<input type="number" v-model="searchOptions.maxCr" min="0" max="30" inputmode="numeric" id="maximumcr" />
+									<div class="quantity-nav">
+										<div class="quantity-button quantity-up" @click="changeCR(true, false)" aria-label="Increase minimum CR">+</div>
+										<div class="quantity-button quantity-down" @click="changeCR(false, false)" aria-label="Decrease maximum CR">-</div>
+									</div>
+								</div>
+							</div>
 						</div>
 						<span class="warning" v-if="searchOptions.minCr > searchOptions.maxCr" style="text-align: center;">
 							Min is bigger than max
@@ -700,7 +718,26 @@ export default defineComponent({
 		},
 		setSelectedCreature(creature: any) {
 			this.lastHoveredCreature = creature;
-		}
+		},
+		changeCR(isIncrease: boolean, isMinimumOption : boolean): void {
+			let cr;
+			if (isMinimumOption) cr = this.searchOptions.minCr
+			else cr  = this.searchOptions.maxCr
+			if (cr == 0 && isIncrease) cr = 0.125;
+			else if (cr == 0.125 && isIncrease) cr = 0.25;
+			else if (cr == 0.25 && isIncrease) cr = 0.5;
+			else if (cr == 0.5 && isIncrease) cr = 1;
+			else if (cr == 0.125 && !isIncrease) cr = 0;
+			else if (cr == 0.25 && !isIncrease) cr = 0.125;
+			else if (cr == 0.5 && !isIncrease) cr = 0.25;
+			else if (cr == 1 && !isIncrease) cr = 0.5;
+			else {
+				if (isIncrease) cr = Math.min(30, cr + 1);
+				else cr = Math.max(0, cr - 1);
+			}
+			if (isMinimumOption) this.searchOptions.minCr = cr
+			else this.searchOptions.maxCr = cr;
+		},
 	},
 	watch: {
 		lastClickedCreature(): void {
@@ -730,6 +767,8 @@ export default defineComponent({
 </script>
 
 <style scoped lang="less">
+@import url("@/assets/number-input.less");
+
 .flow-vertically {
 	display: flex;
 	flex-direction: column;
