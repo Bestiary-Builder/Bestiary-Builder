@@ -105,6 +105,7 @@ async function getFrontendHtml(route: Route, req: Request) {
 	//Get information
 	let title = "Bestiary Builder";
 	if (route.name) title = route.name + " | Bestiary Builder";
+	let description = route.meta.description;
 	if (route.meta.dynamic) {
 		switch (route.path) {
 			case "/bestiary-viewer/:id":
@@ -117,11 +118,10 @@ async function getFrontendHtml(route: Route, req: Request) {
 							route.meta.description = "A bestiary that is unavailable to anyone but its editors.";
 						} else {
 							title = bestiary.name + " | Bestiary Builder";
-							let description = bestiary.description ? bestiary.description : "No description set.";
+							let desc = bestiary.description ? bestiary.description : "No description set.";
 							let owner = await getUser(bestiary.owner);
-							description += `\n${bestiary.creatures.length} creature${bestiary.creatures.length > 1 ? "s" : ""}${owner ? ` created by ${owner.username}` : ""}.`
-							route.meta.description = description;
-
+							desc += `\n${bestiary.creatures.length} creature${bestiary.creatures.length > 1 ? "s" : ""}${owner ? ` created by ${owner.username}` : ""}.`;
+							description = desc;
 						}
 					}
 				}
@@ -149,7 +149,7 @@ async function getFrontendHtml(route: Route, req: Request) {
 		...tags.map((tagDef) => {
 			//Change content of meta tags:
 			if (tagDef.name.includes("title") || tagDef.name.includes("name")) tagDef.content = title;
-			if (tagDef.name.includes("description") && route.meta.description) tagDef.content = route.meta.description;
+			if (tagDef.name.includes("description") && description) tagDef.content = description;
 			if (tagDef.name.includes("image") && route.meta.image) tagDef.content = route.meta.image;
 			if (tagDef.name.includes("keywords") && route.meta.keywords) tagDef.content = route.meta.keywords;
 			//Return new tag
