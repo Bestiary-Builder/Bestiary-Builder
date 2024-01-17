@@ -56,18 +56,17 @@ export default defineComponent({
 		//Login handling:
 		let search = new URLSearchParams(window.location.search);
 		let code = search.get("code");
-		if (code) {
+		if (code && !(await user)) {
 			await fetch("/api/login/" + code).then(async (response) => {
 				let result = await handleApiResponse(response);
 				if (result.success) {
 					toast.success("Succesfully logged in");
-					this.$router.push("/user");
 					window.location.href = getLoginRoute();
 				} else {
 					toast.error((result.data as error).error);
 					this.$router.push("/user");
 				}
-			}); 
+			});
 		} else {
 			this.user = await user;
 			///console.log(this.user);
