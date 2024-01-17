@@ -1,4 +1,4 @@
-import{M as a}from"./index-5Jdbla-E.js";import{B as o}from"./Breadcrumbs-HRgXI-f7.js";import{d as s,_ as i,r as d,o as n,c as t,a as c,b as m,i as l,F as p}from"./index-b3t6WQ4A.js";const u=`## v.1.0.7
+import{M as a}from"./index-5Jdbla-E.js";import{B as o}from"./Breadcrumbs-QG3weiGc.js";import{d as s,_ as i,r as d,o as n,c as t,a as c,b as m,i as l,F as p}from"./index-EySs-aa5.js";const u=`## v.1.0.7
 _January 17th, 2024_
 
 - Fix meta tag description showing unrelated bestiary information.
