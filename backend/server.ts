@@ -136,6 +136,8 @@ async function getFrontendHtml(route: Route, req: Request) {
 			// 		}
 			// 	}
 			// 	break;
+			default:
+				break;
 		}
 	}
 	//Get index.html
@@ -143,19 +145,21 @@ async function getFrontendHtml(route: Route, req: Request) {
 	const filePath = path.join(frontendPath, "index.html");
 	html = fs.readFileSync(filePath, {encoding: "utf-8"});
 	//Create metatags
-	let tags = defaultMetaTags;
+	let tags = [...defaultMetaTags];
 	let metatags = [
 		`<title>${title}</title>`,
-		...tags.map((tagDef) => {
-			//Change content of meta tags:
-			if (tagDef.name.includes("title") || tagDef.name.includes("name")) tagDef.content = title;
-			if (tagDef.name.includes("description") && description) tagDef.content = description;
-			if (tagDef.name.includes("image") && route.meta.image) tagDef.content = route.meta.image;
-			if (tagDef.name.includes("keywords") && route.meta.keywords) tagDef.content = route.meta.keywords;
-			//Return new tag
-			const tag = `<meta ${tagDef.type}="${tagDef.name}" content="${tagDef.content}">`;
-			return tag;
-		})
+		...tags
+			.filter(() => true)
+			.map((tagDef) => {
+				//Change content of meta tags:
+				if (tagDef.name.includes("title") || tagDef.name.includes("name")) tagDef.content = title;
+				if (tagDef.name.includes("description") && description) tagDef.content = description;
+				if (tagDef.name.includes("image") && route.meta.image) tagDef.content = route.meta.image;
+				if (tagDef.name.includes("keywords") && route.meta.keywords) tagDef.content = route.meta.keywords;
+				//Return new tag
+				const tag = `<meta ${tagDef.type}="${tagDef.name}" content="${tagDef.content}">`;
+				return tag;
+			})
 	];
 	//Return index.html with tags
 	return html.replace("<!-- meta tags -->", metatags.join("\n		"));
