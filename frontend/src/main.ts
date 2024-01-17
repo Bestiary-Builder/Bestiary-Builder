@@ -129,7 +129,8 @@ import {
 	faFilter,
 	faMagnifyingGlass,
 	faTag,
-	faArrowUpWideShort
+	faArrowUpWideShort,
+	faGripVertical
 } from "@fortawesome/free-solid-svg-icons";
 import {faTwitter, faFacebook, faDiscord, faInstagram, faPatreon, faGithub} from "@fortawesome/free-brands-svg-icons";
 library.add(
@@ -167,7 +168,8 @@ library.add(
 	faFilter,
 	faMagnifyingGlass,
 	faTag,
-	faArrowUpWideShort
+	faArrowUpWideShort,
+	faGripVertical
 );
 
 app.component("font-awesome-icon", FontAwesomeIcon);

@@ -1,3 +1,11 @@
+## v.1.0.6
+_January 16th, 2024_
+
+- Make features reordable by dragging
+- Make cr buttons in bestiary viewer also increment through 1/8-1/4-1/2
+- Resolve some mobile styling issues
+- Fix some minor bugs here and there
+
 ## v.1.0.5
 _January 15th, 2024_
 

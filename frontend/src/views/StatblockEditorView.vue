@@ -139,7 +139,6 @@
 							<v-select v-model="data.core.size" :options="['Tiny', 'Small', 'Medium', 'Large', 'Huge', 'Gargantuan']" :taggable="true" :pushTags="true" inputId="size" />
 						</LabelledComponent>
 					</div>
-					<hr />
 					<h2 class="group-header">Speed</h2>
 					<div class="editor-field__container three-wide">
 						<LabelledNumberInput v-model="data.core.speed.walk" title="Walk speed" />
@@ -151,7 +150,6 @@
 						<LabelledNumberInput v-model="data.core.speed.burrow" title="Burrow speed" />
 						<LabelledNumberInput v-model="data.core.speed.climb" title="Climb speed" />
 					</div>
-					<hr />
 					<h2 class="group-header">Senses</h2>
 					<div class="editor-field__container three-wide">
 						<LabelledNumberInput v-model="data.core.senses.darkvision" title="Darkvision" />
@@ -163,7 +161,6 @@
 						<LabelledNumberInput v-model="data.core.senses.tremorsense" title="Tremorsense" />
 						<LabelledNumberInput v-model="data.core.senses.passivePerceptionOverride" title="Passive perc ovverride" :step=1 :is-clearable="true" />
 					</div>
-					<hr />
 					<div class="editor-field__container two-wide">
 						<LabelledComponent title="Languages">
 							<v-select placeholder="Select a Language or type one" v-model="data.core.languages" multiple :deselectFromDropdown="true" :closeOnSelect="false" :options="languages" :taggable="true" :pushTags="true" inputId="languages" />
@@ -182,7 +179,6 @@
 						<LabelledNumberInput v-model="data.abilities.stats.wis" title="Wisdom"       :step="1"/>
 						<LabelledNumberInput v-model="data.abilities.stats.cha" title="Charisma"     :step="1"/>
 					</div>
-					<hr />
 					<h2 class="group-header">Saving Throws</h2>
 					<div class="editor-field__container three-wide">
 						<LabelledNumberInput v-model="data.abilities.saves.str.override" title="Strength" :step="1" :is-clearable="true"> 
@@ -222,7 +218,6 @@
 							</p>
 						</LabelledNumberInput>
 					</div>
-					<hr />
 					<h2 class="group-header">Skills</h2>
 					<div class="editor-field__container two-wide">
 						<div v-for="(skill, index) in data.abilities.skills" class="flow-vertically">
@@ -253,14 +248,12 @@
 						<LabelledNumberInput v-model="data.defenses.hp.numOfHitDie" title="Hit Die Number" :step="1"/>
 						<LabelledNumberInput v-model="data.defenses.hp.override" title="HP Override" :step="1" :is-clearable="true"/>
 					</div>
-					<hr />
 					<div class="editor-field__container two-wide">
 						<LabelledNumberInput v-model="data.defenses.ac.ac" title="Armor Class" :step="1"/>
 						<LabelledComponent title="Armor Class source">
 							<input type="text" v-model="data.defenses.ac.acSource" id="armorclasssource"/>
 						</LabelledComponent>
 					</div>
-					<hr />
 					<div class="editor-field__container two-wide">
 						<LabelledComponent title="Vulnerabilities">
 							<v-select
@@ -319,28 +312,35 @@
 				<div class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-5"  id="tabpanel-5">
 					<div v-for="(descText, fType) in featureGenerator">
 						<h2 class="group-header">{{ descText.replace("New ", "") }}s</h2>
-						<div class="editor-field__container two-wide">
-							<LabelledComponent v-for="(feature, index) in data.features[fType]" :title="feature.name">
-								<div class="feature-button__container" :key="index">
-									<FeatureWidget :index="index" :type="fType" :data="data" />
-									<span class="delete-button" @click="deleteFeature(fType, index)" aria-label="Delete feature"><font-awesome-icon :icon="['fas', 'trash']" /></span>
-									<div class="moving-buttons">
-										<span @click="moveFeature(true, fType, index)">▲</span>
-										<span @click="moveFeature(false, fType, index)">▼</span>
-									</div>
-								</div>
-							</LabelledComponent>
-							<LabelledComponent :title="descText">
-								<button class="btn" @click="createNewFeature(fType)" :id="descText.toLowerCase().replaceAll(' ', '')">Create</button>
-							</LabelledComponent>
+							<draggable
+								:list="data.features[fType]"
+								group="features"
+								:itemKey="getDraggableKey()"
+								handle=".handle"
+								class="editor-field__container two-wide"
+								:animation="150"
+							>
+								<template #item="{element, index}">
+									<LabelledComponent :title="element.name">
+										<div class="feature-button__container" :key="index">
+											<FeatureWidget :index="index" :type="fType" :data="data" />
+											<span class="delete-button" @click="deleteFeature(fType, index)" aria-label="Delete feature"><font-awesome-icon :icon="['fas', 'trash']" /></span>
+											<font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle" />											
+										</div>
+									</LabelledComponent>
+								</template>
+								<template #footer>
+									<LabelledComponent :title="descText">
+										<button class="btn" @click="createNewFeature(fType)" :id="descText.toLowerCase().replaceAll(' ', '')">Create</button>
+									</LabelledComponent>
 
-							<LabelledComponent :title="capitalizeFirstLetter(fType) + ' Header'">
-								<textarea v-model="data.misc.featureHeaderTexts[fType]" :id="(fType + ' Header').toLowerCase().replaceAll(' ', '')"/>
-							</LabelledComponent>
-							
-							<LabelledNumberInput v-model="data.misc.legActionsPerRound" v-if="fType == 'legendary' && data.features[fType].length > 0" title="Legendary Actions per round" :min="0" :step="1" />
-						</div>
-						<hr v-if="fType !== 'regional'" />
+									<LabelledComponent :title="capitalizeFirstLetter(fType) + ' Header'">
+										<textarea v-model="data.misc.featureHeaderTexts[fType]" :id="(fType + ' Header').toLowerCase().replaceAll(' ', '')"/>
+									</LabelledComponent>
+									
+									<LabelledNumberInput v-model="data.misc.legActionsPerRound" v-if="fType == 'legendary' && data.features[fType].length > 0" title="Legendary Actions per round" :min="0" :step="1" />
+								</template>
+							</draggable>
 					</div>
 				</div>
 				<div class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-6"  id="tabpanel-6">
@@ -384,8 +384,6 @@
 							<button class="btn" @click="showSpellModal = true" id="editspecificspells">Edit cast level/add comment</button>
 						</LabelledComponent>
 					</div>
-
-					<hr />
 					<h2 class="group-header">Class spellcasting</h2>
 					<div class="editor-field__container two-wide">
 						<LabelledComponent title="Class">
@@ -398,7 +396,6 @@
 						<LabelledNumberInput v-model="data.spellcasting.casterSpells.spellDcOverride" title="DC override" :step="1" :is-clearable="true"/>
 						<LabelledNumberInput v-model="data.spellcasting.casterSpells.spellBonusOverride" title="Attack bonus override" :step="1" />
 					</div>
-
 					<div v-if="data.spellcasting.casterSpells.castingClass" class="editor-field__container two-wide">
 						<LabelledComponent title="Cantrips" v-if="!['Ranger', 'Paladin'].includes(data.spellcasting.casterSpells.castingClass)">
 							<v-select v-model="data.spellcasting.casterSpells.spellList[0]" :options="spellList[0]" multiple :deselectFromDropdown="true" :closeOnSelect="false" :taggable="true" :pushTags="true" inputId="cantrips" />
@@ -479,6 +476,7 @@ import StatblockRenderer from "../components/StatblockRenderer.vue";
 import Breadcrumbs from "../components/Breadcrumbs.vue";
 import LabelledNumberInput from "@/components/LabelledNumberInput.vue";
 import LabelledComponent from "@/components/LabelledComponent.vue";
+import draggable from "vuedraggable";
 
 import {defineComponent} from "vue";
 
@@ -497,7 +495,8 @@ export default defineComponent({
 		Breadcrumbs,
 		LabelledNumberInput,
 		LabelledComponent,
-		Modal
+		Modal,
+		draggable
 	},
 	data() {
 		return {
@@ -582,10 +581,15 @@ export default defineComponent({
 			],
 			showImportModal: false,
 			showSpellModal: false,
-			capitalizeFirstLetter
+			capitalizeFirstLetter,
+			draggableKeyIndex: 0
 		};
 	},
 	methods: {
+		getDraggableKey() : string {
+			this.draggableKeyIndex + 1
+			return this.draggableKeyIndex.toString()
+		},
 		exportStatblock(): void {
 			navigator.clipboard.writeText(JSON.stringify(this.data, null, 2));
 			toast.info("Exported this statblock to your clipboard.");
@@ -669,20 +673,6 @@ export default defineComponent({
 				event.preventDefault()
 				this.showSlides(moveToSlide)
 			}
-		},
-		moveFeature(isUp: boolean, type: "features" | "actions" | "bonus" | "reactions" | "legendary" | "mythic" | "lair" | "regional", index: number): void {
-			// isUp is true if they want to move it higher in the statblock, e.g. earlier in the array
-			let features = this.data.features[type];
-			if (index == 0 && isUp) return;
-			if (index == features.length - 1 && !isUp) return;
-
-			let toSwapIndex = index;
-			if (isUp) toSwapIndex--;
-			else toSwapIndex++;
-
-			var b = features[toSwapIndex];
-			features[toSwapIndex] = features[index];
-			features[index] = b;
 		},
 		changeCR(isIncrease: boolean): void {
 			let cr = this.data.description.cr;
@@ -791,7 +781,7 @@ export default defineComponent({
 					// watch data only once, as traversing the object deeply is expensive.
 					const unwatch = this.$watch(
 						"data",
-						(newValue, oldValue) => {
+						() => {
 							this.madeChanges = true;
 							unwatch();
 						},
@@ -1002,10 +992,6 @@ export default defineComponent({
 		border-bottom: 1px solid grey;
 		color: rgb(201, 201, 201);
 		
-		&:focus{
-			border-color: orangered;
-			outline: 2px solid orangered;
-		}
 		&:hover {
 			background-color: var(--color-surface-0);
 			color: white;
@@ -1052,14 +1038,15 @@ export default defineComponent({
 
 		.group-header {
 			text-align: center;
-			margin-bottom: 1rem;
+			margin-bottom: .5rem;
+			border-bottom: 1px solid orangered;
 		}
 
 		.editor-field__container {
 			width: 100%;
 			display: grid;
-			gap: 2rem;
-			margin-bottom: 1.5rem;
+			gap: 1rem 2rem;
+			margin-bottom: 1rem;
 
 			.flow-vertically {
 				display: flex;
@@ -1101,28 +1088,8 @@ export default defineComponent({
 	gap: 0.5rem;
 	justify-content: space-between;
 
-	& .moving-buttons {
-		display: grid;
-		grid-template-rows: 1fr 1fr;
-		cursor: pointer;
-
-		span {
-			border-radius: 50rem;
-			width: 20px;
-			height: 20px;
-			text-align: center;
-			display: inline-block;
-			line-height: 20px;
-			transition: background-color 0.3s ease;
-
-			&:hover {
-				background-color: var(--color-surface-0);
-			}
-		}
-	}
-
 	.delete-button {
-		translate: 0 11px;
+		translate: 0 14.5px;
 		transition: scale 0.3s ease;
 		cursor: pointer;
 		display: flex;
@@ -1179,17 +1146,15 @@ export default defineComponent({
 	margin: 1rem 25%;
 }
 
-.modal-buttons {
-	display: flex;
-	gap: 1rem;
-	justify-content: center;
+.handle {
+	float: left;
+	padding-top: 15px;
+	padding-bottom: 8px;
+	cursor: grab;
+	color: orangered;
 
-	& .btn {
-		font-size: 1.2rem;
-
-		&.confirm-button {
-			background-color: var(--color-success);
-		}
+	&:active {
+		cursor: grabbing;
 	}
 }
 </style>

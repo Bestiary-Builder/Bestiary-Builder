@@ -146,6 +146,9 @@ export default defineComponent({
 	& .current-page {
 		font-weight: bold;
 		font-size: 1.3rem;
+		max-width: 60vw;
+		text-wrap: nowrap;
+		overflow: hidden;
 	}
 }
 
