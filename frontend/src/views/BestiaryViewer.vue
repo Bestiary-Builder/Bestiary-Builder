@@ -811,6 +811,7 @@ export default defineComponent({
 		cursor: pointer;
 		transition: all 1s;
 		transition-timing-function: cubic-bezier(0.06, 0.975, 0.195, 0.985);
+		border-radius: 2px;
 
 		h3 {
 			font-size: 1.5rem;
@@ -913,11 +914,13 @@ export default defineComponent({
 	cursor: unset;
 	margin: 0 0rem 1rem;
 	padding: 1rem;
+	border-radius: 2px;
 	& h2 {
 		text-align: center;
 		text-wrap: nowrap;
 		overflow: hidden;
 		color: white;
+		max-width: 90vw;
 	}
 
 	.description {
@@ -958,6 +961,8 @@ export default defineComponent({
 }
 @media screen and (max-width: 842px) {
 	.header-tile {
+		padding: .5rem;
+
 		.description {
 			font-size: xx-small;
 		}
