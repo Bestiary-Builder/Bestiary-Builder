@@ -96,7 +96,7 @@ export const defaultMetaTags = [
 		type: "property",
 		content: "website"
 	}
-] as metaTag[];
+] as readonly metaTag[];
 
 export const routes = [
 	//Home
