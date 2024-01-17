@@ -115,10 +115,10 @@ async function getFrontendHtml(route: Route, req: Request) {
 					if (bestiary) {
 						if (bestiary.status == "private") {
 							title = "Private bestiary | Bestiary Builder";
-							route.meta.description = "A bestiary that is unavailable to anyone but its editors.";
+							description = "A bestiary that is unavailable to anyone but its editors.";
 						} else {
 							title = bestiary.name + " | Bestiary Builder";
-							let desc = bestiary.description ? bestiary.description : "No description set.";
+							let desc = bestiary.description ?? "No description set.";
 							let owner = await getUser(bestiary.owner);
 							desc += `\n${bestiary.creatures.length} creature${bestiary.creatures.length > 1 ? "s" : ""}${owner ? ` created by ${owner.username}` : ""}.`;
 							description = desc;
@@ -132,7 +132,7 @@ async function getFrontendHtml(route: Route, req: Request) {
 			// 		let creature = await getCreature(new ObjectId(sId));
 			// 		if (creature) {
 			// 			title = `${creature.stats.description.name.substring(0, 16)} | Bestiary Builder`;
-			// 			if (creature.stats.description.description) route.meta.description = creature.stats.description.description;
+			// 			if (creature.stats.description.description) description = creature.stats.description.description;
 			// 		}
 			// 	}
 			// 	break;
