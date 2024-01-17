@@ -122,7 +122,7 @@
         <div class="feature-container"  v-if="data.features.features.length > 0 || showCasting() || showInnateCasting()">
             <p v-if="data.misc.featureHeaderTexts.features"> {{ data.misc.featureHeaderTexts.features }} </p>
             <p v-for="feature in data.features.features">
-                <b> <i>{{ feature.name }} </i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup> </b>
+                <b> <i>{{ feature.name }}.</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup> </b>
                 <span class="feature-container__desc" v-html="sanitizeAndFormat(feature.description)"> </span>
             </p>
 
@@ -177,7 +177,7 @@
             <h3 class="feature-container__title"> Actions </h3>
             <p v-if="data.misc.featureHeaderTexts.actions"> {{ data.misc.featureHeaderTexts.actions }} </p>
             <p v-for="feature in data.features.actions">
-                <b> <i>{{ feature.name }}</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
+                <b> <i>{{ feature.name }}.</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
                 <span class="feature-container__desc" v-html="sanitizeAndFormat(feature.description)"> </span>
             </p>
 
@@ -212,7 +212,7 @@
             <h3 class="feature-container__title"> Bonus Actions </h3>
                 <p v-if="data.misc.featureHeaderTexts.bonus"> {{ data.misc.featureHeaderTexts.bonus }} </p>
                 <p v-for="feature in data.features.bonus">
-                <b> <i>{{ feature.name }}</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
+                <b> <i>{{ feature.name }}.</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
                 <span class="feature-container__desc" v-html="sanitizeAndFormat(feature.description)"> </span>
             </p>
         </div>
@@ -221,7 +221,7 @@
             <h3 class="feature-container__title"> Reactions </h3>
                 <p v-if="data.misc.featureHeaderTexts.reactions"> {{ data.misc.featureHeaderTexts.reactions }} </p>
                 <p v-for="feature in data.features.reactions">
-                <b> <i>{{ feature.name }}</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
+                <b> <i>{{ feature.name }}.</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
                 <span class="feature-container__desc" v-html="sanitizeAndFormat(feature.description)"> </span>
             </p>
         </div>
@@ -230,7 +230,7 @@
             <h3 class="feature-container__title"> Legendary Actions </h3>
                 <p v-if="data.misc.featureHeaderTexts.legendary"> {{ data.misc.featureHeaderTexts.legendary.replace("$NUM$", data.misc.legActionsPerRound.toString()) }} </p>
                 <p v-for="feature in data.features.legendary">
-                <b> <i>{{ feature.name }}</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
+                <b> <i>{{ feature.name }}.</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
                 <span class="feature-container__desc" v-html="sanitizeAndFormat(feature.description)"> </span>
             </p>
         </div>
@@ -239,7 +239,7 @@
             <h3 class="feature-container__title"> Mythic Actions </h3>
                 <p v-if="data.misc.featureHeaderTexts.mythic"> {{ data.misc.featureHeaderTexts.mythic }} </p>
                 <p v-for="feature in data.features.mythic">
-                <b> <i>{{ feature.name }}</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
+                <b> <i>{{ feature.name }}.</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
                 <span class="feature-container__desc" v-html="sanitizeAndFormat(feature.description)"> </span>
             </p>
         </div>
@@ -248,7 +248,7 @@
             <h3 class="feature-container__title"> Lair Actions </h3>
                 <p v-if="data.misc.featureHeaderTexts.lair"> {{ data.misc.featureHeaderTexts.lair }} </p>
                 <p v-for="feature in data.features.lair">
-                <b> <i>{{ feature.name }}</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
+                <b> <i>{{ feature.name }}.</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
                 <span class="feature-container__desc" v-html="sanitizeAndFormat(feature.description)"> </span>
             </p>
         </div>
@@ -257,7 +257,7 @@
             <h3 class="feature-container__title"> Regional Effects </h3>
                 <p v-if="data.misc.featureHeaderTexts.regional"> {{ data.misc.featureHeaderTexts.regional }} </p>
                 <p v-for="feature in data.features.regional">
-                <b> <i>{{ feature.name }}</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
+                <b> <i>{{ feature.name }}.</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
                 <span class="feature-container__desc" v-html="sanitizeAndFormat(feature.description)"> </span>
             </p>
         </div>
