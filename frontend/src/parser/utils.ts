@@ -68,6 +68,7 @@ const ATTACK_PARSER_RE = new RegExp(
 );
 
 export function parseDescIntoAutomation(text: string, name = "", activationType: number): [FeatureEntity["automation"], null | string] {
+	if (activationType < 1) activationType = 1
 	// find attack overrides through <avrae hidden> / </hidden> text. Currently no support for simple group (nobody uses it anyway)
 	const override_matches = Array.from(text.matchAll(AVRAE_ATTACK_OVERRIDES_RE), (match) => match.groups?.freeform);
 	// parse normal weapon attack into automation

@@ -856,7 +856,7 @@ export default defineComponent({
 		setTimeout(() => {
 			let unwatch = this.$watch(
 				"data",
-				(newValue, oldValue) => {
+				() => {
 					this.madeChanges = true;
 					unwatch();
 				},
