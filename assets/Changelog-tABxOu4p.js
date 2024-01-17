@@ -1,4 +1,9 @@
-import{M as a}from"./index-5Jdbla-E.js";import{B as o}from"./Breadcrumbs-hC0a1kYQ.js";import{d as s,_ as i,r as d,o as n,c as t,a as c,b as m,i as l,F as p}from"./index-RxN-sSSs.js";const u=`## v.1.0.6
+import{M as a}from"./index-5Jdbla-E.js";import{B as o}from"./Breadcrumbs-L1z3Qz0L.js";import{d as s,_ as i,r as d,o as n,c as t,a as c,b as m,i as l,F as p}from"./index-R9bdnDdl.js";const u=`## v.1.0.7
+_January 17th, 2024_
+
+- Fix meta tag description showing unrelated bestiary information.
+
+## v.1.0.6
 _January 16th, 2024_
 
 - Make features reordable by dragging
@@ -55,4 +60,4 @@ _January 10th, 2024_
 _December 10th, 2023_
 
 -   Development started
-`,h=a(),g=s({data(){return{content:h.render(u)}},components:{Breadcrumbs:o}}),_={class:"content markdown less-wide"},b=["innerHTML"];function y(e,f,v,w,k,x){const r=d("Breadcrumbs");return n(),t(p,null,[c(r,{routes:[{path:"",text:"Changelog",isCurrent:!0}],isLessWide:!0}),m("div",_,[e.content?(n(),t("div",{key:0,innerHTML:e.content},null,8,b)):l("",!0)])],64)}const J=i(g,[["render",y]]);export{J as default};
+`,h=a(),g=s({data(){return{content:h.render(u)}},components:{Breadcrumbs:o}}),_={class:"content markdown less-wide"},b=["innerHTML"];function y(e,f,v,w,k,x){const r=d("Breadcrumbs");return n(),t(p,null,[c(r,{routes:[{path:"",text:"Changelog",isCurrent:!0}],isLessWide:!0}),m("div",_,[e.content?(n(),t("div",{key:0,innerHTML:e.content},null,8,b)):l("",!0)])],64)}const C=i(g,[["render",y]]);export{C as default};
