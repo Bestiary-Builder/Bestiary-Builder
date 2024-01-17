@@ -1,3 +1,8 @@
+## v.1.0.7
+_January 17th, 2024_
+
+- Fix meta tag description showing unrelated bestiary information.
+
 ## v.1.0.6
 _January 16th, 2024_
 
