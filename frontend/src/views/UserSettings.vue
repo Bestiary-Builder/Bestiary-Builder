@@ -61,6 +61,7 @@ export default defineComponent({
 				let result = await handleApiResponse(response);
 				if (result.success) {
 					toast.success("Succesfully logged in");
+					this.$router.push("/user");
 					window.location.href = getLoginRoute();
 				} else {
 					toast.error((result.data as error).error);
