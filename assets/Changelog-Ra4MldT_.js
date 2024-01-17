@@ -1,4 +1,12 @@
-import{M as o}from"./index-5Jdbla-E.js";import{B as a}from"./Breadcrumbs-WG5Fetjl.js";import{d as s,_ as i,r as d,o as n,c as t,a as c,b as m,i as p,F as l}from"./index-xa1mIhHg.js";const h=`## v.1.0.5
+import{M as a}from"./index-5Jdbla-E.js";import{B as o}from"./Breadcrumbs-hC0a1kYQ.js";import{d as s,_ as i,r as d,o as n,c as t,a as c,b as m,i as l,F as p}from"./index-RxN-sSSs.js";const u=`## v.1.0.6
+_January 16th, 2024_
+
+- Make features reordable by dragging
+- Make cr buttons in bestiary viewer also increment through 1/8-1/4-1/2
+- Resolve some mobile styling issues
+- Fix some minor bugs here and there
+
+## v.1.0.5
 _January 15th, 2024_
 
 - Add dynamic link descriptions for bestiaries, so that the bestiaries description, creator, and creature count will be linked on other sites.
@@ -47,4 +55,4 @@ _January 10th, 2024_
 _December 10th, 2023_
 
 -   Development started
-`,u=o(),_=s({data(){return{content:u.render(h)}},components:{Breadcrumbs:a}}),g={class:"content markdown less-wide"},f=["innerHTML"];function b(e,v,y,w,k,x){const r=d("Breadcrumbs");return n(),t(l,null,[c(r,{routes:[{path:"",text:"Changelog",isCurrent:!0}],isLessWide:!0}),m("div",g,[e.content?(n(),t("div",{key:0,innerHTML:e.content},null,8,f)):p("",!0)])],64)}const J=i(_,[["render",b]]);export{J as default};
+`,h=a(),g=s({data(){return{content:h.render(u)}},components:{Breadcrumbs:o}}),_={class:"content markdown less-wide"},b=["innerHTML"];function y(e,f,v,w,k,x){const r=d("Breadcrumbs");return n(),t(p,null,[c(r,{routes:[{path:"",text:"Changelog",isCurrent:!0}],isLessWide:!0}),m("div",_,[e.content?(n(),t("div",{key:0,innerHTML:e.content},null,8,b)):l("",!0)])],64)}const J=i(g,[["render",y]]);export{J as default};
