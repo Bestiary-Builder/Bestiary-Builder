@@ -1,7 +1,7 @@
-import{M as o}from"./index-5Jdbla-E.js";import{B as a}from"./Breadcrumbs-QV_0n8bB.js";import{d as s,_ as i,r as d,o as n,c as t,a as c,b as m,i as p,F as l}from"./index-8o-dEuHt.js";const h=`## v.1.0.5
+import{M as o}from"./index-5Jdbla-E.js";import{B as a}from"./Breadcrumbs-WG5Fetjl.js";import{d as s,_ as i,r as d,o as n,c as t,a as c,b as m,i as p,F as l}from"./index-xa1mIhHg.js";const h=`## v.1.0.5
 _January 15th, 2024_
 
-- Add dynamic link descriptions for bestiaries, so that the bestiaries description, creator, and creature count will be linked on other sides.
+- Add dynamic link descriptions for bestiaries, so that the bestiaries description, creator, and creature count will be linked on other sites.
 - Add support for bestiary images (see [Help](/help)).
 - Fix: sleight of hand does now display properly on a statblock.
 - Make banned word filter display which word(s) were matched.
