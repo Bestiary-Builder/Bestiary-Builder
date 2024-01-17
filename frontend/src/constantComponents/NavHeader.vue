@@ -175,7 +175,6 @@ export default defineComponent({
 
 	.navbar.expanded {
 		grid-template-columns: 8fr;
-		position: absolute;
 		width: 100vw;
 		z-index: 101;
 		.navbar-left {
@@ -284,9 +283,12 @@ export default defineComponent({
 </style>
 
 <style lang="less">
-// not scoped styles
 @media screen and (max-width: 842px) {
-	body:has(.navbar.expanded) main::before {
+	body:has(.navbar.expanded) {
+		overflow: hidden;
+	}
+
+	body:has(.navbar.expanded) main::after {
 		content: "";
 		position: absolute;
 		top: 0;
@@ -294,7 +296,7 @@ export default defineComponent({
 		width: 100%;
 		height: 100%;
 		background-color: rgba(0, 0, 0, 0.5);
-		z-index: 1;
+		z-index: 100;
 	}
 }
 </style>
