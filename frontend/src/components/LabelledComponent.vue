@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <label class="editor-field__title" :for="elId">{{ title }}</label>
+        <label class="editor-field__title" :for="elId">{{ title }}<span v-if="takesCustomTextInput" v-tooltip="'Supports custom text input'">*</span></label>
         <slot></slot>
     </div>
     </template>
@@ -17,6 +17,11 @@ export default defineComponent({
         id: {
             type: Number,
             required: false
+        },
+        takesCustomTextInput: {
+            type: Boolean,
+            required: false,
+            default: false
         }
     },
     data() {
