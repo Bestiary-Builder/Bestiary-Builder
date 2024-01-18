@@ -111,7 +111,7 @@ export default defineComponent({
 		justify-content: center;
 	}
 
-	& .btn {
+	.btn {
 		width: fit-content;
 		margin: 1rem auto;	
 	}

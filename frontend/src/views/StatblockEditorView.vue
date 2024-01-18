@@ -892,7 +892,7 @@ export default defineComponent({
 			// set spell slots in case they changed full caster/half caster/arti half/warlock
 			this.data.spellcasting.casterSpells.spellSlotList = getSpellSlots(sClass, this.data.spellcasting.casterSpells.casterLevel);
 		},
-		"data.spellcasting.casterSpells.casterLevel"(newValue, oldValue) {
+		"data.spellcasting.casterSpells.casterLevel"(newValue) {
 			if (newValue == null || newValue == undefined) {
 				this.clearCasting();
 				return;
@@ -902,7 +902,7 @@ export default defineComponent({
 			this.data.spellcasting.casterSpells.spellSlotList = getSpellSlots(this.data.spellcasting.casterSpells.castingClass, this.data.spellcasting.casterSpells.casterLevel);
 		},
 		innateSpells: {
-			handler(newValue, oldValue) {
+			handler() {
 				let list = this.data.spellcasting.innateSpells.spellList;
 				// add spells to our data that we did not have in our statblock data yet but we did in our editor data
 				for (let times in this.innateSpells) {

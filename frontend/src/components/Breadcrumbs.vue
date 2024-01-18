@@ -129,7 +129,7 @@ export default defineComponent({
 }
 
 @media screen and (min-width: 1080px) {
-	&.breadcrumbs__container.less-wide {
+	.breadcrumbs__container.less-wide {
 		padding: 0.7rem 25vw;
 	}
 }
@@ -143,7 +143,7 @@ export default defineComponent({
 	margin: 0;
  	padding-left: 0;
   	list-style: none;
-	& .current-page {
+	.current-page {
 		font-weight: bold;
 		font-size: 1.3rem;
 		max-width: 60vw;
@@ -161,7 +161,7 @@ export default defineComponent({
 		font-size: 0.8rem;
 		display: flex;
 		align-items: center;
-		& .current-page {
+		.current-page {
 			font-size: 0.8rem;
 		}
 	}

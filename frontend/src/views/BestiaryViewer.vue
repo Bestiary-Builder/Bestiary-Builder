@@ -871,7 +871,7 @@ export default defineComponent({
 	.create-tile {
 		text-align: center;
 		text-decoration: underline;
-		& span {
+		span {
 			cursor: pointer;
 		}
 	}
@@ -915,7 +915,7 @@ export default defineComponent({
 	margin: 0 0rem 1rem;
 	padding: 1rem;
 	border-radius: 2px;
-	& h2 {
+	h2 {
 		text-align: center;
 		text-wrap: nowrap;
 		overflow: hidden;
@@ -987,7 +987,7 @@ export default defineComponent({
 	.list-tiles {
 		padding: 0;
 
-		& .content-tile.creature-tile:hover {
+		.content-tile.creature-tile:hover {
 			background-color: #464343;
 			scale: 1;
 		}
@@ -1081,7 +1081,7 @@ export default defineComponent({
 .editor-block {
 	margin-top: 1rem;
 
-	& h3 {
+	h3 {
 		font-size: 1.5rem;
 		border-bottom: 1px solid orangered;
 	}

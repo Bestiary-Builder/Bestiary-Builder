@@ -107,7 +107,7 @@ export default defineComponent({
 	padding: 0.3rem 1rem;
 	gap: 0.7rem;
 
-	& .nav-link {
+	.nav-link {
 		width: fit-content;
 	}
 }
@@ -207,19 +207,19 @@ export default defineComponent({
 	align-items: center;
 
 	gap: 0.3rem;
-	& .image-wrapper {
+	.image-wrapper {
 		width: 1.5rem;
 		height: 1.5rem;
 		position: relative;
 		border-radius: 50%;
 		overflow: hidden;
 	}
-	& img {
+	img {
 		scale: 1;
 		animation: blip-in 100ms forwards;
 	}
 
-	& svg {
+	svg {
 		display: none;
 	}
 }

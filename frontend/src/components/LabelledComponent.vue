@@ -42,7 +42,7 @@ export default defineComponent({
 	display: flex;
 	flex-direction: column;
 	gap: 0.3rem;
-	& label {
+	label {
 		font-weight: bold;
 		text-decoration: underline;
         text-decoration-color: color-mix(in srgb, currentColor, rgba(0, 0, 0, .5));

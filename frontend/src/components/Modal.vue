@@ -130,7 +130,7 @@ export default defineComponent({
 	justify-content: center;
 	margin-top: 2rem;
 
-	& button {
+	button {
     font-size: 1.5rem;
     padding: 1rem;
     height: unset;

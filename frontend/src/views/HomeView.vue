@@ -63,23 +63,23 @@ html {
 	margin-block-end: 3rem;
 	color: white;
 	
-	& .header-content  {
+	.header-content  {
 		z-index: 1;
 		text-align: center;
-		& h1 {
+		h1 {
 			font-size: 12vw;
 			text-transform: uppercase;
 			font-family: 'Bebas Neue', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 			letter-spacing: 3px;
 		}
 
-		& p {
+		p {
 			font-size: 1.5rem;
 			text-wrap: balance;
 			font-weight: 100;
 		}
 	}
-	& .header-image {
+	.header-image {
 		grid-column: 1 / -1;
 		position: absolute;
 		inset: 0;

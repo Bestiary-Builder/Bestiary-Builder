@@ -195,7 +195,7 @@ export default defineComponent({
 	font-size: 1.3rem;
 	padding-top: 1rem;
 
-	& button {
+	button {
 		background-color: unset;
 		border: unset;
 		color: white;

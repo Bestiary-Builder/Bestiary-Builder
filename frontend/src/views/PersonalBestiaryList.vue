@@ -21,11 +21,11 @@
 					</div>
 					<span class="shared-notice" v-if="bestiary.owner != userData?._id">(shared)</span>
 					<div class="tile-content" :class="{'tile-has-image': bestiaryImages[index]}">
-					<img class="tile-image" v-if="bestiaryImages[index]" :src="bestiaryImages[index]" />		
+						<img class="tile-image" v-if="bestiaryImages[index]" :src="bestiaryImages[index]" />
 						<div class="tags">
 							{{ bestiary.tags.join(", ") }}
 						</div>
-						<p>{{ bestiary.description }}</p>
+						<p class="description">{{ bestiary.description }}</p>
 					</div>
 					<div class="tile-footer">
 						<span v-tooltip.left="bestiary.status"><StatusIcon :icon="bestiary.status" /></span>
@@ -176,7 +176,7 @@ export default defineComponent({
 	margin: auto;
 	transition: all 1s ease;
 	color: orangered;
-	& :hover {
+	&:hover {
 		transform: scale(1.1);
 	}
 }

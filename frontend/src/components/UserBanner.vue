@@ -58,7 +58,7 @@ export default defineComponent({
 	align-items: center;
 
 	gap: 0.3rem;
-	& img {
+	img {
 		height: 1.5rem;
 		border-radius: 50%;
 		scale: 1.1;
