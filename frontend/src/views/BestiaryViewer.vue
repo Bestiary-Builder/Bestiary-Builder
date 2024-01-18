@@ -111,7 +111,7 @@
 					<hr />
 					<div class="footer" :class="{'three-wide': isOwner}">
 						<UserBanner :id="bestiary.owner" />
-						<div><StatusIcon :icon="bestiary.status" /> {{ bestiary.status }}</div>
+						<div v-tooltip.left="bestiary.status"><StatusIcon :icon="bestiary.status" /></div>
 						<div>{{ bestiary.creatures.length }}<font-awesome-icon :icon="['fas', 'skull']" /></div>
 						<div role="button" aria-label="Toggle bookmark status" @click.prevent="toggleBookmark" class="bookmark" v-if="!isOwner">
 							<span v-if="bookmarked" v-tooltip="'Unbookmark this bestiary'" class="bookmark-enabled"><font-awesome-icon :icon="['fas', 'star']" /></span>
