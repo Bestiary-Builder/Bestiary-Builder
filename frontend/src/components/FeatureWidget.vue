@@ -179,8 +179,8 @@ export default defineComponent({
 			});
 			if (!feature) return;
 			//Add info to feat
-			if (this.feat.name == "New Feature" || !this.hasEditedName) this.feat.name = feature.name;
-			this.feat.description = feature.description ?? "";
+			if (this.feat.name == "New Feature" || !this.hasEditedName) this.feat.name = feature.name
+			this.feat.description = feature.description.replace("$NAME$", this.data.description.name) ?? "";
 			this.automationString = YAML.stringify(feature.automation);
 			this.saveAutomation(false);
 			setTimeout(() => {
