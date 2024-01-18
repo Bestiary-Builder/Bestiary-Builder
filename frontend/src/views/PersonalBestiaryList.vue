@@ -28,7 +28,7 @@
 						<p>{{ bestiary.description }}</p>
 					</div>
 					<div class="tile-footer">
-						<span><StatusIcon :icon="bestiary.status" />{{ bestiary.status }}</span>
+						<span v-tooltip.left="bestiary.status"><StatusIcon :icon="bestiary.status" /></span>
 						<span role="button" @click.stop.prevent="openDeleteModal(bestiary)" class="edit-button" v-tooltip="'Delete bestiary'" v-if="bestiary.owner == userData?._id" aria-label="Delete bestiary"><font-awesome-icon :icon="['fas', 'trash']" /></span>
 						<span v-else>
 							<UserBanner :id="bestiary.owner"/>
