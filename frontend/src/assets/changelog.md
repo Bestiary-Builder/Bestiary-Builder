@@ -2,7 +2,7 @@
 _January 18th, 2024_
 
 - New Feature: All SRD features without automation are now also added to the SRD feature selector to make it easier to build your creatures!
-
+- Selectors that take custom text input (e.g. race) are now marked with an asterisk to signify that they do.
 ## v.1.0.7
 _January 17th, 2024_
 
