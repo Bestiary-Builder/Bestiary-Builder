@@ -1,7 +1,8 @@
-import{M as a}from"./index-5Jdbla-E.js";import{B as o}from"./Breadcrumbs-kQZB1TOb.js";import{d as s,_ as i,r as d,o as n,c as t,a as c,b as m,i as l,F as u}from"./index-4NJUWLYZ.js";const p=`## v1.1.0
+import{M as r}from"./index-5Jdbla-E.js";import{B as o}from"./Breadcrumbs-CXC1gHHQ.js";import{d as s,_ as i,r as d,o as n,c as t,a as c,b as m,i as l,F as u}from"./index-zBirBZvq.js";const h=`## v1.1.0
 _January 18th, 2024_
 
 - New Feature: All SRD features without automation are now also added to the SRD feature selector to make it easier to build your creatures!
+- Selectors that take custom text input (e.g. race) are now marked with an asterisk to signify that they do.
 
 ## v.1.0.7
 _January 17th, 2024_
@@ -65,4 +66,4 @@ _January 10th, 2024_
 _December 10th, 2023_
 
 -   Development started
-`,h=a(),_=s({data(){return{content:h.render(p)}},components:{Breadcrumbs:o}}),g={class:"content markdown less-wide"},b=["innerHTML"];function y(e,f,v,w,k,x){const r=d("Breadcrumbs");return n(),t(u,null,[c(r,{routes:[{path:"",text:"Changelog",isCurrent:!0}],isLessWide:!0}),m("div",g,[e.content?(n(),t("div",{key:0,innerHTML:e.content},null,8,b)):l("",!0)])],64)}const C=i(_,[["render",y]]);export{C as default};
+`,p=r(),g=s({data(){return{content:p.render(h)}},components:{Breadcrumbs:o}}),_={class:"content markdown less-wide"},y=["innerHTML"];function b(e,f,v,w,k,x){const a=d("Breadcrumbs");return n(),t(u,null,[c(a,{routes:[{path:"",text:"Changelog",isCurrent:!0}],isLessWide:!0}),m("div",_,[e.content?(n(),t("div",{key:0,innerHTML:e.content},null,8,y)):l("",!0)])],64)}const C=i(g,[["render",b]]);export{C as default};
