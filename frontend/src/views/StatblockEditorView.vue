@@ -77,7 +77,7 @@
 						<LabelledComponent title="Faction">
 							<input type="text" v-model="data.description.faction" id="faction" />
 						</LabelledComponent>
-						<LabelledComponent title="Alignment">
+						<LabelledComponent title="Alignment" takes-custom-text-input>
 							<v-select
 								v-model="data.description.alignment"
 								:options="[
@@ -132,10 +132,10 @@
 				</div>
 				<div class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-2"  id="tabpanel-2">
 					<div class="editor-field__container two-wide">
-						<LabelledComponent title="Race">
+						<LabelledComponent title="Race"  takes-custom-text-input>
 							<v-select v-model="data.core.race" :options="['Aberration', 'Beast', 'Celestial', 'Construct', 'Dragon', 'Elemental', 'Fey', 'Fiend', 'Giant', 'Humanoid', 'Monstrosity', 'Ooze', 'Plant', 'Undead']" :taggable="true" :pushTags="true" inputId="race" />
 						</LabelledComponent>
-						<LabelledComponent title="Size">
+						<LabelledComponent title="Size"  takes-custom-text-input>
 							<v-select v-model="data.core.size" :options="['Tiny', 'Small', 'Medium', 'Large', 'Huge', 'Gargantuan']" :taggable="true" :pushTags="true" inputId="size" />
 						</LabelledComponent>
 					</div>
@@ -162,7 +162,7 @@
 						<LabelledNumberInput v-model="data.core.senses.passivePerceptionOverride" title="Passive perc ovverride" :step=1 :is-clearable="true" />
 					</div>
 					<div class="editor-field__container two-wide">
-						<LabelledComponent title="Languages">
+						<LabelledComponent title="Languages"  takes-custom-text-input>
 							<v-select placeholder="Select a Language or type one" v-model="data.core.languages" multiple :deselectFromDropdown="true" :closeOnSelect="false" :options="languages" :taggable="true" :pushTags="true" inputId="languages" />
 						</LabelledComponent>
 						<LabelledNumberInput v-model="data.core.senses.telepathy" title="Telepathy" />
@@ -255,7 +255,7 @@
 						</LabelledComponent>
 					</div>
 					<div class="editor-field__container two-wide">
-						<LabelledComponent title="Vulnerabilities">
+						<LabelledComponent title="Vulnerabilities" takes-custom-text-input>
 							<v-select
 								placeholder="type vulnerabilities..."
 								v-model="data.defenses.vulnerabilities"
@@ -268,7 +268,7 @@
 								inputId="vulnerabilities"
 							/>
 						</LabelledComponent>
-						<LabelledComponent title="Resistances">
+						<LabelledComponent title="Resistances" takes-custom-text-input>
 							<v-select
 								placeholder="type resistances..."
 								v-model="data.defenses.resistances"
@@ -281,7 +281,7 @@
 								inputId="resistances"
 							/>
 						</LabelledComponent>
-						<LabelledComponent title="Immunities">
+						<LabelledComponent title="Immunities" takes-custom-text-input>
 							<v-select
 								placeholder="type immunities..."
 								v-model="data.defenses.immunities"
@@ -294,7 +294,7 @@
 								inputId="immunities"
 							/>
 						</LabelledComponent>
-						<LabelledComponent title="Condition Immunities">
+						<LabelledComponent title="Condition Immunities" takes-custom-text-input>
 							<v-select
 								placeholder="type condition immunities..."
 								v-model="data.defenses.conditionImmunities"
@@ -360,17 +360,17 @@
 					<div class="editor-field__container two-wide">
 						<LabelledNumberInput v-model="data.spellcasting.innateSpells.spellDcOverride" title="DC override" :step="1" :is-clearable="true"/>
 						<LabelledNumberInput v-model="data.spellcasting.innateSpells.spellBonusOverride" title="Attack bonus override" :step="1" :is-clearable="true"/>
-						<LabelledComponent title="At will">
-							<v-select :options="spellListFlattened" v-model="innateSpells[0]" multiple :deselectFromDropdown="true" :closeOnSelect="false" inputId="atwill" />
+						<LabelledComponent title="At will" takes-custom-text-input>
+							<v-select :options="spellListFlattened" v-model="innateSpells[0]" multiple :deselectFromDropdown="true" :closeOnSelect="false" inputId="atwill" :taggable="true" :pushTags="true"/>
 						</LabelledComponent>
-						<LabelledComponent title="1/day">
-							<v-select :options="spellListFlattened" v-model="innateSpells[1]" multiple :deselectFromDropdown="true" :closeOnSelect="false" inputId="1/day" />
+						<LabelledComponent title="1/day" takes-custom-text-input>
+							<v-select :options="spellListFlattened" v-model="innateSpells[1]" multiple :deselectFromDropdown="true" :closeOnSelect="false" inputId="1/day" :taggable="true" :pushTags="true"/>
 						</LabelledComponent>
-						<LabelledComponent title="2/day">
-							<v-select :options="spellListFlattened" v-model="innateSpells[2]" multiple :deselectFromDropdown="true" :closeOnSelect="false" inputId="2/day" />
+						<LabelledComponent title="2/day" takes-custom-text-input>
+							<v-select :options="spellListFlattened" v-model="innateSpells[2]" multiple :deselectFromDropdown="true" :closeOnSelect="false" inputId="2/day" :taggable="true" :pushTags="true"/>
 						</LabelledComponent>
-						<LabelledComponent title="3/day">
-							<v-select :options="spellListFlattened" v-model="innateSpells[3]" multiple :deselectFromDropdown="true" :closeOnSelect="false" inputId="3/day" />
+						<LabelledComponent title="3/day" takes-custom-text-input>
+							<v-select :options="spellListFlattened" v-model="innateSpells[3]" multiple :deselectFromDropdown="true" :closeOnSelect="false" inputId="3/day" :taggable="true" :pushTags="true"/>
 						</LabelledComponent>
 
 						<LabelledComponent title="Is psionics?">
@@ -397,10 +397,10 @@
 						<LabelledNumberInput v-model="data.spellcasting.casterSpells.spellBonusOverride" title="Attack bonus override" :step="1" />
 					</div>
 					<div v-if="data.spellcasting.casterSpells.castingClass" class="editor-field__container two-wide">
-						<LabelledComponent title="Cantrips" v-if="!['Ranger', 'Paladin'].includes(data.spellcasting.casterSpells.castingClass)">
+						<LabelledComponent title="Cantrips" v-if="!['Ranger', 'Paladin'].includes(data.spellcasting.casterSpells.castingClass)" takes-custom-text-input>
 							<v-select v-model="data.spellcasting.casterSpells.spellList[0]" :options="spellList[0]" multiple :deselectFromDropdown="true" :closeOnSelect="false" :taggable="true" :pushTags="true" inputId="cantrips" />
 						</LabelledComponent>
-						<LabelledComponent v-for="level in spellLevelList()" :title="'Level ' + level">
+						<LabelledComponent v-for="level in spellLevelList()" :title="'Level ' + level" takes-custom-text-input>
 							<v-select v-model="data.spellcasting.casterSpells.spellList[level]" :options="getSpellsByLevel(level)" multiple :deselectFromDropdown="true" :closeOnSelect="false" :taggable="true" :pushTags="true" :title="'Level ' + level" />
 						</LabelledComponent>
 
