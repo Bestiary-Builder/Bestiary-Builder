@@ -553,7 +553,7 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 			let creatureData = {
 				name: creature.stats.description.name,
 				proper: creature.stats.description.isProperNoun,
-				image_url: creature.stats.description.image || null,
+				image_url: creature.stats.description.image || "",
 				languages: creature.stats.core.languages,
 				cr: displayCR(creature.stats.description.cr),
 				xp: 1000,
