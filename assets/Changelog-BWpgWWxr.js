@@ -1,4 +1,4 @@
-import{M as r}from"./index-5Jdbla-E.js";import{B as o}from"./Breadcrumbs-VZf8M_Iw.js";import{d as s,_ as i,r as d,o as n,c as t,a as c,b as m,i as l,F as u}from"./index-qBctvpj0.js";const h=`## v1.1.0
+import{M as r}from"./index-5Jdbla-E.js";import{B as o}from"./Breadcrumbs-jLOanFNZ.js";import{d as s,_ as i,r as d,o as n,c as t,a as c,b as m,i as l,F as u}from"./index-fFqdJ7O2.js";const h=`## v1.1.0
 _January 18th, 2024_
 
 - New Feature: All SRD features without automation are now also added to the SRD feature selector to make it easier to build your creatures!
