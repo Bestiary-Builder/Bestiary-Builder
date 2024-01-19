@@ -1,3 +1,8 @@
+## v1.1.1
+_January 19th, 2024_
+
+- Creatures that cannot be edited by you no longer show the editor on the creature page. There is a button to toggle showing it, for debugging purposes only.
+
 ## v1.1.0
 _January 18th, 2024_
 

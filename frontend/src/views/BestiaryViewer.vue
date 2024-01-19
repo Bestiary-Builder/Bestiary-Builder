@@ -252,7 +252,7 @@ import StatblockRenderer from "@/components/StatblockRenderer.vue";
 
 import {RouterLink} from "vue-router";
 import {defineComponent, ref} from "vue";
-import { refDebounced, useTitle } from '@vueuse/core'
+import { refDebounced } from '@vueuse/core'
 
 import {defaultStatblock} from "@/generic/types";
 import type {User, Bestiary, Creature, Statblock} from "@/generic/types";
