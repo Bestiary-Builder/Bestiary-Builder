@@ -5,7 +5,7 @@
 		:routes="[
 			{
 				path: '../my-bestiaries/',
-				text: 'My Bestiaries',
+				text: shouldShowEditor ? 'My Bestiaries' : 'Public Bestiaries',
 				isCurrent: false
 			},
 			{
@@ -20,15 +20,19 @@
 			}
 		]"
 	>
-		<button @click="showImportModal = true" v-tooltip="'Import a creature\'s statblock'" aria-label="Import a creature's statblock">
+		<button v-if="!isOwner && !isEditor" @click="shouldShowEditor = !shouldShowEditor" v-tooltip="'Toggle Editor for debugging purposes'" aria-label="Toggle Editor for debugging purposes">
+			<font-awesome-icon :icon="['fas', 'eye']" v-if="!shouldShowEditor"/>
+			<font-awesome-icon :icon="['fas', 'eye-slash']" v-else/>
+		</button>
+		<button v-if="isOwner || isEditor" @click="showImportModal = true" v-tooltip="'Import a creature\'s statblock'" aria-label="Import a creature's statblock">
 			<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
 		</button>
-		<button @click="exportStatblock()" v-tooltip="'Export this creature as JSON to your clipboard.'" aria-label="Export a creature's statblock">
+		<button v-if="isOwner || isEditor" @click="exportStatblock()" v-tooltip="'Export this creature as JSON to your clipboard.'" aria-label="Export a creature's statblock">
 			<font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" />
 		</button>
 	</Breadcrumbs>
-	<div class="content">
-		<div class="content-container__inner editor">
+	<div class="content" :class="{'is-statblock-only': !shouldShowEditor}">
+		<div class="content-container__inner editor" v-show="shouldShowEditor">
 			<div class="editor-nav" role="tablist" aria-label="Statblock editor tabs">
 				<button @click="showSlides(1)" @keydown="moveSlide" :class="{'active-slide': slideIndex === 1}" class="editor-nav__tab" role="tab" aria-controls="tabpanel-1" id="tab-1">
 					Description
@@ -481,8 +485,8 @@ import draggable from "vuedraggable";
 import {defineComponent} from "vue";
 
 import type {SkillsEntity, Statblock, Creature, Bestiary} from "@/generic/types";
-import {defaultStatblock, getSpellSlots, spellList, spellListFlattened, getXPbyCR} from "@/generic/types";
-import {handleApiResponse, type error, toast, asyncLimits, type limitsType} from "@/main";
+import {defaultStatblock, getSpellSlots, spellList, spellListFlattened, getXPbyCR, type User} from "@/generic/types";
+import {handleApiResponse, type error, toast, asyncLimits, type limitsType, user} from "@/main";
 import {parseFrom5eTools} from "../parser/parseFrom5eTools";
 import { capitalizeFirstLetter } from "@/parser/utils";
 const tabs        = document.getElementsByClassName("editor-nav__tab") as HTMLCollectionOf<HTMLElement>;
@@ -501,6 +505,7 @@ export default defineComponent({
 	data() {
 		return {
 			slideIndex: 2,
+			user: null as User | null,
 			data: defaultStatblock as Statblock,
 			rawInfo: null as Creature | null,
 			bestiary: null as Bestiary | null,
@@ -582,7 +587,10 @@ export default defineComponent({
 			showImportModal: false,
 			showSpellModal: false,
 			capitalizeFirstLetter,
-			draggableKeyIndex: 0
+			draggableKeyIndex: 0,
+			shouldShowEditor: false,
+			isOwner: false,
+			isEditor: false
 		};
 	},
 	methods: {
@@ -794,6 +802,9 @@ export default defineComponent({
 			loader.hide();
 		}
 	},
+	async beforeMount() {
+		this.user = await user;
+	},
 	async mounted() {
 		const loader = this.$loading.show();
 		this.limits = (await asyncLimits) ?? ({} as limitsType);
@@ -806,6 +817,7 @@ export default defineComponent({
 			if (result.success) {
 				this.data = (result.data as Creature).stats;
 				this.rawInfo = result.data as Creature;
+
 				return true;
 			} else {
 				toast.error("Error: " + (result.data as error).error);
@@ -827,6 +839,9 @@ export default defineComponent({
 			let result = await handleApiResponse<Bestiary>(response);
 			if (result.success) {
 				this.bestiary = result.data as Bestiary;
+				this.isOwner = this.user?._id == this.bestiary.owner;
+				this.isEditor = (this.bestiary?.editors ?? []).includes(this.user?._id ?? "");
+				if (this.isOwner || this.isEditor) this.shouldShowEditor = true
 			} else {
 				this.bestiary = null;
 				toast.error((result.data as error).error);
@@ -966,9 +981,21 @@ export default defineComponent({
 	grid-template-columns: 1fr 1fr;
 }
 
+.content.is-statblock-only {
+	grid-template-columns: 1fr;
+	.content-container__inner {
+		width: 60%;
+		margin: auto;
+	}
+}
 @media screen and (max-width: 1200px) {
 	.content {
 		grid-template-columns: 1fr;
+
+		&.is-statblock-only .content-container__inner {
+			width: 100%;
+			margin: unset;
+		}
 	}
 }
 

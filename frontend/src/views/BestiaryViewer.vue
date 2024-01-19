@@ -327,8 +327,6 @@ export default defineComponent({
 			document.title = `${this?.bestiary?.name.substring(0,16)} | Bestiary Builder`
 		}
 	},
-	mounted() {
-	},
 	setup() {
 		const searchText = ref('')
 		const debouncedSearch = refDebounced(searchText, 500)

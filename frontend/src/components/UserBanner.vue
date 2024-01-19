@@ -1,7 +1,7 @@
 <template>
 	<div class="container">
 		<div class="user" v-if="user">
-			<img alt="avatar" :src="user.avatar ? 'https://cdn.discordapp.com/avatars/' + user._id + '/' + user.avatar + '.png' : 'https://cdn.discordapp.com/embed/avatars/0.png'" />
+			<img alt="" :src="user.avatar ? 'https://cdn.discordapp.com/avatars/' + user._id + '/' + user.avatar + '.png' : 'https://cdn.discordapp.com/embed/avatars/0.png'" />
 			<span v-if="!user.supporter">{{ user.username }}</span>
 			<span v-if="user.supporter === 1" class="supporter-tier-1" v-tooltip="'This user is a Wyrmling Patreon Supporter!'"> {{ user.username }} </span>
 			<span v-if="user.supporter === 2" class="supporter-tier-2" v-tooltip="'This user is a Greatwyrm Patreon Supporter!'"> {{ user.username }} </span>
