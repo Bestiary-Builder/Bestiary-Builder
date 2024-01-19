@@ -1,4 +1,9 @@
-import{M as r}from"./index-5Jdbla-E.js";import{B as o}from"./Breadcrumbs-jLOanFNZ.js";import{d as s,_ as i,r as d,o as n,c as t,a as c,b as m,i as l,F as u}from"./index-fFqdJ7O2.js";const h=`## v1.1.0
+import{M as a}from"./index-5Jdbla-E.js";import{B as o}from"./Breadcrumbs-Rx2gqZu0.js";import{d as s,_ as i,r as d,o as n,c as t,a as c,b as u,i as l,F as m}from"./index-oZDwqZry.js";const h=`## v1.1.1
+_January 19th, 2024_
+
+- Creatures that cannot be edited by you no longer show the editor on the creature page. There is a button to toggle showing it, for debugging purposes only.
+
+## v1.1.0
 _January 18th, 2024_
 
 - New Feature: All SRD features without automation are now also added to the SRD feature selector to make it easier to build your creatures!
@@ -66,4 +71,4 @@ _January 10th, 2024_
 _December 10th, 2023_
 
 -   Development started
-`,p=r(),g=s({data(){return{content:p.render(h)}},components:{Breadcrumbs:o}}),_={class:"content markdown less-wide"},y=["innerHTML"];function b(e,f,v,w,k,x){const a=d("Breadcrumbs");return n(),t(u,null,[c(a,{routes:[{path:"",text:"Changelog",isCurrent:!0}],isLessWide:!0}),m("div",_,[e.content?(n(),t("div",{key:0,innerHTML:e.content},null,8,y)):l("",!0)])],64)}const C=i(g,[["render",b]]);export{C as default};
+`,p=a(),g=s({data(){return{content:p.render(h)}},components:{Breadcrumbs:o}}),_={class:"content markdown less-wide"},y=["innerHTML"];function b(e,f,v,w,k,x){const r=d("Breadcrumbs");return n(),t(m,null,[c(r,{routes:[{path:"",text:"Changelog",isCurrent:!0}],isLessWide:!0}),u("div",_,[e.content?(n(),t("div",{key:0,innerHTML:e.content},null,8,y)):l("",!0)])],64)}const C=i(g,[["render",b]]);export{C as default};
