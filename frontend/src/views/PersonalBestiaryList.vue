@@ -174,11 +174,8 @@ export default defineComponent({
 @import url("@/assets/bestiary-list.less");
 .edit-button {
 	margin: auto;
-	transition: all 1s ease;
 	color: orangered;
-	&:hover {
-		transform: scale(1.1);
-	}
+	.scale-on-hover(1.2)
 }
 
 .four-tall {

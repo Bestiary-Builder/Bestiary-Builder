@@ -138,9 +138,9 @@
 										</div>
 									</template>
 								</VDropdown>
-								<span v-if="isOwner || isEditor" v-tooltip="'Edit creature'" :aria-label="`Edit ${creature.stats.description.name}`" class="edit-creature" @click.stop="() => {}">
+								<button v-if="isOwner || isEditor" v-tooltip="'Edit creature'" :aria-label="`Edit ${creature.stats.description.name}`" class="edit-creature" @click.stop="() => {}">
 									<RouterLink class="creature" :to="'/statblock-editor/' + creature._id" aria-label="Edit creature"> <font-awesome-icon :icon="['fas', 'pen-to-square']" /> </RouterLink>
-								</span>
+								</button>
 								<span class="cr"> CR {{ displayCR(creature.stats.description.cr) }}</span>
 							</div>
 						</div>
@@ -768,6 +768,7 @@ export default defineComponent({
 
 <style scoped lang="less">
 @import url("@/assets/number-input.less");
+@import url("@/assets/mixins.less");
 
 .flow-vertically {
 	display: flex;
@@ -830,7 +831,7 @@ export default defineComponent({
 			.right-side {
 				display: flex;
 				flex-direction: row;
-				gap: 1rem;
+				gap: .5rem;
 
 				a {
 					text-decoration: none;
@@ -847,17 +848,19 @@ export default defineComponent({
 					height: 100%;
 					cursor: pointer;
 
-					&:hover {
-						scale: 1.02;
-						overflow: visible;
-					}
-
 					svg {
 						color: #536d8c;
 					}
 
 					&.cr {
 						width: 5rem;
+					}
+				}
+
+				button {
+					.scale-on-hover(1.2);
+					&:hover {
+						overflow: visible;
 					}
 				}
 			}

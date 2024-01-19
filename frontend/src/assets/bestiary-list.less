@@ -1,3 +1,5 @@
+@import "./mixins.less";
+
 .tile-container {
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -29,9 +31,6 @@
 	color: #cbcbcb;
 	padding: 1rem;
 	box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
-
-	transition: all 1s;
-	transition-timing-function: cubic-bezier(0.06, 0.975, 0.195, 0.985);
 
 	display: grid;
 	grid-template-rows: 1fr 6fr 1fr;
@@ -117,9 +116,9 @@
 	}
 }
 
-a.content-tile:not(:has(.tile-has-image)):hover,
-.create-tile:hover {
-	scale: 1.05;
+a.content-tile:not(:has(.tile-has-image)),
+.create-tile {
+	.scale-on-hover(1.05)
 }
 
 .bestiary-tile:hover {

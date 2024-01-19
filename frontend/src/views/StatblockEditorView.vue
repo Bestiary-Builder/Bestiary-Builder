@@ -257,7 +257,7 @@
 					<div class="editor-field__container two-wide">
 						<LabelledComponent title="Vulnerabilities" takes-custom-text-input>
 							<v-select
-								placeholder="type vulnerabilities..."
+								placeholder="Type vulnerabilities..."
 								v-model="data.defenses.vulnerabilities"
 								multiple
 								:deselectFromDropdown="true"
@@ -270,7 +270,7 @@
 						</LabelledComponent>
 						<LabelledComponent title="Resistances" takes-custom-text-input>
 							<v-select
-								placeholder="type resistances..."
+								placeholder="Type resistances..."
 								v-model="data.defenses.resistances"
 								multiple
 								:deselectFromDropdown="true"
@@ -283,7 +283,7 @@
 						</LabelledComponent>
 						<LabelledComponent title="Immunities" takes-custom-text-input>
 							<v-select
-								placeholder="type immunities..."
+								placeholder="Type immunities..."
 								v-model="data.defenses.immunities"
 								multiple
 								:deselectFromDropdown="true"
@@ -296,7 +296,7 @@
 						</LabelledComponent>
 						<LabelledComponent title="Condition Immunities" takes-custom-text-input>
 							<v-select
-								placeholder="type condition immunities..."
+								placeholder="Type condition immunities..."
 								v-model="data.defenses.conditionImmunities"
 								multiple
 								:deselectFromDropdown="true"
@@ -959,6 +959,7 @@ export default defineComponent({
 
 <style scoped lang="less">
 @import url("@/assets/number-input.less");
+@import url("@/assets/mixins.less");
 .content {
 	display: grid;
 	gap: 2rem;
@@ -1090,16 +1091,13 @@ export default defineComponent({
 
 	.delete-button {
 		translate: 0 14.5px;
-		transition: scale 0.3s ease;
 		cursor: pointer;
 		display: flex;
 		height: fit-content;
 		color: orangered;
 		justify-content: center;
 		align-items: center;
-		&:hover {
-			scale: 1.1;
-		}
+		.scale-on-hover(1.2);
 	}
 }
 
