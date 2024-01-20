@@ -1,4 +1,3 @@
-test = 120398213
-test2 = 49058032984
-result = test * test2
-print(result)
+import sys
+from automation_common import validation
+print(sys.argv)
