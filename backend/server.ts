@@ -185,13 +185,14 @@ async function importLogic() {
 }
 importLogic().then(() => {
 	//Everything else is 404
-	app.get("/*", (req, res) => {
+	app.get("/api/*", (req, res) => res.status(404).json({error: "Path not found."}));
+	app.get("/*", async (req, res) => {
 		try {
-			let html = getFrontendHtml(routes.find((r) => r.path == "/notfound")!, req);
-			if (html) return res.send(html);
+			let html = await getFrontendHtml(routes.find((r) => r.path == "/notfound")!, req);
+			return res.send(html);
 		} catch (err) {
 			log.error(err);
-			res.status(500).send("Internal Server Error");
+			return res.status(500).send("Internal Server Error");
 		}
 	});
 });

@@ -84,7 +84,7 @@ export const routes = [
 	},
 	// 404 not found page
 	{
-		path: "/:notfound",
+		path: "/:notfound(.*)",
 		name: "Page not found",
 		file: "NotFound.vue",
 		meta: {navbar: false, loggedIn: false}
