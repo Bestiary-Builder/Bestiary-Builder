@@ -82,6 +82,10 @@
 				</template>
 			</VDropdown>
 
+			<button @click="showImportModal = true" v-tooltip="'Import bestiary'" v-if="isOwner" aria-label="Import bestiary">
+				<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
+			</button>
+			
 			<VDropdown :distance="6" :positioning-disabled="isMobile">
 				<button v-tooltip="'Export bestiary'" aria-label="Export bestiary">
 					<font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" />
@@ -97,9 +101,6 @@
 					</div>
 				</template>
 			</VDropdown>
-			<button @click="showImportModal = true" v-tooltip="'Import bestiary'" v-if="isOwner" aria-label="Import bestiary">
-				<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
-			</button>
 	</Breadcrumbs>
 	<div class="content">
 		<div class="bestiary" v-if="bestiary">
@@ -183,7 +184,7 @@
 		<LabelledComponent title="Bestiary Builder JSON">
 			<p>Insert the JSON as text gotten from clicking export on another bestiary within Bestiary Builder.</p>
 			<div class="flow-horizontally">
-				<input type="text" v-model="bestiaryBuilderJson" id="bestiarybuilderjson" placeholder="" />
+				<input type="text" v-model="bestiaryBuilderJson" id="bestiarybuilderjson" placeholder="Bestiary builder JSON" />
 				<button class="btn confirm" @click.prevent="importCreaturesFromBestiaryBuilder">Import</button>
 			</div>
 		</LabelledComponent>

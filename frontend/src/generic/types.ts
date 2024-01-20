@@ -14,23 +14,16 @@ export const defaultStatblock = {
 		proficiencyBonus: 2,
 		race: "Humanoid",
 		size: "Medium",
-		speed: {
-			walk: 30,
-			fly: 0,
-			isHover: false,
-			burrow: 0,
-			swim: 0,
-			climb: 0
-		},
-		senses: {
-			passivePerceptionOverride: null,
-			darkvision: 0,
-			blindsight: 0,
-			isBlind: false,
-			truesight: 0,
-			tremorsense: 0,
-			telepathy: 0
-		},
+		speed: [			
+			{
+				name: "Walk",
+				value: 30,
+				unit: "ft",
+				comment: ""
+			}
+		],
+		senses: [
+		],
 		languages: []
 	},
 	abilities: {
@@ -106,6 +99,8 @@ export const defaultStatblock = {
 	},
 	misc: {
 		legActionsPerRound: 3,
+		telepathy: 0,
+		passivePerceptionOverride: null,
 		featureHeaderTexts: {
 			features: "",
 			actions: "",
@@ -219,6 +214,8 @@ export interface Statblock {
 
 export interface Misc {
 	legActionsPerRound: number;
+	telepathy: number;
+	passivePerceptionOverride: number | null;
 	featureHeaderTexts: FeatureHeaderTexts;
 }
 
@@ -247,8 +244,8 @@ export interface Core {
 	proficiencyBonus: number;
 	race: string;
 	size: string;
-	speed: Speed;
-	senses: Senses;
+	speed: SpeedEntity[];
+	senses: SenseEntity[];
 	languages: string[] | null;
 }
 export interface Speed {
@@ -259,15 +256,23 @@ export interface Speed {
 	swim: number;
 	climb: number;
 }
-export interface Senses {
-	passivePerceptionOverride: number | null;
-	darkvision: number;
-	blindsight: number;
-	isBlind: boolean;
-	truesight: number;
-	tremorsense: number;
-	telepathy: number;
+
+export type Unit = "ft" | "m" | "km" | "mi" | "none"
+
+export interface SpeedEntity {
+	name: string;
+	value: number;
+	unit: Unit;
+	comment: string;
 }
+
+export interface SenseEntity {
+	name: string;
+	value: number;
+	unit: Unit;
+	comment: string;
+}
+
 export interface Abilities {
 	stats: Stats;
 	saves: Saves;

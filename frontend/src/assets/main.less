@@ -107,6 +107,12 @@ select {
 		background-color: var(--color-surface-0);
 		color: orangered;
 	}
+
+	&.ghost {
+		border-color: var(--border-color-base);
+		color: var(--color-base);
+		color: white;
+	}
 }
 
 .content {
@@ -190,7 +196,7 @@ select {
 	--vs-dropdown-bg: var(--color-surface-2);
 	--vs-dropdown-color: var(--color-base);
 	--vs-dropdown-z-index: 1000;
-	--vs-dropdown-min-width: 20rem;
+	--vs-dropdown-min-width: 100%;
 	--vs-dropdown-max-height: 30rem;
 	--vs-dropdown-box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 1);
 
@@ -310,4 +316,22 @@ transition: transform .15s ease-out;
 
 .v-popper__popper--no-positioning.v-popper__popper--hidden .v-popper__wrapper {
 transform: translateY(100%);
+}
+
+.grid {
+	display: grid;
+	gap: .5rem;
+	padding-bottom: .4rem;
+
+	&.five-five {
+		grid-template-columns: 5fr 5fr;
+
+	}
+	&.eight-two {
+		grid-template-columns: 8fr 2fr;
+	}
+
+	&.nine-one {
+		grid-template-columns: 9fr 1fr;
+	}
 }

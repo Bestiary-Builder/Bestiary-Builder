@@ -16,20 +16,7 @@
         </div>
         <div class="stat-block__speed-container">
             <b> Speed </b>
-            <span> {{ data.core.speed.walk }} ft.<span class="ending-comma">,</span></span>
-            <span v-if="data.core.speed.climb">
-                climb {{ data.core.speed.climb }} ft.<span class="ending-comma">,</span>
-            </span>
-            <span v-if="data.core.speed.fly">
-                fly {{ data.core.speed.fly }} ft.<span v-if="data.core.speed.isHover"> (hover)</span><span class="ending-comma">,</span>
-            </span>
-            <span v-if="data.core.speed.swim">
-                swim {{ data.core.speed.swim }} ft.<span class="ending-comma">,</span>
-            </span>
-            <span v-if="data.core.speed.burrow">
-                burrow {{ data.core.speed.burrow }} ft.<span class="ending-comma">,</span>
-            </span>
-
+            {{ displaySpeedOrSenses(data.core.speed) }}
         </div>
     </div>
     <div class="stat-block__row stat-block__abilities">
@@ -98,19 +85,16 @@
         </div>
         <div ckass="stat-block__senses-container">
             <b> Senses </b>
-            <span v-if="data.core.senses.darkvision"> darkvision {{ data.core.senses.darkvision}}ft.<span class="ending-comma">,</span></span>
-            <span v-if="data.core.senses.blindsight"> blindsight {{ data.core.senses.blindsight}}ft.<span v-if="data.core.senses.isBlind"> (blind beyond this radius)</span><span class="ending-comma">,</span></span>
-            <span v-if="data.core.senses.truesight"> truesight {{ data.core.senses.truesight}}ft.<span class="ending-comma">,</span></span>
-            <span v-if="data.core.senses.tremorsense"> tremorsense {{ data.core.senses.tremorsense}}ft.<span class="ending-comma">,</span></span>
+            {{ displaySpeedOrSenses(data.core.senses, true) }}
             <span> passive Perception {{ ppCalc() }}</span>
         </div>
         <div class="stat-block__language-container"> 
             <b> Languages </b>
-            <span v-if="data.core.languages && data.core.languages.length == 0 && !data.core.senses.telepathy"> — </span>
+            <span v-if="data.core.languages && data.core.languages.length == 0 && !data.misc.telepathy"> — </span>
             <span v-else v-for="lang in data.core.languages?.sort()">
                 <span> {{ lang }}<span class="ending-comma">, </span></span>
             </span>
-            <span v-if="data.core.senses.telepathy"> telepathy {{ data.core.senses.telepathy}}ft.</span>
+            <span v-if="data.misc.telepathy"> telepathy {{ data.misc.telepathy}}ft.</span>
 
         </div>
         <div class="challenge-prof">
@@ -273,7 +257,7 @@
 import { defineComponent } from 'vue';
 import type { Stat, SaveEntity, SkillsEntity, Statblock, InnateSpells, CasterSpells } from '../generic/types'
 import { stringify } from 'yaml'
-import { displayCR } from '@/generic/displayFunctions';
+import { displayCR, displaySpeedOrSenses } from '@/generic/displayFunctions';
 import markdownit from "markdown-it"
 const md = markdownit()
 export default defineComponent({
@@ -297,7 +281,7 @@ export default defineComponent({
             return Math.floor(this.data.abilities.stats[stat]/2)-5
         },
         ppCalc(): number { 
-            if (this.data.core.senses.passivePerceptionOverride !== null) return this.data.core.senses.passivePerceptionOverride
+            if (this.data.misc.passivePerceptionOverride !== null) return this.data.misc.passivePerceptionOverride
             else { 
                 let skills = this.data.abilities.skills
                 if (skills) {
@@ -506,7 +490,8 @@ export default defineComponent({
                 return `, requiring only ${only} components` + colon
             }
             return `, requiring no ${comp[0].toLowerCase()} components` + colon 
-        }
+        },
+        displaySpeedOrSenses
     }
 
 })
