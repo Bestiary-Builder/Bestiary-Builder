@@ -7,7 +7,7 @@
 	"scripts": {
 		"start": "npx nodemon",
 		"build": "npx tsc",
-		"postbuild": "cpy 'staticData/badwordsData/**/*.json' 'build/staticData/badwordsData' && cpy 'scripts' 'build'"
+		"postbuild": "cpy 'staticData/badwordsData/**/*.json' 'build/staticData/badwordsData'"
 	},
 	"engines": {
 		"node": ">=21.4.0"
