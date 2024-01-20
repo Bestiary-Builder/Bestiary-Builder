@@ -1,4 +1,9 @@
-import{M as a}from"./index-5Jdbla-E.js";import{B as o}from"./Breadcrumbs-Rx2gqZu0.js";import{d as s,_ as i,r as d,o as n,c as t,a as c,b as u,i as l,F as m}from"./index-oZDwqZry.js";const h=`## v1.1.1
+import{M as r}from"./index-5Jdbla-E.js";import{B as o}from"./Breadcrumbs-A9Cqqlm_.js";import{d as s,_ as i,r as d,o as n,c as t,a as u,b as c,i as l,F as m}from"./index-6UXSO-Nr.js";const h=`## v1.1.2
+_January 20th, 2024_
+
+- Senses and speed have been reworked to be more flexible, covering a wider range of use cases. You can now set the unit (ft, m, km, mi, none) as well as set flavour text for each. You can now have custom senses and speed as well. 
+
+## v1.1.1
 _January 19th, 2024_
 
 - Creatures that cannot be edited by you no longer show the editor on the creature page. There is a button to toggle showing it, for debugging purposes only.
@@ -71,4 +76,4 @@ _January 10th, 2024_
 _December 10th, 2023_
 
 -   Development started
-`,p=a(),g=s({data(){return{content:p.render(h)}},components:{Breadcrumbs:o}}),_={class:"content markdown less-wide"},y=["innerHTML"];function b(e,f,v,w,k,x){const r=d("Breadcrumbs");return n(),t(m,null,[c(r,{routes:[{path:"",text:"Changelog",isCurrent:!0}],isLessWide:!0}),u("div",_,[e.content?(n(),t("div",{key:0,innerHTML:e.content},null,8,y)):l("",!0)])],64)}const C=i(g,[["render",b]]);export{C as default};
+`,p=r(),g=s({data(){return{content:p.render(h)}},components:{Breadcrumbs:o}}),_={class:"content markdown less-wide"},b=["innerHTML"];function y(e,f,v,w,k,x){const a=d("Breadcrumbs");return n(),t(m,null,[u(a,{routes:[{path:"",text:"Changelog",isCurrent:!0}],isLessWide:!0}),c("div",_,[e.content?(n(),t("div",{key:0,innerHTML:e.content},null,8,b)):l("",!0)])],64)}const C=i(g,[["render",y]]);export{C as default};
