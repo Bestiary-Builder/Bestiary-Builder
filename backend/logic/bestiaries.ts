@@ -564,7 +564,7 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 				armortype: creature.stats.defenses.ac.acSource,
 				hp: hp,
 				hitdice: hitdice,
-				speed: speedCalc(creature.stats.core.speed),
+				speed: displaySpeedOrSenses(creature.stats.core.speed),
 				ability_scores: {
 					prof_bonus: creature.stats.core.proficiencyBonus,
 					strength: creature.stats.abilities.stats.str,
@@ -576,7 +576,7 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 				},
 				saves: saves,
 				skills: calcSkills(creature.stats),
-				senses: getSenses(creature.stats.core.senses),
+				senses: displaySpeedOrSenses(creature.stats.core.senses),
 				resistances: creature.stats.defenses.resistances,
 				immunities: creature.stats.defenses.immunities,
 				vulnerabilities: creature.stats.defenses.vulnerabilities,
@@ -754,26 +754,23 @@ function spellAttackBonus(innate = false, data: any) {
 	return bonus;
 }
 
-function getSenses(data: any) {
-	let str = "";
-	if (data.darkvision) str += `darkvision ${data.darkvision}ft., `;
-	if (data.blindsight) str += `blindsight ${data.blindsight}ft., ${data.isBlind ? " (blind beyond this radius)" : ""}`;
-	if (data.truesight) str += `truesight ${data.truesight}ft., `;
-	if (data.tremorsense) str += `tremorsense ${data.tremorsense}ft., `;
-	if (data.telepathy) str += `telepathy ${data.telepathy}ft., `;
-	return str.slice(0, str.length - 2);
+export function displaySpeedOrSenses(data: any[]) : string {
+    let output = ""
+    let filteredLength = data.filter(item => item.name !== 'New speed' && item.name !== 'New sense').length
+
+	let index = 0;
+    for (let item of data) {
+        if (item.name === "New speed" || item.name === "New sense") continue;
+        if (item.name != "Walk") output += item.name.toLowerCase() + " "
+        output += item.value
+        if (item.unit != "none") output += item.unit + "."
+        if (item.comment) output += ` (${item.comment})`
+        if (filteredLength != 1 && index != filteredLength-1) output += ", "
+		index++
+    }
+    return output
 }
 
-function speedCalc(data: any): string {
-	let speeds = [];
-	for (let key in data) {
-		if (key == "isHover") continue;
-		let addon = "";
-		if (key == "fly" && data.isHover) addon = " (hover)";
-		if (data[key]) speeds.push(`${key == "walk" ? "" : ` ${key}`}${data[key]} ft.${addon}`);
-	}
-	return speeds.join(", ").toLowerCase();
-}
 export interface SkillsEntity {
 	skillName: string;
 	isHalfProficient: boolean;

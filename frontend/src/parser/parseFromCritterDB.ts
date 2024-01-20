@@ -1,5 +1,5 @@
 import {toast} from "@/main";
-import {type CasterSpells, type Statblock, defaultStatblock, spellListFlattened, type SpellSlotEntity, type SkillsEntity, type Stat, type SpellCasting, type InnateSpellsEntity} from "../generic/types";
+import {type CasterSpells, type Statblock, defaultStatblock, spellListFlattened, type SpellSlotEntity, type SkillsEntity, type Stat, type SpellCasting, type InnateSpellsEntity, type SpeedEntity, type SenseEntity} from "../generic/types";
 
 import {abilityParser, descParser, parseDescIntoAutomation, capitalizeFirstLetter} from "./utils";
 
@@ -27,49 +27,71 @@ export function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: s
 		race: data.stats.race,
 		size: data.stats.size,
 		languages: data.stats.languages,
-		senses: {
-			darkvision: (() => {
-				for (let s of data.stats.senses ?? []) {
-					if (s.toLowerCase().includes("dark")) return parseInt(s.replace(/[a-zA-Z]/g, ""));
-				}
-				return 0;
-			})(),
-			blindsight: (() => {
-				for (let s of data.stats.senses ?? []) {
-					if (s.toLowerCase().includes("blind")) return parseInt(s.replace(/[a-zA-Z]/g, ""));
-				}
-				return 0;
-			})(),
-			isBlind: !!(data.stats.senses ?? []).find((str: string) => str.includes("blind beyond this radius")),
-			truesight: (() => {
-				for (let s of data.stats.senses ?? []) {
-					if (s.toLowerCase().includes("true")) return parseInt(s.replace(/[a-zA-Z]/g, ""));
-				}
-				return 0;
-			})(),
-			tremorsense: (() => {
-				for (let s of data.stats.senses ?? []) {
-					if (s.toLowerCase().includes("tremor")) return parseInt(s.replace(/[a-zA-Z]/g, ""));
-				}
-				return 0;
-			})(),
-			telepathy: (() => {
-				if (!data.stats.languages) return 0;
-				for (let s of data.stats.languages ?? []) {
-					if (s.toLowerCase().includes("telepathy")) return parseInt(s.replace(/[a-zA-Z]/g, ""));
-				}
-				return 0;
-			})(),
-			passivePerceptionOverride: null
-		},
-		speed: {
-			walk: parseInt((data?.stats.speed.match(/^(\d+)\s*ft\.?/) || [])[1]) || 0,
-			fly: parseInt((data?.stats.speed.match(/fly\s*(\d+)\s*ft\.?/) || [])[1]) || 0,
-			isHover: data?.stats?.speed.toLowerCase().includes("hover"),
-			swim: parseInt((data?.stats.speed.match(/swim\s*(\d+)\s*ft\.?/) || [])[1]) || 0,
-			burrow: parseInt((data?.stats.speed.match(/burrow\s*(\d+)\s*ft\.?/) || [])[1]) || 0,
-			climb: parseInt((data?.stats.speed.match(/climb\s*(\d+)\s*ft\.?/) || [])[1]) || 0
-		}
+		senses: (() => {
+			let output : SenseEntity[]= []
+			for (let s of data.stats.senses ?? []) {
+				let value = parseInt(s.replace(/[a-zA-Z]/g, ""))
+				let name = ""
+				let isBlind = false
+
+				if (s.toLowerCase().includes("dark")) name = "Darkvision"
+				else if (s.toLowerCase().includes("blind")) {
+					name = "Blindsight"
+					isBlind = !!(data.stats.senses ?? []).find((str: string) => str.includes("blind beyond this radius"))
+				} 
+				else if (s.toLowerCase().includes("true")) name = "Truesight"
+				else if (s.toLowerCase().includes("tremor")) name = "Tremorsense"
+
+				if (name) output.push({
+					name: name,
+					value: value,
+					unit: "ft",
+					comment: isBlind ? "blind beyond this radius" : ""
+				}) ;
+			}
+			return output
+		})(),
+		speed: (() => {
+			let output : SpeedEntity[] = []
+			let fly = parseInt((data?.stats.speed.match(/fly\s*(\d+)\s*ft\.?/) || [])[1]) || 0
+			let isHover = data?.stats?.speed.toLowerCase().includes("hover")
+			let swim = parseInt((data?.stats.speed.match(/swim\s*(\d+)\s*ft\.?/) || [])[1]) || 0
+			let burrow = parseInt((data?.stats.speed.match(/burrow\s*(\d+)\s*ft\.?/) || [])[1]) || 0
+			let climb = parseInt((data?.stats.speed.match(/climb\s*(\d+)\s*ft\.?/) || [])[1]) || 0
+			let walk = parseInt((data?.stats.speed.match(/^(\d+)\s*ft\.?/) || [])[1]) || 0
+				
+			if (walk) output.push({
+				name: "Walk",
+				value: walk,
+				comment: "",
+				unit: "ft"
+			})
+			if (fly) output.push({
+				name: "Fly",
+				value: fly,
+				comment: isHover ? "hover" : "",
+				unit: "ft"
+			})
+			if (climb) output.push({
+				name: "Climb",
+				value: climb,
+				comment: "",
+				unit: "ft"
+			})
+			if (swim) output.push({
+				name: "Swim",
+				value: swim,
+				comment: "",
+				unit: "ft"
+			})
+			if (burrow) output.push({
+				name: "Burrow",
+				value: burrow,
+				comment: "",
+				unit: "ft"
+			})
+			return output
+		})()
 	};
 
 	outputData.abilities = {
@@ -234,6 +256,14 @@ export function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: s
 
 	outputData.misc = {
 		legActionsPerRound: data.stats.legendaryActionsPerRound || 3,
+		telepathy: (() => {
+			if (!data.stats.languages) return 0;
+			for (let s of data.stats.languages ?? []) {
+				if (s.toLowerCase().includes("telepathy")) return parseInt(s.replace(/[a-zA-Z]/g, ""));
+			}
+			return 0;
+		})(),
+		passivePerceptionOverride: null,
 		featureHeaderTexts: {
 			// CritterDB has very little support for this
 			features: "",

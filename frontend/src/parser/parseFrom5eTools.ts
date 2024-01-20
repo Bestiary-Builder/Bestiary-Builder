@@ -1,4 +1,4 @@
-import {type CasterSpells, type Statblock, type InnateSpellsList, defaultStatblock, getXPbyCR, spellListFlattened, type SpellSlotEntity, type SkillsEntity} from "../generic/types";
+import {type CasterSpells, type Statblock, type InnateSpellsList, defaultStatblock, getXPbyCR, spellListFlattened, type SpellSlotEntity, type SkillsEntity, type SpeedEntity, type SenseEntity} from "../generic/types";
 import {abilityParser, capitalizeFirstLetter} from "./utils";
 
 export function parseFrom5eTools(data: any): [Statblock, {[key: string]: string[]}] {
@@ -34,7 +34,7 @@ export function parseFrom5eTools(data: any): [Statblock, {[key: string]: string[
 		race: (() => {
 			let typeData = data.type;
 			if (typeof typeData == "string") return capitalizeFirstLetter(typeData);
-
+			console.log(typeData)
 			let baseType = typeData.type;
 
 			if (!typeData?.tags || typeData?.tags.length == 0) return capitalizeFirstLetter(baseType);
@@ -69,59 +69,71 @@ export function parseFrom5eTools(data: any): [Statblock, {[key: string]: string[
 			if (!data.languages) return [];
 			return data?.languages.filter((l: string) => !l.includes("telepathy"));
 		})(),
-		senses: {
-			darkvision: (() => {
-				for (let s of data?.senses ?? []) {
-					if (s.includes("darkvision")) return parseInt(s.replace(/[a-zA-Z]/g, ""));
-				}
-				return 0;
-			})(),
-			blindsight: (() => {
-				for (let s of data?.senses ?? []) {
-					if (s.includes("blindsight")) return parseInt(s.replace(/[a-zA-Z]/g, ""));
-				}
-				return 0;
-			})(),
-			isBlind: (data?.senses ?? []).find((str: string) => str.includes("blind beyond this radius")) ?? false,
-			truesight: (() => {
-				for (let s of data?.senses ?? []) {
-					if (s.includes("truesight")) return parseInt(s.replace(/[a-zA-Z]/g, ""));
-				}
-				return 0;
-			})(),
-			tremorsense: (() => {
-				for (let s of data?.senses ?? []) {
-					if (s.includes("tremorsense")) return parseInt(s.replace(/[a-zA-Z]/g, ""));
-				}
-				return 0;
-			})(),
-			telepathy: (() => {
-				if (!data.languages) return 0;
-				for (let s of data?.languages ?? []) {
-					if (s.includes("telepathy")) return parseInt(s.replace(/[a-zA-Z]/g, ""));
-				}
-				return 0;
-			})(),
-			passivePerceptionOverride: (() => {
-				let num = data.passive;
+		senses: (() => {
+			let output : SenseEntity[]= []
+			for (let s of data.senses ?? []) {
+				let value = parseInt(s.replace(/[a-zA-Z]/g, ""))
+				let name = ""
+				let isBlind = false
 
-				if (data?.skill?.perception) {
-					if (10 + parseInt(data?.skill?.perception) == num) return null;
-				}
-
-				if (10 + (Math.floor(data.wis / 2) - 5) == num) return null;
-
-				return num;
-			})()
-		},
-		speed: {
-			walk: parseInt(data?.speed?.walk) || data?.speed?.walk?.number || 0,
-			fly: parseInt(data?.speed?.fly) || data?.speed?.fly?.number || 0,
-			isHover: data?.speed?.canHover || false,
-			burrow: parseInt(data?.speed?.burrow) || data?.speed?.burrow?.number || 0,
-			swim: parseInt(data?.speed?.swim) || data?.speed?.swim?.number || 0,
-			climb: parseInt(data?.speed?.climb) || data?.speed?.climb?.number || 0
-		}
+				if (s.toLowerCase().includes("dark")) name = "Darkvision"
+				else if (s.toLowerCase().includes("blind")) {
+					name = "Blindsight"
+					isBlind = !!(data.senses ?? []).find((str: string) => str.includes("blind beyond this radius"))
+				} 
+				else if (s.toLowerCase().includes("true")) name = "Truesight"
+				else if (s.toLowerCase().includes("tremor")) name = "Tremorsense"
+				
+				if (name) output.push({
+					name: name,
+					value: value,
+					unit: "ft",
+					comment: isBlind ? "blind beyond this radius" : ""
+				}) ;
+			}
+			return output
+		})(),
+		speed: (() => {
+			let output : SpeedEntity[] = []
+			let fly = parseInt(data?.speed?.fly) || data?.speed?.fly?.number || 0
+			let isHover = data?.speed?.canHover || false
+			let swim =parseInt(data?.speed?.swim) || data?.speed?.swim?.number || 0
+			let burrow = parseInt(data?.speed?.burrow) || data?.speed?.burrow?.number || 0
+			let climb = parseInt(data?.speed?.climb) || data?.speed?.climb?.number || 0
+			let walk = parseInt(data?.speed?.walk) || data?.speed?.walk?.number || 0
+				
+			if (walk) output.push({
+				name: "Walk",
+				value: walk,
+				comment: "",
+				unit: "ft"
+			})
+			if (fly) output.push({
+				name: "Fly",
+				value: fly,
+				comment: isHover ? "hover" : "",
+				unit: "ft"
+			})
+			if (climb) output.push({
+				name: "Climb",
+				value: climb,
+				comment: "",
+				unit: "ft"
+			})
+			if (swim) output.push({
+				name: "Swim",
+				value: swim,
+				comment: "",
+				unit: "ft"
+			})
+			if (burrow) output.push({
+				name: "Burrow",
+				value: burrow,
+				comment: "",
+				unit: "ft"
+			})
+			return output
+		})()
 	};
 
 	outputData.abilities = {
@@ -244,7 +256,7 @@ export function parseFrom5eTools(data: any): [Statblock, {[key: string]: string[
 
 	outputData.defenses = {
 		hp: {
-			numOfHitDie: data.hp.formula.split("d")[0],
+			numOfHitDie: parseInt(data.hp.formula.split("d")[0]),
 			sizeOfHitDie: parseInt((data.hp.formula.match(/\dd(\d+)/) || [])[1]) || 6,
 			// critterDB doesn't handle this properly (see Demilich)
 			override: null
@@ -581,7 +593,24 @@ export function parseFrom5eTools(data: any): [Statblock, {[key: string]: string[
 			if ((data?.legendary ?? []).length > 0) return 3;
 			return 0;
 		})(),
+		telepathy: (() => {
+			if (!data.languages) return 0;
+			for (let s of data?.languages ?? []) {
+				if (s.includes("telepathy")) return parseInt(s.replace(/[a-zA-Z]/g, ""));
+			}
+			return 0;
+		})(),
+		passivePerceptionOverride: (() => {
+			let num = data.passive;
 
+			if (data?.skill?.perception) {
+				if (10 + parseInt(data?.skill?.perception) == num) return null;
+			}
+
+			if (10 + (Math.floor(data.wis / 2) - 5) == num) return null;
+
+			return num;
+		})(),
 		featureHeaderTexts: {
 			features: "",
 			actions: (data?.actionHeader ?? []).join("\n") ?? "",

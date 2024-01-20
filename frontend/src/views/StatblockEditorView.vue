@@ -144,32 +144,97 @@
 						</LabelledComponent>
 					</div>
 					<h2 class="group-header">Speed</h2>
-					<div class="editor-field__container three-wide">
-						<LabelledNumberInput v-model="data.core.speed.walk" title="Walk speed" />
-						<LabelledNumberInput v-model="data.core.speed.fly" title="Fly speed" />
-						<LabelledComponent title="Hover">
-							<span>Hover yes/no <input type="checkbox" step="5" v-model="data.core.speed.isHover" id="hover" /></span>
-						</LabelledComponent>
-						<LabelledNumberInput v-model="data.core.speed.swim" title="Swim speed" />
-						<LabelledNumberInput v-model="data.core.speed.burrow" title="Burrow speed" />
-						<LabelledNumberInput v-model="data.core.speed.climb" title="Climb speed" />
-					</div>
+					<draggable
+						:list="data.core.speed"
+						:itemKey="getDraggableKey()"
+						handle=".handle"
+						class="editor-field__container two-wide"
+						:animation="150"
+					>
+						<template #item="{element, index}">
+							<LabelledComponent :title="element.name">
+								<div class="grid eight-two">
+									<LabelledNumberInput title="" v-model="data.core.speed[index].value" />
+									<select v-model="data.core.speed[index].unit" class="ghost unit-selector">
+										<option>ft</option>
+										<option>m</option>
+										<option>km</option>
+										<option>mi</option>
+										<option>none</option>
+									</select>
+								</div>
+								<div class="grid eight-two">
+									<input type="text" v-model="data.core.speed[index].comment" placeholder="Comment..."/>
+									<span class="grid five-five">
+										<font-awesome-icon :icon="['fas', 'trash']" v-tooltip="'Delete this speed'" class="button-icon" @click="data.core.speed.splice(index, 1);"/>											
+										<font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle button-icon"/>											
+									</span>
+								</div>
+							</LabelledComponent>
+						</template>
+						<template #footer>
+							<LabelledComponent title="Add speed" takes-custom-text-input>
+								<v-select 
+									v-model="newSpeedName" 
+									:options="['Walk', 'Swim', 'Fly', 'Climb', 'Burrow']" 
+									:taggable="true" 
+									:pushTags="true" 
+									inputId="addspeed" 
+								/>
+								<button class="btn" @click="addNewSpeed">Create</button>
+							</LabelledComponent>
+						</template>
+					</draggable>
 					<h2 class="group-header">Senses</h2>
-					<div class="editor-field__container three-wide">
-						<LabelledNumberInput v-model="data.core.senses.darkvision" title="Darkvision" />
-						<LabelledNumberInput v-model="data.core.senses.blindsight" title="Blindsight" />
-						<LabelledComponent title="Blind beyond">
-							<span>this radius? <input type="checkbox" step="5" v-model="data.core.senses.isBlind" id="blindbeyond" /></span>
-						</LabelledComponent>
-						<LabelledNumberInput v-model="data.core.senses.truesight" title="Truesight" />
-						<LabelledNumberInput v-model="data.core.senses.tremorsense" title="Tremorsense" />
-						<LabelledNumberInput v-model="data.core.senses.passivePerceptionOverride" title="Passive perc ovverride" :step=1 :is-clearable="true" />
-					</div>
+					<draggable
+						:list="data.core.senses"
+						:itemKey="getDraggableKey()"
+						handle=".handle"
+						class="editor-field__container two-wide"
+						:animation="150"
+					>
+						<template #item="{element, index}">
+							<LabelledComponent :title="element.name">
+								<div class="grid eight-two">
+									<LabelledNumberInput title="" v-model="element.value" />
+									<select v-model="element.unit" class="ghost unit-selector">
+										<option>ft</option>
+										<option>m</option>
+										<option>km</option>
+										<option>mi</option>
+										<option>none</option>
+									</select>
+								</div>
+								<div class="grid eight-two">
+									<input type="text" v-model="element.comment" placeholder="Comment..."/>
+									<span class="grid five-five">
+										<font-awesome-icon :icon="['fas', 'trash']" v-tooltip="'Delete this sense'" class="button-icon" @click="data.core.senses.splice(index, 1);"/>											
+										<font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle button-icon"/>											
+									</span>
+								</div>
+							</LabelledComponent>
+						</template>
+						<template #footer>
+							<LabelledComponent title="Add sense" takes-custom-text-input>
+								<v-select 
+									v-model="newSenseName" 
+									:options="['Darkvision', 'Blindsight', 'Truesight', 'Tremorsense']" 
+									:taggable="true" 
+									:pushTags="true" 
+									inputId="addsense" 
+									placeholder="Choose sense" 
+								/>
+								<button class="btn" @click="data.core.senses.push({name: newSenseName, value: 30, unit: 'ft', comment: ''})">Create</button>
+							</LabelledComponent>
+							<LabelledNumberInput v-model="data.misc.passivePerceptionOverride" title="Passive perc override" :step=1 :is-clearable="true" />
+						</template>
+					</draggable>
+					<h2 class="group-header">Misc</h2>
 					<div class="editor-field__container two-wide">
 						<LabelledComponent title="Languages"  takes-custom-text-input>
 							<v-select placeholder="Select a Language or type one" v-model="data.core.languages" multiple :deselectFromDropdown="true" :closeOnSelect="false" :options="languages" :taggable="true" :pushTags="true" inputId="languages" />
 						</LabelledComponent>
-						<LabelledNumberInput v-model="data.core.senses.telepathy" title="Telepathy" />
+						<LabelledNumberInput v-model="data.misc.telepathy" title="Telepathy" />
 					</div>
 				</div>
 
@@ -224,13 +289,7 @@
 					</div>
 					<h2 class="group-header">Skills</h2>
 					<div class="editor-field__container two-wide">
-						<div v-for="(skill, index) in data.abilities.skills" class="flow-vertically">
-							<v-select
-								placeholder="Select a skill"
-								v-model="skill.skillName"
-								:options="['Acrobatics', 'Animal Handling', 'Arcana', 'Athletics', 'Deception', 'History', 'Insight', 'Intimidation', 'Investigation', 'Medicine', 'Nature', 'Perception', 'Performance', 'Persuasion', 'Religion', 'Sleight of Hand', 'Stealth', 'Survival']"
-								:clearable="false"
-							/>
+						<LabelledComponent v-for="(skill, index) in data.abilities.skills" :title="skill.skillName">
 							<div class="button-container">
 								<p><label :for="skill.skillName + 'prof'"> Proficient</label> <input type="checkbox" v-model="skill.isProficient" @click="disableOtherSkills(index, 'prof', skill.isProficient)" :id="skill.skillName + 'prof'" /></p>
 								<p><label :for="skill.skillName + 'exp'"> Expertise </label> <input type="checkbox" v-model="skill.isExpertise" @click="disableOtherSkills(index, 'exp', skill.isExpertise)" :id="skill.skillName + 'exp'" /></p>
@@ -239,9 +298,14 @@
 							<div>
 								<LabelledNumberInput v-model="skill.override" title="" :step=1 :is-clearable="true" />
 							</div>
-							<button class="btn" @click="deleteSkill(index)">delete</button>
-						</div>
+							<button class="btn" @click="deleteSkill(index)">Delete</button>
+						</LabelledComponent>
 						<LabelledComponent title="Add new skill">
+							<v-select
+								placeholder="Select a skill"
+								v-model="newSkillName"
+								:options="['Acrobatics', 'Animal Handling', 'Arcana', 'Athletics', 'Deception', 'History', 'Insight', 'Intimidation', 'Investigation', 'Medicine', 'Nature', 'Perception', 'Performance', 'Persuasion', 'Religion', 'Sleight of Hand', 'Stealth', 'Survival']"
+							/>
 							<button class="btn editor-field__plus-button" id="addnewskill" @click="addNewSkill()">New Skill</button>
 						</LabelledComponent>
 					</div>
@@ -530,8 +594,8 @@ export default defineComponent({
 				mythic: "New Mythic Action",
 				regional: "New Regional Effect"
 			},
-			toolsjson: "" as string,
-			bestiaryBuilderJson: "" as string,
+			toolsjson: "",
+			bestiaryBuilderJson: "",
 			notices: {} as {[key: string]: string[]},
 			madeChanges: false,
 			resistanceList: [
@@ -590,7 +654,10 @@ export default defineComponent({
 			draggableKeyIndex: 0,
 			shouldShowEditor: false,
 			isOwner: false,
-			isEditor: false
+			isEditor: false,
+			newSkillName: "",
+			newSpeedName: "",
+			newSenseName: ""
 		};
 	},
 	methods: {
@@ -607,7 +674,6 @@ export default defineComponent({
 				[this.data, this.notices] = parseFrom5eTools(JSON.parse(this.toolsjson));
 				this.toolsjson = "";
 				toast.success("Successfully imported " + this.data.description.name);
-				this.showImportModal = false;
 			} catch (e) {
 				console.error(e);
 				toast.error("Failed to import this creature");
@@ -618,6 +684,7 @@ export default defineComponent({
 				let creature = JSON.parse(this.bestiaryBuilderJson)
 				if (Array.isArray(creature)) creature = creature[0]
 				this.data = creature;
+				this.notices = {}
 				this.bestiaryBuilderJson = "";
 				toast.success("Successfully imported " + this.data.description.name);
 				this.showImportModal = false;
@@ -701,16 +768,48 @@ export default defineComponent({
 			this.data.description.cr = cr;
 		},
 		addNewSkill(): void {
-			let index = 0;
-			if (this.data.abilities.skills?.length) index = this.data.abilities.skills?.length;
-			if (!this.data.abilities.skills) this.data.abilities.skills = [];
-			this.data.abilities.skills[index] = {
-				skillName: "" as string,
+			if (!this.newSkillName) {
+				this.$toast.error("No skill chosen.")
+				return
+			}
+			if (this.data.abilities.skills.some(obj => obj.skillName === this.newSkillName)) {
+				this.$toast.error("You already have this skill.")
+				return
+			}
+
+			this.data.abilities.skills.push({
+				skillName: this.newSkillName as string,
 				isHalfProficient: false,
 				isProficient: true,
 				isExpertise: false,
 				override: null
-			} as SkillsEntity;
+			});
+
+			this.newSkillName = ""
+		},
+		addNewSpeed() {
+			if (!this.newSpeedName) {
+				this.$toast.error("No speed chosen.")
+				return
+			}
+			if (this.data.core.speed.some(obj => obj.name === this.newSpeedName)) {
+				this.$toast.error("You already have this speed.")
+				return
+			}
+			this.data.core.speed.push({name: this.newSpeedName, value: 30, unit: 'ft', comment: ''})
+			this.newSpeedName = ""
+		},
+		addNewSense() {
+			if (!this.newSenseName) {
+				this.$toast.error("No sense chosen.")
+				return
+			}
+			if (this.data.core.senses.some(obj => obj.name === this.newSenseName)) {
+				this.$toast.error("You already have this sense.")
+				return
+			}
+			this.data.core.senses.push({name: this.newSenseName, value: 30, unit: 'ft', comment: ''})
+			this.newSenseName = ""
 		},
 		disableOtherSkills(index: number, type: "prof" | "exp" | "halfprof", value: boolean): void {
 			if (!value && this.data.abilities.skills) {
@@ -1111,20 +1210,23 @@ export default defineComponent({
 	}
 }
 
+.button-icon {
+	cursor: pointer;
+	color: orangered;
+	padding-top: 15px;
+	padding-bottom: 8px;
+	.scale-on-hover(1.2);
+	margin: auto;
+}
+
 .feature-button__container {
 	display: flex;
 	gap: 0.5rem;
 	justify-content: space-between;
 
 	.delete-button {
-		translate: 0 14.5px;
-		cursor: pointer;
-		display: flex;
-		height: fit-content;
-		color: orangered;
-		justify-content: center;
-		align-items: center;
-		.scale-on-hover(1.2);
+		padding-top: 9px !important;
+		.button-icon();
 	}
 }
 
@@ -1172,7 +1274,6 @@ export default defineComponent({
 }
 
 .handle {
-	float: left;
 	padding-top: 15px;
 	padding-bottom: 8px;
 	cursor: grab;
@@ -1181,5 +1282,10 @@ export default defineComponent({
 	&:active {
 		cursor: grabbing;
 	}
+}
+
+.unit-selector {
+	height: 40px;
+	translate: 0 5px;
 }
 </style>
