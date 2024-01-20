@@ -180,6 +180,7 @@
 									:taggable="true" 
 									:pushTags="true" 
 									inputId="addspeed" 
+									placeholder="Select speed"
 								/>
 								<button class="btn" @click="addNewSpeed">Create</button>
 							</LabelledComponent>
@@ -222,7 +223,7 @@
 									:taggable="true" 
 									:pushTags="true" 
 									inputId="addsense" 
-									placeholder="Choose sense" 
+									placeholder="Select sense" 
 								/>
 								<button class="btn" @click="data.core.senses.push({name: newSenseName, value: 30, unit: 'ft', comment: ''})">Create</button>
 							</LabelledComponent>
@@ -302,7 +303,7 @@
 						</LabelledComponent>
 						<LabelledComponent title="Add new skill">
 							<v-select
-								placeholder="Select a skill"
+								placeholder="Select skill"
 								v-model="newSkillName"
 								:options="['Acrobatics', 'Animal Handling', 'Arcana', 'Athletics', 'Deception', 'History', 'Insight', 'Intimidation', 'Investigation', 'Medicine', 'Nature', 'Perception', 'Performance', 'Persuasion', 'Religion', 'Sleight of Hand', 'Stealth', 'Survival']"
 							/>
