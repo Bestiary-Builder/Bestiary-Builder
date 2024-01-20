@@ -1,4 +1,4 @@
-import {MongoClient, ServerApiVersion, Db, ObjectId, Collection, CommandFailedEvent, CommandSucceededEvent} from "mongodb";
+import {MongoClient, ServerApiVersion, Db, ObjectId, Collection, CommandFailedEvent, CommandSucceededEvent, AnyBulkWriteOperation} from "mongodb";
 import {generateUserSecret} from "./server";
 import {log} from "./logger";
 //Connect to database
@@ -26,17 +26,117 @@ export async function startConnection() {
 		log.log("database", `Established connection to ${database.databaseName} with ${(await database.collections()).length} collections.`);
 
 		//Database change
-		const runDataBaseChange = false;
+		const runDataBaseChange = true;
 		if (runDataBaseChange) {
-			//User additions
-			await addValue(collections.users, "joinedAt", Date.now());
-			await addValue(collections.users, "bestiaries", []);
-			await addValue(collections.users, "bookmarks", []);
-			await addValue(collections.users, "supporter", 0);
-			//Bestiary additions
-			await addValue(collections.bestiaries, "bookmarks", 0);
-			await addValue(collections.bestiaries, "viewCount", 0);
-			await addValue(collections.bestiaries, "editors", []);
+			//Rename properties
+			await collections.creatures.updateMany(
+				{
+					$or: [{"stats.misc.telepathy": {$exists: false}}, {"stats.misc.passivePerceptionOverride": {$exists: false}}]
+				},
+				{
+					$rename: {
+						"stats.core.senses.telepathy": "stats.misc.telepathy",
+						"stats.core.senses.passivePerceptionOverride": "stats.misc.passivePerceptionOverride"
+					}
+				}
+			);
+			log.log("database", "Moved some creature properties.");
+			//Change speed & senses type
+			let foundInfo = (await collections.creatures.aggregate([{$match: {$nor: [{"stats.core.speed": {$type: "array"}}]}}, {$project: {_id: "$_id", speed: "$stats.core.speed", senses: "$stats.core.senses"}}]).toArray()) as {
+				_id: ObjectId;
+				speed: {walk: number; fly: number; isHover: boolean; burrow: number; swim: number; climb: number};
+				senses: {
+					darkvision: number;
+					blindsight: number;
+					isBlind: boolean;
+					truesight: number;
+					tremorsense: number;
+				};
+			}[];
+			log.info(`Found ${foundInfo.length} creatures with old speed and senses format.`);
+			if (foundInfo.length > 0) {
+				let convertedInfoArray = foundInfo.map((info) => {
+					let newSpeed = [
+						{
+							name: "Walk",
+							value: info.speed.walk ?? 0,
+							unit: "ft",
+							comment: ""
+						},
+						{
+							name: "Fly",
+							value: info.speed.fly ?? 0,
+							unit: "ft",
+							comment: info.speed.isHover ? "hover" : ""
+						},
+						{
+							name: "Burrow",
+							value: info.speed.burrow ?? 0,
+							unit: "ft",
+							comment: ""
+						},
+						{
+							name: "Swim",
+							value: info.speed.swim ?? 0,
+							unit: "ft",
+							comment: ""
+						},
+						{
+							name: "Climb",
+							value: info.speed.climb ?? 0,
+							unit: "ft",
+							comment: ""
+						}
+					];
+					let newSenses = [
+						{
+							name: "Darkvision",
+							value: info.senses.darkvision ?? 0,
+							unit: "ft",
+							comment: ""
+						},
+						{
+							name: "Blindsight",
+							value: info.senses.blindsight ?? 0,
+							unit: "ft",
+							comment: info.senses.isBlind ? "blind beyond this radius" : ""
+						},
+						{
+							name: "Truesight",
+							value: info.senses.truesight ?? 0,
+							unit: "ft",
+							comment: ""
+						},
+						{
+							name: "Tremorsense",
+							value: info.senses.tremorsense ?? 0,
+							unit: "ft",
+							comment: ""
+						}
+					];
+					return {
+						_id: info._id,
+						speed: newSpeed,
+						senses: newSenses
+					};
+				});
+				let bulkWriteOperations = [] as AnyBulkWriteOperation<Creature>[];
+				for (let info of convertedInfoArray) {
+					bulkWriteOperations.push({
+						updateOne: {
+							filter: {_id: info._id},
+							update: {
+								$set: {
+									"stats.core.speed": info.speed,
+									"stats.core.senses": info.senses
+								}
+							}
+						}
+					});
+				}
+				await collections.creatures.bulkWrite(bulkWriteOperations);
+				log.log("database", "Updated creature speed & senses format.");
+			}
 		}
 	} catch (err: any) {
 		log.log("critical", err);
