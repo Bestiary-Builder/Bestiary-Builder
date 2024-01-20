@@ -1,3 +1,8 @@
+## v1.1.2
+_January 20th, 2024_
+
+- Senses and speed have been reworked to be more flexible, covering a wider range of use cases. You can now set the unit (ft, m, km, mi, none) as well as set flavour text for each. You can now have custom senses and speed as well. 
+
 ## v1.1.1
 _January 19th, 2024_
 
