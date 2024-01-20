@@ -28,7 +28,7 @@ export async function startConnection() {
 		//Database change
 		const runDataBaseChange = false;
 		if (runDataBaseChange) {
-		}
+	}
 	} catch (err: any) {
 		log.log("critical", err);
 		// Ensures that the client will close on error
