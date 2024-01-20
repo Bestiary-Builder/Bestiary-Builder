@@ -4,10 +4,10 @@ import {app} from "../server";
 import {time, timeEnd} from "console";
 
 //Install pip modules
-spawn("python3", ["scripts/installPipModules.py"]);
+spawn("python", ["scripts/installPipModules.py"]);
 //Script
 async function runPythonScript(args: string) {
-	const childProcess = spawn("python3", ["scripts/python.py", args]);
+	const childProcess = spawn("python", ["scripts/python.py", args]);
 	childProcess.stdout.setEncoding("utf-8");
 	childProcess.stderr.setEncoding("utf-8");
 	let output: string | null;
@@ -26,7 +26,7 @@ async function runPythonScript(args: string) {
 	});
 }
 //Run
-runTest(10);
+runTest(1);
 async function runTest(amount: number) {
 	time("python");
 	let scriptsDone = 1;
