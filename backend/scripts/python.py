@@ -70,7 +70,7 @@ def parse_validation_error(data: Union[Dict, List], the_error: ValidationError) 
 
 # actual logic
 try:
-    validation.validate(json.dumps(automation))
+    validation.validate(automation)
     print("")
     exit(0)
 except ValidationError as e:
