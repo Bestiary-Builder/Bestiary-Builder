@@ -1,4 +1,9 @@
-import{M as r}from"./index-5Jdbla-E.js";import{B as o}from"./Breadcrumbs-A9Cqqlm_.js";import{d as s,_ as i,r as d,o as n,c as t,a as u,b as c,i as l,F as m}from"./index-6UXSO-Nr.js";const h=`## v1.1.2
+import{M as r}from"./index-5Jdbla-E.js";import{B as o}from"./Breadcrumbs-TT1IAUNa.js";import{d as s,_ as i,r as d,o as n,c as t,a as u,b as l,i as c,F as m}from"./index-NPQofO4z.js";const h=`## v1.1.3
+_January 21th, 2024_
+
+- Saving automation will validate if it is formatted as valid avrae automation and send out the relevant error if not. This should make creating automation for your creatures much easier!
+
+## v1.1.2
 _January 20th, 2024_
 
 - Senses and speed have been reworked to be more flexible, covering a wider range of use cases. You can now set the unit (ft, m, km, mi, none) as well as set flavour text for each. You can now have custom senses and speed as well. 
@@ -76,4 +81,4 @@ _January 10th, 2024_
 _December 10th, 2023_
 
 -   Development started
-`,p=r(),g=s({data(){return{content:p.render(h)}},components:{Breadcrumbs:o}}),_={class:"content markdown less-wide"},b=["innerHTML"];function y(e,f,v,w,k,x){const a=d("Breadcrumbs");return n(),t(m,null,[u(a,{routes:[{path:"",text:"Changelog",isCurrent:!0}],isLessWide:!0}),c("div",_,[e.content?(n(),t("div",{key:0,innerHTML:e.content},null,8,b)):l("",!0)])],64)}const C=i(g,[["render",y]]);export{C as default};
+`,p=r(),g=s({data(){return{content:p.render(h)}},components:{Breadcrumbs:o}}),_={class:"content markdown less-wide"},f=["innerHTML"];function v(e,y,b,w,k,x){const a=d("Breadcrumbs");return n(),t(m,null,[u(a,{routes:[{path:"",text:"Changelog",isCurrent:!0}],isLessWide:!0}),l("div",_,[e.content?(n(),t("div",{key:0,innerHTML:e.content},null,8,f)):c("",!0)])],64)}const C=i(g,[["render",v]]);export{C as default};

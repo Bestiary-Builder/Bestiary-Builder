@@ -1,4 +1,4 @@
-import{M as o}from"./index-5Jdbla-E.js";import{B as s}from"./Breadcrumbs-A9Cqqlm_.js";import{d as a,_ as r,r as l,o as n,c as t,a as c,b as d,i as u,F as h}from"./index-6UXSO-Nr.js";const y=`## General scope
+import{M as o}from"./index-5Jdbla-E.js";import{B as s}from"./Breadcrumbs-TT1IAUNa.js";import{d as a,_ as r,r as l,o as n,c as t,a as c,b as d,i as u,F as h}from"./index-NPQofO4z.js";const y=`## General scope
 
 This policy covers personally identifiable information collected or
 stored by Bestiary Builder on its servers in relation to the service it
