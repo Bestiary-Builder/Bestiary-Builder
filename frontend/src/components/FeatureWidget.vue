@@ -36,7 +36,7 @@
 
 					<hr />
 					<div class="automation-editor">
-						<span class="error"> {{ errorMessage }} </span>
+						<span class="yaml-error" v-html="errorMessage"> </span>
 						<CodeEditor width="100%" :wrap="true" :languages="[['yaml', 'YAML']]" v-model="automationString" theme="obsidian" height="380px" font-size="12px"> </CodeEditor>
 					</div>
 				</section>
@@ -130,11 +130,28 @@ export default defineComponent({
 		},
 		saveAutomation(shouldNotify: boolean = false) {
 			try {
-				YAML.parse(this.automationString);
-				this.feat.automation = YAML.parse(this.automationString);
-				if (shouldNotify) toast.success("Saved Automation!");
+				let parsed = YAML.parse(this.automationString);
+
+				fetch("/api/validate/automation", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify({
+						data: parsed
+					})
+				}).then((response) => response.json())
+				.then((data) => {
+					if (!data.success) {
+						toast.error('YAML contains Error, did not save automation')
+						console.log(data)
+						this.errorMessage = data.error
+					} else {
+						this.feat.automation = YAML.parse(this.automationString);
+						if (shouldNotify) toast.success("Saved Automation!");
+					}
+				});
 			} catch (err) {
-				// @ts-ignore
 				if (shouldNotify) toast.error("YAML contains Error, did not save automation");
 			}
 		},
@@ -205,7 +222,7 @@ export default defineComponent({
 		}
 	},
 	watch: {
-		automationString(newVal, oldVal) {
+		automationString() {
 			this.validateYaml();
 
 			if (this.feat.name == "New Feature" || this.feat.description == "") {
@@ -257,10 +274,7 @@ export default defineComponent({
 	padding-right: 2rem;
 }
 
-.error {
-	color: red;
-	font-weight: bold;
-}
+
 
 textarea {
 	width: 100%;
@@ -308,5 +322,25 @@ input {
 
 a {
 	color: orangered;
+}
+</style>
+
+<style lang="less">
+.yaml-error {
+	color: var(--color-destructive);
+	display: flex;
+  	flex-direction: column;
+}
+
+.validation-error-header{
+  margin: 0 0 0.5em 0;
+}
+
+.validation-error-list{
+  margin: 0 0 0.25em 0;
+}
+
+.validation-error-item{
+  margin: 0;
 }
 </style>
