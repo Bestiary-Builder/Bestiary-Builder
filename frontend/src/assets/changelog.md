@@ -1,5 +1,5 @@
 ## v1.1.3
-_January 21th, 2024_
+_January 21st, 2024_
 
 - Saving automation will validate if it is formatted as valid avrae automation and send out the relevant error if not. This should make creating automation for your creatures much easier!
 
