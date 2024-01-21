@@ -1,5 +1,5 @@
-import{M as r}from"./index-5Jdbla-E.js";import{B as o}from"./Breadcrumbs-TT1IAUNa.js";import{d as s,_ as i,r as d,o as n,c as t,a as u,b as l,i as c,F as m}from"./index-NPQofO4z.js";const h=`## v1.1.3
-_January 21th, 2024_
+import{M as r}from"./index-5Jdbla-E.js";import{B as o}from"./Breadcrumbs-PaKSoaiD.js";import{d as s,_ as i,r as d,o as n,c as t,a as u,b as l,i as c,F as m}from"./index-IcooMcQn.js";const h=`## v1.1.3
+_January 21st, 2024_
 
 - Saving automation will validate if it is formatted as valid avrae automation and send out the relevant error if not. This should make creating automation for your creatures much easier!
 
