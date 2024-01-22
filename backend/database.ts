@@ -26,7 +26,7 @@ export async function startConnection() {
 		log.log("database", `Established connection to ${database.databaseName} with ${(await database.collections()).length} collections.`);
 
 		//Database change
-		const runDataBaseChange = true;
+		const runDataBaseChange = false;
 		if (runDataBaseChange) {
 			//Rename properties
 			let response = await collections.creatures.updateMany(

@@ -3,9 +3,12 @@ import {log} from "../logger";
 
 import basicExamples from "../staticData/basicExamples.json";
 import srdFeatures from "../staticData/srdFeatures.json";
-import textOnlyFeatures from "../staticData/textOnlyFeatures.json"
-// @ts-ignore
-const allSrdFeatures  = Object.keys(textOnlyFeatures).map(key => ({ name: key, description: textOnlyFeatures[key], automation: null })).concat(srdFeatures);
+import textOnlyFeatures from "../staticData/textOnlyFeatures.json";
+const allSrdFeatures = Object.keys(textOnlyFeatures)
+	// @ts-ignore
+	.map((key) => ({name: key, description: textOnlyFeatures[key], automation: null}))
+	// @ts-ignore
+	.concat(srdFeatures);
 
 //Basic example
 app.get("/api/basic-examples/list", async (req, res) => {
@@ -13,7 +16,7 @@ app.get("/api/basic-examples/list", async (req, res) => {
 	return res.json(names);
 });
 app.get("/api/basic-example/:name", async (req, res) => {
-	let name = req.params.name;
+	let name = decodeURIComponent(req.params.name);
 	let data = basicExamples.find((a) => a.name == name);
 	if (data) {
 		return res.json(data);
@@ -27,7 +30,7 @@ app.get("/api/srd-features/list", async (req, res) => {
 	return res.json(names);
 });
 app.get("/api/srd-feature/:name", async (req, res) => {
-	let name = req.params.name;
+	let name = decodeURIComponent(req.params.name);
 	let data = allSrdFeatures.find((a) => a.name == name);
 	if (data) {
 		return res.json(data);

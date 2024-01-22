@@ -12,7 +12,7 @@
 							<a href="https://avrae.io/dashboard/characters" v-tooltip="'Edit automation on a character to get access to the full fledged automation builder.'"> Automation Editor</a>
 						</LabelledComponent>
 						<LabelledComponent title="Feature description">
-							<textarea rows="4" id="featuredescription" placeholder="Enter description" v-model="feat.description" /> 
+							<textarea rows="4" id="featuredescription" placeholder="Enter description" v-model="feat.description" />
 						</LabelledComponent>
 					</div>
 					<hr />
@@ -25,11 +25,11 @@
 							</div>
 						</LabelledComponent>
 						<LabelledComponent title="Import basic example">
-							<v-select :options="basicExamples" v-model="importedBasicExample" inputId="importbasicexample"/>
+							<v-select :options="basicExamples" v-model="importedBasicExample" inputId="importbasicexample" />
 							<button class="btn move-down" @click="importExample">Load</button>
 						</LabelledComponent>
 						<LabelledComponent title="Import SRD feature">
-							<v-select :options="srdFeatures" v-model="importedSrdFeature" inputId="importsrdfeature"/>
+							<v-select :options="srdFeatures" v-model="importedSrdFeature" inputId="importsrdfeature" />
 							<button class="btn move-down" @click="importSrdAction">Load</button>
 						</LabelledComponent>
 					</div>
@@ -45,7 +45,6 @@
 	</Teleport>
 </template>
 
-
 <script lang="ts">
 // @ts-ignore
 import CodeEditor from "simple-code-editor";
@@ -60,7 +59,7 @@ import YAML from "yaml";
 import {toast, handleApiResponse, type error} from "@/main";
 import {type FeatureEntity} from "../generic/types";
 import LabelledComponent from "./LabelledComponent.vue";
-import { parseDescIntoAutomation } from "@/parser/utils";
+import {parseDescIntoAutomation} from "@/parser/utils";
 export default defineComponent({
 	setup() {
 		const isModalOpen = ref(false);
@@ -79,8 +78,8 @@ export default defineComponent({
 		return {
 			modal,
 			isModalOpen,
-			openModal,
-		}
+			openModal
+		};
 	},
 	props: ["type", "index", "data"],
 	data() {
@@ -131,26 +130,30 @@ export default defineComponent({
 		saveAutomation(shouldNotify: boolean = false) {
 			try {
 				let parsed = YAML.parse(this.automationString);
-
-				fetch("/api/validate/automation", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json"
-					},
-					body: JSON.stringify({
-						data: parsed
+				if (parsed) {
+					fetch("/api/validate/automation", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json"
+						},
+						body: JSON.stringify({
+							data: parsed
+						})
 					})
-				}).then((response) => response.json())
-				.then((data) => {
-					if (!data.success) {
-						toast.error('YAML contains Error, did not save automation')
-						console.log(data)
-						this.errorMessage = data.error
-					} else {
-						this.feat.automation = YAML.parse(this.automationString);
-						if (shouldNotify) toast.success("Saved Automation!");
-					}
-				});
+						.then((response) => response.json())
+						.then((data) => {
+							if (!data.success) {
+								toast.error("YAML contains Error, did not save automation");
+								this.errorMessage = data.error;
+							} else {
+								this.feat.automation = YAML.parse(this.automationString);
+								if (shouldNotify) toast.success("Saved Automation!");
+							}
+						});
+				} else {
+					this.feat.automation = YAML.parse(this.automationString);
+					if (shouldNotify) toast.success("Saved Automation!");
+				}
 			} catch (err) {
 				if (shouldNotify) toast.error("YAML contains Error, did not save automation");
 			}
@@ -159,7 +162,7 @@ export default defineComponent({
 			if (!this.importedBasicExample) return;
 			//Fetch
 			let example = null as FeatureEntity | null;
-			await fetch("/api/basic-example/" + this.importedBasicExample).then(async (response: any) => {
+			await fetch("/api/basic-example/" + encodeURIComponent(this.importedBasicExample)).then(async (response: any) => {
 				let result = await handleApiResponse<FeatureEntity>(response);
 				if (result.success) example = result.data as FeatureEntity;
 				else {
@@ -186,7 +189,7 @@ export default defineComponent({
 			if (!this.importedSrdFeature) return;
 			//Fetch
 			let feature = null as FeatureEntity | null;
-			await fetch("/api/srd-feature/" + this.importedSrdFeature).then(async (response: any) => {
+			await fetch("/api/srd-feature/" + encodeURIComponent(this.importedSrdFeature)).then(async (response: any) => {
 				let result = await handleApiResponse<FeatureEntity>(response);
 				if (result.success) feature = result.data as FeatureEntity;
 				else {
@@ -196,7 +199,7 @@ export default defineComponent({
 			});
 			if (!feature) return;
 			//Add info to feat
-			if (this.feat.name == "New Feature" || !this.hasEditedName) this.feat.name = feature.name
+			if (this.feat.name == "New Feature" || !this.hasEditedName) this.feat.name = feature.name;
 			this.feat.description = feature.description.replace("$NAME$", this.data.description.name) ?? "";
 			this.automationString = YAML.stringify(feature.automation);
 			this.saveAutomation(false);
@@ -210,13 +213,13 @@ export default defineComponent({
 			toast.success("Successfully loaded: " + feature.name);
 		},
 		generateAutomation() {
-			const result  = parseDescIntoAutomation(this.feat.description, this.feat.name, 0)[0]
+			const result = parseDescIntoAutomation(this.feat.description, this.feat.name, 0)[0];
 			if (result) {
 				try {
 					this.automationString = YAML.stringify(result);
 					this.saveAutomation(false);
 				} catch {
-					toast.error("Something went when generating automation!")
+					toast.error("Something went when generating automation!");
 				}
 			}
 		}
@@ -274,8 +277,6 @@ export default defineComponent({
 	padding-right: 2rem;
 }
 
-
-
 textarea {
 	width: 100%;
 }
@@ -290,7 +291,7 @@ input {
 	grid-template-columns: 1fr 1fr;
 
 	&.uneven {
-		grid-template-columns: .48fr 1fr;
+		grid-template-columns: 0.48fr 1fr;
 	}
 }
 
@@ -312,12 +313,12 @@ input {
 }
 .buttons {
 	display: grid;
-	gap: .5rem;
+	gap: 0.5rem;
 	grid-template-columns: 1fr;
 }
 
 .move-down {
-	margin-top: .4rem;
+	margin-top: 0.4rem;
 }
 
 a {
@@ -329,18 +330,18 @@ a {
 .yaml-error {
 	color: var(--color-destructive);
 	display: flex;
-  	flex-direction: column;
+	flex-direction: column;
 }
 
-.validation-error-header{
-  margin: 0 0 0.5em 0;
+.validation-error-header {
+	margin: 0 0 0.5em 0;
 }
 
-.validation-error-list{
-  margin: 0 0 0.25em 0;
+.validation-error-list {
+	margin: 0 0 0.25em 0;
 }
 
-.validation-error-item{
-  margin: 0;
+.validation-error-item {
+	margin: 0;
 }
 </style>
