@@ -1,3 +1,9 @@
+## v1.1.4
+_January 22nd, 2024_
+
+- Fixed import of some srd features.
+- Fixed automation validition of empty automation.
+
 ## v1.1.3
 _January 21st, 2024_
 
