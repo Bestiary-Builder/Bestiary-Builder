@@ -130,27 +130,30 @@ export default defineComponent({
 		saveAutomation(shouldNotify: boolean = false) {
 			try {
 				let parsed = YAML.parse(this.automationString);
-
-				fetch("/api/validate/automation", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json"
-					},
-					body: JSON.stringify({
-						data: parsed
+				if (parsed) {
+					fetch("/api/validate/automation", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json"
+						},
+						body: JSON.stringify({
+							data: parsed
+						})
 					})
-				})
-					.then((response) => response.json())
-					.then((data) => {
-						if (!data.success) {
-							toast.error("YAML contains Error, did not save automation");
-							console.log(data);
-							this.errorMessage = data.error;
-						} else {
-							this.feat.automation = YAML.parse(this.automationString);
-							if (shouldNotify) toast.success("Saved Automation!");
-						}
-					});
+						.then((response) => response.json())
+						.then((data) => {
+							if (!data.success) {
+								toast.error("YAML contains Error, did not save automation");
+								this.errorMessage = data.error;
+							} else {
+								this.feat.automation = YAML.parse(this.automationString);
+								if (shouldNotify) toast.success("Saved Automation!");
+							}
+						});
+				} else {
+					this.feat.automation = YAML.parse(this.automationString);
+					if (shouldNotify) toast.success("Saved Automation!");
+				}
 			} catch (err) {
 				if (shouldNotify) toast.error("YAML contains Error, did not save automation");
 			}
