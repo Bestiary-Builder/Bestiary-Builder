@@ -1,4 +1,10 @@
-import{M as r}from"./index-5Jdbla-E.js";import{B as o}from"./Breadcrumbs-PaKSoaiD.js";import{d as s,_ as i,r as d,o as n,c as t,a as u,b as l,i as c,F as m}from"./index-IcooMcQn.js";const h=`## v1.1.3
+import{M as o}from"./index-5Jdbla-E.js";import{B as r}from"./Breadcrumbs-EvMmz6jn.js";import{d as s,_ as i,r as d,o as n,c as t,a as u,b as m,i as l,F as c}from"./index-FlJXEjuM.js";const h=`## v1.1.4
+_January 22nd, 2024_
+
+- Fixed import of some srd features.
+- Fixed automation validation of empty automation.
+
+## v1.1.3
 _January 21st, 2024_
 
 - Saving automation will validate if it is formatted as valid avrae automation and send out the relevant error if not. This should make creating automation for your creatures much easier!
@@ -81,4 +87,4 @@ _January 10th, 2024_
 _December 10th, 2023_
 
 -   Development started
-`,p=r(),g=s({data(){return{content:p.render(h)}},components:{Breadcrumbs:o}}),_={class:"content markdown less-wide"},f=["innerHTML"];function v(e,y,b,w,k,x){const a=d("Breadcrumbs");return n(),t(m,null,[u(a,{routes:[{path:"",text:"Changelog",isCurrent:!0}],isLessWide:!0}),l("div",_,[e.content?(n(),t("div",{key:0,innerHTML:e.content},null,8,f)):c("",!0)])],64)}const C=i(g,[["render",v]]);export{C as default};
+`,p=o(),g=s({data(){return{content:p.render(h)}},components:{Breadcrumbs:r}}),_={class:"content markdown less-wide"},f=["innerHTML"];function v(e,y,b,w,k,x){const a=d("Breadcrumbs");return n(),t(c,null,[u(a,{routes:[{path:"",text:"Changelog",isCurrent:!0}],isLessWide:!0}),m("div",_,[e.content?(n(),t("div",{key:0,innerHTML:e.content},null,8,f)):l("",!0)])],64)}const C=i(g,[["render",v]]);export{C as default};
