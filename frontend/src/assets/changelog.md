@@ -2,7 +2,7 @@
 _January 22nd, 2024_
 
 - Fixed import of some srd features.
-- Fixed automation validition of empty automation.
+- Fixed automation validation of empty automation.
 
 ## v1.1.3
 _January 21st, 2024_
