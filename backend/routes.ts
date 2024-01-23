@@ -148,6 +148,14 @@ export const routes = [
 			dynamic: true
 		}
 	},
+	// editing a creature in a bestiary (which one by url param)
+	{
+		path: "/automation-editor/:id/:featureType/:index",
+		name: "Automation Editor",
+		meta: {
+			dynamic: true
+		}
+	},
 	// user settings
 	{
 		path: "/user",

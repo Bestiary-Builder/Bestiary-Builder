@@ -36,6 +36,7 @@
 
 					<hr />
 					<div class="automation-editor">
+						<RouterLink :to="`../automation-editor/${id}/${type}/${index}`">text</RouterLink>
 						<span class="yaml-error" v-html="errorMessage"> </span>
 						<CodeEditor width="100%" :wrap="true" :languages="[['yaml', 'YAML']]" v-model="automationString" theme="obsidian" height="380px" font-size="12px"> </CodeEditor>
 					</div>
@@ -82,7 +83,7 @@ export default defineComponent({
 			openModal,
 		}
 	},
-	props: ["type", "index", "data"],
+	props: ["type", "index", "data", "id"],
 	data() {
 		return {
 			isModalOpen: false,

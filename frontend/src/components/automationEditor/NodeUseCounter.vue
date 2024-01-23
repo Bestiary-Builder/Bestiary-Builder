@@ -1,0 +1,1 @@
+<template>use counter</template>

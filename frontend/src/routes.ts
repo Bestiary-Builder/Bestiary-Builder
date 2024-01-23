@@ -53,6 +53,12 @@ export const routes = [
 		file: "StatblockEditorView.vue",
 		meta: {navbar: false, loggedIn: true}
 	},
+	{
+		path: "/automation-editor/:id/:featureType/:index",
+		name: "Automation Editor",
+		file: "AutomationEditorView.vue",
+		meta: {navbar: false, loggedIn: true}
+	},
 	// user settings
 	{
 		path: "/user",

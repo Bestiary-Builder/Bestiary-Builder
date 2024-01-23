@@ -392,7 +392,7 @@
 								<template #item="{element, index}">
 									<LabelledComponent :title="element.name">
 										<div class="feature-button__container" :key="index">
-											<FeatureWidget :index="index" :type="fType" :data="data" />
+											<FeatureWidget :index="index" :type="fType" :data="data" :id="rawInfo?._id"/>
 											<span class="delete-button" @click="deleteFeature(fType, index)" aria-label="Delete feature"><font-awesome-icon :icon="['fas', 'trash']" /></span>
 											<font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle" />											
 										</div>
