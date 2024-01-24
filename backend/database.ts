@@ -29,7 +29,7 @@ export async function startConnection() {
 		const runDataBaseChange = true;
 		if (runDataBaseChange) {
 			//Change speed & senses (remove 0 values)
-			let result = await collections.creatures.updateMany({}, {$pull: {"stats.core.speed": {value: 0}, "stats.core.senses": {value: 0}}});
+			let result = await collections.creatures.updateMany({}, {$pull: {"stats.core.speed": {value: 0, name: {$ne: "Walk"}}, "stats.core.senses": {value: 0}}});
 			log.log("database", `Updated ${result.modifiedCount} creatures to remove empty speed and senses.`);
 		}
 	} catch (err: any) {
