@@ -44,7 +44,7 @@
 						</LabelledComponent>
 						<LabelledComponent title="Creature type">
 							<div style="min-width: 300px;">
-							<v-select placeholder="Search by creature type" v-model="searchOptions.tags" multiple :options="['Aberration', 'Beast', 'Celestial', 'Construct', 'Dragon', 'Elemental', 'Fey', 'Fiend', 'Giant', 'Humanoid', 'Monstrosity', 'Ooze', 'Plant', 'Undead']" inputId="taaaags"/>
+							<v-select placeholder="Search by creature type" v-model="searchOptions.tags" multiple :options="['Aberration', 'Beast', 'Celestial', 'Construct', 'Dragon', 'Elemental', 'Fey', 'Fiend', 'Giant', 'Humanoid', 'Monstrosity', 'Ooze', 'Plant', 'Undead']" inputId="creaturetype" :taggable="true"/>
 						</div>
 						</LabelledComponent>
 						<div class="two-wide">
@@ -411,7 +411,7 @@ export default defineComponent({
 
 			if (this.searchOptions.tags.length > 0) {
 				filterChecks.push(
-					this.searchOptions.tags.map(str => str.toLowerCase()).includes(data.stats.core.race.trim().split(' ')[0].toLowerCase())
+					this.searchOptions.tags.some(item => data.stats.core.race.toLowerCase().includes(item.toLowerCase()))
 				)
 			}
 
