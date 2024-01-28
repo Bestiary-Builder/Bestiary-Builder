@@ -863,7 +863,7 @@ export default defineComponent({
 			this.data.spellcasting.casterSpells.castingClass = null;
 			this.data.spellcasting.casterSpells.casterLevel = null;
 			this.data.spellcasting.casterSpells.spellList = [[], [], [], [], [], [], [], [], [], []];
-			this.data.spellcasting.casterSpells.spellSlotList = undefined;
+			this.data.spellcasting.casterSpells.spellSlotList = {};
 			this.data.spellcasting.casterSpells.spellCastingAbility = null;
 			this.data.spellcasting.casterSpells.spellBonusOverride = null;
 			this.data.spellcasting.casterSpells.spellDcOverride = null;
