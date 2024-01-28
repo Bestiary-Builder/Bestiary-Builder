@@ -1,4 +1,4 @@
-import{M as o}from"./index-5Jdbla-E.js";import{B as r}from"./Breadcrumbs-EvMmz6jn.js";import{d as s,_ as i,r as d,o as n,c as t,a as u,b as m,i as l,F as c}from"./index-FlJXEjuM.js";const h=`## v1.1.4
+import{M as o}from"./index-5Jdbla-E.js";import{B as r}from"./Breadcrumbs-51jOAtbo.js";import{d as s,_ as i,r as d,o as n,c as t,a as u,b as m,i as l,F as c}from"./index-j3z8KcgI.js";const h=`## v1.1.4
 _January 22nd, 2024_
 
 - Fixed import of some srd features.
