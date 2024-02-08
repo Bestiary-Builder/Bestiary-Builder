@@ -1,4 +1,16 @@
-import{M as o}from"./index-5Jdbla-E.js";import{B as r}from"./Breadcrumbs-51jOAtbo.js";import{d as s,_ as i,r as d,o as n,c as t,a as u,b as m,i as l,F as c}from"./index-j3z8KcgI.js";const h=`## v1.1.4
+import{M as o}from"./index-5Jdbla-E.js";import{B as r}from"./Breadcrumbs-0feQ4cZK.js";import{d as s,_ as i,r as d,o as n,c as t,a as l,b as u,i as m,F as c}from"./index-XY3Tj-b5.js";const h=`## v1.2
+_February 8th, 2024_
+
+- Adds a view creature button in bestiaries that are not your own, making it easy to navigate to the page for just that creature.
+- Fixes Animal Handling/Sleight of Hand not being imported properly into Avrae.
+- Fixes an issue with empty spell slot lists sometimes causing issues on import.
+- Filtering a bestiary now allows custom creature types.
+- Fixes the custom styling of the scrollbar having disappeared. 
+- Fixes an issue where deleting an element from a draggable list did not update the buttons after it.
+- Improves 5e.tools import slightly to allow some homebrew creature options to import too, as well as parse more types of attacks correctly.
+- Enables full markdown rendering (including images) in the description of features.
+
+## v1.1.4
 _January 22nd, 2024_
 
 - Fixed import of some srd features.
@@ -87,4 +99,4 @@ _January 10th, 2024_
 _December 10th, 2023_
 
 -   Development started
-`,p=o(),g=s({data(){return{content:p.render(h)}},components:{Breadcrumbs:r}}),_={class:"content markdown less-wide"},f=["innerHTML"];function v(e,y,b,w,k,x){const a=d("Breadcrumbs");return n(),t(c,null,[u(a,{routes:[{path:"",text:"Changelog",isCurrent:!0}],isLessWide:!0}),m("div",_,[e.content?(n(),t("div",{key:0,innerHTML:e.content},null,8,f)):l("",!0)])],64)}const C=i(g,[["render",v]]);export{C as default};
+`,p=o(),g=s({data(){return{content:p.render(h)}},components:{Breadcrumbs:r}}),y={class:"content markdown less-wide"},f=["innerHTML"];function b(e,v,_,w,k,x){const a=d("Breadcrumbs");return n(),t(c,null,[l(a,{routes:[{path:"",text:"Changelog",isCurrent:!0}],isLessWide:!0}),u("div",y,[e.content?(n(),t("div",{key:0,innerHTML:e.content},null,8,f)):m("",!0)])],64)}const B=i(g,[["render",b]]);export{B as default};

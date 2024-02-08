@@ -1,4 +1,4 @@
-import{M as a}from"./index-5Jdbla-E.js";import{B as n}from"./Breadcrumbs-51jOAtbo.js";import{d as i,_ as s,r as p,o as e,c as o,a as c,b as d,i as l,F as h}from"./index-j3z8KcgI.js";const m=`## Importing a Bestiary from CritterDB
+import{M as a}from"./index-5Jdbla-E.js";import{B as n}from"./Breadcrumbs-0feQ4cZK.js";import{d as i,_ as s,r as p,o as e,c as o,a as c,b as d,i as l,F as h}from"./index-XY3Tj-b5.js";const m=`## Importing a Bestiary from CritterDB
 
 It is possible to import a bestiary from [CritterDB](https://critterdb.com):
 
