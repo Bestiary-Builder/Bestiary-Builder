@@ -57,7 +57,7 @@ import "highlight.js/styles/obsidian.css";
 import {defineComponent} from "vue";
 import YAML from "yaml";
 import {toast, handleApiResponse, type error} from "@/main";
-import {type FeatureEntity} from "../generic/types";
+import {type FeatureEntity} from "@/utils/types";
 import LabelledComponent from "./LabelledComponent.vue";
 import {parseDescIntoAutomation} from "@/parser/utils";
 export default defineComponent({

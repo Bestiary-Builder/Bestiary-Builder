@@ -74,7 +74,7 @@
 <script lang="ts">
 import {RouterLink} from "vue-router";
 import {defineComponent} from "vue";
-import type {Bestiary} from "@/generic/types";
+import type {Bestiary} from "@/utils/types";
 import UserBanner from "@/components/UserBanner.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import {handleApiResponse, toast, tags, type error, isMobile} from "@/main";

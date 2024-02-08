@@ -672,8 +672,6 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 				});
 			}
 			creatures.push(creatureData);
-
-			//  <span v-if="!data.description.isProperNoun"> The </span> {{ data.description.name }} casts one of the following spells{{ componentsString(false) }}, using {{ fullSpellAbilityName(true) }} as the spellcasting ability, (spell save DC {{ spellDc(true) }}, {{ spellAttackBonus(true) }} to hit with spell attacks).
 		}
 		//Return bestiary in specific format
 		let data = {
@@ -784,7 +782,7 @@ function calcSkills(data: any) {
 	let output = {} as {[key: string]: {value: number; prof?: number; bonus: number; adv: number | null}};
 	for (let stat in SKILLS_BY_STAT) {
 		for (let skill of SKILLS_BY_STAT[stat]) {
-			let raw = skillData.find((a) => a.skillName.toLowerCase() == skill);
+			let raw = skillData.find((a) => a.skillName.replaceAll(" ", "").toLowerCase() == skill.toLowerCase());
 			if (raw == undefined) {
 				output[skill] = {
 					value: statCalc(stat, data),

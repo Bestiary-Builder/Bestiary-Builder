@@ -1,4 +1,4 @@
-import {type CasterSpells, type Statblock, type InnateSpellsList, defaultStatblock, getXPbyCR, spellListFlattened, type SpellSlotEntity, type SkillsEntity, type SpeedEntity, type SenseEntity} from "../generic/types";
+import {type CasterSpells, type Statblock, type InnateSpellsList, defaultStatblock, getXPbyCR, spellListFlattened, type SpellSlotEntity, type SkillsEntity, type SpeedEntity, type SenseEntity} from "../utils/types";
 import {abilityParser, capitalizeFirstLetter} from "./utils";
 
 export function parseFrom5eTools(data: any): [Statblock, {[key: string]: string[]}] {
@@ -34,7 +34,6 @@ export function parseFrom5eTools(data: any): [Statblock, {[key: string]: string[
 		race: (() => {
 			let typeData = data.type;
 			if (typeof typeData == "string") return capitalizeFirstLetter(typeData);
-			console.log(typeData)
 			let baseType = typeData.type;
 
 			if (!typeData?.tags || typeData?.tags.length == 0) return capitalizeFirstLetter(baseType);
@@ -256,10 +255,10 @@ export function parseFrom5eTools(data: any): [Statblock, {[key: string]: string[
 
 	outputData.defenses = {
 		hp: {
-			numOfHitDie: parseInt(data.hp.formula.split("d")[0]),
-			sizeOfHitDie: parseInt((data.hp.formula.match(/\dd(\d+)/) || [])[1]) || 6,
-			// critterDB doesn't handle this properly (see Demilich)
-			override: null
+			numOfHitDie: parseInt(( data.hp.formula || "1d6").split("d")[0]),
+			sizeOfHitDie: parseInt((( data.hp.formula || "1d6").match(/\dd(\d+)/) || [])[1]) || 6,
+			// critterDB only handles this on homebrew monsters.)
+			override: data.hp.special || null
 		},
 		ac: {
 			ac: parseInt(data.ac[0]) || parseInt(data.ac[0].ac),

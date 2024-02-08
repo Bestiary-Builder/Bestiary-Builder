@@ -44,7 +44,7 @@
 						</LabelledComponent>
 						<LabelledComponent title="Creature type">
 							<div style="min-width: 300px;">
-							<v-select placeholder="Search by creature type" v-model="searchOptions.tags" multiple :options="['Aberration', 'Beast', 'Celestial', 'Construct', 'Dragon', 'Elemental', 'Fey', 'Fiend', 'Giant', 'Humanoid', 'Monstrosity', 'Ooze', 'Plant', 'Undead']" inputId="taaaags"/>
+							<v-select placeholder="Search by creature type" v-model="searchOptions.tags" multiple :options="['Aberration', 'Beast', 'Celestial', 'Construct', 'Dragon', 'Elemental', 'Fey', 'Fiend', 'Giant', 'Humanoid', 'Monstrosity', 'Ooze', 'Plant', 'Undead']" inputId="creaturetype" :taggable="true"/>
 						</div>
 						</LabelledComponent>
 						<div class="two-wide">
@@ -139,8 +139,11 @@
 										</div>
 									</template>
 								</VDropdown>
-								<button v-if="isOwner || isEditor" v-tooltip="'Edit creature'" :aria-label="`Edit ${creature.stats.description.name}`" class="edit-creature" @click.stop="() => {}">
-									<RouterLink class="creature" :to="'/statblock-editor/' + creature._id" aria-label="Edit creature"> <font-awesome-icon :icon="['fas', 'pen-to-square']" /> </RouterLink>
+								<button v-tooltip="`${isOwner || isEditor ? 'Edit' : 'View'} creature`" :aria-label="`${isOwner || isEditor ? 'Edit' : 'View'} ${creature.stats.description.name}`" class="edit-creature" @click.stop="() => {}">
+									<RouterLink class="creature" :to="'/statblock-editor/' + creature._id" :aria-label="`${isOwner || isEditor ? 'Edit' : 'View'} creature`"> 
+										<font-awesome-icon :icon="['fas', 'pen-to-square']" v-if="isOwner || isEditor "/> 
+										<font-awesome-icon :icon="['fas', 'eye']" v-else/> 
+									</RouterLink>
 								</button>
 								<span class="cr"> CR {{ displayCR(creature.stats.description.cr) }}</span>
 							</div>
@@ -255,11 +258,11 @@ import {RouterLink} from "vue-router";
 import {defineComponent, ref} from "vue";
 import { refDebounced } from '@vueuse/core'
 
-import {defaultStatblock} from "@/generic/types";
-import type {User, Bestiary, Creature, Statblock} from "@/generic/types";
+import {defaultStatblock} from "@/utils/types";
+import type {User, Bestiary, Creature, Statblock} from "@/utils/types";
 import {handleApiResponse, user, type error, toast, tags, type limitsType, asyncLimits, isMobile} from "@/main";
 import {parseFromCritterDB} from "@/parser/parseFromCritterDB";
-import {displayCR} from "@/generic/displayFunctions";
+import {displayCR} from "@/utils/displayFunctions";
 
 import markdownit from "markdown-it";
 
@@ -411,7 +414,7 @@ export default defineComponent({
 
 			if (this.searchOptions.tags.length > 0) {
 				filterChecks.push(
-					this.searchOptions.tags.map(str => str.toLowerCase()).includes(data.stats.core.race.trim().split(' ')[0].toLowerCase())
+					this.searchOptions.tags.some(item => data.stats.core.race.toLowerCase().includes(item.toLowerCase()))
 				)
 			}
 

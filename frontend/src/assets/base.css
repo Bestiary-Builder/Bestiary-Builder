@@ -88,7 +88,7 @@ body {
 
 @media (hover: hover) {
 	* {
-		scrollbar-width: thin;
+		scrollbar-width: auto;
 	}
 
 	::-webkit-scrollbar {
@@ -127,6 +127,13 @@ body {
 	::-webkit-scrollbar-corner {
 		background-color: transparent;
 	}
+}
+
+/* Browsers without `::-webkit-scrollbar-*` support */
+@supports not selector(::-webkit-scrollbar) {
+    html {
+        scrollbar-width: thin;
+    }
 }
 
 /* Box sizing rules */

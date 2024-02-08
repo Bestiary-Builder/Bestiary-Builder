@@ -41,7 +41,7 @@
 
 <script lang="ts">
 import {defineComponent} from "vue";
-import type {User, Bestiary, Creature} from "@/generic/types";
+import type {User, Bestiary, Creature} from "@/utils/types";
 import UserBanner from "@/components/UserBanner.vue";
 import {user, sendToLogin, getLoginRoute, handleApiResponse, toast, type error} from "@/main";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
