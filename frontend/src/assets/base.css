@@ -129,6 +129,13 @@ body {
 	}
 }
 
+/* Browsers without `::-webkit-scrollbar-*` support */
+@supports not selector(::-webkit-scrollbar) {
+    html {
+        scrollbar-width: thin;
+    }
+}
+
 /* Box sizing rules */
 *,
 *::before,

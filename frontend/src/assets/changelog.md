@@ -7,6 +7,8 @@ _February 8th, 2024_
 - Filtering a bestiary now allows custom creature types.
 - Fixes the custom styling of the scrollbar having disappeared. 
 - Fixes an issue where deleting an element from a draggable list did not update the buttons after it.
+- Improves 5e.tools import slightly to allow some homebrew creature options to import too, as well as parse more types of attacks correctly.
+- Enables full markdown rendering (including images) in the description of features.
 
 ## v1.1.4
 _January 22nd, 2024_

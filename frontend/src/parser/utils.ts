@@ -1,4 +1,4 @@
-import type { FeatureEntity } from "@/generic/types"
+import type { FeatureEntity } from "@/utils/types"
 import YAML from "yaml";
 
 export function abilityParser(fData: any, activationType: number): [FeatureEntity[], string[]] {
@@ -43,6 +43,10 @@ export function markdownReplacer(text: string): string {
 	text = text
 		.replace("{@atk mw}", "*Melee Weapon Attack:*")
 		.replace("{@atk rw}", "*Ranged Weapon Attack:*")
+		.replace("{@atk mw,rw}", "*Melee or Ranged Weapon Attack:*")
+		.replace("{@atk ms}", "*Melee Spell Attack:*")
+		.replace("{@atk rs}", "*Ranged Spell Attack:*")
+		.replace("{@atk ms,rs}", "*Melee or Ranged Spell Attack:*")
 		.replace("{@h}", "*Hit:* ")
 		.replace(/\{@damage\s+([^}]+)\}/g, "$1")
 		.replace(/\{@dc\s+([^}]+)\}/g, "DC $1")

@@ -549,8 +549,8 @@ import draggable from "vuedraggable";
 
 import {defineComponent} from "vue";
 
-import type {SkillsEntity, Statblock, Creature, Bestiary} from "@/generic/types";
-import {defaultStatblock, getSpellSlots, spellList, spellListFlattened, getXPbyCR, type User} from "@/generic/types";
+import type {SkillsEntity, Statblock, Creature, Bestiary} from "@/utils/types";
+import {defaultStatblock, getSpellSlots, spellList, spellListFlattened, getXPbyCR, type User} from "@/utils/types";
 import {handleApiResponse, type error, toast, asyncLimits, type limitsType, user} from "@/main";
 import {parseFrom5eTools} from "../parser/parseFrom5eTools";
 import { capitalizeFirstLetter } from "@/parser/utils";
@@ -872,7 +872,7 @@ export default defineComponent({
 			this.data.spellcasting.casterSpells.castingClass = null;
 			this.data.spellcasting.casterSpells.casterLevel = null;
 			this.data.spellcasting.casterSpells.spellList = [[], [], [], [], [], [], [], [], [], []];
-			this.data.spellcasting.casterSpells.spellSlotList = undefined;
+			this.data.spellcasting.casterSpells.spellSlotList = {};
 			this.data.spellcasting.casterSpells.spellCastingAbility = null;
 			this.data.spellcasting.casterSpells.spellBonusOverride = null;
 			this.data.spellcasting.casterSpells.spellDcOverride = null;

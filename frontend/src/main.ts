@@ -13,7 +13,7 @@ export async function handleApiResponse<Type>(response: Response) {
 	}
 }
 //Get logged in user
-import type {User} from "./generic/types";
+import type {User} from "./utils/types";
 export const user = fetch("/api/user").then(async (response: any) => {
 	let result = await handleApiResponse<User>(response);
 	if (result.success) return result.data as User;
@@ -190,5 +190,5 @@ export const isMobile = screen.width < 900;
 
 //Gtag
 if (import.meta.env.MODE == "production") {
-	import("./generic/gtag" as any);
+	import("./utils/gtag" as any);
 }

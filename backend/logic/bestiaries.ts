@@ -672,8 +672,6 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 				});
 			}
 			creatures.push(creatureData);
-
-			//  <span v-if="!data.description.isProperNoun"> The </span> {{ data.description.name }} casts one of the following spells{{ componentsString(false) }}, using {{ fullSpellAbilityName(true) }} as the spellcasting ability, (spell save DC {{ spellDc(true) }}, {{ spellAttackBonus(true) }} to hit with spell attacks).
 		}
 		//Return bestiary in specific format
 		let data = {

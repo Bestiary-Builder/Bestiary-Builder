@@ -1,5 +1,5 @@
 import {toast} from "@/main";
-import {type CasterSpells, type Statblock, defaultStatblock, spellListFlattened, type SpellSlotEntity, type SkillsEntity, type Stat, type SpellCasting, type InnateSpellsEntity, type SpeedEntity, type SenseEntity} from "../generic/types";
+import {type CasterSpells, type Statblock, defaultStatblock, spellListFlattened, type SpellSlotEntity, type SkillsEntity, type Stat, type SpellCasting, type InnateSpellsEntity, type SpeedEntity, type SenseEntity} from "../utils/types";
 
 import {abilityParser, descParser, parseDescIntoAutomation, capitalizeFirstLetter} from "./utils";
 

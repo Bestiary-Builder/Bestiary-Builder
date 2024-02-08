@@ -107,35 +107,12 @@
             <p v-if="data.misc.featureHeaderTexts.features"> {{ data.misc.featureHeaderTexts.features }} </p>
             <p v-for="feature in data.features.features">
                 <b> <i>{{ feature.name }}.</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup> </b>
-                <span class="feature-container__desc" v-html="sanitizeAndFormat(feature.description)"> </span>
+                <span class="feature-container__desc" v-html="md.render(feature.description)"> </span>
             </p>
 
-
             <p v-if="showInnateCasting() && !data.spellcasting.innateSpells.displayAsAction">
-                <b><i>Innate Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics"> (Psionics)</span> </i></b> 
-                <span class="feature-container__desc">
-                    <span v-if="!data.description.isProperNoun"> The </span> {{ data.description.name }}'s spellcasting ability is {{ fullSpellAbilityName(true) }} (spell save DC {{ spellDc(true) }}, {{ spellAttackBonus(true) }} to hit with spell attacks). <span v-if="!data.description.isProperNoun"> It </span><span v-else> {{ data.description.name }}</span> can innately cast the following spells<span v-if="data.spellcasting.innateSpells.noComponentsOfType.length ==0">:</span>
-                    <span v-else> {{ componentsString() }} </span>
-
-                    <div class="spell-list">
-                        <div v-if="data.spellcasting.innateSpells.spellList[0].length > 0"> 
-                            <span> At will: </span>
-                            <i> {{ data.spellcasting.innateSpells.spellList[0].map(x => x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell).sort().join(", ").toLowerCase() }} </i> 
-                        </div>
-                        <div v-if="data.spellcasting.innateSpells.spellList[3].length > 0"> 
-                            <span> 3/day{{ data.spellcasting.innateSpells.spellList[3].length > 1 ? ' each' : "" }}: </span>
-                            <i> {{ data.spellcasting.innateSpells.spellList[3].map(x => x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell).sort().join(", ").toLowerCase() }} </i> 
-                        </div>
-                        <div v-if="data.spellcasting.innateSpells.spellList[2].length > 0"> 
-                            <span> 2/day{{ data.spellcasting.innateSpells.spellList[2].length > 1 ? ' each' : "" }}: </span>
-                            <i> {{ data.spellcasting.innateSpells.spellList[2].map(x => x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell).sort().join(", ").toLowerCase() }} </i> 
-                        </div>
-                        <div v-if="data.spellcasting.innateSpells.spellList[1].length > 0"> 
-                            <span> 1/day{{ data.spellcasting.innateSpells.spellList[1].length > 1 ? ' each' : "" }}: </span>
-                            <i> {{ data.spellcasting.innateSpells.spellList[1].map(x => x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell).sort().join(", ").toLowerCase() }} </i> 
-                        </div>
-                    </div>
-                </span>
+                <b><i>Innate Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics"> (Psionics)</span>.</i></b> 
+                <span class="feature-container__desc" v-html="md.render(displayInnateCasting(data))" />
             </p>
 
             <p v-if="showCasting() && data.spellcasting.casterSpells.castingClass && data.spellcasting.casterSpells.casterLevel &&  data.spellcasting.casterSpells.spellSlotList">
@@ -162,33 +139,12 @@
             <p v-if="data.misc.featureHeaderTexts.actions"> {{ data.misc.featureHeaderTexts.actions }} </p>
             <p v-for="feature in data.features.actions">
                 <b> <i>{{ feature.name }}.</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
-                <span class="feature-container__desc" v-html="sanitizeAndFormat(feature.description)"> </span>
+                <span class="feature-container__desc" v-html="md.render(feature.description)"> </span>
             </p>
 
             <p v-if="showInnateCasting() && data.spellcasting.innateSpells.displayAsAction">
-                <b><i>Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics"> (Psionics)</span> </i></b> 
-                <span class="feature-container__desc">
-                    <span v-if="!data.description.isProperNoun"> The </span> {{ data.description.isProperNoun ? data.description.name : data.description.name.toLowerCase() }} casts one of the following spells{{ componentsString(false) }} and using {{ fullSpellAbilityName(true) }} as the spellcasting ability (spell save DC {{ spellDc(true) }}, {{ spellAttackBonus(true) }} to hit with spell attacks).
-
-                    <div class="spell-list">
-                        <div v-if="data.spellcasting.innateSpells.spellList[0].length > 0"> 
-                            <span> At will: </span>
-                            <i> {{ data.spellcasting.innateSpells.spellList[0].map(x => x.comment.length > 0 ? `${x.spell.toLowerCase()} (${x.comment})` : x.spell.toLowerCase()).sort().join(", ") }} </i> 
-                        </div>
-                        <div v-if="data.spellcasting.innateSpells.spellList[3].length > 0"> 
-                            <span> 3/day{{ data.spellcasting.innateSpells.spellList[3].length > 1 ? ' each' : "" }}: </span>
-                            <i> {{ data.spellcasting.innateSpells.spellList[3].map(x => x.comment.length > 0 ? `${x.spell.toLowerCase()} (${x.comment})` : x.spell.toLowerCase()).sort().join(", ") }} </i> 
-                        </div>
-                        <div v-if="data.spellcasting.innateSpells.spellList[2].length > 0"> 
-                            <span> 2/day{{ data.spellcasting.innateSpells.spellList[2].length > 1 ? ' each' : "" }}: </span>
-                            <i> {{ data.spellcasting.innateSpells.spellList[2].map(x => x.comment.length > 0 ? `${x.spell.toLowerCase()} (${x.comment})` : x.spell.toLowerCase()).sort().join(", ") }} </i> 
-                        </div>
-                        <div v-if="data.spellcasting.innateSpells.spellList[1].length > 0"> 
-                            <span> 1/day{{ data.spellcasting.innateSpells.spellList[1].length > 1 ? ' each' : "" }}: </span>
-                            <i> {{ data.spellcasting.innateSpells.spellList[1].map(x => x.comment.length > 0 ? `${x.spell.toLowerCase()} (${x.comment})` : x.spell.toLowerCase()).sort().join(", ") }} </i> 
-                        </div>
-                    </div>
-                </span>
+                <b><i>Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics"> (Psionics)</span>.</i></b> 
+                <span class="feature-container__desc" v-html="md.render(displayInnateCasting(data))" />
             </p>
         </div>
 
@@ -197,7 +153,7 @@
                 <p v-if="data.misc.featureHeaderTexts.bonus"> {{ data.misc.featureHeaderTexts.bonus }} </p>
                 <p v-for="feature in data.features.bonus">
                 <b> <i>{{ feature.name }}.</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
-                <span class="feature-container__desc" v-html="sanitizeAndFormat(feature.description)"> </span>
+                <span class="feature-container__desc" v-html="md.render(feature.description)"> </span>
             </p>
         </div>
 
@@ -206,7 +162,7 @@
                 <p v-if="data.misc.featureHeaderTexts.reactions"> {{ data.misc.featureHeaderTexts.reactions }} </p>
                 <p v-for="feature in data.features.reactions">
                 <b> <i>{{ feature.name }}.</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
-                <span class="feature-container__desc" v-html="sanitizeAndFormat(feature.description)"> </span>
+                <span class="feature-container__desc" v-html="md.render(feature.description)"> </span>
             </p>
         </div>
 
@@ -215,7 +171,7 @@
                 <p v-if="data.misc.featureHeaderTexts.legendary"> {{ data.misc.featureHeaderTexts.legendary.replace("$NUM$", data.misc.legActionsPerRound.toString()) }} </p>
                 <p v-for="feature in data.features.legendary">
                 <b> <i>{{ feature.name }}.</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
-                <span class="feature-container__desc" v-html="sanitizeAndFormat(feature.description)"> </span>
+                <span class="feature-container__desc" v-html="md.render(feature.description)"> </span>
             </p>
         </div>
 
@@ -224,7 +180,7 @@
                 <p v-if="data.misc.featureHeaderTexts.mythic"> {{ data.misc.featureHeaderTexts.mythic }} </p>
                 <p v-for="feature in data.features.mythic">
                 <b> <i>{{ feature.name }}.</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
-                <span class="feature-container__desc" v-html="sanitizeAndFormat(feature.description)"> </span>
+                <span class="feature-container__desc" v-html="md.render(feature.description)"> </span>
             </p>
         </div>
 
@@ -233,7 +189,7 @@
                 <p v-if="data.misc.featureHeaderTexts.lair"> {{ data.misc.featureHeaderTexts.lair }} </p>
                 <p v-for="feature in data.features.lair">
                 <b> <i>{{ feature.name }}.</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
-                <span class="feature-container__desc" v-html="sanitizeAndFormat(feature.description)"> </span>
+                <span class="feature-container__desc" v-html="md.render(feature.description)"> </span>
             </p>
         </div>
 
@@ -242,7 +198,7 @@
                 <p v-if="data.misc.featureHeaderTexts.regional"> {{ data.misc.featureHeaderTexts.regional }} </p>
                 <p v-for="feature in data.features.regional">
                 <b> <i>{{ feature.name }}.</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
-                <span class="feature-container__desc" v-html="sanitizeAndFormat(feature.description)"> </span>
+                <span class="feature-container__desc" v-html="md.render(feature.description)"> </span>
             </p>
         </div>
     </div>
@@ -255,9 +211,9 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import type { Stat, SaveEntity, SkillsEntity, Statblock, InnateSpells, CasterSpells } from '../generic/types'
+import type { Stat, SkillsEntity, Statblock, InnateSpells, CasterSpells } from '@/utils/types'
 import { stringify } from 'yaml'
-import { displayCR, displaySpeedOrSenses } from '@/generic/displayFunctions';
+import { displayCR, displaySpeedOrSenses, displayInnateCasting } from '@/utils/displayFunctions';
 import markdownit from "markdown-it"
 const md = markdownit()
 export default defineComponent({
@@ -269,7 +225,7 @@ export default defineComponent({
     },
     data() {
         return {
-            displayCR: displayCR,
+            displayCR,
             md
         }
     },
@@ -414,16 +370,6 @@ export default defineComponent({
         yamlString() {
             return stringify(this.data)
         },
-        sanitizeAndFormat(input: string) {
-            // Replace *italic*, **bold**, and ***italic bold*** with HTML markup
-            const formattedText = input
-                .replace(/\*{3}([^*]+)\*{3}/g, '<i><b>$1</b></i>')// ***italic bold***
-                .replace(/\*{2}([^*]+)\*{2}/g, '<b>$1</b>') // **bold**
-                .replace(/\*{1}([^*]+)\*{1}/g, '<i>$1</i>'); // *italic*
-
-            
-            return formattedText ;
-        },
         nthSuffix(number: number) : string {
             switch (number) {
                 case 1:
@@ -491,7 +437,8 @@ export default defineComponent({
             }
             return `, requiring no ${comp[0].toLowerCase()} components` + colon 
         },
-        displaySpeedOrSenses
+        displaySpeedOrSenses,
+        displayInnateCasting,
     }
 
 })
@@ -587,6 +534,11 @@ export default defineComponent({
     overflow-wrap: anywhere;
 }
 
+// paragraph is coming from within the markdown rendered so has to be globalized.
+:global(.feature-container__desc p) {
+    display: inline;
+}
+
 .challenge-prof {
     display: flex;
     justify-content: space-between;
@@ -596,3 +548,4 @@ export default defineComponent({
     overflow-wrap: anywhere;
 }
 </style>
+

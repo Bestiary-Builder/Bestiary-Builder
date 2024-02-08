@@ -258,11 +258,11 @@ import {RouterLink} from "vue-router";
 import {defineComponent, ref} from "vue";
 import { refDebounced } from '@vueuse/core'
 
-import {defaultStatblock} from "@/generic/types";
-import type {User, Bestiary, Creature, Statblock} from "@/generic/types";
+import {defaultStatblock} from "@/utils/types";
+import type {User, Bestiary, Creature, Statblock} from "@/utils/types";
 import {handleApiResponse, user, type error, toast, tags, type limitsType, asyncLimits, isMobile} from "@/main";
 import {parseFromCritterDB} from "@/parser/parseFromCritterDB";
-import {displayCR} from "@/generic/displayFunctions";
+import {displayCR} from "@/utils/displayFunctions";
 
 import markdownit from "markdown-it";
 
