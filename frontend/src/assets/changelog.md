@@ -1,4 +1,4 @@
-## v1.2
+## v1.2.0
 _February 8th, 2024_
 
 - Adds a view creature button in bestiaries that are not your own, making it easy to navigate to the page for just that creature.
