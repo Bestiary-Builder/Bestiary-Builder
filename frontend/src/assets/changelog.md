@@ -1,3 +1,13 @@
+## v1.2
+_February 8th, 2024_
+
+- Adds a view creature button in bestiaries that are not your own, making it easy to navigate to the page for just that creature.
+- Fixes Animal Handling/Sleight of Hand not being imported properly into Avrae.
+- Fixes an issue with empty spell slot lists sometimes causing issues on import.
+- Filtering a bestiary now allows custom creature types.
+- Fixes the custom styling of the scrollbar having disappeared. 
+- Fixes an issue where deleting an element from a draggable list did not update the buttons after it.
+
 ## v1.1.4
 _January 22nd, 2024_
 

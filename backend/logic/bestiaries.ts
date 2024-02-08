@@ -784,7 +784,7 @@ function calcSkills(data: any) {
 	let output = {} as {[key: string]: {value: number; prof?: number; bonus: number; adv: number | null}};
 	for (let stat in SKILLS_BY_STAT) {
 		for (let skill of SKILLS_BY_STAT[stat]) {
-			let raw = skillData.find((a) => a.skillName.toLowerCase() == skill);
+			let raw = skillData.find((a) => a.skillName.replaceAll(" ", "").toLowerCase() == skill.toLowerCase());
 			if (raw == undefined) {
 				output[skill] = {
 					value: statCalc(stat, data),

@@ -139,8 +139,11 @@
 										</div>
 									</template>
 								</VDropdown>
-								<button v-if="isOwner || isEditor" v-tooltip="'Edit creature'" :aria-label="`Edit ${creature.stats.description.name}`" class="edit-creature" @click.stop="() => {}">
-									<RouterLink class="creature" :to="'/statblock-editor/' + creature._id" aria-label="Edit creature"> <font-awesome-icon :icon="['fas', 'pen-to-square']" /> </RouterLink>
+								<button v-tooltip="`${isOwner || isEditor ? 'Edit' : 'View'} creature`" :aria-label="`${isOwner || isEditor ? 'Edit' : 'View'} ${creature.stats.description.name}`" class="edit-creature" @click.stop="() => {}">
+									<RouterLink class="creature" :to="'/statblock-editor/' + creature._id" :aria-label="`${isOwner || isEditor ? 'Edit' : 'View'} creature`"> 
+										<font-awesome-icon :icon="['fas', 'pen-to-square']" v-if="isOwner || isEditor "/> 
+										<font-awesome-icon :icon="['fas', 'eye']" v-else/> 
+									</RouterLink>
 								</button>
 								<span class="cr"> CR {{ displayCR(creature.stats.description.cr) }}</span>
 							</div>

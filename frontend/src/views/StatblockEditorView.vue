@@ -146,8 +146,8 @@
 					<h2 class="group-header">Speed</h2>
 					<draggable
 						:list="data.core.speed"
-						:itemKey="getDraggableKey()"
 						handle=".handle"
+						:itemKey="() => getDraggableKey()"
 						class="editor-field__container two-wide"
 						:animation="150"
 					>
@@ -189,8 +189,8 @@
 					<h2 class="group-header">Senses</h2>
 					<draggable
 						:list="data.core.senses"
-						:itemKey="getDraggableKey()"
 						handle=".handle"
+						:itemKey="() => getDraggableKey()"
 						class="editor-field__container two-wide"
 						:animation="150"
 					>
@@ -384,15 +384,15 @@
 							<draggable
 								:list="data.features[fType]"
 								group="features"
-								:itemKey="getDraggableKey()"
+								:itemKey="() => getDraggableKey()"
 								handle=".handle"
 								class="editor-field__container two-wide"
 								:animation="150"
 							>
 								<template #item="{element, index}">
 									<LabelledComponent :title="element.name">
-										<div class="feature-button__container" :key="index">
-											<FeatureWidget :index="index" :type="fType" :data="data" />
+										<div class="feature-button__container">
+											<FeatureWidget :index="index" :type="fType" :data="data" :key="index" />
 											<span class="delete-button" @click="deleteFeature(fType, index)" aria-label="Delete feature"><font-awesome-icon :icon="['fas', 'trash']" /></span>
 											<font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle" />											
 										</div>
@@ -556,6 +556,7 @@ import {parseFrom5eTools} from "../parser/parseFrom5eTools";
 import { capitalizeFirstLetter } from "@/parser/utils";
 const tabs        = document.getElementsByClassName("editor-nav__tab") as HTMLCollectionOf<HTMLElement>;
 const tabsContent = document.getElementsByClassName("editor-content__tab-inner") as HTMLCollectionOf<HTMLElement>;
+let draggableKeyIndexes : number[] = []
 
 export default defineComponent({
 	components: {
@@ -652,7 +653,6 @@ export default defineComponent({
 			showImportModal: false,
 			showSpellModal: false,
 			capitalizeFirstLetter,
-			draggableKeyIndex: 0,
 			shouldShowEditor: false,
 			isOwner: false,
 			isEditor: false,
@@ -663,8 +663,17 @@ export default defineComponent({
 	},
 	methods: {
 		getDraggableKey() : string {
-			this.draggableKeyIndex + 1
-			return this.draggableKeyIndex.toString()
+			// this is a hack. no other solution worked.
+			let found = false;
+			let num = 0;
+			while (!found) {
+				num = Math.random()
+				if (draggableKeyIndexes.includes(num)) continue;
+				found = true;
+				draggableKeyIndexes.push(num)
+			}
+
+			return num.toString()
 		},
 		exportStatblock(): void {
 			navigator.clipboard.writeText(JSON.stringify(this.data, null, 2));
