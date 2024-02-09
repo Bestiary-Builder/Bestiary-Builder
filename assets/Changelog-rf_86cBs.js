@@ -1,5 +1,4 @@
-import{M as o}from"./index-5Jdbla-E.js";import{B as r}from"./Breadcrumbs-iovUQHlD.js";import{d as s,_ as i,r as d,o as n,c as t,a as l,b as u,i as m,F as h}from"./index-GSl3Oep5.js";const c=`
-## v1.2.1
+import{M as o}from"./index-5Jdbla-E.js";import{B as r}from"./Breadcrumbs-sOrZjjRo.js";import{d as s,_ as i,r as d,o as n,c as t,a as l,b as u,i as m,F as h}from"./index-PRFVQd68.js";const c=`## v1.2.1
 _February 9th, 2024_
 
 - Once again fixes the issue where deleting an element from a draggable list did not update the buttons after it. This time it should stay working.
