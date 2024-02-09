@@ -1,4 +1,4 @@
-import{M as o}from"./index-5Jdbla-E.js";import{B as r}from"./Breadcrumbs-dXcb5_av.js";import{d as s,_ as i,r as d,o as n,c as t,a as l,b as u,i as m,F as c}from"./index-m5YkVSS2.js";const h=`## v1.2.0
+import{M as o}from"./index-5Jdbla-E.js";import{B as r}from"./Breadcrumbs-GXLjxHZJ.js";import{d as s,_ as i,r as d,o as n,c as t,a as l,b as u,i as m,F as c}from"./index-Sxv7nlZq.js";const h=`## v1.2.0
 _February 8th, 2024_
 
 - Adds a view creature button in bestiaries that are not your own, making it easy to navigate to the page for just that creature.
