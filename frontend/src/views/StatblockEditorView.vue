@@ -147,7 +147,7 @@
 					<draggable
 						:list="data.core.speed"
 						handle=".handle"
-						:itemKey="() => getDraggableKey()"
+						:itemKey="getDraggableKey()"
 						class="editor-field__container two-wide"
 						:animation="150"
 					>
@@ -190,7 +190,7 @@
 					<draggable
 						:list="data.core.senses"
 						handle=".handle"
-						:itemKey="() => getDraggableKey()"
+						:itemKey="getDraggableKey()"
 						class="editor-field__container two-wide"
 						:animation="150"
 					>
@@ -384,7 +384,7 @@
 							<draggable
 								:list="data.features[fType]"
 								group="features"
-								:itemKey="() => getDraggableKey()"
+								:itemKey="getDraggableKey()"
 								handle=".handle"
 								class="editor-field__container two-wide"
 								:animation="150"
@@ -556,7 +556,7 @@ import {parseFrom5eTools} from "../parser/parseFrom5eTools";
 import { capitalizeFirstLetter } from "@/parser/utils";
 const tabs        = document.getElementsByClassName("editor-nav__tab") as HTMLCollectionOf<HTMLElement>;
 const tabsContent = document.getElementsByClassName("editor-content__tab-inner") as HTMLCollectionOf<HTMLElement>;
-let draggableKeyIndexes : number[] = []
+let draggableKeyIndex = 0
 
 export default defineComponent({
 	components: {
@@ -663,17 +663,8 @@ export default defineComponent({
 	},
 	methods: {
 		getDraggableKey() : string {
-			// this is a hack. no other solution worked.
-			let found = false;
-			let num = 0;
-			while (!found) {
-				num = Math.random()
-				if (draggableKeyIndexes.includes(num)) continue;
-				found = true;
-				draggableKeyIndexes.push(num)
-			}
-
-			return num.toString()
+			draggableKeyIndex++
+			return draggableKeyIndex.toString()
 		},
 		exportStatblock(): void {
 			navigator.clipboard.writeText(JSON.stringify(this.data, null, 2));
@@ -968,7 +959,7 @@ export default defineComponent({
 		window.addEventListener("beforeunload", (event) => {
 			// haven't figured out yet how to destroy the event listener upon unmount so for now this confirms that the
 			// warning only shows if they are in the statblock editor
-			if (this.madeChanges && location.pathname.split("/")[1] == "statblock-editor") {
+			if (this.madeChanges && (this.isOwner || this.isEditor)&& location.pathname.split("/")[1] == "statblock-editor") {
 				event.preventDefault();
 				event.returnValue = true;
 			}
@@ -1066,14 +1057,14 @@ export default defineComponent({
 	},
 	beforeRouteUpdate() {
 		// just in case the user manages to navigate to a page that also uses StatblockEditorView
-		if (this.madeChanges) {
+		if (this.madeChanges && (this.isOwner || this.isEditor)) {
 			const answer = window.confirm("Do you really want to leave? you have unsaved changes!");
 			if (!answer) return false;
 		}
 	},
 	beforeRouteLeave() {
 		// when the user leaves this route
-		if (this.madeChanges) {
+		if (this.madeChanges && (this.isOwner || this.isEditor)) {
 			const answer = window.confirm("Do you really want to leave? you have unsaved changes!");
 			if (!answer) return false;
 		}
