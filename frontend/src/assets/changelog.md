@@ -1,3 +1,9 @@
+
+## v1.2.1
+_February 9th, 2024_
+
+- Once again fixes the issue where deleting an element from a draggable list did not update the buttons after it. This time it should stay working.
+
 ## v1.2.0
 _February 8th, 2024_
 

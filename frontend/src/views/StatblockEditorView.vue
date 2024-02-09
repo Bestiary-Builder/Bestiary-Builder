@@ -147,7 +147,7 @@
 					<draggable
 						:list="data.core.speed"
 						handle=".handle"
-						:itemKey="getDraggableKey()"
+						:item-key="getDraggableKey"								
 						class="editor-field__container two-wide"
 						:animation="150"
 					>
@@ -190,7 +190,7 @@
 					<draggable
 						:list="data.core.senses"
 						handle=".handle"
-						:itemKey="getDraggableKey()"
+						:item-key="getDraggableKey"								
 						class="editor-field__container two-wide"
 						:animation="150"
 					>
@@ -384,7 +384,7 @@
 							<draggable
 								:list="data.features[fType]"
 								group="features"
-								:itemKey="getDraggableKey()"
+								:item-key="getDraggableKey"								
 								handle=".handle"
 								class="editor-field__container two-wide"
 								:animation="150"
@@ -392,7 +392,7 @@
 								<template #item="{element, index}">
 									<LabelledComponent :title="element.name">
 										<div class="feature-button__container">
-											<FeatureWidget :index="index" :type="fType" :data="data" :key="index" />
+											<FeatureWidget :index="index" :type="fType" :data="data"  />
 											<span class="delete-button" @click="deleteFeature(fType, index)" aria-label="Delete feature"><font-awesome-icon :icon="['fas', 'trash']" /></span>
 											<font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle" />											
 										</div>
@@ -662,9 +662,8 @@ export default defineComponent({
 		};
 	},
 	methods: {
-		getDraggableKey() : string {
-			draggableKeyIndex++
-			return draggableKeyIndex.toString()
+		getDraggableKey(item : any) {
+			return item
 		},
 		exportStatblock(): void {
 			navigator.clipboard.writeText(JSON.stringify(this.data, null, 2));
