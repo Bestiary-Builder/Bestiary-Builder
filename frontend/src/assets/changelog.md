@@ -1,3 +1,8 @@
+## v1.2.2
+_February 12th, 2024_
+
+- Fixes a few issues with the feature editor on mobile. It should now display and be styled properly.
+
 ## v1.2.1
 _February 9th, 2024_
 

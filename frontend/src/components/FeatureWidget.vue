@@ -1,48 +1,44 @@
 <template>
-	<button class="btn open-btn" @click="openModal" :id="type + index">Edit Feature</button>
-	<Teleport to="#modal">
-		<Transition name="modal">
-			<div class="modal__bg" v-if="isModalOpen">
-				<section class="modal__content" ref="modal">
-					<button @click="isModalOpen = false" class="modal__close-button" aria-label="Close Modal" type="button"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
-					<div class="two-wide uneven">
-						<LabelledComponent title="Feature name">
-							<input type="text" id="featurename" placeholder="Enter name" v-model="feat.name" @change="hasEditedName = true" />
-							<a href="https://avrae.readthedocs.io/en/stable/automation_ref.html"> Documentation</a>
-							<a href="https://avrae.io/dashboard/characters" v-tooltip="'Edit automation on a character to get access to the full fledged automation builder.'"> Automation Editor</a>
-						</LabelledComponent>
-						<LabelledComponent title="Feature description">
-							<textarea rows="4" id="featuredescription" placeholder="Enter description" v-model="feat.description" />
-						</LabelledComponent>
-					</div>
-					<hr />
-					<div class="three-wide">
-						<LabelledComponent title="Options">
-							<div class="buttons">
-								<button class="btn confirm" @click="saveAutomation(true)">Save Automation!</button>
-								<button class="btn danger" @click="automationString = 'null'">Clear</button>
-								<button class="btn" @click="generateAutomation" v-tooltip="'Generate automation from description. May be incomplete or inaccurate.'">Generate from description</button>
-							</div>
-						</LabelledComponent>
-						<LabelledComponent title="Import basic example">
-							<v-select :options="basicExamples" v-model="importedBasicExample" inputId="importbasicexample" />
-							<button class="btn move-down" @click="importExample">Load</button>
-						</LabelledComponent>
-						<LabelledComponent title="Import SRD feature">
-							<v-select :options="srdFeatures" v-model="importedSrdFeature" inputId="importsrdfeature" />
-							<button class="btn move-down" @click="importSrdAction">Load</button>
-						</LabelledComponent>
-					</div>
-
-					<hr />
-					<div class="automation-editor">
-						<span class="yaml-error" v-html="errorMessage"> </span>
-						<CodeEditor width="100%" :wrap="true" :languages="[['yaml', 'YAML']]" v-model="automationString" theme="obsidian" height="380px" font-size="12px"> </CodeEditor>
-					</div>
-				</section>
+	<button class="btn open-btn" @click="showFeatureModal = true" :id="type + index">Edit Feature</button>
+	<Modal :show="showFeatureModal" @close="showFeatureModal = false">
+		<template #header> Feature Editor </template>
+		<template #body>
+			<div class="two-wide uneven">
+				<LabelledComponent title="Feature name">
+					<input type="text" id="featurename" placeholder="Enter name" v-model="feat.name" @change="hasEditedName = true" />
+					<a href="https://avrae.readthedocs.io/en/stable/automation_ref.html"> Documentation</a>
+					<a href="https://avrae.io/dashboard/characters" v-tooltip="'Edit automation on a character to get access to the full fledged automation builder.'"> Automation Editor</a>
+				</LabelledComponent>
+				<LabelledComponent title="Feature description">
+					<textarea rows="4" id="featuredescription" placeholder="Enter description" v-model="feat.description" />
+				</LabelledComponent>
 			</div>
-		</Transition>
-	</Teleport>
+			<hr />
+			<div class="three-wide">
+				<LabelledComponent title="Options">
+					<div class="buttons">
+						<button class="btn confirm" @click="saveAutomation(true)">Save Automation!</button>
+						<button class="btn danger" @click="automationString = 'null'">Clear</button>
+						<button class="btn" @click="generateAutomation" v-tooltip="'Generate automation from description. May be incomplete or inaccurate.'">Generate from description</button>
+					</div>
+				</LabelledComponent>
+				<LabelledComponent title="Import basic example">
+					<v-select :options="basicExamples" v-model="importedBasicExample" inputId="importbasicexample" />
+					<button class="btn move-down" @click="importExample">Load</button>
+				</LabelledComponent>
+				<LabelledComponent title="Import SRD feature">
+					<v-select :options="srdFeatures" v-model="importedSrdFeature" inputId="importsrdfeature" />
+					<button class="btn move-down" @click="importSrdAction">Load</button>
+				</LabelledComponent>
+			</div>
+
+			<hr />
+			<div class="automation-editor">
+				<span class="yaml-error" v-html="errorMessage"> </span>
+				<CodeEditor width="100%" :wrap="true" :languages="[['yaml', 'YAML']]" v-model="automationString" theme="obsidian" height="380px" font-size="12px"> </CodeEditor>
+			</div>
+		</template>
+	</Modal>
 </template>
 
 <script lang="ts">
@@ -59,32 +55,12 @@ import YAML from "yaml";
 import {toast, handleApiResponse, type error} from "@/main";
 import {type FeatureEntity} from "@/utils/types";
 import LabelledComponent from "./LabelledComponent.vue";
+import Modal from "./Modal.vue";
 import {parseDescIntoAutomation} from "@/parser/utils";
 export default defineComponent({
-	setup() {
-		const isModalOpen = ref(false);
-		const modal = ref<HTMLDivElement | null>(null);
-
-		onClickOutside(modal, () => (isModalOpen.value = false));
-
-		const openModal = () => {
-			isModalOpen.value = true;
-			let els = document.querySelectorAll(".language-yaml") as NodeListOf<HTMLElement>;
-			for (let e in els) {
-				if (els[e].dataset?.highlighted == "yes") els[e].dataset.highlighted = "";
-			}
-		};
-
-		return {
-			modal,
-			isModalOpen,
-			openModal
-		};
-	},
 	props: ["type", "index", "data"],
 	data() {
 		return {
-			isModalOpen: false,
 			feat: this.data.features[this.type][this.index],
 			automationString: "" as string,
 			errorMessage: null as null | string,
@@ -92,13 +68,14 @@ export default defineComponent({
 			srdFeatures: [] as string[],
 			importedBasicExample: null as string | null,
 			importedSrdFeature: null as string | null,
-
+			showFeatureModal: false,
 			hasEditedName: false
 		};
 	},
 	components: {
 		CodeEditor,
-		LabelledComponent
+		LabelledComponent,
+		Modal
 	},
 	mounted() {
 		this.automationString = YAML.stringify(this.feat.automation) ?? YAML.stringify(null);
@@ -222,7 +199,7 @@ export default defineComponent({
 					toast.error("Something went when generating automation!");
 				}
 			}
-		}
+		},
 	},
 	watch: {
 		automationString() {
@@ -263,6 +240,14 @@ export default defineComponent({
 			for (let e in els) {
 				if (els[e].dataset?.highlighted == "yes") els[e].dataset.highlighted = "";
 			}
+		},
+		showFeatureModal() {
+			setTimeout(() => {
+				let els = document.querySelectorAll(".language-yaml") as NodeListOf<HTMLElement>;
+				for (let e in els) {
+					if (els[e].dataset?.highlighted == "yes") els[e].dataset.highlighted = "";
+				}
+			}, 100);
 		}
 	}
 });
@@ -301,13 +286,14 @@ input {
 	grid-template-columns: 1fr 1fr 1fr;
 }
 @media screen and (max-width: 1080px) {
-	.editor-content__tab-inner .editor-field__container.three-wide {
+	.three-wide {
 		grid-template-columns: 1fr 1fr;
 	}
 }
 
 @media screen and (max-width: 950px) {
-	.editor-content__tab-inner .editor-field__container:is(.two-wide, .three-wide) {
+	.three-wide, .two-wide, .two-wide.uneven {
+		gap: 1rem;
 		grid-template-columns: 1fr;
 	}
 }

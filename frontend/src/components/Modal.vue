@@ -131,9 +131,9 @@ export default defineComponent({
 	margin-top: 2rem;
 
 	button {
-    font-size: 1.5rem;
-    padding: 1rem;
-    height: unset;
+		font-size: 1.3rem;
+		padding: 1rem;
+		height: unset;
 		cursor: pointer;
 	}
 }
@@ -145,14 +145,15 @@ export default defineComponent({
 	}
 	.modal__bg {
 		top: 0%;
-		z-index: 100;
 	}
+
 	.modal__content {
 		max-width: 100%;
 		width: 100%;
 		height: 100%;
 		max-height: 100%;
 		border-radius: 0;
+		box-shadow: none;
 		padding: 2rem .8rem;
 	}
 }
