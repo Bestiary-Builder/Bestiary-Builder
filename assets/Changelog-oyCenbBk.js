@@ -1,4 +1,9 @@
-import{M as o}from"./index-5Jdbla-E.js";import{B as r}from"./Breadcrumbs-sOrZjjRo.js";import{d as s,_ as i,r as d,o as n,c as t,a as l,b as u,i as m,F as h}from"./index-PRFVQd68.js";const c=`## v1.2.1
+import{M as o}from"./index-5Jdbla-E.js";import{B as r}from"./Breadcrumbs-Dz60_qMd.js";import{d as s,_ as i,r as d,o as n,c as t,a as l,b as u,i as m,F as h}from"./index-J23rYKFN.js";const c=`## v1.2.2
+_February 12th, 2024_
+
+- Fixes a few issues with the feature editor on mobile. It should now display and be styled properly.
+
+## v1.2.1
 _February 9th, 2024_
 
 - Once again fixes the issue where deleting an element from a draggable list did not update the buttons after it. This time it should stay working.
@@ -104,4 +109,4 @@ _January 10th, 2024_
 _December 10th, 2023_
 
 -   Development started
-`,p=o(),g=s({data(){return{content:p.render(c)}},components:{Breadcrumbs:r}}),f={class:"content markdown less-wide"},y=["innerHTML"];function b(e,v,_,w,k,x){const a=d("Breadcrumbs");return n(),t(h,null,[l(a,{routes:[{path:"",text:"Changelog",isCurrent:!0}],isLessWide:!0}),u("div",f,[e.content?(n(),t("div",{key:0,innerHTML:e.content},null,8,y)):m("",!0)])],64)}const B=i(g,[["render",b]]);export{B as default};
+`,p=o(),g=s({data(){return{content:p.render(c)}},components:{Breadcrumbs:r}}),y={class:"content markdown less-wide"},f=["innerHTML"];function b(e,_,v,w,k,x){const a=d("Breadcrumbs");return n(),t(h,null,[l(a,{routes:[{path:"",text:"Changelog",isCurrent:!0}],isLessWide:!0}),u("div",y,[e.content?(n(),t("div",{key:0,innerHTML:e.content},null,8,f)):m("",!0)])],64)}const B=i(g,[["render",b]]);export{B as default};
