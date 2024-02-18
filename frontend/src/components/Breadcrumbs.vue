@@ -63,7 +63,7 @@ export default defineComponent({
 		}
 	},
 	mounted() {
-		document.body.style.setProperty('--navbar-height', document.getElementById('navbar')!.offsetHeight.toString() + "px") 
+		document.body.style.setProperty("--navbar-height", document.getElementById("navbar")!.offsetHeight.toString() + "px");
 		// document.getElementById("breadcrumb")!.style.marginTop = "1000"
 	}
 });
@@ -73,7 +73,9 @@ export default defineComponent({
 .breadcrumbs__container {
 	background-color: var(--color-surface-0);
 	padding: 0.7rem 9.5vw;
-	box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+	box-shadow:
+		rgba(0, 0, 0, 0.19) 0px 10px 20px,
+		rgba(0, 0, 0, 0.23) 0px 6px 6px;
 	position: fixed;
 	top: 0;
 	width: 100%;
@@ -141,8 +143,8 @@ export default defineComponent({
 	gap: 0.7rem;
 	font-size: 1.3rem;
 	margin: 0;
- 	padding-left: 0;
-  	list-style: none;
+	padding-left: 0;
+	list-style: none;
 	.current-page {
 		font-weight: bold;
 		font-size: 1.3rem;

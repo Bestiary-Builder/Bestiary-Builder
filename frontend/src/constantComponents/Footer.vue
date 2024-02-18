@@ -39,7 +39,7 @@ import {defineComponent} from "vue";
 
 export default defineComponent({
 	name: "Footer",
-	data: () => ({} as {}),
+	data: () => ({}) as {},
 	async mounted() {}
 });
 </script>

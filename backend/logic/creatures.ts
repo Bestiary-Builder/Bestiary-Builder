@@ -2,7 +2,7 @@ import {badwords, app} from "../utilities/constants";
 import {log} from "../utilities/logger";
 import {requireUser, possibleUser} from "./login";
 import {addCreatureToBestiary, collections, getBestiary, getCreature, getUser, updateCreature, deleteCreature} from "../utilities/database";
-import {User, Bestiary, Creature} from "../../shared";
+import {User, Bestiary, Creature, Statblock} from "../../shared";
 import {checkBestiaryPermission} from "./bestiaries";
 import {ObjectId} from "mongodb";
 import limits from "../staticData/limits.json";
@@ -86,7 +86,7 @@ app.post("/api/creature/:id?/update", requireUser, async (req, res) => {
 		}
 		//Make sure all fields are present
 		let oldStats = data.stats;
-		data.stats = {};
+		data.stats = {} as Statblock;
 		for (let key in defaultStatblock) {
 			//@ts-ignore
 			data.stats[key] = {...defaultStatblock[key], ...oldStats[key]};

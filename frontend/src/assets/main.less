@@ -35,7 +35,7 @@ a {
 	color: rgb(205, 205, 205);
 	text-decoration: underline 0.1em rgba(0, 0, 0, 0);
 	&:hover {
-		text-decoration-color: color-mix(in srgb, currentColor, rgba(0, 0, 0, .5));
+		text-decoration-color: color-mix(in srgb, currentColor, rgba(0, 0, 0, 0.5));
 	}
 }
 
@@ -119,7 +119,7 @@ select {
 	padding: 2rem 10vw;
 	background-image: url("/bg_black.png");
 	min-height: 100vh;
-	margin-top: calc(var(--navbar-height)*2);
+	margin-top: calc(var(--navbar-height) * 2);
 
 	&.markdown {
 		h2 {
@@ -266,14 +266,15 @@ body .v-popper--theme-dropdown .v-popper__inner {
 	background: var(--color-surface-0);
 	border: 2px solid orangered;
 	box-shadow: none;
-	box-shadow: rgba(0, 0, 0, .5) 0px 10px 20px, rgba(0, 0, 0, .5) 0px 6px 6px;
+	box-shadow:
+		rgba(0, 0, 0, 0.5) 0px 10px 20px,
+		rgba(0, 0, 0, 0.5) 0px 6px 6px;
 	overflow-y: visible;
 }
 
 body .v-popper--theme-dropdown :is(.v-popper__arrow-outer, .v-popper__arrow-inner) {
 	border-color: orangered;
 }
-
 
 .v-popper__custom-menu {
 	background-color: var(--color-surface-0);
@@ -288,44 +289,43 @@ body .v-popper--theme-dropdown :is(.v-popper__arrow-outer, .v-popper__arrow-inne
 }
 
 // disable scroll when a mobile popper is enabled
-body:has(.v-popper__popper--no-positioning[aria-hidden=false]) {
+body:has(.v-popper__popper--no-positioning[aria-hidden="false"]) {
 	overflow: hidden;
 }
-  
+
 .v-popper__popper--no-positioning {
-position: fixed;
-z-index: 9999;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-display: flex;
-align-items: flex-end;
+	position: fixed;
+	z-index: 9999;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: flex-end;
 }
 
 .v-popper__popper--no-positioning .v-popper__backdrop {
-display: block;
-background: rgba(0 0 0 / 90%);
+	display: block;
+	background: rgba(0 0 0 / 90%);
 }
 
 .v-popper__popper--no-positioning .v-popper__wrapper {
-width: 100%;
-pointer-events: auto;
-transition: transform .15s ease-out;
+	width: 100%;
+	pointer-events: auto;
+	transition: transform 0.15s ease-out;
 }
 
 .v-popper__popper--no-positioning.v-popper__popper--hidden .v-popper__wrapper {
-transform: translateY(100%);
+	transform: translateY(100%);
 }
 
 .grid {
 	display: grid;
-	gap: .5rem;
-	padding-bottom: .4rem;
+	gap: 0.5rem;
+	padding-bottom: 0.4rem;
 
 	&.five-five {
 		grid-template-columns: 5fr 5fr;
-
 	}
 	&.eight-two {
 		grid-template-columns: 8fr 2fr;

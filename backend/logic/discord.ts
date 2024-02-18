@@ -22,10 +22,13 @@ client.on("ready", async () => {
 	if (!guild) return;
 	checkUserStatuses(guild);
 	//Interval check:
-	setInterval(function () {
-		if (!guild) return;
-		checkUserStatuses(guild);
-	}, 60 * 60 * 1000); //Once an hour
+	setInterval(
+		function () {
+			if (!guild) return;
+			checkUserStatuses(guild);
+		},
+		60 * 60 * 1000
+	); //Once an hour
 
 	///channels.combinedLogs = (await guild.channels.fetch("1188124583975460954")) as discord.TextBasedChannel;
 	channels.errorLogs = (await guild.channels.fetch("1188133661208477806")) as discord.TextBasedChannel;

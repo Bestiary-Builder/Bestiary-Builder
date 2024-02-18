@@ -45,7 +45,7 @@ export function parseFrom5eTools(data: any): [Statblock, {[key: string]: string[
 			if (typeof typeData?.tags[0] == "object") {
 				return capitalizeFirstLetter(baseType) + " " + typeData?.tags.map((t: any) => `${capitalizeFirstLetter(t.prefix)}} ${capitalizeFirstLetter(t.tag)}`).join(", ");
 			}
-			console.log("Something is wrong in race", typeData);
+			///console.log("Something is wrong in race", typeData);
 			return "";
 		})(),
 		size: (() => {

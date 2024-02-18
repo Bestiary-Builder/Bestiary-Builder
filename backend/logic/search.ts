@@ -9,7 +9,6 @@ const amountPerPage = 12;
 app.post("/api/search", async (req, res) => {
 	try {
 		//Parse search inputs
-		console.log(req.body);
 		let searchOptions = req.body.options as {
 			search: string;
 			page: number;
@@ -75,7 +74,6 @@ app.post("/api/search", async (req, res) => {
 				pageAmount
 			};
 		}
-		//console.log(output.results.map((x: any) => ({name: x.name, creatureAmount: x.creatures.length, popularityScore: x.popularityScore, bookmarks: x.bookmarks, viewCount: x.viewCount})));
 		log.info(`Search completed with ${output.pageAmount} pages`);
 		return res.json(output);
 	} catch (err) {

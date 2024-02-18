@@ -16,7 +16,6 @@
 	.tile-container {
 		grid-template-columns: 1fr 1fr;
 	}
-	
 }
 
 @media screen and (max-width: 800px) {
@@ -30,7 +29,9 @@
 	background: var(--color-surface-1);
 	color: #cbcbcb;
 	padding: 1rem;
-	box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+	box-shadow:
+		rgba(0, 0, 0, 0.19) 0px 10px 20px,
+		rgba(0, 0, 0, 0.23) 0px 6px 6px;
 
 	display: grid;
 	grid-template-rows: 1fr 6fr 1fr;
@@ -51,11 +52,12 @@
 		.tags {
 			font-style: italic;
 		}
-		
+
 		&.tile-has-image {
 			position: relative;
 			overflow-y: hidden;
-			.description, .tags {
+			.description,
+			.tags {
 				position: absolute;
 				width: 90%;
 				height: 100%;
@@ -92,7 +94,7 @@
 			padding-bottom: 20px;
 		}
 		.tile-image {
-			filter: brightness(25%)
+			filter: brightness(25%);
 		}
 	}
 	.tile-footer {
@@ -118,13 +120,12 @@
 
 a.content-tile,
 .create-tile {
-	.scale-on-hover(1.05)
+	.scale-on-hover(1.05);
 }
 
 .bestiary-tile:hover {
 	background-color: #454241;
 }
-
 
 .popin-enter-active {
 	animation: bounce-in 0.7s ease;
@@ -146,23 +147,26 @@ a.content-tile,
 }
 
 @keyframes bounce-in {
-  0% {
-    opacity: 0;
-    transform: scale(.3);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.05);
-  }
-  70% { transform: scale(.9); }
-  100% { transform: scale(1); }
+	0% {
+		opacity: 0;
+		transform: scale(0.3);
+	}
+	50% {
+		opacity: 1;
+		transform: scale(1.05);
+	}
+	70% {
+		transform: scale(0.9);
+	}
+	100% {
+		transform: scale(1);
+	}
 }
-
 
 .zero-found {
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	flex-direction: column;
-	gap: 1rem
+	gap: 1rem;
 }

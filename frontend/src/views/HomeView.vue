@@ -11,13 +11,12 @@
 	/> -->
 	<div class="article-header">
 		<div class="header-content">
-			<h1 class="header-title"> Bestiary Builder </h1>
+			<h1 class="header-title">Bestiary Builder</h1>
 			<p>Welcome to Bestiary Builder, <i>the</i> convenient Bestiary Creator for D&D 5e, designed for incredible integration with <a href="https://avrae.io/"> Avrae</a> and convenience of use!</p>
 		</div>
 		<img src="/mmcover.jpg" alt="" class="header-image" />
-	
 	</div>
-	
+
 	<div class="content markdown less-wide">
 		<div v-if="content" v-html="content"></div>
 	</div>
@@ -47,7 +46,7 @@ html {
 }
 </style>
 <style scoped lang="less">
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=block');
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&display=block");
 .content {
 	z-index: 2;
 	position: relative;
@@ -62,14 +61,14 @@ html {
 	padding-block: 7rem;
 	margin-block-end: 3rem;
 	color: white;
-	
-	.header-content  {
+
+	.header-content {
 		z-index: 1;
 		text-align: center;
 		h1 {
 			font-size: 12vw;
 			text-transform: uppercase;
-			font-family: 'Bebas Neue', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+			font-family: "Bebas Neue", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 			letter-spacing: 3px;
 		}
 
@@ -85,18 +84,21 @@ html {
 		inset: 0;
 		width: 100vw;
 		height: 100%;
-		opacity: .3;
+		opacity: 0.3;
 		object-fit: cover;
 		z-index: 0;
 		pointer-events: none;
 		transform-origin: top right;
 		scale: 1;
-
 	}
 }
 
 @keyframes header-image-animation {
-	85%, 100% {opacity: .3; scale: 1.5}
+	85%,
+	100% {
+		opacity: 0.3;
+		scale: 1.5;
+	}
 }
 
 @supports (animation-timeline: view()) {

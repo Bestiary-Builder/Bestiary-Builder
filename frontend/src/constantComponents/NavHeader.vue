@@ -88,7 +88,9 @@ export default defineComponent({
 	display: grid;
 	grid-template-columns: 2fr 6fr 2fr;
 
-	box-shadow: rgba(0, 0, 0, 0.19) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 2px 2px;
+	box-shadow:
+		rgba(0, 0, 0, 0.19) 0px 3px 6px,
+		rgba(0, 0, 0, 0.23) 0px 2px 2px;
 }
 
 .navbar-left {

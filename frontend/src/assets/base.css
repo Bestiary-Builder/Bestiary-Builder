@@ -1,6 +1,6 @@
 @import "https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700";
-@import 'https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700';
-@import 'https://fonts.googleapis.com/css2?family=Convergence&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700';
+@import "https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700";
+@import "https://fonts.googleapis.com/css2?family=Convergence&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700";
 :root {
 	--color-surface-0: #1a1919;
 	--color-surface-1: #3b3736;
@@ -131,9 +131,9 @@ body {
 
 /* Browsers without `::-webkit-scrollbar-*` support */
 @supports not selector(::-webkit-scrollbar) {
-    html {
-        scrollbar-width: thin;
-    }
+	html {
+		scrollbar-width: thin;
+	}
 }
 
 /* Box sizing rules */

@@ -27,4 +27,4 @@ coverage
 frontend/public/sitemap.xml
 backend/.env
 .jwtkey
-backend/build/
+build/

@@ -3,7 +3,7 @@ import {log} from "../utilities/logger";
 import {requireUser, possibleUser} from "./login";
 import {publicLog, colors} from "./discord";
 import {addBestiaryToUser, getBestiary, getUser, incrementBestiaryViewCount, updateBestiary, deleteBestiary, getCreature, collections, addBookmark, removeBookmark} from "../utilities/database";
-import {User, Bestiary, Creature} from "../../shared";
+import {User, Bestiary, Creature, type Statblock} from "../../shared";
 import {ObjectId} from "mongodb";
 import {type CreatureInput, defaultStatblock} from "./creatures";
 import limits from "../staticData/limits.json";
@@ -248,7 +248,7 @@ app.post("/api/bestiary/:id?/addcreatures", requireUser, async (req, res) => {
 		//Get creature input
 		let data;
 		try {
-			let inputData = req.body.data as CreatureInput[];
+			let inputData = req.body.data as Statblock[];
 			data = inputData.map((a) => ({stats: a} as Creature));
 		} catch {
 			data = null;
@@ -262,7 +262,7 @@ app.post("/api/bestiary/:id?/addcreatures", requireUser, async (req, res) => {
 		for (let creature of data) {
 			if (!creature) continue;
 			let oldStats = creature.stats;
-			creature.stats = {};
+			creature.stats = {} as Statblock;
 			for (let key in defaultStatblock) {
 				//@ts-expect-error
 				creature.stats[key] = {...defaultStatblock[key], ...oldStats[key]};
@@ -505,7 +505,7 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 				known_spells: knownSpells(creature.stats.spellcasting),
 				caster_dc: spellDc(false, creature.stats),
 				caster_sab: spellAttackBonus(false, creature.stats),
-				caster_mod: statCalc(spellcastCasterObj.spellCastingAbilityOverride ?? spellcastCasterObj.spellCastingAbility, creature.stats),
+				caster_mod: statCalc(spellcastCasterObj.spellCastingAbilityOverride ?? spellcastCasterObj.spellCastingAbility ?? "", creature.stats),
 				innate_dc: spellDc(true, creature.stats),
 				innate_sab: spellAttackBonus(true, creature.stats),
 				innate_mod: statCalc(spellcastInnateObj.spellCastingAbilityOverride ?? spellcastInnateObj.spellCastingAbility, creature.stats)
@@ -605,21 +605,21 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 
 			// best not to think about this too much.
 			if (caster.casterLevel && caster.castingClass && caster.spellList.flat().length > 0) {
-				let output = `${isNoun ? "" : "The "}${name} is a ${nthSuffix(caster.casterLevel)}-level spellcaster. ${isNoun ? "Their" : "Its"} spellcasting ability is ${fullSpellAbilityName(caster.spellCastingAbilityOverride ?? caster.spellCastingAbility)} (spell save DC ${spellDc(
+				let output = `${isNoun ? "" : "The "}${name} is a ${nthSuffix(caster.casterLevel)}-level spellcaster. ${isNoun ? "Their" : "Its"} spellcasting ability is ${fullSpellAbilityName(caster.spellCastingAbilityOverride ?? caster.spellCastingAbility ?? "")} (spell save DC ${spellDc(
 					false,
 					creature.stats
 				)}, ${spellAttackBonus(false, creature.stats) >= 0 ? "+" : ""}${spellAttackBonus(false, creature.stats)} to hit with spell attacks). ${isNoun ? name : "It"} ${
 					["Sorcerer", "Bard", "Ranger", "Warlock"].includes(caster.castingClass) ? `knowns the following ${caster.castingClass.toLowerCase()} spells` : `has the following ${caster.castingClass.toLowerCase()} spells prepared`
 				}:${!["Ranger", "Paladin"].includes(caster.castingClass) && caster.spellList[0].length > 0 ? `\n\nCantrips (at will): ${caster.spellList[0].sort().join(", ").toLowerCase()}` : ""}${
-					caster.spellList[1].length > 0 ? `\n\n1st level ${slots(caster.spellSlotList[1])}: ${caster.spellList[1].sort().join(", ").toLowerCase()}` : ""
-				}${caster.spellList[2].length > 0 ? `\n\n2nd level ${slots(caster.spellSlotList[2])}: ${caster.spellList[2].sort().join(", ").toLowerCase()}` : ""}${
-					caster.spellList[3].length > 0 ? `\n\n3rd level ${slots(caster.spellSlotList[3])}: ${caster.spellList[3].sort().join(", ").toLowerCase()}` : ""
-				}${caster.spellList[4].length > 0 ? `\n\n4th level ${slots(caster.spellSlotList[4])}: ${caster.spellList[4].sort().join(", ").toLowerCase()}` : ""}${
-					caster.spellList[5].length > 0 ? `\n\n5th level ${slots(caster.spellSlotList[5])}: ${caster.spellList[5].sort().join(", ").toLowerCase()}` : ""
-				}${caster.spellList[6].length > 0 ? `\n\n6th level ${slots(caster.spellSlotList[6])}: ${caster.spellList[6].sort().join(", ").toLowerCase()}` : ""}${
-					caster.spellList[7].length > 0 ? `\n\n7th level ${slots(caster.spellSlotList[7])}: ${caster.spellList[7].sort().join(", ").toLowerCase()}` : ""
-				}${caster.spellList[8].length > 0 ? `\n\n8th level ${slots(caster.spellSlotList[8])}: ${caster.spellList[8].sort().join(", ").toLowerCase()}` : ""}${
-					caster.spellList[9].length > 0 ? `\n\n9th level ${slots(caster.spellSlotList[9])}: ${caster.spellList[9].sort().join(", ").toLowerCase()}` : ""
+					caster.spellList[1].length > 0 ? `\n\n1st level ${slots(caster.spellSlotList![1])}: ${caster.spellList[1].sort().join(", ").toLowerCase()}` : ""
+				}${caster.spellList[2].length > 0 ? `\n\n2nd level ${slots(caster.spellSlotList![2])}: ${caster.spellList[2].sort().join(", ").toLowerCase()}` : ""}${
+					caster.spellList[3].length > 0 ? `\n\n3rd level ${slots(caster.spellSlotList![3])}: ${caster.spellList[3].sort().join(", ").toLowerCase()}` : ""
+				}${caster.spellList[4].length > 0 ? `\n\n4th level ${slots(caster.spellSlotList![4])}: ${caster.spellList[4].sort().join(", ").toLowerCase()}` : ""}${
+					caster.spellList[5].length > 0 ? `\n\n5th level ${slots(caster.spellSlotList![5])}: ${caster.spellList[5].sort().join(", ").toLowerCase()}` : ""
+				}${caster.spellList[6].length > 0 ? `\n\n6th level ${slots(caster.spellSlotList![6])}: ${caster.spellList[6].sort().join(", ").toLowerCase()}` : ""}${
+					caster.spellList[7].length > 0 ? `\n\n7th level ${slots(caster.spellSlotList![7])}: ${caster.spellList[7].sort().join(", ").toLowerCase()}` : ""
+				}${caster.spellList[8].length > 0 ? `\n\n8th level ${slots(caster.spellSlotList![8])}: ${caster.spellList[8].sort().join(", ").toLowerCase()}` : ""}${
+					caster.spellList[9].length > 0 ? `\n\n9th level ${slots(caster.spellSlotList![9])}: ${caster.spellList[9].sort().join(", ").toLowerCase()}` : ""
 				}`.replaceAll("\t", "");
 
 				creatureData.traits.push({
@@ -629,48 +629,48 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 				});
 			}
 
-			caster = creature.stats["spellcasting"]["innateSpells"];
-			if (caster.spellCastingAbility && (caster.spellList[0].length > 0 || caster.spellList[1].length > 0 || caster.spellList[2].length > 0 || caster.spellList[3].length > 0)) {
-				let fName = `Innate Spellcasting${caster.isPsionics ? " (Psionics)" : ""}`;
+			let innateCaster = creature.stats["spellcasting"]["innateSpells"];
+			if (innateCaster.spellCastingAbility && (innateCaster.spellList[0].length > 0 || innateCaster.spellList[1].length > 0 || innateCaster.spellList[2].length > 0 || innateCaster.spellList[3].length > 0)) {
+				let fName = `Innate Spellcasting${innateCaster.isPsionics ? " (Psionics)" : ""}`;
 				let output = "";
 
-				if (!caster.displayAsAction) {
-					output += `${isNoun ? "" : "The "}${name}'s spellcasting ability is ${fullSpellAbilityName(caster.spellCastingAbility)} (spell save DC ${spellDc(true, creature.stats)}, ${spellAttackBonus(true, creature.stats) >= 0 ? "+" : ""}${spellAttackBonus(
+				if (!innateCaster.displayAsAction) {
+					output += `${isNoun ? "" : "The "}${name}'s spellcasting ability is ${fullSpellAbilityName(innateCaster.spellCastingAbility)} (spell save DC ${spellDc(true, creature.stats)}, ${spellAttackBonus(true, creature.stats) >= 0 ? "+" : ""}${spellAttackBonus(
 						true,
 						creature.stats
-					)} to hit with spell attacks). ${isNoun ? name : "It"} can innately cast the following spells${componentsString(caster.noComponentsOfType)}:`;
+					)} to hit with spell attacks). ${isNoun ? name : "It"} can innately cast the following spells${componentsString(innateCaster.noComponentsOfType)}:`;
 				} else {
-					output += `${isNoun ? "" : "The "}${name} casts one of the following spells${componentsString(caster.noComponentsOfType)} and using ${fullSpellAbilityName(caster.spellCastingAbility)} as the spellcasting ability (spell save DC ${spellDc(true, creature.stats)}, ${
+					output += `${isNoun ? "" : "The "}${name} casts one of the following spells${componentsString(innateCaster.noComponentsOfType)} and using ${fullSpellAbilityName(innateCaster.spellCastingAbility)} as the spellcasting ability (spell save DC ${spellDc(true, creature.stats)}, ${
 						spellAttackBonus(true, creature.stats) >= 0 ? "+" : ""
 					}${spellAttackBonus(true, creature.stats)} to hit with spell attacks):`;
 				}
 
-				if (caster.spellList[0].length > 0)
-					output += `\n\nAt will: ${caster.spellList[0]
+				if (innateCaster.spellList[0].length > 0)
+					output += `\n\nAt will: ${innateCaster.spellList[0]
 						.map((x: any) => (x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell))
 						.sort()
 						.join(", ")
 						.toLowerCase()}`;
-				if (caster.spellList[3].length > 0)
-					output += `\n\n3/day each: ${caster.spellList[3]
+				if (innateCaster.spellList[3].length > 0)
+					output += `\n\n3/day each: ${innateCaster.spellList[3]
 						.map((x: any) => (x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell))
 						.sort()
 						.join(", ")
 						.toLowerCase()}`;
-				if (caster.spellList[2].length > 0)
-					output += `\n\n2/day each: ${caster.spellList[2]
+				if (innateCaster.spellList[2].length > 0)
+					output += `\n\n2/day each: ${innateCaster.spellList[2]
 						.map((x: any) => (x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell))
 						.sort()
 						.join(", ")
 						.toLowerCase()}`;
-				if (caster.spellList[1].length > 0)
-					output += `\n\n1/day each: ${caster.spellList[1]
+				if (innateCaster.spellList[1].length > 0)
+					output += `\n\n1/day each: ${innateCaster.spellList[1]
 						.map((x: any) => (x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell))
 						.sort()
 						.join(", ")
 						.toLowerCase()}`;
 
-				creatureData[caster.displayAsAction ? "actions" : "traits"].push({
+				creatureData[innateCaster.displayAsAction ? "actions" : "traits"].push({
 					name: fName,
 					description: output,
 					automation: null

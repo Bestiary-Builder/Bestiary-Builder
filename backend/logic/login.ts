@@ -86,7 +86,6 @@ app.get("/api/logout", async (req, res) => {
 });
 export const requireUser = async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		console.log("Require user");
 		let token = req.cookies.userToken;
 		if (!token) {
 			return res.status(401).json({error: "Not logged in."});

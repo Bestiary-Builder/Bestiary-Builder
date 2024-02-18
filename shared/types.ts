@@ -33,7 +33,7 @@ export class Bestiary {
 	) {}
 }
 export class Creature {
-	constructor(public lastUpdated: number, public stats: any, public bestiary: ObjectId, public _id?: ObjectId) {}
+	constructor(public lastUpdated: number, public stats: Statblock, public bestiary: ObjectId, public _id?: ObjectId) {}
 }
 
 //Frontend types
