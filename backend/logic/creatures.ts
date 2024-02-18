@@ -1,7 +1,8 @@
-import {app, badwords} from "../server";
-import {log} from "../logger";
+import {badwords, app} from "../utilities/constants";
+import {log} from "../utilities/logger";
 import {requireUser, possibleUser} from "./login";
-import {addCreatureToBestiary, collections, getBestiary, getCreature, getUser, updateCreature, Creature, deleteCreature} from "../database";
+import {addCreatureToBestiary, collections, getBestiary, getCreature, getUser, updateCreature, deleteCreature} from "../utilities/database";
+import {User, Bestiary, Creature} from "../../shared";
 import {checkBestiaryPermission} from "./bestiaries";
 import {ObjectId} from "mongodb";
 import limits from "../staticData/limits.json";
@@ -134,12 +135,16 @@ app.post("/api/creature/:id?/update", requireUser, async (req, res) => {
 			if (["none", "view"].includes(bestiaryPermissionLevel)) return res.status(401).json({error: "You don't have permission to update this creature."});
 			//Remove bad words
 			if (bestiary.status != "private") {
-				let usedBadwords : string[] = []
-				badwords.filter(data.stats.description.name, badword => {usedBadwords.push(badword)})
+				let usedBadwords: string[] = [];
+				badwords.filter(data.stats.description.name, (badword) => {
+					usedBadwords.push(badword);
+				});
 				if (usedBadwords.length > 0) return res.status(400).json({error: `Creature name includes blocked words or phrases. Remove the badwords or make the bestiary private. Matched: ${usedBadwords.join(", ")}. If you think this was a mistake, please file a bug report.`});
-				
-				usedBadwords = []
-				badwords.filter(data.stats.description.description, badword => {usedBadwords.push(badword)})
+
+				usedBadwords = [];
+				badwords.filter(data.stats.description.description, (badword) => {
+					usedBadwords.push(badword);
+				});
 				if (usedBadwords.length > 0) {
 					return res.status(400).json({error: `Creature description includes blocked words or phrases. Remove the badwords or make the bestiary private. Matched: ${usedBadwords.join(", ")}. If you think this was a mistake, please file a bug report.`});
 				}

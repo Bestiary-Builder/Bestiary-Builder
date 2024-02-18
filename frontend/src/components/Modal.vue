@@ -1,74 +1,73 @@
 <template>
-<Teleport to="#modal">
-  	<Transition name="modal">
-		<div class="modal__bg" @click="$emit('close')" v-show="show" ref="target">
-			<div class="modal__content" @click.stop role="dialog" aria-modal="true" :aria-labelledby="`dialog${id}_label`">
-				<div class="modal__header">
-					<h2 :id="`dialog${id}_label`"><slot name="header"></slot> </h2>
-					<button
-						class="modal__close-button"
-						@click="$emit('close')"
-						><font-awesome-icon icon="fa-solid fa-xmark" />
-					</button>
-				</div>
-				<div class="modal__body"> 
-					<slot name="body"></slot>
-				</div>
-				<div class="modal__footer modal__buttons">
-					<slot name="footer"></slot>
+	<Teleport to="#modal">
+		<Transition name="modal">
+			<div class="modal__bg" @click="$emit('close')" v-show="show" ref="target">
+				<div class="modal__content" @click.stop role="dialog" aria-modal="true" :aria-labelledby="`dialog${id}_label`">
+					<div class="modal__header">
+						<h2 :id="`dialog${id}_label`"><slot name="header"></slot></h2>
+						<button class="modal__close-button" @click="$emit('close')"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
+					</div>
+					<div class="modal__body">
+						<slot name="body"></slot>
+					</div>
+					<div class="modal__footer modal__buttons">
+						<slot name="footer"></slot>
+					</div>
 				</div>
 			</div>
-		</div>
-  	</Transition>
-</Teleport>
+		</Transition>
+	</Teleport>
 </template>
 <script lang="ts">
-import { defineComponent, nextTick, ref, watch } from 'vue';
-import { useFocusTrap } from '@vueuse/integrations/useFocusTrap'
+import {defineComponent, nextTick, ref, watch} from "vue";
+import {useFocusTrap} from "@vueuse/integrations/useFocusTrap";
 
 export default defineComponent({
-  	props: {
-    	show: {
+	props: {
+		show: {
 			type: Boolean,
 			required: true
 		}
-  	},
+	},
 	name: "Modal",
-  	emits: ['close'],
-  	data() {
-    	return {
-      		id: this.$.uid
-    	}
-  	},
+	emits: ["close"],
+	data() {
+		return {
+			id: this.$.uid
+		};
+	},
 	setup(props) {
-        const target = ref()
-        const { hasFocus, activate, deactivate } = useFocusTrap(target)
+		const target = ref();
+		const {hasFocus, activate, deactivate} = useFocusTrap(target);
 
-        watch(() => props.show, async (newValue, oldValue) => {
-            if (newValue === oldValue) return
-            if (newValue === true) {
-				await nextTick()
-				activate()
-			} 
-            if (newValue === false) {
-				await nextTick()
-				deactivate()
-			} 
-        });
+		watch(
+			() => props.show,
+			async (newValue, oldValue) => {
+				if (newValue === oldValue) return;
+				if (newValue === true) {
+					await nextTick();
+					activate();
+				}
+				if (newValue === false) {
+					await nextTick();
+					deactivate();
+				}
+			}
+		);
 
 		return {
 			hasFocus,
 			target
-		}
-    },
+		};
+	},
 	mounted() {
 		document.addEventListener("keydown", (e) => {
 			if (e.key == "Escape" && this.show) {
-				this.$emit('close')
+				this.$emit("close");
 			}
-		})
+		});
 	}
-})
+});
 </script>
 
 <style lang="less">
@@ -92,9 +91,9 @@ export default defineComponent({
 .modal__content {
 	position: relative;
 	width: 80%;
- 	max-width: 80%;
+	max-width: 80%;
 	padding: 2rem;
- 	max-height: 80%;
+	max-height: 80%;
 	background-color: var(--color-surface-1);
 	border-radius: 1rem;
 	overflow-y: scroll;
@@ -104,7 +103,7 @@ export default defineComponent({
 
 .modal__close-button {
 	position: absolute;
-	top: .3rem;
+	top: 0.3rem;
 	right: 0.1rem;
 
 	font-size: 2rem;
@@ -112,16 +111,16 @@ export default defineComponent({
 	background: none;
 	border: none;
 	cursor: pointer;
-  transition: color .3s ease;
-  &:hover {
-    color: orangered;
-  }
+	transition: color 0.3s ease;
+	&:hover {
+		color: orangered;
+	}
 }
 
 .modal__header {
 	border-bottom: 1px solid orangered;
-  font-size: 1.5rem;
-  margin-bottom: .5rem;
+	font-size: 1.5rem;
+	margin-bottom: 0.5rem;
 }
 
 .modal__buttons {
@@ -154,7 +153,7 @@ export default defineComponent({
 		max-height: 100%;
 		border-radius: 0;
 		box-shadow: none;
-		padding: 2rem .8rem;
+		padding: 2rem 0.8rem;
 	}
 }
 
@@ -167,13 +166,12 @@ export default defineComponent({
 
 @keyframes slideIn {
 	0% {
-	  transform: translateY(-100%);
-	  opacity: 0;
+		transform: translateY(-100%);
+		opacity: 0;
 	}
 	100% {
-	  transform: translateY(0px);
-	  opacity: 1;
+		transform: translateY(0px);
+		opacity: 1;
 	}
-  }
-
+}
 </style>

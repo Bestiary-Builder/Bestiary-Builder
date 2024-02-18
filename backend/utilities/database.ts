@@ -1,6 +1,7 @@
 import {MongoClient, ServerApiVersion, Db, ObjectId, Collection, CommandFailedEvent, CommandSucceededEvent, AnyBulkWriteOperation} from "mongodb";
-import {generateUserSecret} from "./server";
+import {generateUserSecret} from "./constants";
 import {log} from "./logger";
+import {User, Bestiary, Creature} from "../../shared";
 //Connect to database
 let database = null as Db | null;
 export async function startConnection() {
@@ -26,7 +27,7 @@ export async function startConnection() {
 		log.log("database", `Established connection to ${database.databaseName} with ${(await database.collections()).length} collections.`);
 
 		//Database change
-		const runDataBaseChange = true;
+		const runDataBaseChange = false;
 		if (runDataBaseChange) {
 			//Change speed & senses (remove 0 values)
 			let result = await collections.creatures.updateMany({}, {$pull: {"stats.core.speed": {value: 0, name: {$ne: "Walk"}}, "stats.core.senses": {value: 0}}});
@@ -39,41 +40,6 @@ export async function startConnection() {
 	}
 }
 
-//Collections
-export class User {
-	constructor(
-		public username: string,
-		public avatar: string,
-		public email: string,
-		public verified: boolean,
-		public banner_color: string,
-		public global_name: string,
-		public bestiaries: ObjectId[] = [],
-		public bookmarks: ObjectId[] = [],
-		public supporter: 0 | 1 | 2,
-		public joinedAt: number,
-		public _id: string,
-		public secret?: string
-	) {}
-}
-export class Bestiary {
-	constructor(
-		public name: string,
-		public owner: string,
-		public editors: string[],
-		public status: "public" | "private" | "unlisted",
-		public description: string,
-		public creatures: ObjectId[],
-		public tags: string[],
-		public viewCount: number,
-		public bookmarks: number,
-		public lastUpdated: number,
-		public _id?: ObjectId
-	) {}
-}
-export class Creature {
-	constructor(public lastUpdated: number, public stats: any, public bestiary: ObjectId, public _id?: ObjectId) {}
-}
 export const collections: {users?: Collection<User>; bestiaries?: Collection<Bestiary>; creatures?: Collection<Creature>} = {};
 
 //Add changes to all in database

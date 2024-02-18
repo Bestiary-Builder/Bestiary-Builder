@@ -53,7 +53,7 @@ import "highlight.js/styles/obsidian.css";
 import {defineComponent} from "vue";
 import YAML from "yaml";
 import {toast, handleApiResponse, type error} from "@/main";
-import {type FeatureEntity} from "@/utils/types";
+import {type FeatureEntity} from "@/../../shared";
 import LabelledComponent from "./LabelledComponent.vue";
 import Modal from "./Modal.vue";
 import {parseDescIntoAutomation} from "@/parser/utils";
@@ -199,7 +199,7 @@ export default defineComponent({
 					toast.error("Something went when generating automation!");
 				}
 			}
-		},
+		}
 	},
 	watch: {
 		automationString() {
@@ -292,7 +292,9 @@ input {
 }
 
 @media screen and (max-width: 950px) {
-	.three-wide, .two-wide, .two-wide.uneven {
+	.three-wide,
+	.two-wide,
+	.two-wide.uneven {
 		gap: 1rem;
 		grid-template-columns: 1fr;
 	}

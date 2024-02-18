@@ -35,7 +35,7 @@
 import {RouterLink, RouterView} from "vue-router";
 import UserBanner from "@/components/UserBanner.vue";
 import {user, sendToLogin} from "@/main";
-import type {User} from "@/utils/types";
+import type {User} from "@/../../shared";
 import {defineComponent} from "vue";
 import {onClickOutside} from "@vueuse/core";
 import {ref} from "vue";

@@ -1,0 +1,11 @@
+{
+	"compilerOptions": {
+		"declaration": true,
+		"declarationMap": true,
+		"rootDir": ".",
+		"outDir": "build",
+		"composite": true,
+		"lib": ["ES2021"]
+	},
+	"references": []
+}

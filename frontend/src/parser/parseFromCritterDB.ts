@@ -1,5 +1,5 @@
 import {toast} from "@/main";
-import {type CasterSpells, type Statblock, defaultStatblock, spellListFlattened, type SpellSlotEntity, type SkillsEntity, type Stat, type SpellCasting, type InnateSpellsEntity, type SpeedEntity, type SenseEntity} from "../utils/types";
+import {type CasterSpells, type Statblock, defaultStatblock, spellListFlattened, type SpellSlotEntity, type SkillsEntity, type Stat, type SpellCasting, type InnateSpellsEntity, type SpeedEntity, type SenseEntity} from "@/../../shared";
 
 import {abilityParser, descParser, parseDescIntoAutomation, capitalizeFirstLetter} from "./utils";
 
@@ -28,69 +28,74 @@ export function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: s
 		size: data.stats.size,
 		languages: data.stats.languages,
 		senses: (() => {
-			let output : SenseEntity[]= []
+			let output: SenseEntity[] = [];
 			for (let s of data.stats.senses ?? []) {
-				let value = parseInt(s.replace(/[a-zA-Z]/g, ""))
-				let name = ""
-				let isBlind = false
+				let value = parseInt(s.replace(/[a-zA-Z]/g, ""));
+				let name = "";
+				let isBlind = false;
 
-				if (s.toLowerCase().includes("dark")) name = "Darkvision"
+				if (s.toLowerCase().includes("dark")) name = "Darkvision";
 				else if (s.toLowerCase().includes("blind")) {
-					name = "Blindsight"
-					isBlind = !!(data.stats.senses ?? []).find((str: string) => str.includes("blind beyond this radius"))
-				} 
-				else if (s.toLowerCase().includes("true")) name = "Truesight"
-				else if (s.toLowerCase().includes("tremor")) name = "Tremorsense"
+					name = "Blindsight";
+					isBlind = !!(data.stats.senses ?? []).find((str: string) => str.includes("blind beyond this radius"));
+				} else if (s.toLowerCase().includes("true")) name = "Truesight";
+				else if (s.toLowerCase().includes("tremor")) name = "Tremorsense";
 
-				if (name) output.push({
-					name: name,
-					value: value,
-					unit: "ft",
-					comment: isBlind ? "blind beyond this radius" : ""
-				}) ;
+				if (name)
+					output.push({
+						name: name,
+						value: value,
+						unit: "ft",
+						comment: isBlind ? "blind beyond this radius" : ""
+					});
 			}
-			return output
+			return output;
 		})(),
 		speed: (() => {
-			let output : SpeedEntity[] = []
-			let fly = parseInt((data?.stats.speed.match(/fly\s*(\d+)\s*ft\.?/) || [])[1]) || 0
-			let isHover = data?.stats?.speed.toLowerCase().includes("hover")
-			let swim = parseInt((data?.stats.speed.match(/swim\s*(\d+)\s*ft\.?/) || [])[1]) || 0
-			let burrow = parseInt((data?.stats.speed.match(/burrow\s*(\d+)\s*ft\.?/) || [])[1]) || 0
-			let climb = parseInt((data?.stats.speed.match(/climb\s*(\d+)\s*ft\.?/) || [])[1]) || 0
-			let walk = parseInt((data?.stats.speed.match(/^(\d+)\s*ft\.?/) || [])[1]) || 0
-				
-			if (walk) output.push({
-				name: "Walk",
-				value: walk,
-				comment: "",
-				unit: "ft"
-			})
-			if (fly) output.push({
-				name: "Fly",
-				value: fly,
-				comment: isHover ? "hover" : "",
-				unit: "ft"
-			})
-			if (climb) output.push({
-				name: "Climb",
-				value: climb,
-				comment: "",
-				unit: "ft"
-			})
-			if (swim) output.push({
-				name: "Swim",
-				value: swim,
-				comment: "",
-				unit: "ft"
-			})
-			if (burrow) output.push({
-				name: "Burrow",
-				value: burrow,
-				comment: "",
-				unit: "ft"
-			})
-			return output
+			let output: SpeedEntity[] = [];
+			let fly = parseInt((data?.stats.speed.match(/fly\s*(\d+)\s*ft\.?/) || [])[1]) || 0;
+			let isHover = data?.stats?.speed.toLowerCase().includes("hover");
+			let swim = parseInt((data?.stats.speed.match(/swim\s*(\d+)\s*ft\.?/) || [])[1]) || 0;
+			let burrow = parseInt((data?.stats.speed.match(/burrow\s*(\d+)\s*ft\.?/) || [])[1]) || 0;
+			let climb = parseInt((data?.stats.speed.match(/climb\s*(\d+)\s*ft\.?/) || [])[1]) || 0;
+			let walk = parseInt((data?.stats.speed.match(/^(\d+)\s*ft\.?/) || [])[1]) || 0;
+
+			if (walk)
+				output.push({
+					name: "Walk",
+					value: walk,
+					comment: "",
+					unit: "ft"
+				});
+			if (fly)
+				output.push({
+					name: "Fly",
+					value: fly,
+					comment: isHover ? "hover" : "",
+					unit: "ft"
+				});
+			if (climb)
+				output.push({
+					name: "Climb",
+					value: climb,
+					comment: "",
+					unit: "ft"
+				});
+			if (swim)
+				output.push({
+					name: "Swim",
+					value: swim,
+					comment: "",
+					unit: "ft"
+				});
+			if (burrow)
+				output.push({
+					name: "Burrow",
+					value: burrow,
+					comment: "",
+					unit: "ft"
+				});
+			return output;
 		})()
 	};
 
@@ -302,14 +307,14 @@ export function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: s
 
 		const typeMatch = sData.match(/spellcasting ability is (\w+) \(spell save DC (\d+), [+\-](\d+) to hit/);
 		if (!typeMatch) return defaultStatblock.spellcasting.casterSpells;
-		
+
 		let dc = typeMatch ? parseInt(typeMatch[2]) : null;
 		let bonus = typeMatch ? parseInt(typeMatch[3]) : null;
 		const ability: Stat = typeMatch ? typeMatch[1].toLowerCase().slice(0, 3) : null;
 
 		let casterLevel = sData.match(/(\d+)[stndrh]{2}-level/);
 		if (!casterLevel) return defaultStatblock.spellcasting.casterSpells;
-		casterLevel = parseInt(casterLevel[1])
+		casterLevel = parseInt(casterLevel[1]);
 
 		let casterClass: null | CasterSpells["castingClass"] = null;
 		if (sData.toLowerCase().includes("wizard")) casterClass = "Wizard";
@@ -373,7 +378,7 @@ export function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: s
 		let sData = null;
 
 		for (let a of data.stats.actions) {
-			if (a.name.toLowerCase().includes("innate spellcasting") || a.name.toLowerCase().includes("spellcasting") && !a.description.match(/(\d+)[stndrh]{2}-level/)) {
+			if (a.name.toLowerCase().includes("innate spellcasting") || (a.name.toLowerCase().includes("spellcasting") && !a.description.match(/(\d+)[stndrh]{2}-level/))) {
 				sData = a.description;
 				isPsionics = a.name.toLowerCase().includes("psionics");
 				displayAsAction = true;
@@ -551,7 +556,7 @@ function innateSpellListConstructor(spellString: string): InnateSpellsEntity[] {
 				.trim()
 				.replace(/[.$*_]/g, "")
 				.replace(/\(.+\)/, "")
-				.trim()
+				.trim();
 		output.push({
 			spell: spell,
 			comment: comment

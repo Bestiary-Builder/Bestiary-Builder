@@ -1,34 +1,34 @@
 <template>
-<div class="content">
-	<div class="tile-container" v-if="bestiaries.length > 0">
-		<TransitionGroup name="popin" >
-			<RouterLink class="content-tile bestiary-tile" v-for="bestiary, index in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" v-if="bestiaries">
-				<h2 class="tile-header">{{ bestiary.name }}</h2>
-				<div class="tile-content" :class="{'tile-has-image': bestiaryImages[index]}">
-					<img class="tile-image" v-if="bestiaryImages[index]" :src="bestiaryImages[index]" />					
-					<div class="tags">
-						{{ bestiary.tags.join(", ") }}
+	<div class="content">
+		<div class="tile-container" v-if="bestiaries.length > 0">
+			<TransitionGroup name="popin">
+				<RouterLink class="content-tile bestiary-tile" v-for="(bestiary, index) in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" v-if="bestiaries">
+					<h2 class="tile-header">{{ bestiary.name }}</h2>
+					<div class="tile-content" :class="{'tile-has-image': bestiaryImages[index]}">
+						<img class="tile-image" v-if="bestiaryImages[index]" :src="bestiaryImages[index]" />
+						<div class="tags">
+							{{ bestiary.tags.join(", ") }}
+						</div>
+						<p class="description">{{ bestiary.description }}</p>
 					</div>
-					<p class="description">{{ bestiary.description }}</p>
-				</div>
-				<div class="tile-footer">
-					<UserBanner :id="bestiary.owner" />
-					<span>{{ bestiary.creatures.length }}🐉</span>
-				</div>
-			</RouterLink>
-		</TransitionGroup>
+					<div class="tile-footer">
+						<UserBanner :id="bestiary.owner" />
+						<span>{{ bestiary.creatures.length }}🐉</span>
+					</div>
+				</RouterLink>
+			</TransitionGroup>
+		</div>
+		<div v-else class="no-bookmarks-notice">
+			<p>You do not have any bookmarked bestiaries. View a Bestiary and click on the ⭐ icon to bookmark it.</p>
+		</div>
 	</div>
-	<div v-else class="no-bookmarks-notice">
-		<p> You do not have any bookmarked bestiaries. View a Bestiary and click on the ⭐ icon to bookmark it.</p>
-	</div>
-</div>
 </template>
 
 <script lang="ts">
 import {RouterLink} from "vue-router";
 import {defineComponent} from "vue";
 import UserBanner from "@/components/UserBanner.vue";
-import type {User, Bestiary} from "@/utils/types";
+import type {User, Bestiary} from "@/../../shared";
 import {handleApiResponse, toast, user} from "@/main";
 import type {error} from "@/main";
 export default defineComponent({
@@ -64,15 +64,15 @@ export default defineComponent({
 		}
 	},
 	computed: {
-		bestiaryImages() : string[] {
-			let bestiaryImages : string[] = []
+		bestiaryImages(): string[] {
+			let bestiaryImages: string[] = [];
 			for (let bestiary of this.bestiaries) {
 				const match = bestiary.description.match(/\!\[.*?\]\((.*?)\)/);
 				const firstImageUrl = (match || [])[1];
-				if (match) bestiary.description =  bestiary.description.replace(match[0], '')
-				bestiaryImages.push(firstImageUrl)
+				if (match) bestiary.description = bestiary.description.replace(match[0], "");
+				bestiaryImages.push(firstImageUrl);
 			}
-			return bestiaryImages
+			return bestiaryImages;
 		}
 	}
 });

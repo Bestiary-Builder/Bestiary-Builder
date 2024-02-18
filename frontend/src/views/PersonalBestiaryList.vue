@@ -1,22 +1,22 @@
 <template>
-	<Breadcrumbs :routes="[
-		{
-			path: '',
-			text: 'My Bestiaries',
-			isCurrent: true
-		}
-		]" 
+	<Breadcrumbs
+		:routes="[
+			{
+				path: '',
+				text: 'My Bestiaries',
+				isCurrent: true
+			}
+		]"
 	>
-	<button @click="createBestiary" v-tooltip="'Create bestiary!'" class="inverted" aria-label="Create bestiary">
-		<font-awesome-icon :icon="['fas', 'plus']" />
-	</button>
+		<button @click="createBestiary" v-tooltip="'Create bestiary!'" class="inverted" aria-label="Create bestiary">
+			<font-awesome-icon :icon="['fas', 'plus']" />
+		</button>
 	</Breadcrumbs>
 	<div class="content">
 		<div class="tile-container" v-if="bestiaries">
 			<TransitionGroup name="popin">
-				<RouterLink class="content-tile bestiary-tile" v-for="bestiary, index in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" :key="bestiary._id"
-					:class="{'four-tall': bestiary.owner != userData?._id}" :aria-label="`Open Bestiary ${bestiary.name}`">
-					<div class="tile-header" >
+				<RouterLink class="content-tile bestiary-tile" v-for="(bestiary, index) in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" :key="bestiary._id?.toString()" :class="{'four-tall': bestiary.owner != userData?._id}" :aria-label="`Open Bestiary ${bestiary.name}`">
+					<div class="tile-header">
 						<h2>{{ bestiary.name }}</h2>
 					</div>
 					<span class="shared-notice" v-if="bestiary.owner != userData?._id">(shared)</span>
@@ -31,30 +31,29 @@
 						<span v-tooltip.left="bestiary.status"><StatusIcon :icon="bestiary.status" /></span>
 						<span role="button" @click.stop.prevent="openDeleteModal(bestiary)" class="edit-button" v-tooltip="'Delete bestiary'" v-if="bestiary.owner == userData?._id" aria-label="Delete bestiary"><font-awesome-icon :icon="['fas', 'trash']" /></span>
 						<span v-else>
-							<UserBanner :id="bestiary.owner"/>
+							<UserBanner :id="bestiary.owner" />
 						</span>
 						<span>{{ bestiary.creatures.length }}<font-awesome-icon :icon="['fas', 'skull']" /></span>
 					</div>
 				</RouterLink>
-		</TransitionGroup>
+			</TransitionGroup>
+		</div>
+		<div v-else class="zero-found">
+			<span> You do not have any bestiaries. </span>
+			<button class="btn confirm" @click="createBestiary">Create a bestiary</button>
+		</div>
 	</div>
-	<div v-else class="zero-found">
-		<span> You do not have any bestiaries. </span>
-		<button class="btn confirm" @click="createBestiary">Create a bestiary</button>
-	</div>
-</div>
-<Modal :show="showDeleteModal" @close="showDeleteModal = false">
-	<template #header>Are you sure you want to delete {{ selectedBestiary?.name }}</template>
-	<template #body>
-		<p class="modal-desc">Please confirm you want to permanently delete this bestiary. This action is not reversible.</p>
-	</template>
-	<template #footer>
-		<button class="btn" @click="showDeleteModal = false">Cancel</button>
-		<button class="btn danger" @click.prevent="() => deleteBestiary(selectedBestiary)">Confirm</button>
-	</template>
-</Modal>
+	<Modal :show="showDeleteModal" @close="showDeleteModal = false">
+		<template #header>Are you sure you want to delete {{ selectedBestiary?.name }}</template>
+		<template #body>
+			<p class="modal-desc">Please confirm you want to permanently delete this bestiary. This action is not reversible.</p>
+		</template>
+		<template #footer>
+			<button class="btn" @click="showDeleteModal = false">Cancel</button>
+			<button class="btn danger" @click.prevent="() => deleteBestiary(selectedBestiary)">Confirm</button>
+		</template>
+	</Modal>
 </template>
-
 
 <script lang="ts">
 import UserBanner from "@/components/UserBanner.vue";
@@ -66,9 +65,8 @@ import {RouterLink} from "vue-router";
 import {defineComponent} from "vue";
 
 import {handleApiResponse, toast, user} from "@/main";
-import type {User, Bestiary} from "@/utils/types";
+import type {User, Bestiary, ObjectId} from "@/../../shared";
 import type {error} from "@/main";
-
 
 export default defineComponent({
 	components: {
@@ -101,7 +99,7 @@ export default defineComponent({
 				name: "New bestiary",
 				description: "",
 				status: "private",
-				creatures: [] as string[]
+				creatures: [] as ObjectId[]
 			} as Bestiary;
 			//Send data to server
 			await fetch("/api/bestiary/update", {
@@ -130,7 +128,7 @@ export default defineComponent({
 				let result = await handleApiResponse(response);
 				if (result.success) {
 					toast.success("Deleted bestiary succesfully");
-					this.showDeleteModal = false
+					this.showDeleteModal = false;
 				} else {
 					toast.error((result.data as error).error);
 				}
@@ -152,19 +150,19 @@ export default defineComponent({
 		},
 		openDeleteModal(bestiary: Bestiary) {
 			this.selectedBestiary = bestiary;
-			this.showDeleteModal  = true;
+			this.showDeleteModal = true;
 		}
 	},
 	computed: {
-		bestiaryImages() : string[] {
-			let bestiaryImages : string[] = []
+		bestiaryImages(): string[] {
+			let bestiaryImages: string[] = [];
 			for (let bestiary of this.bestiaries) {
 				const match = bestiary.description.match(/\!\[.*?\]\((.*?)\)/);
 				const firstImageUrl = (match || [])[1];
-				if (match) bestiary.description =  bestiary.description.replace(match[0], '')
-				bestiaryImages.push(firstImageUrl)
+				if (match) bestiary.description = bestiary.description.replace(match[0], "");
+				bestiaryImages.push(firstImageUrl);
 			}
-			return bestiaryImages
+			return bestiaryImages;
 		}
 	}
 });
@@ -175,11 +173,11 @@ export default defineComponent({
 .edit-button {
 	margin: auto;
 	color: orangered;
-	.scale-on-hover(1.2)
+	.scale-on-hover(1.2);
 }
 
 .four-tall {
-	grid-template-rows: 1fr .1fr 6fr 1fr
+	grid-template-rows: 1fr 0.1fr 6fr 1fr;
 }
 
 .shared-notice {

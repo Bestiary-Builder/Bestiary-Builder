@@ -1,21 +1,20 @@
 <template>
-<div>
-	<Breadcrumbs
-		v-if="bestiary"
-		:routes="[
-			{
-				path: isOwner || isEditor ? '../my-bestiaries/' : '../bestiaries',
-				text: isOwner || isEditor ? 'My Bestiaries' : 'Bestiaries',
-				isCurrent: false
-			},
-			{
-				path: '',
-				text: bestiary?.name,
-				isCurrent: true
-			}
-		]"
-	>
-
+	<div>
+		<Breadcrumbs
+			v-if="bestiary"
+			:routes="[
+				{
+					path: isOwner || isEditor ? '../my-bestiaries/' : '../bestiaries',
+					text: isOwner || isEditor ? 'My Bestiaries' : 'Bestiaries',
+					isCurrent: false
+				},
+				{
+					path: '',
+					text: bestiary?.name,
+					isCurrent: true
+				}
+			]"
+		>
 			<button @click="createCreature()" v-tooltip="'Create creature!'" class="inverted" v-if="isOwner || isEditor" aria-label="Create creature">
 				<font-awesome-icon :icon="['fas', 'plus']" />
 			</button>
@@ -43,9 +42,16 @@
 							<input type="text" v-model="searchText" id="searchtext" placeholder="Search by name..." />
 						</LabelledComponent>
 						<LabelledComponent title="Creature type">
-							<div style="min-width: 300px;">
-							<v-select placeholder="Search by creature type" v-model="searchOptions.tags" multiple :options="['Aberration', 'Beast', 'Celestial', 'Construct', 'Dragon', 'Elemental', 'Fey', 'Fiend', 'Giant', 'Humanoid', 'Monstrosity', 'Ooze', 'Plant', 'Undead']" inputId="creaturetype" :taggable="true"/>
-						</div>
+							<div style="min-width: 300px">
+								<v-select
+									placeholder="Search by creature type"
+									v-model="searchOptions.tags"
+									multiple
+									:options="['Aberration', 'Beast', 'Celestial', 'Construct', 'Dragon', 'Elemental', 'Fey', 'Fiend', 'Giant', 'Humanoid', 'Monstrosity', 'Ooze', 'Plant', 'Undead']"
+									inputId="creaturetype"
+									:taggable="true"
+								/>
+							</div>
 						</LabelledComponent>
 						<div class="two-wide">
 							<div class="flow-vertically">
@@ -69,12 +75,10 @@
 								</div>
 							</div>
 						</div>
-						<span class="warning" v-if="searchOptions.minCr > searchOptions.maxCr" style="text-align: center;">
-							Min is bigger than max
-						</span>
+						<span class="warning" v-if="searchOptions.minCr > searchOptions.maxCr" style="text-align: center"> Min is bigger than max </span>
 						<LabelledComponent title="Environment">
 							<input type="text" v-model="searchEnv" id="environment" placeholder="Search by name..." />
-						</LabelledComponent>						
+						</LabelledComponent>
 						<LabelledComponent title="Faction">
 							<input type="text" v-model="searchFaction" id="faction" placeholder="Search by name..." />
 						</LabelledComponent>
@@ -85,7 +89,7 @@
 			<button @click="showImportModal = true" v-tooltip="'Import bestiary'" v-if="isOwner" aria-label="Import bestiary">
 				<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
 			</button>
-			
+
 			<VDropdown :distance="6" :positioning-disabled="isMobile">
 				<button v-tooltip="'Export bestiary'" aria-label="Export bestiary">
 					<font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" />
@@ -101,148 +105,146 @@
 					</div>
 				</template>
 			</VDropdown>
-	</Breadcrumbs>
-	<div class="content">
-		<div class="bestiary" v-if="bestiary">
-			<div class="left-side-container">
-				<div class="content-tile header-tile">
-					<h2> {{ bestiary.name ? bestiary.name : "..." }} </h2>
-					<p class="description" :class="{expanded: isExpanded}" v-html="md.render(bestiary.description || 'No description set.')"></p>
-					<button v-if="bestiary.description.length > 0" class="expand-btn" v-tooltip="'Expand description'" @click="isExpanded = !isExpanded" aria-label="Expand description">{{ isExpanded ? "▲" : "▼" }}</button>
-					<hr />
-					<div class="footer" :class="{'three-wide': isOwner}">
-						<UserBanner :id="bestiary.owner" />
-						<div v-tooltip.left="bestiary.status"><StatusIcon :icon="bestiary.status" /></div>
-						<div>{{ bestiary.creatures.length }}<font-awesome-icon :icon="['fas', 'skull']" /></div>
-						<div role="button" aria-label="Toggle bookmark status" @click.prevent="toggleBookmark" class="bookmark" v-if="!isOwner">
-							<span v-if="bookmarked" v-tooltip="'Unbookmark this bestiary'" class="bookmark-enabled"><font-awesome-icon :icon="['fas', 'star']" /></span>
-							<span v-else v-tooltip="'Bookmark this bestiary'" class="bookmark-disabled"><font-awesome-icon :icon="['fas', 'star']" /></span>
+		</Breadcrumbs>
+		<div class="content">
+			<div class="bestiary" v-if="bestiary">
+				<div class="left-side-container">
+					<div class="content-tile header-tile">
+						<h2>{{ bestiary.name ? bestiary.name : "..." }}</h2>
+						<p class="description" :class="{expanded: isExpanded}" v-html="md.render(bestiary.description || 'No description set.')"></p>
+						<button v-if="bestiary.description.length > 0" class="expand-btn" v-tooltip="'Expand description'" @click="isExpanded = !isExpanded" aria-label="Expand description">{{ isExpanded ? "▲" : "▼" }}</button>
+						<hr />
+						<div class="footer" :class="{'three-wide': isOwner}">
+							<UserBanner :id="bestiary.owner" />
+							<div v-tooltip.left="bestiary.status"><StatusIcon :icon="bestiary.status" /></div>
+							<div>{{ bestiary.creatures.length }}<font-awesome-icon :icon="['fas', 'skull']" /></div>
+							<div role="button" aria-label="Toggle bookmark status" @click.prevent="toggleBookmark" class="bookmark" v-if="!isOwner">
+								<span v-if="bookmarked" v-tooltip="'Unbookmark this bestiary'" class="bookmark-enabled"><font-awesome-icon :icon="['fas', 'star']" /></span>
+								<span v-else v-tooltip="'Bookmark this bestiary'" class="bookmark-disabled"><font-awesome-icon :icon="['fas', 'star']" /></span>
+							</div>
 						</div>
 					</div>
-				</div>
-				<div class="tile-container list-tiles">
-					<TransitionGroup name="slide-fade">
-						<div v-for="creature in searchCreatures" :key="creature._id" class="content-tile creature-tile" @mouseover="lastHoveredCreature = creature.stats" @click="lastClickedCreature = creature.stats">
-							<div class="left-side">
-								<h3>{{ creature.stats?.description?.name }}</h3>
-								<span>{{ creature.stats?.core?.size }} {{ creature.stats?.core?.race }}{{ creature.stats?.description?.alignment ? ", " + creature.stats?.description?.alignment : "" }}</span>
-							</div>
-							<div class="right-side">
-								<VDropdown :distance="6" v-if="isOwner || isEditor" :positioning-disabled="isMobile">
-									<button v-tooltip="'Delete creature'" @click.stop.prevent="" :aria-label="`Delete ${creature.stats.description.name}`">
-										<font-awesome-icon :icon="['fas', 'trash']" />
+					<div class="tile-container list-tiles">
+						<TransitionGroup name="slide-fade">
+							<div v-for="creature in searchCreatures" :key="creature._id?.toString()" class="content-tile creature-tile" @mouseover="lastHoveredCreature = creature.stats" @click="lastClickedCreature = creature.stats">
+								<div class="left-side">
+									<h3>{{ creature.stats?.description?.name }}</h3>
+									<span>{{ creature.stats?.core?.size }} {{ creature.stats?.core?.race }}{{ creature.stats?.description?.alignment ? ", " + creature.stats?.description?.alignment : "" }}</span>
+								</div>
+								<div class="right-side">
+									<VDropdown :distance="6" v-if="isOwner || isEditor" :positioning-disabled="isMobile">
+										<button v-tooltip="'Delete creature'" @click.stop.prevent="" :aria-label="`Delete ${creature.stats.description.name}`">
+											<font-awesome-icon :icon="['fas', 'trash']" />
+										</button>
+										<template #popper>
+											<div class="v-popper__custom-menu">
+												<span> Are you sure you want to delete this creature? </span>
+												<button class="btn danger" @click.stop="deleteCreature(creature)" v-close-popper>Confirm</button>
+											</div>
+										</template>
+									</VDropdown>
+									<button v-tooltip="`${isOwner || isEditor ? 'Edit' : 'View'} creature`" :aria-label="`${isOwner || isEditor ? 'Edit' : 'View'} ${creature.stats.description.name}`" class="edit-creature" @click.stop="() => {}">
+										<RouterLink class="creature" :to="'/statblock-editor/' + creature._id" :aria-label="`${isOwner || isEditor ? 'Edit' : 'View'} creature`">
+											<font-awesome-icon :icon="['fas', 'pen-to-square']" v-if="isOwner || isEditor" />
+											<font-awesome-icon :icon="['fas', 'eye']" v-else />
+										</RouterLink>
 									</button>
-									<template #popper>
-										<div class="v-popper__custom-menu">
-											<span> Are you sure you want to delete this creature? </span>
-											<button class="btn danger" @click.stop="deleteCreature(creature)" v-close-popper>Confirm</button>
-										</div>
-									</template>
-								</VDropdown>
-								<button v-tooltip="`${isOwner || isEditor ? 'Edit' : 'View'} creature`" :aria-label="`${isOwner || isEditor ? 'Edit' : 'View'} ${creature.stats.description.name}`" class="edit-creature" @click.stop="() => {}">
-									<RouterLink class="creature" :to="'/statblock-editor/' + creature._id" :aria-label="`${isOwner || isEditor ? 'Edit' : 'View'} creature`"> 
-										<font-awesome-icon :icon="['fas', 'pen-to-square']" v-if="isOwner || isEditor "/> 
-										<font-awesome-icon :icon="['fas', 'eye']" v-else/> 
-									</RouterLink>
-								</button>
-								<span class="cr"> CR {{ displayCR(creature.stats.description.cr) }}</span>
+									<span class="cr"> CR {{ displayCR(creature.stats.description.cr) }}</span>
+								</div>
 							</div>
+						</TransitionGroup>
+						<div class="create-tile" v-if="isOwner || isEditor">
+							<span role="button" class="create-text" @click="createCreature()">add creature</span>
 						</div>
-					</TransitionGroup>
-					<div class="create-tile" v-if="isOwner || isEditor">
-						<span role="button" class="create-text" @click="createCreature()">add creature</span>
+					</div>
+				</div>
+				<div class="statblock-container" v-if="creatures && lastHoveredCreature">
+					<span v-if="lastClickedCreature" class="pin-notice">
+						<span class="unpin-button" @click="lastClickedCreature = null" role="button" aria-label="unpin currently pinned creature"><b>unpin</b></span
+						>📌
+					</span>
+					<Transition name="fade" mode="out-in">
+						<StatblockRenderer :data="lastClickedCreature || lastHoveredCreature" :key="lastClickedCreature?.description.name || lastHoveredCreature.description.name" />
+					</Transition>
+				</div>
+				<div class="statblock-container" v-else>
+					<div class="no-creature-text">
+						<p>Hover or click on a creature to see its statblock</p>
 					</div>
 				</div>
 			</div>
-			<div class="statblock-container" v-if="creatures && lastHoveredCreature">
-				<span v-if="lastClickedCreature" class="pin-notice">
-					<span class="unpin-button" @click="lastClickedCreature = null" role="button" aria-label="unpin currently pinned creature"><b>unpin</b></span
-					>📌
-				</span>
-				<Transition name="fade" mode="out-in">
-					<StatblockRenderer :data="lastClickedCreature || lastHoveredCreature" :key="lastClickedCreature?.description.name || lastHoveredCreature.description.name" />
-				</Transition>
-			</div>
-			<div class="statblock-container" v-else>
-				<div class="no-creature-text">
-					<p>Hover or click on a creature to see its statblock</p>
-				</div>
-			</div>
 		</div>
+		<Modal :show="showImportModal" @close="showImportModal = false" v-if="bestiary && isOwner">
+			<template #header>Import Creatures</template>
+			<template #body>
+				<LabelledComponent title="CritterDB bestiary link">
+					<p>Insert a link to a critterDB bestiary to import all its creatures.</p>
+					<p>Make sure the bestiary is public or has link sharing enabled.</p>
+					<div class="flow-horizontally">
+						<input type="text" v-model="critterDbId" id="critterdbbestiarylink" placeholder="CritterDB bestiary link" />
+						<button class="btn confirm" @click.prevent="importBestiaryFromCritterDB">Import</button>
+					</div>
+				</LabelledComponent>
+
+				<hr />
+
+				<LabelledComponent title="Bestiary Builder JSON">
+					<p>Insert the JSON as text gotten from clicking export on another bestiary within Bestiary Builder.</p>
+					<div class="flow-horizontally">
+						<input type="text" v-model="bestiaryBuilderJson" id="bestiarybuilderjson" placeholder="Bestiary builder JSON" />
+						<button class="btn confirm" @click.prevent="importCreaturesFromBestiaryBuilder">Import</button>
+					</div>
+				</LabelledComponent>
+			</template>
+		</Modal>
+
+		<Modal :show="showEditorModal" @close="showEditorModal = false" v-if="bestiary && isOwner">
+			<template #header>Edit Bestiary</template>
+			<template #body>
+				<LabelledComponent title="Bestiary name">
+					<input type="text" v-model="bestiary.name" :minlength="limits.nameMin" :maxlength="limits.nameLength" id="bestiaryname" />
+				</LabelledComponent>
+				<LabelledComponent title="Description">
+					<p>Supports markdown</p>
+					<textarea v-model="bestiary.description" :maxlength="limits.descriptionLength" id="description" />
+				</LabelledComponent>
+				<div class="two-wide" v-if="isOwner">
+					<LabelledComponent title="Status">
+						<v-select v-model="bestiary.status" :options="['public', 'unlisted', 'private']" inputId="status" />
+					</LabelledComponent>
+					<LabelledComponent title="Tags">
+						<v-select placeholder="Select Tags" v-model="bestiary.tags" multiple :options="allTags" inputId="tags" />
+					</LabelledComponent>
+				</div>
+				<div class="editor-block">
+					<h3>Editors</h3>
+					<p v-if="isOwner">Editors can add, edit, and remove creatures. They can edit the name of the bestiary and its description. Editors cannot change the status of the bestiary or delete the bestiary. Editors cannot add other editors. The owner can remove editors at any time.</p>
+					<div class="editor-container">
+						<div v-for="editor in editors" class="editor-list">
+							<p>
+								<UserBanner :id="editor._id" />
+								<span v-if="isOwner" role="button" @click="removeEditor(editor._id)" class="delete-creature"> <span>🗑️</span> </span>
+							</p>
+						</div>
+					</div>
+					<LabelledComponent title="Add editor">
+						<div class="button-container">
+							<input type="text" v-model="editorToAdd" inputmode="numeric" placeholder="Discord user ID" id="addeditor" />
+							<button class="btn" @click="addEditor()" id="add">Add</button>
+						</div>
+					</LabelledComponent>
+				</div>
+				<p class="warning" v-if="showWarning">
+					By changing the bestiary status to public I confirm that I am the copyright holder of the content within, or that I have permission from the copyright holder to share this content. I hereby agree to the <RouterLink to="../content-policy">Content Policy</RouterLink> and agree to
+					be fully liable for the content within. I affirm that the content does not include any official non-free D&D content. Bestiaries that breach these terms may have their status changed to private or be outright removed, and may result in a ban if the content breaches our content
+					policy.
+				</p>
+			</template>
+			<template #footer>
+				<button class="btn confirm" @click.prevent="updateBestiary">Save changes</button>
+			</template>
+		</Modal>
 	</div>
-	<Modal :show="showImportModal" @close="showImportModal = false" v-if="bestiary && isOwner">
-      <template #header>Import Creatures</template>
-	  <template #body>
-		<LabelledComponent title="CritterDB bestiary link">
-			<p>Insert a link to a critterDB bestiary to import all its creatures.</p>
-			<p> Make sure the bestiary is public or has link sharing enabled.</p>
-			<div class="flow-horizontally">
-				<input type="text" v-model="critterDbId" id="critterdbbestiarylink" placeholder="CritterDB bestiary link" />
-				<button class="btn confirm" @click.prevent="importBestiaryFromCritterDB">Import</button>
-			</div>
-		</LabelledComponent>
-
-		<hr />
-
-		<LabelledComponent title="Bestiary Builder JSON">
-			<p>Insert the JSON as text gotten from clicking export on another bestiary within Bestiary Builder.</p>
-			<div class="flow-horizontally">
-				<input type="text" v-model="bestiaryBuilderJson" id="bestiarybuilderjson" placeholder="Bestiary builder JSON" />
-				<button class="btn confirm" @click.prevent="importCreaturesFromBestiaryBuilder">Import</button>
-			</div>
-		</LabelledComponent>
-	  </template>
-    </Modal>
-
-	<Modal :show="showEditorModal" @close="showEditorModal = false" v-if="bestiary && isOwner">
-      <template #header>Edit Bestiary</template>
-	  <template #body>
-		<LabelledComponent title="Bestiary name">
-			<input type="text" v-model="bestiary.name" :minlength="limits.nameMin" :maxlength="limits.nameLength" id="bestiaryname" />
-		</LabelledComponent>
-		<LabelledComponent title="Description">
-			<p>Supports markdown</p>
-			<textarea v-model="bestiary.description" :maxlength="limits.descriptionLength" id="description" />
-		</LabelledComponent>
-		<div class="two-wide" v-if="isOwner">
-			<LabelledComponent title="Status">
-				<v-select v-model="bestiary.status" :options="['public', 'unlisted', 'private']" inputId="status" />
-			</LabelledComponent>
-			<LabelledComponent title="Tags">
-				<v-select placeholder="Select Tags" v-model="bestiary.tags" multiple :options="allTags" inputId="tags" />
-			</LabelledComponent>
-		</div>
-		<div class="editor-block">
-			<h3>Editors</h3>
-			<p v-if="isOwner">
-				Editors can add, edit, and remove creatures. They can edit the name of the bestiary and its description. Editors cannot change the status of the bestiary or delete the bestiary. Editors cannot add other editors. The owner can remove editors at any time.
-			</p>
-			<div class="editor-container">
-				<div v-for="editor in editors" class="editor-list">
-					<p>
-						<UserBanner :id="editor._id" />
-						<span v-if="isOwner" role="button" @click="removeEditor(editor._id)" class="delete-creature"> <span>🗑️</span> </span>
-					</p>
-				</div>
-			</div>
-			<LabelledComponent title="Add editor">
-				<div class="button-container">
-					<input type="text" v-model="editorToAdd" inputmode="numeric" placeholder="Discord user ID" id="addeditor" />
-					<button class="btn" @click="addEditor()" id="add">Add</button>
-				</div>
-			</LabelledComponent>
-		</div>
-		<p class="warning" v-if="showWarning">
-			By changing the bestiary status to public I confirm that I am the copyright holder of the content within, or that I have permission from the copyright holder to share this content. I hereby agree to the <RouterLink to="../content-policy">Content Policy</RouterLink> and agree
-			to be fully liable for the content within. I affirm that the content does not include any official non-free D&D content. Bestiaries that breach these terms may have their status changed to private or be outright removed, and may result in a ban if the content breaches our
-			content policy.
-		</p>
-	  </template>
-	  <template #footer>
-		<button class="btn confirm" @click.prevent="updateBestiary">Save changes</button>
-	  </template>
-    </Modal>
-</div>
 </template>
 
 <script lang="ts">
@@ -256,10 +258,10 @@ import StatblockRenderer from "@/components/StatblockRenderer.vue";
 
 import {RouterLink} from "vue-router";
 import {defineComponent, ref} from "vue";
-import { refDebounced } from '@vueuse/core'
+import {refDebounced} from "@vueuse/core";
 
-import {defaultStatblock} from "@/utils/types";
-import type {User, Bestiary, Creature, Statblock} from "@/utils/types";
+import {defaultStatblock} from "@/../../shared";
+import type {User, Bestiary, Creature, Statblock} from "@/../../shared";
 import {handleApiResponse, user, type error, toast, tags, type limitsType, asyncLimits, isMobile} from "@/main";
 import {parseFromCritterDB} from "@/parser/parseFromCritterDB";
 import {displayCR} from "@/utils/displayFunctions";
@@ -328,18 +330,18 @@ export default defineComponent({
 		loader.hide();
 
 		if (this?.bestiary?.name) {
-			document.title = `${this?.bestiary?.name.substring(0,16)} | Bestiary Builder`
+			document.title = `${this?.bestiary?.name.substring(0, 16)} | Bestiary Builder`;
 		}
 	},
 	setup() {
-		const searchText = ref('')
-		const debouncedSearch = refDebounced(searchText, 500)
+		const searchText = ref("");
+		const debouncedSearch = refDebounced(searchText, 500);
 
-		const searchEnv = ref('')
-		const debouncedEnv = refDebounced(searchEnv, 500)
+		const searchEnv = ref("");
+		const debouncedEnv = refDebounced(searchEnv, 500);
 
-		const searchFaction= ref('')
-		const debouncedFaction= refDebounced(searchFaction, 500)
+		const searchFaction = ref("");
+		const debouncedFaction = refDebounced(searchFaction, 500);
 
 		return {
 			searchText,
@@ -348,82 +350,68 @@ export default defineComponent({
 			debouncedEnv,
 			searchFaction,
 			debouncedFaction
-		}
+		};
 	},
 	computed: {
-		searchCreatures() : Creature[] | null {
-			if (this.creatures == null) return null
-			const loader = this.$loading.show()
+		searchCreatures(): Creature[] | null {
+			if (this.creatures == null) return null;
+			const loader = this.$loading.show();
 
-			let response = this.creatures?.filter(this.filterCreature) || null
+			let response = this.creatures?.filter(this.filterCreature) || null;
 
 			if (this.sortMode == "Alphabetically") {
 				response.sort((a, b) => {
-					const nameA = a.stats.description.name.toLowerCase()
-					const nameB = b.stats.description.name.toLowerCase()
-					if (nameA < nameB) return -1
-					if (nameA > nameB) return 1
-					return 0
-				})
-			}
-			else if (this.sortMode == "Creature Type") {
+					const nameA = a.stats.description.name.toLowerCase();
+					const nameB = b.stats.description.name.toLowerCase();
+					if (nameA < nameB) return -1;
+					if (nameA > nameB) return 1;
+					return 0;
+				});
+			} else if (this.sortMode == "Creature Type") {
 				response.sort((a, b) => {
-					const nameA = a.stats.core.race.toLowerCase()
-					const nameB = b.stats.core.race.toLowerCase()
-					if (nameA < nameB) return -1
-					if (nameA > nameB) return 1
-					return 0
-				})
-			}
-			else if (this.sortMode == "CR Descending") {
+					const nameA = a.stats.core.race.toLowerCase();
+					const nameB = b.stats.core.race.toLowerCase();
+					if (nameA < nameB) return -1;
+					if (nameA > nameB) return 1;
+					return 0;
+				});
+			} else if (this.sortMode == "CR Descending") {
 				response.sort((a, b) => {
-					return b.stats.description.cr - a.stats.description.cr
-				})
-			}
-			else if (this.sortMode == "CR Ascending") {
+					return b.stats.description.cr - a.stats.description.cr;
+				});
+			} else if (this.sortMode == "CR Ascending") {
 				response.sort((a, b) => {
-					return a.stats.description.cr - b.stats.description.cr
-				})
+					return a.stats.description.cr - b.stats.description.cr;
+				});
 			}
-			loader.hide()
+			loader.hide();
 
-
-			return response
+			return response;
 		}
 	},
 	methods: {
-		filterCreature(data : Creature) {
-			let filterChecks : boolean[] = []
+		filterCreature(data: Creature) {
+			let filterChecks: boolean[] = [];
 			if (this.searchOptions.text != "") {
-				filterChecks.push(
-					data.stats.description.name.toLowerCase().includes(this.searchOptions.text.toLowerCase().trim())
-				)
+				filterChecks.push(data.stats.description.name.toLowerCase().includes(this.searchOptions.text.toLowerCase().trim()));
 			}
 
 			if (this.searchOptions.env != "") {
-				filterChecks.push(
-					data.stats.description.environment.toLowerCase().includes(this.searchOptions.env.toLowerCase().trim())
-				)
+				filterChecks.push(data.stats.description.environment.toLowerCase().includes(this.searchOptions.env.toLowerCase().trim()));
 			}
 
 			if (this.searchOptions.faction != "") {
-				filterChecks.push(
-					data.stats.description.faction.toLowerCase().includes(this.searchOptions.faction.toLowerCase().trim())
-				)
+				filterChecks.push(data.stats.description.faction.toLowerCase().includes(this.searchOptions.faction.toLowerCase().trim()));
 			}
 
 			if (this.searchOptions.tags.length > 0) {
-				filterChecks.push(
-					this.searchOptions.tags.some(item => data.stats.core.race.toLowerCase().includes(item.toLowerCase()))
-				)
+				filterChecks.push(this.searchOptions.tags.some((item) => data.stats.core.race.toLowerCase().includes(item.toLowerCase())));
 			}
 
 			if (this.searchOptions.minCr != 0 || this.searchOptions.maxCr != 30) {
-				filterChecks.push(
-					this.searchOptions.minCr <= data.stats.description.cr && data.stats.description.cr <= this.searchOptions.maxCr
-				)
+				filterChecks.push(this.searchOptions.minCr <= data.stats.description.cr && data.stats.description.cr <= this.searchOptions.maxCr);
 			}
-			return filterChecks.every(_ => _)
+			return filterChecks.every((_) => _);
 		},
 		exportBestiary(asFile: boolean): void {
 			if (asFile) {
@@ -567,7 +555,7 @@ export default defineComponent({
 				let result = await handleApiResponse<Creature>(response);
 				if (result.success) {
 					let data = result.data as Creature;
-					this.bestiary?.creatures.push(data._id);
+					this.bestiary?.creatures.push(data._id!);
 					this.creatures?.push(data);
 				} else {
 					toast.error((result.data as error).error);
@@ -577,7 +565,7 @@ export default defineComponent({
 				const tileContainer = document.getElementsByClassName("tile-container")[0] as HTMLDivElement;
 				tileContainer.scrollTop = tileContainer.scrollHeight;
 			}
-			if (shouldHaveLoader && loader) loader.hide()
+			if (shouldHaveLoader && loader) loader.hide();
 		},
 		async deleteCreature(creature: Creature) {
 			const loader = this.$loading.show();
@@ -721,10 +709,10 @@ export default defineComponent({
 		setSelectedCreature(creature: any) {
 			this.lastHoveredCreature = creature;
 		},
-		changeCR(isIncrease: boolean, isMinimumOption : boolean): void {
+		changeCR(isIncrease: boolean, isMinimumOption: boolean): void {
 			let cr;
-			if (isMinimumOption) cr = this.searchOptions.minCr
-			else cr  = this.searchOptions.maxCr
+			if (isMinimumOption) cr = this.searchOptions.minCr;
+			else cr = this.searchOptions.maxCr;
 			if (cr == 0 && isIncrease) cr = 0.125;
 			else if (cr == 0.125 && isIncrease) cr = 0.25;
 			else if (cr == 0.25 && isIncrease) cr = 0.5;
@@ -737,9 +725,9 @@ export default defineComponent({
 				if (isIncrease) cr = Math.min(30, cr + 1);
 				else cr = Math.max(0, cr - 1);
 			}
-			if (isMinimumOption) this.searchOptions.minCr = cr
+			if (isMinimumOption) this.searchOptions.minCr = cr;
 			else this.searchOptions.maxCr = cr;
-		},
+		}
 	},
 	watch: {
 		lastClickedCreature(): void {
@@ -752,17 +740,17 @@ export default defineComponent({
 			if (newValue == "private") this.showWarning = false;
 			if (newValue == "public") this.showWarning = true;
 		},
-		"bestiary.name"() : void {
-			document.title = `${this?.bestiary?.name.substring(0,16)} | Bestiary Builder`
+		"bestiary.name"(): void {
+			document.title = `${this?.bestiary?.name.substring(0, 16)} | Bestiary Builder`;
 		},
 		debouncedSearch() {
-			this.searchOptions.text = this.searchText
+			this.searchOptions.text = this.searchText;
 		},
 		debouncedEnv() {
-			this.searchOptions.env = this.searchEnv
+			this.searchOptions.env = this.searchEnv;
 		},
 		debouncedFaction() {
-			this.searchOptions.faction = this.searchFaction
+			this.searchOptions.faction = this.searchFaction;
 		}
 	}
 });
@@ -833,7 +821,7 @@ export default defineComponent({
 			.right-side {
 				display: flex;
 				flex-direction: row;
-				gap: .5rem;
+				gap: 0.5rem;
 
 				a {
 					text-decoration: none;
@@ -966,7 +954,7 @@ export default defineComponent({
 }
 @media screen and (max-width: 842px) {
 	.header-tile {
-		padding: .5rem;
+		padding: 0.5rem;
 
 		.description {
 			font-size: xx-small;

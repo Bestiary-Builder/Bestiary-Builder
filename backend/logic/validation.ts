@@ -1,5 +1,5 @@
-import {log} from "../logger";
-import {app} from "../server";
+import {log} from "../utilities/logger";
+import {app} from "../utilities/constants";
 import fetch from "node-fetch";
 
 app.post("/api/validate/automation", async (req, res) => {
@@ -13,4 +13,3 @@ app.post("/api/validate/automation", async (req, res) => {
 	}).then((response) => response.json());
 	return res.json(result);
 });
-

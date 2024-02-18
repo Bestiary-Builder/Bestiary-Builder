@@ -1,8 +1,9 @@
-import {app, badwords} from "../server";
-import {log} from "../logger";
+import {badwords, app} from "../utilities/constants";
+import {log} from "../utilities/logger";
 import {requireUser, possibleUser} from "./login";
 import {publicLog, colors} from "./discord";
-import {type Bestiary, type User, Creature, addBestiaryToUser, getBestiary, getUser, incrementBestiaryViewCount, updateBestiary, deleteBestiary, getCreature, collections, addBookmark, removeBookmark} from "../database";
+import {addBestiaryToUser, getBestiary, getUser, incrementBestiaryViewCount, updateBestiary, deleteBestiary, getCreature, collections, addBookmark, removeBookmark} from "../utilities/database";
+import {User, Bestiary, Creature} from "../../shared";
 import {ObjectId} from "mongodb";
 import {type CreatureInput, defaultStatblock} from "./creatures";
 import limits from "../staticData/limits.json";
@@ -127,14 +128,18 @@ app.post("/api/bestiary/:id?/update", requireUser, async (req, res) => {
 		if (!["private", "public", "unlisted"].includes(data.status)) return res.status(400).json({error: "Status has an unkown value, must only be 'public', 'unlisted' or 'private'."});
 		//Remove bad words
 		if (data.status != "private") {
-			let usedBadwords : string[] = []
-			badwords.filter(data.name, badword => {usedBadwords.push(badword)})
+			let usedBadwords: string[] = [];
+			badwords.filter(data.name, (badword) => {
+				usedBadwords.push(badword);
+			});
 			if (usedBadwords.length > 0) {
 				return res.status(400).json({error: `Bestiary name includes blocked words or phrases. Matched: ${usedBadwords.join(", ")}. If you think this was a mistake, please file a bug report.`});
 			}
 
-			usedBadwords = []
-			badwords.filter(data.description, badword => {usedBadwords.push(badword)})
+			usedBadwords = [];
+			badwords.filter(data.description, (badword) => {
+				usedBadwords.push(badword);
+			});
 			if (usedBadwords.length > 0) {
 				return res.status(400).json({error: `Bestiary description includes blocked words or phrases. Matched: ${usedBadwords.join(", ")}. If you think this was a mistake, please file a bug report.`});
 			}
@@ -752,21 +757,21 @@ function spellAttackBonus(innate = false, data: any) {
 	return bonus;
 }
 
-export function displaySpeedOrSenses(data: any[]) : string {
-    let output = ""
-    let filteredLength = data.filter(item => item.name !== 'New speed' && item.name !== 'New sense').length
+export function displaySpeedOrSenses(data: any[]): string {
+	let output = "";
+	let filteredLength = data.filter((item) => item.name !== "New speed" && item.name !== "New sense").length;
 
 	let index = 0;
-    for (let item of data) {
-        if (item.name === "New speed" || item.name === "New sense") continue;
-        if (item.name != "Walk") output += item.name.toLowerCase() + " "
-        output += item.value
-        if (item.unit != "none") output += item.unit + "."
-        if (item.comment) output += ` (${item.comment})`
-        if (filteredLength != 1 && index != filteredLength-1) output += ", "
-		index++
-    }
-    return output
+	for (let item of data) {
+		if (item.name === "New speed" || item.name === "New sense") continue;
+		if (item.name != "Walk") output += item.name.toLowerCase() + " ";
+		output += item.value;
+		if (item.unit != "none") output += item.unit + ".";
+		if (item.comment) output += ` (${item.comment})`;
+		if (filteredLength != 1 && index != filteredLength - 1) output += ", ";
+		index++;
+	}
+	return output;
 }
 
 export interface SkillsEntity {

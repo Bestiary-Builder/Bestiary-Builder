@@ -13,5 +13,10 @@
 		"esModuleInterop": true,
 		"resolveJsonModule": true
 	},
-	"hooks": ["copy-files"]
+	"hooks": ["copy-files"],
+	"references": [
+		{
+			"path": "../shared"
+		}
+	]
 }

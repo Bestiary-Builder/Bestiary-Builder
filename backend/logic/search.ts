@@ -1,13 +1,15 @@
-import {Bestiary, collections} from "../database";
+import {collections} from "../utilities/database";
+import {User, Bestiary, Creature} from "../../shared";
 import type {Filter, FindOptions, Sort} from "mongodb";
-import {app} from "../server";
-import {log} from "../logger";
+import {app} from "../utilities/constants";
+import {log} from "../utilities/logger";
 
 const amountPerPage = 12;
 
 app.post("/api/search", async (req, res) => {
 	try {
 		//Parse search inputs
+		console.log(req.body);
 		let searchOptions = req.body.options as {
 			search: string;
 			page: number;

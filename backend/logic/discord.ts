@@ -1,11 +1,11 @@
-import {isProduction} from "../server";
-import {log} from "../logger";
+import {isProduction} from "../utilities/constants";
+import {log} from "../utilities/logger";
 import discord, {PresenceUpdateStatus, Status} from "discord.js";
-import {collections, getUser, type User} from "../database";
+import {collections, getUser} from "../utilities/database";
+import {User, Bestiary, Creature} from "../../shared";
 const client = new discord.Client({
 	intents: [discord.IntentsBitField.Flags.Guilds, discord.IntentsBitField.Flags.GuildMessages, discord.IntentsBitField.Flags.GuildMembers]
 });
-const token = process.env.discordBotToken ?? "";
 
 let guild: discord.Guild | null;
 let channels = {} as {
@@ -46,7 +46,9 @@ if (isProduction) {
 	});
 }
 
-client.login(token).catch(() => log.error("Failed to connect to discord bot"));
+export function startDiscordBot() {
+	client.login(process.env.discordBotToken ?? "").catch(() => log.error("Failed to connect to discord bot"));
+}
 
 async function checkUserStatuses(guild: discord.Guild) {
 	let supporterTier1Role = await guild.roles.fetch("1187500073836367965");

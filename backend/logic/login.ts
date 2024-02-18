@@ -1,8 +1,8 @@
-import {app, isProduction, JWTKey} from "../server";
-import {log} from "../logger";
+import {isProduction, JWTKey, app} from "../utilities/constants";
+import {log} from "../utilities/logger";
 import fetch from "node-fetch";
 import jwt from "jsonwebtoken";
-import {getUser, getUserFromSecret, updateUser, User} from "../database";
+import {getUser, getUserFromSecret, updateUser} from "../utilities/database";
 import {NextFunction, Response, Request} from "express";
 
 app.head("/api/login/:code", async (req, res) => {
@@ -86,6 +86,7 @@ app.get("/api/logout", async (req, res) => {
 });
 export const requireUser = async (req: Request, res: Response, next: NextFunction) => {
 	try {
+		console.log("Require user");
 		let token = req.cookies.userToken;
 		if (!token) {
 			return res.status(401).json({error: "Not logged in."});

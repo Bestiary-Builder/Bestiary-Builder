@@ -13,7 +13,7 @@ export async function handleApiResponse<Type>(response: Response) {
 	}
 }
 //Get logged in user
-import type {User} from "./utils/types";
+import type {User} from "@/../../shared";
 export const user = fetch("/api/user").then(async (response: any) => {
 	let result = await handleApiResponse<User>(response);
 	if (result.success) return result.data as User;

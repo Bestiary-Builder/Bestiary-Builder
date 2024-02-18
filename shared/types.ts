@@ -1,3 +1,42 @@
+export {ObjectId} from "bson";
+import {ObjectId} from "./types";
+//Database types
+export class User {
+	constructor(
+		public username: string,
+		public avatar: string,
+		public email: string,
+		public verified: boolean,
+		public banner_color: string,
+		public global_name: string,
+		public bestiaries: ObjectId[] = [],
+		public bookmarks: ObjectId[] = [],
+		public supporter: 0 | 1 | 2,
+		public joinedAt: number,
+		public _id: string,
+		public secret?: string
+	) {}
+}
+export class Bestiary {
+	constructor(
+		public name: string,
+		public owner: string,
+		public editors: string[],
+		public status: "public" | "private" | "unlisted",
+		public description: string,
+		public creatures: ObjectId[],
+		public tags: string[],
+		public viewCount: number,
+		public bookmarks: number,
+		public lastUpdated: number,
+		public _id?: ObjectId
+	) {}
+}
+export class Creature {
+	constructor(public lastUpdated: number, public stats: any, public bestiary: ObjectId, public _id?: ObjectId) {}
+}
+
+//Frontend types
 export const defaultStatblock = {
 	description: {
 		name: "New Creature",
@@ -14,7 +53,7 @@ export const defaultStatblock = {
 		proficiencyBonus: 2,
 		race: "Humanoid",
 		size: "Medium",
-		speed: [			
+		speed: [
 			{
 				name: "Walk",
 				value: 30,
@@ -22,8 +61,7 @@ export const defaultStatblock = {
 				comment: ""
 			}
 		],
-		senses: [
-		],
+		senses: [],
 		languages: []
 	},
 	abilities: {
@@ -115,14 +153,14 @@ export const defaultStatblock = {
 } as Statblock;
 export const XPbyCR = [
 	// skips 1/8 1/4 1/2
-	0, 200, 450, 700, 1100, 1800, 2300, 2900, 3900, 5000, 5900, 7200, 8400, 10000, 11500, 13000, 15000, 18000, 20000, 22000, 25000, 33000, 41000, 50000, 62000, 75000, 90000, 105000, 120000, 135000, 255000,
-]
+	0, 200, 450, 700, 1100, 1800, 2300, 2900, 3900, 5000, 5900, 7200, 8400, 10000, 11500, 13000, 15000, 18000, 20000, 22000, 25000, 33000, 41000, 50000, 62000, 75000, 90000, 105000, 120000, 135000, 255000
+];
 
 export function getXPbyCR(cr: number) {
-	if (cr == 0.125)    return 25
-	else if (cr == 0.25)return 50
-	else if (cr == 0.5 ) return 100
-	else return XPbyCR[cr] ?? 0
+	if (cr == 0.125) return 25;
+	else if (cr == 0.25) return 50;
+	else if (cr == 0.5) return 100;
+	else return XPbyCR[cr] ?? 0;
 }
 
 export function getSpellSlots(sClass: string | null, level: number | null): SpellSlotEntity | undefined {
@@ -257,7 +295,7 @@ export interface Speed {
 	climb: number;
 }
 
-export type Unit = "ft" | "m" | "km" | "mi" | "none"
+export type Unit = "ft" | "m" | "km" | "mi" | "none";
 
 export interface SpeedEntity {
 	name: string;
@@ -369,38 +407,6 @@ export interface InnateSpellsEntity {
 
 export interface SpellSlotEntity {
 	[index: number]: number;
-}
-export interface User {
-	username: string;
-	avatar: string;
-	email: string;
-	verified: boolean;
-	banner_color: string;
-	global_name: string;
-	bestiaries: string[];
-	bookmarks: string[];
-	supporter: 0 | 1 | 2;
-	joinedAt: number;
-	_id: string;
-}
-
-export interface Bestiary {
-	name: string;
-	owner: string;
-	editors: string[];
-	status: "public" | "private" | "unlisted";
-	description: string;
-	creatures: string[];
-	tags: string[];
-	lastUpdated: number;
-	_id: string;
-}
-
-export interface Creature {
-	lastUpdated: number;
-	stats: Statblock;
-	bestiary: string;
-	_id: string;
 }
 
 export const spellList = {

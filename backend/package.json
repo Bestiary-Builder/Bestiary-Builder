@@ -6,7 +6,7 @@
 	"main": "server.ts",
 	"scripts": {
 		"start": "npx nodemon",
-		"build": "npx tsc",
+		"build": "cd ../shared && npx tsc && cd ../backend && npx tsc",
 		"postbuild": "cpy 'staticData/badwordsData/**/*.json' 'build/staticData/badwordsData'"
 	},
 	"engines": {
@@ -15,7 +15,6 @@
 	"author": "Stevnbak",
 	"license": "MPL-2.0",
 	"dependencies": {
-		"@pm2/io": "^5.0.0",
 		"bad-words-next": "^2.2.1",
 		"body-parser": "^1.20.2",
 		"compression": "^1.7.4",

@@ -53,7 +53,13 @@ export default defineConfig({
 		}
 	},
 	build: {
-		chunkSizeWarningLimit: 1250
+		chunkSizeWarningLimit: 1250,
+		target: "esnext"
+	},
+	optimizeDeps: {
+		esbuildOptions: {
+			target: "esnext"
+		}
 	},
 	server: {
 		proxy: {

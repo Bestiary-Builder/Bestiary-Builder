@@ -1,5 +1,5 @@
-import {app} from "../server";
-import {log} from "../logger";
+import {app} from "../utilities/constants";
+import {log} from "../utilities/logger";
 
 import basicExamples from "../staticData/basicExamples.json";
 import srdFeatures from "../staticData/srdFeatures.json";
