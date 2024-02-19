@@ -1,6 +1,41 @@
-export {ObjectId} from "bson";
-import {ObjectId} from "./types";
+import {ObjectId} from "bson";
+export class Id extends ObjectId {}
+
 //Database types
+/**
+export type User = {
+	username: string;
+	avatar: string;
+	email: string;
+	verified: boolean;
+	banner_color: string;
+	global_name: string;
+	bestiaries: Id[];
+	bookmarks: Id[];
+	supporter: 0 | 1 | 2;
+	joinedAt: number;
+	_id: string;
+	secret?: string;
+};
+export type Bestiary = {
+	name: string;
+	owner: string;
+	editors: string[];
+	status: "public" | "private" | "unlisted";
+	description: string;
+	creatures: Id[];
+	tags: string[];
+	viewCount: number;
+	bookmarks: number;
+	lastUpdated: number;
+	_id: Id;
+};
+export type Creature = {
+	lastUpdated: number;
+	stats: Statblock;
+	bestiary: Id;
+	_id?: Id;
+}; */
 export class User {
 	constructor(
 		public username: string,
@@ -9,8 +44,8 @@ export class User {
 		public verified: boolean,
 		public banner_color: string,
 		public global_name: string,
-		public bestiaries: ObjectId[] = [],
-		public bookmarks: ObjectId[] = [],
+		public bestiaries: Id[] = [],
+		public bookmarks: Id[] = [],
 		public supporter: 0 | 1 | 2,
 		public joinedAt: number,
 		public _id: string,
@@ -24,16 +59,29 @@ export class Bestiary {
 		public editors: string[],
 		public status: "public" | "private" | "unlisted",
 		public description: string,
-		public creatures: ObjectId[],
+		public creatures: Id[],
 		public tags: string[],
 		public viewCount: number,
 		public bookmarks: number,
 		public lastUpdated: number,
-		public _id?: ObjectId
+		public _id?: Id
 	) {}
 }
 export class Creature {
-	constructor(public lastUpdated: number, public stats: Statblock, public bestiary: ObjectId, public _id?: ObjectId) {}
+	constructor(public lastUpdated: number, public stats: Statblock, public bestiary: Id, public _id?: Id) {}
+}
+
+export type SearchOptions = {
+	search: string;
+	page: number;
+	mode: "popular" | "recent";
+	tags: string[];
+};
+
+export function stringToId(id: string): Id | null {
+	if (!id) return null;
+	if (id.length != 24) return null;
+	return new Id(id);
 }
 
 //Frontend types
@@ -317,11 +365,21 @@ export interface Abilities {
 	skills: SkillsEntity[];
 }
 export type Stats = {
-	[index in Stat]: number;
+	str: number;
+	dex: number;
+	con: number;
+	int: number;
+	cha: number;
+	wis: number;
 };
 
 export type Saves = {
-	[index in Stat]: SaveEntity;
+	str: SaveEntity;
+	dex: SaveEntity;
+	con: SaveEntity;
+	int: SaveEntity;
+	cha: SaveEntity;
+	wis: SaveEntity;
 };
 export interface SaveEntity {
 	isProficient: boolean;

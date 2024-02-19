@@ -798,9 +798,7 @@ export default defineComponent({
 		background: var(--color-surface-1);
 		color: white;
 		padding: 1rem;
-		box-shadow:
-			rgba(0, 0, 0, 0.19) 0px 10px 20px,
-			rgba(0, 0, 0, 0.23) 0px 6px 6px;
+		box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
 		cursor: pointer;
 		transition: all 1s;
 		transition-timing-function: cubic-bezier(0.06, 0.975, 0.195, 0.985);

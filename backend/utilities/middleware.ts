@@ -60,8 +60,8 @@ function errorHandler(err: Error, req: Request, res: Response, next: NextFunctio
 }
 app.use(errorHandler);
 process.on("uncaughtException", (err) => {
-	log.log("critical", "Uncaught exception" + err);
+	log.log("critical", "Uncaught exception: " + err);
 });
 process.on("unhandledRejection", (err) => {
-	log.log("critical", "Unhandled rejection" + err);
+	log.log("critical", "Unhandled rejection: " + err);
 });

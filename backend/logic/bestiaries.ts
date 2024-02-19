@@ -3,9 +3,7 @@ import {log} from "../utilities/logger";
 import {requireUser, possibleUser} from "./login";
 import {publicLog, colors} from "./discord";
 import {addBestiaryToUser, getBestiary, getUser, incrementBestiaryViewCount, updateBestiary, deleteBestiary, getCreature, collections, addBookmark, removeBookmark} from "../utilities/database";
-import {User, Bestiary, Creature, type Statblock} from "../../shared";
-import {ObjectId} from "mongodb";
-import {type CreatureInput, defaultStatblock} from "./creatures";
+import {User, Bestiary, Creature, type Statblock, defaultStatblock, Stat, Id, stringToId} from "../../shared";
 import limits from "../staticData/limits.json";
 import tags from "../staticData/tags.json";
 
@@ -22,11 +20,8 @@ export function checkBestiaryPermission(bestiary: Bestiary, user: User | null): 
 //Get info
 app.get("/api/bestiary/:id", possibleUser, async (req, res) => {
 	try {
-		let id = req.params.id;
-		if (id.length != 24) {
-			return res.status(400).json({error: "Bestiary id not valid."});
-		}
-		let _id = new ObjectId(id);
+		let _id = stringToId(req.params.id);
+		if (!_id) return res.status(400).json({error: "Bestiary id not valid."});
 		let bestiary = await getBestiary(_id);
 		if (!bestiary) {
 			return res.status(404).json({error: "No bestiary with that id found."});
@@ -45,7 +40,7 @@ app.get("/api/bestiary/:id", possibleUser, async (req, res) => {
 				});
 			}
 			//Return bestiary
-			log.info(`Retrieved bestiary with the id ${id}`);
+			log.info(`Retrieved bestiary with the id ${_id}`);
 			if (!bestiary.tags) bestiary.tags = [];
 			return res.json(bestiary);
 		} else {
@@ -88,39 +83,35 @@ app.get("/api/user/:userid/bestiaries", possibleUser, async (req, res) => {
 });
 
 //Update info
-type BestiaryInput = Omit<Bestiary, "_id"> & {_id?: string};
-function convertInput(input: BestiaryInput): Bestiary | null {
-	if (!input._id) {
-		return input as Bestiary;
-	}
-	if (input._id.length != 24) {
-		return null;
-	}
-	let bestiaryId = new ObjectId(input._id);
-	let data = Object.assign(input, {_id: bestiaryId});
-	return data;
-}
 app.post("/api/bestiary/:id?/update", requireUser, async (req, res) => {
 	try {
 		//Get input
-		let id = req.params.id;
-		let inputData = req.body.data as BestiaryInput;
-		let data = convertInput(inputData);
-		if (!data) {
-			if (!id || id.length != 24) {
-				return res.status(400).json({error: "Bestiary id not valid."});
-			}
-			data = inputData as Bestiary;
-			data._id = new ObjectId(id);
-		}
 		let user = await getUser(req.body.id);
-		if (!user) {
-			return res.status(404).json({error: "Couldn't find current user."});
+		if (!user) return res.status(404).json({error: "Couldn't find current user."});
+		let id = req.params.id;
+		if (!req.body.data) return res.status(400).json({error: "Bestiary data not found."});
+		let data = {
+			...({
+				creatures: [],
+				tags: [],
+				name: "",
+				status: "private",
+				editors: [],
+				owner: user._id,
+				description: "",
+				viewCount: 0,
+				bookmarks: 0,
+				lastUpdated: 0
+			} as Bestiary),
+			...(req.body.data as Partial<Bestiary>)
+		} as Bestiary;
+		if (typeof data._id == "string") {
+			let _id = stringToId(data._id);
+			if (!_id) return res.status(400).json({error: "Invalid bestiary id in body."});
+			data._id = _id;
 		}
 		//Check limits
-		if (!data.creatures) data.creatures = [];
-		if (!data.tags) data.tags = [];
-		else data.tags = data.tags.filter((t) => tags.includes(t));
+		data.tags = data.tags.filter((t) => tags.includes(t));
 		if (data.name.length > limits.nameLength) return res.status(400).json({error: `Name exceeds the character limit of ${limits.nameLength} characters.`});
 		if (data.name.length < limits.nameMin) return res.status(400).json({error: `Name is less than the minimum character limit of ${limits.nameMin} characters.`});
 		if (data.description.length > limits.descriptionLength) return res.status(400).json({error: `Description exceeds the character limit of ${limits.descriptionLength} characters.`});
@@ -132,17 +123,13 @@ app.post("/api/bestiary/:id?/update", requireUser, async (req, res) => {
 			badwords.filter(data.name, (badword) => {
 				usedBadwords.push(badword);
 			});
-			if (usedBadwords.length > 0) {
-				return res.status(400).json({error: `Bestiary name includes blocked words or phrases. Matched: ${usedBadwords.join(", ")}. If you think this was a mistake, please file a bug report.`});
-			}
+			if (usedBadwords.length > 0) return res.status(400).json({error: `Bestiary name includes blocked words or phrases. Matched: ${usedBadwords.join(", ")}. If you think this was a mistake, please file a bug report.`});
 
 			usedBadwords = [];
 			badwords.filter(data.description, (badword) => {
 				usedBadwords.push(badword);
 			});
-			if (usedBadwords.length > 0) {
-				return res.status(400).json({error: `Bestiary description includes blocked words or phrases. Matched: ${usedBadwords.join(", ")}. If you think this was a mistake, please file a bug report.`});
-			}
+			if (usedBadwords.length > 0) return res.status(400).json({error: `Bestiary description includes blocked words or phrases. Matched: ${usedBadwords.join(", ")}. If you think this was a mistake, please file a bug report.`});
 		}
 		//Public?
 		if (data.status == "public") {
@@ -150,7 +137,10 @@ app.post("/api/bestiary/:id?/update", requireUser, async (req, res) => {
 			if (data.name.toLowerCase().includes("new bestiary")) return res.status(400).json({error: "A bestiary must have a non default name."});
 		}
 		//Add or update
-		if (data._id) {
+		if (id) {
+			let _id = stringToId(id);
+			if (!_id) return res.status(400).json({error: "Bestiary id not valid."});
+			data._id = _id;
 			//Update existing bestiary
 			let bestiary = await getBestiary(data._id);
 			if (bestiary) {
@@ -185,9 +175,7 @@ app.post("/api/bestiary/:id?/update", requireUser, async (req, res) => {
 		} else {
 			//Create new bestiary
 			let _id = await updateBestiary(data);
-			if (!_id) {
-				return res.status(500).json({error: "Failed to create bestiary."});
-			}
+			if (!_id) return res.status(500).json({error: "Failed to create bestiary."});
 			await addBestiaryToUser(_id, user._id!);
 			data._id = _id;
 			data.owner = user._id!;
@@ -202,11 +190,8 @@ app.post("/api/bestiary/:id?/update", requireUser, async (req, res) => {
 app.get("/api/bestiary/:id/delete", requireUser, async (req, res) => {
 	try {
 		//Get input
-		let id = req.params.id;
-		if (id.length != 24) {
-			return res.status(400).json({error: "Bestiary id not valid."});
-		}
-		let _id = new ObjectId(id);
+		let _id = stringToId(req.params.id);
+		if (!_id) return res.status(400).json({error: "Bestiary id not valid."});
 		let user = await getUser(req.body.id);
 		if (!user) return res.status(404).json({error: "Couldn't find current user."});
 		//Permissions
@@ -216,7 +201,7 @@ app.get("/api/bestiary/:id/delete", requireUser, async (req, res) => {
 		//Remove from db
 		let status = await deleteBestiary(_id);
 		if (status) {
-			log.info(`Deleted bestiary with the id ${id}`);
+			log.info(`Deleted bestiary with the id ${_id}`);
 			res.json({});
 		} else {
 			res.status(500).json({error: "Failed to delete creature."});
@@ -228,34 +213,29 @@ app.get("/api/bestiary/:id/delete", requireUser, async (req, res) => {
 });
 
 //Add many creatures
-app.post("/api/bestiary/:id?/addcreatures", requireUser, async (req, res) => {
+app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 	try {
 		//Get bestiary
 		let id = req.params.id;
-		if (!id || id.length != 24) {
-			return res.status(400).json({error: "Bestiary id not valid."});
-		}
-		let _id = new ObjectId(id);
+		let _id = stringToId(id);
+		if (!_id) return res.status(400).json({error: "Bestiary id not valid."});
 		let bestiary = await getBestiary(_id);
 		if (!bestiary) return res.status(404).json({error: "Bestiary not found"});
 		//Check owner
 		let user = await getUser(req.body.id);
-		if (!user) {
-			return res.status(404).json({error: "Couldn't find current user."});
-		}
+		if (!user) return res.status(404).json({error: "Couldn't find current user."});
 		let bestiaryPermissionLevel = checkBestiaryPermission(bestiary, user);
 		if (["none", "view"].includes(bestiaryPermissionLevel)) return res.status(401).json({error: "You don't have permission to add creatures to this bestiary."});
 		//Get creature input
 		let data;
 		try {
 			let inputData = req.body.data as Statblock[];
+			if (!validateStatblockInput(inputData)) data = null;
 			data = inputData.map((a) => ({stats: a} as Creature));
 		} catch {
 			data = null;
 		}
-		if (!data) {
-			return res.status(400).json({error: "Failed to parse creature data."});
-		}
+		if (!data) return res.status(400).json({error: "Failed to parse creature data."});
 		let now = Date.now();
 		//Make sure all fields are present in all creatures
 		let fixedData = [] as Creature[];
@@ -322,7 +302,7 @@ app.post("/api/bestiary/:id?/addcreatures", requireUser, async (req, res) => {
 		//Add all creatures
 		let result = ((await collections.creatures?.insertMany(fixedData, {ordered: false})) ?? {}) as {
 			acknowledged: boolean;
-			insertedIds: {[key: string]: ObjectId};
+			insertedIds: {[key: string]: Id};
 		};
 		let ids = Object.values(result.insertedIds);
 		log.log("database", `Created ${ids.length} creatures.`);
@@ -340,10 +320,8 @@ app.post("/api/bestiary/:id?/addcreatures", requireUser, async (req, res) => {
 app.get("/api/bestiary/:bestiaryid/editors/add/:userid", requireUser, async (req, res) => {
 	try {
 		//Get input
-		if (!req.params.bestiaryid || req.params.bestiaryid.length != 24) {
-			return res.status(400).json({error: "Bestiary id not valid."});
-		}
-		let _id = new ObjectId(req.params.bestiaryid);
+		let _id = stringToId(req.params.bestiaryId);
+		if (!_id) return res.status(400).json({error: "Bestiary id not valid."});
 		let currentUser = await getUser(req.body.id);
 		if (!currentUser) {
 			return res.status(404).json({error: "Couldn't find current user."});
@@ -371,10 +349,8 @@ app.get("/api/bestiary/:bestiaryid/editors/add/:userid", requireUser, async (req
 app.get("/api/bestiary/:bestiaryid/editors/remove/:userid", requireUser, async (req, res) => {
 	try {
 		//Get input
-		if (!req.params.bestiaryid || req.params.bestiaryid.length != 24) {
-			return res.status(400).json({error: "Bestiary id not valid."});
-		}
-		let _id = new ObjectId(req.params.bestiaryid);
+		let _id = stringToId(req.params.bestiaryId);
+		if (!_id) return res.status(400).json({error: "Bestiary id not valid."});
 		let currentUser = await getUser(req.body.id);
 		if (!currentUser) {
 			return res.status(404).json({error: "Couldn't find current user."});
@@ -404,11 +380,8 @@ app.get("/api/bestiary/:bestiaryid/editors/remove/:userid", requireUser, async (
 app.get("/api/bestiary/:id/bookmark/toggle", requireUser, async (req, res) => {
 	try {
 		//Get input
-		let id = req.params.id;
-		if (id.length != 24) {
-			return res.status(400).json({error: "Bestiary id not valid."});
-		}
-		let _id = new ObjectId(id);
+		let _id = stringToId(req.params.id);
+		if (!_id) return res.status(400).json({error: "Bestiary id not valid."});
 		let bestiary = await getBestiary(_id);
 		if (!bestiary) return res.status(404).json({error: "Couldn't find bestiary."});
 		let user = await getUser(req.body.id);
@@ -421,7 +394,7 @@ app.get("/api/bestiary/:id/bookmark/toggle", requireUser, async (req, res) => {
 		let status;
 		let newState;
 		let bookmarks = user.bookmarks ?? [];
-		if (bookmarks.filter((a) => a.toHexString() == _id.toHexString()).length > 0) {
+		if (bookmarks.filter((a) => a.toHexString() == _id?.toHexString()).length > 0) {
 			status = await removeBookmark(user._id, _id);
 			newState = false;
 			log.info(`Removed bestiary with the id ${_id} from the bookmarks of user with the id ${user._id}`);
@@ -444,11 +417,8 @@ app.get("/api/bestiary/:id/bookmark/toggle", requireUser, async (req, res) => {
 app.get("/api/bestiary/:id/bookmark/get", requireUser, async (req, res) => {
 	try {
 		//Get input
-		let id = req.params.id;
-		if (id.length != 24) {
-			return res.status(400).json({error: "Bestiary id not valid."});
-		}
-		let _id = new ObjectId(id);
+		let _id = stringToId(req.params.id);
+		if (!_id) return res.status(400).json({error: "Bestiary id not valid."});
 		let bestiary = await getBestiary(_id);
 		if (!bestiary) return res.status(404).json({error: "Couldn't find bestiary."});
 		let user = await getUser(req.body.id);
@@ -459,7 +429,7 @@ app.get("/api/bestiary/:id/bookmark/get", requireUser, async (req, res) => {
 		}
 		//Already bookmarked
 		let bookmarks = user.bookmarks ?? [];
-		if (bookmarks.filter((a) => a.toHexString() == _id.toHexString()).length > 0) {
+		if (bookmarks.filter((a) => a.toHexString() == _id?.toHexString()).length > 0) {
 			return res.json({state: true});
 		} else {
 			return res.json({state: false});
@@ -477,9 +447,8 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 	//// STOP. EDITING THIS FUNCTION CAN BREAK AVRAE IMPORTS. TEST BEFORE CHANGING  ////
 	///////////////////////////////////////////////////////////////////////////////////
 	try {
-		let id = req.params.id;
-		if (id.length != 24) return res.status(400).json({error: "Bestiary id not valid."});
-		let _id = new ObjectId(id);
+		let _id = stringToId(req.params.id);
+		if (!_id) return res.status(400).json({error: "Bestiary id not valid."});
 		let bestiary = await getBestiary(_id);
 		if (!bestiary) return res.status(404).json({error: "No bestiary with that id found."});
 		if (bestiary.status == "private") return res.status(401).json({error: "This bestiary is private"});
@@ -488,7 +457,7 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 		//Get creatures
 		let creatures = [];
 		for (let creatureId of bestiary.creatures) {
-			let creature = await collections.creatures?.findOne({_id: new ObjectId(creatureId)});
+			let creature = await collections.creatures?.findOne({_id: new Id(creatureId)});
 			if (!creature) continue;
 
 			//HP:
@@ -508,7 +477,7 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 				caster_mod: statCalc(spellcastCasterObj.spellCastingAbilityOverride ?? spellcastCasterObj.spellCastingAbility ?? "", creature.stats),
 				innate_dc: spellDc(true, creature.stats),
 				innate_sab: spellAttackBonus(true, creature.stats),
-				innate_mod: statCalc(spellcastInnateObj.spellCastingAbilityOverride ?? spellcastInnateObj.spellCastingAbility, creature.stats)
+				innate_mod: statCalc(spellcastInnateObj.spellCastingAbility ?? "", creature.stats)
 			};
 
 			//Saves/stats
@@ -686,13 +655,24 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 			},
 			creatures
 		};
-		log.info(`Export - Retrieved bestiary with the id ${id}`);
+		log.info(`Export - Retrieved bestiary with the id ${_id}`);
 		return res.json(data);
 	} catch (err) {
 		log.log("critical", err);
 		return res.status(500).json({error: "Unknown server error occured. Please contact the developers of Bestiary Builder, not Avrae."});
 	}
 });
+
+//Validate inputs
+import {createCheckers} from "ts-interface-checker";
+import {typeInterface, interfaceValidation} from "../../shared";
+const {Statblock: StatblockChecker} = createCheckers(typeInterface);
+function validateStatblockInput(input: Statblock[]) {
+	for (let block of input) {
+		if (!StatblockChecker.test(block)) return false;
+	}
+	return true;
+}
 
 //Statblock functions:
 function displayCR(cr: number): string {

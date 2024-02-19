@@ -1,6 +1,6 @@
 import {collections} from "../utilities/database";
-import {User, Bestiary, Creature} from "../../shared";
-import type {Filter, FindOptions, Sort} from "mongodb";
+import {User, Bestiary, Creature, SearchOptions} from "../../shared";
+import {type Filter, type FindOptions, type Sort} from "mongodb";
 import {app} from "../utilities/constants";
 import {log} from "../utilities/logger";
 
@@ -9,15 +9,17 @@ const amountPerPage = 12;
 app.post("/api/search", async (req, res) => {
 	try {
 		//Parse search inputs
-		let searchOptions = req.body.options as {
-			search: string;
-			page: number;
-			mode: "popular" | "recent";
-			tags: string[];
-		};
-		if (!searchOptions) return res.status(400).json({error: "No search options were found"});
-		if (!searchOptions.search) searchOptions.search = ".";
-		if (!searchOptions.page) searchOptions.page = 0;
+		let input = req.body.options as Partial<SearchOptions> | null;
+		let searchOptions = {
+			...({
+				search: ".",
+				page: 0,
+				mode: "popular",
+				tags: []
+			} as SearchOptions),
+			...(input ?? {})
+		} as SearchOptions;
+		if (!validateSearchInput(searchOptions, res)) return;
 		if (searchOptions.page < 0) return res.status(400).json({error: "Page out of bounds"});
 		//Filter
 		let filter = {
@@ -81,3 +83,19 @@ app.post("/api/search", async (req, res) => {
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
+
+//Validate input
+import {createCheckers} from "ts-interface-checker";
+import {Response} from "express";
+import {typeInterface, interfaceValidation} from "../../shared";
+const {SearchOptions: SearchChecker} = createCheckers(typeInterface);
+function validateSearchInput(input: any, res: Response) {
+	//@ts-ignore
+	if (SearchChecker.test(input)) {
+		return true;
+	} else {
+		//@ts-ignore
+		res.status(400).json({error: `Creature data not valid:\n${interfaceValidation(SearchChecker.validate(input) ?? [])}`});
+		return false;
+	}
+}

@@ -27,7 +27,7 @@ httpServer.listen(5000, () => {
 
 //Load frontend
 import {routes, defaultMetaTags, Route} from "./utilities/routes";
-import {ObjectId} from "mongodb";
+import {Id, stringToId} from "../shared";
 async function getFrontendHtml(route: Route, req: Request) {
 	//Get information
 	let title = "Bestiary Builder";
@@ -36,9 +36,9 @@ async function getFrontendHtml(route: Route, req: Request) {
 	if (route.meta.dynamic) {
 		switch (route.path) {
 			case "/bestiary-viewer/:id":
-				let bId = req.params.id;
-				if (bId.length == 24) {
-					let bestiary = await getBestiary(new ObjectId(bId));
+				let bId = stringToId(req.params.id);
+				if (bId) {
+					let bestiary = await getBestiary(new Id(bId));
 					if (bestiary) {
 						if (bestiary.status == "private") {
 							title = "Private bestiary | Bestiary Builder";
@@ -54,9 +54,9 @@ async function getFrontendHtml(route: Route, req: Request) {
 				}
 				break;
 			// case "/statblock-editor/:id":
-			// 	let sId = req.params.id;
-			// 	if (sId.length == 24) {
-			// 		let creature = await getCreature(new ObjectId(sId));
+			// 	let sId = stringToId(req.params.id);
+			// 	if (sId) {
+			// 		let creature = await getCreature(new Id(sId));
 			// 		if (creature) {
 			// 			title = `${creature.stats.description.name.substring(0, 16)} | Bestiary Builder`;
 			// 			if (creature.stats.description.description) description = creature.stats.description.description;

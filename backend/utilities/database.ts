@@ -1,7 +1,7 @@
-import {MongoClient, ServerApiVersion, Db, ObjectId, Collection, CommandFailedEvent, CommandSucceededEvent, AnyBulkWriteOperation} from "mongodb";
+import {MongoClient, ServerApiVersion, Db, Collection} from "mongodb";
 import {generateUserSecret} from "./constants";
 import {log} from "./logger";
-import {User, Bestiary, Creature} from "../../shared";
+import {User, Bestiary, Creature, Id} from "../../shared";
 //Connect to database
 let database = null as Db | null;
 export async function startConnection() {
@@ -105,7 +105,7 @@ export async function updateUser(data: {_id: string; username: string; avatar: s
 		return null;
 	}
 }
-export async function addBookmark(userId: string, bestiaryId: ObjectId) {
+export async function addBookmark(userId: string, bestiaryId: Id) {
 	try {
 		log.log("database", `Adding bookmark to user ${userId}.`);
 		await collections.users?.updateOne({_id: userId}, {$push: {bookmarks: bestiaryId}});
@@ -116,7 +116,7 @@ export async function addBookmark(userId: string, bestiaryId: ObjectId) {
 		return false;
 	}
 }
-export async function removeBookmark(userId: string, bestiaryId: ObjectId) {
+export async function removeBookmark(userId: string, bestiaryId: Id) {
 	try {
 		log.log("database", `Removing bookmark from user ${userId}.`);
 		await collections.users?.updateOne({_id: userId}, {$pull: {bookmarks: bestiaryId}});
@@ -128,7 +128,7 @@ export async function removeBookmark(userId: string, bestiaryId: ObjectId) {
 	}
 }
 //Bestiary functions
-export async function getBestiary(id: ObjectId) {
+export async function getBestiary(id: Id) {
 	try {
 		log.log("database", `Reading bestiary with the id ${id}.`);
 		return (await collections.bestiaries?.findOne({_id: id})) as Bestiary | null;
@@ -137,7 +137,7 @@ export async function getBestiary(id: ObjectId) {
 		return null;
 	}
 }
-export async function updateBestiary(data: Bestiary, id?: ObjectId) {
+export async function updateBestiary(data: Bestiary, id?: Id) {
 	try {
 		data.lastUpdated = Date.now();
 		if (id) {
@@ -151,7 +151,7 @@ export async function updateBestiary(data: Bestiary, id?: ObjectId) {
 			}
 		} else {
 			log.log("database", "Adding new bestiary to collection");
-			let _id = new ObjectId();
+			let _id = new Id();
 			let newData = {
 				...data,
 				...{
@@ -169,11 +169,11 @@ export async function updateBestiary(data: Bestiary, id?: ObjectId) {
 		return null;
 	}
 }
-export async function incrementBestiaryViewCount(id: ObjectId) {
+export async function incrementBestiaryViewCount(id: Id) {
 	log.log("database", `Incrementing viewcount of bestiary with the id ${id}.`);
 	await collections.bestiaries?.updateOne({_id: id}, {$inc: {viewCount: 1}});
 }
-export async function addBestiaryToUser(bestiaryId: ObjectId, userId: string) {
+export async function addBestiaryToUser(bestiaryId: Id, userId: string) {
 	try {
 		log.log("database", `Adding bestiary with the id ${bestiaryId} to user with the id ${userId}.`);
 		await collections.users?.updateOne({_id: userId}, {$push: {bestiaries: bestiaryId}});
@@ -184,7 +184,7 @@ export async function addBestiaryToUser(bestiaryId: ObjectId, userId: string) {
 		return false;
 	}
 }
-export async function deleteBestiary(bestiaryId: ObjectId) {
+export async function deleteBestiary(bestiaryId: Id) {
 	try {
 		let bestiary = await getBestiary(bestiaryId);
 		if (!bestiary) return false;
@@ -199,7 +199,7 @@ export async function deleteBestiary(bestiaryId: ObjectId) {
 	}
 }
 //Creature functions
-export async function getCreature(id: ObjectId) {
+export async function getCreature(id: Id) {
 	try {
 		log.log("database", `Getting creature with the id ${id}.`);
 		return (await collections.creatures?.findOne({_id: id})) as Creature | null;
@@ -208,7 +208,7 @@ export async function getCreature(id: ObjectId) {
 		return null;
 	}
 }
-export async function updateCreature(data: Creature, id?: ObjectId) {
+export async function updateCreature(data: Creature, id?: Id) {
 	try {
 		data.lastUpdated = Date.now();
 		if (id) {
@@ -224,7 +224,7 @@ export async function updateCreature(data: Creature, id?: ObjectId) {
 			}
 		} else {
 			log.log("database", "Adding new creature to collection");
-			let _id = new ObjectId();
+			let _id = new Id();
 			data._id = _id;
 			await collections.creatures?.insertOne(data);
 			return _id;
@@ -234,7 +234,7 @@ export async function updateCreature(data: Creature, id?: ObjectId) {
 		return null;
 	}
 }
-export async function addCreatureToBestiary(creatureId: ObjectId, bestiaryId: ObjectId) {
+export async function addCreatureToBestiary(creatureId: Id, bestiaryId: Id) {
 	try {
 		log.log("database", `Adding creature with the id ${creatureId} to bestiary with the id ${bestiaryId}.`);
 		await collections.bestiaries?.updateOne({_id: bestiaryId}, {$push: {creatures: creatureId}});
@@ -244,7 +244,7 @@ export async function addCreatureToBestiary(creatureId: ObjectId, bestiaryId: Ob
 		return false;
 	}
 }
-export async function deleteCreature(creatureId: ObjectId) {
+export async function deleteCreature(creatureId: Id) {
 	try {
 		let creature = await getCreature(creatureId);
 		if (!creature) return false;
