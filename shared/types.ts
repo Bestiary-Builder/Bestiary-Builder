@@ -2,40 +2,6 @@ import {ObjectId} from "bson";
 export class Id extends ObjectId {}
 
 //Database types
-/**
-export type User = {
-	username: string;
-	avatar: string;
-	email: string;
-	verified: boolean;
-	banner_color: string;
-	global_name: string;
-	bestiaries: Id[];
-	bookmarks: Id[];
-	supporter: 0 | 1 | 2;
-	joinedAt: number;
-	_id: string;
-	secret?: string;
-};
-export type Bestiary = {
-	name: string;
-	owner: string;
-	editors: string[];
-	status: "public" | "private" | "unlisted";
-	description: string;
-	creatures: Id[];
-	tags: string[];
-	viewCount: number;
-	bookmarks: number;
-	lastUpdated: number;
-	_id: Id;
-};
-export type Creature = {
-	lastUpdated: number;
-	stats: Statblock;
-	bestiary: Id;
-	_id?: Id;
-}; */
 export class User {
 	constructor(
 		public username: string,
