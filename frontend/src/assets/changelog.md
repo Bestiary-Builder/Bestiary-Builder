@@ -1,3 +1,14 @@
+## v1.2.3
+_February 24th, 2024_
+
+- Improved Automation Editor:
+    - Importing an SRD feature will automatically remove the name of the origin creature, e.g. Frog - Bite will import as Bite.
+    - It now checks if the feature description and last automation text node differ. If they do, prompt the user to update one of the other with a button.
+    - Made it full screen since it was getting cluttered. This is an experimental change until we have a better way to edit automation. 
+        - **Please leave feedback on this change!**
+- Importing Bestiary Builder Json will now check if everything is of the right type, stopping the import if things are typed wrongly. This should prevent errors when manually creating or modifying Bestiary Builder JSON.
+
+
 ## v1.2.2
 _February 12th, 2024_
 
