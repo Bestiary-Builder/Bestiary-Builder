@@ -7,10 +7,10 @@ import type {IErrorDetail} from "ts-interface-checker";
 export function interfaceValidation(validation: IErrorDetail[], nestlevel = 0 as number) {
 	let message = "";
 	for (let err of validation) {
-		message += `${"	".repeat(nestlevel)}${err.path.replace("value.", "")} ${err.message}${err.nested ? ":" : "."}\n`;
+		message += `<span style="margin-left:${nestlevel}rem">${err.path.replace("value.", "")} ${err.message}${err.nested ? ":" : "."}</span>\n`;
 		if (err.nested) {
 			message += interfaceValidation(err.nested, nestlevel + 1) ?? "";
 		}
 	}
-	return message;
+	return message.replaceAll("is not a", "is not of type");
 }
