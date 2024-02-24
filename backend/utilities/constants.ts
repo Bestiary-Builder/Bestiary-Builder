@@ -4,21 +4,21 @@ import {log} from "./logger";
 import express from "express";
 export const app = express();
 
+//Is production
+export const isProduction = (process.env.NODE_ENV == "production") as boolean;
+
 //Bad-words filter
 import fs from "fs";
 import path from "path";
 import BadWordsNext from "bad-words-next";
 export const badwords = new BadWordsNext({placeholder: ""});
-const badwordsPath = path.resolve("./staticData/badwordsData") + "/";
+const badwordsPath = path.resolve("./" + (isProduction ? "build/" : "") + "staticData/badwordsData") + "/";
 let dataFiles = fs.readdirSync(badwordsPath);
 for (let file of dataFiles) {
-	import("file:" + badwordsPath + file).then((data) => {
+	import((isProduction ? "" : "file:") + badwordsPath + file).then((data) => {
 		badwords.add(data);
 	});
 }
-
-//Is production
-export const isProduction = (process.env.NODE_ENV == "production") as boolean;
 
 //Secrets:
 import crypto from "crypto";
