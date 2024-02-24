@@ -60,7 +60,7 @@ app.post("/api/creature/:id?/update", requireUser, async (req, res) => {
 		let id = req.params.id;
 		let data = req.body.data as Creature;
 		if (!data) return res.status(400).json({error: "Creature data not found."});
-		if (!validateCreatureInput(data, res)) return;
+		if (!validateCreatureInput(data.stats, res)) return;
 		if (typeof data.bestiary == "string") {
 			let _id = stringToId(data.bestiary);
 			if (!_id) return res.status(400).json({error: "Invalid creature id in body."});
@@ -204,11 +204,25 @@ import {Response} from "express";
 import {typeInterface, interfaceValidation} from "../../shared";
 const {Statblock: StatblockChecker} = createCheckers(typeInterface);
 
-function validateCreatureInput(input: Creature, res: Response) {
-	if (StatblockChecker.test(input.stats)) {
+function validateCreatureInput(input: Statblock, res: Response) {
+	if (StatblockChecker.test(input)) {
 		return true;
 	} else {
-		res.status(400).json({error: `Search options not valid:\n${interfaceValidation(StatblockChecker.validate(input.stats) ?? [])}`});
+		res.status(400).json({error: `Creature data not valid:\n${interfaceValidation(StatblockChecker.validate(input) ?? [])}`});
 		return false;
 	}
 }
+
+app.post("/api/creature/validate", async (req, res) => {
+	try {
+		//Get input
+		let data = req.body.data as Statblock;
+		if (!data) return res.status(400).json({error: "Creature data not found."});
+		//Validate input
+		if (!validateCreatureInput(data, res)) return;
+		return {};
+	} catch (err) {
+		log.log("critical", err);
+		return res.status(500).json({error: "Unknown server error occured, please try again."});
+	}
+});

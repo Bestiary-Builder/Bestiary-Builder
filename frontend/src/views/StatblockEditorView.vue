@@ -601,14 +601,30 @@ export default defineComponent({
 				toast.error("Failed to import this creature");
 			}
 		},
-		importBestiaryBuilder(): void {
+		async importBestiaryBuilder() {
 			try {
 				let creature = JSON.parse(this.bestiaryBuilderJson);
 				if (Array.isArray(creature)) creature = creature[0];
-				this.data = creature;
-				this.notices = {};
-				this.bestiaryBuilderJson = "";
-				toast.success("Successfully imported " + this.data.description.name);
+				//Validate input
+				let result = await fetch("/api/creature/validate", {
+					method: "POST",
+					headers: {
+						Accept: "application/json",
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify({data: creature})
+				}).then(handleApiResponse);
+				//Succesful?:
+				if (result.success) {
+					this.data = creature;
+					this.notices = {};
+					this.bestiaryBuilderJson = "";
+					toast.success("Successfully imported " + this.data.description.name);
+				} else {
+					toast.error((result.data as error).error.replaceAll("\n", "<br />"), {
+						duration: 0
+					});
+				}
 				this.showImportModal = false;
 			} catch (e) {
 				console.error(e);
