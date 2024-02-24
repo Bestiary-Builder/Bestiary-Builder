@@ -10,7 +10,7 @@ import fs from "fs";
 import path from "path";
 import BadWordsNext from "bad-words-next";
 export const badwords = new BadWordsNext({placeholder: ""});
-const badwordsPath = path.resolve("./" + (isProduction ? "build/" : "") + "staticData/badwordsData") + "/";
+const badwordsPath = path.resolve("./staticData/badwordsData") + "/";
 let dataFiles = fs.readdirSync(badwordsPath);
 for (let file of dataFiles) {
 	import(badwordsPath + file).then((data) => {
