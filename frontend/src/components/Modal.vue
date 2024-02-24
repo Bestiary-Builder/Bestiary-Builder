@@ -1,8 +1,8 @@
 <template>
 	<Teleport to="#modal">
 		<Transition name="modal">
-			<div class="modal__bg" @click="$emit('close')" v-show="show" ref="target">
-				<div class="modal__content" @click.stop role="dialog" aria-modal="true" :aria-labelledby="`dialog${id}_label`">
+			<div class="modal__bg" @click="$emit('close')" v-show="show" ref="target" >
+				<div :class="{'fullscreen': fullScreen}" class="modal__content" @click.stop role="dialog" aria-modal="true" :aria-labelledby="`dialog${id}_label`" >
 					<div class="modal__header">
 						<h2 :id="`dialog${id}_label`"><slot name="header"></slot></h2>
 						<button class="modal__close-button" @click="$emit('close')"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
@@ -27,6 +27,10 @@ export default defineComponent({
 		show: {
 			type: Boolean,
 			required: true
+		},
+		fullScreen: {
+			type: Boolean,
+			default: false
 		}
 	},
 	name: "Modal",
@@ -102,6 +106,21 @@ export default defineComponent({
 		rgba(0, 0, 0, 0.4) 0px 2px 4px,
 		rgba(0, 0, 0, 0.3) 0px 7px 13px -3px,
 		rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+}
+
+.modal__content.fullscreen {
+	width: 100%;
+	max-width: 100%;
+	padding: 2rem 4rem;
+	max-height: 100%;
+	height: 100%;
+	border-radius: 0;
+	box-shadow: none;
+
+	.modal__close-button {
+		color: var(--color-destructive);
+		font-size: 4rem;
+	}
 }
 
 .modal__close-button {

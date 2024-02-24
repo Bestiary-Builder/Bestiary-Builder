@@ -477,7 +477,7 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 				caster_mod: statCalc(spellcastCasterObj.spellCastingAbilityOverride ?? spellcastCasterObj.spellCastingAbility ?? "", creature.stats),
 				innate_dc: spellDc(true, creature.stats),
 				innate_sab: spellAttackBonus(true, creature.stats),
-				innate_mod: statCalc(spellcastInnateObj.spellCastingAbility ?? "", creature.stats)
+				innate_mod: statCalc(spellcastInnateObj.spellCastingAbility, creature.stats)
 			};
 
 			//Saves/stats
@@ -719,7 +719,8 @@ function hpCalc(data: any): number {
 	return data.defenses.hp.override ?? Math.floor(data.defenses.hp.numOfHitDie * ((data.defenses.hp.sizeOfHitDie + 1) / 2 + statCalc("con", data)));
 }
 
-function statCalc(stat: string, data: any): number {
+function statCalc(stat: string | null, data: any): number {
+	if (!stat) return 0
 	return Math.floor(data.abilities.stats[stat] / 2) - 5;
 }
 

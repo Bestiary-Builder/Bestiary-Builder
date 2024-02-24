@@ -1,19 +1,37 @@
 <template>
 	<button class="btn open-btn" @click="showFeatureModal = true" :id="type + index">Edit Feature</button>
-	<Modal :show="showFeatureModal" @close="showFeatureModal = false">
+	<Modal :show="showFeatureModal" @close="showFeatureModal = false" :full-screen="true">
 		<template #header> Feature Editor </template>
 		<template #body>
 			<div class="two-wide uneven">
-				<LabelledComponent title="Feature name">
-					<input type="text" id="featurename" placeholder="Enter name" v-model="feat.name" @change="hasEditedName = true" />
-					<a href="https://avrae.readthedocs.io/en/stable/automation_ref.html"> Documentation</a>
-					<a href="https://avrae.io/dashboard/characters" v-tooltip="'Edit automation on a character to get access to the full fledged automation builder.'"> Automation Editor</a>
+				<LabelledComponent title="Information">
+					<input type="text" id="information" placeholder="Enter name" v-model="feat.name" @change="hasEditedName = true" />
+					<div> 
+						<a href="https://avrae.readthedocs.io/en/stable/automation_ref.html"> Documentation</a> <br>
+						<a href="https://avrae.io/dashboard/characters" v-tooltip="'Edit automation on a character to get access to the full fledged automation builder.'"> Automation Editor</a>
+					</div>
+
 				</LabelledComponent>
 				<LabelledComponent title="Feature description">
 					<textarea rows="4" id="featuredescription" placeholder="Enter description" v-model="feat.description" />
 				</LabelledComponent>
 			</div>
 			<hr />
+			<div class="two-wide uneven" v-if="showDescriptionButtons">
+				<div class="two-wide">
+					<LabelledComponent title="Update from automation">
+						<button class="btn" @click="updateFeatureDescFromAutomationDesc"> Update </button>
+					</LabelledComponent>
+					<LabelledComponent title="Update from description">
+						<button class="btn" @click="updateAutomationDescFromFeatureDesc"> Update </button>
+					</LabelledComponent>
+				</div>
+				<div>
+					<p class="warning"> Feature description and last automation text node do not match. </p>
+					<p> You can update the other with the buttons here.</p>
+				</div>
+			</div>
+			<hr v-if="showDescriptionButtons"/>
 			<div class="three-wide">
 				<LabelledComponent title="Options">
 					<div class="buttons">
@@ -175,9 +193,18 @@ export default defineComponent({
 				}
 			});
 			if (!feature) return;
-			//Add info to feat
-			if (this.feat.name == "New Feature" || !this.hasEditedName) this.feat.name = feature.name;
+			//Add info to feat, making sure to clean it all up.
+			if (this.feat.name == "New Feature" || !this.hasEditedName) this.feat.name = feature.name.split('-').slice(1).join('-').trim();
 			this.feat.description = feature.description.replace("$NAME$", this.data.description.name) ?? "";
+
+			if (Array.isArray(feature.automation)) {
+				for (let feat of feature.automation) {
+					feat['name'] = feat['name'].split('-').slice(1).join('-').trim();
+				}
+			} else if (feature.automation != null) {
+				// @ts-ignore
+				feature.automation['name'] = feature.automation['name'].split('-').slice(1).join('-').trim();
+			}
 			this.automationString = YAML.stringify(feature.automation);
 			this.saveAutomation(false);
 			setTimeout(() => {
@@ -199,7 +226,49 @@ export default defineComponent({
 					toast.error("Something went when generating automation!");
 				}
 			}
+		},
+		getAutomationDescription() : string | false {
+			let auto = YAML.parse(this.automationString)
+			if (Array.isArray(auto)) return false;
+			if (!this.feat.automation || !auto || auto.automation.length == 0) return false
+			for (let field of auto.automation.reverse()) {
+				if (field["type"] == "text") {
+					return field["text"]
+				}
+			}
+			return ""
+		},
+		updateFeatureDescFromAutomationDesc() : void {
+			let auto = YAML.parse(this.automationString)
+			if (Array.isArray(auto)) return;
+			for (let field of auto.automation.reverse()) {
+				if (field["type"] == "text") {
+					this.feat.description = field["text"]
+					return;
+				}
+			}
+		},
+		updateAutomationDescFromFeatureDesc() : void { 
+			let auto = YAML.parse(this.automationString)
+			if (Array.isArray(auto)) return;
+			for (let field of auto.automation.reverse()) {
+				if (field["type"] == "text") {
+					field["text"] = this.feat.description
+					auto.automation.reverse()
+					this.automationString = YAML.stringify(auto)
+					return;
+				}
+			}
 		}
+	},
+	computed: {
+		showDescriptionButtons() : boolean {
+			const desc = this.feat.description
+			const autoDesc = this.getAutomationDescription()
+			if (Array.isArray(this.feat.automation) || !desc || !autoDesc) return false
+			if (desc != autoDesc) return true
+			return false
+		},
 	},
 	watch: {
 		automationString() {
@@ -312,6 +381,11 @@ input {
 a {
 	color: orangered;
 }
+
+.external-links {
+	display: flex;
+	justify-content: space-between;
+}
 </style>
 
 <style lang="less">
@@ -332,4 +406,6 @@ a {
 .validation-error-item {
 	margin: 0;
 }
+
+
 </style>
