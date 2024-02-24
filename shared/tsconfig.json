@@ -5,7 +5,7 @@
 		"rootDir": ".",
 		"outDir": "build",
 		"composite": true,
-		"lib": ["es2021"]
+		"lib": ["esnext"]
 	},
 	"references": []
 }
