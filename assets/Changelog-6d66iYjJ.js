@@ -1,4 +1,15 @@
-import{M as o}from"./index-5Jdbla-E.js";import{B as r}from"./Breadcrumbs-Dz60_qMd.js";import{d as s,_ as i,r as d,o as n,c as t,a as l,b as u,i as m,F as h}from"./index-J23rYKFN.js";const c=`## v1.2.2
+import{M as o}from"./index-5Jdbla-E.js";import{B as r}from"./Breadcrumbs-jhOApAKq.js";import{d as i,_ as s,r as d,o as n,c as t,a as l,b as u,i as h,F as m}from"./index-7FyOWJqL.js";const c=`## v1.2.3
+_February 24th, 2024_
+
+- Improved Automation Editor:
+    - Importing an SRD feature will automatically remove the name of the origin creature, e.g. Frog - Bite will import as Bite.
+    - It now checks if the feature description and last automation text node differ. If they do, prompt the user to update one of the other with a button.
+    - Made it full screen since it was getting cluttered. This is an experimental change until we have a better way to edit automation. 
+        - **Please leave feedback on this change!**
+- Importing Bestiary Builder Json will now check if everything is of the right type, stopping the import if things are typed wrongly. This should prevent errors when manually creating or modifying Bestiary Builder JSON.
+
+
+## v1.2.2
 _February 12th, 2024_
 
 - Fixes a few issues with the feature editor on mobile. It should now display and be styled properly.
@@ -109,4 +120,4 @@ _January 10th, 2024_
 _December 10th, 2023_
 
 -   Development started
-`,p=o(),g=s({data(){return{content:p.render(c)}},components:{Breadcrumbs:r}}),y={class:"content markdown less-wide"},f=["innerHTML"];function b(e,_,v,w,k,x){const a=d("Breadcrumbs");return n(),t(h,null,[l(a,{routes:[{path:"",text:"Changelog",isCurrent:!0}],isLessWide:!0}),u("div",y,[e.content?(n(),t("div",{key:0,innerHTML:e.content},null,8,f)):m("",!0)])],64)}const B=i(g,[["render",b]]);export{B as default};
+`,p=o(),g=i({data(){return{content:p.render(c)}},components:{Breadcrumbs:r}}),f={class:"content markdown less-wide"},y=["innerHTML"];function w(e,b,v,_,k,x){const a=d("Breadcrumbs");return n(),t(m,null,[l(a,{routes:[{path:"",text:"Changelog",isCurrent:!0}],isLessWide:!0}),u("div",f,[e.content?(n(),t("div",{key:0,innerHTML:e.content},null,8,y)):h("",!0)])],64)}const A=s(g,[["render",w]]);export{A as default};
