@@ -12,6 +12,9 @@ jobs:
             - name: Installing project dependencies
               working-directory: ./frontend
               run: npm install
+            - name: Installing shared project dependencies
+              working-directory: ./shared
+              run: npm install
             - name: Building the project
               working-directory: ./frontend
               run: npm run build

@@ -3,7 +3,7 @@
 		"declaration": true,
 		"declarationMap": true,
 		"rootDir": ".",
-		"outDir": "build",
+		"outDir": "../build/shared",
 		"composite": true,
 		"lib": ["esnext"]
 	},

@@ -5,7 +5,7 @@
 		"lib": ["es2022"],
 		"skipLibCheck": true,
 		"allowJs": true,
-		"outDir": "build",
+		"outDir": "../build/backend",
 		"rootDir": ".",
 		"sourceMap": false,
 		"strict": true,
