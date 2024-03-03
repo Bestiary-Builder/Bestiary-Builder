@@ -602,8 +602,10 @@ export default defineComponent({
 			}
 		},
 		async importBestiaryBuilder() {
+		console.log('yes')
 			try {
 				let creature = JSON.parse(this.bestiaryBuilderJson);
+				console.log(creature)
 				if (Array.isArray(creature)) creature = creature[0];
 				//Validate input
 				let result = await fetch("/api/creature/validate", {
