@@ -220,7 +220,6 @@ app.post("/api/creature/validate", async (req, res) => {
 		if (!data) return res.status(400).json({error: "Creature data not found."});
 		//Validate input
 		if (!validateCreatureInput(data, res)) return;
-		return {};
 		return res.json({valid: true});
 	} catch (err) {
 		log.log("critical", err);
