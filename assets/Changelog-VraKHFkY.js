@@ -1,4 +1,10 @@
-import{M as o}from"./index-5Jdbla-E.js";import{B as r}from"./Breadcrumbs-jhOApAKq.js";import{d as i,_ as s,r as d,o as n,c as t,a as l,b as u,i as h,F as m}from"./index-7FyOWJqL.js";const c=`## v1.2.3
+import{M as o}from"./index-5Jdbla-E.js";import{B as r}from"./Breadcrumbs-raRIXE47.js";import{d as i,_ as s,r as d,o as n,c as t,a as l,b as u,i as h,F as m}from"./index-uVai2fwd.js";const c=`## v1.2.4
+March 3rd, 2024_
+
+- Fixed an issue which made it impossible to import Bestiary Builder JSON
+- Fixed an issue where typing invalid YAML into the feature editor would freeze up the site.
+
+## v1.2.3
 _February 24th, 2024_
 
 - Improved Automation Editor:
