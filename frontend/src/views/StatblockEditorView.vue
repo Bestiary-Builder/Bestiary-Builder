@@ -607,7 +607,7 @@ export default defineComponent({
 				console.log(creature)
 				if (Array.isArray(creature)) creature = creature[0];
 				//Validate input
-				let result = await fetch("/api/validate/creature", {
+				let result = await fetch("/api/randomroute", {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json"
