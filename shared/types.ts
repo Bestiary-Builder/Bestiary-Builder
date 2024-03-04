@@ -1,5 +1,5 @@
-import {ObjectId} from "bson";
-export class Id extends ObjectId {}
+export {ObjectId as Id} from "bson";
+import {ObjectId as Id} from "bson";
 
 //Database types
 export class User {
