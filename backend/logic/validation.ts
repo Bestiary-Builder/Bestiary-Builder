@@ -29,7 +29,7 @@ export function validateCreatureInput(input: Statblock, res: Response) {
 	}
 }
 
-app.post("/api/randomroute", async (req, res) => {
+app.post("/api/validate/creature", async (req, res) => {
 	try {
 		log.error("hello?")
 		//Get input
