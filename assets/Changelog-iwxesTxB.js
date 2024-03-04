@@ -1,4 +1,4 @@
-import{M as o}from"./index-5Jdbla-E.js";import{B as r}from"./Breadcrumbs-LxhD_vhS.js";import{d as i,_ as s,r as d,o as n,c as t,a as l,b as u,i as h,F as m}from"./index-Zt0Cv_p-.js";const c=`## v1.2.4
+import{M as o}from"./index-5Jdbla-E.js";import{B as r}from"./Breadcrumbs-1pLZv4pM.js";import{d as i,_ as s,r as d,o as n,c as t,a as l,b as u,i as h,F as m}from"./index-rPP-xhut.js";const c=`## v1.2.4
 _March 3rd, 2024_
 
 - Fixed an issue which made it impossible to import Bestiary Builder JSON
