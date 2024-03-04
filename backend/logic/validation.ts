@@ -31,10 +31,8 @@ export function validateCreatureInput(input: Statblock, res: Response) {
 
 app.post("/api/validate/creature", async (req, res) => {
 	try {
-		log.error("hello?")
 		//Get input
 		let data = req.body.data as Statblock;
-		log.log("critical", data);
 		if (!data) return res.status(400).json({error: "Creature data not found."});
 		//Validate input
 		if (!validateCreatureInput(data, res)) return;
