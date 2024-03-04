@@ -6,7 +6,7 @@
 	"main": "server.ts",
 	"scripts": {
 		"start": "npx nodemon",
-		"build": "cd ../shared && npx tsc && cd ../backend && npx tsc",
+		"build": "cd ../shared && npm run build && cd ../backend && npx tsc",
 		"postbuild": "cpy 'staticData/badwordsData/**/*.json' '../build/backend/staticData/badwordsData' && cp package.json ../build/backend/package.json && cp ../shared/package.json ../build/shared/package.json & cd ../build/backend && npm install --omit=dev && cd ../shared && npm install --omit=dev"
 	},
 	"engines": {

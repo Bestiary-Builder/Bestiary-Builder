@@ -43,7 +43,7 @@ export const FeatureHeaderTexts = t.iface([], {
 
 export const Description = t.iface([], {
   "name": "string",
-  "isProperNoun": t.lit(false),
+  "isProperNoun": "boolean",
   "description": "string",
   "image": "string",
   "faction": "string",
