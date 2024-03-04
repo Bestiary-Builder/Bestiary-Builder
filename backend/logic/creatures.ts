@@ -5,7 +5,7 @@ import {addCreatureToBestiary, collections, getBestiary, getCreature, getUser, u
 import {User, Bestiary, Creature, Statblock, defaultStatblock, Id, stringToId} from "../../shared";
 import {checkBestiaryPermission} from "./bestiaries";
 import limits from "../staticData/limits.json";
-
+import { validateCreatureInput } from "./validation"
 //Get info
 app.get("/api/creature/:id", possibleUser, async (req, res) => {
 	try {
@@ -192,35 +192,6 @@ app.get("/api/creature/:id/delete", requireUser, async (req, res) => {
 		} else {
 			res.status(500).json({error: "Failed to delete creature."});
 		}
-	} catch (err) {
-		log.log("critical", err);
-		return res.status(500).json({error: "Unknown server error occured, please try again."});
-	}
-});
-
-//Validate input
-import {createCheckers} from "ts-interface-checker";
-import {Response} from "express";
-import {typeInterface, interfaceValidation} from "../../shared";
-const {Statblock: StatblockChecker} = createCheckers(typeInterface);
-
-function validateCreatureInput(input: Statblock, res: Response) {
-	if (StatblockChecker.test(input)) {
-		return true;
-	} else {
-		res.status(400).json({error: `Creature data not valid:\n${interfaceValidation(StatblockChecker.validate(input) ?? [])}`});
-		return false;
-	}
-}
-
-app.post("/api/validate/creature", async (req, res) => {
-	try {
-		//Get input
-		let data = req.body.data as Statblock;
-		if (!data) return res.status(400).json({error: "Creature data not found."});
-		//Validate input
-		if (!validateCreatureInput(data, res)) return;
-		return res.json({valid: true});
 	} catch (err) {
 		log.log("critical", err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
