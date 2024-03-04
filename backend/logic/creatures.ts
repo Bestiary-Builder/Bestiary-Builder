@@ -213,7 +213,7 @@ function validateCreatureInput(input: Statblock, res: Response) {
 	}
 }
 
-app.post("/api/creature/validate", async (req, res) => {
+app.post("/api/validate/creature", async (req, res) => {
 	try {
 		//Get input
 		let data = req.body.data as Statblock;
