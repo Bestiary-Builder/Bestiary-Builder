@@ -604,12 +604,13 @@ export default defineComponent({
 		async importBestiaryBuilder() {
 			try {
 				let creature = JSON.parse(this.bestiaryBuilderJson);
-				console.log(creature)
+				console.log(creature);
 				if (Array.isArray(creature)) creature = creature[0];
 				//Validate input
 				let result = await fetch("/api/validate/creature", {
 					method: "POST",
 					headers: {
+						Accept: "application/json",
 						"Content-Type": "application/json"
 					},
 					body: JSON.stringify({data: creature})
