@@ -213,14 +213,14 @@ function validateCreatureInput(input: Statblock, res: Response) {
 	}
 }
 
-app.post("/api/creature/validate", async (req, res) => {
+app.post("/api/validate/creature", async (req, res) => {
 	try {
 		//Get input
 		let data = req.body.data as Statblock;
 		if (!data) return res.status(400).json({error: "Creature data not found."});
 		//Validate input
 		if (!validateCreatureInput(data, res)) return;
-		return {};
+		return res.json({valid: true});
 	} catch (err) {
 		log.log("critical", err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});

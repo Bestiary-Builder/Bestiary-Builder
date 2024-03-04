@@ -228,7 +228,12 @@ export default defineComponent({
 			}
 		},
 		getAutomationDescription() : string | false {
-			let auto = YAML.parse(this.automationString)
+			let auto;
+			try {
+				auto = YAML.parse(this.automationString)
+			} catch {
+				return false;
+			}
 			if (Array.isArray(auto)) return false;
 			if (!this.feat.automation || !auto || auto.automation.length == 0) return false
 			for (let field of auto.automation.reverse()) {
@@ -239,8 +244,12 @@ export default defineComponent({
 			return ""
 		},
 		updateFeatureDescFromAutomationDesc() : void {
-			let auto = YAML.parse(this.automationString)
-			if (Array.isArray(auto)) return;
+			let auto;
+			try {
+				auto = YAML.parse(this.automationString)
+			} catch {
+				return;
+			}			if (Array.isArray(auto)) return;
 			for (let field of auto.automation.reverse()) {
 				if (field["type"] == "text") {
 					this.feat.description = field["text"]
@@ -249,8 +258,12 @@ export default defineComponent({
 			}
 		},
 		updateAutomationDescFromFeatureDesc() : void { 
-			let auto = YAML.parse(this.automationString)
-			if (Array.isArray(auto)) return;
+			let auto;
+			try {
+				auto = YAML.parse(this.automationString)
+			} catch {
+				return;
+			}			if (Array.isArray(auto)) return;
 			for (let field of auto.automation.reverse()) {
 				if (field["type"] == "text") {
 					field["text"] = this.feat.description
@@ -310,14 +323,6 @@ export default defineComponent({
 				if (els[e].dataset?.highlighted == "yes") els[e].dataset.highlighted = "";
 			}
 		},
-		showFeatureModal() {
-			setTimeout(() => {
-				let els = document.querySelectorAll(".language-yaml") as NodeListOf<HTMLElement>;
-				for (let e in els) {
-					if (els[e].dataset?.highlighted == "yes") els[e].dataset.highlighted = "";
-				}
-			}, 100);
-		}
 	}
 });
 </script>
