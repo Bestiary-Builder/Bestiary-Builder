@@ -283,7 +283,7 @@ export interface FeatureHeaderTexts {
 }
 export interface Description {
 	name: string;
-	isProperNoun: false;
+	isProperNoun: boolean;
 	description: string;
 	image: string;
 	faction: string;
