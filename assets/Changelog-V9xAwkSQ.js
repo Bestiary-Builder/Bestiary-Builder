@@ -1,4 +1,12 @@
-import{M as o}from"./index-5Jdbla-E.js";import{B as r}from"./Breadcrumbs-tiL3R-tD.js";import{d as i,_ as s,r as d,o as n,c as t,a as l,b as u,i as h,F as m}from"./index-eCFlmf6Y.js";const c=`## v1.2.4
+import{M as o}from"./index-5Jdbla-E.js";import{B as r}from"./Breadcrumbs-lUA5YTaZ.js";import{d as i,_ as s,r as d,o as n,c as t,a as l,b as u,i as h,F as m}from"./index-WthShEgz.js";const c=`## v1.2.5
+_March 25th, 2024_
+
+- Fixed an issue where XP would not import into Avrae properly.
+- Fixed an issue where scrolling on mobile devices does not work properly.
+- Added .gif and .apng as valid image formats.
+- Adding a creature automatically opens the Statblock Editor for said creature.
+
+## v1.2.4
 _March 3rd, 2024_
 
 - Fixed an issue which made it impossible to import Bestiary Builder JSON
@@ -126,4 +134,4 @@ _January 10th, 2024_
 _December 10th, 2023_
 
 -   Development started
-`,p=o(),g=i({data(){return{content:p.render(c)}},components:{Breadcrumbs:r}}),f={class:"content markdown less-wide"},y=["innerHTML"];function w(e,b,v,_,k,x){const a=d("Breadcrumbs");return n(),t(m,null,[l(a,{routes:[{path:"",text:"Changelog",isCurrent:!0}],isLessWide:!0}),u("div",f,[e.content?(n(),t("div",{key:0,innerHTML:e.content},null,8,y)):h("",!0)])],64)}const A=s(g,[["render",w]]);export{A as default};
+`,p=o(),g=i({data(){return{content:p.render(c)}},components:{Breadcrumbs:r}}),f={class:"content markdown less-wide"},y=["innerHTML"];function w(e,v,b,_,k,x){const a=d("Breadcrumbs");return n(),t(m,null,[l(a,{routes:[{path:"",text:"Changelog",isCurrent:!0}],isLessWide:!0}),u("div",f,[e.content?(n(),t("div",{key:0,innerHTML:e.content},null,8,y)):h("",!0)])],64)}const A=s(g,[["render",w]]);export{A as default};
