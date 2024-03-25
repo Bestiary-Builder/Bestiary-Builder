@@ -1,3 +1,11 @@
+## v1.2.5
+_March 25th, 2024_
+
+- Fixed an issue where XP would not import into Avrae properly.
+- Fixed an issue where scrolling on mobile devices does not work properly.
+- Added .gif and .apng as valid image formats.
+- Adding a creature automatically opens the Statblock Editor for said creature.
+
 ## v1.2.4
 _March 3rd, 2024_
 
