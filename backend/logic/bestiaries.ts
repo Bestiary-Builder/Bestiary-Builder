@@ -539,7 +539,7 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 				image_url: creature.stats.description.image || "",
 				languages: creature.stats.core.languages,
 				cr: displayCR(creature.stats.description.cr),
-				xp: 1000,
+				xp: creature.stats.description.xp,
 				alignment: creature.stats.description.alignment,
 				size: creature.stats.core.size,
 				race: creature.stats.core.race,

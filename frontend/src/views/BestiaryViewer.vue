@@ -555,8 +555,7 @@ export default defineComponent({
 				let result = await handleApiResponse<Creature>(response);
 				if (result.success) {
 					let data = result.data as Creature;
-					this.bestiary?.creatures.push(data._id!);
-					this.creatures?.push(data);
+					this.$router.push(`../statblock-editor/${data._id}`)
 				} else {
 					toast.error((result.data as error).error);
 				}
