@@ -5,7 +5,7 @@ import {addCreatureToBestiary, collections, getBestiary, getCreature, getUser, u
 import {User, Bestiary, Creature, Statblock, defaultStatblock, Id, stringToId} from "../../shared";
 import {checkBestiaryPermission} from "./bestiaries";
 import limits from "../staticData/limits.json";
-import { validateCreatureInput } from "./validation"
+import {validateCreatureInput} from "./validation";
 //Get info
 app.get("/api/creature/:id", possibleUser, async (req, res) => {
 	try {
@@ -89,8 +89,12 @@ app.post("/api/creature/:id?/update", requireUser, async (req, res) => {
 		let image = data.stats.description.image as string;
 		// remove any url parameters from the string
 		if (image) {
-			image = new URL(image).origin + new URL(image).pathname;
-			data.stats.description.image = image;
+			try {
+				image = new URL(image).origin + new URL(image).pathname;
+				data.stats.description.image = image;
+			} catch {
+				return res.status(400).json({error: `Invalid image url.`});
+			}
 		}
 
 		let failedToImportImage = false;
