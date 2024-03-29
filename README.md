@@ -14,7 +14,7 @@ To start editing the project follow these simple steps:
 
 1. Fork the repository, to have your own editing location. See: [GitHub Docs - Fork a repo](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo)
 2. Clone your newly created fork. See: [GitHub Docs - Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository)
-3. Install npm dependencies. (Run "npm i" in both the backend and frontend folder)
+3. Install npm dependencies. (Run "npm i" in the backend frontend, and shared folder)
 4. Setup outside resources
     - MongoDB:
         - Follow this guide to setup a free MongoDB Atlas cluster: [MongoDB Docs - Deploy free tier cluster](https://www.mongodb.com/docs/atlas/tutorial/deploy-free-tier-cluster/)
