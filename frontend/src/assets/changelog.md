@@ -1,3 +1,10 @@
+## v1.2.6
+_April 3rd, 2024_
+
+- Fixed some issues with parsing from 5e.tools.
+- Fixed invalid image url error messages.
+- Fixed a bestiary import error message.
+
 ## v1.2.5
 _March 25th, 2024_
 
