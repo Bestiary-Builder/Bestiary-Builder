@@ -309,15 +309,19 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 			error += `Number of creatures exceeds the limit of ${limits.creatureAmount}, only creatures up to this limit was added.\n`;
 		}
 		//Add all creatures
-		let result = ((await collections.creatures?.insertMany(fixedData, {ordered: false})) ?? {}) as {
-			acknowledged: boolean;
-			insertedIds: {[key: string]: Id};
-		};
-		let ids = Object.values(result.insertedIds);
-		log.log("database", `Created ${ids.length} creatures.`);
-		await collections.bestiaries?.updateOne({_id: _id}, {$push: {creatures: {$each: ids}}, $set: {lastUpdated: now}});
-		log.log("database", `Updated bestiary ${_id} with ${ids.length} creatures.`);
-		log.info(`Added ${ids.length} creatures to bestiary with the id: ${_id}`);
+		if (fixedData.length > 0) {
+			let result = ((await collections.creatures?.insertMany(fixedData, {ordered: false})) ?? {}) as {
+				acknowledged: boolean;
+				insertedIds: {[key: string]: Id};
+			};
+			let ids = Object.values(result.insertedIds);
+			log.log("database", `Created ${ids.length} creatures.`);
+			await collections.bestiaries?.updateOne({_id: _id}, {$push: {creatures: {$each: ids}}, $set: {lastUpdated: now}});
+			log.log("database", `Updated bestiary ${_id} with ${ids.length} creatures.`);
+			log.info(`Added ${ids.length} creatures to bestiary with the id: ${_id}`);
+		} else {
+			error += "0 valid creatures found.";
+		}
 		return res.status(201).json({error: error});
 	} catch (err) {
 		log.log("critical", err);
