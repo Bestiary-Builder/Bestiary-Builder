@@ -41,13 +41,13 @@ export function descParser(dData: any) {
 
 export function markdownReplacer(text: string): string {
 	text = text
-		.replace("{@atk mw}", "*Melee Weapon Attack:*")
-		.replace("{@atk rw}", "*Ranged Weapon Attack:*")
-		.replace("{@atk mw,rw}", "*Melee or Ranged Weapon Attack:*")
-		.replace("{@atk ms}", "*Melee Spell Attack:*")
-		.replace("{@atk rs}", "*Ranged Spell Attack:*")
-		.replace("{@atk ms,rs}", "*Melee or Ranged Spell Attack:*")
-		.replace("{@h}", "*Hit:* ")
+		.replaceAll("{@atk mw}", "*Melee Weapon Attack:*")
+		.replaceAll("{@atk rw}", "*Ranged Weapon Attack:*")
+		.replaceAll("{@atk mw,rw}", "*Melee or Ranged Weapon Attack:*")
+		.replaceAll("{@atk ms}", "*Melee Spell Attack:*")
+		.replaceAll("{@atk rs}", "*Ranged Spell Attack:*")
+		.replaceAll("{@atk ms,rs}", "*Melee or Ranged Spell Attack:*")
+		.replaceAll("{@h}", "*Hit:* ")
 		.replace(/\{@damage\s+([^}]+)\}/g, "$1")
 		.replace(/\{@dc\s+([^}]+)\}/g, "DC $1")
 		.replace(/\{@dice\s+([^}]+)\}/g, "$1")
@@ -55,11 +55,12 @@ export function markdownReplacer(text: string): string {
 		.replace(/\{@item\s+([^}]+)\}/g, "$1")
 		.replace(/\{@condition\s+([^}]+)\}/g, "<u>$1</u>")
 		.replace(/\{@recharge\s+(\d+)\}/g, "(Recharge $1-6)")
-		.replace(/\{@quickref\s+[^|]+\|[^|]+\|[^|]+\|[^|]+\|([^}]+)\}/, "$1")
+		.replace(/\{@quickref\s+[a-z\s]+[|]+[0-9]+\}/, "$1".replace(/(^|\s)\S/g, function(t) { return t.toUpperCase() }))
 		.replace("Recharge 6-6", "Recharge 6")
-		// @ts-ignore
-		.replace(/\{@hit\s+(-?\d+)\}/g, (_, number) => (number >= 0 ? `+${number}` : number));
-
+		.replace("{@recharge}", "(Recharge 6)")
+		.replace(/\{@hit\s+(-?\d+)\}/g, (_, number) => (number >= 0 ? `+${number}` : number))
+		.replaceAll("<u>", "*")
+		.replaceAll("</u>", "*")
 	return text;
 }
 
