@@ -1,3 +1,11 @@
+## v1.2.6 
+_April 8th, 2024_
+
+- Makes lists in statblocks have normal spacing between its list items.
+- Makes unnamed features display an Unnamed name in the editor rather than nothing.
+- Fixes an issue where SRD features with no automation did not import their name into the feature editor. 
+- Fixes an issue where imported features with automation only replaced the first placeholder $NAME$ rather than all.
+
 ## v1.2.6
 _April 3rd, 2024_
 

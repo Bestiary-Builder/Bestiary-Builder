@@ -86,7 +86,7 @@
 			"label": "startup",
 			"type": "shell",
 			"group": "none",
-			"command": "cd frontend;npm i;cd ../backend;npm i",
+			"command": "cd frontend;npm i;cd ../backend;npm i; cd ../shared; npm i",
 			"options": {
 				"cwd": "${workspaceFolder}"
 			},

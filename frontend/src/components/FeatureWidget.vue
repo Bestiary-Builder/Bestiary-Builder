@@ -192,10 +192,14 @@ export default defineComponent({
 					feature = null;
 				}
 			});
+
 			if (!feature) return;
 			//Add info to feat, making sure to clean it all up.
-			if (this.feat.name == "New Feature" || !this.hasEditedName) this.feat.name = feature.name.split('-').slice(1).join('-').trim();
-			this.feat.description = feature.description.replace("$NAME$", this.data.description.name) ?? "";
+			if (this.feat.name == "New Feature" || !this.hasEditedName) {
+				if (feature.automation != null) this.feat.name = feature.name.split('-').slice(1).join('-').trim();
+				else this.feat.name = feature.name
+			} 
+			this.feat.description = feature.description.replaceAll("$NAME$", this.data.description.name) ?? "";
 
 			if (Array.isArray(feature.automation)) {
 				for (let feat of feature.automation) {
@@ -204,7 +208,8 @@ export default defineComponent({
 			} else if (feature.automation != null) {
 				// @ts-ignore
 				feature.automation['name'] = feature.automation['name'].split('-').slice(1).join('-').trim();
-			}
+			} 
+			
 			this.automationString = YAML.stringify(feature.automation);
 			this.saveAutomation(false);
 			setTimeout(() => {

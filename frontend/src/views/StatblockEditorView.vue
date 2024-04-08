@@ -314,7 +314,7 @@
 							<h2 class="group-header">{{ descText.replace("New ", "") }}s</h2>
 							<draggable :list="data.features[fType]" group="features" :item-key="getDraggableKey" handle=".handle" class="editor-field__container two-wide" :animation="150">
 								<template #item="{element, index}">
-									<LabelledComponent :title="element.name">
+									<LabelledComponent :title="element.name || `Unnamed ${index}`">
 										<div class="feature-button__container">
 											<FeatureWidget :index="index" :type="fType" :data="data" />
 											<span class="delete-button" @click="deleteFeature(fType, index)" aria-label="Delete feature"><font-awesome-icon :icon="['fas', 'trash']" /></span>
