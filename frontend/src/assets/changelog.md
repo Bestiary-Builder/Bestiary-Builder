@@ -1,4 +1,4 @@
-## v1.2.6 
+## v1.2.7
 _April 8th, 2024_
 
 - Makes lists in statblocks have normal spacing between its list items.
