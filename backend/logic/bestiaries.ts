@@ -482,7 +482,7 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 			let spellcastInnateObj = creature.stats.spellcasting.innateSpells;
 			let spellcastCasterObj = creature.stats.spellcasting.casterSpells;
 			let spellcasting = {
-				caster_level: spellcastCasterObj.casterLevel,
+				caster_level: spellcastCasterObj.casterLevel || 0,
 				slots: spellcastCasterObj.spellSlotList || {},
 				known_spells: knownSpells(creature.stats.spellcasting),
 				caster_dc: spellDc(false, creature.stats),

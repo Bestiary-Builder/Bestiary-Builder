@@ -1,3 +1,8 @@
+## v1.2.8
+_April 10th, 2024_
+
+- Fixes an issue where clearing the caster level field would break casting cantrips with the -cantripdice # option in avrae. 
+
 ## v1.2.7
 _April 8th, 2024_
 
