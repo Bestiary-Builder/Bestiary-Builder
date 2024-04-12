@@ -169,7 +169,7 @@ export default defineComponent({
 </script>
 
 <style scoped lang="less">
-@import url("@/assets/styles/bestiary-list.less");
+@import url("@/assets/bestiary-list.less");
 .edit-button {
 	margin: auto;
 	color: orangered;

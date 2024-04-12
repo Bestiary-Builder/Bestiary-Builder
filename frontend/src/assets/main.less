@@ -195,7 +195,7 @@ select {
 	/* Dropdown */
 	--vs-dropdown-bg: var(--color-surface-2);
 	--vs-dropdown-color: var(--color-base);
-	--vs-dropdown-z-index: 100;
+	--vs-dropdown-z-index: 1000;
 	--vs-dropdown-min-width: 100%;
 	--vs-dropdown-max-height: 30rem;
 	--vs-dropdown-box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 1);
@@ -292,10 +292,6 @@ body .v-popper--theme-dropdown :is(.v-popper__arrow-outer, .v-popper__arrow-inne
 // disable scroll when a mobile popper is enabled
 body:has(.v-popper__popper--no-positioning[aria-hidden="false"]) {
 	overflow: hidden;
-}
-// or while a modal is open
-html:has(.open-modal) {
-  	overflow: hidden;
 }
 
 .v-popper__popper--no-positioning {
