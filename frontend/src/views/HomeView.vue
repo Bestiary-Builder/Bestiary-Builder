@@ -27,7 +27,7 @@ import {defineComponent} from "vue";
 // @ts-ignore
 import markdownit from "markdown-it";
 const md = markdownit({html: true, linkify: true, typographer: true});
-import dataFile from "@/assets/home.md";
+import dataFile from "@/assets/documents/home.md";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 export default defineComponent({
 	data() {
@@ -76,6 +76,8 @@ html {
 			font-size: 1.5rem;
 			text-wrap: balance;
 			font-weight: 100;
+			max-width: 80%;
+			margin: auto;
 		}
 	}
 	.header-image {

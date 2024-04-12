@@ -1,0 +1,38 @@
+.editor-field__container {
+    width: 100%;
+    display: grid;
+    gap: 1rem 2rem;
+    margin-bottom: 1rem;
+
+    .flow-vertically {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+
+        .button-container p {
+            display: flex;
+            justify-content: space-between;
+        }
+    }
+
+    .editor-field__title .text {
+        font-weight: bold;
+        text-decoration: underline;
+    }
+
+    &.one-wide {
+        grid-template-columns: 1fr;
+    }
+    &.two-wide {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    &.three-wide {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    textarea {
+        min-height: 46px;
+        height: 46px;
+    }
+}

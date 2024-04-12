@@ -63,7 +63,7 @@ export function getLoginRoute() {
 }
 
 //Style sheet
-import "@/assets/main.less";
+import "@/assets/styles/main.less";
 //Vue
 import {createApp} from "vue";
 //@ts-ignore
@@ -132,7 +132,8 @@ import {
 	faArrowUpWideShort,
 	faGripVertical,
 	faEyeSlash,
-	faEye
+	faEye,
+	faCircleInfo
 } from "@fortawesome/free-solid-svg-icons";
 import {faTwitter, faFacebook, faDiscord, faInstagram, faPatreon, faGithub} from "@fortawesome/free-brands-svg-icons";
 library.add(
@@ -173,7 +174,8 @@ library.add(
 	faArrowUpWideShort,
 	faGripVertical,
 	faEyeSlash,
-	faEye
+	faEye,
+	faCircleInfo
 );
 
 app.component("font-awesome-icon", FontAwesomeIcon);
@@ -181,6 +183,14 @@ app.component("font-awesome-icon", FontAwesomeIcon);
 import vSelect from "vue-select";
 import "vue-select/dist/vue-select.css";
 app.component("v-select", vSelect);
+
+// monaco editor
+import { loader } from '@guolao/vue-monaco-editor'
+loader.config({
+  paths: {
+    vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.43.0/min/vs',
+  },
+})
 
 //Mount
 app.mount("body");
