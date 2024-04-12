@@ -1,3 +1,20 @@
+## v1.3.0
+_April 12th, 2024_
+
+- Revamped the feature editor completely:
+    - Replaced the old text editor with a new one, which means:
+        - Lines are numbered and it also includes word wrap.
+        - Indentation is marked by vertical lines, which is very helpful
+        - Generally a smoother experience as this is the code editor made by Microsoft for VSCode.
+    - Clicking in the editor will *attempt* to find what type of node you are in (e.g. Damage, Target, IEffect) and then:
+        - Describe what the node does.
+        - Show an overview of its options and their types.
+        - Show detailed information for each option, their defaults, if they are optional, and what it does.
+        - Show which variables that node exposes the automation
+        - **Please note:** This is not a replacement for reading the complete [Documentation](https://avrae.readthedocs.io/en/stable/automation_ref.html), and writing automation by hand is very difficult. It is easier to use the [Automation Editor](https://avrae.io/dashboard/characters) when creating new automation.
+    - Reorganized the modal to be more organized for a cleaner and easier experience.
+- If a modal is open it is now no longer possible to scroll the document behind it, as originally intended.
+
 ## v1.2.8
 _April 10th, 2024_
 
