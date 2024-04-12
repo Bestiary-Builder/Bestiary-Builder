@@ -18,7 +18,7 @@
 import {defineComponent} from "vue";
 import markdownit from "markdown-it";
 const md = markdownit();
-import dataFile from "@/assets/documents/terms-and-conditions.md";
+import dataFile from "@/assets/terms-and-conditions.md";
 export default defineComponent({
 	data() {
 		return {

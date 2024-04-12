@@ -1,7 +1,7 @@
 <template>
 	<Teleport to="#modal">
 		<Transition name="modal">
-			<div class="modal__bg" @click="$emit('close')" v-show="show" ref="target" :class="{'open-modal': show}">
+			<div class="modal__bg" @click="$emit('close')" v-show="show" ref="target" >
 				<div :class="{'fullscreen': fullScreen}" class="modal__content" @click.stop role="dialog" aria-modal="true" :aria-labelledby="`dialog${id}_label`" >
 					<div class="modal__header">
 						<h2 :id="`dialog${id}_label`"><slot name="header"></slot></h2>
@@ -160,6 +160,10 @@ export default defineComponent({
 }
 
 @media screen and (max-width: 842px) {
+	// disable overscrolling when there is a modal;
+	body:has(#modal .modal__bg) {
+		overflow: hidden;
+	}
 	.modal__bg {
 		top: 0%;
 	}
@@ -172,10 +176,6 @@ export default defineComponent({
 		border-radius: 0;
 		box-shadow: none;
 		padding: 2rem 0.8rem;
-	}
-
-	.modal__content.fullscreen {
-		padding: 0.2rem 0.8rem;
 	}
 }
 
@@ -196,8 +196,4 @@ export default defineComponent({
 		opacity: 1;
 	}
 }
-</style>
-
-<style>
-
 </style>
