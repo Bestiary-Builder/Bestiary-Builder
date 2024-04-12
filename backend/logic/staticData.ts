@@ -50,3 +50,9 @@ import limits from "../staticData/limits.json";
 app.get("/api/limits", async (req, res) => {
 	res.json(limits);
 });
+
+//Automation documentation
+import data from "../staticData/automationDocumentation.json";
+app.get("/api/automationDocumentation", async (req, res) => {
+	res.json(data);
+});
