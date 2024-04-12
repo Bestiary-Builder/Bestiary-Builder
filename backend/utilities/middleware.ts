@@ -28,7 +28,7 @@ app.use(
 			directives: {
 				"default-src": ["'self'"],
 				"img-src": ["https://cdn.discordapp.com", "*", "'self'", "data: 'self'"],
-				"script-src": ["'self'", "'sha256-reBsRZd5I88opZSwT59Ir+QlBhrEhdRJ1aQUr4GXhyw='", "https://www.googletagmanager.com"],
+				"script-src": ["'self'", "'sha256-reBsRZd5I88opZSwT59Ir+QlBhrEhdRJ1aQUr4GXhyw='", "https://www.googletagmanager.com", "https://cdn.jsdelivr.net"],
 				"style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
 				"font-src": ["'self'", "data: https://fonts.gstatic.com"],
 				"connect-src": ["'self'", "https://discord.com", "*.google-analytics.com"]
