@@ -1,148 +1,80 @@
 <template>
 	<button class="btn open-btn" @click="showFeatureModal = true" :id="type + index">Edit Feature</button>
 	<Modal :show="showFeatureModal" @close="showFeatureModal = false" :full-screen="true">
-		<template #header> Edit feature: {{ feat.name }} </template>
+		<template #header> Feature Editor </template>
 		<template #body>
 			<div class="two-wide uneven">
+				<LabelledComponent title="Information">
+					<input type="text" id="information" placeholder="Enter name" v-model="feat.name" @change="hasEditedName = true" />
+					<div> 
+						<a href="https://avrae.readthedocs.io/en/stable/automation_ref.html"> Documentation</a> <br>
+						<a href="https://avrae.io/dashboard/characters" v-tooltip="'Edit automation on a character to get access to the full fledged automation builder.'"> Automation Editor</a>
+					</div>
+
+				</LabelledComponent>
+				<LabelledComponent title="Feature description">
+					<textarea rows="4" id="featuredescription" placeholder="Enter description" v-model="feat.description" />
+				</LabelledComponent>
+			</div>
+			<hr />
+			<div class="two-wide uneven" v-if="showDescriptionButtons">
+				<div class="two-wide">
+					<LabelledComponent title="Update from automation">
+						<button class="btn" @click="updateFeatureDescFromAutomationDesc"> Update </button>
+					</LabelledComponent>
+					<LabelledComponent title="Update from description">
+						<button class="btn" @click="updateAutomationDescFromFeatureDesc"> Update </button>
+					</LabelledComponent>
+				</div>
 				<div>
-					<div class="editor-field__container two-wide">
-						<LabelledComponent title="Feature name">
-							<input type="text" id="featurename" placeholder="Enter name" v-model="feat.name" @change="hasEditedName = true" />
-						</LabelledComponent>
-						<LabelledComponent title="Documentation">
-							<div>
-								<a href="https://avrae.readthedocs.io/en/stable/automation_ref.html"> Documentation</a> <br>
-								<a href="https://avrae.io/dashboard/characters" v-tooltip="'Edit automation on a character to get access to the full fledged automation builder.'"> Automation Editor</a>
-							</div>
-						</LabelledComponent>
-					</div>
-
-
-					<div class="editor-field__container">
-						<LabelledComponent title="Feature description">
-							<textarea height="94" id="featuredescription" placeholder="Enter description" v-model="feat.description" style="height: 93px;"/>
-						</LabelledComponent>
-					</div>
-
-					<div class="editor-field__container two-wide">
-						<LabelledComponent title="Save automation">
-							<button class="btn confirm" @click="saveAutomation(true)">Save </button>
-						</LabelledComponent>
-						<LabelledComponent title="Generate automation">
-							<button 
-								class="btn" 
-								@click="generateAutomation" 
-								v-tooltip="'Generate automation from description. May be incomplete or inaccurate. Only works for basic, to hit attacks.'"
-							>
-								Generate 
-								<font-awesome-icon :icon="['fas', 'circle-info']" />
-							</button>
-						</LabelledComponent>
-					</div>
-
-					<hr />
-					<div class="editor-field__container">
-						<LabelledComponent title="Import SRD feature">
-							<v-select :options="srdFeatures" v-model="importedSrdFeature" inputId="importsrdfeature" />
-							<button class="btn move-down" @click="importSrdAction">Load</button>
-						</LabelledComponent>
-					</div>
-
-					<div class="editor-field__container">
-						<LabelledComponent title="Import basic example">
-							<v-select :options="basicExamples" v-model="importedBasicExample" inputId="importbasicexample" />
-							<button class="btn move-down" @click="importExample">Load</button>
-						</LabelledComponent>
-					</div>
-
-					<div v-if="errorMessage">
-						<hr />
-						<span class="yaml-error" v-html="errorMessage"> </span>
-					</div>
-					<div v-if="showDescriptionButtons && (errorMessage == null || errorMessage?.length == 0)">
-						<hr />
-						<p class="warning"> Feature description and last automation text node do not match. </p>
-						<p> You can update the other with the buttons here.</p>
-						<div class="two-wide editor-field__container">
-							<LabelledComponent title="Update from automation">
-								<button class="btn" @click="updateFeatureDescFromAutomationDesc"> Update </button>
-							</LabelledComponent>
-							<LabelledComponent title="Update from description">
-								<button class="btn" @click="updateAutomationDescFromFeatureDesc"> Update </button>
-							</LabelledComponent>
-						</div>
-					</div>
-				</div>
-				<div class="automation-editor">
-					<VueMonacoEditor
-						v-model:value="automationString"
-						theme="vs-dark"
-						:options="{wordWrap: 'on', theme: 'vs-dark', minimap: {enabled: false}, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false}"
-						height="600px"
-						:language="getLanguage"
-						@mount="handleMount"
-					/>
+					<p class="warning"> Feature description and last automation text node do not match. </p>
+					<p> You can update the other with the buttons here.</p>
 				</div>
 			</div>
-			<div class="two-wide uneven">
-				<div></div>
-				<div v-if="currentDocu" class="docs">
-					<hr>
-					<h3> Documentation: {{ currentContext }}</h3>
-					<p class="small" v-html="md.render(currentDocu.desc)" />
-
-					<div >
-						<hr>
-						<h4> Overview </h4>
-						See full documentation <a :href="'https://avrae.readthedocs.io/en/stable/automation_ref.html#' + currentDocu.url" target="_blank">here</a>.
-						<VueMonacoEditor 
-							v-if="currentDocu?.ts"
-							:value="'// Values denoted with an ? are optional.\n' + currentDocu.ts"
-							theme="vs-dark"
-							:options="{wordWrap: 'on', theme: 'vs-dark', minimap: {enabled: false}, automaticLayout: true, readOnly: true, scrollBeyondLastLine: false}"
-							language="json"
-							height="200px"
-						/>
+			<hr v-if="showDescriptionButtons"/>
+			<div class="three-wide">
+				<LabelledComponent title="Options">
+					<div class="buttons">
+						<button class="btn confirm" @click="saveAutomation(true)">Save Automation!</button>
+						<button class="btn danger" @click="automationString = 'null'">Clear</button>
+						<button class="btn" @click="generateAutomation" v-tooltip="'Generate automation from description. May be incomplete or inaccurate.'">Generate from description</button>
 					</div>
-					<div v-if="currentDocu?.opt">
-						<hr>
-						<h4> Options </h4>
-						<ul>
-							<li v-for="info, name in currentDocu.opt">
-								<span>
-									<code class="highlight">{{ name }}</code> 
-									<span v-html="md.render(info)"/> 
-								</span>
-							</li>
-						</ul>
-					</div>
-					<div v-if="currentDocu?.variables">
-						<hr>
-						<h4> Exposed Variables </h4>
-						<ul>
-							<li v-for="info, name in currentDocu.variables">
-								<span><span class="highlight">{{ name }}</span> [<code>{{ info.type }}</code>] <span v-html="md.render(info.desc)" /> </span>
-							</li>
-						</ul>
-					</div>
-				</div>
+				</LabelledComponent>
+				<LabelledComponent title="Import basic example">
+					<v-select :options="basicExamples" v-model="importedBasicExample" inputId="importbasicexample" />
+					<button class="btn move-down" @click="importExample">Load</button>
+				</LabelledComponent>
+				<LabelledComponent title="Import SRD feature">
+					<v-select :options="srdFeatures" v-model="importedSrdFeature" inputId="importsrdfeature" />
+					<button class="btn move-down" @click="importSrdAction">Load</button>
+				</LabelledComponent>
 			</div>
 
+			<hr />
+			<div class="automation-editor">
+				<span class="yaml-error" v-html="errorMessage"> </span>
+				<CodeEditor width="100%" :wrap="true" :languages="[['yaml', 'YAML']]" v-model="automationString" theme="obsidian" height="380px" font-size="12px"> </CodeEditor>
+			</div>
 		</template>
 	</Modal>
 </template>
 
 <script lang="ts">
-import {defineComponent, shallowRef, ref, watch, watchEffect, onUnmounted} from "vue";
-import { VueMonacoEditor } from '@guolao/vue-monaco-editor'
+// @ts-ignore
+import CodeEditor from "simple-code-editor";
+import {ref} from "vue";
+import {onClickOutside} from "@vueuse/core";
+// highlight.js
+import "highlight.js";
+import "highlight.js/styles/obsidian.css";
+
+import {defineComponent} from "vue";
 import YAML from "yaml";
 import {toast, handleApiResponse, type error} from "@/main";
 import {type FeatureEntity} from "@/../../shared";
 import LabelledComponent from "./LabelledComponent.vue";
 import Modal from "./Modal.vue";
 import {parseDescIntoAutomation} from "@/parser/utils";
-import markdownit from "markdown-it"
-const md = markdownit()
 export default defineComponent({
 	props: ["type", "index", "data"],
 	data() {
@@ -152,42 +84,21 @@ export default defineComponent({
 			errorMessage: null as null | string,
 			basicExamples: [] as string[],
 			srdFeatures: [] as string[],
-			docu: {} as Record<string, unknown>,
 			importedBasicExample: null as string | null,
 			importedSrdFeature: null as string | null,
 			showFeatureModal: false,
-			hasEditedName: false,
-			currentContext: "",
-			md,
-			YAML
+			hasEditedName: false
 		};
 	},
 	components: {
+		CodeEditor,
 		LabelledComponent,
-		VueMonacoEditor,
 		Modal
-	},
-	setup() {
-		const editorRef  = shallowRef()
-		const handleMount = (editor: any) => (editorRef.value = editor)
-
-		let cursorPosition = ref(0);
-
-		setInterval(() => {
-			cursorPosition.value = editorRef.value?.getModel().getOffsetAt(editorRef.value?.getPosition());
-		}, 1000)
-		
-
-		return {
-			handleMount,
-			editorRef,
-			cursorPosition
-		}
 	},
 	mounted() {
 		this.automationString = YAML.stringify(this.feat.automation) ?? YAML.stringify(null);
 
-		//Fetch example and feature namesP
+		//Fetch example and feature names
 		fetch("/api/basic-examples/list").then(async (response: any) => {
 			let result = await handleApiResponse<string[]>(response);
 			if (result.success) this.basicExamples = result.data as string[];
@@ -196,13 +107,7 @@ export default defineComponent({
 		fetch("/api/srd-features/list").then(async (response: any) => {
 			let result = await handleApiResponse<string[]>(response);
 			if (result.success) this.srdFeatures = result.data as string[];
-			else this.srdFeatures = [];
-		});
-
-		fetch("/api/automationDocumentation").then(async (response: any) => {
-			let result = await handleApiResponse<Record<string, unknown>>(response);
-			if (result.success) this.docu = result.data as Record<string, unknown>;
-			else this.docu = {};
+			else this.basicExamples = [];
 		});
 	},
 	methods: {
@@ -233,7 +138,7 @@ export default defineComponent({
 						.then((response) => response.json())
 						.then((data) => {
 							if (!data.success) {
-								if (shouldNotify) toast.error("YAML contains Error, did not save automation");
+								toast.error("YAML contains Error, did not save automation");
 								this.errorMessage = data.error;
 							} else {
 								this.feat.automation = YAML.parse(this.automationString);
@@ -372,34 +277,7 @@ export default defineComponent({
 					return;
 				}
 			}
-		},
-		getContext() {
-			const textToTraverse = this.automationString;
-			let buffer = ""
-			let type = ""
-			let startingPosition = this.cursorPosition;
-
-			// if the user has their cursor on the word type, it would begin the buffer in that word and would not be able to detect it. 
-			// Therefore before we start we check if the immediate vicinity of our cursor includes type:. if it does, start 6 characters later so we can properly extract the type.
-			// clamp slices to string min and max, to be sure it doesn't go out of range
-			const closeVicinity = textToTraverse.slice(Math.max(startingPosition - 6, 0 ), Math.min(startingPosition + 6, textToTraverse.length))
-			if (closeVicinity.includes("type:")) startingPosition += 6
-
-			// from our position in the string we go backwards until we find the first type: string.
-			// Then we get our first word after that type:
-			// Works both with yaml or json string
-			// Assumes that type: is always at the beginning of a node, and that a user does not have type: in a text field
-			for (let i = startingPosition; i--; i < textToTraverse.length) {
-				const char = textToTraverse.charAt(i)
-				buffer = char + buffer
-				if (buffer.startsWith("type:")) {
-					type = textToTraverse.slice(i).match(/type['"]?:\s*['"]?(\w+)['"]?/)?.[1] || ""
-					break;
-				} 
-			}
-
-			this.currentContext = type
-		},
+		}
 	},
 	computed: {
 		showDescriptionButtons() : boolean {
@@ -408,13 +286,6 @@ export default defineComponent({
 			if (Array.isArray(this.feat.automation) || !desc || !autoDesc) return false
 			if (desc != autoDesc) return true
 			return false
-		},
-		getLanguage() : string {
-			if (this.automationString.startsWith('{') || this.automationString.startsWith('[')) return "json"
-			return "yaml"
-		},
-		currentDocu() : any {
-			return (this.docu[this.currentContext] as Record<string, unknown>)
 		},
 	},
 	watch: {
@@ -457,23 +328,26 @@ export default defineComponent({
 				if (els[e].dataset?.highlighted == "yes") els[e].dataset.highlighted = "";
 			}
 		},
-		cursorPosition() {
-			this.getContext()
-		}
 	}
 });
 </script>
 
 <style scoped lang="less">
-.automation-editor {
-	max-width: 1fr;
-}
 .open-btn {
 	width: 100%;
 }
+.btn {
+	padding-left: 2rem;
+	padding-right: 2rem;
+}
 
-a {
-	color: orangered;
+textarea {
+	width: 100%;
+}
+
+input {
+	min-width: 20rem;
+	width: fit-content;
 }
 .two-wide {
 	display: grid;
@@ -481,8 +355,7 @@ a {
 	grid-template-columns: 1fr 1fr;
 
 	&.uneven {
-		grid-template-columns: 1fr 2fr;
-		max-width: 100%;
+		grid-template-columns: 0.48fr 1fr;
 	}
 }
 
@@ -499,66 +372,29 @@ a {
 
 @media screen and (max-width: 950px) {
 	.three-wide,
-	.two-wide {
-		gap: 1rem;
-		grid-template-columns: 1fr;
-	}
-}
-
-@media screen and (max-width: 1660px) {
-	.two-wide.uneven {
-		gap: 1rem;
-		grid-template-columns: 1fr 1fr;
-	}
-}
-
-@media screen and (max-width: 1200px) {
+	.two-wide,
 	.two-wide.uneven {
 		gap: 1rem;
 		grid-template-columns: 1fr;
 	}
 }
-
-
+.buttons {
+	display: grid;
+	gap: 0.5rem;
+	grid-template-columns: 1fr;
+}
 
 .move-down {
 	margin-top: 0.4rem;
 }
 
-
-
-.editor-field__container {
-	display: grid;
-	gap: 1rem 2rem;
-	margin-bottom: 1rem;
-
-	.flow-vertically {
-		display: flex;
-		flex-direction: column;
-		gap: 0.3rem;
-
-		.button-container p {
-			display: flex;
-			justify-content: space-between;
-		}
-	}
-
-	.editor-field__title .text {
-		font-weight: bold;
-		text-decoration: underline;
-	}
-
-
-	textarea {
-		min-height: 46px;
-		height: 46px;
-	}
+a {
+	color: orangered;
 }
 
-.highlight {
-	color: orangered;
-	border-left: 3px solid orangered;
-	padding: 3px;
+.external-links {
+	display: flex;
+	justify-content: space-between;
 }
 </style>
 
@@ -567,7 +403,6 @@ a {
 	color: var(--color-destructive);
 	display: flex;
 	flex-direction: column;
-	font-weight: bold
 }
 
 .validation-error-header {
@@ -582,7 +417,5 @@ a {
 	margin: 0;
 }
 
-.docs a {
-	color: orangered;
-}
+
 </style>

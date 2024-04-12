@@ -12,7 +12,7 @@
 		"paths": {
 			"@/*": ["./src/*"]
 		},
-		"lib": ["dom", "esnext"]
+		"lib": ["esnext"]
 	},
 	"references": [
 		{

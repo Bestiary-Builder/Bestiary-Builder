@@ -154,5 +154,5 @@ export default defineComponent({
 </script>
 
 <style scoped lang="less">
-@import url("@/assets/styles/number-input.less");
+@import url("@/assets/number-input.less");
 </style>

@@ -20,7 +20,7 @@ import {defineComponent} from "vue";
 // @ts-ignore
 import markdownit from "markdown-it";
 const md = markdownit();
-import dataFile from "@/assets/documents/changelog.md";
+import dataFile from "@/assets/changelog.md";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 export default defineComponent({
 	data() {
