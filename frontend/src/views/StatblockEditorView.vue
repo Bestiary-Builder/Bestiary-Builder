@@ -1008,8 +1008,8 @@ export default defineComponent({
 </script>
 
 <style scoped lang="less">
-@import url("@/assets/number-input.less");
-@import url("@/assets/mixins.less");
+@import url("@/assets/styles/number-input.less");
+@import url("@/assets/styles/mixins.less");
 .content {
 	display: grid;
 	gap: 2rem;

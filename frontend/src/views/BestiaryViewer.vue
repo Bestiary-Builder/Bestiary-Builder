@@ -154,7 +154,7 @@
 							</div>
 						</TransitionGroup>
 						<div class="create-tile" v-if="isOwner || isEditor">
-							<span role="button" class="create-text" @click="createCreature()">add creature</span>
+							<span role="button" class="create-text" @click="createCreature()">Add Creature</span>
 						</div>
 					</div>
 				</div>
@@ -756,8 +756,8 @@ export default defineComponent({
 </script>
 
 <style scoped lang="less">
-@import url("@/assets/number-input.less");
-@import url("@/assets/mixins.less");
+@import url("@/assets/styles/number-input.less");
+@import url("@/assets/styles/mixins.less");
 
 .flow-vertically {
 	display: flex;
