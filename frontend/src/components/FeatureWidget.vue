@@ -173,11 +173,13 @@ export default defineComponent({
 
 		let cursorPosition = ref(0);
 
-		setInterval(() => {
+		let ourInterval = setInterval(() => {
 			cursorPosition.value = editorRef.value?.getModel().getOffsetAt(editorRef.value?.getPosition());
 		}, 1000)
 		
-
+		onUnmounted(() => {
+			clearInterval(ourInterval)
+		})
 		return {
 			handleMount,
 			editorRef,
