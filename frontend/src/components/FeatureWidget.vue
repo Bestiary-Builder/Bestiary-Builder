@@ -26,16 +26,32 @@
 
 					<div class="editor-field__container two-wide">
 						<LabelledComponent title="Save automation">
-							<button class="btn confirm" @click="saveAutomation(true)">Save </button>
+							<button class="btn confirm" @click="saveAutomation(true)" id="saveautomation">Save </button>
 						</LabelledComponent>
 						<LabelledComponent title="Generate automation">
 							<button 
 								class="btn" 
 								@click="generateAutomation" 
 								v-tooltip="'Generate automation from description. May be incomplete or inaccurate. Only works for basic, to hit attacks.'"
+								id="generateautomation"
 							>
 								Generate 
 								<font-awesome-icon :icon="['fas', 'circle-info']" />
+							</button>
+						</LabelledComponent>
+					</div>
+
+					<div class="editor-field__container two-wide" v-if="isMobile">
+						<LabelledComponent title="Clear automation">
+							<button class="btn danger" @click="automationString = 'null'" id="clearautomation">Clear</button>
+						</LabelledComponent>
+						<LabelledComponent title="Copy Automation">
+							<button 
+								class="btn" 
+								@click="copyAutomation()" 
+								id="copyautomation"
+							>
+								Copy 
 							</button>
 						</LabelledComponent>
 					</div>
@@ -133,7 +149,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, shallowRef, ref, watch, watchEffect, onUnmounted} from "vue";
+import {defineComponent, shallowRef, ref, onUnmounted} from "vue";
 import { VueMonacoEditor } from '@guolao/vue-monaco-editor'
 import YAML from "yaml";
 import {toast, handleApiResponse, type error} from "@/main";
@@ -142,6 +158,7 @@ import LabelledComponent from "./LabelledComponent.vue";
 import Modal from "./Modal.vue";
 import {parseDescIntoAutomation} from "@/parser/utils";
 import markdownit from "markdown-it"
+import { isMobile } from "@/main";
 const md = markdownit()
 export default defineComponent({
 	props: ["type", "index", "data"],
@@ -159,7 +176,8 @@ export default defineComponent({
 			hasEditedName: false,
 			currentContext: "",
 			md,
-			YAML
+			YAML,
+			isMobile
 		};
 	},
 	components: {
@@ -374,6 +392,10 @@ export default defineComponent({
 					return;
 				}
 			}
+		},
+		copyAutomation()  {
+			navigator.clipboard.writeText(this.automationString);
+			toast.success("Copied automation to clipboard!")
 		},
 		getContext() {
 			const textToTraverse = this.automationString;

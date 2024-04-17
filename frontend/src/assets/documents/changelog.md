@@ -1,3 +1,8 @@
+## v1.3.1
+_April 14th, 2024_
+
+- Added copy and clear buttons to the feature editor on mobile to assist with the new editor.
+
 ## v1.3.0
 _April 12th, 2024_
 
