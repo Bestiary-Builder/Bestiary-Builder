@@ -1,3 +1,8 @@
+## v1.3.2 
+_April 17th, 2024_
+
+- Fixes some issues with the help page where it referenced old locations of some buttons.
+
 ## v1.3.1
 _April 14th, 2024_
 
