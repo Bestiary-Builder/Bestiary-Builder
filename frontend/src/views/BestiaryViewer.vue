@@ -154,7 +154,7 @@
 							</div>
 						</TransitionGroup>
 						<div class="create-tile" v-if="isOwner || isEditor">
-							<span role="button" class="create-text" @click="createCreature()">add creature</span>
+							<span role="button" class="create-text" @click="createCreature()">Add Creature</span>
 						</div>
 					</div>
 				</div>
@@ -555,8 +555,7 @@ export default defineComponent({
 				let result = await handleApiResponse<Creature>(response);
 				if (result.success) {
 					let data = result.data as Creature;
-					this.bestiary?.creatures.push(data._id!);
-					this.creatures?.push(data);
+					this.$router.push(`../statblock-editor/${data._id}`)
 				} else {
 					toast.error((result.data as error).error);
 				}
@@ -757,8 +756,8 @@ export default defineComponent({
 </script>
 
 <style scoped lang="less">
-@import url("@/assets/number-input.less");
-@import url("@/assets/mixins.less");
+@import url("@/assets/styles/number-input.less");
+@import url("@/assets/styles/mixins.less");
 
 .flow-vertically {
 	display: flex;

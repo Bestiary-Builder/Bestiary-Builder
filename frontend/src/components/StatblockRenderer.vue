@@ -534,11 +534,6 @@ export default defineComponent({
     overflow-wrap: anywhere;
 }
 
-// paragraph is coming from within the markdown rendered so has to be globalized.
-:global(.feature-container__desc p) {
-    display: inline;
-}
-
 .challenge-prof {
     display: flex;
     justify-content: space-between;
@@ -546,6 +541,15 @@ export default defineComponent({
 
 .description {
     overflow-wrap: anywhere;
+}
+
+// styling only for the markdown rendered content which is not inside the vue component scope
+:global(.feature-container__desc p) {
+    display: inline;
+}
+:global(.feature-container__desc ul) {
+    white-space: normal;
+    margin-bottom: 0
 }
 </style>
 

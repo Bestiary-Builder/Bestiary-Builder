@@ -238,6 +238,7 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 		if (!data) return res.status(400).json({error: "Failed to parse creature data."});
 		let now = Date.now();
 		//Make sure all fields are present in all creatures
+		let ignoredCreatures = [] as string[];
 		let fixedData = [] as Creature[];
 		for (let creature of data) {
 			if (!creature) continue;
@@ -254,9 +255,10 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 			//Set last updated
 			creature.lastUpdated = now;
 			//Check limits
-			if (creature.stats.description.name.length > limits.nameLength) continue;
-			if (creature.stats.description.name.length < limits.nameMin) continue;
-			if (creature.stats.description.description.length > limits.descriptionLength) continue;
+			if (creature.stats.description.name.length > limits.nameLength || creature.stats.description.name.length < limits.nameMin || creature.stats.description.description.length > limits.descriptionLength) {
+				ignoredCreatures.push(creature.stats.description.name);
+				continue;
+			}
 			//Check image link
 			let image = creature.stats.description.image as string;
 			// remove any url parameters from the string
@@ -266,6 +268,7 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 					creature.stats.description.image = image;
 				} catch (err) {
 					log.error("Image url not recognized. (" + image + ")");
+					ignoredCreatures.push(creature.stats.description.name);
 					continue;
 				}
 			}
@@ -285,30 +288,40 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 					failedToImportImage = true;
 				}
 			}
-			//Remove bad words
+			//Badwords check
 			if (bestiary.status != "private") {
-				if (badwords.check(creature.stats.description.name)) continue;
-				if (badwords.check(creature.stats.description.description)) continue;
+				if (badwords.check(creature.stats.description.name) || badwords.check(creature.stats.description.description)) {
+					ignoredCreatures.push(creature.stats.description.name);
+					continue;
+				}
 			}
 			//Push data
 			fixedData.push(creature);
 		}
-		let error;
+		let error = "";
+		//Failed creatures:
+		if (ignoredCreatures.length > 0) {
+			error += `Ignored ${ignoredCreatures.length}, due to invalid data. Import these individually instead: ${ignoredCreatures.join(", ")}\n`;
+		}
 		//Check amount of creatures:
 		if (bestiary.creatures.length + fixedData.length > limits.creatureAmount) {
 			fixedData.length = limits.creatureAmount - bestiary.creatures.length;
-			error = `Number of creatures exceeds the limit of ${limits.creatureAmount}, only creatures up to this limit was added.`;
+			error += `Number of creatures exceeds the limit of ${limits.creatureAmount}, only creatures up to this limit was added.\n`;
 		}
 		//Add all creatures
-		let result = ((await collections.creatures?.insertMany(fixedData, {ordered: false})) ?? {}) as {
-			acknowledged: boolean;
-			insertedIds: {[key: string]: Id};
-		};
-		let ids = Object.values(result.insertedIds);
-		log.log("database", `Created ${ids.length} creatures.`);
-		await collections.bestiaries?.updateOne({_id: _id}, {$push: {creatures: {$each: ids}}, $set: {lastUpdated: now}});
-		log.log("database", `Updated bestiary ${_id} with ${ids.length} creatures.`);
-		log.info(`Added ${ids.length} creatures to bestiary with the id: ${_id}`);
+		if (fixedData.length > 0) {
+			let result = ((await collections.creatures?.insertMany(fixedData, {ordered: false})) ?? {}) as {
+				acknowledged: boolean;
+				insertedIds: {[key: string]: Id};
+			};
+			let ids = Object.values(result.insertedIds);
+			log.log("database", `Created ${ids.length} creatures.`);
+			await collections.bestiaries?.updateOne({_id: _id}, {$push: {creatures: {$each: ids}}, $set: {lastUpdated: now}});
+			log.log("database", `Updated bestiary ${_id} with ${ids.length} creatures.`);
+			log.info(`Added ${ids.length} creatures to bestiary with the id: ${_id}`);
+		} else {
+			error += "0 valid creatures found.";
+		}
 		return res.status(201).json({error: error});
 	} catch (err) {
 		log.log("critical", err);
@@ -469,7 +482,7 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 			let spellcastInnateObj = creature.stats.spellcasting.innateSpells;
 			let spellcastCasterObj = creature.stats.spellcasting.casterSpells;
 			let spellcasting = {
-				caster_level: spellcastCasterObj.casterLevel,
+				caster_level: spellcastCasterObj.casterLevel || 0,
 				slots: spellcastCasterObj.spellSlotList || {},
 				known_spells: knownSpells(creature.stats.spellcasting),
 				caster_dc: spellDc(false, creature.stats),
@@ -530,7 +543,7 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 				image_url: creature.stats.description.image || "",
 				languages: creature.stats.core.languages,
 				cr: displayCR(creature.stats.description.cr),
-				xp: 1000,
+				xp: creature.stats.description.xp,
 				alignment: creature.stats.description.alignment,
 				size: creature.stats.core.size,
 				race: creature.stats.core.race,
@@ -720,7 +733,7 @@ function hpCalc(data: any): number {
 }
 
 function statCalc(stat: string | null, data: any): number {
-	if (!stat) return 0
+	if (!stat) return 0;
 	return Math.floor(data.abilities.stats[stat] / 2) - 5;
 }
 

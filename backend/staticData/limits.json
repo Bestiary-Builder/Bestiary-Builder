@@ -3,5 +3,5 @@
 	"nameLength": 50,
 	"descriptionLength": 3000,
 	"creatureAmount": 1000,
-	"imageFormats": ["png", "jpg", "jpeg", "webp"]
+	"imageFormats": ["png", "jpg", "jpeg", "webp", "gif", "apng"]
 }

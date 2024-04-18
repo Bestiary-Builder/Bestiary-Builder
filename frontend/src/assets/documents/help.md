@@ -3,7 +3,7 @@
 It is possible to import a bestiary from [CritterDB](https://critterdb.com):
 
 1. Create a new [Bestiary](/my-bestiaries), give it a name and optionally a description
-2. Press the Import button to open the import dialog
+2. Press the Import button at the top-right to open the import dialog
 3. Enter the link to the CritterDB bestiary into the text box and press Import
 4. It will start importing creatures from CritterDB into your new bestiary
 5. (optional) Publish your bestiary by changing its status to public
@@ -22,7 +22,7 @@ It is possible to import a single creature from [5etools](https://5e.tools), to 
 1. Navigate to the 5etools page for that creature and shift-click the export button (arrow pointing upright) above the name.
 2. Press Copy Code to copy the JSON to your clipboard
 3. Create a creature and open the Statblock Editor
-4. Press Import at the bottom of the Editor and paste the JSON into the 5e.tools input field, then
+4. Press Import at the top-right of the Editor and paste the JSON into the 5e.tools input field, then
 5. Press Import again and save your changes
 
 ### Caveats
@@ -42,7 +42,7 @@ Press the Export button at the top right of the page. You can choose to copy it 
 ### Importing a Creature
 
 1. Create a creature and open the Statblock Editor.
-2. Press Import at the bottom of the Editor and paste the copied JSOn into the Bestiary Builder input field
+2. Press Import at the top-right of the Editor and paste the copied JSON into the Bestiary Builder input field
 3. Press Import Again and save your changes
 
 ### Importing a Bestiary

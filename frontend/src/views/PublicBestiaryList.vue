@@ -171,7 +171,7 @@ export default defineComponent({
 </script>
 
 <style scoped lang="less">
-@import url("@/assets/bestiary-list.less");
+@import url("@/assets/styles/bestiary-list.less");
 
 .content-tile .tile-footer {
 	display: grid;

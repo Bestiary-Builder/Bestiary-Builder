@@ -1,3 +1,58 @@
+## v1.3.2 
+_April 17th, 2024_
+
+- Fixes some issues with the help page where it referenced old locations of some buttons.
+
+## v1.3.1
+_April 14th, 2024_
+
+- Added copy and clear buttons to the feature editor on mobile to assist with the new editor.
+
+## v1.3.0
+_April 12th, 2024_
+
+- Revamped the feature editor completely:
+    - Replaced the old text editor with a new one, which means:
+        - Lines are numbered and it also includes word wrap.
+        - Indentation is marked by vertical lines, which is very helpful
+        - Generally a smoother experience as this is the code editor made by Microsoft for VSCode.
+    - Clicking in the editor will *attempt* to find what type of node you are in (e.g. Damage, Target, IEffect) and then:
+        - Describe what the node does.
+        - Show an overview of its options and their types.
+        - Show detailed information for each option, their defaults, if they are optional, and what it does.
+        - Show which variables that node exposes the automation
+        - **Please note:** This is not a replacement for reading the complete [Documentation](https://avrae.readthedocs.io/en/stable/automation_ref.html), and writing automation by hand is very difficult. It is easier to use the [Automation Editor](https://avrae.io/dashboard/characters) when creating new automation.
+    - Reorganized the modal to be more organized for a cleaner and easier experience.
+- If a modal is open it is now no longer possible to scroll the document behind it, as originally intended.
+
+## v1.2.8
+_April 10th, 2024_
+
+- Fixes an issue where clearing the caster level field would break casting cantrips with the -cantripdice # option in avrae. 
+
+## v1.2.7
+_April 8th, 2024_
+
+- Makes lists in statblocks have normal spacing between its list items.
+- Makes unnamed features display an Unnamed name in the editor rather than nothing.
+- Fixes an issue where SRD features with no automation did not import their name into the feature editor. 
+- Fixes an issue where imported features with automation only replaced the first placeholder $NAME$ rather than all.
+
+## v1.2.6
+_April 3rd, 2024_
+
+- Fixed some issues with parsing from 5e.tools.
+- Fixed invalid image url error messages.
+- Fixed a bestiary import error message.
+
+## v1.2.5
+_March 25th, 2024_
+
+- Fixed an issue where XP would not import into Avrae properly.
+- Fixed an issue where scrolling on mobile devices does not work properly.
+- Added .gif and .apng as valid image formats.
+- Adding a creature automatically opens the Statblock Editor for said creature.
+
 ## v1.2.4
 _March 3rd, 2024_
 
