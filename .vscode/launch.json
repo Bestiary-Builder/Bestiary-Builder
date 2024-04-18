@@ -2,14 +2,6 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"type": "firefox",
-			"request": "launch",
-			"name": "Firefox: Debug both backend and frontend",
-			"url": "http://localhost:5173",
-			"preLaunchTask": "debug-both",
-			"webRoot": "${workspaceFolder}"
-		},
-		{
 			"type": "chrome",
 			"request": "launch",
 			"name": "Chrome: Debug both backend and frontend",
