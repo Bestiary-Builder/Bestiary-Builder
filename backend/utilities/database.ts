@@ -90,12 +90,12 @@ export async function getUserFromSecret(secret: string) {
 export async function updateUser(data: {_id: string; username: string; avatar: string; email: string; verified: boolean; banner_color: string; global_name: string}) {
 	try {
 		if (await getUser(data._id)) {
-			log.log("database", "Updating user with id " + data._id.toString());
+			log.log("database", "Updating user with id " + data._id);
 			await collections.users?.updateOne({_id: data._id}, {$set: data});
 			resetUserCache(data._id);
 			return (await getUser(data._id))?.secret ?? null;
 		} else {
-			log.log("database", "Adding new user to collection with id " + data._id.toString());
+			log.log("database", "Adding new user to collection with id " + data._id);
 			let userData = {...(data as User), joinedAt: Date.now(), secret: generateUserSecret(), bestiaries: [], bookmarks: [], supporter: 0} as User;
 			await collections.users?.insertOne(userData);
 			return userData.secret;
@@ -142,7 +142,7 @@ export async function updateBestiary(data: Bestiary, id?: Id) {
 		data.lastUpdated = Date.now();
 		if (id) {
 			if (await getBestiary(id)) {
-				log.log("database", "Updating bestiary with id " + id.toString());
+				log.log("database", "Updating bestiary with id " + id);
 				await collections.bestiaries?.updateOne({_id: id}, {$set: data});
 				return id;
 			} else {
@@ -255,5 +255,22 @@ export async function deleteCreature(creatureId: Id) {
 	} catch (err) {
 		log.log("critical", err);
 		return false;
+	}
+}
+
+export async function getGlobalStats(): Promise<{
+	creatures: number;
+	bestiaries: number;
+	users: number;
+} | null> {
+	try {
+		return {
+			creatures: (await collections.creatures?.countDocuments()) ?? 0,
+			bestiaries: (await collections.bestiaries?.countDocuments()) ?? 0,
+			users: (await collections.users?.countDocuments()) ?? 0
+		};
+	} catch (err) {
+		log.log("critical", err);
+		return null;
 	}
 }

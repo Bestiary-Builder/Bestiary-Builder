@@ -1,4 +1,4 @@
-import {collections} from "../utilities/database";
+import {collections, getGlobalStats} from "../utilities/database";
 import {User, Bestiary, Creature, SearchOptions} from "../../shared";
 import {type Filter, type FindOptions, type Sort} from "mongodb";
 import {app} from "../utilities/constants";
@@ -99,3 +99,11 @@ function validateSearchInput(input: any, res: Response) {
 		return false;
 	}
 }
+
+//Global stats
+app.get("/api/stats", async (req, res) => {
+	const stats = await getGlobalStats();
+	console.log(stats);
+	if (!stats) return res.status(500).json({error: "Failed to retrieve stats."});
+	return res.json(stats);
+});

@@ -16,7 +16,11 @@
 		</div>
 		<img src="/mmcover.jpg" alt="" class="header-image" />
 	</div>
-
+	<div v-show="stats != null" class="stats">
+		<span>Users: {{ stats?.users }}</span>
+		<span>Bestiaries: {{ stats?.bestiaries }}</span>
+		<span>Creatures: {{ stats?.creatures }}</span>
+	</div>
 	<div class="content markdown less-wide">
 		<div v-if="content" v-html="content"></div>
 	</div>
@@ -29,20 +33,48 @@ import markdownit from "markdown-it";
 const md = markdownit({html: true, linkify: true, typographer: true});
 import dataFile from "@/assets/documents/home.md";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
+import {handleApiResponse} from "@/main";
 export default defineComponent({
 	data() {
 		return {
-			content: md.render(dataFile)
+			content: md.render(dataFile),
+			stats: null as {
+				creatures: number;
+				bestiaries: number;
+				users: number;
+			} | null
 		};
 	},
 	components: {
 		Breadcrumbs
+	},
+	mounted() {
+		fetch("/api/stats")
+			.then(handleApiResponse)
+			.then((result) => {
+				if (result.success) {
+					this.stats = result.data as {
+						creatures: number;
+						bestiaries: number;
+						users: number;
+					};
+				} else {
+					console.error("Failed to retrieve global stats.");
+					this.stats = null;
+				}
+			});
 	}
 });
 </script>
 <style scoped>
 html {
 	overflow-y: unset;
+}
+.stats {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
 }
 </style>
 <style scoped lang="less">
