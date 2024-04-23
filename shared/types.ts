@@ -1004,3 +1004,50 @@ for (let l in spellList) {
 }
 
 spellListFlattened.sort();
+
+interface CRTableEntry{
+	xp: number,
+	profBonus: number,
+	ac: number,
+	hp: [number, number],
+	attackBonus: number,
+	dpr: [number, number],
+	dc: number
+}
+
+export const ChallengeRatingTable: Record<number, CRTableEntry>= {
+	0: { xp: 10, profBonus: 2, ac: 13, hp: [1, 6], attackBonus: 3, dpr: [0, 1], dc: 13 },
+    0.125: { xp: 25, profBonus: 2, ac: 13, hp: [7, 35], attackBonus: 3, dpr: [2, 3], dc: 13 },
+    0.25: { xp: 50, profBonus: 2, ac: 13, hp: [36, 49], attackBonus: 3, dpr: [4, 5], dc: 13 },
+    0.5: { xp: 100, profBonus: 2, ac: 13, hp: [50, 70], attackBonus: 3, dpr: [6, 8], dc: 13 },
+    1: { xp: 200, profBonus: 2, ac: 13, hp: [71, 85], attackBonus: 3, dpr: [9, 14], dc: 13 },
+    2: { xp: 450, profBonus: 2, ac: 13, hp: [86, 100], attackBonus: 3, dpr: [15, 20], dc: 13 },
+    3: { xp: 700, profBonus: 2, ac: 13, hp: [101, 115], attackBonus: 4, dpr: [21, 26], dc: 13 },
+    4: { xp: 1100, profBonus: 2, ac: 14, hp: [116, 130], attackBonus: 5, dpr: [27, 32], dc: 14 },
+    5: { xp: 1800, profBonus: 3, ac: 15, hp: [131, 145], attackBonus: 6, dpr: [33, 38], dc: 15 },
+    6: { xp: 2300, profBonus: 3, ac: 15, hp: [146, 160], attackBonus: 6, dpr: [39, 44], dc: 15 },
+    7: { xp: 2900, profBonus: 3, ac: 15, hp: [161, 175], attackBonus: 6, dpr: [45, 50], dc: 15 },
+    8: { xp: 3900, profBonus: 3, ac: 16, hp: [176, 190], attackBonus: 7, dpr: [51, 56], dc: 16 },
+    9: { xp: 5000, profBonus: 4, ac: 16, hp: [191, 205], attackBonus: 7, dpr: [57, 62], dc: 16 },
+    10: { xp: 5900, profBonus: 4, ac: 17, hp: [206, 220], attackBonus: 7, dpr: [63, 68], dc: 16 },
+    11: { xp: 7200, profBonus: 4, ac: 17, hp: [221, 235], attackBonus: 8, dpr: [69, 74], dc: 17 },
+    12: { xp: 8400, profBonus: 4, ac: 17, hp: [236, 250], attackBonus: 8, dpr: [75, 80], dc: 18 },
+    13: { xp: 10000, profBonus: 5, ac: 18, hp: [251, 265], attackBonus: 8, dpr: [81, 86], dc: 18 },
+    14: { xp: 11500, profBonus: 5, ac: 18, hp: [266, 280], attackBonus: 8, dpr: [87, 92], dc: 18 },
+    15: { xp: 13000, profBonus: 5, ac: 18, hp: [281, 295], attackBonus: 8, dpr: [93, 98], dc: 18 },
+    16: { xp: 15000, profBonus: 5, ac: 18, hp: [296, 310], attackBonus: 9, dpr: [99, 104], dc: 18 },
+    17: { xp: 18000, profBonus: 6, ac: 19, hp: [311, 325], attackBonus: 10, dpr: [105, 110], dc: 19 },
+    18: { xp: 20000, profBonus: 6, ac: 19, hp: [326, 340], attackBonus: 10, dpr: [111, 116], dc: 19 },
+    19: { xp: 22000, profBonus: 6, ac: 19, hp: [341, 355], attackBonus: 10, dpr: [117, 122], dc: 19 },
+    20: { xp: 25000, profBonus: 6, ac: 19, hp: [356, 400], attackBonus: 10, dpr: [123, 140], dc: 19 },
+    21: { xp: 33000, profBonus: 7, ac: 19, hp: [401, 445], attackBonus: 11, dpr: [141, 158], dc: 20 },
+    22: { xp: 41000, profBonus: 7, ac: 19, hp: [446, 490], attackBonus: 11, dpr: [159, 176], dc: 20 },
+    23: { xp: 50000, profBonus: 7, ac: 19, hp: [491, 535], attackBonus: 11, dpr: [177, 194], dc: 20 },
+    24: { xp: 62000, profBonus: 7, ac: 19, hp: [536, 580], attackBonus: 11, dpr: [195, 212], dc: 21},
+	25: {xp: 75000, profBonus: 8, ac: 19, hp: [581, 625], attackBonus: 12, dpr: [213, 230], dc: 21},
+	26: {xp: 90000, profBonus: 8, ac: 19, hp: [626, 670], attackBonus: 12, dpr: [231, 248], dc: 21},
+	27: {xp: 105000, profBonus: 8, ac: 19, hp: [671, 715], attackBonus: 13, dpr: [249, 266], dc: 22},
+	28: {xp: 120000, profBonus: 8, ac: 19, hp: [716, 760], attackBonus: 13, dpr: [267, 284], dc: 22},
+	29: {xp: 135000, profBonus: 9, ac: 19, hp: [760, 805], attackBonus: 13, dpr: [285, 302], dc: 22},
+	30: {xp: 155000, profBonus: 9, ac: 19, hp: [805, 850], attackBonus: 14, dpr: [303, 320], dc: 23}
+}
