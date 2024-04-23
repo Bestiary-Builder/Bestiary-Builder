@@ -116,7 +116,7 @@
 									</div>
 								</div>
 							</div>
-
+							<button class="btn" @click="showCRModal = true">Calculate CR</button>
 							<LabelledNumberInput v-model="data.core.proficiencyBonus" :min="0" title="Proficiency Bonus" :step="1" />
 							<LabelledNumberInput v-model="data.description.xp" :min="0" :step="1" title="Experience Points" />
 						</div>
@@ -457,6 +457,22 @@
 				</div>
 			</template>
 		</Modal>
+
+		<Modal :show="showCRModal" @close="showCRModal = false">
+			<template #header>Calculate Monster CR</template>
+			<template #body>
+				<div class="two-wide">
+					<LabelledNumberInput v-model="crCalc.attackBonus" title="Attack Bonus" :step="1" :min="0"></LabelledNumberInput> 
+					<LabelledNumberInput v-model="crCalc.dpr" title="DPR" :step="1" :min="0"></LabelledNumberInput> 
+				</div>
+				<div class="two-wide">
+					<LabelledNumberInput v-model="crCalc.dc" title="Save DC" :step="1" :min="0"></LabelledNumberInput> 
+				</div>
+				<div class="buttons">
+					<button class="btn" @click="calculateCR()">Calculate CR</button>
+				</div>
+			</template>
+		</Modal>
 	</div>
 </template>
 
@@ -471,11 +487,12 @@ import draggable from "vuedraggable";
 
 import {defineComponent} from "vue";
 
-import type {SkillsEntity, Statblock, Creature, Bestiary} from "@/../../shared";
-import {defaultStatblock, getSpellSlots, spellList, spellListFlattened, getXPbyCR, type User} from "@/../../shared";
+import type {SkillsEntity, Statblock, Creature, Bestiary, Stat, FeatureEntity} from "@/../../shared";
+import {defaultStatblock, getSpellSlots, spellList, spellListFlattened, getXPbyCR, ChallengeRatingTable, type User} from "@/../../shared";
 import {handleApiResponse, type error, toast, asyncLimits, type limitsType, user} from "@/main";
 import {parseFrom5eTools} from "../parser/parseFrom5eTools";
-import {capitalizeFirstLetter} from "@/parser/utils";
+import {capitalizeFirstLetter, parseDescIntoAutomation} from "@/parser/utils";
+import { isAssertEntry } from "typescript";
 const tabs = document.getElementsByClassName("editor-nav__tab") as HTMLCollectionOf<HTMLElement>;
 const tabsContent = document.getElementsByClassName("editor-content__tab-inner") as HTMLCollectionOf<HTMLElement>;
 let draggableKeyIndex = 0;
@@ -574,13 +591,15 @@ export default defineComponent({
 			],
 			showImportModal: false,
 			showSpellModal: false,
+			showCRModal: false,
 			capitalizeFirstLetter,
 			shouldShowEditor: false,
 			isOwner: false,
 			isEditor: false,
 			newSkillName: "",
 			newSpeedName: "",
-			newSenseName: ""
+			newSenseName: "",
+			crCalc: {"attackBonus": 0, "dpr": 0, "dc": 0}
 		};
 	},
 	methods: {
@@ -685,6 +704,155 @@ export default defineComponent({
 				event.preventDefault();
 				this.showSlides(moveToSlide);
 			}
+		},
+		calculateCR(): void{
+			var defenseCR: number = 0
+			var offenseCR: number = 0
+			const hp = this.data.defenses.hp.override ? this.data.defenses.hp.override : this.hpCalc()
+			console.log("HP: " + hp)
+
+			Object.keys(ChallengeRatingTable).forEach((k) => {
+				const cr = parseFloat(k)
+				const reference = ChallengeRatingTable[cr]
+
+				if (cr > defenseCR && hp >= reference.hp[0]){
+					defenseCR = cr
+				}
+
+				if (cr > offenseCR && this.crCalc.dpr >= reference.dpr[0]){
+					offenseCR = cr
+				}
+			})
+
+			
+			const attackBonusDiff = this.crCalc.attackBonus - ChallengeRatingTable[offenseCR].attackBonus
+			const saveDiff = this.crCalc.dc - ChallengeRatingTable[offenseCR].dc 
+			
+
+			defenseCR += Math.floor((this.data.defenses.ac.ac - ChallengeRatingTable[defenseCR].ac)/2.0)
+			offenseCR += Math.floor(Math.max(attackBonusDiff, saveDiff) / 2.0)
+
+			const totalCR = (defenseCR: number, offenseCR: number): number => {
+				const avg = (defenseCR + offenseCR) / 2
+
+				if (avg >= 0.75) return Math.min(30, Math.round(avg));
+				if (avg >= 0.375) return 0.5;
+				if (avg >= 0.1875) return 0.25;
+				if (avg >= 0.0625) return 0.125;
+				return 0
+			}
+			
+			this.showCRModal = false
+			this.data.description.cr = totalCR(defenseCR, offenseCR)
+			toast.success("Defense CR: " + defenseCR + " Offense CR: " + offenseCR + " Total Calcualted CR: " + totalCR(defenseCR, offenseCR))
+
+		},
+		hpCalc(): number {
+            return Math.floor(this.data.defenses.hp.numOfHitDie * ( (this.data.defenses.hp.sizeOfHitDie + 1)/2 + this.statCalc("con")))
+        },
+        statCalc(stat: Stat) : number {
+            return Math.floor(this.data.abilities.stats[stat]/2)-5
+        },
+		attackStats(): number[]{
+			var bonuses: number[] = []
+			var saveDC: number[] = []
+			var damages: number[] = []
+
+			function findAttackBonus(obj: any): any{
+				if (typeof obj === 'object' && obj !== null){
+					if ('attackBonus' in obj){
+						return parseInt(obj.attackBonus)
+					} else {
+						for (const key in obj){
+							const result = findAttackBonus(obj[key])
+							if (result !== undefined){
+								return result
+							}
+						}
+					}
+				}
+			}
+
+			function findAttackDamage(obj: any): any{
+				if (typeof obj === 'object' && obj !== null){
+					if ('damage' in obj){
+						return averageDamage(obj.damage)
+					} else {
+						for (const key in obj){
+							const result = findAttackDamage(obj[key])
+							if (result !== undefined){
+								return result
+							}
+						}
+					}
+				}
+			}
+
+			function findDC(obj: any): any{
+				if (typeof obj === 'object' && obj !== null){
+					if ('dc' in obj){
+						return obj.dc
+					} else {
+						for (const key in obj){
+							const result = findDC(obj[key])
+							if (result !== undefined){
+								return result
+							}
+						}
+					}
+				}
+			}
+
+			function averageDamage(damageString: string): number{
+				const d_string = damageString.replace(/\s*\[.*?\]\s*/g, '')
+				const [roll, mod] = d_string.includes("+")  ? d_string.split("+") : [d_string,0]
+				const [numDie, dieSize] = roll.split("d").map(Number)
+				const averageRoll = (dieSize+1)/2
+				const averageDmg = (averageRoll * numDie) + (mod ? Number(mod) : 0)
+				return Math.floor(averageDmg)
+			}
+
+			function scrapeFeatures(features: FeatureEntity[]){
+				features.forEach(feature => {
+					var automation: string
+
+					if (feature.automation){
+						automation = JSON.stringify(feature.automation)
+					} else {
+						automation = JSON.stringify(parseDescIntoAutomation(feature.description, feature.name ,1)[0])
+					}
+
+
+					const bonus = automation ?  findAttackBonus(JSON.parse(automation)) : undefined
+					const damage = automation ? findAttackDamage(JSON.parse(automation)) : undefined
+					const dc = automation ? findDC(JSON.parse(automation)): undefined
+
+					if (bonus && !isNaN(bonus)){
+						bonuses.push(bonus)
+					}
+
+					if (damage && !isNaN(damage)){
+						damages.push(damage)
+					}
+
+					if (dc && !isNaN(dc)){
+						saveDC.push(dc)
+					}
+				})
+			}
+
+			scrapeFeatures(this.data.features.features)
+			scrapeFeatures(this.data.features.actions)
+			scrapeFeatures(this.data.features.bonus)
+		
+			
+			// Average the numbers
+			const attackBonus = Math.round(bonuses.reduce((acc, cv) => acc + cv,0) / bonuses.length)
+			const dpr = Math.round(damages.reduce((acc, cv) => acc + cv,0) / damages.length)
+			const dc = Math.round(saveDC.reduce((acc, cv) => acc + cv,0) / saveDC.length)
+			
+			return [attackBonus, dpr, dc]
+
 		},
 		changeCR(isIncrease: boolean): void {
 			let cr = this.data.description.cr;
@@ -889,6 +1057,8 @@ export default defineComponent({
 			2: this.data.spellcasting.innateSpells.spellList[2].map((spell) => spell.spell),
 			3: this.data.spellcasting.innateSpells.spellList[3].map((spell) => spell.spell)
 		};
+
+		[this.crCalc.attackBonus, this.crCalc.dpr, this.crCalc.dc] = this.attackStats()
 
 		// if the user had changes without saving, stop them from closing the page without confirming.
 		window.addEventListener("beforeunload", (event) => {
