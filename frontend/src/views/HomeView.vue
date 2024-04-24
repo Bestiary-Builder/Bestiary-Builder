@@ -135,7 +135,8 @@ html {
 			}
 			
 			b {
-				font-size: 2rem;;
+				font-size: 2rem;
+				display: inline-block;
 			}
 
 		}
