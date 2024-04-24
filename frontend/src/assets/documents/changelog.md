@@ -1,8 +1,8 @@
 ## v1.3.4 
 _April 24th, 2024_
 
-- Improve the home page, adding statistics about the number of users, bestiaries, and creatures.
-- Improve the look of checkbox inputs on the statblock editor page to not be so placeholder-y.
+- Improved the home page, adding statistics about the number of users, bestiaries, and creatures.
+- Improved the look of checkbox inputs on the statblock editor page to not be so placeholder-y.
 
 ## v1.3.3
 _April 18th, 2024_
