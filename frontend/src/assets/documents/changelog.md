@@ -1,3 +1,8 @@
+## v1.3.3
+_April 18th, 2024_
+
+- Adds some missing automation documentation.
+
 ## v1.3.2 
 _April 17th, 2024_
 
