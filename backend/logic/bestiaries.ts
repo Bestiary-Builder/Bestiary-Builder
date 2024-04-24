@@ -333,7 +333,7 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 app.get("/api/bestiary/:bestiaryid/editors/add/:userid", requireUser, async (req, res) => {
 	try {
 		//Get input
-		let _id = stringToId(req.params.bestiaryId);
+		let _id = stringToId(req.params.bestiaryid);
 		if (!_id) return res.status(400).json({error: "Bestiary id not valid."});
 		let currentUser = await getUser(req.body.id);
 		if (!currentUser) {
@@ -362,7 +362,7 @@ app.get("/api/bestiary/:bestiaryid/editors/add/:userid", requireUser, async (req
 app.get("/api/bestiary/:bestiaryid/editors/remove/:userid", requireUser, async (req, res) => {
 	try {
 		//Get input
-		let _id = stringToId(req.params.bestiaryId);
+		let _id = stringToId(req.params.bestiaryid);
 		if (!_id) return res.status(400).json({error: "Bestiary id not valid."});
 		let currentUser = await getUser(req.body.id);
 		if (!currentUser) {
