@@ -50,7 +50,7 @@
 							</LabelledComponent>
 
 							<LabelledComponent title="Proper Noun">
-								<span> display as "{{ data.description.name }}" instead of "the {{ data.description.name }}" <input type="checkbox" v-model="data.description.isProperNoun" id="propernoun" /> </span>
+								<span> <input type="checkbox" v-model="data.description.isProperNoun" id="propernounbox" /> <label for="propernounbox">Toggles display as "{{ data.description.name }}" instead of "the {{ data.description.name }}"? </label> </span>
 							</LabelledComponent>
 						</div>
 
@@ -214,38 +214,38 @@
 						<div class="editor-field__container three-wide">
 							<LabelledNumberInput v-model="data.abilities.saves.str.override" title="Strength" :step="1" :is-clearable="true">
 								<p>
-									<label for="strsaveprof" aria-label="strength save proficiency">Proficient</label>
 									<input type="checkbox" v-model="data.abilities.saves.str.isProficient" id="strsaveprof" :is-clearable="true" />
+									<label for="strsaveprof" aria-label="strength save proficiency"> Proficient </label>
 								</p>
 							</LabelledNumberInput>
 							<LabelledNumberInput v-model="data.abilities.saves.dex.override" title="Dexterity" :step="1" :is-clearable="true">
 								<p>
-									<label for="dexsaveprof" aria-label="dexterity save proficiency">Proficient</label>
 									<input type="checkbox" v-model="data.abilities.saves.dex.isProficient" id="dexsaveprof" />
+									<label for="dexsaveprof" aria-label="dexterity save proficiency"> Proficient </label>
 								</p>
 							</LabelledNumberInput>
 							<LabelledNumberInput v-model="data.abilities.saves.con.override" title="Constitution" :step="1" :is-clearable="true">
 								<p>
-									<label for="consaveprof" aria-label="constitution save proficiency">Proficient</label>
 									<input type="checkbox" v-model="data.abilities.saves.con.isProficient" id="consaveprof" />
+									<label for="consaveprof" aria-label="constitution save proficiency"> Proficient </label>
 								</p>
 							</LabelledNumberInput>
 							<LabelledNumberInput v-model="data.abilities.saves.int.override" title="Intelligence" :step="1" :is-clearable="true">
 								<p>
-									<label for="intsaveprof" aria-label="intelligence save proficiency">Proficient</label>
 									<input type="checkbox" v-model="data.abilities.saves.int.isProficient" id="intsaveprof" />
+									<label for="intsaveprof" aria-label="intelligence save proficiency"> Proficient </label>
 								</p>
 							</LabelledNumberInput>
 							<LabelledNumberInput v-model="data.abilities.saves.wis.override" title="Wisdom" :step="1" :is-clearable="true">
 								<p>
-									<label for="wissaveprof" aria-label="wisdom save proficiency">Proficient</label>
 									<input type="checkbox" v-model="data.abilities.saves.wis.isProficient" id="wissaveprof" />
+									<label for="wissaveprof" aria-label="wisdom save proficiency"> Proficient </label>
 								</p>
 							</LabelledNumberInput>
 							<LabelledNumberInput v-model="data.abilities.saves.cha.override" title="Charisma" :step="1" :is-clearable="true">
 								<p>
-									<label for="chasaveprof" aria-label="charisma save proficiency">Proficient</label>
 									<input type="checkbox" v-model="data.abilities.saves.cha.isProficient" id="chasaveprof" />
+									<label for="chasaveprof" aria-label="charisma save proficiency"> Proficient </label>
 								</p>
 							</LabelledNumberInput>
 						</div>
@@ -253,9 +253,9 @@
 						<div class="editor-field__container two-wide">
 							<LabelledComponent v-for="(skill, index) in data.abilities.skills" :title="skill.skillName">
 								<div class="button-container">
-									<p><label :for="skill.skillName + 'prof'"> Proficient</label> <input type="checkbox" v-model="skill.isProficient" @click="disableOtherSkills(index, 'prof', skill.isProficient)" :id="skill.skillName + 'prof'" /></p>
-									<p><label :for="skill.skillName + 'exp'"> Expertise </label> <input type="checkbox" v-model="skill.isExpertise" @click="disableOtherSkills(index, 'exp', skill.isExpertise)" :id="skill.skillName + 'exp'" /></p>
-									<p><label :for="skill.skillName + 'halfprof'"> Half prof </label> <input type="checkbox" v-model="skill.isHalfProficient" @click="disableOtherSkills(index, 'halfprof', skill.isHalfProficient)" :id="skill.skillName + 'halfprof'" /></p>
+									<p> <input type="checkbox" v-model="skill.isProficient" @click="disableOtherSkills(index, 'prof', skill.isProficient)" :id="skill.skillName + 'prof'" /> <label :for="skill.skillName + 'prof'"> Proficient </label> </p>
+									<p> <input type="checkbox" v-model="skill.isExpertise" @click="disableOtherSkills(index, 'exp', skill.isExpertise)" :id="skill.skillName + 'exp'" /><label :for="skill.skillName + 'exp'"> Expertise </label> </p>
+									<p> <input type="checkbox" v-model="skill.isHalfProficient" @click="disableOtherSkills(index, 'halfprof', skill.isHalfProficient)" :id="skill.skillName + 'halfprof'" /><label :for="skill.skillName + 'halfprof'"> Half prof </label ></p>
 								</div>
 								<div>
 									<LabelledNumberInput v-model="skill.override" title="" :step="1" :is-clearable="true" />
@@ -340,10 +340,7 @@
 						<h2 class="group-header">Innate Spellcasting</h2>
 						<div class="editor-field__container two-wide">
 							<LabelledComponent title="Casting ability">
-								<p>
-									<v-select :options="['str', 'dex', 'con', 'wis', 'int', 'cha']" v-model="data.spellcasting.innateSpells.spellCastingAbility" inputId="castingability" />
-									<span class="delete-button" @click="data.spellcasting.innateSpells.spellCastingAbility = null" aria-label="Delete innate spellcasting ability"><font-awesome-icon :icon="['fas', 'trash']" /></span>
-								</p>
+								<v-select :options="['str', 'dex', 'con', 'wis', 'int', 'cha']" v-model="data.spellcasting.innateSpells.spellCastingAbility" inputId="castingability" />
 							</LabelledComponent>
 							<LabelledComponent title="Not these components">
 								<v-select :options="['Material', 'Verbal', 'Somatic']" v-model="data.spellcasting.innateSpells.noComponentsOfType" multiple :deselectFromDropdown="true" :closeOnSelect="false" inputId="notthesecomponents" />
@@ -366,10 +363,10 @@
 							</LabelledComponent>
 
 							<LabelledComponent title="Is psionics?">
-								<span> display as psionics? <input type="checkbox" v-model="data.spellcasting.innateSpells.isPsionics" id="ispsionics?" /> </span>
+								<span> <input type="checkbox" v-model="data.spellcasting.innateSpells.isPsionics" id="ispsionics?" /> Toggles display as psionics  </span>
 							</LabelledComponent>
 							<LabelledComponent title="Display as action?">
-								<span> should this display as an action? <input type="checkbox" v-model="data.spellcasting.innateSpells.displayAsAction" id="displayasaction?" /> </span>
+								<span> <input type="checkbox" v-model="data.spellcasting.innateSpells.displayAsAction" id="displayasaction?" /> Toggles display as action  </span>
 							</LabelledComponent>
 
 							<LabelledComponent title="Edit specific spells">

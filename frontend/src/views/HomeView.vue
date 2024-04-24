@@ -12,15 +12,20 @@
 	<div class="article-header">
 		<div class="header-content">
 			<h1 class="header-title">Bestiary Builder</h1>
-			<p>Welcome to Bestiary Builder, <i>the</i> convenient Bestiary Creator for D&D 5e, designed for incredible integration with <a href="https://avrae.io/"> Avrae</a> and convenience of use!</p>
+			<div class="call-to-action">
+				<ul class="left">
+					<li> Join our <b>{{ stats?.users }}</b> users! </li>
+					<li> Flip through our <b>{{ stats?.bestiaries }}</b> bestiaries! </li>
+					<li> Frighten your players with our <b>{{ stats?.creatures }}</b> creatures! </li>
+				</ul>
+				<ul class="right">
+					<li>Welcome to Bestiary Builder, <i>the</i> convenient Bestiary Creator for <b>D&D 5e</b>, designed for incredible integration with <b><a href="https://avrae.io/"> Avrae</a></b> and convenience of use!</li>
+				</ul>
+			</div>
 		</div>
 		<img src="/mmcover.jpg" alt="" class="header-image" />
 	</div>
-	<div v-show="stats != null" class="stats">
-		<span>Users: {{ stats?.users }}</span>
-		<span>Bestiaries: {{ stats?.bestiaries }}</span>
-		<span>Creatures: {{ stats?.creatures }}</span>
-	</div>
+
 	<div class="content markdown less-wide">
 		<div v-if="content" v-html="content"></div>
 	</div>
@@ -48,8 +53,8 @@ export default defineComponent({
 	components: {
 		Breadcrumbs
 	},
-	mounted() {
-		fetch("/api/stats")
+	async beforeMount() {
+		await fetch("/api/stats")
 			.then(handleApiResponse)
 			.then((result) => {
 				if (result.success) {
@@ -69,12 +74,6 @@ export default defineComponent({
 <style scoped>
 html {
 	overflow-y: unset;
-}
-.stats {
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
 }
 </style>
 <style scoped lang="less">
@@ -104,13 +103,7 @@ html {
 			letter-spacing: 3px;
 		}
 
-		p {
-			font-size: 1.5rem;
-			text-wrap: balance;
-			font-weight: 100;
-			max-width: 80%;
-			margin: auto;
-		}
+
 	}
 	.header-image {
 		grid-column: 1 / -1;
@@ -124,6 +117,76 @@ html {
 		pointer-events: none;
 		transform-origin: top right;
 		scale: 1;
+	}
+
+	.call-to-action {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		font-weight: bolder;
+
+		ul {
+			list-style-type: none;
+			font-size: 1.5rem;
+			max-width: 80%;
+			margin: auto;
+
+			li {
+				font-weight: 100;				
+			}
+			
+			b {
+				font-size: 2rem;;
+			}
+
+		}
+
+		.left {
+			text-align: right;
+
+			li {
+				color: orangered;
+			}
+
+			b {
+				color: white;
+			}
+
+		}
+		.right {
+			text-wrap: balance;
+			text-align: left;
+
+			li {
+				color: white;
+			}
+
+			b {
+				&, a {
+					color: orangered;
+				}
+			}
+		}
+
+
+	}
+
+	@media screen and (max-width: 950px) {
+		.call-to-action {
+			grid-template-columns: 1fr;
+			gap: 1rem;
+
+			.left, .right {
+				text-align: left;
+				font-size: 1rem;
+				b {
+					font-size: 1rem;
+				}
+			}
+
+			.right {
+				text-wrap: unset;
+			}
+		}	
 	}
 }
 
