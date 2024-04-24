@@ -1005,7 +1005,7 @@ for (let l in spellList) {
 
 spellListFlattened.sort();
 
-interface CRTableEntry{
+export interface CRTableEntry{
 	xp: number,
 	profBonus: number,
 	ac: number,
@@ -1050,4 +1050,8 @@ export const ChallengeRatingTable: Record<number, CRTableEntry>= {
 	28: {xp: 120000, profBonus: 8, ac: 19, hp: [716, 760], attackBonus: 13, dpr: [267, 284], dc: 22},
 	29: {xp: 135000, profBonus: 9, ac: 19, hp: [760, 805], attackBonus: 13, dpr: [285, 302], dc: 22},
 	30: {xp: 155000, profBonus: 9, ac: 19, hp: [805, 850], attackBonus: 14, dpr: [303, 320], dc: 23}
-}
+} as const
+
+export const ChallengeRatingsList: number[] = Object.keys(ChallengeRatingTable).map(parseFloat).sort((a, b) => a-b)
+
+export const XPList: number[] = Object.values(ChallengeRatingTable).map(entry => entry.xp).sort((a, b) => a-b)

@@ -2,10 +2,10 @@
 	<LabelledComponent :title="title" :id="id">
 		<slot></slot>
 		<div class="quantity">
-			<input ref="input" type="number" :name="title" :value="isNaN(value) ? '' : value" :min="min" :max="max" :step="step" inputmode="numeric" :id="title.toLowerCase().replaceAll(' ', '') + id" @change="change" :placeholder="placeholder" />
+			<input ref="input" type="number" :name="title" :value="isNaN(value) ? '' : value" :min="min" :max="max" :step="isSteppable ? 'any' : step" inputmode="numeric" :id="title.toLowerCase().replaceAll(' ', '') + id" @change="change" :placeholder="placeholder" />
 			<div class="quantity-nav">
-				<div class="quantity-button quantity-up" @click.prevent="increase" :aria-label="`Increase ${title} by ${step}`">+</div>
-				<div class="quantity-button quantity-down" @click.prevent="decrease" :aria-label="`Decrease ${title} by ${step}`">-</div>
+				<div class="quantity-button quantity-up" @click.prevent="increase" :aria-label="`Increase ${title} by ${isSteppable ? '1 step':step}`">+</div>
+				<div class="quantity-button quantity-down" @click.prevent="decrease" :aria-label="`Decrease ${title} by ${isSteppable ? '1 step':step}`">-</div>
 			</div>
 			<span v-if="isClearable" class="delete-button" @click="clear" :aria-label="`Clear override of ${title}`"><font-awesome-icon :icon="['fas', 'trash']" /></span>
 		</div>
@@ -46,6 +46,11 @@ export default defineComponent({
 		modelValue: {
 			type: Number as PropType<Number | null>,
 			default: NaN
+		},
+		steps: {
+			type: Array as PropType<number[] | null>,
+			required: false,
+			default: null
 		}
 	},
 	emits: ["update:modelValue"],
@@ -72,7 +77,9 @@ export default defineComponent({
 					value = 0;
 				}
 
-				this.setValue(value - this.step);
+				const newValue = this.isSteppable ? this.steps![this.steps!.indexOf(this.nearestStepDown)-1] : value-this.step
+
+				this.setValue(newValue)
 			}
 		},
 		increase() {
@@ -85,8 +92,10 @@ export default defineComponent({
 				if (isNaN(value)) {
 					value = 0;
 				}
+			
+				const newValue = this.isSteppable ? this.steps![this.steps!.indexOf(this.nearestStepUp)+1] : value+this.step
 
-				this.setValue(value + this.step);
+				this.setValue(newValue)
 			}
 		},
 		setValue(value: number | null) {
@@ -102,8 +111,8 @@ export default defineComponent({
 			let newValue = typeof value !== "number" ? parseFloat(value) : value;
 
 			if (!isNaN(newValue)) {
-				if (this.min <= this.max) {
-					newValue = Math.min(this.max, Math.max(this.min, newValue));
+				if (this.minimum <= this.maximum) {
+					newValue = Math.min(this.maximum, Math.max(this.minimum, newValue));
 				}
 			}
 
@@ -123,12 +132,60 @@ export default defineComponent({
 	computed: {
 		increasable(): boolean {
 			if (this.value == null) return true;
-			return isNaN(this.value) || this.value < this.max;
+			return isNaN(this.value) || this.value < this.maximum;
 		},
-
 		decreasable(): boolean {
 			if (this.value == null) return true;
-			return isNaN(this.value) || this.value > this.min;
+			return isNaN(this.value) || this.value > this.minimum;
+		},
+		isSteppable(): boolean{
+			return this.steps != null && this.steps.length > 0
+		},
+		minimum(): number{
+			if (this.isSteppable){
+				return this.steps![0]
+			} else {
+				return this.min
+			}
+		},
+		maximum(): number{
+			if (this.isSteppable){
+				return this.steps![this.steps!.length-1]
+			} else {
+				return this.max
+			}
+		},
+		nearestStepDown(): number{
+			if (!this.isSteppable) return this.value
+
+			let minimumDifference = Math.abs(this.value - this.steps![0])
+			let nearestValue = this.value
+
+			for (const step of this.steps!){
+				const difference = Math.abs(this.value - step)
+				if (difference <= minimumDifference){
+					minimumDifference = difference
+					nearestValue = step
+				}
+			}
+
+			return nearestValue
+		},
+		nearestStepUp(): number{
+			if (!this.isSteppable) return this.value
+
+			let minimumDifference = Math.abs(this.value - this.steps![0])
+			let nearestValue = this.value
+
+			for (const step of this.steps!){
+				const difference = Math.abs(this.value - step)
+				if (difference < minimumDifference){
+					minimumDifference = difference
+					nearestValue = step
+				}
+			}
+
+			return nearestValue
 		},
 		placeholder(): string {
 			if (this.isClearable) return "Override";

@@ -106,19 +106,13 @@
 							</LabelledComponent>
 						</div>
 						<div class="editor-field__container three-wide">
-							<div class="flow-vertically">
-								<label class="editor-field__title" for="challengerating"><span class="text"> Challenge rating</span></label>
-								<div class="quantity">
-									<input type="number" v-model="data.description.cr" min="0" max="30" inputmode="numeric" id="challengerating" />
-									<div class="quantity-nav">
-										<div class="quantity-button quantity-up" @click="changeCR(true)" aria-label="Increase CR">+</div>
-										<div class="quantity-button quantity-down" @click="changeCR(false)" aria-label="Decrease CR">-</div>
-									</div>
-								</div>
-							</div>
-							<button class="btn" @click="showCRModal = true">Calculate CR</button>
+							<LabelledNumberInput v-model="data.description.cr" title="Challenge rating" id="challengerating" :steps="ChallengeRatingsList"></LabelledNumberInput>
+							<LabelledComponent title="Calculate CR">
+								<button class="btn" @click="openCRCalculator()">Calculate CR</button>	
+							</LabelledComponent>
+							
 							<LabelledNumberInput v-model="data.core.proficiencyBonus" :min="0" title="Proficiency Bonus" :step="1" />
-							<LabelledNumberInput v-model="data.description.xp" :min="0" :step="1" title="Experience Points" />
+							<LabelledNumberInput v-model="data.description.xp" :min="0" :steps="XPList" title="Experience Points" />
 						</div>
 					</div>
 					<div class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-2" id="tabpanel-2">
@@ -461,15 +455,34 @@
 		<Modal :show="showCRModal" @close="showCRModal = false">
 			<template #header>Calculate Monster CR</template>
 			<template #body>
-				<div class="two-wide">
-					<LabelledNumberInput v-model="crCalc.attackBonus" title="Attack Bonus" :step="1" :min="0"></LabelledNumberInput> 
-					<LabelledNumberInput v-model="crCalc.dpr" title="DPR" :step="1" :min="0"></LabelledNumberInput> 
+				<span>CR Calculation is an approximate at best. User discretion is advised.</span>
+				<h2 class="group-header">Calculator Output</h2>
+				<div class="three-wide">
+					<LabelledComponent title="Calculated CR"><span>{{crCalc.totalCR}}</span></LabelledComponent>
+					<LabelledComponent title="Offensive CR"><span>{{crCalc.offensiveCR}}</span></LabelledComponent>
+					<LabelledComponent title="Defensive CR"><span>{{crCalc.defensiveCR}}</span></LabelledComponent>
+					<LabelledComponent title="Proficiency Bonus"><span>{{data.core.proficiencyBonus}}</span></LabelledComponent>
+					<LabelledComponent title="XP"><span>{{crCalc.xp}}</span></LabelledComponent>
 				</div>
-				<div class="two-wide">
-					<LabelledNumberInput v-model="crCalc.dc" title="Save DC" :step="1" :min="0"></LabelledNumberInput> 
+				<hr/>
+				<h2 class="group-header">Parameters</h2>
+				<LabelledNumberInput v-model="crCalc.expectedCR" title="Expected CR" :steps="ChallengeRatingsList"></LabelledNumberInput>
+				<div class="two-wide editor-field__container">
+					<LabelledNumberInput v-model="crCalc.hp" title="Effective HP" :step="1" :min="0"></LabelledNumberInput>
+					<LabelledNumberInput v-model="crCalc.ac" title="Effective AC" :step="1" :min="0"></LabelledNumberInput>
+					<LabelledNumberInput v-model="crCalc.dpr" title="Damage Per Round (DPR)" :step="1" :min="0"></LabelledNumberInput>
+					<LabelledComponent title="CR 0-9 Only">
+						<span><input type="checkbox" v-model="crCalc.flies"/> Can fly and deal damage at range?</span>
+					</LabelledComponent>
+					<LabelledNumberInput v-model="crCalc.attackBonusCalc" title="Attack Bonus/Save DC" :step="1" :min="0"></LabelledNumberInput> 
+					<LabelledComponent title="Use DC">
+						<span><input type="checkbox" v-model="crCalc.useDC" @click="swapAttackBonusCalc()"/> Use save DC instead of Attack Bonus in calculation</span>
+					</LabelledComponent>
 				</div>
-				<div class="buttons">
-					<button class="btn" @click="calculateCR()">Calculate CR</button>
+				<hr/>
+				<div class="two-wide">
+					<button class="btn" @click="showCRModal = false">Cancel</button>
+					<button class="btn confirm" @click="calculateCR()">Done</button>
 				</div>
 			</template>
 		</Modal>
@@ -487,12 +500,12 @@ import draggable from "vuedraggable";
 
 import {defineComponent} from "vue";
 
-import type {SkillsEntity, Statblock, Creature, Bestiary, Stat, FeatureEntity} from "@/../../shared";
-import {defaultStatblock, getSpellSlots, spellList, spellListFlattened, getXPbyCR, ChallengeRatingTable, type User} from "@/../../shared";
+import type {SkillsEntity, Statblock, Creature, Bestiary, Stat} from "@/../../shared";
+import {defaultStatblock, getSpellSlots, spellList, spellListFlattened, ChallengeRatingTable, type User, type CRTableEntry, ChallengeRatingsList, XPList} from "@/../../shared";
 import {handleApiResponse, type error, toast, asyncLimits, type limitsType, user} from "@/main";
 import {parseFrom5eTools} from "../parser/parseFrom5eTools";
-import {capitalizeFirstLetter, parseDescIntoAutomation} from "@/parser/utils";
-import { isAssertEntry } from "typescript";
+import {capitalizeFirstLetter} from "@/parser/utils";
+import { scrapeFeatures, averageValue } from "@/parser/crCalculator";
 const tabs = document.getElementsByClassName("editor-nav__tab") as HTMLCollectionOf<HTMLElement>;
 const tabsContent = document.getElementsByClassName("editor-content__tab-inner") as HTMLCollectionOf<HTMLElement>;
 let draggableKeyIndex = 0;
@@ -599,7 +612,24 @@ export default defineComponent({
 			newSkillName: "",
 			newSpeedName: "",
 			newSenseName: "",
-			crCalc: {"attackBonus": 0, "dpr": 0, "dc": 0}
+			ChallengeRatingsList: ChallengeRatingsList,
+			XPList: XPList,
+			crCalc: {
+				"hp": 0,
+				"ac": 0,
+				"attackBonus": 0, 
+				"expectedCR": 0,
+				"dpr": 0, 
+				"dc": 0, 
+				"attackBonusCalc": 0,
+				"saveProficiencies": 0,
+				useDC: false,
+				flies: false, 
+				"offensiveCR": 0, 
+				"defensiveCR": 0,
+				"totalCR": 0,
+				"xp": 0
+			}
 		};
 	},
 	methods: {
@@ -705,32 +735,57 @@ export default defineComponent({
 				this.showSlides(moveToSlide);
 			}
 		},
+		crSteps(){
+			const keys: number[] = Object.keys(ChallengeRatingTable).map(parseFloat)
+			keys.sort((a, b) => a-b)
+			return keys
+		},
+		openCRCalculator(){
+			[this.crCalc.attackBonus, this.crCalc.dpr, this.crCalc.dc] = this.attackStats()
+			this.crCalc.ac = this.data.defenses.ac.ac
+			this.crCalc.hp = this.data.defenses.hp.override ? this.data.defenses.hp.override : this.hpCalc()
+			this.crCalc.attackBonusCalc = this.crCalc.useDC == true ? this.crCalc.dc : this.crCalc.attackBonus
+			this.crCalc.totalCR = this.data.description.cr
+			this.crCalc.expectedCR = this.data.description.cr
+			this.crCalc.xp = this.data.description.xp
+			this.calculateCR()
+			this.showCRModal = true
+		},
+		swapAttackBonusCalc(){
+			if (this.crCalc.useDC == true){
+				this.crCalc.dc = this.crCalc.attackBonusCalc
+				this.crCalc.attackBonusCalc = this.crCalc.attackBonus
+			} else {
+				this.crCalc.attackBonus = this.crCalc.attackBonusCalc
+				this.crCalc.attackBonusCalc = this.crCalc.dc
+			}
+		},
 		calculateCR(): void{
-			var defenseCR: number = 0
-			var offenseCR: number = 0
-			const hp = this.data.defenses.hp.override ? this.data.defenses.hp.override : this.hpCalc()
-			console.log("HP: " + hp)
+			let defenseCR: number = 0
+			let defenseRow: CRTableEntry = ChallengeRatingTable[defenseCR]
+			let offenseCR: number = 0
+			let offenseRow: CRTableEntry = ChallengeRatingTable[offenseCR]
 
-			Object.keys(ChallengeRatingTable).forEach((k) => {
-				const cr = parseFloat(k)
-				const reference = ChallengeRatingTable[cr]
-
-				if (cr > defenseCR && hp >= reference.hp[0]){
+			for (const [crStr, reference] of Object.entries(ChallengeRatingTable)){
+				const cr = parseFloat(crStr)
+				if (cr > defenseCR && this.crCalc.hp >= reference.hp[0]){
 					defenseCR = cr
+					defenseRow = reference
 				}
 
 				if (cr > offenseCR && this.crCalc.dpr >= reference.dpr[0]){
 					offenseCR = cr
+					offenseRow = reference
 				}
-			})
+			}
 
 			
-			const attackBonusDiff = this.crCalc.attackBonus - ChallengeRatingTable[offenseCR].attackBonus
-			const saveDiff = this.crCalc.dc - ChallengeRatingTable[offenseCR].dc 
+			const attackBonusDiff = this.crCalc.attackBonus - offenseRow.attackBonus
+			const saveDiff = this.crCalc.dc - offenseRow.dc 
 			
 
-			defenseCR += Math.floor((this.data.defenses.ac.ac - ChallengeRatingTable[defenseCR].ac)/2.0)
-			offenseCR += Math.floor(Math.max(attackBonusDiff, saveDiff) / 2.0)
+			defenseCR += Math.floor((this.data.defenses.ac.ac - defenseRow.ac)/2.0) | 0
+			offenseCR += Math.floor(Math.max(attackBonusDiff, saveDiff) / 2.0) | 0
 
 			const totalCR = (defenseCR: number, offenseCR: number): number => {
 				const avg = (defenseCR + offenseCR) / 2
@@ -742,10 +797,10 @@ export default defineComponent({
 				return 0
 			}
 			
-			this.showCRModal = false
-			this.data.description.cr = totalCR(defenseCR, offenseCR)
-			toast.success("Defense CR: " + defenseCR + " Offense CR: " + offenseCR + " Total Calcualted CR: " + totalCR(defenseCR, offenseCR))
-
+			this.crCalc.totalCR = totalCR(defenseCR, offenseCR)
+			this.crCalc.xp = ChallengeRatingTable[this.crCalc.totalCR].xp
+			this.crCalc.offensiveCR = offenseCR
+			this.crCalc.defensiveCR = defenseCR
 		},
 		hpCalc(): number {
             return Math.floor(this.data.defenses.hp.numOfHitDie * ( (this.data.defenses.hp.sizeOfHitDie + 1)/2 + this.statCalc("con")))
@@ -754,102 +809,13 @@ export default defineComponent({
             return Math.floor(this.data.abilities.stats[stat]/2)-5
         },
 		attackStats(): number[]{
-			var bonuses: number[] = []
-			var saveDC: number[] = []
-			var damages: number[] = []
-
-			function findAttackBonus(obj: any): any{
-				if (typeof obj === 'object' && obj !== null){
-					if ('attackBonus' in obj){
-						return parseInt(obj.attackBonus)
-					} else {
-						for (const key in obj){
-							const result = findAttackBonus(obj[key])
-							if (result !== undefined){
-								return result
-							}
-						}
-					}
-				}
-			}
-
-			function findAttackDamage(obj: any): any{
-				if (typeof obj === 'object' && obj !== null){
-					if ('damage' in obj){
-						return averageDamage(obj.damage)
-					} else {
-						for (const key in obj){
-							const result = findAttackDamage(obj[key])
-							if (result !== undefined){
-								return result
-							}
-						}
-					}
-				}
-			}
-
-			function findDC(obj: any): any{
-				if (typeof obj === 'object' && obj !== null){
-					if ('dc' in obj){
-						return obj.dc
-					} else {
-						for (const key in obj){
-							const result = findDC(obj[key])
-							if (result !== undefined){
-								return result
-							}
-						}
-					}
-				}
-			}
-
-			function averageDamage(damageString: string): number{
-				const d_string = damageString.replace(/\s*\[.*?\]\s*/g, '')
-				const [roll, mod] = d_string.includes("+")  ? d_string.split("+") : [d_string,0]
-				const [numDie, dieSize] = roll.split("d").map(Number)
-				const averageRoll = (dieSize+1)/2
-				const averageDmg = (averageRoll * numDie) + (mod ? Number(mod) : 0)
-				return Math.floor(averageDmg)
-			}
-
-			function scrapeFeatures(features: FeatureEntity[]){
-				features.forEach(feature => {
-					var automation: string
-
-					if (feature.automation){
-						automation = JSON.stringify(feature.automation)
-					} else {
-						automation = JSON.stringify(parseDescIntoAutomation(feature.description, feature.name ,1)[0])
-					}
-
-
-					const bonus = automation ?  findAttackBonus(JSON.parse(automation)) : undefined
-					const damage = automation ? findAttackDamage(JSON.parse(automation)) : undefined
-					const dc = automation ? findDC(JSON.parse(automation)): undefined
-
-					if (bonus && !isNaN(bonus)){
-						bonuses.push(bonus)
-					}
-
-					if (damage && !isNaN(damage)){
-						damages.push(damage)
-					}
-
-					if (dc && !isNaN(dc)){
-						saveDC.push(dc)
-					}
-				})
-			}
-
-			scrapeFeatures(this.data.features.features)
-			scrapeFeatures(this.data.features.actions)
-			scrapeFeatures(this.data.features.bonus)
-		
+			const [featureAttackBonus, featureDPR, featureDC] = scrapeFeatures(this.data.features.features)
+			const [actionAttackbonus, actionDPR, actionDC] =  scrapeFeatures(this.data.features.actions)
+			const [bonusAttackBonus, bonusDPR, bonusDC] = scrapeFeatures(this.data.features.bonus)
 			
-			// Average the numbers
-			const attackBonus = Math.round(bonuses.reduce((acc, cv) => acc + cv,0) / bonuses.length)
-			const dpr = Math.round(damages.reduce((acc, cv) => acc + cv,0) / damages.length)
-			const dc = Math.round(saveDC.reduce((acc, cv) => acc + cv,0) / saveDC.length)
+			const attackBonus: number = averageValue([featureAttackBonus, actionAttackbonus, bonusAttackBonus])
+			const dpr: number = averageValue([featureDPR, actionDPR, bonusDPR])
+			const dc: number = averageValue([featureDC, actionDC, bonusDC])
 			
 			return [attackBonus, dpr, dc]
 
@@ -1058,8 +1024,6 @@ export default defineComponent({
 			3: this.data.spellcasting.innateSpells.spellList[3].map((spell) => spell.spell)
 		};
 
-		[this.crCalc.attackBonus, this.crCalc.dpr, this.crCalc.dc] = this.attackStats()
-
 		// if the user had changes without saving, stop them from closing the page without confirming.
 		window.addEventListener("beforeunload", (event) => {
 			// haven't figured out yet how to destroy the event listener upon unmount so for now this confirms that the
@@ -1258,6 +1222,12 @@ export default defineComponent({
 .two-wide {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
+	gap: 1rem;
+}
+
+.three-wide {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
 	gap: 1rem;
 }
 
