@@ -637,7 +637,8 @@ export default defineComponent({
 				defensiveCR: 0,
 				totalCR: 0,
 				xp: 0,
-				proficiencyBonus: 0
+				proficiencyBonus: 0,
+				loaded: false
 			}
 		};
 	},
@@ -815,6 +816,7 @@ export default defineComponent({
 			return saveModifier
 		},
 		calculateCR(): void{
+			if (!this.crCalc.loaded) return
 			let defenseCR: number = 0
 			let defenseRow: CRTableEntry = ChallengeRatingTable[defenseCR]
 			let offenseCR: number = 0
@@ -1197,7 +1199,7 @@ export default defineComponent({
 
 			this.crCalc.hp = this.crCalc.calculatedHP + modifiedHP
 		},
-		"crCalc.hp"() {
+		"crCalc.hp"(newValue, oldValue) {
 			let str = ""
 
 			if (this.data.defenses.hp.override){
@@ -1222,6 +1224,7 @@ export default defineComponent({
 			}
 			this.crCalc.hpString = str
 
+			if (oldValue == 0) return
 			this.calculateCR()
 		},
 		"crCalc.flies"(){
@@ -1250,7 +1253,7 @@ export default defineComponent({
 				str += (modifiedAC > 0 ? "+" : "-") + Math.abs(modifiedAC) + "[manual]"
 			}
 			this.crCalc.acString = str
-
+		
 			this.calculateCR()
 		},
 		"crCalc.attackBonusCalc"(){
@@ -1267,6 +1270,11 @@ export default defineComponent({
 				this.crCalc.attackBonus = this.crCalc.attackBonusCalc
 				this.crCalc.attackBonusCalc = this.crCalc.dc
 			}
+		},
+		showCRModal(){
+			if (!this.showCRModal) this.crCalc.loaded = false
+
+			this.crCalc.loaded = true
 		}
 	},
 	beforeRouteUpdate() {
