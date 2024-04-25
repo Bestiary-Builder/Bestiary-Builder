@@ -34,7 +34,6 @@ export function scrapeFeatures(features: FeatureEntity[] = []): number[]{
 
     const averageAttackBonus = averageValue(bonuses)
     const averageDPR = averageValue(damages)
-    const averageDPR = averageValue(damages)
     const averageDC = averageValue(saveDC)
     return [averageAttackBonus, averageDPR, averageDC]
 }
@@ -42,7 +41,6 @@ export function scrapeFeatures(features: FeatureEntity[] = []): number[]{
 export function countProficientSaves(saves: Saves): number {
     let totalCount = 0
 
-    for (const save of Object.values(saves)){
     for (const save of Object.values(saves)){
         if (save.isProficient) totalCount ++
     }
@@ -67,16 +65,6 @@ function findAttackBonus(obj: any): number | undefined{
             return result
         }
     }
-    if (typeof obj !== "object" || obj == null) return undefined
-
-    if ('attackBonus' in obj) return parseInt(obj.attackBonus)
-
-    for (const key in obj){
-        const result = findAttackBonus(obj[key])
-        if (result !== undefined){
-            return result
-        }
-    }
 }
 
 function findAttackDamage(obj: any): number | undefined{
@@ -90,29 +78,9 @@ function findAttackDamage(obj: any): number | undefined{
             return result
         }
     }
-    if (typeof obj !== "object" || obj == null) return undefined
-
-    if ('damage' in obj) return averageDamage(obj.damage)
-
-    for (const key in obj){
-        const result = findAttackDamage(obj[key])
-        if (result !== undefined){
-            return result
-        }
-    }
 }
 
 function findDC(obj: any): any{
-    if (typeof obj !== "object" || obj == null) return undefined
-
-    if ('dc' in obj) return obj.dc
-
-    for (const key in obj){
-        const result = findDC(obj[key])
-        if (result !== undefined){
-            return result
-        }
-    }
     if (typeof obj !== "object" || obj == null) return undefined
 
     if ('dc' in obj) return obj.dc
