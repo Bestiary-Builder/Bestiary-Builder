@@ -105,7 +105,7 @@
 								/>
 							</LabelledComponent>
 						</div>
-						<div class="editor-field__container three-wide">
+						<div class="editor-field__container two-wide">
 							<LabelledNumberInput v-model="data.description.cr" title="Challenge rating" :steps="ChallengeRatingsList"></LabelledNumberInput>
 							<LabelledComponent title="Calculate CR">
 								<button class="btn" @click="openCRCalculator()">Calculate CR</button>	
@@ -457,7 +457,7 @@
 			<template #body>
 				<span>CR Calculation is an approximate at best. User discretion is advised. Initial numbers are approximates based on the current monster statblock.</span>
 				<h2 class="group-header">Calculator Output</h2>
-				<div class="three-wide">
+				<div class="three-wide editor-field__container">
 					<LabelledComponent title="Calculated CR"><span>{{crCalc.totalCR}}</span></LabelledComponent>
 					<LabelledComponent title="Offensive CR"><span>{{crCalc.offensiveCR}}</span></LabelledComponent>
 					<LabelledComponent title="Defensive CR"><span>{{crCalc.defensiveCR}}</span></LabelledComponent>
@@ -476,11 +476,11 @@
 					<LabelledComponent title="Effective AC Calculation"><span>{{crCalc.acString}}</span></LabelledComponent>
 					<LabelledNumberInput v-model="crCalc.dpr" title="Damage Per Round (DPR)" :step="1" :min="0"></LabelledNumberInput>
 					<LabelledComponent title="Can fly and deal damage at range?">
-						<span><input type="checkbox" v-model="crCalc.flies"/> CR [0-9] only. Adjusts the effective ac</span>
+						<span><input type="checkbox" v-model="crCalc.flies" id="crfliesbox"><label for="crfliesbox"> CR [0-9] only. Adjusts the effective ac</label></span>
 					</LabelledComponent>
 					<LabelledNumberInput v-model="crCalc.attackBonusCalc" title="Attack Bonus/Save DC" :step="1"></LabelledNumberInput> 
 					<LabelledComponent title="Use DC">
-						<span><input type="checkbox" v-model="crCalc.useDC"/> Use save DC instead of Attack Bonus in calculation</span>
+						<span><input type="checkbox" v-model="crCalc.useDC" id="crattackbox"/><label for="crattackbox"> Use save DC instead of Attack Bonus in calculation</label></span>
 					</LabelledComponent>
 				</div>
 				<hr/>
@@ -755,7 +755,7 @@ export default defineComponent({
 			this.crCalc.hp = this.calculateEffectiveHP()
 			this.crCalc.calculatedHP = this.crCalc.hp
 
-			this.crCalc.attackBonusCalc = this.crCalc.useDC == true ? this.crCalc.dc : this.crCalc.attackBonus
+			this.crCalc.attackBonusCalc = this.crCalc.useDC ? this.crCalc.dc : this.crCalc.attackBonus
 			this.crCalc.expectedCR = this.data.description.cr
 			this.showCRModal = true
 		},
@@ -796,9 +796,9 @@ export default defineComponent({
 			return multiplier
 		},
 		calculateEffectiveAC(): number{
-			let ac: number = this.data.defenses.ac.ac
+			let ac: number = isNaN(this.data.defenses.ac.ac) ? 0 : this.data.defenses.ac.ac
 			
-			ac += this.saveProficiencyModifier() + (this.crCalc.flies == true ? 2: 0)
+			ac += this.saveProficiencyModifier() + (this.crCalc.flies ? 2: 0)
 
 			return ac
 		},
@@ -821,8 +821,8 @@ export default defineComponent({
 			let offenseRow: CRTableEntry = ChallengeRatingTable[offenseCR]
 
 			// Ensure we stay within the bounds of the CR Table
-			const hp = this.crCalc.hp > 850 ? 850 : this.crCalc.hp
-			const dpr = this.crCalc.dpr > 320 ? 320 : this.crCalc.dpr
+			const hp = Math.min(this.crCalc.hp, 850)
+			const dpr = Math.min(this.crCalc.dpr, 320)
 
 
 			// Find rows on the table
@@ -1203,7 +1203,9 @@ export default defineComponent({
 			if (this.data.defenses.hp.override){
 				str += this.data.defenses.hp.override + ("[override]")
 			} else {
-				str += this.data.defenses.hp.numOfHitDie + "d" + this.data.defenses.hp.sizeOfHitDie + "+" + this.statCalc("con") + "[con]"
+				const conMod =  this.statCalc("con")
+				str += this.data.defenses.hp.numOfHitDie + "d" + this.data.defenses.hp.sizeOfHitDie
+				str += conMod < 0 ? "" : "+" + (conMod * this.data.defenses.hp.numOfHitDie) + "[con]"
 			}
 
 			if (this.data.defenses.vulnerabilities.length > 0){
@@ -1236,7 +1238,7 @@ export default defineComponent({
 			str += this.data.defenses.ac.ac + "[ac]"
 
 			if (this.saveProficiencyModifier() > 0){
-				str += this.saveProficiencyModifier() + "[prof saves]"
+				str += "+" + this.saveProficiencyModifier() + "[prof saves]"
 			}
 
 			if (this.crCalc.flies == true){
@@ -1258,7 +1260,7 @@ export default defineComponent({
 			this.calculateCR()
 		},
 		"crCalc.useDC"(){
-			if (this.crCalc.useDC == false){
+			if (!this.crCalc.useDC){
 				this.crCalc.dc = this.crCalc.attackBonusCalc
 				this.crCalc.attackBonusCalc = this.crCalc.attackBonus
 			} else {

@@ -2,7 +2,7 @@
 	<LabelledComponent :title="title" :id="id">
 		<slot></slot>
 		<div class="quantity">
-			<input ref="input" type="number" :name="title" :value="isNaN(value) ? '' : value" :min="min" :max="max" :step="isSteppable ? 'any' : step" inputmode="numeric" :id="title.toLowerCase().replaceAll(' ', '') + id" @change="change" :placeholder="placeholder" />
+			<input ref="input" type="number" :name="title" :value="isNaN(value) ? '' : value" :min="minimum" :max="maximum" :step="isSteppable ? 'any' : step" inputmode="numeric" :id="title.toLowerCase().replaceAll(' ', '') + id" @change="change" :placeholder="placeholder" />
 			<div class="quantity-nav">
 				<div class="quantity-button quantity-up" @click.prevent="increase" :aria-label="`Increase ${title} by ${isSteppable ? '1 step':step}`">+</div>
 				<div class="quantity-button quantity-down" @click.prevent="decrease" :aria-label="`Decrease ${title} by ${isSteppable ? '1 step':step}`">-</div>
@@ -156,7 +156,7 @@ export default defineComponent({
 			}
 		},
 		nearestStepDown(): number{
-			if (!this.isSteppable) return this.value
+			if (!this.isSteppable) return this.step
 
 			let minimumDifference = Math.abs(this.value - this.steps![0])
 			let nearestValue = this.value
@@ -172,7 +172,7 @@ export default defineComponent({
 			return nearestValue
 		},
 		nearestStepUp(): number{
-			if (!this.isSteppable) return this.value
+			if (!this.isSteppable) return this.step
 
 			let minimumDifference = Math.abs(this.value - this.steps![0])
 			let nearestValue = this.value
