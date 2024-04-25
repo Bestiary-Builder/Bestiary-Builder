@@ -108,7 +108,7 @@
 						<div class="editor-field__container two-wide">
 							<LabelledNumberInput v-model="data.description.cr" title="Challenge rating" :steps="ChallengeRatingsList"></LabelledNumberInput>
 							<LabelledComponent title="Calculate CR">
-								<button class="btn" @click="openCRCalculator()">Calculate CR</button>	
+								<button class="btn" @click="showCRModal = true">Calculate CR</button>	
 							</LabelledComponent>
 							
 							<LabelledNumberInput v-model="data.core.proficiencyBonus" :min="0" title="Proficiency Bonus" :step="1" />
@@ -637,7 +637,8 @@ export default defineComponent({
 				defensiveCR: 0,
 				totalCR: 0,
 				xp: 0,
-				proficiencyBonus: 0
+				proficiencyBonus: 0,
+				loaded: false
 			}
 		};
 	},
@@ -744,21 +745,6 @@ export default defineComponent({
 				this.showSlides(moveToSlide);
 			}
 		},
-		openCRCalculator(){
-			[this.crCalc.attackBonus, this.crCalc.dpr, this.crCalc.dc] = this.attackStats()
-
-			// Effective AC
-			this.crCalc.ac = this.calculateEffectiveAC()
-			this.crCalc.calculatedAC = this.crCalc.ac
-			
-			// Effective HP
-			this.crCalc.hp = this.calculateEffectiveHP()
-			this.crCalc.calculatedHP = this.crCalc.hp
-
-			this.crCalc.attackBonusCalc = this.crCalc.useDC ? this.crCalc.dc : this.crCalc.attackBonus
-			this.crCalc.expectedCR = this.data.description.cr
-			this.showCRModal = true
-		},
 		calculateEffectiveHP(): number{
 			let hp: number = this.data.defenses.hp.override ? this.data.defenses.hp.override : this.hpCalc()
 
@@ -815,6 +801,7 @@ export default defineComponent({
 			return saveModifier
 		},
 		calculateCR(): void{
+			if (!this.crCalc.loaded) return
 			let defenseCR: number = 0
 			let defenseRow: CRTableEntry = ChallengeRatingTable[defenseCR]
 			let offenseCR: number = 0
@@ -1197,7 +1184,7 @@ export default defineComponent({
 
 			this.crCalc.hp = this.crCalc.calculatedHP + modifiedHP
 		},
-		"crCalc.hp"() {
+		"crCalc.hp"(newValue, oldValue) {
 			let str = ""
 
 			if (this.data.defenses.hp.override){
@@ -1222,6 +1209,7 @@ export default defineComponent({
 			}
 			this.crCalc.hpString = str
 
+			if (oldValue == 0) return
 			this.calculateCR()
 		},
 		"crCalc.flies"(){
@@ -1250,7 +1238,7 @@ export default defineComponent({
 				str += (modifiedAC > 0 ? "+" : "-") + Math.abs(modifiedAC) + "[manual]"
 			}
 			this.crCalc.acString = str
-
+		
 			this.calculateCR()
 		},
 		"crCalc.attackBonusCalc"(){
@@ -1267,6 +1255,27 @@ export default defineComponent({
 				this.crCalc.attackBonus = this.crCalc.attackBonusCalc
 				this.crCalc.attackBonusCalc = this.crCalc.dc
 			}
+		},
+		showCRModal(){
+			if (!this.showCRModal){
+				this.crCalc.loaded = false
+				return
+			}
+			
+			[this.crCalc.attackBonus, this.crCalc.dpr, this.crCalc.dc] = this.attackStats()
+
+			// Effective AC
+			this.crCalc.ac = this.calculateEffectiveAC()
+			this.crCalc.calculatedAC = this.crCalc.ac
+			
+			// Effective HP
+			this.crCalc.hp = this.calculateEffectiveHP()
+			this.crCalc.calculatedHP = this.crCalc.hp
+
+			this.crCalc.attackBonusCalc = this.crCalc.useDC ? this.crCalc.dc : this.crCalc.attackBonus
+			this.crCalc.expectedCR = this.data.description.cr
+			this.crCalc.loaded = true
+			this.calculateCR()
 		}
 	},
 	beforeRouteUpdate() {
