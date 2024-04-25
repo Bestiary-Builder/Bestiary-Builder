@@ -1184,7 +1184,7 @@ export default defineComponent({
 
 			this.crCalc.hp = this.crCalc.calculatedHP + modifiedHP
 		},
-		"crCalc.hp"(newValue, oldValue) {
+		"crCalc.hp"() {
 			let str = ""
 
 			if (this.data.defenses.hp.override){
@@ -1209,7 +1209,6 @@ export default defineComponent({
 			}
 			this.crCalc.hpString = str
 
-			if (oldValue == 0) return
 			this.calculateCR()
 		},
 		"crCalc.flies"(){
@@ -1256,7 +1255,7 @@ export default defineComponent({
 				this.crCalc.attackBonusCalc = this.crCalc.dc
 			}
 		},
-		showCRModal(){
+		"showCRModal"(){
 			if (!this.showCRModal){
 				this.crCalc.loaded = false
 				return
