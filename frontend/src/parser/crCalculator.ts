@@ -1,4 +1,4 @@
-import type { FeatureEntity } from "../../../shared"
+import type { FeatureEntity, Saves } from "../../../shared"
 import { parseDescIntoAutomation } from "./utils"
 
 export function scrapeFeatures(features: FeatureEntity[] = []): number[]{
@@ -31,12 +31,22 @@ export function scrapeFeatures(features: FeatureEntity[] = []): number[]{
             saveDC.push(dc)
         }
     }
-    
+
     const averageAttackBonus = averageValue(bonuses)
     const averageDPR = averageValue(bonuses)
     const averageDC = averageValue(saveDC)
 
     return [averageAttackBonus, averageDPR, averageDC]
+}
+
+export function countProficientSaves(saves: Saves): number {
+    let totalCount = 0
+
+    for (const [key, save] of Object.entries(saves)){
+        if (save.isProficient) totalCount ++
+    }
+
+    return totalCount
 }
 
 export function averageValue(values: number[] = []): number{

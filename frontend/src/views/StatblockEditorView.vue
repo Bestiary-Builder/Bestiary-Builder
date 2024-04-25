@@ -455,34 +455,38 @@
 		<Modal :show="showCRModal" @close="showCRModal = false">
 			<template #header>Calculate Monster CR</template>
 			<template #body>
-				<span>CR Calculation is an approximate at best. User discretion is advised.</span>
+				<span>CR Calculation is an approximate at best. User discretion is advised. Initial numbers are approximates based on the current monster statblock.</span>
 				<h2 class="group-header">Calculator Output</h2>
 				<div class="three-wide">
 					<LabelledComponent title="Calculated CR"><span>{{crCalc.totalCR}}</span></LabelledComponent>
 					<LabelledComponent title="Offensive CR"><span>{{crCalc.offensiveCR}}</span></LabelledComponent>
 					<LabelledComponent title="Defensive CR"><span>{{crCalc.defensiveCR}}</span></LabelledComponent>
-					<LabelledComponent title="Proficiency Bonus"><span>{{data.core.proficiencyBonus}}</span></LabelledComponent>
+					<LabelledComponent title="Proficiency Bonus"><span>{{crCalc.proficiencyBonus}}</span></LabelledComponent>
 					<LabelledComponent title="XP"><span>{{crCalc.xp}}</span></LabelledComponent>
 				</div>
+
 				<hr/>
+
 				<h2 class="group-header">Parameters</h2>
 				<LabelledNumberInput v-model="crCalc.expectedCR" title="Expected CR" :steps="ChallengeRatingsList"></LabelledNumberInput>
 				<div class="two-wide editor-field__container">
 					<LabelledNumberInput v-model="crCalc.hp" title="Effective HP" :step="1" :min="0"></LabelledNumberInput>
+					<LabelledComponent title="Effective HP Calculation"><span>{{crCalc.hpString}}</span></LabelledComponent>
 					<LabelledNumberInput v-model="crCalc.ac" title="Effective AC" :step="1" :min="0"></LabelledNumberInput>
+					<LabelledComponent title="Effective AC Calculation"><span>{{crCalc.acString}}</span></LabelledComponent>
 					<LabelledNumberInput v-model="crCalc.dpr" title="Damage Per Round (DPR)" :step="1" :min="0"></LabelledNumberInput>
-					<LabelledComponent title="CR 0-9 Only">
-						<span><input type="checkbox" v-model="crCalc.flies"/> Can fly and deal damage at range?</span>
+					<LabelledComponent title="Can fly and deal damage at range?">
+						<span><input type="checkbox" v-model="crCalc.flies"/> CR [0-9] only. Adjusts the effective ac</span>
 					</LabelledComponent>
-					<LabelledNumberInput v-model="crCalc.attackBonusCalc" title="Attack Bonus/Save DC" :step="1" :min="0"></LabelledNumberInput> 
+					<LabelledNumberInput v-model="crCalc.attackBonusCalc" title="Attack Bonus/Save DC" :step="1"></LabelledNumberInput> 
 					<LabelledComponent title="Use DC">
-						<span><input type="checkbox" v-model="crCalc.useDC" @click="swapAttackBonusCalc()"/> Use save DC instead of Attack Bonus in calculation</span>
+						<span><input type="checkbox" v-model="crCalc.useDC"/> Use save DC instead of Attack Bonus in calculation</span>
 					</LabelledComponent>
 				</div>
 				<hr/>
 				<div class="two-wide">
 					<button class="btn" @click="showCRModal = false">Cancel</button>
-					<button class="btn confirm" @click="calculateCR()">Done</button>
+					<button class="btn confirm" @click="commitCRCalculator()">Done</button>
 				</div>
 			</template>
 		</Modal>
@@ -505,7 +509,9 @@ import {defaultStatblock, getSpellSlots, spellList, spellListFlattened, Challeng
 import {handleApiResponse, type error, toast, asyncLimits, type limitsType, user} from "@/main";
 import {parseFrom5eTools} from "../parser/parseFrom5eTools";
 import {capitalizeFirstLetter} from "@/parser/utils";
-import { scrapeFeatures, averageValue } from "@/parser/crCalculator";
+import { scrapeFeatures, averageValue, countProficientSaves } from "@/parser/crCalculator";
+import { off } from "process";
+import { Misc } from "../../../shared/types-ti";
 const tabs = document.getElementsByClassName("editor-nav__tab") as HTMLCollectionOf<HTMLElement>;
 const tabsContent = document.getElementsByClassName("editor-content__tab-inner") as HTMLCollectionOf<HTMLElement>;
 let draggableKeyIndex = 0;
@@ -615,20 +621,25 @@ export default defineComponent({
 			ChallengeRatingsList: ChallengeRatingsList,
 			XPList: XPList,
 			crCalc: {
-				"hp": 0,
-				"ac": 0,
-				"attackBonus": 0, 
-				"expectedCR": 0,
-				"dpr": 0, 
-				"dc": 0, 
-				"attackBonusCalc": 0,
-				"saveProficiencies": 0,
+				hp: 0,
+				calculatedHP: 0,
+				hpString: "",
+				vulnerabilityModifier: 0.6,
+				ac: 0,
+				calculatedAC: 0,
+				acString: "",
+				attackBonus: 0, 
+				expectedCR: 0,
+				dpr: 0, 
+				dc: 0, 
+				attackBonusCalc: 0,
 				useDC: false,
 				flies: false, 
-				"offensiveCR": 0, 
-				"defensiveCR": 0,
-				"totalCR": 0,
-				"xp": 0
+				offensiveCR: 0, 
+				defensiveCR: 0,
+				totalCR: 0,
+				xp: 0,
+				proficiencyBonus: 0
 			}
 		};
 	},
@@ -735,30 +746,75 @@ export default defineComponent({
 				this.showSlides(moveToSlide);
 			}
 		},
-		crSteps(){
-			const keys: number[] = Object.keys(ChallengeRatingTable).map(parseFloat)
-			keys.sort((a, b) => a-b)
-			return keys
-		},
 		openCRCalculator(){
 			[this.crCalc.attackBonus, this.crCalc.dpr, this.crCalc.dc] = this.attackStats()
-			this.crCalc.ac = this.data.defenses.ac.ac
-			this.crCalc.hp = this.data.defenses.hp.override ? this.data.defenses.hp.override : this.hpCalc()
+
+			// Effective AC
+			this.crCalc.ac = this.calculateEffectiveAC()
+			this.crCalc.calculatedAC = this.crCalc.ac
+			
+			// Effective HP
+			this.crCalc.hp = this.calculateEffectiveHP()
+			this.crCalc.calculatedHP = this.crCalc.hp
+
 			this.crCalc.attackBonusCalc = this.crCalc.useDC == true ? this.crCalc.dc : this.crCalc.attackBonus
-			this.crCalc.totalCR = this.data.description.cr
 			this.crCalc.expectedCR = this.data.description.cr
-			this.crCalc.xp = this.data.description.xp
-			this.calculateCR()
 			this.showCRModal = true
 		},
-		swapAttackBonusCalc(){
-			if (this.crCalc.useDC == true){
-				this.crCalc.dc = this.crCalc.attackBonusCalc
-				this.crCalc.attackBonusCalc = this.crCalc.attackBonus
-			} else {
-				this.crCalc.attackBonus = this.crCalc.attackBonusCalc
-				this.crCalc.attackBonusCalc = this.crCalc.dc
+		calculateEffectiveHP(): number{
+			let hp: number = this.data.defenses.hp.override ? this.data.defenses.hp.override : this.hpCalc()
+
+			// Adjust for vulnerabilities
+			if (this.data.defenses.vulnerabilities.length >0) hp = Math.floor(hp * this.crCalc.vulnerabilityModifier)
+
+			// Expected CR Multiplier			
+			hp = Math.floor(hp * this.expectedCRMultiplier())
+
+			return hp
+		},
+		expectedCRMultiplier(): number{
+			let multiplier = 1
+
+			if (this.data.defenses.immunities.length > 0){
+				if (this.crCalc.expectedCR >= 0 && this.crCalc.expectedCR <= 4){
+					multiplier = 2
+				} else if (this.crCalc.expectedCR <= 10){
+					multiplier = 2
+				} else if (this.crCalc.expectedCR <= 16){
+					multiplier = 1.5
+				} else {
+					multiplier = 1.25
+				}
+			} else if (this.data.defenses.resistances.length > 0){
+				if (this.crCalc.expectedCR >=0 && this.crCalc.expectedCR <=4){
+					multiplier = 2
+				} else if (this.crCalc.expectedCR <= 10){
+					multiplier = 1.5
+				} else if (this.crCalc.expectedCR <= 16){
+					multiplier = 1.25
+				}
 			}
+
+			return multiplier
+		},
+		calculateEffectiveAC(): number{
+			let ac: number = this.data.defenses.ac.ac
+			
+			ac += this.saveProficiencyModifier() + (this.crCalc.flies == true ? 2: 0)
+
+			return ac
+		},
+		saveProficiencyModifier(): number{
+			let numberProficientSaves = countProficientSaves(this.data.abilities.saves)
+			let saveModifier = 0
+
+			if (numberProficientSaves >=5){
+				saveModifier = 4
+			} else if (numberProficientSaves >= 3){
+				saveModifier = 2
+			}
+
+			return saveModifier
 		},
 		calculateCR(): void{
 			let defenseCR: number = 0
@@ -766,41 +822,70 @@ export default defineComponent({
 			let offenseCR: number = 0
 			let offenseRow: CRTableEntry = ChallengeRatingTable[offenseCR]
 
+			// Ensure we stay within the bounds of the CR Table
+			const hp = this.crCalc.hp > 850 ? 850 : this.crCalc.hp
+			const dpr = this.crCalc.dpr > 320 ? 320 : this.crCalc.dpr
+
+
+			// Find rows on the table
 			for (const [crStr, reference] of Object.entries(ChallengeRatingTable)){
 				const cr = parseFloat(crStr)
-				if (cr > defenseCR && this.crCalc.hp >= reference.hp[0]){
+				if (cr > defenseCR && hp >= reference.hp[0]){
 					defenseCR = cr
 					defenseRow = reference
 				}
 
-				if (cr > offenseCR && this.crCalc.dpr >= reference.dpr[0]){
+				if (cr > offenseCR && dpr >= reference.dpr[0]){
 					offenseCR = cr
 					offenseRow = reference
 				}
 			}
 
-			
-			const attackBonusDiff = this.crCalc.attackBonus - offenseRow.attackBonus
-			const saveDiff = this.crCalc.dc - offenseRow.dc 
-			
-
-			defenseCR += Math.floor((this.data.defenses.ac.ac - defenseRow.ac)/2.0) | 0
-			offenseCR += Math.floor(Math.max(attackBonusDiff, saveDiff) / 2.0) | 0
-
-			const totalCR = (defenseCR: number, offenseCR: number): number => {
-				const avg = (defenseCR + offenseCR) / 2
-
-				if (avg >= 0.75) return Math.min(30, Math.round(avg));
-				if (avg >= 0.375) return 0.5;
-				if (avg >= 0.1875) return 0.25;
-				if (avg >= 0.0625) return 0.125;
-				return 0
+			// Calculate Defensive CR
+			let defenseDifference = (defenseRow.ac - this.crCalc.ac) / 2
+			if (defenseDifference > 0){
+				defenseDifference = Math.floor(defenseDifference)
+			} else{
+				defenseDifference = Math.ceil(defenseDifference)
 			}
+			defenseCR = ChallengeRatingsList.indexOf(defenseCR) - defenseDifference
+			defenseCR = ChallengeRatingsList[Math.min(Math.max(defenseCR,0),ChallengeRatingsList.length-1)]
 			
-			this.crCalc.totalCR = totalCR(defenseCR, offenseCR)
-			this.crCalc.xp = ChallengeRatingTable[this.crCalc.totalCR].xp
+			// Calculate Offensive CR
+			const adjustor = this.crCalc.useDC == true ? offenseRow.dc : offenseRow.attackBonus
+			let attackBonusDiff = (adjustor - this.crCalc.attackBonusCalc) / 2
+
+			if (attackBonusDiff > 0){
+				attackBonusDiff = Math.floor(attackBonusDiff)
+			} else {
+				attackBonusDiff = Math.ceil(attackBonusDiff)
+			}			
+	
+			offenseCR  = ChallengeRatingsList.indexOf(offenseCR) - attackBonusDiff
+			offenseCR = ChallengeRatingsList[Math.min(Math.max(offenseCR,0),ChallengeRatingsList.length-1)]
+
+			// Total CR
+			let totalCR: number = (defenseCR + offenseCR) / 2
+
+			if (totalCR >= 0.75){
+				totalCR = Math.min(30, Math.round(totalCR))
+			} else if (totalCR >= 0.375){
+				totalCR = 0.5
+			} else if (totalCR >= 0.1875){
+				totalCR = 0.25
+			} else if (totalCR >= 0.0625){
+				totalCR = 0.125
+			}
+
+			this.crCalc.totalCR = totalCR
+			this.crCalc.xp = ChallengeRatingTable[totalCR].xp
+			this.crCalc.proficiencyBonus = ChallengeRatingTable[totalCR].profBonus
 			this.crCalc.offensiveCR = offenseCR
 			this.crCalc.defensiveCR = defenseCR
+		},
+		commitCRCalculator(){
+			this.data.description.cr = this.crCalc.totalCR
+			this.showCRModal = false
 		},
 		hpCalc(): number {
             return Math.floor(this.data.defenses.hp.numOfHitDie * ( (this.data.defenses.hp.sizeOfHitDie + 1)/2 + this.statCalc("con")))
@@ -1123,6 +1208,83 @@ export default defineComponent({
 		},
 		"data.description.name"() {
 			document.title = `${this?.data.description.name.substring(0, 16)} | Bestiary Builder`;
+		},
+		"crCalc.expectedCR"() {
+			const currentHP = this.crCalc.hp
+			const modifiedHP = this.crCalc.calculatedHP - currentHP
+
+			this.crCalc.calculatedHP = this.calculateEffectiveHP()
+
+			this.crCalc.hp = this.crCalc.calculatedHP + modifiedHP
+		},
+		"crCalc.hp"() {
+			let str = ""
+
+			if (this.data.defenses.hp.override){
+				str += this.data.defenses.hp.override + ("[override]")
+			} else {
+				str += this.data.defenses.hp.numOfHitDie + "d" + this.data.defenses.hp.sizeOfHitDie + "+" + this.statCalc("con") + "[con]"
+			}
+
+			if (this.data.defenses.vulnerabilities.length > 0){
+				str += "*" + this.crCalc.vulnerabilityModifier + "[vulnerability]"
+			}
+
+			if (this.expectedCRMultiplier() != 1){
+				str += "*" + this.expectedCRMultiplier() + "[expected CR]"
+			}
+
+			if (Math.abs(this.crCalc.hp - this.crCalc.calculatedHP) > 0){
+				let modifiedHP = this.crCalc.hp - this.crCalc.calculatedHP
+				str += (modifiedHP > 0 ? "+" : "-") + Math.abs(modifiedHP) + "[manual]"
+			}
+			this.crCalc.hpString = str
+
+			this.calculateCR()
+		},
+		"crCalc.flies"(){
+			const currentAC = this.crCalc.ac
+			const modifiedAC = this.crCalc.calculatedAC - currentAC
+
+			this.crCalc.calculatedAC = this.calculateEffectiveAC()
+
+			this.crCalc.ac = this.crCalc.calculatedAC + modifiedAC
+		},
+		"crCalc.ac"(){
+			let str = ""
+
+			str += this.data.defenses.ac.ac + "[ac]"
+
+			if (this.saveProficiencyModifier() > 0){
+				str += this.saveProficiencyModifier() + "[prof saves]"
+			}
+
+			if (this.crCalc.flies == true){
+				str += "+2[flying&range]"
+			}
+
+			if (Math.abs(this.crCalc.ac - this.crCalc.calculatedAC) > 0){
+				let modifiedAC = this.crCalc.ac - this.crCalc.calculatedAC
+				str += (modifiedAC > 0 ? "+" : "-") + Math.abs(modifiedAC) + "[manual]"
+			}
+			this.crCalc.acString = str
+
+			this.calculateCR()
+		},
+		"crCalc.attackBonusCalc"(){
+			this.calculateCR()
+		},
+		"crCalc.dpr"(){
+			this.calculateCR()
+		},
+		"crCalc.useDC"(){
+			if (this.crCalc.useDC == false){
+				this.crCalc.dc = this.crCalc.attackBonusCalc
+				this.crCalc.attackBonusCalc = this.crCalc.attackBonus
+			} else {
+				this.crCalc.attackBonus = this.crCalc.attackBonusCalc
+				this.crCalc.attackBonusCalc = this.crCalc.dc
+			}
 		}
 	},
 	beforeRouteUpdate() {
