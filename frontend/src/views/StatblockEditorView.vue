@@ -504,14 +504,12 @@ import draggable from "vuedraggable";
 
 import {defineComponent} from "vue";
 
-import type {SkillsEntity, Statblock, Creature, Bestiary, Stat} from "@/../../shared";
+import type {Statblock, Creature, Bestiary, Stat} from "@/../../shared";
 import {defaultStatblock, getSpellSlots, spellList, spellListFlattened, ChallengeRatingTable, type User, type CRTableEntry, ChallengeRatingsList, XPList} from "@/../../shared";
 import {handleApiResponse, type error, toast, asyncLimits, type limitsType, user} from "@/main";
 import {parseFrom5eTools} from "../parser/parseFrom5eTools";
 import {capitalizeFirstLetter} from "@/parser/utils";
 import { scrapeFeatures, averageValue, countProficientSaves } from "@/parser/crCalculator";
-import { off } from "process";
-import { Misc } from "../../../shared/types-ti";
 const tabs = document.getElementsByClassName("editor-nav__tab") as HTMLCollectionOf<HTMLElement>;
 const tabsContent = document.getElementsByClassName("editor-content__tab-inner") as HTMLCollectionOf<HTMLElement>;
 let draggableKeyIndex = 0;
