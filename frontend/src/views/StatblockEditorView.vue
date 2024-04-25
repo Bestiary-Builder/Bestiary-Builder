@@ -106,7 +106,7 @@
 							</LabelledComponent>
 						</div>
 						<div class="editor-field__container three-wide">
-							<LabelledNumberInput v-model="data.description.cr" title="Challenge rating" id="challengerating" :steps="ChallengeRatingsList"></LabelledNumberInput>
+							<LabelledNumberInput v-model="data.description.cr" title="Challenge rating" :steps="ChallengeRatingsList"></LabelledNumberInput>
 							<LabelledComponent title="Calculate CR">
 								<button class="btn" @click="openCRCalculator()">Calculate CR</button>	
 							</LabelledComponent>
