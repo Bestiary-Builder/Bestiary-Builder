@@ -27,7 +27,7 @@ httpServer.listen(parseInt(process.env.port ?? "5000"), () => {
 import {routes, defaultMetaTags, Route} from "./utilities/routes";
 import {Id, stringToId} from "../shared";
 async function getFrontendHtml(route: Route, req: Request) {
-	const frontendPath = path.join(__dirname, process.env.frontendPath as string);
+	const frontendPath = process.env.frontendPath as string;
 	//Get information
 	let title = "Bestiary Builder";
 	if (route.name) title = route.name + " | Bestiary Builder";
