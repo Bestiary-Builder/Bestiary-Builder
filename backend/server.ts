@@ -6,8 +6,6 @@ import dotenv from "dotenv";
 dotenv.config();
 //Logging
 import {log} from "./utilities/logger";
-//Get info
-const frontendPath = path.join(__dirname, process.env.frontendPath as string);
 //App
 import {app, isProduction} from "./utilities/constants";
 
@@ -29,6 +27,7 @@ httpServer.listen(parseInt(process.env.port ?? "5000"), () => {
 import {routes, defaultMetaTags, Route} from "./utilities/routes";
 import {Id, stringToId} from "../shared";
 async function getFrontendHtml(route: Route, req: Request) {
+	const frontendPath = path.join(__dirname, process.env.frontendPath as string);
 	//Get information
 	let title = "Bestiary Builder";
 	if (route.name) title = route.name + " | Bestiary Builder";
@@ -101,7 +100,7 @@ for (let route of routes) {
 	});
 }
 //Static frontend files
-app.use(express.static(frontendPath));
+app.use(express.static(path.join(__dirname, process.env.frontendPath as string)));
 
 //Import logic files
 import "./logic/logic";
