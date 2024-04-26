@@ -54,7 +54,9 @@ export default defineConfig({
 	},
 	build: {
 		chunkSizeWarningLimit: 1250,
-		target: "esnext"
+		target: "esnext",
+		outDir: "../build/frontend",
+		emptyOutDir: true
 	},
 	optimizeDeps: {
 		esbuildOptions: {
