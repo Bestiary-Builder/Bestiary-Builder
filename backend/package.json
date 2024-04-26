@@ -9,7 +9,7 @@
 		"build": "cd ../shared && npm run build && cd ../backend && npx tsc",
 		"postbuild": "cpy 'staticData/badwordsData/**/*.json' '../build/backend/staticData/badwordsData' && cp package.json ../build/backend/package.json && cp ../shared/package.json ../build/shared/package.json & cd ../build/backend && npm install --omit=dev && cd ../shared && npm install --omit=dev",
 		"compile": "cd ../shared && npm run build && cd ../backend && bun build server.ts --target node --outfile ../build/server.js",
-		"postcompile": "cpy 'staticData/badwordsData/**/*.json' '../build/backend/staticData/badwordsData'"
+		"postcompile": "cpy 'staticData/badwordsData/**/*.json' '../build/staticData/badwordsData'"
 	},
 	"engines": {
 		"node": ">=21.4.0"
