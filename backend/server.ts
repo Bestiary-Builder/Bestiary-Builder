@@ -27,7 +27,6 @@ httpServer.listen(parseInt(process.env.port ?? "5000"), () => {
 import {routes, defaultMetaTags, Route} from "./utilities/routes";
 import {Id, stringToId} from "../shared";
 async function getFrontendHtml(route: Route, req: Request) {
-	const frontendPath = process.env.frontendPath as string;
 	//Get information
 	let title = "Bestiary Builder";
 	if (route.name) title = route.name + " | Bestiary Builder";
@@ -68,8 +67,7 @@ async function getFrontendHtml(route: Route, req: Request) {
 	}
 	//Get index.html
 	let html = null;
-	const filePath = path.join(frontendPath, "index.html");
-	console.log(filePath);
+	const filePath = path.join(process.env.frontendPath as string, "index.html");
 	html = fs.readFileSync(filePath, {encoding: "utf-8"});
 	//Create metatags
 	let metatags = [
@@ -100,7 +98,7 @@ for (let route of routes) {
 	});
 }
 //Static frontend files
-app.use(express.static(path.join(__dirname, process.env.frontendPath as string)));
+app.use(express.static(process.env.frontendPath as string));
 
 //Import logic files
 import "./logic/logic";

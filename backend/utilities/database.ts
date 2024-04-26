@@ -6,7 +6,6 @@ import {User, Bestiary, Creature, Id} from "../../shared";
 let database = null as Db | null;
 export async function startConnection() {
 	// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-	console.log(process.env.MongoDB);
 	const client = new MongoClient(process.env.MongoDB!, {
 		serverApi: {
 			version: ServerApiVersion.v1,

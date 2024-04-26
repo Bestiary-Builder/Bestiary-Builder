@@ -103,7 +103,6 @@ function validateSearchInput(input: any, res: Response) {
 //Global stats
 app.get("/api/stats", async (req, res) => {
 	const stats = await getGlobalStats();
-	console.log(stats);
 	if (!stats) return res.status(500).json({error: "Failed to retrieve stats."});
 	return res.json(stats);
 });
