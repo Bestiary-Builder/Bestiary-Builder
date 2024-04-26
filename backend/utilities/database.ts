@@ -15,6 +15,7 @@ export async function startConnection() {
 		},
 		monitorCommands: true
 	});
+	console.log(client);
 	try {
 		// Connect the client to the server
 		await client.connect();
