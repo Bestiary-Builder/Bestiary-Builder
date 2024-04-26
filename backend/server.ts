@@ -22,7 +22,7 @@ startConnection();
 import http from "http";
 const httpServer = http.createServer(app);
 httpServer.listen(parseInt(process.env.port ?? "5000"), () => {
-	log.info("Server listening to port " + process.env.port ?? "5000");
+	log.info("Server listening to port " + (process.env.port ?? "5000"));
 });
 
 //Load frontend
