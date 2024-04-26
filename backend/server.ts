@@ -70,6 +70,7 @@ async function getFrontendHtml(route: Route, req: Request) {
 	//Get index.html
 	let html = null;
 	const filePath = path.join(frontendPath, "index.html");
+	console.log(filePath);
 	html = fs.readFileSync(filePath, {encoding: "utf-8"});
 	//Create metatags
 	let metatags = [
