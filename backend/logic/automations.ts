@@ -39,6 +39,19 @@ app.get("/api/my-automations", requireUser, async (req, res) => {
 	}
 });
 
+app.get("/api/my-automations/list", requireUser, async (req, res) => {
+	try {
+		let user = await getUser(req.body.id);
+		if (!user) return res.status(404).json({error: "Couldn't find user"});
+		let allAutomations = (await collections.automations?.find({owner: user._id}).toArray()) ?? [];
+		log.info(`Retrieved all automations in list form from the current user with the id ${req.params.userid}`);
+		return res.json(allAutomations.map(a => {a.name, a._id})?? []);
+	} catch (err) {
+		log.log("critical", err);
+		return res.status(500).json({error: "Unknown server error occured, please try again."});
+	}
+});
+
 //Update info
 app.post("/api/automation/:id/update", requireUser, async (req, res) => {
 	try {
@@ -51,8 +64,9 @@ app.post("/api/automation/:id/update", requireUser, async (req, res) => {
 		let data = {
 			...({
 				_id: _id,
-				json: "",
-				name: "",
+				automation: null,
+				name: "New automation",
+				description: "",
 				owner: user._id
 			} as Automation),
 			...(req.body.data as Partial<Automation>)
@@ -65,7 +79,7 @@ app.post("/api/automation/:id/update", requireUser, async (req, res) => {
 			//Limit properties that are editable:
 			let update = {
 				name: data.name,
-				json: data.json
+				automation: data.automation
 			};
 			//Update:
 			let updatedId = await updateAutomation(update as Automation, data._id);
@@ -82,7 +96,7 @@ app.post("/api/automation/:id/update", requireUser, async (req, res) => {
 	}
 });
 
-app.post("api/automation/add", requireUser, async (req, res) => {
+app.post("/api/automation/add", requireUser, async (req, res) => {
 	try {
 		//Get input
 		let user = await getUser(req.body.id);
@@ -90,8 +104,9 @@ app.post("api/automation/add", requireUser, async (req, res) => {
 		if (!req.body.data) return res.status(400).json({error: "Automation data not found."});
 		let data = {
 			...({
-				json: "",
+				automation: null,
 				name: "",
+				description: "",
 				owner: user._id
 			} as Automation),
 			...(req.body.data as Partial<Automation>)

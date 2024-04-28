@@ -1,3 +1,8 @@
+## v1.4.0
+_April 30th, 2024_
+
+- Added a new page: [My Automation](/my-automation).
+
 ## v1.3.4 
 _April 24th, 2024_
 

@@ -316,7 +316,7 @@
 								<template #item="{element, index}">
 									<LabelledComponent :title="element.name || `Unnamed ${index}`">
 										<div class="feature-button__container">
-											<FeatureWidget :index="index" :type="fType" :data="data" />
+											<FeatureWidget :index="index" :type="fType" :data="data.features[fType][index]" />
 											<span class="delete-button" @click="deleteFeature(fType, index)" aria-label="Delete feature"><font-awesome-icon :icon="['fas', 'trash']" /></span>
 											<font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle" />
 										</div>

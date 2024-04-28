@@ -7,3 +7,4 @@ import "./search";
 import "./staticData";
 import "./user";
 import "./validation";
+import "./automations"
