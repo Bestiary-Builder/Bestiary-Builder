@@ -37,6 +37,10 @@ export class Creature {
 	constructor(public lastUpdated: number, public stats: Statblock, public bestiary: Id, public _id?: Id) {}
 }
 
+export class Automation {
+	constructor(public _id: Id, public name: string, public owner: string, public lastUpdated: number, public json: string) {}
+}
+
 export type SearchOptions = {
 	search: string;
 	page: number;
