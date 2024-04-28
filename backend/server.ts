@@ -6,8 +6,6 @@ import dotenv from "dotenv";
 dotenv.config();
 //Logging
 import {log} from "./utilities/logger";
-//Get info
-const frontendPath = path.join(__dirname, process.env.frontendPath as string);
 //App
 import {app, isProduction} from "./utilities/constants";
 
@@ -21,8 +19,8 @@ startConnection();
 //Setup http server
 import http from "http";
 const httpServer = http.createServer(app);
-httpServer.listen(5000, () => {
-	log.info("Server listening to port 5000");
+httpServer.listen(parseInt(process.env.port ?? "5000"), () => {
+	log.info("Server listening to port " + (process.env.port ?? "5000"));
 });
 
 //Load frontend
@@ -69,7 +67,7 @@ async function getFrontendHtml(route: Route, req: Request) {
 	}
 	//Get index.html
 	let html = null;
-	const filePath = path.join(frontendPath, "index.html");
+	const filePath = path.join(process.env.frontendPath as string, "index.html");
 	html = fs.readFileSync(filePath, {encoding: "utf-8"});
 	//Create metatags
 	let metatags = [
@@ -100,7 +98,7 @@ for (let route of routes) {
 	});
 }
 //Static frontend files
-app.use(express.static(frontendPath));
+app.use(express.static(process.env.frontendPath as string));
 
 //Import logic files
 import "./logic/logic";
