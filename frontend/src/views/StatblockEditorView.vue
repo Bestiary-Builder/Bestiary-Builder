@@ -623,6 +623,7 @@ export default defineComponent({
 					hp: 0,
 					ac: 0,
 					attackBonus: 0,
+					dc: 0,
 					expectedCR: 0,
 					dpr: 0,
 					useDC: false,
@@ -871,7 +872,7 @@ export default defineComponent({
 			
 			// Calculate Offensive CR
 			const adjustor = this.crCalc.input.useDC == true ? offenseRow.dc : offenseRow.attackBonus
-			const attackBonus =  this.crCalc.input.attackBonus +  (this.crCalc.input.useDC ? this.crCalc.computed.dc : this.crCalc.computed.attackBonus)
+			const attackBonus =  this.crCalc.input.useDC ? (this.crCalc.computed.dc + this.crCalc.input.dc) : (this.crCalc.computed.attackBonus + this.crCalc.input.attackBonus) 
 			let attackBonusDiff = (adjustor - attackBonus) / 2
 
 			if (attackBonusDiff > 0){
@@ -1076,11 +1077,11 @@ export default defineComponent({
 		},
 		attackBonus: {
 			get: function (){
-				if (this.crCalc.input.useDC) return this.crCalc.input.attackBonus + this.crCalc.computed.dc
+				if (this.crCalc.input.useDC) return this.crCalc.input.dc + this.crCalc.computed.dc
 				return this.crCalc.input.attackBonus + this.crCalc.computed.attackBonus
 			},
 			set: function (newValue: number){
-				if (this.crCalc.input.useDC) this.crCalc.input.attackBonus = newValue - this.crCalc.computed.dc
+				if (this.crCalc.input.useDC) this.crCalc.input.dc = newValue - this.crCalc.computed.dc
 				if (!this.crCalc.input.useDC) this.crCalc.input.attackBonus = newValue - this.crCalc.computed.attackBonus
 			}
 		},
