@@ -1280,6 +1280,9 @@ export default defineComponent({
 		"crCalc.input.attackBonus"() {
 			this.calculateCR()
 		},
+		"crCalc.input.dc"(){
+			this.calculateCR()
+		},
 		showCRModal(){
 			// Attack Bonus, DPR, and Save DC setup
 			[this.crCalc.computed.attackBonus, this.crCalc.computed.dpr, this.crCalc.computed.dc] = this.attackStats()
