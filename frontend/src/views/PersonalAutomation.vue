@@ -8,10 +8,13 @@
 			}
 		]"
 	>
-    <button @click="exportMyAutomations()" v-tooltip="'Export all automations to your clipboard'" aria-label="Export all automations to your clipboard">
-        <font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" />
-    </button>
-</Breadcrumbs>
+        <button @click="showImportModal = true" v-tooltip="'Import a list of automation'" aria-label="Import a list of automation">
+            <font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
+        </button>
+        <button @click="exportMyAutomations()" v-tooltip="'Export all automations to your clipboard'" aria-label="Export all automations to your clipboard">
+            <font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" />
+        </button>
+    </Breadcrumbs>
     <div class="content">
         <div class="wrapper">
             <div class="left">
@@ -29,7 +32,7 @@
                 </LabelledComponent>
                 <LabelledComponent title="Add new automation">
                     <input type="text" v-model="newAutomationName" id="addnewautomation">
-                    <button class="btn confirm" @click="addAutomation()">Add </button>
+                    <button class="btn confirm" @click="addAutomation(newAutomationName)">Add </button>
                 </LabelledComponent>
                 <LabelledComponent title="Delete automation" v-if="selectedAutomation">
                     <button class="btn danger" @click="deleteAutomation(selectedAutomation._id)">Delete current automation</button>
@@ -41,8 +44,21 @@
                 <div v-else class="no-selected"> Select an automation to get started with editing it.</div>
             </div> 
         </div>
-
     </div>
+
+    <Modal :show="showImportModal" @close="showImportModal = false">
+        <template #header>Import Automation</template>
+        <template #body>
+            <LabelledComponent title="List of automation">
+                <p>Insert a list of automation in JSON format.</p>
+                <div class="two-wide">
+                    <input type="text" v-model="importedListOfAutomation" id="listofautomation" placeholder="JSON"/>
+                    <button class="btn confirm" @click="importAutomations">Import</button>
+                </div>
+            </LabelledComponent>
+            <hr />
+        </template>
+    </Modal>
 </template>
 
 <script setup lang="ts">
@@ -54,6 +70,7 @@ import { type User, Automation } from '../../../shared';
 import type { Id } from '../../../shared';
 import LabelledComponent from '@/components/LabelledComponent.vue';
 import AutomationEditor from '@/components/AutomationEditor.vue';
+import Modal from '@/components/Modal.vue';
 import YAML from "yaml";
 const $loading = useLoading(loadingOptions);
 const user     = ref<User | null>(null);
@@ -75,8 +92,8 @@ const selectedAutomation = ref<Automation | null>(null);
 
 
 const newAutomationName = ref<string>("New Automation");
-const addAutomation = () => {
-    if (newAutomationName.value == "New Automation") {
+const addAutomation = (name : string, automation = {}) => {
+    if (name == "New Automation") {
         toast.warning("Automation must have a non-default name!")
         return;
     }
@@ -87,13 +104,13 @@ const addAutomation = () => {
             Accept: "application/json",
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({data: {name: newAutomationName.value}})
+        body: JSON.stringify({data: {name: name, automation: automation}})
     }).then(async (response) => {
         let result = await handleApiResponse<Automation>(response);
         if (result.success) {
             await getMyAutomations();
             newAutomationName.value = "New Automation";
-            toast.success("Successfully added automation!")
+            toast.success("Successfully added automation: " + name)
             selectedAutomation.value = data.value[data.value.length -1]
         } 
         else toast.error((result.data as error).error);
@@ -125,11 +142,24 @@ const getMyAutomations = async () => {
 
 const exportMyAutomations = () => {
     navigator.clipboard.writeText(
-        YAML.stringify(
+        JSON.stringify(
             data.value.map(a => a.automation)
         )
     )
     toast.success("Copied all automation to clipboard!")
+}
+
+const showImportModal = ref(false);
+const importedListOfAutomation = ref("");
+
+const importAutomations = () => {
+    const parsedAutomation = JSON.parse(importedListOfAutomation.value);
+    for (const a of parsedAutomation) {
+        let name : string;
+        if (Array.isArray(a)) name = a[0].name.replace(" (1H)", "").replace(" (2H)", "")
+        else name = a.name
+        addAutomation(name,a)
+    }
 }
 </script>
 
@@ -184,5 +214,11 @@ const exportMyAutomations = () => {
 		gap: 1rem;
 		grid-template-columns: 1fr;
 	}
+}
+
+.two-wide {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0rem 1rem;
 }
 </style>

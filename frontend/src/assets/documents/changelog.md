@@ -1,10 +1,11 @@
 ## v1.4.0
 _April 30th, 2024_
 
+- Fixes an issue where the breadcrumbs could conceal part of the page content by being placed over them.
 - Added a new page: [My Automation](/my-automation). You can now:
   - Edit automation independently of a creature and save them for reuse, and edit them from there.
   - Quickly import your own saved automation into any of your creatures.
-- If you'd like to see a full visual automation editor like [Avrae Dashboard](https://avrae.io/dashboard/characters) directly within Bestiary Builder, consider supporting us on [Patreon](https://www.patreon.com/BestiaryBuilder). At four Patreon supporters, we will be able to start working on this!
+- If you'd like to see a full visual automation editor like [Avrae Dashboard](https://avrae.io/dashboard/characters) directly within Bestiary Builder, consider supporting us on [Patreon](https://www.patreon.com/BestiaryBuilder)!
 
 ## v1.3.4 
 _April 24th, 2024_

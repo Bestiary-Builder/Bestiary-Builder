@@ -37,7 +37,7 @@ import UserBanner from "@/components/UserBanner.vue";
 import {user, sendToLogin} from "@/main";
 import type {User} from "@/../../shared";
 import {defineComponent} from "vue";
-import {onClickOutside} from "@vueuse/core";
+import {onClickOutside, useElementSize} from "@vueuse/core";
 import {ref} from "vue";
 export default defineComponent({
 	name: "NavHeader",
@@ -60,6 +60,7 @@ export default defineComponent({
 	setup() {
 		const isExpanded = ref(false);
 		const navbar = ref<HTMLDivElement | null>(null);
+		const { width, height } = useElementSize(navbar)
 
 		// only register this handler if on mobile device.
 		// this is crude but works fine
@@ -71,8 +72,14 @@ export default defineComponent({
 
 		return {
 			isExpanded,
-			navbar
+			navbar,
+			height
 		};
+	},
+	watch: {
+		height() {
+			document.body.style.setProperty("--navbar-height", `${this.height}px`);
+		}
 	}
 });
 </script>

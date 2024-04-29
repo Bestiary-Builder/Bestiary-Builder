@@ -589,6 +589,10 @@ export default defineComponent({
 			toast.info("Exported this statblock to your clipboard.");
 		},
 		import5etools(): void {
+			if (this.toolsjson.startsWith("___")) {
+				toast.error("You copied the markdown code, not the JSON.")
+				return;
+			}
 			try {
 				[this.data, this.notices] = parseFrom5eTools(JSON.parse(this.toolsjson));
 				this.toolsjson = "";
