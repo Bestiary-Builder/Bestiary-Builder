@@ -228,3 +228,12 @@ export function parseDescIntoAutomation(text: string, name = "", activationType:
 export function capitalizeFirstLetter(string: string) {
 	return string.charAt(0).toUpperCase() + string.slice(1);
 }
+
+export function fractionStrToDecimal(string: string) : number{
+	const [numerator, denominator] = string.split("/").map(Number)
+
+	if (!denominator) return numerator
+	if (denominator === 0 ) return 0
+	
+	return numerator / denominator
+}

@@ -1055,3 +1055,16 @@ export const ChallengeRatingTable: Record<number, CRTableEntry>= {
 export const ChallengeRatingsList: number[] = Object.keys(ChallengeRatingTable).map(parseFloat).sort((a, b) => a-b)
 
 export const XPList: number[] = Object.values(ChallengeRatingTable).map(entry => entry.xp).sort((a, b) => a-b)
+
+export const BPS: string[] = [
+	"nonmagical bludgeoning",
+	"nonmagical nonsilvered bludgeoning",
+	"nonmagical piercing",
+	"nonmagical nonsilvered piercing",
+	"nonmagical slashing",
+	"nonmagical nonsilvered slashing"
+] as const
+
+function displayCR(value: number, index: number, array: number[]): number {
+	throw new Error("Function not implemented.");
+}

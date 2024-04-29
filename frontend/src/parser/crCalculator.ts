@@ -1,4 +1,4 @@
-import type { Defenses, FeatureEntity, Saves } from "../../../shared"
+import { BPS, type Defenses, type FeatureEntity, type Saves } from "../../../shared"
 import { parseDescIntoAutomation } from "./utils"
 
 export function scrapeFeatures(features: FeatureEntity[] = []): number[]{
@@ -39,30 +39,35 @@ export function scrapeFeatures(features: FeatureEntity[] = []): number[]{
     return [averageAttackBonus, averageDPR, averageDC]
 }
 
-export function expectedCRMultiplier(cr: number = 0, defenses: Defenses): number {
+export function resistImmuneModifier(cr: number = 0, defenses: Defenses): number {
+    let allResistances: string[] = [...defenses.immunities, ...defenses.resistances].map(value => value.toLowerCase())
+    if (cr >= 10) allResistances = stripBPS(allResistances)
     let multiplier = 1
 
-    if (defenses.immunities.length > 0){
+    let adjustor = 0
+
+    if (allResistances.length > 0){
         if (cr >= 0 && cr <= 4){
-            multiplier = 2
+            adjustor = .2
         } else if (cr <= 10){
-            multiplier = 2
-        } else if (cr <= 16){
-            multiplier = 1.5
-        } else {
-            multiplier = 1.25
-        }
-    } else if (defenses.resistances.length > 0){
-        if (cr >=0 && cr <=4){
-            multiplier = 2
-        } else if (cr <= 10){
-            multiplier = 1.5
-        } else if (cr <= 16){
-            multiplier = 1.25
+            adjustor = .15
+        } else if (cr <= 16 ){
+            adjustor = .1
         }
     }
 
+    multiplier = parseFloat((1+(allResistances.length * adjustor)).toFixed(1))
+
     return multiplier
+}
+
+function stripBPS(resistanceArray: string[] = []): string[]{
+    for (const type of BPS){
+        const index = resistanceArray.indexOf(type)
+        if ( index >= 0) resistanceArray.splice(index, 1)
+    }
+
+    return resistanceArray
 }
 
 export function countProficientSaves(saves: Saves): number {

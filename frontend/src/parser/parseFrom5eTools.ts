@@ -1,5 +1,5 @@
-import {type CasterSpells, type Statblock, type InnateSpellsList, defaultStatblock, getXPbyCR, spellListFlattened, type SpellSlotEntity, type SkillsEntity, type SpeedEntity, type SenseEntity} from "@/../../shared";
-import {abilityParser, capitalizeFirstLetter} from "./utils";
+import {type CasterSpells, type Statblock, type InnateSpellsList, defaultStatblock, spellListFlattened, type SpellSlotEntity, type SkillsEntity, type SpeedEntity, type SenseEntity, ChallengeRatingTable} from "@/../../shared";
+import {abilityParser, capitalizeFirstLetter, fractionStrToDecimal} from "./utils";
 
 export function parseFrom5eTools(data: any): [Statblock, {[key: string]: string[]}] {
 	let outputData = {} as Statblock;
@@ -7,7 +7,7 @@ export function parseFrom5eTools(data: any): [Statblock, {[key: string]: string[
 		name: data.name,
 		image: "",
 		description: "",
-		cr: parseInt(data.cr?.cr ?? data.cr),
+		cr: parseFloat(data.cr?.cr ?? fractionStrToDecimal(data.cr)),
 		isProperNoun: data.isNamedCreature ?? false,
 		environment: (data?.environment ?? []).join(", "),
 		faction: "",
@@ -26,7 +26,7 @@ export function parseFrom5eTools(data: any): [Statblock, {[key: string]: string[
 			// @ts-ignore
 			return (data?.alignmentPrefix ?? "") + (data.alignment ?? []).map((a) => nameMap[a]).join(" ");
 		})(),
-		xp: getXPbyCR(parseInt(data.cr?.cr ?? data.cr))
+		xp: ChallengeRatingTable[parseFloat(data.cr?.cr ?? fractionStrToDecimal(data.cr))].xp
 	};
 
 	outputData.core = {

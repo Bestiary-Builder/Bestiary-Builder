@@ -508,8 +508,9 @@ import type {Statblock, Creature, Bestiary, Stat} from "@/../../shared";
 import {defaultStatblock, getSpellSlots, spellList, spellListFlattened, ChallengeRatingTable, type User, type CRTableEntry, ChallengeRatingsList, XPList} from "@/../../shared";
 import {handleApiResponse, type error, toast, asyncLimits, type limitsType, user} from "@/main";
 import {parseFrom5eTools} from "../parser/parseFrom5eTools";
-import {capitalizeFirstLetter} from "@/parser/utils";
-import { scrapeFeatures, averageValue, countProficientSaves, expectedCRMultiplier } from "@/parser/crCalculator";
+import {capitalizeFirstLetter, fractionStrToDecimal} from "@/parser/utils";
+import { scrapeFeatures, averageValue, countProficientSaves, resistImmuneModifier } from "@/parser/crCalculator";
+import { displayCR } from "@/utils/displayFunctions";
 const tabs = document.getElementsByClassName("editor-nav__tab") as HTMLCollectionOf<HTMLElement>;
 const tabsContent = document.getElementsByClassName("editor-content__tab-inner") as HTMLCollectionOf<HTMLElement>;
 let draggableKeyIndex = 0;
@@ -632,13 +633,13 @@ export default defineComponent({
 				output: {
 					hp: "",
 					ac: "",
-					offensiveCR: 0,
-					defensiveCR: 0,
-					totalCR: 0,
+					offensiveCR: "",
+					defensiveCR: "",
+					totalCR: "",
 					xp: 0,
 					proficiencyBonus: 0,
 				},
-				computed: {
+				calculated: {
 					hp: 0,
 					ac: 0,
 					attackBonus: 0,
@@ -647,7 +648,8 @@ export default defineComponent({
 					expectedCR: 0
 				},
 				support: {
-					vulnerabilityModifier: 0.6
+					vulnerabilityModifier: 0.6,
+					conditionImmunityModifier: .04	
 				}
 			}
 		};
@@ -758,7 +760,7 @@ export default defineComponent({
 		
 		computedEffectiveHP(): void {
 			let hp: number = this.data.defenses.hp.override ? this.data.defenses.hp.override : this.hpCalc()
-			const crMultiplier = expectedCRMultiplier(this.crCalc.input.expectedCR, this.data.defenses)
+			const crMultiplier = resistImmuneModifier(this.crCalc.input.expectedCR + this.crCalc.calculated.expectedCR, this.data.defenses)
 
 			// Adjust for vulnerabilities
 			if (this.data.defenses.vulnerabilities.length >0) hp = Math.floor(hp * this.crCalc.support.vulnerabilityModifier)
@@ -766,10 +768,15 @@ export default defineComponent({
 			// Expected CR Multiplier			
 			hp = Math.floor(hp * crMultiplier)
 
-			this.crCalc.computed.hp = hp
+			if (this.data.defenses.conditionImmunities.length > 0){
+				let modifier = 1+parseFloat((this.crCalc.support.conditionImmunityModifier * this.data.defenses.conditionImmunities.length).toFixed(1))
+				hp = Math.floor(hp * modifier)
+			} 
+
+			this.crCalc.calculated.hp = hp
 		},
 		outputEffectiveHP(): void {
-			const crMultiplier = expectedCRMultiplier(this.crCalc.input.expectedCR, this.data.defenses)
+			const crMultiplier = resistImmuneModifier(this.crCalc.input.expectedCR + this.crCalc.calculated.expectedCR, this.data.defenses)
 			let str = ""
 
 			if (this.data.defenses.hp.override){
@@ -785,7 +792,12 @@ export default defineComponent({
 			}
 
 			if (crMultiplier != 1){
-				str += "*" + crMultiplier + "[expected CR]"
+				str += "*" + crMultiplier + "[immunities/resistances]"
+			}
+
+			if (this.data.defenses.conditionImmunities.length > 0){
+				let modifier = 1+parseFloat((this.crCalc.support.conditionImmunityModifier * this.data.defenses.conditionImmunities.length).toFixed(1))
+				str += "*" + modifier + "[condition immunities]"
 			}
 
 			if (Math.abs(this.crCalc.input.hp) > 0){
@@ -800,7 +812,7 @@ export default defineComponent({
 
 			ac += this.saveProficiencyModifier()
 
-			this.crCalc.computed.ac = ac
+			this.crCalc.calculated.ac = ac
 		},
 		outputEffectiveAC(): void{
 			let str = ""
@@ -815,7 +827,6 @@ export default defineComponent({
 				str += "+2[flying&range]"
 			}
 
-			const  modifiedAC = this.crCalc.input.ac - this.crCalc.computed.ac 
 			if (Math.abs(this.crCalc.input.ac) > 0){
 				str += (this.crCalc.input.ac > 0 ? "+" : "-") + Math.abs(this.crCalc.input.ac) + "[manual]"
 			}
@@ -842,8 +853,8 @@ export default defineComponent({
 			let offenseRow: CRTableEntry = ChallengeRatingTable[offenseCR]
 
 			// Ensure we stay within the bounds of the CR Table
-			const hp = Math.min(this.crCalc.input.hp + this.crCalc.computed.hp, 850)
-			const dpr = Math.min(this.crCalc.input.dpr + this.crCalc.computed.dpr, 320)
+			const hp = Math.min(this.crCalc.input.hp + this.crCalc.calculated.hp, 850)
+			const dpr = Math.min(this.crCalc.input.dpr + this.crCalc.calculated.dpr, 320)
 
 
 			// Find rows on the table
@@ -861,7 +872,7 @@ export default defineComponent({
 			}
 
 			// Calculate Defensive CR
-			let defenseDifference = (defenseRow.ac - (this.crCalc.input.ac + this.crCalc.computed.ac)) / 2
+			let defenseDifference = (defenseRow.ac - (this.crCalc.input.ac + this.crCalc.calculated.ac)) / 2
 			if (defenseDifference > 0){
 				defenseDifference = Math.floor(defenseDifference)
 			} else{
@@ -872,7 +883,7 @@ export default defineComponent({
 			
 			// Calculate Offensive CR
 			const adjustor = this.crCalc.input.useDC == true ? offenseRow.dc : offenseRow.attackBonus
-			const attackBonus =  this.crCalc.input.useDC ? (this.crCalc.computed.dc + this.crCalc.input.dc) : (this.crCalc.computed.attackBonus + this.crCalc.input.attackBonus) 
+			const attackBonus =  this.crCalc.input.useDC ? (this.crCalc.calculated.dc + this.crCalc.input.dc) : (this.crCalc.calculated.attackBonus + this.crCalc.input.attackBonus) 
 			let attackBonusDiff = (adjustor - attackBonus) / 2
 
 			if (attackBonusDiff > 0){
@@ -897,14 +908,14 @@ export default defineComponent({
 				totalCR = 0.125
 			}
 
-			this.crCalc.output.totalCR = totalCR
+			this.crCalc.output.totalCR = displayCR(totalCR)
 			this.crCalc.output.xp = ChallengeRatingTable[totalCR].xp
 			this.crCalc.output.proficiencyBonus = ChallengeRatingTable[totalCR].profBonus
-			this.crCalc.output.offensiveCR = offenseCR
-			this.crCalc.output.defensiveCR = defenseCR
+			this.crCalc.output.offensiveCR = displayCR(offenseCR)
+			this.crCalc.output.defensiveCR = displayCR(defenseCR)
 		},
 		commitCRCalculator(){
-			this.data.description.cr = this.crCalc.output.totalCR
+			this.data.description.cr = fractionStrToDecimal(this.crCalc.output.totalCR)
 			this.showCRModal = false
 		},
 		hpCalc(): number {
@@ -1061,44 +1072,44 @@ export default defineComponent({
 	computed: {
 		effectiveAC: {
 			get: function (){
-				return this.crCalc.input.ac + this.crCalc.computed.ac
+				return this.crCalc.input.ac + this.crCalc.calculated.ac
 			},
 			set: function (newValue: number){
-				this.crCalc.input.ac = newValue - this.crCalc.computed.ac
+				this.crCalc.input.ac = newValue - this.crCalc.calculated.ac
 			}
 		},
 		effectiveHP:{
 			get: function () {
-				return this.crCalc.input.hp + this.crCalc.computed.hp
+				return this.crCalc.input.hp + this.crCalc.calculated.hp
 			},
 			set: function (newValue: number){
-				this.crCalc.input.hp = newValue - this.crCalc.computed.hp
+				this.crCalc.input.hp = newValue - this.crCalc.calculated.hp
 			}
 		},
 		attackBonus: {
 			get: function (){
-				if (this.crCalc.input.useDC) return this.crCalc.input.dc + this.crCalc.computed.dc
-				return this.crCalc.input.attackBonus + this.crCalc.computed.attackBonus
+				if (this.crCalc.input.useDC) return this.crCalc.input.dc + this.crCalc.calculated.dc
+				return this.crCalc.input.attackBonus + this.crCalc.calculated.attackBonus
 			},
 			set: function (newValue: number){
-				if (this.crCalc.input.useDC) this.crCalc.input.dc = newValue - this.crCalc.computed.dc
-				if (!this.crCalc.input.useDC) this.crCalc.input.attackBonus = newValue - this.crCalc.computed.attackBonus
+				if (this.crCalc.input.useDC) this.crCalc.input.dc = newValue - this.crCalc.calculated.dc
+				if (!this.crCalc.input.useDC) this.crCalc.input.attackBonus = newValue - this.crCalc.calculated.attackBonus
 			}
 		},
 		dpr: {
 			get: function (){
-				return this.crCalc.computed.dpr + this.crCalc.input.dpr
+				return this.crCalc.calculated.dpr + this.crCalc.input.dpr
 			},
 			set: function (newValue: number){
-				this.crCalc.input.dpr = newValue - this.crCalc.computed.dpr
+				this.crCalc.input.dpr = newValue - this.crCalc.calculated.dpr
 			}
 		},
 		expectedCR: {
 			get: function() {
-				return this.crCalc.computed.expectedCR + this.crCalc.input.expectedCR
+				return this.crCalc.calculated.expectedCR + this.crCalc.input.expectedCR
 			},
 			set: function (newValue: number){
-				this.crCalc.input.expectedCR = newValue - this.crCalc.computed.expectedCR
+				this.crCalc.input.expectedCR = newValue - this.crCalc.calculated.expectedCR
 			}
 		}
 	},
@@ -1285,10 +1296,10 @@ export default defineComponent({
 		},
 		showCRModal(){
 			// Attack Bonus, DPR, and Save DC setup
-			[this.crCalc.computed.attackBonus, this.crCalc.computed.dpr, this.crCalc.computed.dc] = this.attackStats()
+			[this.crCalc.calculated.attackBonus, this.crCalc.calculated.dpr, this.crCalc.calculated.dc] = this.attackStats()
 
 			// Get initial expected CR, assume it is the current CR or 0 if user cleared it out
-			this.crCalc.computed.expectedCR = this.data.description.cr || 0
+			this.crCalc.calculated.expectedCR = this.data.description.cr || 0
 
 			// Effective AC
 			this.computedEffectiveAC()
