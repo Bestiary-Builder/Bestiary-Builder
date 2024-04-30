@@ -24,12 +24,12 @@
             <LabelledComponent title="Save automation">
                 <button class="btn confirm" @click="saveAutomation(true)" id="saveautomation">Save </button>
             </LabelledComponent>
-            <LabelledComponent title="Generate automation">
+            <LabelledComponent title="Generate">
                 <button 
                     class="btn" 
                     @click="generateAutomation" 
                     v-tooltip="'Generate automation from description. May be incomplete or inaccurate. Only works for basic, to hit attacks.'"
-                    id="generateautomation"
+                    id="generate"
                 >
                     Generate 
                     <font-awesome-icon :icon="['fas', 'circle-info']" />
@@ -225,6 +225,7 @@ export default defineComponent({
 		});
 		this.getMyAutomations();
 	},
+	emits: ["savedData"],
 	methods: {
 		getMyAutomations() {
 			fetch("/api/automationDocumentation").then(async (response: any) => {
@@ -261,10 +262,10 @@ export default defineComponent({
 				return false;
 			}
 		},
-		saveAutomation(shouldNotify: boolean = false) {
+		saveAutomation(shouldNotify = false) {
 			try {
 				let parsed = YAML.parse(this.automationString);
-				if (parsed) {
+				if (parsed || parsed == null) {
 					fetch("/api/validate/automation", {
 						method: "POST",
 						headers: {
@@ -276,7 +277,8 @@ export default defineComponent({
 					})
 						.then((response) => response.json())
 						.then((data) => {
-							if (!data.success) {
+							// null is valid automation in our db, but not in the validator. Accept it here as valid.
+							if (parsed != null && !data.success) {
 								if (shouldNotify) toast.error("YAML contains Error, did not save automation");
 								this.errorMessage = data.error;
 							} else {
@@ -284,7 +286,7 @@ export default defineComponent({
                                 if (this.isStandAlone) {
                                     fetch(`/api/automation/${this.data._id}/update`, {
 										method: "POST",
-														headers: {
+										headers: {
 											"Content-Type": "application/json"
 										},
 										body: JSON.stringify({
@@ -293,19 +295,19 @@ export default defineComponent({
 									})
 									.then(async (response: any) => {
 										let result = await handleApiResponse<FeatureEntity>(response);
-										if (result.success && shouldNotify) toast.success("Saved Automation!");
+										if (result.success && shouldNotify) {
+											 toast.success("Saved Automation!");
+											 this.$emit("savedData")
+										}
 										else if (!result.success) {
-											toast.error("Errorasfdasfasdfasdf: " + (result.data as error).error);
+											toast.error(`${this.data.name}:` + (result.data as error).error);
 										}
 									});
                                 }
 								if (shouldNotify && !this.isStandAlone) toast.success("Saved Automation!");
 							}
 						});
-				} else {
-					this.data.automation = YAML.parse(this.automationString);
-					if (shouldNotify) toast.success("Saved Automation!");
-				}
+				} 
 			} catch (err) {
 				if (shouldNotify) toast.error("YAML contains Error, did not save automation");
 			}
@@ -435,8 +437,8 @@ export default defineComponent({
 				return false;
 			}
 			if (Array.isArray(auto)) return false;
-			if (!this.data.automation || !auto || auto.automation.length == 0) return false
-			for (let field of auto.automation.reverse()) {
+			if (!this.data.automation || !auto || auto?.automation?.length == 0) return false
+			for (let field of auto?.automation?.reverse() || []) {
 				if (field["type"] == "text") {
 					return field["text"]
 				}
@@ -449,8 +451,9 @@ export default defineComponent({
 				auto = YAML.parse(this.automationString)
 			} catch {
 				return;
-			}			if (Array.isArray(auto)) return;
-			for (let field of auto.automation.reverse()) {
+			}			
+			if (Array.isArray(auto)) return;
+			for (let field of auto?.automation?.reverse() || []) {
 				if (field["type"] == "text") {
 					this.data.description = field["text"]
 					return;
@@ -463,8 +466,9 @@ export default defineComponent({
 				auto = YAML.parse(this.automationString)
 			} catch {
 				return;
-			}			if (Array.isArray(auto)) return;
-			for (let field of auto.automation.reverse()) {
+			}			
+			if (Array.isArray(auto)) return;
+			for (let field of auto?.automation?.reverse() || []) {
 				if (field["type"] == "text") {
 					field["text"] = this.data.description
 					auto.automation.reverse()
@@ -532,14 +536,12 @@ export default defineComponent({
 						if (parsedAutomation.length > 0) parsedAutomation = parsedAutomation[0];
 						else return;
 					}
-					///console.log(parsedAutomation);
 
 					if (parsedAutomation.name && this.data.name == "New Feature") this.data.name = parsedAutomation.name.replace(" (1H)", "").replace(" (2H)", "");
 
 					if (parsedAutomation.automation && this.data.description == "") {
 						for (let type in parsedAutomation.automation) {
 							if (parsedAutomation.automation[type]["type"] == "text") {
-								///console.log(parsedAutomation.automation[type]["text"]);
 								this.data.description = parsedAutomation.automation[type]["text"];
 								break;
 							}

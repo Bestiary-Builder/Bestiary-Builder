@@ -99,8 +99,10 @@ app.post("/api/automation/:id/update", requireUser, async (req, res) => {
 			//Limit properties that are editable:
 			let update = {
 				name: data.name,
-				automation: data.automation
+				automation: data.automation,
+				description: data.description
 			};
+
 			//Update:
 			let updatedId = await updateAutomation(update as Automation, data._id);
 			if (updatedId) {

@@ -40,7 +40,7 @@
             </div>
             <hr />
             <div class="automation-editor">
-                <AutomationEditor v-if="selectedAutomation" :data="selectedAutomation" :is-stand-alone="true" :key="selectedAutomation?._id.toString()"/>
+                <AutomationEditor v-if="selectedAutomation" :data="selectedAutomation" :is-stand-alone="true" :key="selectedAutomation?._id.toString()" @savedData="initialData = JSON.stringify(data);"/>
                 <div v-else class="no-selected"> Select an automation to get started with editing it.</div>
             </div> 
         </div>
@@ -65,25 +65,25 @@
 import Breadcrumbs from '@/components/Breadcrumbs.vue';
 import {ref, onMounted } from 'vue';
 import {useLoading} from 'vue-loading-overlay'
-import { user as getUser, handleApiResponse, toast, type error, asyncLimits, type limitsType, loadingOptions } from '@/main';
+import { user as getUser, handleApiResponse, toast, type error, loadingOptions } from '@/main';
 import { type User, Automation } from '../../../shared';
 import type { Id } from '../../../shared';
 import LabelledComponent from '@/components/LabelledComponent.vue';
 import AutomationEditor from '@/components/AutomationEditor.vue';
 import Modal from '@/components/Modal.vue';
-import YAML from "yaml";
+import { onBeforeRouteLeave } from 'vue-router';
 const $loading = useLoading(loadingOptions);
 const user     = ref<User | null>(null);
-let limits     : limitsType | null = null
 const data     = ref<Automation[]>([]);
+let initialData= "";
 // get our data
 onMounted(async () => {
     const loader = $loading.show();
 
     //Request my automations
-    await getMyAutomations()
+    await getMyAutomations();
+    initialData = JSON.stringify(data.value);
     user.value = await getUser;
-    limits = await asyncLimits;
     loader.hide()
 })
 
@@ -92,7 +92,7 @@ const selectedAutomation = ref<Automation | null>(null);
 
 
 const newAutomationName = ref<string>("New Automation");
-const addAutomation = (name : string, automation = {}) => {
+const addAutomation = (name : string, automation = null, shouldNotify = true) => {
     if (name == "New Automation") {
         toast.warning("Automation must have a non-default name!")
         return;
@@ -110,7 +110,7 @@ const addAutomation = (name : string, automation = {}) => {
         if (result.success) {
             await getMyAutomations();
             newAutomationName.value = "New Automation";
-            toast.success("Successfully added automation: " + name)
+            if (shouldNotify) toast.success("Successfully added automation: " + name)
             selectedAutomation.value = data.value[data.value.length -1]
         } 
         else toast.error((result.data as error).error);
@@ -138,6 +138,7 @@ const getMyAutomations = async () => {
         if (result.success) data.value = result.data as Automation[];
         else toast.error((result.data as error).error);
     });
+    initialData = JSON.stringify(data.value);
 }
 
 const exportMyAutomations = () => {
@@ -158,9 +159,34 @@ const importAutomations = () => {
         let name : string;
         if (Array.isArray(a)) name = a[0].name.replace(" (1H)", "").replace(" (2H)", "")
         else name = a.name
-        addAutomation(name,a)
+        addAutomation(name,a, false)
     }
+    toast.info("Done importing automation!")
+    showImportModal.value = false;
 }
+
+onBeforeRouteLeave(() => {
+    // when the user leaves this route
+    console.log("cool")
+    console.log(JSON.stringify(initialData), JSON.stringify(data.value))
+    if (initialData !== JSON.stringify(data.value)) {
+        console.log('different')
+        const answer = window.confirm("Do you really want to leave? you have unsaved changes!");
+        if (!answer) return false;
+    }
+})
+
+window.addEventListener("beforeunload", (event) => {
+    // haven't figured out yet how to destroy the event listener upon unmount so for now this confirms that the
+    // warning only shows if they are in the statblock editor
+    if (initialData !== JSON.stringify(data.value)) {
+        console.log('different')
+        const answer = window.confirm("Do you really want to leave? you have unsaved changes!");
+        event.preventDefault();
+        event.returnValue = true;
+    }
+});
+
 </script>
 
 <style scoped lang="less">
@@ -182,6 +208,8 @@ const importAutomations = () => {
                 margin: .3rem 0;
                 p {
                     cursor: pointer;
+                    word-break: break-all;
+
 
                 }
                 &.selected {

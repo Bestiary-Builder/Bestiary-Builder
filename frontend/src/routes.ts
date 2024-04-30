@@ -35,7 +35,7 @@ export const routes = [
 	// a page to edit your personal automations
 	{
 		path: "/my-automation",
-		name: "My Automations",
+		name: "My Automation",
 		file: "PersonalAutomation.vue",
 		meta: {navbar: true, loggedIn: true}
 	},

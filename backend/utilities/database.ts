@@ -273,7 +273,7 @@ export async function updateAutomation(data: Automation, id?: Id) {
 		data.lastUpdated = Date.now();
 		if (id) {
 			if (await getAutomation(id)) {
-				log.log("database", "Updating bestiary with id " + id);
+				log.log("database", "Updating automation with id " + id);
 				await collections.automations?.updateOne({_id: id}, {$set: data});
 				return id;
 			} else {
@@ -281,7 +281,7 @@ export async function updateAutomation(data: Automation, id?: Id) {
 				return null;
 			}
 		} else {
-			log.log("database", "Adding new bestiary to collection");
+			log.log("database", "Adding new automation to collection");
 			let _id = new Id();
 			let newData = {
 				...data,
