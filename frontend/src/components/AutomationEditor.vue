@@ -225,7 +225,7 @@ export default defineComponent({
 		});
 		this.getMyAutomations();
 	},
-	emits: ["savedData"],
+	emits: ["savedStandaloneData"],
 	methods: {
 		getMyAutomations() {
 			fetch("/api/automationDocumentation").then(async (response: any) => {
@@ -297,7 +297,7 @@ export default defineComponent({
 										let result = await handleApiResponse<FeatureEntity>(response);
 										if (result.success && shouldNotify) {
 											 toast.success("Saved Automation!");
-											 this.$emit("savedData")
+											 this.$emit("savedStandaloneData")
 										}
 										else if (!result.success) {
 											toast.error(`${this.data.name}:` + (result.data as error).error);

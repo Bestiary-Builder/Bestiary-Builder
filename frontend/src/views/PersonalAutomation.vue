@@ -40,7 +40,7 @@
             </div>
             <hr />
             <div class="automation-editor">
-                <AutomationEditor v-if="selectedAutomation" :data="selectedAutomation" :is-stand-alone="true" :key="selectedAutomation?._id.toString()" @savedData="initialData = JSON.stringify(data);"/>
+                <AutomationEditor v-if="selectedAutomation" :data="selectedAutomation" :is-stand-alone="true" :key="selectedAutomation?._id.toString()" @saved-standalone-data="initialData = JSON.stringify(data);"/>
                 <div v-else class="no-selected"> Select an automation to get started with editing it.</div>
             </div> 
         </div>
