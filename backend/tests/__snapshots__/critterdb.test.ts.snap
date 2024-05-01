@@ -1,0 +1,194 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CritterDB export to be unchanged 1`] = `
+[
+  {
+    "__v": 0,
+    "_id": "5df1637163de6f61312fa47a",
+    "flavor": {
+      "description": "",
+      "environment": "",
+      "faction": "",
+      "imageUrl": "http://avrae.io/assets/img/AvraeSquare.jpg",
+      "nameIsProper": true,
+    },
+    "name": "Avrae",
+    "publishedBestiaryId": "5acb0aa187653a455731b890",
+    "sharing": {
+      "linkSharingEnabled": false,
+    },
+    "stats": {
+      "abilityScores": {
+        "charisma": 18,
+        "constitution": 14,
+        "dexterity": 10,
+        "intelligence": 22,
+        "strength": 5,
+        "wisdom": 12,
+      },
+      "actions": [
+        {
+          "description": "<i>Melee Weapon Attack:</i> +3 to hit, reach 5 ft., one creature. <i>Hit:</i> -1 (1d4 + -3) piercing damage, plus 35 (10d6) force damage.
+<avrae hidden>Bite|3|1d4-3[piercing]+10d6[force]</avrae>",
+          "name": "Bite",
+        },
+        {
+          "description": "Avrae does a thing.",
+          "name": "Do a Thing",
+        },
+        {
+          "description": "<i>Melee Weapon Attack:</i> +6 to hit, reach 5 ft., one creature. <i>Hit:</i> 3 (1d6) slashing damage, or 4 (1d8) slashing damage if used with two hands to make a melee attack, plus 5 (1d10) force damage.
+<avrae hidden>One Handed|6|1d6[slashing]+1d10[force]</avrae><avrae hidden>Two Handed|6|1d8[slashing]+1d10[force]</avrae>",
+          "name": "Versatile Melee",
+        },
+        {
+          "description": "<i>Melee or Ranged Weapon Attack:</i> +3 to hit, reach 5 ft. or range 80/320 ft., one creature. <i>Hit:</i> 0 (1d6 + -3) bludgeoning damage in melee, or 0 (1d6 + -3) bludgeoning damage at range, or 1 (1d8 + -3) bludgeoning damage if used with two hands to make a melee attack, plus 35 (10d6) force damage.",
+          "name": "Throw Dice",
+        },
+      ],
+      "additionalAbilities": [
+        {
+          "description": "Avrae's innate spellcasting ability is Intelligence (spell save DC 20, +12 to hit with spell attacks). Avrae can innately cast the following spells, requiring no components:
+
+At will: <i>power word kill</i>, <i>power word heal</i>, <i>wish</i>, <i>power word panic</i>",
+          "name": "Innate Spellcasting",
+        },
+        {
+          "description": "Avrae is a 20th-level spellcaster. Avrae's spellcasting ability is Intelligence (spell save DC 20, +12 to hit with spell attacks). Avrae has the following wizard spells prepared:
+
+3rd level (3 slots): <i>fireball</i>",
+          "name": "Spellcasting",
+        },
+      ],
+      "alignment": "Lawful Neutral",
+      "armorClass": 16,
+      "armorType": "natural armor",
+      "challengeRating": 30,
+      "conditionImmunities": [
+        "Charmed",
+        "Unconscious",
+        "Stunned",
+        "Petrified",
+        "Paralyzed",
+        "Exhaustion",
+        "Intoxicated",
+        "Frightened",
+      ],
+      "damageImmunities": [
+        "Psychic",
+        "Acid",
+      ],
+      "damageResistances": [],
+      "damageVulnerabilities": [],
+      "experiencePoints": 155000,
+      "hitDieSize": 4,
+      "languages": [
+        "Common",
+        "Draconic",
+        "Python",
+      ],
+      "legendaryActions": [],
+      "legendaryActionsDescription": "",
+      "legendaryActionsPerRound": 3,
+      "numHitDie": 10,
+      "proficiencyBonus": 6,
+      "race": "Dragon",
+      "reactions": [],
+      "savingThrows": [
+        {
+          "ability": "intelligence",
+          "proficient": false,
+          "value": 18,
+        },
+        {
+          "ability": "constitution",
+          "proficient": true,
+        },
+      ],
+      "senses": [
+        "truesight 120 ft.",
+      ],
+      "size": "Tiny",
+      "skills": [
+        {
+          "name": "Arcana",
+          "proficient": false,
+          "value": 18,
+        },
+        {
+          "name": "Perception",
+          "proficient": true,
+        },
+      ],
+      "speed": "30 ft.",
+    },
+  },
+  {
+    "__v": 0,
+    "_id": "5df1637163de6f61312fa47b",
+    "flavor": {
+      "description": "",
+      "environment": "",
+      "faction": "",
+      "imageUrl": "",
+      "nameIsProper": false,
+    },
+    "name": "Spellcasting Test",
+    "publishedBestiaryId": "5acb0aa187653a455731b890",
+    "sharing": {
+      "linkSharingEnabled": false,
+    },
+    "stats": {
+      "abilityScores": {
+        "charisma": 16,
+        "constitution": 10,
+        "dexterity": 10,
+        "intelligence": 12,
+        "strength": 10,
+        "wisdom": 14,
+      },
+      "actions": [],
+      "additionalAbilities": [
+        {
+          "description": "The spellcasting test's innate spellcasting ability is Charisma (spell save DC 13, +5 to hit with spell attacks). It can innately cast the following spells, requiring no components:
+
+At will: <i>fire bolt</i>
+3/day: <i>faerie fire</i>",
+          "name": "Innate Spellcasting",
+        },
+        {
+          "description": "The spellcasting test is a 10th-level spellcaster. The spellcasting test's spellcasting ability is Wisdom (spell save DC 12, +4 to hit with spell attacks). The spellcasting test has the following cleric spells prepared:
+
+1st level (4 slots): <i>inflict wounds</i>, <i>bane</i>",
+          "name": "Spellcasting",
+        },
+      ],
+      "alignment": "Unaligned",
+      "armorClass": 10,
+      "armorType": null,
+      "challengeRating": 0.125,
+      "conditionImmunities": [],
+      "damageImmunities": [],
+      "damageResistances": [],
+      "damageVulnerabilities": [],
+      "experiencePoints": 25,
+      "hitDieSize": 8,
+      "languages": [
+        "Common",
+      ],
+      "legendaryActions": [],
+      "legendaryActionsDescription": "",
+      "legendaryActionsPerRound": 3,
+      "numHitDie": 1,
+      "proficiencyBonus": 2,
+      "race": "Humanoid",
+      "reactions": [],
+      "savingThrows": [],
+      "senses": [],
+      "size": "Medium",
+      "skills": [],
+      "speed": "30 ft.",
+    },
+  },
+]
+`;

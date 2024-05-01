@@ -242,7 +242,7 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 		let fixedData = [] as Creature[];
 		for (let creature of data) {
 			if (!creature) continue;
-			let oldStats = creature.stats;
+			let oldStats = creature;
 			creature.stats = {} as Statblock;
 			for (let key in defaultStatblock) {
 				//@ts-expect-error
@@ -473,191 +473,7 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 			let creature = await collections.creatures?.findOne({_id: new Id(creatureId)});
 			if (!creature) continue;
 
-			//HP:
-			let hpObject = creature.stats.defenses.hp;
-			let hp = hpCalc(creature.stats);
-			let hitdice = `${hpObject.numOfHitDie + "d" + hpObject.sizeOfHitDie} + ${hpObject.numOfHitDie * statCalc("con", creature.stats)}`;
-
-			//Spellcastin:
-			let spellcastInnateObj = creature.stats.spellcasting.innateSpells;
-			let spellcastCasterObj = creature.stats.spellcasting.casterSpells;
-			let spellcasting = {
-				caster_level: spellcastCasterObj.casterLevel || 0,
-				slots: spellcastCasterObj.spellSlotList || {},
-				known_spells: knownSpells(creature.stats.spellcasting),
-				caster_dc: spellDc(false, creature.stats),
-				caster_sab: spellAttackBonus(false, creature.stats),
-				caster_mod: statCalc(spellcastCasterObj.spellCastingAbilityOverride ?? spellcastCasterObj.spellCastingAbility ?? "", creature.stats),
-				innate_dc: spellDc(true, creature.stats),
-				innate_sab: spellAttackBonus(true, creature.stats),
-				innate_mod: statCalc(spellcastInnateObj.spellCastingAbility, creature.stats)
-			};
-
-			//Saves/stats
-			let saves = {} as any;
-			for (let key in creature.stats.abilities.saves) {
-				let newKey;
-				switch (key) {
-					case "str":
-						newKey = "strengthSave";
-						break;
-					case "dex":
-						newKey = "dexteritySave";
-						break;
-					case "con":
-						newKey = "constitutionSave";
-						break;
-					case "wis":
-						newKey = "wisdomSave";
-						break;
-					case "int":
-						newKey = "intelligenceSave";
-						break;
-					case "cha":
-						newKey = "charismaSave";
-						break;
-					default:
-						continue;
-				}
-				let override = creature.stats.abilities.saves[key].override;
-				let value = statCalc(key, creature.stats);
-				let prof = 0;
-				if (override != null) {
-					value = override;
-					prof = 1;
-				} else if (creature.stats.abilities.saves[key].isProficient) {
-					value += creature.stats.core.proficiencyBonus;
-					prof = 1;
-				}
-				saves[newKey] = {
-					value: value,
-					prof: prof,
-					adv: null,
-					bonus: 0
-				};
-			}
-			//Final data
-			let creatureData = {
-				name: creature.stats.description.name,
-				proper: creature.stats.description.isProperNoun,
-				image_url: creature.stats.description.image || "",
-				languages: creature.stats.core.languages,
-				cr: displayCR(creature.stats.description.cr),
-				xp: creature.stats.description.xp,
-				alignment: creature.stats.description.alignment,
-				size: creature.stats.core.size,
-				race: creature.stats.core.race,
-				ac: creature.stats.defenses.ac.ac,
-				armortype: creature.stats.defenses.ac.acSource,
-				hp: hp,
-				hitdice: hitdice,
-				speed: displaySpeedOrSenses(creature.stats.core.speed),
-				ability_scores: {
-					prof_bonus: creature.stats.core.proficiencyBonus,
-					strength: creature.stats.abilities.stats.str,
-					dexterity: creature.stats.abilities.stats.dex,
-					constitution: creature.stats.abilities.stats.con,
-					intelligence: creature.stats.abilities.stats.int,
-					wisdom: creature.stats.abilities.stats.wis,
-					charisma: creature.stats.abilities.stats.cha
-				},
-				saves: saves,
-				skills: calcSkills(creature.stats),
-				senses: displaySpeedOrSenses(creature.stats.core.senses),
-				resistances: creature.stats.defenses.resistances,
-				immunities: creature.stats.defenses.immunities,
-				vulnerabilities: creature.stats.defenses.vulnerabilities,
-				condition_immune: creature.stats.defenses.conditionImmunities,
-				traits: creature.stats.features.features,
-				actions: creature.stats.features.actions,
-				bonus_actions: creature.stats.features.bonus,
-				reactions: creature.stats.features.reactions,
-				legactions: creature.stats.features.legendary,
-				mythic: creature.stats.features.mythic,
-				lair: creature.stats.features.lair,
-				regional: creature.stats.features.regional,
-				la_per_round: creature.stats.misc.legActionsPerRound,
-				spellcasting: spellcasting
-			};
-			// @ts-ignore
-			creatureData.passiveperc = calcPP(creature.stats.core.senses.passivePerceptionOverride, creatureData);
-			let caster = creature.stats["spellcasting"]["casterSpells"];
-			let isNoun = creature.stats["description"]["isProperNoun"];
-			let name = creature.stats["description"]["name"];
-
-			// best not to think about this too much.
-			if (caster.casterLevel && caster.castingClass && caster.spellList.flat().length > 0) {
-				let output = `${isNoun ? "" : "The "}${name} is a ${nthSuffix(caster.casterLevel)}-level spellcaster. ${isNoun ? "Their" : "Its"} spellcasting ability is ${fullSpellAbilityName(caster.spellCastingAbilityOverride ?? caster.spellCastingAbility ?? "")} (spell save DC ${spellDc(
-					false,
-					creature.stats
-				)}, ${spellAttackBonus(false, creature.stats) >= 0 ? "+" : ""}${spellAttackBonus(false, creature.stats)} to hit with spell attacks). ${isNoun ? name : "It"} ${
-					["Sorcerer", "Bard", "Ranger", "Warlock"].includes(caster.castingClass) ? `knowns the following ${caster.castingClass.toLowerCase()} spells` : `has the following ${caster.castingClass.toLowerCase()} spells prepared`
-				}:${!["Ranger", "Paladin"].includes(caster.castingClass) && caster.spellList[0].length > 0 ? `\n\nCantrips (at will): ${caster.spellList[0].sort().join(", ").toLowerCase()}` : ""}${
-					caster.spellList[1].length > 0 ? `\n\n1st level ${slots(caster.spellSlotList![1])}: ${caster.spellList[1].sort().join(", ").toLowerCase()}` : ""
-				}${caster.spellList[2].length > 0 ? `\n\n2nd level ${slots(caster.spellSlotList![2])}: ${caster.spellList[2].sort().join(", ").toLowerCase()}` : ""}${
-					caster.spellList[3].length > 0 ? `\n\n3rd level ${slots(caster.spellSlotList![3])}: ${caster.spellList[3].sort().join(", ").toLowerCase()}` : ""
-				}${caster.spellList[4].length > 0 ? `\n\n4th level ${slots(caster.spellSlotList![4])}: ${caster.spellList[4].sort().join(", ").toLowerCase()}` : ""}${
-					caster.spellList[5].length > 0 ? `\n\n5th level ${slots(caster.spellSlotList![5])}: ${caster.spellList[5].sort().join(", ").toLowerCase()}` : ""
-				}${caster.spellList[6].length > 0 ? `\n\n6th level ${slots(caster.spellSlotList![6])}: ${caster.spellList[6].sort().join(", ").toLowerCase()}` : ""}${
-					caster.spellList[7].length > 0 ? `\n\n7th level ${slots(caster.spellSlotList![7])}: ${caster.spellList[7].sort().join(", ").toLowerCase()}` : ""
-				}${caster.spellList[8].length > 0 ? `\n\n8th level ${slots(caster.spellSlotList![8])}: ${caster.spellList[8].sort().join(", ").toLowerCase()}` : ""}${
-					caster.spellList[9].length > 0 ? `\n\n9th level ${slots(caster.spellSlotList![9])}: ${caster.spellList[9].sort().join(", ").toLowerCase()}` : ""
-				}`.replaceAll("\t", "");
-
-				creatureData.traits.push({
-					name: "Spellcasting",
-					description: output,
-					automation: null
-				});
-			}
-
-			let innateCaster = creature.stats["spellcasting"]["innateSpells"];
-			if (innateCaster.spellCastingAbility && (innateCaster.spellList[0].length > 0 || innateCaster.spellList[1].length > 0 || innateCaster.spellList[2].length > 0 || innateCaster.spellList[3].length > 0)) {
-				let fName = `Innate Spellcasting${innateCaster.isPsionics ? " (Psionics)" : ""}`;
-				let output = "";
-
-				if (!innateCaster.displayAsAction) {
-					output += `${isNoun ? "" : "The "}${name}'s spellcasting ability is ${fullSpellAbilityName(innateCaster.spellCastingAbility)} (spell save DC ${spellDc(true, creature.stats)}, ${spellAttackBonus(true, creature.stats) >= 0 ? "+" : ""}${spellAttackBonus(
-						true,
-						creature.stats
-					)} to hit with spell attacks). ${isNoun ? name : "It"} can innately cast the following spells${componentsString(innateCaster.noComponentsOfType)}:`;
-				} else {
-					output += `${isNoun ? "" : "The "}${name} casts one of the following spells${componentsString(innateCaster.noComponentsOfType)} and using ${fullSpellAbilityName(innateCaster.spellCastingAbility)} as the spellcasting ability (spell save DC ${spellDc(true, creature.stats)}, ${
-						spellAttackBonus(true, creature.stats) >= 0 ? "+" : ""
-					}${spellAttackBonus(true, creature.stats)} to hit with spell attacks):`;
-				}
-
-				if (innateCaster.spellList[0].length > 0)
-					output += `\n\nAt will: ${innateCaster.spellList[0]
-						.map((x: any) => (x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell))
-						.sort()
-						.join(", ")
-						.toLowerCase()}`;
-				if (innateCaster.spellList[3].length > 0)
-					output += `\n\n3/day each: ${innateCaster.spellList[3]
-						.map((x: any) => (x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell))
-						.sort()
-						.join(", ")
-						.toLowerCase()}`;
-				if (innateCaster.spellList[2].length > 0)
-					output += `\n\n2/day each: ${innateCaster.spellList[2]
-						.map((x: any) => (x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell))
-						.sort()
-						.join(", ")
-						.toLowerCase()}`;
-				if (innateCaster.spellList[1].length > 0)
-					output += `\n\n1/day each: ${innateCaster.spellList[1]
-						.map((x: any) => (x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell))
-						.sort()
-						.join(", ")
-						.toLowerCase()}`;
-
-				creatureData[innateCaster.displayAsAction ? "actions" : "traits"].push({
-					name: fName,
-					description: output,
-					automation: null
-				});
-			}
+			const creatureData = getCreatureData(creature.stats)
 			creatures.push(creatureData);
 		}
 		//Return bestiary in specific format
@@ -893,4 +709,193 @@ function componentsString(comp: string[]): string {
 		return `, requiring only ${only} components`;
 	}
 	return `, requiring no ${comp[0].toLowerCase()} components`;
+}
+
+export function getCreatureData(creature : Statblock) {
+	//HP:
+	let hpObject = creature.defenses.hp;
+	let hp = hpCalc(creature);
+	let hitdice = `${hpObject.numOfHitDie + "d" + hpObject.sizeOfHitDie} + ${hpObject.numOfHitDie * statCalc("con", creature)}`;
+
+	//Spellcastin:
+	let spellcastInnateObj = creature.spellcasting.innateSpells;
+	let spellcastCasterObj = creature.spellcasting.casterSpells;
+	let spellcasting = {
+		caster_level: spellcastCasterObj.casterLevel || 0,
+		slots: spellcastCasterObj.spellSlotList || {},
+		known_spells: knownSpells(creature.spellcasting),
+		caster_dc: spellDc(false, creature),
+		caster_sab: spellAttackBonus(false, creature),
+		caster_mod: statCalc(spellcastCasterObj.spellCastingAbilityOverride ?? spellcastCasterObj.spellCastingAbility ?? "", creature),
+		innate_dc: spellDc(true, creature),
+		innate_sab: spellAttackBonus(true, creature),
+		innate_mod: statCalc(spellcastInnateObj.spellCastingAbility, creature)
+	};
+
+	//Saves/stats
+	let saves = {} as any;
+	for (let key in creature.abilities.saves) {
+		let newKey;
+		switch (key) {
+			case "str":
+				newKey = "strengthSave";
+				break;
+			case "dex":
+				newKey = "dexteritySave";
+				break;
+			case "con":
+				newKey = "constitutionSave";
+				break;
+			case "wis":
+				newKey = "wisdomSave";
+				break;
+			case "int":
+				newKey = "intelligenceSave";
+				break;
+			case "cha":
+				newKey = "charismaSave";
+				break;
+			default:
+				continue;
+		}
+		let override = creature.abilities.saves[key].override;
+		let value = statCalc(key, creature);
+		let prof = 0;
+		if (override != null) {
+			value = override;
+			prof = 1;
+		} else if (creature.abilities.saves[key].isProficient) {
+			value += creature.core.proficiencyBonus;
+			prof = 1;
+		}
+		saves[newKey] = {
+			value: value,
+			prof: prof,
+			adv: null,
+			bonus: 0
+		};
+	}
+	//Final data
+	let creatureData = {
+		name: creature.description.name,
+		proper: creature.description.isProperNoun,
+		image_url: creature.description.image || "",
+		languages: creature.core.languages,
+		cr: displayCR(creature.description.cr),
+		xp: creature.description.xp,
+		alignment: creature.description.alignment,
+		size: creature.core.size,
+		race: creature.core.race,
+		ac: creature.defenses.ac.ac,
+		armortype: creature.defenses.ac.acSource,
+		hp: hp,
+		hitdice: hitdice,
+		speed: displaySpeedOrSenses(creature.core.speed),
+		ability_scores: {
+			prof_bonus: creature.core.proficiencyBonus,
+			strength: creature.abilities.stats.str,
+			dexterity: creature.abilities.stats.dex,
+			constitution: creature.abilities.stats.con,
+			intelligence: creature.abilities.stats.int,
+			wisdom: creature.abilities.stats.wis,
+			charisma: creature.abilities.stats.cha
+		},
+		saves: saves,
+		skills: calcSkills(creature),
+		senses: displaySpeedOrSenses(creature.core.senses),
+		resistances: creature.defenses.resistances,
+		immunities: creature.defenses.immunities,
+		vulnerabilities: creature.defenses.vulnerabilities,
+		condition_immune: creature.defenses.conditionImmunities,
+		traits: creature.features.features,
+		actions: creature.features.actions,
+		bonus_actions: creature.features.bonus,
+		reactions: creature.features.reactions,
+		legactions: creature.features.legendary,
+		mythic: creature.features.mythic,
+		lair: creature.features.lair,
+		regional: creature.features.regional,
+		la_per_round: creature.misc.legActionsPerRound,
+		spellcasting: spellcasting
+	};
+	// @ts-ignore
+	creatureData.passiveperc = calcPP(creature.core.senses.passivePerceptionOverride, creatureData);
+	let caster = creature["spellcasting"]["casterSpells"];
+	let isNoun = creature["description"]["isProperNoun"];
+	let name = creature["description"]["name"];
+
+	// best not to think about this too much.
+	if (caster.casterLevel && caster.castingClass && caster.spellList.flat().length > 0) {
+		let output = `${isNoun ? "" : "The "}${name} is a ${nthSuffix(caster.casterLevel)}-level spellcaster. ${isNoun ? "Their" : "Its"} spellcasting ability is ${fullSpellAbilityName(caster.spellCastingAbilityOverride ?? caster.spellCastingAbility ?? "")} (spell save DC ${spellDc(
+			false,
+			creature
+		)}, ${spellAttackBonus(false, creature) >= 0 ? "+" : ""}${spellAttackBonus(false, creature)} to hit with spell attacks). ${isNoun ? name : "It"} ${
+			["Sorcerer", "Bard", "Ranger", "Warlock"].includes(caster.castingClass) ? `knowns the following ${caster.castingClass.toLowerCase()} spells` : `has the following ${caster.castingClass.toLowerCase()} spells prepared`
+		}:${!["Ranger", "Paladin"].includes(caster.castingClass) && caster.spellList[0].length > 0 ? `\n\nCantrips (at will): ${caster.spellList[0].sort().join(", ").toLowerCase()}` : ""}${
+			caster.spellList[1].length > 0 ? `\n\n1st level ${slots(caster.spellSlotList![1])}: ${caster.spellList[1].sort().join(", ").toLowerCase()}` : ""
+		}${caster.spellList[2].length > 0 ? `\n\n2nd level ${slots(caster.spellSlotList![2])}: ${caster.spellList[2].sort().join(", ").toLowerCase()}` : ""}${
+			caster.spellList[3].length > 0 ? `\n\n3rd level ${slots(caster.spellSlotList![3])}: ${caster.spellList[3].sort().join(", ").toLowerCase()}` : ""
+		}${caster.spellList[4].length > 0 ? `\n\n4th level ${slots(caster.spellSlotList![4])}: ${caster.spellList[4].sort().join(", ").toLowerCase()}` : ""}${
+			caster.spellList[5].length > 0 ? `\n\n5th level ${slots(caster.spellSlotList![5])}: ${caster.spellList[5].sort().join(", ").toLowerCase()}` : ""
+		}${caster.spellList[6].length > 0 ? `\n\n6th level ${slots(caster.spellSlotList![6])}: ${caster.spellList[6].sort().join(", ").toLowerCase()}` : ""}${
+			caster.spellList[7].length > 0 ? `\n\n7th level ${slots(caster.spellSlotList![7])}: ${caster.spellList[7].sort().join(", ").toLowerCase()}` : ""
+		}${caster.spellList[8].length > 0 ? `\n\n8th level ${slots(caster.spellSlotList![8])}: ${caster.spellList[8].sort().join(", ").toLowerCase()}` : ""}${
+			caster.spellList[9].length > 0 ? `\n\n9th level ${slots(caster.spellSlotList![9])}: ${caster.spellList[9].sort().join(", ").toLowerCase()}` : ""
+		}`.replaceAll("\t", "");
+
+		creatureData.traits.push({
+			name: "Spellcasting",
+			description: output,
+			automation: null
+		});
+	}
+
+	let innateCaster = creature["spellcasting"]["innateSpells"];
+	if (innateCaster.spellCastingAbility && (innateCaster.spellList[0].length > 0 || innateCaster.spellList[1].length > 0 || innateCaster.spellList[2].length > 0 || innateCaster.spellList[3].length > 0)) {
+		let fName = `Innate Spellcasting${innateCaster.isPsionics ? " (Psionics)" : ""}`;
+		let output = "";
+
+		if (!innateCaster.displayAsAction) {
+			output += `${isNoun ? "" : "The "}${name}'s spellcasting ability is ${fullSpellAbilityName(innateCaster.spellCastingAbility)} (spell save DC ${spellDc(true, creature)}, ${spellAttackBonus(true, creature) >= 0 ? "+" : ""}${spellAttackBonus(
+				true,
+				creature
+			)} to hit with spell attacks). ${isNoun ? name : "It"} can innately cast the following spells${componentsString(innateCaster.noComponentsOfType)}:`;
+		} else {
+			output += `${isNoun ? "" : "The "}${name} casts one of the following spells${componentsString(innateCaster.noComponentsOfType)} and using ${fullSpellAbilityName(innateCaster.spellCastingAbility)} as the spellcasting ability (spell save DC ${spellDc(true, creature)}, ${
+				spellAttackBonus(true, creature) >= 0 ? "+" : ""
+			}${spellAttackBonus(true, creature)} to hit with spell attacks):`;
+		}
+
+		if (innateCaster.spellList[0].length > 0)
+			output += `\n\nAt will: ${innateCaster.spellList[0]
+				.map((x: any) => (x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell))
+				.sort()
+				.join(", ")
+				.toLowerCase()}`;
+		if (innateCaster.spellList[3].length > 0)
+			output += `\n\n3/day each: ${innateCaster.spellList[3]
+				.map((x: any) => (x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell))
+				.sort()
+				.join(", ")
+				.toLowerCase()}`;
+		if (innateCaster.spellList[2].length > 0)
+			output += `\n\n2/day each: ${innateCaster.spellList[2]
+				.map((x: any) => (x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell))
+				.sort()
+				.join(", ")
+				.toLowerCase()}`;
+		if (innateCaster.spellList[1].length > 0)
+			output += `\n\n1/day each: ${innateCaster.spellList[1]
+				.map((x: any) => (x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell))
+				.sort()
+				.join(", ")
+				.toLowerCase()}`;
+
+		creatureData[innateCaster.displayAsAction ? "actions" : "traits"].push({
+			name: fName,
+			description: output,
+			automation: null
+		});
+	}
+	return creatureData
 }

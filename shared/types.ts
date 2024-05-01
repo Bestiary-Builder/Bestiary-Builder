@@ -105,7 +105,7 @@ export const defaultStatblock = {
 		hp: {
 			numOfHitDie: 1,
 			sizeOfHitDie: 6,
-			override: null as number | null
+			override: null
 		},
 		ac: {
 			ac: 10,
