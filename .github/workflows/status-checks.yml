@@ -3,18 +3,43 @@ on:
     pull_request:
         branches:
             - main
+env:
+    NODE_ENV: production
 jobs:
-    build-frontend:
+    test:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@master
-            - uses: actions/setup-node@master
-            - name: Installing frontend project dependencies
-              working-directory: ./frontend
-              run: npm install
+            - uses: oven-sh/setup-bun@v1
             - name: Installing shared project dependencies
               working-directory: ./shared
-              run: npm install
+              run: bun install
+            - name: Installing frontend dependencies
+              working-directory: ./frontend
+              run: bun install
+            - name: Installing backend dependencies
+              working-directory: ./backend
+              run: bun install
+            - name: Running backend tests
+              working-directory: ./backend
+              run: bun run test
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@master
+            - uses: oven-sh/setup-bun@v1
+            - name: Installing shared project dependencies
+              working-directory: ./shared
+              run: bun install
+            - name: Installing frontend dependencies
+              working-directory: ./frontend
+              run: bun install
             - name: Building the frontend
               working-directory: ./frontend
-              run: npm run build
+              run: bun run build
+            - name: Installing backend dependencies
+              working-directory: ./backend
+              run: bun install
+            - name: Building the backend
+              working-directory: ./backend
+              run: bun run compile
