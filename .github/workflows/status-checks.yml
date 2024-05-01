@@ -1,8 +1,7 @@
 name: Check status of branch
 on:
     pull_request:
-        branches:
-            - main
+        types: [opened, reopened]
 env:
     NODE_ENV: production
 jobs:
