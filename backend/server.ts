@@ -101,11 +101,10 @@ for (let route of routes) {
 app.use(express.static(process.env.frontendPath as string));
 
 //Import logic files
-import "./logic/logic";
+import "./logic";
 
 //Start discord bot
-import {startDiscordBot} from "./logic/discord";
-startDiscordBot();
+import "./logic/discord";
 
 //Everything else is 404
 app.get("/api/*", (req, res) => res.status(404).json({error: "Path not found."}));
