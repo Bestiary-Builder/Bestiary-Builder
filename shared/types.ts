@@ -394,7 +394,7 @@ export type Features = {
 export interface FeatureEntity {
 	name: string;
 	description: string;
-	automation: null | object | object[];
+	automation: null | {[key: string]: any} | {[key: string]: any}[];
 }
 
 export interface SpellCasting {
@@ -1003,7 +1003,6 @@ export const spellList = {
 
 export let spellListFlattened = [];
 for (let l in spellList) {
-	// @ts-ignore
 	spellListFlattened = spellListFlattened.concat(spellList[l]);
 }
 

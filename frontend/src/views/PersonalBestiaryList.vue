@@ -110,11 +110,10 @@ export default defineComponent({
 				},
 				body: JSON.stringify({data: data})
 			}).then(async (response) => {
-				let result = await handleApiResponse(response);
+				let result = await handleApiResponse<Bestiary>(response);
 				if (result.success) {
 					toast.success("Created bestiary");
-					// @ts-ignore
-					this.$router.push("/bestiary-viewer/" + result.data._id);
+					this.$router.push("/bestiary-viewer/" + (result.data as Bestiary)._id);
 				} else {
 					toast.error((result.data as error).error);
 				}

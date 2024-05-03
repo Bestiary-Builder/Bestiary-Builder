@@ -785,7 +785,7 @@ export default defineComponent({
 
 			const slots = this.data.spellcasting.casterSpells.spellSlotList;
 			if (sClass == "Warlock" && slots) {
-				// @ts-ignore
+				//@ts-expect-error
 				return Array.from({length: Object.keys(slots)[0]}, (_, index) => index + 1);
 			}
 			if (slots) return Object.keys(slots).map((str) => parseInt(str));
@@ -794,8 +794,7 @@ export default defineComponent({
 		getSpellsByLevel(level: number): string[] {
 			// this function is needed for typescript.
 			if (level < 0 || level > 9) return [];
-			// @ts-ignore
-			return spellList[level];
+			return spellList[level as 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9];
 		},
 		clearCasting() {
 			this.data.spellcasting.casterSpells.castingClass = null;
@@ -960,10 +959,8 @@ export default defineComponent({
 				for (let times in this.innateSpells) {
 					for (let spell in this.innateSpells[times]) {
 						// the spell is not in our stat block data yet, so we add it.
-						// @ts-ignore
 						if (!list[times].map((obj) => obj.spell).includes(this.innateSpells[times][spell])) {
 							list[times].push({
-								// @ts-ignore
 								spell: this.innateSpells[times][spell],
 								comment: ""
 							});
@@ -974,7 +971,6 @@ export default defineComponent({
 				// remove spells that we have in the statblock data but not in the editor data
 				for (let times in list) {
 					for (let spell in list[times]) {
-						//@ts-ignore
 						if (!this.innateSpells[times].includes(list[times][spell].spell)) delete list[times][spell];
 					}
 					// remove all falsy (null/undefined/etc) from our array which delete leaves behind.

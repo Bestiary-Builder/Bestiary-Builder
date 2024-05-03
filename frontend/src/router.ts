@@ -1,6 +1,6 @@
 import {createRouter, createWebHistory} from "vue-router";
 
-/*@ts-ignore*/
+// @ts-ignore
 import fileRoutes from "~pages";
 import {routes as relevantRoutes} from "./routes";
 import {user, sendToLogin} from "@/main";

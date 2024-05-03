@@ -288,7 +288,7 @@ export default defineComponent({
                 "int": ["arcana", "history", "investigation", "nature", "religion"],
                 "wis": ["animalhandling", "insight", "medicine", "perception", "survival"],
                 "cha": ["deception", "intimidation", "performance", "persuasion"]
-            } as any
+            } as {[key in Stat]: string[]}
 
 
             let seenSkillNames = new Set();
@@ -311,13 +311,12 @@ export default defineComponent({
 
                 let bonus = 0
                 for (let stat in SKILLS_BY_STAT) {
-                    if (SKILLS_BY_STAT[stat].includes(skill.skillName.replaceAll(" ", "").toLowerCase())) {
+                    if (SKILLS_BY_STAT[stat as Stat].includes(skill.skillName.replaceAll(" ", "").toLowerCase())) {
                         if (skill.override && skill.override !== null) {
                             let over = skill.override
                             output.push(`${skill.skillName} ${over ?? 0 >= 0 ? '+' : ''}${over}`)
                         } else {
-                            // @ts-ignore
-                            bonus = this.statCalc(stat)
+                            bonus = this.statCalc(stat as Stat)
                             if (skill.isHalfProficient) {
                                 bonus += Math.floor(this.data.core.proficiencyBonus/2)
                             } else if (skill.isProficient) {
@@ -359,8 +358,7 @@ export default defineComponent({
             const sortByLastWord = (a :string , b :string) => {
                 const lastWordA = a.split(' ').pop();
                 const lastWordB = b.split(' ').pop();
-                // @ts-ignore
-                return lastWordA.localeCompare(lastWordB);
+                return lastWordA!.localeCompare(lastWordB!);
                 };
             return list.sort(sortByLastWord)
         },
@@ -403,8 +401,7 @@ export default defineComponent({
             if (castingData.spellDcOverride) return castingData.spellDcOverride
             else {
                 if (innate && castingData.spellCastingAbility) return 8 + this.statCalc(castingData.spellCastingAbility) + this.data.core.proficiencyBonus
-                // @ts-ignore
-                else return 8 + this.statCalc(castingData.spellCastingAbilityOveride ?? castingData.spellCastingAbility) + this.data.core.proficiencyBonus
+                else return 8 + this.statCalc((castingData as CasterSpells).spellCastingAbilityOverride ?? castingData.spellCastingAbility!) + this.data.core.proficiencyBonus
             }
         },
         spellAttackBonus(innate = false): string {
@@ -416,8 +413,7 @@ export default defineComponent({
             if (castingData.spellBonusOverride || castingData.spellBonusOverride === 0) bonus = castingData.spellBonusOverride
             else {
                 if (innate && castingData.spellCastingAbility) bonus = this.statCalc(castingData.spellCastingAbility) + this.data.core.proficiencyBonus
-                // @ts-ignore
-                else bonus = this.statCalc(castingData.spellCastingAbilityOveride ?? castingData.spellCastingAbility) + this.data.core.proficiencyBonus
+                else bonus = this.statCalc((castingData as CasterSpells).spellCastingAbilityOverride ?? castingData.spellCastingAbility!) + this.data.core.proficiencyBonus
             }
 
             if (bonus >= 0) return '+' + bonus

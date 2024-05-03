@@ -16,7 +16,6 @@
 
 <script lang="ts">
 import {defineComponent} from "vue";
-// @ts-ignore
 import markdownit from "markdown-it";
 const md = markdownit();
 import dataFile from "@/assets/documents/privacy-policy.md";

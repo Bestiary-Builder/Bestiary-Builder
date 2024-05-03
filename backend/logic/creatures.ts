@@ -78,8 +78,8 @@ app.post("/api/creature/:id?/update", requireUser, async (req, res) => {
 		let oldStats = data.stats;
 		data.stats = {} as Statblock;
 		for (let key in defaultStatblock) {
-			//@ts-ignore
-			data.stats[key] = {...defaultStatblock[key], ...oldStats[key]};
+			let k = key as keyof Statblock;
+			data.stats[k] = {...defaultStatblock[k], ...oldStats[k]} as any;
 		}
 		//Check limits
 		if (data.stats.description.name.length > limits.nameLength) return res.status(400).json({error: `Name exceeds the character limit of ${limits.nameLength} characters.`});

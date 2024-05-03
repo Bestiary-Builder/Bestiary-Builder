@@ -3,11 +3,10 @@ import {log} from "../utilities/logger";
 
 import basicExamples from "../staticData/basicExamples.json";
 import srdFeatures from "../staticData/srdFeatures.json";
-import textOnlyFeatures from "../staticData/textOnlyFeatures.json";
+import tOF from "../staticData/textOnlyFeatures.json";
+const textOnlyFeatures = tOF as {[key: string]: string};
 const allSrdFeatures = Object.keys(textOnlyFeatures)
-	// @ts-ignore
-	.map((key) => ({name: key, description: textOnlyFeatures[key], automation: null}))
-	// @ts-ignore
+	.map((key) => ({name: key, description: textOnlyFeatures[key] as string, automation: null as unknown}))
 	.concat(srdFeatures);
 
 //Basic example

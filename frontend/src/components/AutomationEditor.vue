@@ -247,8 +247,7 @@ export default defineComponent({
 				this.errorMessage = null;
 				return true;
 			} catch (err) {
-				// @ts-ignore
-				this.errorMessage = err;
+				this.errorMessage = err as string;
 				return false;
 			}
 		},
@@ -347,7 +346,6 @@ export default defineComponent({
 					feat["name"] = feat["name"].split("-").slice(1).join("-").trim();
 				}
 			} else if (feature.automation != null) {
-				// @ts-ignore
 				feature.automation["name"] = feature.automation["name"].split("-").slice(1).join("-").trim();
 			}
 
@@ -378,8 +376,7 @@ export default defineComponent({
 			this.data.description = feature.description.replaceAll("$NAME$", this.data.description.name) ?? "";
 
 			if (!Array.isArray(feature.automation)) {
-				// @ts-ignore
-				feature.automation["name"] = feature.automation["name"];
+				if (feature.automation) feature.automation["name"] = feature.name;
 			}
 
 			this.automationString = YAML.stringify(feature.automation);

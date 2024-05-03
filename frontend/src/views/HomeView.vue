@@ -14,12 +14,20 @@
 			<h1 class="header-title">Bestiary Builder</h1>
 			<div class="call-to-action">
 				<ul class="left">
-					<li> Join our <b>{{ stats?.users }}</b> users! </li>
-					<li> Flip through our <b>{{ stats?.bestiaries }}</b> bestiaries! </li>
-					<li> Frighten your players with our <b>{{ stats?.creatures }}</b> creatures! </li>
+					<li>
+						Join our <b>{{ stats?.users }}</b> users!
+					</li>
+					<li>
+						Flip through our <b>{{ stats?.bestiaries }}</b> bestiaries!
+					</li>
+					<li>
+						Frighten your players with our <b>{{ stats?.creatures }}</b> creatures!
+					</li>
 				</ul>
 				<ul class="right">
-					<li>Welcome to Bestiary Builder, <i>the</i> convenient Bestiary Creator for <span style="display: inline-block"><b>D&D 5e</b>,</span> designed for incredible integration with <b><a href="https://avrae.io/"> Avrae</a></b> and convenience of use!</li>
+					<li>
+						Welcome to Bestiary Builder, <i>the</i> convenient Bestiary Creator for <span style="display: inline-block"><b>D&D 5e</b>,</span> designed for incredible integration with <b><a href="https://avrae.io/"> Avrae</a></b> and convenience of use!
+					</li>
 				</ul>
 			</div>
 		</div>
@@ -33,7 +41,6 @@
 
 <script lang="ts">
 import {defineComponent} from "vue";
-// @ts-ignore
 import markdownit from "markdown-it";
 const md = markdownit({html: true, linkify: true, typographer: true});
 import dataFile from "@/assets/documents/home.md";
@@ -102,8 +109,6 @@ html {
 			font-family: "Bebas Neue", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 			letter-spacing: 3px;
 		}
-
-
 	}
 	.header-image {
 		grid-column: 1 / -1;
@@ -131,14 +136,13 @@ html {
 			margin: auto;
 
 			li {
-				font-weight: 100;				
+				font-weight: 100;
 			}
-			
+
 			b {
 				font-size: 2rem;
 				display: inline-block;
 			}
-
 		}
 
 		.left {
@@ -151,7 +155,6 @@ html {
 			b {
 				color: white;
 			}
-
 		}
 		.right {
 			text-wrap: balance;
@@ -162,13 +165,12 @@ html {
 			}
 
 			b {
-				&, a {
+				&,
+				a {
 					color: orangered;
 				}
 			}
 		}
-
-
 	}
 
 	@media screen and (max-width: 950px) {
@@ -176,7 +178,8 @@ html {
 			grid-template-columns: 1fr;
 			gap: 1rem;
 
-			.left, .right {
+			.left,
+			.right {
 				text-align: left;
 				font-size: 1rem;
 				b {
@@ -187,7 +190,7 @@ html {
 			.right {
 				text-wrap: unset;
 			}
-		}	
+		}
 	}
 }
 

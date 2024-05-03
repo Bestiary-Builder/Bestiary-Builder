@@ -66,12 +66,13 @@ function knownSpells(data: any): any {
 		"1": [],
 		"2": [],
 		"3": []
+	} as {
+		[key: string]: unknown[];
 	};
 
 	for (let times in data.innateSpells.spellList) {
 		if (times == "0") continue;
 		for (let sp of data.innateSpells.spellList[times]) {
-			// @ts-ignore
 			dailySpells[times].push(sp.spell);
 		}
 	}
@@ -355,10 +356,10 @@ export function getCreatureData(creature: Statblock) {
 		lair: creature.features.lair,
 		regional: creature.features.regional,
 		la_per_round: creature.misc.legActionsPerRound,
-		spellcasting: spellcasting
+		spellcasting: spellcasting,
+		passiveperc: undefined as number | undefined
 	};
-	// @ts-ignore
-	creatureData.passiveperc = calcPP(creature.core.senses.passivePerceptionOverride, creatureData);
+	creatureData.passiveperc = calcPP(null, creatureData);
 	let caster = creature["spellcasting"]["casterSpells"];
 	let isNoun = creature["description"]["isProperNoun"];
 	let name = creature["description"]["name"];

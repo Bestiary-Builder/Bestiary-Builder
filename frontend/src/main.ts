@@ -66,7 +66,6 @@ export function getLoginRoute() {
 import "@/assets/styles/main.less";
 //Vue
 import {createApp} from "vue";
-//@ts-ignore
 import VueApp from "@/App.vue";
 export const app = createApp(VueApp);
 
@@ -90,13 +89,13 @@ export const toast = app.config.globalProperties.$toast;
 // Loading animation
 import {LoadingPlugin, type Props} from "vue-loading-overlay";
 import "vue-loading-overlay/dist/css/index.css";
-export const loadingOptions : Props = {
+export const loadingOptions: Props = {
 	loader: "dots",
 	color: "orangered",
 	backgroundColor: "black",
 	height: 128,
 	width: 128
-}
+};
 app.use(LoadingPlugin, loadingOptions);
 
 //Font-Awesome-Icons
@@ -180,18 +179,17 @@ library.add(
 );
 
 app.component("font-awesome-icon", FontAwesomeIcon);
-// @ts-ignore Vue Select
 import vSelect from "vue-select";
 import "vue-select/dist/vue-select.css";
 app.component("v-select", vSelect);
 
 // monaco editor
-import { loader } from '@guolao/vue-monaco-editor'
+import {loader} from "@guolao/vue-monaco-editor";
 loader.config({
-  paths: {
-    vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.43.0/min/vs',
-  },
-})
+	paths: {
+		vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.43.0/min/vs"
+	}
+});
 
 //Mount
 app.mount("body");
