@@ -56,7 +56,7 @@ app.get("/api/my-bestiaries", requireUser, async (req, res) => {
 		let user = await getUser(req.body.id);
 		if (!user) return res.status(404).json({error: "Couldn't find user"});
 		let allBestiaries = (await collections.bestiaries?.find({$or: [{owner: user._id}, {editors: {$elemMatch: {$eq: user._id}}}]}).toArray()) ?? [];
-		log.info(`Retrieved all bestiaries from the current user with the id ${req.params.userid}`);
+		log.info(`Retrieved all bestiaries from the current user with the id ${user._id}`);
 		return res.json(allBestiaries);
 	} catch (err) {
 		log.log("critical", err);
