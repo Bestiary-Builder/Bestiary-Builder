@@ -318,12 +318,6 @@ export default defineComponent({
 			this.data.description = example.description ?? "";
 			this.automationString = YAML.stringify(example.automation);
 			this.saveAutomation(false);
-			setTimeout(() => {
-				let els = document.querySelectorAll(".language-yaml") as NodeListOf<HTMLElement>;
-				for (let e in els) {
-					if (els[e].dataset?.highlighted == "yes") els[e].dataset.highlighted = "";
-				}
-			}, 100);
 
 			toast.success("Successfully loaded: " + example.name);
 		},
@@ -359,12 +353,6 @@ export default defineComponent({
 
 			this.automationString = YAML.stringify(feature.automation);
 			this.saveAutomation(false);
-			setTimeout(() => {
-				let els = document.querySelectorAll(".language-yaml") as NodeListOf<HTMLElement>;
-				for (let e in els) {
-					if (els[e].dataset?.highlighted == "yes") els[e].dataset.highlighted = "";
-				}
-			}, 100);
 
 			toast.success("Successfully loaded: " + feature.name);
 		},
@@ -396,12 +384,6 @@ export default defineComponent({
 
 			this.automationString = YAML.stringify(feature.automation);
 			this.saveAutomation(false);
-			setTimeout(() => {
-				let els = document.querySelectorAll(".language-yaml") as NodeListOf<HTMLElement>;
-				for (let e in els) {
-					if (els[e].dataset?.highlighted == "yes") els[e].dataset.highlighted = "";
-				}
-			}, 100);
 
 			toast.success("Successfully loaded: " + feature.name);
 		},
@@ -535,19 +517,6 @@ export default defineComponent({
 						}
 					}
 				} catch {}
-			}
-
-			// I hate this.
-			let els = document.querySelectorAll(".language-yaml") as NodeListOf<HTMLElement>;
-			for (let e in els) {
-				if (els[e].dataset?.highlighted == "yes") els[e].dataset.highlighted = "";
-			}
-		},
-		"feat.description"() {
-			// I hate this.
-			let els = document.querySelectorAll(".language-markdown") as NodeListOf<HTMLElement>;
-			for (let e in els) {
-				if (els[e].dataset?.highlighted == "yes") els[e].dataset.highlighted = "";
 			}
 		},
 		cursorPosition() {
