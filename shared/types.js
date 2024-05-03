@@ -7,7 +7,7 @@ var __createBinding = (this && this.__createBinding) || (Object.create ? (functi
     o[k2] = m[k];
 }));
 exports.__esModule = true;
-exports.spellListFlattened = exports.spellList = exports.getSpellSlots = exports.getXPbyCR = exports.XPbyCR = exports.defaultStatblock = exports.stringToId = exports.Creature = exports.Bestiary = exports.User = void 0;
+exports.spellListFlattened = exports.spellList = exports.getSpellSlots = exports.getXPbyCR = exports.XPbyCR = exports.defaultStatblock = exports.stringToId = exports.Automation = exports.Creature = exports.Bestiary = exports.User = void 0;
 var bson_1 = require("bson");
 __createBinding(exports, bson_1, "ObjectId", "Id");
 var bson_2 = require("bson");
@@ -59,6 +59,18 @@ var Creature = /** @class */ (function () {
     return Creature;
 }());
 exports.Creature = Creature;
+var Automation = /** @class */ (function () {
+    function Automation(_id, name, description, owner, lastUpdated, automation) {
+        this._id = _id;
+        this.name = name;
+        this.description = description;
+        this.owner = owner;
+        this.lastUpdated = lastUpdated;
+        this.automation = automation;
+    }
+    return Automation;
+}());
+exports.Automation = Automation;
 function stringToId(id) {
     if (!id)
         return null;

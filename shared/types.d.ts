@@ -36,6 +36,15 @@ export declare class Creature {
     _id?: Id;
     constructor(lastUpdated: number, stats: Statblock, bestiary: Id, _id?: Id);
 }
+export declare class Automation {
+    _id: Id;
+    name: string;
+    description: string;
+    owner: string;
+    lastUpdated: number;
+    automation: null | object | object[];
+    constructor(_id: Id, name: string, description: string, owner: string, lastUpdated: number, automation: null | object | object[]);
+}
 export declare type SearchOptions = {
     search: string;
     page: number;
