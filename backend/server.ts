@@ -104,7 +104,8 @@ app.use(express.static(process.env.frontendPath as string));
 import "./logic";
 
 //Start discord bot
-import "./logic/discord";
+import discord from "./logic/discord";
+discord.login(process.env.discordBotToken!).catch(() => log.error("Failed to connect to discord bot"));
 
 //Everything else is 404
 app.get("/api/*", (req, res) => res.status(404).json({error: "Path not found."}));

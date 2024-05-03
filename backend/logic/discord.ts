@@ -6,6 +6,7 @@ import {User, Bestiary, Creature} from "../../shared";
 const client = new discord.Client({
 	intents: [discord.IntentsBitField.Flags.Guilds, discord.IntentsBitField.Flags.GuildMessages, discord.IntentsBitField.Flags.GuildMembers]
 });
+export default client;
 
 let guild: discord.Guild | null;
 let channels = {} as {
