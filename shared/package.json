@@ -1,10 +1,13 @@
 {
-	"scripts": {
-		"build": "ts-interface-builder types.ts && tsc"
-	},
-	"dependencies": {
-		"bson": "^6.3.0",
-		"ts-interface-builder": "^0.3.3",
-		"ts-interface-checker": "^1.0.2"
-	}
+  "scripts": {
+    "build": "npx ts-interface-builder types.ts && tsc"
+  },
+  "dependencies": {
+    "bson": "^6.2.0",
+    "ts-interface-builder": "^0.3.3",
+    "ts-interface-checker": "^1.0.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
 }
