@@ -38,7 +38,7 @@ export class Creature {
 }
 
 export class Automation {
-	constructor(public _id: Id, public name: string, public description: string, public owner: string, public lastUpdated: number, public automation: null | object | object[]) {}
+	constructor(public name: string, public description: string, public owner: string, public lastUpdated: number, public automation: null | object | object[], public _id?: Id) {}
 }
 
 export type SearchOptions = {

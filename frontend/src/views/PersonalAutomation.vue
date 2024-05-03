@@ -33,12 +33,12 @@
 					<button class="btn confirm" @click="addAutomation(newAutomationName)">Add</button>
 				</LabelledComponent>
 				<LabelledComponent title="Delete automation" v-if="selectedAutomation">
-					<button class="btn danger" @click="deleteAutomation(selectedAutomation._id)">Delete current automation</button>
+					<button class="btn danger" @click="deleteAutomation(selectedAutomation._id!)">Delete current automation</button>
 				</LabelledComponent>
 			</div>
 			<hr />
 			<div class="automation-editor">
-				<AutomationEditor v-if="selectedAutomation" :data="selectedAutomation" :is-stand-alone="true" :key="selectedAutomation?._id.toString()" @saved-standalone-data="initialData = JSON.stringify(data)" />
+				<AutomationEditor v-if="selectedAutomation" :data="selectedAutomation" :is-stand-alone="true" :key="selectedAutomation?._id!.toString()" @saved-standalone-data="initialData = JSON.stringify(data)" />
 				<div v-else class="no-selected">Select an automation to get started with editing it.</div>
 			</div>
 		</div>
