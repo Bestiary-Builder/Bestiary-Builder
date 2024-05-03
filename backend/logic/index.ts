@@ -1,3 +1,5 @@
+import "./automations";
+import "./avrae";
 import "./bestiaries";
 import "./creatures";
 import "./critterdb";
@@ -7,4 +9,3 @@ import "./search";
 import "./staticData";
 import "./user";
 import "./validation";
-import "./automations"
