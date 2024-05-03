@@ -1,5 +1,5 @@
 <template>
-	<nav class="breadcrumbs__container" :class="{'less-wide': isLessWide}" aria-label="Header" id="breadcrumb">
+	<nav class="breadcrumbs__container" :class="{'less-wide': isLessWide}" aria-label="Header" id="breadcrumb" ref="breadcrumbs">
 		<ol class="breadcrumbs__links" aria-label="Breadcrumbs">
 			<li v-for="(route, index) in routes" :key="index">
 				<RouterLink v-if="!route.isCurrent" :to="route.path"> {{ route.text }} </RouterLink>
@@ -18,10 +18,9 @@
 </template>
 
 <script lang="ts">
-import {defineComponent} from "vue";
-import {ref} from "vue";
+import {ref, defineComponent} from "vue";
 import {isClient} from "@vueuse/shared";
-import {useShare} from "@vueuse/core";
+import {useShare, useElementSize} from "@vueuse/core";
 import {toast} from "@/main";
 
 type links = {
@@ -46,9 +45,14 @@ export default defineComponent({
 			toast.success("Copied link to clipboard!");
 		}
 
+		const breadcrumbs = ref(null)
+		const { width, height } = useElementSize(breadcrumbs)
+
 		return {
 			isSupported,
-			startShare
+			startShare,
+			breadcrumbs,
+			height
 		};
 	},
 	props: {
@@ -62,9 +66,10 @@ export default defineComponent({
 			required: false
 		}
 	},
-	mounted() {
-		document.body.style.setProperty("--navbar-height", document.getElementById("navbar")!.offsetHeight.toString() + "px");
-		// document.getElementById("breadcrumb")!.style.marginTop = "1000"
+	watch: {
+		height() {
+			document.body.style.setProperty("--breadcrumbs-height", `${this.height}px`);
+		}
 	}
 });
 </script>

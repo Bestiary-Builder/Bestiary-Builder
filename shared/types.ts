@@ -37,6 +37,10 @@ export class Creature {
 	constructor(public lastUpdated: number, public stats: Statblock, public bestiary: Id, public _id?: Id) {}
 }
 
+export class Automation {
+	constructor(public _id: Id, public name: string, public description: string, public owner: string, public lastUpdated: number, public automation: null | object | object[]) {}
+}
+
 export type SearchOptions = {
 	search: string;
 	page: number;
@@ -101,7 +105,7 @@ export const defaultStatblock = {
 		hp: {
 			numOfHitDie: 1,
 			sizeOfHitDie: 6,
-			override: null as number | null
+			override: null
 		},
 		ac: {
 			ac: 10,

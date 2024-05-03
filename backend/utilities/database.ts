@@ -1,7 +1,7 @@
 import {MongoClient, ServerApiVersion, Db, Collection} from "mongodb";
 import {generateUserSecret} from "./constants";
 import {log} from "./logger";
-import {User, Bestiary, Creature, Id} from "../../shared";
+import {User, Bestiary, Creature, Id, Automation} from "../../shared";
 //Connect to database
 let database = null as Db | null;
 export async function startConnection() {
@@ -23,6 +23,7 @@ export async function startConnection() {
 		collections.users = database.collection("Users");
 		collections.bestiaries = database.collection("Bestiaries");
 		collections.creatures = database.collection("Creatures");
+		collections.automations = database.collection("Automations");
 		log.info(`Successfully connected to the database.`);
 		log.log("database", `Established connection to ${database.databaseName} with ${(await database.collections()).length} collections.`);
 
@@ -40,7 +41,7 @@ export async function startConnection() {
 	}
 }
 
-export const collections: {users?: Collection<User>; bestiaries?: Collection<Bestiary>; creatures?: Collection<Creature>} = {};
+export const collections: {users?: Collection<User>; bestiaries?: Collection<Bestiary>; creatures?: Collection<Creature>; automations?: Collection<Automation>} = {};
 
 //Add changes to all in database
 export async function addValue(collection: Collection<any>, key: string, value: any) {
@@ -251,6 +252,57 @@ export async function deleteCreature(creatureId: Id) {
 		log.log("database", `Deleting creature with the id ${creatureId}.`);
 		await collections.bestiaries?.updateOne({_id: creature.bestiary}, {$pull: {creatures: creatureId}});
 		await collections.creatures?.deleteOne({_id: creature._id});
+		return true;
+	} catch (err) {
+		log.log("critical", err);
+		return false;
+	}
+}
+//Automation functions
+export async function getAutomation(id: Id) {
+	try {
+		log.log("database", `Reading bestiary with the id ${id}.`);
+		return (await collections.automations?.findOne({_id: id})) as Bestiary | null;
+	} catch (err) {
+		log.log("critical", err);
+		return null;
+	}
+}
+export async function updateAutomation(data: Automation, id?: Id) {
+	try {
+		data.lastUpdated = Date.now();
+		if (id) {
+			if (await getAutomation(id)) {
+				log.log("database", "Updating automation with id " + id);
+				await collections.automations?.updateOne({_id: id}, {$set: data});
+				return id;
+			} else {
+				///log.error("Trying to update non existant bestiary");
+				return null;
+			}
+		} else {
+			log.log("database", "Adding new automation to collection");
+			let _id = new Id();
+			let newData = {
+				...data,
+				...{
+					_id: _id
+				}
+			};
+			await collections.automations?.insertOne(newData);
+			return _id;
+		}
+	} catch (err) {
+		log.log("critical", err);
+		return null;
+	}
+}
+export async function deleteAutomation(_id: Id) {
+	try {
+		let automation = await getAutomation(_id);
+		if (!automation) return false;
+		log.log("database", `Deleting bestiary with the id ${_id}.`);
+		await collections.automations?.deleteOne({_id});
 		return true;
 	} catch (err) {
 		log.log("critical", err);

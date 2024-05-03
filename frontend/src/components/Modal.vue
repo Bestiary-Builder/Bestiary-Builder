@@ -94,7 +94,7 @@ export default defineComponent({
 
 .modal__content {
 	position: relative;
-	width: 80%;
+	//width: 80%;
 	max-width: 80%;
 	padding: 2rem;
 	max-height: 80%;

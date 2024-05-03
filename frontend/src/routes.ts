@@ -32,6 +32,13 @@ export const routes = [
 		file: "PersonalBestiaryList.vue",
 		meta: {navbar: true, loggedIn: true}
 	},
+	// a page to edit your personal automations
+	{
+		path: "/my-automation",
+		name: "My Automation",
+		file: "PersonalAutomation.vue",
+		meta: {navbar: true, loggedIn: true}
+	},
 	// a list of all public bestiaries
 	{
 		path: "/bestiaries",

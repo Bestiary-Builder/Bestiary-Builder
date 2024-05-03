@@ -90,11 +90,9 @@ import {Response} from "express";
 import {typeInterface, interfaceValidation} from "../../shared";
 const {SearchOptions: SearchChecker} = createCheckers(typeInterface);
 function validateSearchInput(input: any, res: Response) {
-	//@ts-ignore
 	if (SearchChecker.test(input)) {
 		return true;
 	} else {
-		//@ts-ignore
 		res.status(400).json({error: `Creature data not valid:\n${interfaceValidation(SearchChecker.validate(input) ?? [])}`});
 		return false;
 	}

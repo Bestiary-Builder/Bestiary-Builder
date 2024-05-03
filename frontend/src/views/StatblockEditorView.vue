@@ -50,7 +50,9 @@
 							</LabelledComponent>
 
 							<LabelledComponent title="Proper Noun">
-								<span> <input type="checkbox" v-model="data.description.isProperNoun" id="propernounbox" /> <label for="propernounbox">Toggles display as "{{ data.description.name }}" instead of "the {{ data.description.name }}"? </label> </span>
+								<span>
+									<input type="checkbox" v-model="data.description.isProperNoun" id="propernounbox" /> <label for="propernounbox">Toggles display as "{{ data.description.name }}" instead of "the {{ data.description.name }}"? </label>
+								</span>
 							</LabelledComponent>
 						</div>
 
@@ -253,9 +255,9 @@
 						<div class="editor-field__container two-wide">
 							<LabelledComponent v-for="(skill, index) in data.abilities.skills" :title="skill.skillName">
 								<div class="button-container">
-									<p> <input type="checkbox" v-model="skill.isProficient" @click="disableOtherSkills(index, 'prof', skill.isProficient)" :id="skill.skillName + 'prof'" /> <label :for="skill.skillName + 'prof'"> Proficient </label> </p>
-									<p> <input type="checkbox" v-model="skill.isExpertise" @click="disableOtherSkills(index, 'exp', skill.isExpertise)" :id="skill.skillName + 'exp'" /><label :for="skill.skillName + 'exp'"> Expertise </label> </p>
-									<p> <input type="checkbox" v-model="skill.isHalfProficient" @click="disableOtherSkills(index, 'halfprof', skill.isHalfProficient)" :id="skill.skillName + 'halfprof'" /><label :for="skill.skillName + 'halfprof'"> Half prof </label ></p>
+									<p><input type="checkbox" v-model="skill.isProficient" @click="disableOtherSkills(index, 'prof', skill.isProficient)" :id="skill.skillName + 'prof'" /> <label :for="skill.skillName + 'prof'"> Proficient </label></p>
+									<p><input type="checkbox" v-model="skill.isExpertise" @click="disableOtherSkills(index, 'exp', skill.isExpertise)" :id="skill.skillName + 'exp'" /><label :for="skill.skillName + 'exp'"> Expertise </label></p>
+									<p><input type="checkbox" v-model="skill.isHalfProficient" @click="disableOtherSkills(index, 'halfprof', skill.isHalfProficient)" :id="skill.skillName + 'halfprof'" /><label :for="skill.skillName + 'halfprof'"> Half prof </label></p>
 								</div>
 								<div>
 									<LabelledNumberInput v-model="skill.override" title="" :step="1" :is-clearable="true" />
@@ -316,7 +318,7 @@
 								<template #item="{element, index}">
 									<LabelledComponent :title="element.name || `Unnamed ${index}`">
 										<div class="feature-button__container">
-											<FeatureWidget :index="index" :type="fType" :data="data" />
+											<FeatureWidget :index="index" :type="fType" :data="data.features[fType][index]" />
 											<span class="delete-button" @click="deleteFeature(fType, index)" aria-label="Delete feature"><font-awesome-icon :icon="['fas', 'trash']" /></span>
 											<font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle" />
 										</div>
@@ -363,10 +365,10 @@
 							</LabelledComponent>
 
 							<LabelledComponent title="Is psionics?">
-								<span> <input type="checkbox" v-model="data.spellcasting.innateSpells.isPsionics" id="ispsionics?" /> Toggles display as psionics  </span>
+								<span> <input type="checkbox" v-model="data.spellcasting.innateSpells.isPsionics" id="ispsionics?" /> Toggles display as psionics </span>
 							</LabelledComponent>
 							<LabelledComponent title="Display as action?">
-								<span> <input type="checkbox" v-model="data.spellcasting.innateSpells.displayAsAction" id="displayasaction?" /> Toggles display as action  </span>
+								<span> <input type="checkbox" v-model="data.spellcasting.innateSpells.displayAsAction" id="displayasaction?" /> Toggles display as action </span>
 							</LabelledComponent>
 
 							<LabelledComponent title="Edit specific spells">
@@ -589,6 +591,10 @@ export default defineComponent({
 			toast.info("Exported this statblock to your clipboard.");
 		},
 		import5etools(): void {
+			if (this.toolsjson.startsWith("___")) {
+				toast.error("You copied the markdown code, not the JSON.");
+				return;
+			}
 			try {
 				[this.data, this.notices] = parseFrom5eTools(JSON.parse(this.toolsjson));
 				this.toolsjson = "";
@@ -601,7 +607,6 @@ export default defineComponent({
 		async importBestiaryBuilder() {
 			try {
 				let creature = JSON.parse(this.bestiaryBuilderJson);
-				console.log(creature);
 				if (Array.isArray(creature)) creature = creature[0];
 				//Validate input
 				let result = await fetch("/api/validate/creature", {

@@ -37,7 +37,7 @@ async function from_critterdb(url: string, published: boolean) {
 	return errored ? null : data;
 }
 
-async function get_published_bestiary_creatures(id: string, api_base: string) {
+export async function get_published_bestiary_creatures(id: string, api_base: string) {
 	log.info(`CritterDB | Getting link published bestiary ${id}...`);
 	let creatures = [] as any[];
 	for (let index = 1; index <= 100 /* 100 pages max */; index++) {

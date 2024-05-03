@@ -88,15 +88,16 @@ app.use(ToastPlugin, {
 export const toast = app.config.globalProperties.$toast;
 
 // Loading animation
-import {LoadingPlugin} from "vue-loading-overlay";
+import {LoadingPlugin, type Props} from "vue-loading-overlay";
 import "vue-loading-overlay/dist/css/index.css";
-app.use(LoadingPlugin, {
+export const loadingOptions : Props = {
 	loader: "dots",
 	color: "orangered",
 	backgroundColor: "black",
 	height: 128,
 	width: 128
-});
+}
+app.use(LoadingPlugin, loadingOptions);
 
 //Font-Awesome-Icons
 import {library} from "@fortawesome/fontawesome-svg-core";

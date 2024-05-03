@@ -115,11 +115,18 @@ export const routes = [
 			dynamic: false
 		}
 	},
-
 	// a list of your bestiaries
 	{
 		path: "/my-bestiaries",
 		name: "My Bestiaries",
+		meta: {
+			dynamic: false
+		}
+	},
+	// a page to edit your personal automation
+	{
+		path: "/my-automation",
+		name: "My Automation",
 		meta: {
 			dynamic: false
 		}
