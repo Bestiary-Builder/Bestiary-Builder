@@ -1,15 +1,8 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-exports.__esModule = true;
-exports.spellListFlattened = exports.spellList = exports.getSpellSlots = exports.getXPbyCR = exports.XPbyCR = exports.defaultStatblock = exports.stringToId = exports.Automation = exports.Creature = exports.Bestiary = exports.User = void 0;
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.spellListFlattened = exports.spellList = exports.getSpellSlots = exports.getXPbyCR = exports.XPbyCR = exports.defaultStatblock = exports.stringToId = exports.Automation = exports.Creature = exports.Bestiary = exports.User = exports.Id = void 0;
 var bson_1 = require("bson");
-__createBinding(exports, bson_1, "ObjectId", "Id");
+Object.defineProperty(exports, "Id", { enumerable: true, get: function () { return bson_1.ObjectId; } });
 var bson_2 = require("bson");
 //Database types
 var User = /** @class */ (function () {
@@ -60,13 +53,13 @@ var Creature = /** @class */ (function () {
 }());
 exports.Creature = Creature;
 var Automation = /** @class */ (function () {
-    function Automation(_id, name, description, owner, lastUpdated, automation) {
-        this._id = _id;
+    function Automation(name, description, owner, lastUpdated, automation, _id) {
         this.name = name;
         this.description = description;
         this.owner = owner;
         this.lastUpdated = lastUpdated;
         this.automation = automation;
+        this._id = _id;
     }
     return Automation;
 }());

@@ -37,15 +37,15 @@ export declare class Creature {
     constructor(lastUpdated: number, stats: Statblock, bestiary: Id, _id?: Id);
 }
 export declare class Automation {
-    _id: Id;
     name: string;
     description: string;
     owner: string;
     lastUpdated: number;
     automation: null | object | object[];
-    constructor(_id: Id, name: string, description: string, owner: string, lastUpdated: number, automation: null | object | object[]);
+    _id?: Id;
+    constructor(name: string, description: string, owner: string, lastUpdated: number, automation: null | object | object[], _id?: Id);
 }
-export declare type SearchOptions = {
+export type SearchOptions = {
     search: string;
     page: number;
     mode: "popular" | "recent";
@@ -56,7 +56,7 @@ export declare const defaultStatblock: Statblock;
 export declare const XPbyCR: number[];
 export declare function getXPbyCR(cr: number): number;
 export declare function getSpellSlots(sClass: string | null, level: number | null): SpellSlotEntity | undefined;
-export declare type Stat = "str" | "dex" | "con" | "int" | "cha" | "wis";
+export type Stat = "str" | "dex" | "con" | "int" | "cha" | "wis";
 export interface Statblock {
     description: Description;
     core: Core;
@@ -109,7 +109,7 @@ export interface Speed {
     swim: number;
     climb: number;
 }
-export declare type Unit = "ft" | "m" | "km" | "mi" | "none";
+export type Unit = "ft" | "m" | "km" | "mi" | "none";
 export interface SpeedEntity {
     name: string;
     value: number;
@@ -127,7 +127,7 @@ export interface Abilities {
     saves: Saves;
     skills: SkillsEntity[];
 }
-export declare type Stats = {
+export type Stats = {
     str: number;
     dex: number;
     con: number;
@@ -135,7 +135,7 @@ export declare type Stats = {
     cha: number;
     wis: number;
 };
-export declare type Saves = {
+export type Saves = {
     str: SaveEntity;
     dex: SaveEntity;
     con: SaveEntity;
@@ -171,7 +171,7 @@ export interface Ac {
     ac: number;
     acSource: string;
 }
-export declare type Features = {
+export type Features = {
     features: FeatureEntity[];
     actions: FeatureEntity[];
     bonus: FeatureEntity[];
