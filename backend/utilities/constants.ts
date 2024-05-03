@@ -84,16 +84,7 @@ import zh from "../staticData/badwordsData/zh.json";
 badwords.add(zh);
 
 //Secrets:
-import fs from "fs";
 import crypto from "crypto";
 export function generateUserSecret(): string {
 	return crypto.randomBytes(64).toString("hex");
-}
-export const JWTKey = getJWTKey();
-function getJWTKey() {
-	if (!fs.existsSync(".jwtkey")) {
-		let newKey = crypto.randomBytes(128).toString("hex");
-		fs.writeFileSync(".jwtkey", newKey);
-	}
-	return fs.readFileSync(".jwtkey").toString("hex");
 }

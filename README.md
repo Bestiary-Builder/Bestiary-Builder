@@ -31,6 +31,7 @@ To start editing the project follow these simple steps:
     - "clientSecret" should be changed to your Discord OAuth application secret.
     - "discordRedirectURI" should stay unchanged. (Unless you changed the hostname or port of the local site)
     - "MongoDB" should be changed to the connection URI for your MongoDB database.
+    - "JWTKEY" should be any string and can be left as is for development.
 7. Launch the local site.
     - In VSCode/VSCodium simply press F5 to start the already created launch tasks.
     - For other code editors, start the backend by running "npm run start" in the backend folder, and build the frontend by running "npm run build" in the frontend folder.

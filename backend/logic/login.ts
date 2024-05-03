@@ -1,4 +1,4 @@
-import {isProduction, JWTKey, app} from "../utilities/constants";
+import {isProduction, app} from "../utilities/constants";
 import {log} from "../utilities/logger";
 import fetch from "node-fetch";
 import jwt from "jsonwebtoken";
@@ -62,7 +62,7 @@ app.get("/api/login/:code", async (req, res) => {
 					global_name: userResult.global_name
 				});
 				//Create token
-				const token = jwt.sign({id: secret}, JWTKey, {
+				const token = jwt.sign({id: secret}, process.env.JWTKEY ?? "key", {
 					expiresIn: "7d"
 				});
 				res.cookie("userToken", token, {expires: new Date(new Date().getTime() + 60 * 60 * 1000 * 24 * 7), sameSite: "strict", secure: true, httpOnly: true});
@@ -91,7 +91,7 @@ export const requireUser = async (req: Request, res: Response, next: NextFunctio
 			return res.status(401).json({error: "Not logged in."});
 		}
 		try {
-			const decoded = jwt.verify(token, JWTKey) as any;
+			const decoded = jwt.verify(token, process.env.JWTKEY ?? "key") as any;
 			let user = await getUserFromSecret(decoded.id);
 			if (!user) {
 				return res.status(401).send({error: "User token doesn't correspond to any user."});
@@ -112,7 +112,7 @@ export const possibleUser = async (req: Request, res: Response, next: NextFuncti
 		req.body.id = null;
 		if (token) {
 			try {
-				const decoded = jwt.verify(token, JWTKey) as any;
+				const decoded = jwt.verify(token, process.env.JWTKEY ?? "key") as any;
 				let user = await getUserFromSecret(decoded.id);
 				if (user) {
 					req.body.id = user;
