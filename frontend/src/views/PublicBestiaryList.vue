@@ -78,7 +78,7 @@ import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import {handleApiResponse, toast, tags, type error, isMobile} from "@/main";
 // @ts-ignore
 import {vue3Debounce} from "vue-debounce";
-import BookmarkedBestiaryList from "./BookmarkedBestiaryList.vue";
+import BookmarkedBestiaryList from "../components/BookmarkedBestiary.vue";
 export default defineComponent({
 	directives: {
 		debounce: vue3Debounce({lock: true})
