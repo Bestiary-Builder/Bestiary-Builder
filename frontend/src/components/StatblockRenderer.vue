@@ -441,6 +441,8 @@ export default defineComponent({
 </script>
 
 <style scoped lang="less">
+@import "https://fonts.googleapis.com/css2?family=Convergence";
+
 .stat-block {
     width: 100%;
 
@@ -448,7 +450,7 @@ export default defineComponent({
     box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
     padding: .4rem;
 
-    font-family:  'Convergence', monospace;
+    font-family:  'Convergence', 'Roboto',  monospace;
 }
 
 .stat-block__image {
