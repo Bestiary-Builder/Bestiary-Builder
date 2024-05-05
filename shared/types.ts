@@ -398,7 +398,7 @@ export type Features = {
 export interface FeatureEntity {
 	name: string;
 	description: string;
-	automation: null | {[key: string]: any} | {[key: string]: any}[];
+	automation: null | Record<string, unknown> | Record<string, unknown>[];
 }
 
 export interface SpellCasting {

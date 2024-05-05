@@ -43,22 +43,22 @@
 			<hr />
 			<div class="editor-field__container">
 				<LabelledComponent title="Import SRD feature">
-					<v-select :options="srdFeatures" v-model="importedSrdFeature" inputId="importsrdfeature" />
-					<button class="btn move-down" @click="importSrdAction">Load</button>
+					<v-select :options="loadedAutomation.srdFeatures"  inputId="importsrdfeature" @option:selected="(selected : string) => (importAutomation('srd-feature', selected)) "/>
+					<!-- <button class="btn move-down" @click="importSrdAction">Load</button> -->
 				</LabelledComponent>
 			</div>
 
 			<div class="editor-field__container">
 				<LabelledComponent title="Import basic example">
-					<v-select :options="basicExamples" v-model="importedBasicExample" inputId="importbasicexample" />
-					<button class="btn move-down" @click="importExample">Load</button>
+					<v-select :options="loadedAutomation.basicExamples" inputId="importbasicexample" @option:selected="(selected : string) => (importAutomation('basic-example', selected))"/>
+					<!-- <button class="btn move-down" @click="importExample">Load</button> -->
 				</LabelledComponent>
 			</div>
 
 			<div class="editor-field__container" v-if="!isStandAlone">
 				<LabelledComponent title="Import custom automation">
-					<v-select :options="myAutomations" v-model="importedCustomAutomation" inputId="importcustomautomation" label="name" />
-					<button class="btn move-down" @click="importCustomAutomation">Load</button>
+					<v-select :options="loadedAutomation.myAutomation"  inputId="importcustomautomation" label="name" @option:selected="(selected : myAutomationSkeleton) => (importAutomation('basic-example', selected.name, selected._id))"/>
+					<!-- <button class="btn move-down" @click="importCustomAutomation">Load</button> -->
 				</LabelledComponent>
 			</div>
 
@@ -98,7 +98,7 @@
 			<hr />
 			<h3>Documentation: {{ currentContext }}</h3>
 			<!-- <p class="small" v-html="md.render(currentDocu.desc)" /> -->
-			<Markdown class="small" :text="currentDocu.desc" />
+			<Markdown class="small" :text="currentDocu.desc as string" />
 
 			<div>
 				<hr />
@@ -138,8 +138,8 @@
 	</div>
 </template>
 
-<script lang="ts">
-import {defineComponent, shallowRef, ref, onUnmounted} from "vue";
+<script setup lang="ts">
+import {defineComponent, shallowRef, ref, onUnmounted, defineProps, withDefaults, defineEmits, onMounted, watch, computed} from "vue";
 import {VueMonacoEditor} from "@guolao/vue-monaco-editor";
 import YAML from "yaml";
 import {toast, handleApiResponse, type error} from "@/main";
@@ -149,374 +149,359 @@ import Markdown from "./Markdown.vue";
 import Modal from "./Modal.vue";
 import {parseDescIntoAutomation} from "@/parser/utils";
 import {isMobile} from "@/main";
-export default defineComponent({
-	props: ["data", "isStandAlone"],
-	data() {
-		return {
-			automationString: "" as string,
-			errorMessage: null as null | string,
-			basicExamples: [] as string[],
-			srdFeatures: [] as string[],
-			myAutomations: [] as {name: string; _id: Id}[],
-			docu: {} as Record<string, unknown>,
-			importedBasicExample: null as string | null,
-			importedSrdFeature: null as string | null,
-			importedCustomAutomation: null as null | {name: string; _id: Id},
-			hasEditedName: false,
-			currentContext: "",
-			isMobile
-		};
-	},
-	components: {
-		LabelledComponent,
-		VueMonacoEditor,
-		Modal,
-		Markdown
-	},
-	setup() {
-		const editorRef = shallowRef();
-		const handleMount = (editor: any) => (editorRef.value = editor);
 
-		let cursorPosition = ref(0);
+const props = withDefaults(defineProps<{data: FeatureEntity | Automation, isStandAlone?: boolean, creatureName?: string}>(), { isStandAlone: false, creatureName: "$NAME$"})
 
-		let ourInterval = setInterval(() => {
-			cursorPosition.value = editorRef.value?.getModel().getOffsetAt(editorRef.value?.getPosition());
-		}, 1000);
+const errorMessage = ref<null | string>(null);
 
-		onUnmounted(() => {
-			clearInterval(ourInterval);
-		});
-		return {
-			handleMount,
-			editorRef,
-			cursorPosition
-		};
-	},
-	mounted() {
-		this.automationString = YAML.stringify(this.data.automation) ?? YAML.stringify(null);
-		//Fetch example and feature names
-		fetch("/api/basic-examples/list").then(async (response: any) => {
-			let result = await handleApiResponse<string[]>(response);
-			if (result.success) this.basicExamples = result.data as string[];
-			else this.basicExamples = [];
-		});
-		fetch("/api/srd-features/list").then(async (response: any) => {
-			let result = await handleApiResponse<string[]>(response);
-			if (result.success) this.srdFeatures = result.data as string[];
-			else this.srdFeatures = [];
-		});
-		fetch(`/api/my-automations`).then(async (response) => {
-			let result = await handleApiResponse<{name: string; _id: Id}[]>(response);
-			if (result.success) this.myAutomations = result.data as {name: string; _id: Id}[];
-			else toast.error((result.data as error).error);
-		});
-		this.getMyAutomations();
-	},
-	emits: ["savedStandaloneData"],
-	methods: {
-		getMyAutomations() {
-			fetch("/api/automationDocumentation").then(async (response: any) => {
-				let result = await handleApiResponse<Record<string, unknown>>(response);
-				if (result.success) this.docu = result.data as Record<string, unknown>;
-				else this.docu = {};
-			});
-		},
-		saveCustomAutomation() {
-			fetch(`/api/automation/add`, {
-				method: "POST",
-				headers: {
-					Accept: "application/json",
-					"Content-Type": "application/json"
-				},
-				body: JSON.stringify({data: {name: this.data.name, description: this.data.description, automation: this.data.automation}})
-			}).then(async (response) => {
-				let result = await handleApiResponse<{}>(response);
-				if (result.success) {
-					this.getMyAutomations();
-					toast.success("Successfully added automation!");
-				} else toast.error((result.data as error).error);
-			});
-		},
-		validateYaml(): boolean {
-			try {
-				YAML.parse(this.automationString);
-				this.errorMessage = null;
-				return true;
-			} catch (err) {
-				this.errorMessage = err as string;
-				return false;
-			}
-		},
-		saveAutomation(shouldNotify = false) {
-			try {
-				let parsed = YAML.parse(this.automationString);
-				if (parsed || parsed == null) {
-					fetch("/api/validate/automation", {
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json"
-						},
-						body: JSON.stringify({
-							data: parsed
-						})
-					})
-						.then((response) => response.json())
-						.then((data) => {
-							// null is valid automation in our db, but not in the validator. Accept it here as valid.
-							if (parsed != null && !data.success) {
-								if (shouldNotify) toast.error("YAML contains Error, did not save automation");
-								this.errorMessage = data.error;
-							} else {
-								this.data.automation = YAML.parse(this.automationString);
-								if (this.isStandAlone) {
-									fetch(`/api/automation/${this.data._id}/update`, {
-										method: "POST",
-										headers: {
-											"Content-Type": "application/json"
-										},
-										body: JSON.stringify({
-											data: this.data
-										})
-									}).then(async (response: any) => {
-										let result = await handleApiResponse<FeatureEntity>(response);
-										if (result.success && shouldNotify) {
-											toast.success("Saved Automation!");
-											this.$emit("savedStandaloneData");
-										} else if (!result.success) {
-											toast.error(`${this.data.name}:` + (result.data as error).error);
-										}
-									});
-								}
-								if (shouldNotify && !this.isStandAlone) toast.success("Saved Automation!");
-							}
-						});
-				}
-			} catch (err) {
-				if (shouldNotify) toast.error("YAML contains Error, did not save automation");
-			}
-		},
-		async importExample() {
-			if (!this.importedBasicExample) return;
-			//Fetch
-			let example = null as FeatureEntity | null;
-			await fetch("/api/basic-example/" + encodeURIComponent(this.importedBasicExample)).then(async (response: any) => {
-				let result = await handleApiResponse<FeatureEntity>(response);
-				if (result.success) example = result.data as FeatureEntity;
-				else {
-					toast.error("Error: " + (result.data as error).error);
-					example = null;
-				}
-			});
-			if (!example) return;
-			//Add info to feat
-			if (this.data.name == "New Feature" || !this.hasEditedName) this.data.name = example.name;
-			this.data.description = example.description ?? "";
-			this.automationString = YAML.stringify(example.automation);
-			this.saveAutomation(false);
+const hasEditedName = ref(false);
 
-			toast.success("Successfully loaded: " + example.name);
-		},
-		async importSrdAction() {
-			if (!this.importedSrdFeature) return;
-			//Fetch
-			let feature = null as FeatureEntity | null;
-			await fetch("/api/srd-feature/" + encodeURIComponent(this.importedSrdFeature)).then(async (response: any) => {
-				let result = await handleApiResponse<FeatureEntity>(response);
-				if (result.success) feature = result.data as FeatureEntity;
-				else {
-					toast.error("Error: " + (result.data as error).error);
-					feature = null;
-				}
-			});
 
-			if (!feature) return;
-			//Add info to feat, making sure to clean it all up.
-			if (this.data.name == "New Feature" || !this.hasEditedName) {
-				if (feature.automation != null) this.data.name = feature.name.split("-").slice(1).join("-").trim();
-				else this.data.name = feature.name;
-			}
-			this.data.description = feature.description.replaceAll("$NAME$", this.data.description.name) ?? "";
+const emit  = defineEmits<{
+	(e: 'savedStandaloneData',): void
+}>()
 
-			if (Array.isArray(feature.automation)) {
-				for (let feat of feature.automation) {
-					feat["name"] = feat["name"].split("-").slice(1).join("-").trim();
-				}
-			} else if (feature.automation != null) {
-				feature.automation["name"] = feature.automation["name"].split("-").slice(1).join("-").trim();
-			}
 
-			this.automationString = YAML.stringify(feature.automation);
-			this.saveAutomation(false);
 
-			toast.success("Successfully loaded: " + feature.name);
-		},
-		async importCustomAutomation() {
-			if (!this.importCustomAutomation) return;
-			//Fetch
-			let feature = null as FeatureEntity | null;
-			await fetch("/api/automation/" + encodeURIComponent(this.importedCustomAutomation!._id.toString())).then(async (response: any) => {
-				let result = await handleApiResponse<FeatureEntity>(response);
-				if (result.success) feature = result.data as FeatureEntity;
-				else {
-					toast.error("Error: " + (result.data as error).error);
-					feature = null;
-				}
-			});
+// Imported automation helpers
+interface myAutomationSkeleton {
+	name: string,
+	_id: Id
+}
+interface LoadedAutomation {
+	basicExamples: string[];
+	srdFeatures: string[];
+	myAutomation: myAutomationSkeleton[]
+}
 
-			if (!feature) return;
-			//Add info to feat, making sure to clean it all up.
-			if (this.data.name == "New Feature" || !this.hasEditedName) {
-				if (feature.automation != null) this.data.name = feature.name;
-				else this.data.name = feature.name;
-			}
-			this.data.description = feature.description.replaceAll("$NAME$", this.data.description.name) ?? "";
+const loadedAutomation = ref<LoadedAutomation>({
+	basicExamples: [],
+	srdFeatures: [],
+	myAutomation: []
+})
 
-			if (!Array.isArray(feature.automation)) {
-				if (feature.automation) feature.automation["name"] = feature.name;
-			}
-
-			this.automationString = YAML.stringify(feature.automation);
-			this.saveAutomation(false);
-
-			toast.success("Successfully loaded: " + feature.name);
-		},
-		generateAutomation() {
-			const result = parseDescIntoAutomation(this.data.description, this.data.name, 0)[0];
-			if (result) {
-				try {
-					this.automationString = YAML.stringify(result);
-					this.saveAutomation(false);
-				} catch {
-					toast.error("Something went when generating automation!");
-				}
-			}
-		},
-		getAutomationDescription(): string | false {
-			let auto;
-			try {
-				auto = YAML.parse(this.automationString);
-			} catch {
-				return false;
-			}
-			if (Array.isArray(auto)) return false;
-			if (!this.data.automation || !auto || auto?.automation?.length == 0) return false;
-			for (let field of auto?.automation?.reverse() || []) {
-				if (field["type"] == "text") {
-					return field["text"];
-				}
-			}
-			return "";
-		},
-		updateFeatureDescFromAutomationDesc(): void {
-			let auto;
-			try {
-				auto = YAML.parse(this.automationString);
-			} catch {
-				return;
-			}
-			if (Array.isArray(auto)) return;
-			for (let field of auto?.automation?.reverse() || []) {
-				if (field["type"] == "text") {
-					this.data.description = field["text"];
-					return;
-				}
-			}
-		},
-		updateAutomationDescFromFeatureDesc(): void {
-			let auto;
-			try {
-				auto = YAML.parse(this.automationString);
-			} catch {
-				return;
-			}
-			if (Array.isArray(auto)) return;
-			for (let field of auto?.automation?.reverse() || []) {
-				if (field["type"] == "text") {
-					field["text"] = this.data.description;
-					auto.automation.reverse();
-					this.automationString = YAML.stringify(auto);
-					return;
-				}
-			}
-		},
-		copyAutomation() {
-			navigator.clipboard.writeText(this.automationString);
-			toast.success("Copied automation to clipboard!");
-		},
-		getContext() {
-			const textToTraverse = this.automationString;
-			let buffer = "";
-			let type = "";
-			let startingPosition = this.cursorPosition;
-
-			// if the user has their cursor on the word type, it would begin the buffer in that word and would not be able to detect it.
-			// Therefore before we start we check if the immediate vicinity of our cursor includes type:. if it does, start 6 characters later so we can properly extract the type.
-			// clamp slices to string min and max, to be sure it doesn't go out of range
-			const closeVicinity = textToTraverse.slice(Math.max(startingPosition - 6, 0), Math.min(startingPosition + 6, textToTraverse.length));
-			if (closeVicinity.includes("type:")) startingPosition += 6;
-
-			// from our position in the string we go backwards until we find the first type: string.
-			// Then we get our first word after that type:
-			// Works both with yaml or json string
-			// Assumes that type: is always at the beginning of a node, and that a user does not have type: in a text field
-			for (let i = startingPosition; i--; i < textToTraverse.length) {
-				const char = textToTraverse.charAt(i);
-				buffer = char + buffer;
-				if (buffer.startsWith("type:")) {
-					type = textToTraverse.slice(i).match(/type['"]?:\s*['"]?(\w+)['"]?/)?.[1] || "";
-					break;
-				}
-			}
-
-			this.currentContext = type;
+const loadImportedAutomation = (apiPath: string, saveTo: keyof LoadedAutomation) => {
+	fetch(`api/${apiPath}`).then(async (response: any) => {
+		const result = await handleApiResponse<string[]>(response);
+		// @ts-ignore
+		if (result.success) loadedAutomation.value[saveTo] = result.data;
+		else {
+			loadedAutomation.value[saveTo] = [];
+			toast.error((result.data as error).error)
 		}
-	},
-	computed: {
-		showDescriptionButtons(): boolean {
-			const desc = this.data.description;
-			const autoDesc = this.getAutomationDescription();
-			if (Array.isArray(this.data.automation) || !desc || !autoDesc) return false;
-			if (desc != autoDesc) return true;
-			return false;
-		},
-		getLanguage(): string {
-			if (this.automationString.startsWith("{") || this.automationString.startsWith("[")) return "json";
-			return "yaml";
-		},
-		currentDocu(): any {
-			return this.docu[this.currentContext] as Record<string, unknown>;
+	})
+}
+
+onMounted(() => {
+	loadImportedAutomation('basic-examples/list', 'basicExamples')
+	loadImportedAutomation('srd-features/list', 'srdFeatures')
+	loadImportedAutomation('my-automations', 'myAutomation')
+})
+
+type ImportedData = FeatureEntity | Automation
+const importAutomation = async (apiPath: 'automation' | 'basic-example' | 'srd-feature' , name: string, _id : Id | null = null) => {
+	fetch(`/api/${apiPath}/` + encodeURIComponent(_id?.toString() ?? name)).then(async (response: any) => {
+		let feature : ImportedData | null = null;
+
+		let result = await handleApiResponse<ImportedData | null>(response);
+		if (!result.success) {
+			toast.error("Error: " + (result.data as error).error);
+			return;
+		} 
+		feature = result.data as ImportedData | null;
+
+		if (!feature) {
+			toast.error(`Error: Failed to import ${name}`)
+			return;
+		};
+
+		if (props.data.name == "New Feature" || !hasEditedName.value) {
+			if (apiPath == 'srd-feature' && feature.name.includes(" - ")) props.data.name = feature.name.split("-").slice(1).join("-").trim();
+			else props.data.name = feature.name;
 		}
-	},
-	watch: {
-		automationString() {
-			this.validateYaml();
+		
+		if (feature.description) {
+			props.data.description = feature.description.replaceAll("$NAME$", props.creatureName);
+		}
 
-			if (this.data.name == "New Feature" || this.data.description == "") {
-				try {
-					let parsedAutomation = YAML.parse(this.automationString);
-					if (Array.isArray(parsedAutomation)) {
-						if (parsedAutomation.length > 0) parsedAutomation = parsedAutomation[0];
-						else return;
-					}
 
-					if (parsedAutomation.name && this.data.name == "New Feature") this.data.name = parsedAutomation.name.replace(" (1H)", "").replace(" (2H)", "");
-
-					if (parsedAutomation.automation && this.data.description == "") {
-						for (let type in parsedAutomation.automation) {
-							if (parsedAutomation.automation[type]["type"] == "text") {
-								this.data.description = parsedAutomation.automation[type]["text"];
-								break;
-							}
-						}
-					}
-				} catch {}
+		if (Array.isArray(feature.automation)) {
+			for (let feat of feature.automation) {
+				feat.name = feat.name.split("-").slice(1).join("-").trim() ?? feat.name;
 			}
-		},
-		cursorPosition() {
-			this.getContext();
+		} 
+
+		automationString.value = YAML.stringify(feature.automation);
+		saveAutomation(false);
+
+		toast.success("Successfully loaded: " + feature.name);
+	});
+}
+
+// Automation
+const automationString = ref("")
+onMounted(() => {
+	automationString.value = YAML.stringify(props.data.automation) ?? YAML.stringify(null);
+})
+
+
+watch(automationString, () => {
+	validateYaml();
+	// TODO: check if this is the best approach to handle these cases.
+	if (props.data.name == "New Feature" || props.data.description == "") {
+		try {
+			let parsedAutomation = YAML.parse(automationString.value);
+			if (Array.isArray(parsedAutomation)) {
+				if (parsedAutomation.length > 0) parsedAutomation = parsedAutomation[0];
+				else return;
+			}
+
+			if (parsedAutomation.name && props.data.name == "New Feature") props.data.name = parsedAutomation.name.replace(" (1H)", "").replace(" (2H)", "");
+
+			if (parsedAutomation.automation && props.data.description == "") {
+				for (let type in parsedAutomation.automation) {
+					if (parsedAutomation.automation[type]["type"] == "text") {
+						props.data.description = parsedAutomation.automation[type]["text"];
+						break;
+					}
+				}
+			}
+		} catch {}
+	}
+})
+
+	
+const saveAutomation = (shouldNotify = false) => {
+	//
+}
+// export default defineComponent({
+
+// 		saveAutomation(shouldNotify = false) {
+// 			try {
+// 				let parsed = YAML.parse(this.automationString);
+// 				if (parsed || parsed == null) {
+// 					fetch("/api/validate/automation", {
+// 						method: "POST",
+// 						headers: {
+// 							"Content-Type": "application/json"
+// 						},
+// 						body: JSON.stringify({
+// 							data: parsed
+// 						})
+// 					})
+// 						.then((response) => response.json())
+// 						.then((data) => {
+// 							// null is valid automation in our db, but not in the validator. Accept it here as valid.
+// 							if (parsed != null && !data.success) {
+// 								if (shouldNotify) toast.error("YAML contains Error, did not save automation");
+// 								this.errorMessage = data.error;
+// 							} else {
+// 								this.data.automation = YAML.parse(this.automationString);
+// 								if (this.isStandAlone) {
+// 									fetch(`/api/automation/${this.data._id}/update`, {
+// 										method: "POST",
+// 										headers: {
+// 											"Content-Type": "application/json"
+// 										},
+// 										body: JSON.stringify({
+// 											data: this.data
+// 										})
+// 									}).then(async (response: any) => {
+// 										let result = await handleApiResponse<FeatureEntity>(response);
+// 										if (result.success && shouldNotify) {
+// 											toast.success("Saved Automation!");
+// 											this.$emit("savedStandaloneData");
+// 										} else if (!result.success) {
+// 											toast.error(`${this.data.name}:` + (result.data as error).error);
+// 										}
+// 									});
+// 								}
+// 								if (shouldNotify && !this.isStandAlone) toast.success("Saved Automation!");
+// 							}
+// 						});
+// 				}
+// 			} catch (err) {
+// 				if (shouldNotify) toast.error("YAML contains Error, did not save automation");
+// 			}
+// 		},
+
+// });
+
+
+// Documentation context by mouse location
+const currentContext = ref("");
+
+const editorRef = shallowRef();
+const handleMount = (editor: any) => (editorRef.value = editor);
+const cursorPosition = ref(0);
+
+const ourInterval = setInterval(() => {
+	cursorPosition.value = editorRef.value?.getModel().getOffsetAt(editorRef.value?.getPosition());
+}, 1000);
+
+onUnmounted(() => {
+	clearInterval(ourInterval);
+});
+
+watch(cursorPosition, () => getContext())
+
+const getContext = () => {
+	const textToTraverse = automationString.value;
+	let buffer = "";
+	let type = "";
+	let startingPosition = cursorPosition.value;
+
+	// if the user has their cursor on the word type, it would begin the buffer in that word and would not be able to detect it.
+	// Therefore before we start we check if the immediate vicinity of our cursor includes type:. if it does, start 6 characters later so we can properly extract the type.
+	// clamp slices to string min and max, to be sure it doesn't go out of range
+	const closeVicinity = textToTraverse.slice(Math.max(startingPosition - 6, 0), Math.min(startingPosition + 6, textToTraverse.length));
+	if (closeVicinity.includes("type:")) startingPosition += 6;
+
+	// from our position in the string we go backwards until we find the first type: string.
+	// Then we get our first word after that type:
+	// Works both with yaml or json string
+	// Assumes that type: is always at the beginning of a node, and that a user does not have type: in a text field
+	for (let i = startingPosition; i--; i < textToTraverse.length) {
+		const char = textToTraverse.charAt(i);
+		buffer = char + buffer;
+		if (buffer.startsWith("type:")) {
+			type = textToTraverse.slice(i).match(/type['"]?:\s*['"]?(\w+)['"]?/)?.[1] || "";
+			break;
 		}
 	}
-});
+
+	currentContext.value = type;
+}
+
+// Documentation helpers
+// TODO: type documentation
+const docu = ref<Record<string, unknown>>({});
+
+onMounted(() => {
+	fetch("/api/automationDocumentation").then(async (response: any) => {
+		let result = await handleApiResponse<Record<string, unknown>>(response);
+		if (result.success) docu.value = result.data as Record<string, unknown>;
+		else docu.value = {};
+	})
+})
+
+const currentDocu = computed(() => {
+	return docu.value[currentContext.value] as Record<string, unknown>;
+})
+
+
+
+// Description parity helpers
+const updateFeatureDescFromAutomationDesc = () => {
+	let auto;
+	try {
+		auto = YAML.parse(automationString.value);
+	} catch {
+		return;
+	}
+	if (Array.isArray(auto)) return;
+	for (let field of auto?.automation?.reverse() || []) {
+		if (field["type"] == "text") {
+			props.data.description = field["text"];
+			return;
+		}
+	}
+}
+
+const updateAutomationDescFromFeatureDesc = () => {
+	let auto;
+	try {
+		auto = YAML.parse(automationString.value);
+	} catch {
+		return;
+	}
+	if (Array.isArray(auto)) return;
+	for (let field of auto?.automation?.reverse() || []) {
+		if (field["type"] == "text") {
+			field["text"] = props.data.description;
+			auto.automation.reverse();
+			automationString.value = YAML.stringify(auto);
+			return;
+		}
+	}
+}
+
+const getAutomationDescription = () : string | boolean =>  {
+	let auto;
+	try {
+		auto = YAML.parse(automationString.value);
+	} catch {
+		return false;
+	}
+	if (Array.isArray(auto)) return false;
+	if (props.data.automation || !auto || auto?.automation?.length == 0) return false;
+	for (let field of auto?.automation?.reverse() || []) {
+		if (field["type"] == "text") {
+			return field["text"];
+		}
+	}
+	return "";
+}
+
+const showDescriptionButtons = computed(()=> {
+	const desc = props.data.description;
+	const autoDesc = getAutomationDescription();
+	if (Array.isArray(props.data.automation) || !desc || !autoDesc) return false;
+	if (desc != autoDesc) return true;
+	return false;
+})
+
+
+// utils
+const copyAutomation = () => {
+	navigator.clipboard.writeText(automationString.value);
+	toast.success("Copied automation to clipboard!");
+}
+
+const generateAutomation = () => {
+	const result = parseDescIntoAutomation(props.data.description, props.data.name, 0)[0];
+	if (result) {
+		try {
+			automationString.value = YAML.stringify(result);
+			saveAutomation(false);
+		} catch {
+			toast.error("Something went when generating automation!");
+		}
+	}
+}
+
+const validateYaml = () => {
+	try {
+		YAML.parse(automationString.value);
+		errorMessage.value = null;
+		return true;
+	} catch (err) {
+		errorMessage.value = err as string;
+		return false;
+	}
+}
+
+const getLanguage = computed(() => {
+	if (automationString.value.startsWith("{") || automationString.value.startsWith("[")) return "json";
+	return "yaml";
+})
+
+const saveCustomAutomation = () => {
+	fetch(`/api/automation/add`, {
+		method: "POST",
+		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify({data: {name: props.data.name, description: props.data.description, automation: props.data.automation}})
+	}).then(async (response) => {
+		let result = await handleApiResponse<{}>(response);
+		if (result.success) {
+			loadImportedAutomation('my-automations', 'myAutomation')
+			toast.success("Successfully added automation!");
+		} else toast.error((result.data as error).error);
+	});
+}
 </script>
 
 <style scoped lang="less">
