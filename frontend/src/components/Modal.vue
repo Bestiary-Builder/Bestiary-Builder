@@ -5,7 +5,7 @@
 				<div :class="{'fullscreen': fullScreen}" class="modal__content" @click.stop role="dialog" aria-modal="true" :aria-labelledby="`dialog${id}_label`" >
 					<div class="modal__header">
 						<h2 :id="`dialog${id}_label`"><slot name="header"></slot></h2>
-						<button class="modal__close-button" @click="$emit('close')"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
+						<button class="modal__close-button" @click="emit('close')"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
 					</div>
 					<div class="modal__body">
 						<slot name="body"></slot>
@@ -18,60 +18,47 @@
 		</Transition>
 	</Teleport>
 </template>
-<script lang="ts">
-import {defineComponent, nextTick, ref, watch} from "vue";
+<script setup lang="ts">
+import {defineProps, getCurrentInstance, nextTick, onMounted, onUnmounted, ref, watch} from "vue";
 import {useFocusTrap} from "@vueuse/integrations/useFocusTrap";
 
-export default defineComponent({
-	props: {
-		show: {
-			type: Boolean,
-			required: true
-		},
-		fullScreen: {
-			type: Boolean,
-			default: false
+const props = withDefaults(defineProps<{show: boolean, fullScreen?: boolean}>(), {fullScreen: false})
+const emit  = defineEmits<{
+	(e: 'close',): void
+}>()
+
+// TODO: Don't use this.
+const id    = getCurrentInstance()?.uid
+const target = ref();
+
+const {hasFocus, activate, deactivate} = useFocusTrap(target);
+
+watch(
+	() => props.show,
+	async (newValue, oldValue) => {
+		if (newValue === oldValue) return;
+		if (newValue === true) {
+			await nextTick();
+			activate();
 		}
-	},
-	name: "Modal",
-	emits: ["close"],
-	data() {
-		return {
-			id: this.$.uid
-		};
-	},
-	setup(props) {
-		const target = ref();
-		const {hasFocus, activate, deactivate} = useFocusTrap(target);
-
-		watch(
-			() => props.show,
-			async (newValue, oldValue) => {
-				if (newValue === oldValue) return;
-				if (newValue === true) {
-					await nextTick();
-					activate();
-				}
-				if (newValue === false) {
-					await nextTick();
-					deactivate();
-				}
-			}
-		);
-
-		return {
-			hasFocus,
-			target
-		};
-	},
-	mounted() {
-		document.addEventListener("keydown", (e) => {
-			if (e.key == "Escape" && this.show) {
-				this.$emit("close");
-			}
-		});
+		if (newValue === false) {
+			await nextTick();
+			deactivate();
+		}
 	}
-});
+);
+
+const escapeHandler = (e: KeyboardEvent) => {
+	if (e.key == "Escape" && props.show) {
+		emit("close");
+	}
+}
+onMounted(() => {
+	document.addEventListener("keydown", escapeHandler)
+})
+onUnmounted(() => {
+	document.addEventListener("keydown", escapeHandler)
+})
 </script>
 
 <style lang="less">

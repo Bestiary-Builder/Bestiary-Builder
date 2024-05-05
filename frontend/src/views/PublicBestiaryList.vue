@@ -66,7 +66,7 @@
 			<button aria-label="Increase page number" @click="page = Math.min(total, page + 1)" v-tooltip="'Increase page number'">+</button>
 		</div>
 	</div>
-	<BookmarkedBestiaryList v-else />
+	<BookmarkedBestiary v-else />
 </template>
 
 <script lang="ts">
@@ -78,7 +78,7 @@ import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import {handleApiResponse, toast, tags, type error, isMobile} from "@/main";
 // @ts-ignore
 import {vue3Debounce} from "vue-debounce";
-import BookmarkedBestiaryList from "../components/BookmarkedBestiary.vue";
+import BookmarkedBestiary from "../components/BookmarkedBestiary.vue";
 export default defineComponent({
 	directives: {
 		debounce: vue3Debounce({lock: true})
@@ -99,7 +99,7 @@ export default defineComponent({
 	components: {
 		UserBanner,
 		Breadcrumbs,
-		BookmarkedBestiaryList
+		BookmarkedBestiary
 	},
 	async beforeMount() {
 		const loader = this.$loading.show();
