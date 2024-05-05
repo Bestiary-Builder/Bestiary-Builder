@@ -60,114 +60,97 @@
 		<div v-else class="zero-found">
 			<span> Did not find any Bestiaries with that name or tags.</span>
 		</div>
-		<div class="page-nav__container" v-if="total > 1">
-			<button aria-label="Decrease page number" @click="page = Math.max(1, page - 1)" v-tooltip="'Decrease page number'">-</button>
-			<span>{{ page }}/{{ total }}</span>
-			<button aria-label="Increase page number" @click="page = Math.min(total, page + 1)" v-tooltip="'Increase page number'">+</button>
+		<div class="page-nav__container" v-if="totalPages > 1">
+			<button aria-label="Decrease page number" @click="selectedPage = Math.max(1, selectedPage - 1)" v-tooltip="'Decrease page number'">-</button>
+			<span>{{ selectedPage }}/{{ totalPages }}</span>
+			<button aria-label="Increase page number" @click="selectedPage = Math.min(totalPages, selectedPage + 1)" v-tooltip="'Increase page number'">+</button>
 		</div>
 	</div>
 	<BookmarkedBestiaryList v-else />
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {RouterLink} from "vue-router";
-import {defineComponent} from "vue";
+import {ref, onMounted, computed, watch} from "vue";
 import type {Bestiary} from "~/shared";
 import UserBanner from "@/components/UserBanner.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
-import {handleApiResponse, toast, tags, type error, isMobile} from "@/main";
+import {handleApiResponse, toast, tags as getTags, type error, isMobile} from "@/main";
 // @ts-ignore
-import {vue3Debounce} from "vue-debounce";
+import {vue3Debounce as vDebounce} from "vue-debounce";
 import BookmarkedBestiaryList from "../components/BookmarkedBestiaryList.vue";
-export default defineComponent({
-	directives: {
-		debounce: vue3Debounce({lock: true})
-	},
-	data() {
-		return {
-			bestiaries: [] as Bestiary[],
-			page: 1 as number,
-			total: 1 as number,
-			search: "" as string,
-			selectedTags: [] as string[],
-			tags: [] as string[],
-			lastInput: 0,
-			viewMode: "Popular",
-			isMobile
-		};
-	},
-	components: {
-		UserBanner,
-		Breadcrumbs,
-		BookmarkedBestiaryList
-	},
-	async beforeMount() {
-		const loader = this.$loading.show();
-		this.tags = (await tags) ?? ([] as string[]);
-		this.searchBestiaries();
+import { useLoading } from "vue-loading-overlay";
+import { loadingOptions } from "@/main";
+
+const tags = ref<string[] | null>([]);
+
+const $loading = useLoading(loadingOptions)
+onMounted(async () => {
+	const loader = $loading.show();
+	tags.value = await getTags;
+	searchBestiaries();
+	loader.hide();
+})
+
+const bestiaries = ref<Bestiary[]>([]);
+
+const selectedPage = ref(1);
+const selectedTags = ref<string[]>([]);
+const viewMode = ref("Popular");
+const search = ref("");
+
+const totalPages = ref(1);
+
+const searchBestiaries = async () => {
+	//Request bestiary info
+	await fetch(`/api/search`, {
+		method: "POST",
+		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify({
+			options: {
+				search: search.value,
+				page: selectedPage.value - 1,
+				tags: selectedTags.value,
+				mode: viewMode.value.toLowerCase()
+			}
+		})
+	}).then(async (response) => {
+		let result = await handleApiResponse<{results: Bestiary[]; pageAmount: number}>(response);
+		if (result.success) {
+			let data = result.data as {results: Bestiary[]; pageAmount: number};
+			bestiaries.value = data.results;
+			totalPages.value = data.pageAmount;
+		} else {
+			bestiaries.value = [];
+			totalPages.value = 1;
+			toast.error((result.data as error).error);
+		}
+	});
+}
+
+watch(selectedPage, () => searchBestiaries())
+watch(selectedTags, () => searchBestiaries())
+watch(viewMode, (newValue) => {
+	if (newValue != "Bookmarked") {
+		const loader = $loading.show();
+		searchBestiaries();
 		loader.hide();
-	},
-	watch: {
-		page() {
-			this.searchBestiaries();
-		},
-		selectedTags() {
-			this.searchBestiaries();
-		},
-		async viewMode(newValue) {
-			if (newValue != "Bookmarked") {
-				const loader = this.$loading.show();
-				await this.searchBestiaries();
-				loader.hide();
-			}
-		}
-	},
-	methods: {
-		async searchBestiaries() {
-			//Request bestiary info
-			await fetch(`/api/search`, {
-				method: "POST",
-				headers: {
-					Accept: "application/json",
-					"Content-Type": "application/json"
-				},
-				body: JSON.stringify({
-					options: {
-						search: this.search,
-						page: this.page - 1,
-						tags: this.selectedTags,
-						mode: this.viewMode.toLowerCase()
-					}
-				})
-			}).then(async (response) => {
-				let result = await handleApiResponse<{results: Bestiary[]; pageAmount: number}>(response);
-				if (result.success) {
-					let data = result.data as {results: Bestiary[]; pageAmount: number};
-					this.bestiaries = data.results;
-					//this.page = 1;
-					this.total = data.pageAmount;
-				} else {
-					this.bestiaries = [];
-					this.total = 1;
-					toast.error((result.data as error).error);
-				}
-			});
-			///console.log(this.bestiaries);
-		}
-	},
-	computed: {
-		bestiaryImages(): string[] {
-			let bestiaryImages: string[] = [];
-			for (let bestiary of this.bestiaries) {
-				const match = bestiary.description.match(/\!\[.*?\]\((.*?)\)/);
-				const firstImageUrl = (match || [])[1];
-				if (match) bestiary.description = bestiary.description.replace(match[0], "");
-				bestiaryImages.push(firstImageUrl);
-			}
-			return bestiaryImages;
-		}
 	}
-});
+})
+
+const bestiaryImages = computed(() => {
+	let bestiaryImages: string[] = [];
+	for (let bestiary of bestiaries.value) {
+		const match = bestiary.description.match(/\!\[.*?\]\((.*?)\)/);
+		const firstImageUrl = (match || [])[1];
+		if (match) bestiary.description = bestiary.description.replace(match[0], "");
+		bestiaryImages.push(firstImageUrl);
+	}
+	return bestiaryImages;
+})
 </script>
 
 <style scoped lang="less">
