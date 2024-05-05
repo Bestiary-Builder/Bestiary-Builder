@@ -12,41 +12,29 @@
 	</div>
 </template>
 
-<script lang="ts">
-import {defineComponent} from "vue";
+<script setup lang="ts">
+import {onMounted, defineProps, computed, ref} from "vue";
 import type {User} from "~/shared";
-import {handleApiResponse} from "@/main";
+import {handleApiResponse, user as getUser} from "@/main";
 import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/css/index.css";
 
-export default defineComponent({
-	components: {
-		Loading
-	},
-	data() {
-		return {
-			user: null as User | null
-		};
-	},
-	props: {
-		id: {
-			type: String,
-			required: true
-		}
-	},
-	computed: {
-		isLoading() {
-			return this.user == null;
-		}
-	},
-	async beforeMount() {
-		await fetch("/api/user" + "/" + this.id).then(async (response: any) => {
-			let result = await handleApiResponse<User>(response);
-			if (result.success) this.user = result.data as User;
-			else this.user = null;
-		});
-	}
-});
+const user = ref<User | null>(null);
+const props = defineProps<{id: string}>()
+
+onMounted(async () => {
+	user.value = await getUser;
+	await fetch("/api/user" + "/" + props.id).then(async (response: any) => {
+		let result = await handleApiResponse<User>(response);
+		if (result.success) user.value = result.data as User;
+		else user.value = null;
+	});
+})
+
+const isLoading = computed(() => {
+	return user.value == null
+})
+
 </script>
 
 <style scoped lang="less">

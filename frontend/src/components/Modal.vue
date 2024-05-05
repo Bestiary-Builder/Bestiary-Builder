@@ -57,7 +57,7 @@ onMounted(() => {
 	document.addEventListener("keydown", escapeHandler)
 })
 onUnmounted(() => {
-	document.addEventListener("keydown", escapeHandler)
+	document.removeEventListener("keydown", escapeHandler)
 })
 </script>
 
