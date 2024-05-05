@@ -10,7 +10,7 @@
 	<div v-if="!user">
 		<p> You are not logged in. Login with Discord to log in.</p>
 		<hr />
-		<button class="btn confirm" @click.prevent="LoginClick">Login</button>
+		<button class="btn confirm" @click.prevent="sendToLogin($route.path)">Login</button>
 	</div>
 	<div v-else>
 		<p> You are logged in to Bestiary Builder with Discord as <b> {{ user.username }} </b>.</p>
@@ -33,69 +33,52 @@
 			If you cannot see your name display change on the website yet, make sure to join our discord.
 		</p>
 		<hr />
-		<button @click.prevent="LogoutClick" class="btn">Log out of Bestiary Builder </button>
+		<button @click.prevent="logoutClick" class="btn">Log out of Bestiary Builder </button>
 	</div>
 </div>
 
 </template>
 
-<script lang="ts">
-import {defineComponent} from "vue";
-import type {User, Bestiary, Creature} from "~/shared";
-import UserBanner from "@/components/UserBanner.vue";
-import {user, sendToLogin, getLoginRoute, handleApiResponse, toast, type error} from "@/main";
+<script setup lang="ts">
+import { onMounted, ref} from "vue";
+import type {User} from "~/shared";
+import {user as getUser, sendToLogin, getLoginRoute, handleApiResponse, toast, type error} from "@/main";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import JoinPatreon from "@/components/JoinPatreon.vue"
-export default defineComponent({
-	data() {
-		return {
-			user: null as User | null
-		};
-	},
-	async mounted() {
-		//Login handling:
-		let search = new URLSearchParams(window.location.search);
-		let code = search.get("code");
-		if (code && !(await user)) {
-			await fetch("/api/login/" + code).then(async (response) => {
-				let result = await handleApiResponse(response);
-				if (result.success) {
-					toast.success("Succesfully logged in");
-					window.location.href = getLoginRoute();
-				} else {
-					toast.error((result.data as error).error);
-					this.$router.push("/user");
-				}
-			});
+import { useRouter } from "vue-router";
+
+const user = ref<User | null>(null);
+const router = useRouter();
+
+onMounted(async () => {
+	user.value = await getUser
+	let search = new URLSearchParams(window.location.search);
+	let code = search.get("code");
+	if (code && !user.value) {
+		await fetch("/api/login/" + code).then(async (response) => {
+			let result = await handleApiResponse(response);
+			if (result.success) {
+				toast.success("Succesfully logged in");
+				window.location.href = getLoginRoute();
+			} else {
+				toast.error((result.data as error).error);
+				router.push("/user");
+			}
+		});
+	} 
+})
+
+const logoutClick = async () => {
+	await fetch("/api/logout").then(async (response) => {
+		let result = await handleApiResponse(response);
+		if (result.success) {
+			location.reload()
 		} else {
-			this.user = await user;
-			///console.log(this.user);
+			toast.error((result.data as error).error);
 		}
-	},
-	components: {
-		UserBanner,
-		Breadcrumbs,
-		JoinPatreon
-	},
-	methods: {
-		LoginClick() {
-			sendToLogin(this.$route.path);
-		},
-		async LogoutClick() {
-			await fetch("/api/logout").then(async (response) => {
-				let result = await handleApiResponse(response);
-				if (result.success) {
-					location.reload()
-				} else {
-					toast.error((result.data as error).error);
-				}
-			});
-		}
-	}
-});
+	});
+}
 </script>
-
-
 <style scoped lang="less">
 .content div {
 	display: flex;
@@ -120,5 +103,4 @@ export default defineComponent({
 hr {
 	width: 100%;
 }
-
 </style>

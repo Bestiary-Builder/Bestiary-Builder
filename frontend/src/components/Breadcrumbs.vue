@@ -48,11 +48,9 @@ async function startShare() {
 
 const breadcrumbs = ref(null)
 const { width, height } = useElementSize(breadcrumbs)
-
 watchEffect(() => {
 	document.body.style.setProperty("--breadcrumbs-height", `${height.value}px`);
 })
-
 </script>
 
 <style lang="less">
