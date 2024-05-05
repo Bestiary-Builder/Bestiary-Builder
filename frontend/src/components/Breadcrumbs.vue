@@ -17,61 +17,42 @@
 	</nav>
 </template>
 
-<script lang="ts">
-import {ref, defineComponent} from "vue";
+<script setup lang="ts">
+import {ref, defineComponent, watchEffect} from "vue";
 import {isClient} from "@vueuse/shared";
 import {useShare, useElementSize} from "@vueuse/core";
 import {toast} from "@/main";
+
+const props = withDefaults(defineProps<{routes: links, isLessWide?: boolean}>(),{isLessWide: false})
 
 type links = {
 	path: string;
 	text: string;
 	isCurrent: boolean;
 }[];
-export default defineComponent({
-	setup() {
-		const options = ref({
-			title: "Bestiary Builder",
-			text: "Check my creation out on Bestiary Builder!",
-			url: isClient ? location.href : ""
-		});
 
-		const {share, isSupported} = useShare(options);
-
-		async function startShare() {
-			if (isSupported && isSupported.value) return share().catch((err) => err);
-			// webshare API is not supported
-			navigator.clipboard.writeText(options.value.url);
-			toast.success("Copied link to clipboard!");
-		}
-
-		const breadcrumbs = ref(null)
-		const { width, height } = useElementSize(breadcrumbs)
-
-		return {
-			isSupported,
-			startShare,
-			breadcrumbs,
-			height
-		};
-	},
-	props: {
-		routes: {
-			type: Array as () => links,
-			required: true
-		},
-		isLessWide: {
-			type: Boolean,
-			default: false,
-			required: false
-		}
-	},
-	watch: {
-		height() {
-			document.body.style.setProperty("--breadcrumbs-height", `${this.height}px`);
-		}
-	}
+const options = ref({
+	title: "Bestiary Builder",
+	text: "Check my creation out on Bestiary Builder!",
+	url: isClient ? location.href : ""
 });
+
+const {share, isSupported} = useShare(options);
+
+async function startShare() {
+	if (isSupported && isSupported.value) return share().catch((err) => err);
+	// webshare API is not supported
+	navigator.clipboard.writeText(options.value.url);
+	toast.success("Copied link to clipboard!");
+}
+
+const breadcrumbs = ref(null)
+const { width, height } = useElementSize(breadcrumbs)
+
+watchEffect(() => {
+	document.body.style.setProperty("--breadcrumbs-height", `${height.value}px`);
+})
+
 </script>
 
 <style lang="less">

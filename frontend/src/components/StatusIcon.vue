@@ -3,17 +3,10 @@
 	<font-awesome-icon :icon="['fas', 'link']" v-if="icon == 'unlisted'" />
 	<font-awesome-icon :icon="['fas', 'lock']" v-if="icon == 'private'" />
 </template>
-<script lang="ts">
-import type {Bestiary} from "~/shared";
-
-export default {
-	props: {
-		icon: {
-			type: String as () => Bestiary["status"],
-			required: true
-		}
-	}
-};
+<script lang="ts" setup>
+import {Bestiary} from "~/shared";
+import { defineProps } from "vue";
+defineProps<{icon: Bestiary['status']}>()
 </script>
 
 <style scoped>

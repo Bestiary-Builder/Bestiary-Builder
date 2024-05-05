@@ -5,35 +5,13 @@
 	</div>
 </template>
 
-<script lang="ts">
-import {defineComponent} from "vue";
+<script setup lang="ts">
+import {withDefaults, defineProps, ref} from "vue";
+const props = withDefaults(defineProps<{title: string, id?: number | undefined, takesCustomTextInput?: boolean}>(), {takesCustomTextInput: false, number: undefined})
+const elId = ref("")
 
-export default defineComponent({
-	props: {
-		title: {
-			type: String,
-			required: true
-		},
-		id: {
-			type: Number,
-			required: false
-		},
-		takesCustomTextInput: {
-			type: Boolean,
-			required: false,
-			default: false
-		}
-	},
-	data() {
-		return {
-			elId: ""
-		};
-	},
-	mounted() {
-		if (this.id) this.elId = this.title.toLowerCase().replaceAll(" ", "") + this.id;
-		else this.elId = this.title.toLowerCase().replaceAll(" ", "");
-	}
-});
+if (props.id) elId.value = props.title.toLowerCase().replaceAll(" ", "") + props.id;
+else elId.value = props.title.toLowerCase().replaceAll(" ", "");
 </script>
 
 <style scoped lang="less">

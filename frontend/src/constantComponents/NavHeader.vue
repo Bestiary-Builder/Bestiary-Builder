@@ -24,63 +24,42 @@
 						</svg>
 					</div>
 				</RouterLink>
-				<div v-else class="user login" @click.prevent="LoginClick">Login</div>
+				<div v-else class="user login" @click.prevent="sendToLogin($route.path)">Login</div>
 			</div>
 			<span class="navbar-toggler" @click="isExpanded = !isExpanded" aria-label="Toggle navbar"> <font-awesome-icon :icon="['fas', 'bars']" /> </span>
 		</nav>
 	</header>
 </template>
-<script lang="ts">
+<script setup lang="ts">
 import {RouterLink, RouterView} from "vue-router";
 import UserBanner from "@/components/UserBanner.vue";
-import {user, sendToLogin} from "@/main";
+import {user as getUser, sendToLogin} from "@/main";
 import type {User} from "~/shared";
-import {defineComponent} from "vue";
+import {defineComponent, onMounted, watchEffect} from "vue";
 import {onClickOutside, useElementSize} from "@vueuse/core";
 import {ref} from "vue";
-export default defineComponent({
-	name: "NavHeader",
-	components: {
-		UserBanner
-	},
-	data() {
-		return {
-			user: null as User | null
-		};
-	},
-	async mounted() {
-		this.user = await user;
-	},
-	methods: {
-		LoginClick() {
-			sendToLogin(this.$route.path);
-		}
-	},
-	setup() {
-		const isExpanded = ref(false);
-		const navbar = ref<HTMLDivElement | null>(null);
-		const {width, height} = useElementSize(navbar);
 
-		// only register this handler if on mobile device.
-		// this is crude but works fine
-		if (window.screen.availWidth < 900) {
-			onClickOutside(navbar, () => {
-				if (isExpanded.value) isExpanded.value = false;
-			});
-		}
+const user = ref<User | null>(null);
 
-		return {
-			isExpanded,
-			navbar,
-			height
-		};
-	},
-	watch: {
-		height() {
-			document.body.style.setProperty("--navbar-height", `${this.height}px`);
-		}
-	}
-});
+onMounted(async () => {
+	user.value = await getUser
+})
+
+const isExpanded = ref(false);
+const navbar = ref<HTMLDivElement | null>(null);
+const {width, height} = useElementSize(navbar);
+
+// only register this handler if on mobile device.
+// this is crude but works fine
+if (window.screen.availWidth < 900) {
+	onClickOutside(navbar, () => {
+		if (isExpanded.value) isExpanded.value = false;
+	});
+}
+
+watchEffect(() => {
+	document.body.style.setProperty("--navbar-height", `${height.value}px`);
+})
 </script>
 <style scoped lang="less">
 .navbar {
