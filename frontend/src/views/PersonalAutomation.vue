@@ -61,7 +61,7 @@
 
 <script setup lang="ts">
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
-import {ref, onMounted} from "vue";
+import {ref, onMounted, onUnmounted} from "vue";
 import {useLoading} from "vue-loading-overlay";
 import {user as getUser, handleApiResponse, toast, type error, loadingOptions} from "@/main";
 import {type User, Automation} from "~/shared";
@@ -164,15 +164,21 @@ onBeforeRouteLeave(() => {
 	}
 });
 
-window.addEventListener("beforeunload", (event) => {
-	// haven't figured out yet how to destroy the event listener upon unmount so for now this confirms that the
-	// warning only shows if they are in the statblock editor
+
+const unloadHandler = (event: Event) => {
 	if (initialData !== JSON.stringify(data.value)) {
 		const answer = window.confirm("Do you really want to leave? you have unsaved changes!");
 		event.preventDefault();
 		event.returnValue = true;
 	}
-});
+}
+
+onMounted(() => {
+	window.addEventListener("beforeunload", unloadHandler)
+})
+onUnmounted(() => {
+	window.removeEventListener("beforeunload", unloadHandler)
+})
 </script>
 
 <style scoped lang="less">
