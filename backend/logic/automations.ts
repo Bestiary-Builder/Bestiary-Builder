@@ -1,9 +1,9 @@
-import {app, badwords} from "../utilities/constants";
+import {app, checkAutomationLimits} from "../utilities/constants";
 import {log} from "../utilities/logger";
-import limits from "../staticData/limits.json";
 import {requireUser, possibleUser} from "./login";
 import {getUser, getAutomation, collections, updateAutomation, deleteAutomation} from "../utilities/database";
 import {Automation, stringToId} from "../../shared";
+import {checkBadwords} from "../utilities/badwords";
 
 //Get info
 app.get("/api/automation/:id", requireUser, async (req, res) => {
@@ -78,20 +78,13 @@ app.post("/api/automation/:id/update", requireUser, async (req, res) => {
 		} as Automation;
 		data._id = _id;
 		//Check limits
-		if (data.name.length > limits.nameLength) return res.status(400).json({error: `Name exceeds the character limit of ${limits.nameLength} characters.`});
-		if (data.name.length < limits.nameMin) return res.status(400).json({error: `Name is less than the minimum character limit of ${limits.nameMin} characters.`});
-		if (data.description.length > limits.descriptionLength) return res.status(400).json({error: `Description exceeds the character limit of ${limits.descriptionLength} characters.`});
+		let limitError = checkAutomationLimits(data);
+		if (limitError) return res.status(400).json({error: limitError});
 		//Remove bad words
-		let usedBadwords: string[] = [];
-		badwords.filter(data.name, (badword) => {
-			usedBadwords.push(badword);
-		});
-		if (usedBadwords.length > 0) return res.status(400).json({error: `Automation name includes blocked words or phrases. Matched: ${usedBadwords.join(", ")}. If you think this was a mistake, please file a bug report.`});
-		usedBadwords = [];
-		badwords.filter(data.description, (badword) => {
-			usedBadwords.push(badword);
-		});
-		if (usedBadwords.length > 0) return res.status(400).json({error: `Automation description includes blocked words or phrases. Matched: ${usedBadwords.join(", ")}. If you think this was a mistake, please file a bug report.`});
+		let nameError = checkBadwords(data.name);
+		if (!nameError) return res.status(400).json({error: "Automation name " + nameError});
+		let descError = checkBadwords(data.description);
+		if (!descError) return res.status(400).json({error: "Automation description " + descError});
 		//Update existing automation
 		let automation = await getAutomation(data._id);
 		if (automation) {
@@ -134,20 +127,13 @@ app.post("/api/automation/add", requireUser, async (req, res) => {
 			...(req.body.data as Partial<Automation>)
 		} as Automation;
 		//Check limits
-		if (data.name.length > limits.nameLength) return res.status(400).json({error: `Name exceeds the character limit of ${limits.nameLength} characters.`});
-		if (data.name.length < limits.nameMin) return res.status(400).json({error: `Name is less than the minimum character limit of ${limits.nameMin} characters.`});
-		if (data.description.length > limits.descriptionLength) return res.status(400).json({error: `Description exceeds the character limit of ${limits.descriptionLength} characters.`});
+		let limitError = checkAutomationLimits(data);
+		if (limitError) return res.status(400).json({error: limitError});
 		//Remove bad words
-		let usedBadwords: string[] = [];
-		badwords.filter(data.name, (badword) => {
-			usedBadwords.push(badword);
-		});
-		if (usedBadwords.length > 0) return res.status(400).json({error: `Automation name includes blocked words or phrases. Matched: ${usedBadwords.join(", ")}. If you think this was a mistake, please file a bug report.`});
-		usedBadwords = [];
-		badwords.filter(data.description, (badword) => {
-			usedBadwords.push(badword);
-		});
-		if (usedBadwords.length > 0) return res.status(400).json({error: `Automation description includes blocked words or phrases. Matched: ${usedBadwords.join(", ")}. If you think this was a mistake, please file a bug report.`});
+		let nameError = checkBadwords(data.name);
+		if (!nameError) return res.status(400).json({error: "Automation name " + nameError});
+		let descError = checkBadwords(data.description);
+		if (!descError) return res.status(400).json({error: "Automation description " + descError});
 		//Create new automation
 		let _id = await updateAutomation(data);
 		if (!_id) return res.status(500).json({error: "Failed to create automation."});
