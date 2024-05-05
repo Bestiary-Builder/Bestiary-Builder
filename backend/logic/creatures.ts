@@ -125,9 +125,9 @@ app.post("/api/creature/add", requireUser, async (req, res) => {
 		//Remove bad words
 		if (bestiary.status != "private") {
 			let nameError = checkBadwords(data.stats.description.name);
-			if (!nameError) return res.status(400).json({error: "Creature name " + nameError});
+			if (nameError) return res.status(400).json({error: "Creature name " + nameError});
 			let descriptionError = checkBadwords(data.stats.description.description);
-			if (!descriptionError) return res.status(400).json({error: "Creature description " + descriptionError});
+			if (descriptionError) return res.status(400).json({error: "Creature description " + descriptionError});
 		}
 		//Check permissions
 		if (["none", "view"].includes(checkBestiaryPermission(bestiary, user))) return res.status(401).json({error: "You don't have permission to add creature to this bestiary."});
@@ -212,9 +212,9 @@ app.post("/api/creature/:id/update", requireUser, async (req, res) => {
 		//Remove bad words
 		if (bestiary.status != "private") {
 			let nameError = checkBadwords(data.stats.description.name);
-			if (!nameError) return res.status(400).json({error: "Creature name " + nameError});
+			if (nameError) return res.status(400).json({error: "Creature name " + nameError});
 			let descriptionError = checkBadwords(data.stats.description.description);
-			if (!descriptionError) return res.status(400).json({error: "Creature description " + descriptionError});
+			if (descriptionError) return res.status(400).json({error: "Creature description " + descriptionError});
 		}
 		//Check permissions
 		if (["none", "view"].includes(checkBestiaryPermission(bestiary, user))) return res.status(401).json({error: "You don't have permission to update this creature."});

@@ -82,9 +82,9 @@ app.post("/api/automation/:id/update", requireUser, async (req, res) => {
 		if (limitError) return res.status(400).json({error: limitError});
 		//Remove bad words
 		let nameError = checkBadwords(data.name);
-		if (!nameError) return res.status(400).json({error: "Automation name " + nameError});
+		if (nameError) return res.status(400).json({error: "Automation name " + nameError});
 		let descError = checkBadwords(data.description);
-		if (!descError) return res.status(400).json({error: "Automation description " + descError});
+		if (descError) return res.status(400).json({error: "Automation description " + descError});
 		//Update existing automation
 		let automation = await getAutomation(data._id);
 		if (automation) {
@@ -131,9 +131,9 @@ app.post("/api/automation/add", requireUser, async (req, res) => {
 		if (limitError) return res.status(400).json({error: limitError});
 		//Remove bad words
 		let nameError = checkBadwords(data.name);
-		if (!nameError) return res.status(400).json({error: "Automation name " + nameError});
+		if (nameError) return res.status(400).json({error: "Automation name " + nameError});
 		let descError = checkBadwords(data.description);
-		if (!descError) return res.status(400).json({error: "Automation description " + descError});
+		if (descError) return res.status(400).json({error: "Automation description " + descError});
 		//Create new automation
 		let _id = await updateAutomation(data);
 		if (!_id) return res.status(500).json({error: "Failed to create automation."});
