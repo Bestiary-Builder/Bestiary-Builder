@@ -1,10 +1,9 @@
-import {badwords, app} from "../utilities/constants";
+import {app, checkBestiaryLimits, checkCreatureLimits, limits} from "../utilities/constants";
 import {log} from "../utilities/logger";
 import {requireUser, possibleUser} from "./login";
 import {publicLog, colors} from "./discord";
 import {addBestiaryToUser, getBestiary, getUser, incrementBestiaryViewCount, updateBestiary, deleteBestiary, collections, addBookmark, removeBookmark} from "../utilities/database";
 import {User, Bestiary, Creature, type Statblock, defaultStatblock, Stat, Id, stringToId} from "../../shared";
-import limits from "../staticData/limits.json";
 import tags from "../staticData/tags.json";
 
 //Permission checks
@@ -112,24 +111,14 @@ app.post("/api/bestiary/:id?/update", requireUser, async (req, res) => {
 		}
 		//Check limits
 		data.tags = data.tags.filter((t) => tags.includes(t));
-		if (data.name.length > limits.nameLength) return res.status(400).json({error: `Name exceeds the character limit of ${limits.nameLength} characters.`});
-		if (data.name.length < limits.nameMin) return res.status(400).json({error: `Name is less than the minimum character limit of ${limits.nameMin} characters.`});
-		if (data.description.length > limits.descriptionLength) return res.status(400).json({error: `Description exceeds the character limit of ${limits.descriptionLength} characters.`});
-		if (data.creatures.length > limits.creatureAmount) return res.status(400).json({error: `Number of creatures exceeds the limit of ${limits.creatureAmount}.`});
-		if (!["private", "public", "unlisted"].includes(data.status)) return res.status(400).json({error: "Status has an unkown value, must only be 'public', 'unlisted' or 'private'."});
+		let limitError = checkBestiaryLimits(data);
+		if (limitError) return res.status(400).json({error: limitError});
 		//Remove bad words
 		if (data.status != "private") {
-			let usedBadwords: string[] = [];
-			badwords.filter(data.name, (badword) => {
-				usedBadwords.push(badword);
-			});
-			if (usedBadwords.length > 0) return res.status(400).json({error: `Bestiary name includes blocked words or phrases. Matched: ${usedBadwords.join(", ")}. If you think this was a mistake, please file a bug report.`});
-
-			usedBadwords = [];
-			badwords.filter(data.description, (badword) => {
-				usedBadwords.push(badword);
-			});
-			if (usedBadwords.length > 0) return res.status(400).json({error: `Bestiary description includes blocked words or phrases. Matched: ${usedBadwords.join(", ")}. If you think this was a mistake, please file a bug report.`});
+			let nameError = checkBadwords(data.name);
+			if (!nameError) return res.status(400).json({error: "Bestiary name " + nameError});
+			let descError = checkBadwords(data.description);
+			if (!descError) return res.status(400).json({error: "Bestiary description " + descError});
 		}
 		//Public?
 		if (data.status == "public") {
@@ -255,7 +244,7 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 			//Set last updated
 			creature.lastUpdated = now;
 			//Check limits
-			if (creature.stats.description.name.length > limits.nameLength || creature.stats.description.name.length < limits.nameMin || creature.stats.description.description.length > limits.descriptionLength) {
+			if (!checkCreatureLimits(creature)) {
 				ignoredCreatures.push(creature.stats.description.name);
 				continue;
 			}
@@ -290,7 +279,7 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 			}
 			//Badwords check
 			if (bestiary.status != "private") {
-				if (badwords.check(creature.stats.description.name) || badwords.check(creature.stats.description.description)) {
+				if (checkBadwords(creature.stats.description.name) || checkBadwords(creature.stats.description.description)) {
 					ignoredCreatures.push(creature.stats.description.name);
 					continue;
 				}
@@ -456,6 +445,7 @@ app.get("/api/bestiary/:id/bookmark/get", requireUser, async (req, res) => {
 //Validate inputs
 import {createCheckers} from "ts-interface-checker";
 import {typeInterface, interfaceValidation} from "../../shared";
+import {checkBadwords} from "../utilities/badwords";
 const {Statblock: StatblockChecker} = createCheckers(typeInterface);
 function validateStatblockInput(input: Statblock[]) {
 	for (let block of input) {

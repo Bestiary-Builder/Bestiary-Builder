@@ -1,11 +1,11 @@
-import {badwords, app} from "../utilities/constants";
+import {app, checkCreatureAmountLimit, checkCreatureLimits, limits} from "../utilities/constants";
 import {log} from "../utilities/logger";
 import {requireUser, possibleUser} from "./login";
 import {addCreatureToBestiary, collections, getBestiary, getCreature, getUser, updateCreature, deleteCreature} from "../utilities/database";
 import {User, Creature, Statblock, defaultStatblock, stringToId} from "../../shared";
 import {checkBestiaryPermission} from "./bestiaries";
-import limits from "../staticData/limits.json";
 import {validateCreatureInput} from "./validation";
+import {checkBadwords} from "../utilities/badwords";
 
 //Check creature permissions
 async function checkCreaturePermission(creature: Creature, user: User | null) {
@@ -90,9 +90,8 @@ app.post("/api/creature/add", requireUser, async (req, res) => {
 			data.stats[k] = {...defaultStatblock[k], ...oldStats[k]} as any;
 		}
 		//Check limits
-		if (data.stats.description.name.length > limits.nameLength) return res.status(400).json({error: `Name exceeds the character limit of ${limits.nameLength} characters.`});
-		if (data.stats.description.name.length < limits.nameMin) return res.status(400).json({error: `Name is less than the minimum character limit of ${limits.nameMin} characters.`});
-		if (data.stats.description.description.length > limits.descriptionLength) return res.status(400).json({error: `Description exceeds the character limit of ${limits.descriptionLength} characters.`});
+		let limitError = checkCreatureLimits(data);
+		if (limitError) return res.status(400).json({error: limitError});
 		//Check image link
 		let image = data.stats.description.image as string;
 		// remove any url parameters from the string
@@ -125,21 +124,16 @@ app.post("/api/creature/add", requireUser, async (req, res) => {
 		if (!bestiary) return res.status(404).json({error: "Bestiary not found"});
 		//Remove bad words
 		if (bestiary.status != "private") {
-			let usedBadwords: string[] = [];
-			badwords.filter(data.stats.description.name, (badword) => {
-				usedBadwords.push(badword);
-			});
-			if (usedBadwords.length > 0) return res.status(400).json({error: `Creature name includes blocked words or phrases. Remove the badwords or make the bestiary private. Matched: ${usedBadwords.join(", ")}. If you think this was a mistake, please file a bug report.`});
-			usedBadwords = [];
-			badwords.filter(data.stats.description.description, (badword) => {
-				usedBadwords.push(badword);
-			});
-			if (usedBadwords.length > 0) return res.status(400).json({error: `Creature description includes blocked words or phrases. Remove the badwords or make the bestiary private. Matched: ${usedBadwords.join(", ")}. If you think this was a mistake, please file a bug report.`});
+			let nameError = checkBadwords(data.stats.description.name);
+			if (!nameError) return res.status(400).json({error: "Creature name " + nameError});
+			let descriptionError = checkBadwords(data.stats.description.description);
+			if (!descriptionError) return res.status(400).json({error: "Creature description " + descriptionError});
 		}
 		//Check permissions
 		if (["none", "view"].includes(checkBestiaryPermission(bestiary, user))) return res.status(401).json({error: "You don't have permission to add creature to this bestiary."});
 		//Check amount of creatures:
-		if (bestiary.creatures.length >= limits.creatureAmount) return res.status(400).json({error: `Number of creatures exceeds the limit of ${limits.creatureAmount}.`});
+		let amountError = checkCreatureAmountLimit(bestiary);
+		if (amountError) return res.status(400).json({error: amountError});
 		//Add creature
 		let _id = await updateCreature(data);
 		if (!_id) return res.status(500).json({error: "Failed to create creature."});
@@ -183,9 +177,8 @@ app.post("/api/creature/:id/update", requireUser, async (req, res) => {
 			data.stats[k] = {...defaultStatblock[k], ...oldStats[k]} as any;
 		}
 		//Check limits
-		if (data.stats.description.name.length > limits.nameLength) return res.status(400).json({error: `Name exceeds the character limit of ${limits.nameLength} characters.`});
-		if (data.stats.description.name.length < limits.nameMin) return res.status(400).json({error: `Name is less than the minimum character limit of ${limits.nameMin} characters.`});
-		if (data.stats.description.description.length > limits.descriptionLength) return res.status(400).json({error: `Description exceeds the character limit of ${limits.descriptionLength} characters.`});
+		let limitError = checkCreatureLimits(data);
+		if (limitError) return res.status(400).json({error: limitError});
 		//Check image link
 		let image = data.stats.description.image as string;
 		// remove any url parameters from the string
@@ -218,16 +211,10 @@ app.post("/api/creature/:id/update", requireUser, async (req, res) => {
 		if (!bestiary) return res.status(404).json({error: "Bestiary not found"});
 		//Remove bad words
 		if (bestiary.status != "private") {
-			let usedBadwords: string[] = [];
-			badwords.filter(data.stats.description.name, (badword) => {
-				usedBadwords.push(badword);
-			});
-			if (usedBadwords.length > 0) return res.status(400).json({error: `Creature name includes blocked words or phrases. Remove the badwords or make the bestiary private. Matched: ${usedBadwords.join(", ")}. If you think this was a mistake, please file a bug report.`});
-			usedBadwords = [];
-			badwords.filter(data.stats.description.description, (badword) => {
-				usedBadwords.push(badword);
-			});
-			if (usedBadwords.length > 0) return res.status(400).json({error: `Creature description includes blocked words or phrases. Remove the badwords or make the bestiary private. Matched: ${usedBadwords.join(", ")}. If you think this was a mistake, please file a bug report.`});
+			let nameError = checkBadwords(data.stats.description.name);
+			if (!nameError) return res.status(400).json({error: "Creature name " + nameError});
+			let descriptionError = checkBadwords(data.stats.description.description);
+			if (!descriptionError) return res.status(400).json({error: "Creature description " + descriptionError});
 		}
 		//Check permissions
 		if (["none", "view"].includes(checkBestiaryPermission(bestiary, user))) return res.status(401).json({error: "You don't have permission to update this creature."});
