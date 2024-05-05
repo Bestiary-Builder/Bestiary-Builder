@@ -90,7 +90,7 @@ app.post("/api/creature/add", requireUser, async (req, res) => {
 			data.stats[k] = {...defaultStatblock[k], ...oldStats[k]} as any;
 		}
 		//Check limits
-		let limitError = checkCreatureLimits(data);
+		const limitError = checkCreatureLimits(data);
 		if (limitError) return res.status(400).json({error: limitError});
 		//Check image link
 		let image = data.stats.description.image as string;
@@ -124,15 +124,15 @@ app.post("/api/creature/add", requireUser, async (req, res) => {
 		if (!bestiary) return res.status(404).json({error: "Bestiary not found"});
 		//Remove bad words
 		if (bestiary.status != "private") {
-			let nameError = checkBadwords(data.stats.description.name);
+			const nameError = checkBadwords(data.stats.description.name);
 			if (nameError) return res.status(400).json({error: "Creature name " + nameError});
-			let descriptionError = checkBadwords(data.stats.description.description);
-			if (descriptionError) return res.status(400).json({error: "Creature description " + descriptionError});
+			const descError = checkBadwords(data.stats.description.description);
+			if (descError) return res.status(400).json({error: "Creature description " + descError});
 		}
 		//Check permissions
 		if (["none", "view"].includes(checkBestiaryPermission(bestiary, user))) return res.status(401).json({error: "You don't have permission to add creature to this bestiary."});
 		//Check amount of creatures:
-		let amountError = checkCreatureAmountLimit(bestiary);
+		const amountError = checkCreatureAmountLimit(bestiary);
 		if (amountError) return res.status(400).json({error: amountError});
 		//Add creature
 		let _id = await updateCreature(data);
@@ -177,7 +177,7 @@ app.post("/api/creature/:id/update", requireUser, async (req, res) => {
 			data.stats[k] = {...defaultStatblock[k], ...oldStats[k]} as any;
 		}
 		//Check limits
-		let limitError = checkCreatureLimits(data);
+		const limitError = checkCreatureLimits(data);
 		if (limitError) return res.status(400).json({error: limitError});
 		//Check image link
 		let image = data.stats.description.image as string;
@@ -211,10 +211,10 @@ app.post("/api/creature/:id/update", requireUser, async (req, res) => {
 		if (!bestiary) return res.status(404).json({error: "Bestiary not found"});
 		//Remove bad words
 		if (bestiary.status != "private") {
-			let nameError = checkBadwords(data.stats.description.name);
+			const nameError = checkBadwords(data.stats.description.name);
 			if (nameError) return res.status(400).json({error: "Creature name " + nameError});
-			let descriptionError = checkBadwords(data.stats.description.description);
-			if (descriptionError) return res.status(400).json({error: "Creature description " + descriptionError});
+			const descError = checkBadwords(data.stats.description.description);
+			if (descError) return res.status(400).json({error: "Creature description " + descError});
 		}
 		//Check permissions
 		if (["none", "view"].includes(checkBestiaryPermission(bestiary, user))) return res.status(401).json({error: "You don't have permission to update this creature."});

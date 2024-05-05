@@ -108,13 +108,13 @@ app.post("/api/bestiary/:id/update", requireUser, async (req, res) => {
 		data._id = _id;
 		//Check limits
 		data.tags = data.tags.filter((t) => tags.includes(t));
-		let limitError = checkBestiaryLimits(data);
+		const limitError = checkBestiaryLimits(data);
 		if (limitError) return res.status(400).json({error: limitError});
 		//Remove bad words
 		if (data.status != "private") {
-			let nameError = checkBadwords(data.name);
+			const nameError = checkBadwords(data.name);
 			if (nameError) return res.status(400).json({error: "Bestiary name " + nameError});
-			let descError = checkBadwords(data.description);
+			const descError = checkBadwords(data.description);
 			if (descError) return res.status(400).json({error: "Bestiary description " + descError});
 		}
 		//Public?
@@ -183,13 +183,13 @@ app.post("/api/bestiary/add", requireUser, async (req, res) => {
 		}
 		//Check limits
 		data.tags = data.tags.filter((t) => tags.includes(t));
-		let limitError = checkBestiaryLimits(data);
+		const limitError = checkBestiaryLimits(data);
 		if (limitError) return res.status(400).json({error: limitError});
 		//Remove bad words
 		if (data.status != "private") {
-			let nameError = checkBadwords(data.name);
+			const nameError = checkBadwords(data.name);
 			if (nameError) return res.status(400).json({error: "Bestiary name " + nameError});
-			let descError = checkBadwords(data.description);
+			const descError = checkBadwords(data.description);
 			if (descError) return res.status(400).json({error: "Bestiary description " + descError});
 		}
 		//Public?
