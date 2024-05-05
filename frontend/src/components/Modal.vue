@@ -28,9 +28,9 @@ const emit  = defineEmits<{
 }>()
 
 // TODO: Don't use this.
-const id    = getCurrentInstance()?.uid
-const target = ref();
+const id    = getCurrentInstance()?.uid;
 
+const target = ref();
 const {hasFocus, activate, deactivate} = useFocusTrap(target);
 
 watch(

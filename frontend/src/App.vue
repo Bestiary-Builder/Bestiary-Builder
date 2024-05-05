@@ -1,16 +1,7 @@
-<script lang="ts">
+<script setup lang="ts">
 import {RouterView} from "vue-router";
 import Footer from "@/constantComponents/Footer.vue";
 import NavHeader from "@/constantComponents/NavHeader.vue";
-import {defineComponent} from "vue";
-export default defineComponent({
-	name: "App",
-	components: {
-		NavHeader,
-		Footer,
-		RouterView
-	}
-});
 </script>
 
 <template>
@@ -23,5 +14,3 @@ export default defineComponent({
 		<Footer></Footer>
 	</footer>
 </template>
-
-<style scoped></style>

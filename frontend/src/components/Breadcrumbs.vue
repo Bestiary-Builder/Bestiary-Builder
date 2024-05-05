@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, defineComponent, watchEffect} from "vue";
+import {ref, watchEffect} from "vue";
 import {isClient} from "@vueuse/shared";
 import {useShare, useElementSize} from "@vueuse/core";
 import {toast} from "@/main";
