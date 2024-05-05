@@ -199,5 +199,5 @@ export const isMobile = screen.width < 900;
 
 //Gtag
 if (import.meta.env.MODE == "production") {
-	import("./utils/gtag" as any);
+	import("./utils/gtag.js" as any);
 }
