@@ -24,7 +24,7 @@ httpServer.listen(parseInt(process.env.port ?? "5000"), () => {
 });
 
 //Load frontend
-import {routes, defaultMetaTags, Route} from "./utilities/routes";
+import {routes, defaultMetaTags, Route} from "../shared/routes";
 import {Id, stringToId} from "../shared";
 async function getFrontendHtml(route: Route, req: Request) {
 	//Get information
