@@ -7,7 +7,7 @@ import {user, sendToLogin} from "@/main";
 const routes = relevantRoutes.map((route) => {
 	return {
 		...route,
-		...{component: fileRoutes.find((fileRoute: any) => fileRoute.name === route.file.replace(".vue", "").replace("/", "-"))?.component, props: true}
+		...{component: fileRoutes.find((fileRoute: any) => fileRoute.name === route.file.replace(".vue", "").replace("/", "-"))?.component}
 	};
 });
 

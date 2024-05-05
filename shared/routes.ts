@@ -9,7 +9,8 @@ export interface Route {
 		description?: string;
 		keywords?: string;
 		image?: string;
-	};
+	},
+	props?: Record<string, unknown> 
 }
 
 export const routes: Route[] = [
@@ -24,8 +25,9 @@ export const routes: Route[] = [
 	{
 		path: "/help",
 		name: "Help",
-		file: "HelpView.vue",
-		meta: {navbar: true, loggedIn: false, dynamic: false}
+		file: "GenericMarkdownView.vue",
+		meta: {navbar: true, loggedIn: false, dynamic: false},
+		props: { filePath: 'help'}
 	},
 	// a list of your bestiaries
 	{
@@ -74,29 +76,34 @@ export const routes: Route[] = [
 	{
 		path: "/privacy-policy",
 		name: "Privacy Policy",
-		file: "PrivacyPolicy.vue",
-		meta: {navbar: false, loggedIn: false, dynamic: false}
+		file: "GenericMarkdownView.vue",
+		meta: {navbar: false, loggedIn: false, dynamic: false},
+		props: { filePath: 'privacy-policy'}
+
 	},
 	// terms and conditions
 	{
 		path: "/terms-and-conditions",
 		name: "Terms And Conditions",
-		file: "TermsAndConditions.vue",
-		meta: {navbar: false, loggedIn: false, dynamic: false}
+		file: "GenericMarkdownView.vue",
+		meta: {navbar: false, loggedIn: false, dynamic: false},
+		props: { filePath: 'terms-and-conditions'}
 	},
 	// changelog
 	{
 		path: "/changelog",
 		name: "Changelog",
-		file: "Changelog.vue",
-		meta: {navbar: true, loggedIn: false, dynamic: false}
+		file: "GenericMarkdownView.vue",
+		meta: {navbar: true, loggedIn: false, dynamic: false},
+		props: { filePath: 'changelog'}
 	},
-	// 404 not found page
+	// 404 not found page - must be last.
 	{
-		path: "/notfound",
+		path: "/:pathMatch(.*)*",
 		name: "Page not found",
-		file: "NotFound.vue",
-		meta: {navbar: false, loggedIn: false, dynamic: false}
+		file: "GenericMarkdownView.vue",
+		meta: {navbar: false, loggedIn: false, dynamic: false},
+		props: { filePath: "not-found"}
 	}
 ];
 export const siteMapRoutes = routes.map((route) => ({
