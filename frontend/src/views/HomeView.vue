@@ -78,11 +78,6 @@ export default defineComponent({
 	}
 });
 </script>
-<style scoped>
-html {
-	overflow-y: unset;
-}
-</style>
 <style scoped lang="less">
 @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&display=block");
 .content {
