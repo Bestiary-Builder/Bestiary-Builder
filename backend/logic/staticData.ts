@@ -1,9 +1,7 @@
-import {app} from "../utilities/constants";
-import {log} from "../utilities/logger";
-
-import basicExamples from "../staticData/basicExamples.json";
-import srdFeatures from "../staticData/srdFeatures.json";
-import tOF from "../staticData/textOnlyFeatures.json";
+import {app} from "@/utilities/constants";
+import basicExamples from "@/staticData/basicExamples.json";
+import srdFeatures from "@/staticData/srdFeatures.json";
+import tOF from "@/staticData/textOnlyFeatures.json";
 const textOnlyFeatures = tOF as {[key: string]: string};
 const allSrdFeatures = Object.keys(textOnlyFeatures)
 	.map((key) => ({name: key, description: textOnlyFeatures[key] as string, automation: null as unknown}))
@@ -39,19 +37,19 @@ app.get("/api/srd-feature/:name", async (req, res) => {
 });
 
 //Tags
-import tags from "../staticData/tags.json";
+import tags from "@/staticData/tags.json";
 app.get("/api/tags", async (req, res) => {
 	res.json(tags);
 });
 
 //Limits
-import limits from "../staticData/limits.json";
+import limits from "@/staticData/limits.json";
 app.get("/api/limits", async (req, res) => {
 	res.json(limits);
 });
 
 //Automation documentation
-import data from "../staticData/automationDocumentation.json";
+import data from "@/staticData/automationDocumentation.json";
 app.get("/api/automationDocumentation", async (req, res) => {
 	res.json(data);
 });

@@ -211,7 +211,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import type { Stat, SkillsEntity, Statblock, InnateSpells, CasterSpells } from '@/../../shared'
+import type { Stat, SkillsEntity, Statblock, InnateSpells, CasterSpells } from "~/shared"
 import { stringify } from 'yaml'
 import { displayCR, displaySpeedOrSenses, displayInnateCasting } from '@/utils/displayFunctions';
 import markdownit from "markdown-it"

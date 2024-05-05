@@ -1,6 +1,6 @@
-import {log} from "../logger";
-import {User, Bestiary, Creature, Id, Automation} from "../../../shared";
-import {generateUserSecret} from "../constants";
+import {log} from "@/utilities/logger";
+import {User, Bestiary, Creature, Id, Automation} from "~/shared";
+import {generateUserSecret} from "@/utilities/constants";
 import {collections} from ".";
 
 //User cache

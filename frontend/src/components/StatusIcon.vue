@@ -4,7 +4,7 @@
 	<font-awesome-icon :icon="['fas', 'lock']" v-if="icon == 'private'" />
 </template>
 <script lang="ts">
-import type {Bestiary} from "@/../../shared";
+import type {Bestiary} from "~/shared";
 
 export default {
 	props: {

@@ -1,5 +1,5 @@
-import {app} from "../utilities/constants";
-import {log} from "../utilities/logger";
+import {app} from "@/utilities/constants";
+import {log} from "@/utilities/logger";
 import fetch from "node-fetch";
 
 app.get("/api/critterdb/:id/:published", async (req, res) => {

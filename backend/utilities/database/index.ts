@@ -1,6 +1,6 @@
 import {MongoClient, ServerApiVersion, Db, Collection} from "mongodb";
-import {log} from "../logger";
-import {User, Bestiary, Creature, Id, Automation} from "../../../shared";
+import {log} from "@/utilities/logger";
+import {User, Bestiary, Creature, Id, Automation} from "~/shared";
 
 //Connect to database
 let database = null as Db | null;

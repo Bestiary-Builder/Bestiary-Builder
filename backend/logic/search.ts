@@ -1,8 +1,8 @@
-import {collections, getGlobalStats} from "../utilities/database";
-import {User, Bestiary, Creature, SearchOptions} from "../../shared";
+import {collections, getGlobalStats} from "@/utilities/database";
+import {User, Bestiary, Creature, SearchOptions} from "~/shared";
 import {type Filter, type FindOptions, type Sort} from "mongodb";
-import {app} from "../utilities/constants";
-import {log} from "../utilities/logger";
+import {app} from "@/utilities/constants";
+import {log} from "@/utilities/logger";
 
 const amountPerPage = 12;
 
@@ -87,7 +87,7 @@ app.post("/api/search", async (req, res) => {
 //Validate input
 import {createCheckers} from "ts-interface-checker";
 import {Response} from "express";
-import {typeInterface, interfaceValidation} from "../../shared";
+import {typeInterface, interfaceValidation} from "~/shared";
 const {SearchOptions: SearchChecker} = createCheckers(typeInterface);
 function validateSearchInput(input: any, res: Response) {
 	if (SearchChecker.test(input)) {

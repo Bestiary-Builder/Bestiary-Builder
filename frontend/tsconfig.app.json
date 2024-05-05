@@ -10,7 +10,8 @@
 		"baseUrl": ".",
 		"noEmit": false,
 		"paths": {
-			"@/*": ["./src/*"]
+			"@/*": ["./src/*"],
+			"~/*": ["../*"]
 		},
 		"lib": ["dom", "esnext"]
 	},

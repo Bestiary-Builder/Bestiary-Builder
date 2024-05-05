@@ -1,6 +1,6 @@
 // Simple global functions used in several places in the UI
 
-import type {Creature, SenseEntity, SpeedEntity, SpellCasting, Statblock, Stat} from "@/../../shared";
+import type {Creature, SenseEntity, SpeedEntity, SpellCasting, Statblock, Stat} from "~/shared";
 
 export function displayCR(cr: number): string {
 	if (cr == 0.125) return "1/8";

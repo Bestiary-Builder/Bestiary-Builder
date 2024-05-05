@@ -1,7 +1,7 @@
-import {app} from "../utilities/constants";
-import {log} from "../utilities/logger";
-import {getBestiary, incrementBestiaryViewCount, collections} from "../utilities/database";
-import {type Statblock, Id, stringToId} from "../../shared";
+import {app} from "@/utilities/constants";
+import {log} from "@/utilities/logger";
+import {getBestiary, incrementBestiaryViewCount, collections} from "@/utilities/database";
+import {type Statblock, Id, stringToId} from "~/shared";
 
 //Export data
 app.get("/api/public/bestiary/:id", (req, res) => res.redirect("/api/export/bestiary/" + req.params.id));

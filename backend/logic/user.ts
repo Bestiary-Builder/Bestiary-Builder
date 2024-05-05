@@ -1,8 +1,8 @@
-import {app} from "../utilities/constants";
-import {log} from "../utilities/logger";
+import {app} from "@/utilities/constants";
+import {log} from "@/utilities/logger";
 import {requireUser, possibleUser} from "./login";
-import {getUser, collections} from "../utilities/database";
-import {User, Bestiary, Creature} from "../../shared";
+import {getUser, collections} from "@/utilities/database";
+import {User, Bestiary, Creature} from "~/shared";
 
 app.get("/api/user/bookmarks", requireUser, async (req, res) => {
 	try {

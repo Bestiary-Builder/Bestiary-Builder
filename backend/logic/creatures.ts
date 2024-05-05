@@ -1,11 +1,11 @@
-import {app, checkCreatureAmountLimit, checkCreatureLimits, limits} from "../utilities/constants";
-import {log} from "../utilities/logger";
+import {app, checkCreatureAmountLimit, checkCreatureLimits, limits} from "@/utilities/constants";
+import {log} from "@/utilities/logger";
 import {requireUser, possibleUser} from "./login";
-import {addCreatureToBestiary, collections, getBestiary, getCreature, getUser, updateCreature, deleteCreature} from "../utilities/database";
-import {User, Creature, Statblock, defaultStatblock, stringToId} from "../../shared";
+import {addCreatureToBestiary, collections, getBestiary, getCreature, getUser, updateCreature, deleteCreature} from "@/utilities/database";
+import {User, Creature, Statblock, defaultStatblock, stringToId} from "~/shared";
 import {checkBestiaryPermission} from "./bestiaries";
 import {validateCreatureInput} from "./validation";
-import {checkBadwords} from "../utilities/badwords";
+import {checkBadwords} from "@/utilities/badwords";
 
 //Check creature permissions
 async function checkCreaturePermission(creature: Creature, user: User | null) {

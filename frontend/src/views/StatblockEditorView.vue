@@ -470,8 +470,8 @@ import draggable from "vuedraggable";
 
 import {defineComponent} from "vue";
 
-import type {SkillsEntity, Statblock, Creature, Bestiary} from "@/../../shared";
-import {defaultStatblock, getSpellSlots, spellList, spellListFlattened, getXPbyCR, type User} from "@/../../shared";
+import type {SkillsEntity, Statblock, Creature, Bestiary} from "~/shared";
+import {defaultStatblock, getSpellSlots, spellList, spellListFlattened, getXPbyCR, type User} from "~/shared";
 import {handleApiResponse, type error, toast, asyncLimits, type limitsType, user} from "@/main";
 import {parseFrom5eTools} from "../parser/parseFrom5eTools";
 import {capitalizeFirstLetter} from "@/parser/utils";

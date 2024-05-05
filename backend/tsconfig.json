@@ -11,7 +11,11 @@
 		"strict": true,
 		"noImplicitAny": true,
 		"esModuleInterop": true,
-		"resolveJsonModule": true
+		"resolveJsonModule": true,
+		"paths": {
+			"@/*": ["./*"],
+			"~/*": ["../*"]
+		}
 	},
 	"hooks": ["copy-files"],
 	"references": [

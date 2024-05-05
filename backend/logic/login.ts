@@ -1,10 +1,10 @@
-import {isProduction, app} from "../utilities/constants";
-import {log} from "../utilities/logger";
+import {isProduction, app} from "@/utilities/constants";
+import {log} from "@/utilities/logger";
 import fetch from "node-fetch";
 import jwt from "jsonwebtoken";
-import {getUser, getUserFromSecret, updateUser} from "../utilities/database";
+import {getUser, getUserFromSecret, updateUser} from "@/utilities/database";
 import {NextFunction, Response, Request} from "express";
-import {User} from "../../shared";
+import {User} from "~/shared";
 
 app.head("/api/login/:code", async (req, res) => {
 	return res.sendStatus(200);

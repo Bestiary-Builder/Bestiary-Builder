@@ -5,15 +5,15 @@ import express, {NextFunction, Request, Response} from "express";
 import dotenv from "dotenv";
 dotenv.config();
 //Logging
-import {log} from "./utilities/logger";
+import {log} from "@/utilities/logger";
 //App
-import {app, isProduction} from "./utilities/constants";
+import {app, isProduction} from "@/utilities/constants";
 
 //Import middleware
-import "./utilities/middleware";
+import "@/utilities/middleware";
 
 //Setup database connection
-import {getBestiary, getCreature, getUser, startConnection} from "./utilities/database";
+import {getBestiary, getCreature, getUser, startConnection} from "@/utilities/database";
 startConnection();
 
 //Setup http server
@@ -24,8 +24,8 @@ httpServer.listen(parseInt(process.env.port ?? "5000"), () => {
 });
 
 //Load frontend
-import {routes, defaultMetaTags, Route} from "../shared/routes";
-import {Id, stringToId} from "../shared";
+import {routes, defaultMetaTags, Route} from "~/shared/routes";
+import {Id, stringToId} from "~/shared";
 async function getFrontendHtml(route: Route, req: Request) {
 	//Get information
 	let title = "Bestiary Builder";

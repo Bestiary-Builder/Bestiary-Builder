@@ -260,8 +260,8 @@ import {RouterLink} from "vue-router";
 import {defineComponent, ref} from "vue";
 import {refDebounced} from "@vueuse/core";
 
-import {defaultStatblock} from "@/../../shared";
-import type {User, Bestiary, Creature, Statblock} from "@/../../shared";
+import {defaultStatblock} from "~/shared";
+import type {User, Bestiary, Creature, Statblock} from "~/shared";
 import {handleApiResponse, user, type error, toast, tags, type limitsType, asyncLimits, isMobile} from "@/main";
 import {parseFromCritterDB} from "@/parser/parseFromCritterDB";
 import {displayCR} from "@/utils/displayFunctions";

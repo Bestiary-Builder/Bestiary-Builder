@@ -145,7 +145,7 @@ import {defineComponent, shallowRef, ref, onUnmounted} from "vue";
 import {VueMonacoEditor} from "@guolao/vue-monaco-editor";
 import YAML from "yaml";
 import {toast, handleApiResponse, type error} from "@/main";
-import {Id, type FeatureEntity, type Automation} from "@/../../shared";
+import {Id, type FeatureEntity, type Automation} from "~/shared";
 import LabelledComponent from "./LabelledComponent.vue";
 import Modal from "./Modal.vue";
 import {parseDescIntoAutomation} from "@/parser/utils";

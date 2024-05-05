@@ -1,4 +1,4 @@
-import {type CasterSpells, type Statblock, type InnateSpellsList, defaultStatblock, getXPbyCR, spellListFlattened, type SpellSlotEntity, type SkillsEntity, type SpeedEntity, type SenseEntity} from "@/../../shared";
+import {type CasterSpells, type Statblock, type InnateSpellsList, defaultStatblock, getXPbyCR, spellListFlattened, type SpellSlotEntity, type SkillsEntity, type SpeedEntity, type SenseEntity} from "~/shared";
 import {abilityParser, capitalizeFirstLetter} from "./utils";
 
 export function parseFrom5eTools(data: any): [Statblock, {[key: string]: string[]}] {

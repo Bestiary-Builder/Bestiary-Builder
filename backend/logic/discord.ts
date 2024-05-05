@@ -1,8 +1,8 @@
-import {isProduction} from "../utilities/constants";
-import {log} from "../utilities/logger";
+import {isProduction} from "@/utilities/constants";
+import {log} from "@/utilities/logger";
 import discord, {PresenceUpdateStatus, Status} from "discord.js";
-import {collections, getUser} from "../utilities/database";
-import {User, Bestiary, Creature} from "../../shared";
+import {collections, getUser} from "@/utilities/database";
+import {User, Bestiary, Creature} from "~/shared";
 const client = new discord.Client({
 	intents: [discord.IntentsBitField.Flags.Guilds, discord.IntentsBitField.Flags.GuildMessages, discord.IntentsBitField.Flags.GuildMembers]
 });

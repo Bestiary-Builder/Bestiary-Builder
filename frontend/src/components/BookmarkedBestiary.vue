@@ -28,7 +28,7 @@
 import {RouterLink} from "vue-router";
 import {defineComponent} from "vue";
 import UserBanner from "@/components/UserBanner.vue";
-import type {User, Bestiary} from "@/../../shared";
+import type {User, Bestiary} from "~/shared";
 import {handleApiResponse, toast, user} from "@/main";
 import type {error} from "@/main";
 export default defineComponent({

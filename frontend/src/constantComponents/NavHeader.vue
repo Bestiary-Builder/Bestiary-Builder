@@ -34,7 +34,7 @@
 import {RouterLink, RouterView} from "vue-router";
 import UserBanner from "@/components/UserBanner.vue";
 import {user, sendToLogin} from "@/main";
-import type {User} from "@/../../shared";
+import type {User} from "~/shared";
 import {defineComponent} from "vue";
 import {onClickOutside, useElementSize} from "@vueuse/core";
 import {ref} from "vue";
@@ -59,7 +59,7 @@ export default defineComponent({
 	setup() {
 		const isExpanded = ref(false);
 		const navbar = ref<HTMLDivElement | null>(null);
-		const { width, height } = useElementSize(navbar)
+		const {width, height} = useElementSize(navbar);
 
 		// only register this handler if on mobile device.
 		// this is crude but works fine
@@ -94,9 +94,7 @@ export default defineComponent({
 	display: grid;
 	grid-template-columns: 2fr 6fr 2fr;
 
-	box-shadow:
-		rgba(0, 0, 0, 0.19) 0px 3px 6px,
-		rgba(0, 0, 0, 0.23) 0px 2px 2px;
+	box-shadow: rgba(0, 0, 0, 0.19) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 2px 2px;
 }
 
 .navbar-left {

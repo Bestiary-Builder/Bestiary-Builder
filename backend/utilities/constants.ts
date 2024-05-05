@@ -15,9 +15,9 @@ export function generateUserSecret(): string {
 import "./badwords";
 
 //Limits
-import l from "../staticData/limits.json";
+import l from "@/staticData/limits.json";
 export const limits = l;
-import {Automation, Bestiary, Creature, User} from "../../shared";
+import {Automation, Bestiary, Creature, User} from "~/shared";
 export function checkCreatureAmountLimit(bestiary: Bestiary) {
 	if (bestiary.creatures.length > limits.creatureAmount) return `Number of creatures exceeds the limit of ${limits.creatureAmount}.`;
 }

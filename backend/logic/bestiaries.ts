@@ -1,10 +1,10 @@
-import {app, checkBestiaryLimits, checkCreatureLimits, limits} from "../utilities/constants";
-import {log} from "../utilities/logger";
+import {app, checkBestiaryLimits, checkCreatureLimits, limits} from "@/utilities/constants";
+import {log} from "@/utilities/logger";
 import {requireUser, possibleUser} from "./login";
 import {publicLog, colors} from "./discord";
-import {addBestiaryToUser, getBestiary, getUser, incrementBestiaryViewCount, updateBestiary, deleteBestiary, collections, addBookmark, removeBookmark} from "../utilities/database";
-import {User, Bestiary, Creature, type Statblock, defaultStatblock, Stat, Id, stringToId} from "../../shared";
-import tags from "../staticData/tags.json";
+import {addBestiaryToUser, getBestiary, getUser, incrementBestiaryViewCount, updateBestiary, deleteBestiary, collections, addBookmark, removeBookmark} from "@/utilities/database";
+import {User, Bestiary, Creature, type Statblock, defaultStatblock, Stat, Id, stringToId} from "~/shared";
+import tags from "@/staticData/tags.json";
 
 //Permission checks
 export function checkBestiaryPermission(bestiary: Bestiary, user: User | null): "none" | "view" | "owner" | "editor" {
@@ -478,8 +478,8 @@ app.get("/api/bestiary/:id/bookmark/get", requireUser, async (req, res) => {
 
 //Validate inputs
 import {createCheckers} from "ts-interface-checker";
-import {typeInterface, interfaceValidation} from "../../shared";
-import {checkBadwords} from "../utilities/badwords";
+import {typeInterface, interfaceValidation} from "~/shared";
+import {checkBadwords} from "@/utilities/badwords";
 const {Statblock: StatblockChecker} = createCheckers(typeInterface);
 function validateStatblockInput(input: Statblock[]) {
 	for (let block of input) {

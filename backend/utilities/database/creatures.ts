@@ -1,5 +1,5 @@
-import {log} from "../logger";
-import {User, Bestiary, Creature, Id, Automation} from "../../../shared";
+import {log} from "@/utilities/logger";
+import {User, Bestiary, Creature, Id, Automation} from "~/shared";
 import {collections} from ".";
 import {getBestiary, updateBestiary} from "./bestiaries";
 

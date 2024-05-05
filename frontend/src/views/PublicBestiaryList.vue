@@ -72,7 +72,7 @@
 <script lang="ts">
 import {RouterLink} from "vue-router";
 import {defineComponent} from "vue";
-import type {Bestiary} from "@/../../shared";
+import type {Bestiary} from "~/shared";
 import UserBanner from "@/components/UserBanner.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import {handleApiResponse, toast, tags, type error, isMobile} from "@/main";

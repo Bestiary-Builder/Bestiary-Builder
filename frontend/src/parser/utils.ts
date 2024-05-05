@@ -1,4 +1,4 @@
-import type {FeatureEntity} from "@/../../shared";
+import type {FeatureEntity} from "~/shared";
 import YAML from "yaml";
 
 export function abilityParser(fData: any, activationType: number): [FeatureEntity[], string[]] {
@@ -55,12 +55,17 @@ export function markdownReplacer(text: string): string {
 		.replace(/\{@item\s+([^}]+)\}/g, "$1")
 		.replace(/\{@condition\s+([^}]+)\}/g, "<u>$1</u>")
 		.replace(/\{@recharge\s+(\d+)\}/g, "(Recharge $1-6)")
-		.replace(/\{@quickref\s+[a-z\s]+[|]+[0-9]+\}/, "$1".replace(/(^|\s)\S/g, function(t) { return t.toUpperCase() }))
+		.replace(
+			/\{@quickref\s+[a-z\s]+[|]+[0-9]+\}/,
+			"$1".replace(/(^|\s)\S/g, function (t) {
+				return t.toUpperCase();
+			})
+		)
 		.replace("Recharge 6-6", "Recharge 6")
 		.replace("{@recharge}", "(Recharge 6)")
 		.replace(/\{@hit\s+(-?\d+)\}/g, (_, number) => (number >= 0 ? `+${number}` : number))
 		.replaceAll("<u>", "*")
-		.replaceAll("</u>", "*")
+		.replaceAll("</u>", "*");
 	return text;
 }
 

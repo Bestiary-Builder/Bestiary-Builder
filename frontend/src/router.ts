@@ -2,7 +2,7 @@ import {createRouter, createWebHistory} from "vue-router";
 
 // @ts-ignore
 import fileRoutes from "~pages";
-import {routes as relevantRoutes} from "../../shared/routes";
+import {routes as relevantRoutes} from "~/shared/routes";
 import {user, sendToLogin} from "@/main";
 const routes = relevantRoutes.map((route) => {
 	return {

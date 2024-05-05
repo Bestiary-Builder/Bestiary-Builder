@@ -14,7 +14,7 @@
 
 <script lang="ts">
 import {defineComponent} from "vue";
-import type {User} from "@/../../shared";
+import type {User} from "~/shared";
 import {handleApiResponse} from "@/main";
 import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/css/index.css";

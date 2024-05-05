@@ -1,5 +1,5 @@
-import {log} from "../utilities/logger";
-import {app} from "../utilities/constants";
+import {log} from "@/utilities/logger";
+import {app} from "@/utilities/constants";
 import fetch from "node-fetch";
 
 app.post("/api/validate/automation", async (req, res) => {
@@ -17,7 +17,7 @@ app.post("/api/validate/automation", async (req, res) => {
 //Validate input
 import {createCheckers} from "ts-interface-checker";
 import {Response} from "express";
-import {typeInterface, interfaceValidation, Statblock} from "../../shared";
+import {typeInterface, interfaceValidation, Statblock} from "~/shared";
 const {Statblock: StatblockChecker} = createCheckers(typeInterface);
 
 export function validateCreatureInput(input: Statblock, res: Response) {

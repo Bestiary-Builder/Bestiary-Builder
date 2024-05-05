@@ -6,7 +6,7 @@ import rateLimit from "express-rate-limit";
 import cors from "cors";
 import compression from "compression";
 import cookieParser from "cookie-parser";
-import {app, badwords, isProduction} from "./constants";
+import {app, isProduction} from "./constants";
 
 //Function to run on all requests
 app.use(async (req, res, next) => {

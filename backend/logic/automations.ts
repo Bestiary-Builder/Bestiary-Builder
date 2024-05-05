@@ -1,9 +1,9 @@
-import {app, checkAutomationLimits} from "../utilities/constants";
-import {log} from "../utilities/logger";
+import {app, checkAutomationLimits} from "@/utilities/constants";
+import {log} from "@/utilities/logger";
 import {requireUser, possibleUser} from "./login";
-import {getUser, getAutomation, collections, updateAutomation, deleteAutomation} from "../utilities/database";
-import {Automation, stringToId} from "../../shared";
-import {checkBadwords} from "../utilities/badwords";
+import {getUser, getAutomation, collections, updateAutomation, deleteAutomation} from "@/utilities/database";
+import {Automation, stringToId} from "~/shared";
+import {checkBadwords} from "@/utilities/badwords";
 
 //Get info
 app.get("/api/automation/:id", requireUser, async (req, res) => {

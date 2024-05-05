@@ -65,7 +65,7 @@ import {RouterLink} from "vue-router";
 import {defineComponent} from "vue";
 
 import {handleApiResponse, toast, user} from "@/main";
-import type {User, Bestiary, Id} from "@/../../shared";
+import type {User, Bestiary, Id} from "~/shared";
 import type {error} from "@/main";
 
 export default defineComponent({
