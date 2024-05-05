@@ -82,12 +82,85 @@ app.get("/api/user/:userid/bestiaries", possibleUser, async (req, res) => {
 });
 
 //Update info
-app.post("/api/bestiary/:id?/update", requireUser, async (req, res) => {
+app.post("/api/bestiary/:id/update", requireUser, async (req, res) => {
 	try {
 		//Get input
 		let user = await getUser(req.body.id);
 		if (!user) return res.status(404).json({error: "Couldn't find current user."});
-		let id = req.params.id;
+		let _id = stringToId(req.params.id);
+		if (!_id) return res.status(400).json({error: "Bestiary id not valid."});
+		if (!req.body.data) return res.status(400).json({error: "Bestiary data not found."});
+		let data = {
+			...({
+				creatures: [],
+				tags: [],
+				name: "",
+				status: "private",
+				editors: [],
+				owner: user._id,
+				description: "",
+				viewCount: 0,
+				bookmarks: 0,
+				lastUpdated: 0
+			} as Bestiary),
+			...(req.body.data as Partial<Bestiary>)
+		} as Bestiary;
+		console.log(data, req.body.data);
+		data._id = _id;
+		//Check limits
+		data.tags = data.tags.filter((t) => tags.includes(t));
+		let limitError = checkBestiaryLimits(data);
+		if (limitError) return res.status(400).json({error: limitError});
+		//Remove bad words
+		if (data.status != "private") {
+			let nameError = checkBadwords(data.name);
+			if (nameError) return res.status(400).json({error: "Bestiary name " + nameError});
+			let descError = checkBadwords(data.description);
+			if (descError) return res.status(400).json({error: "Bestiary description " + descError});
+		}
+		//Public?
+		if (data.status == "public") {
+			if (data.creatures.length == 0) return res.status(400).json({error: "A bestiary must include at least 1 creature to be made public."});
+			if (data.name.toLowerCase().includes("new bestiary")) return res.status(400).json({error: "A bestiary must have a non default name."});
+		}
+		//Update bestiary
+		let bestiary = await getBestiary(data._id);
+		if (!bestiary) return res.status(404).json({error: "No bestiary with that id found."});
+		let permissionLevel = checkBestiaryPermission(bestiary, user);
+		if (permissionLevel == "none" || permissionLevel == "view") return res.status(401).json({error: "You don't have permission to update this bestiary."});
+		//Limit to properties that are editable:
+		let update = {
+			name: data.name,
+			description: data.description,
+			status: data.status,
+			tags: data.tags
+		} as {
+			name: string;
+			description: string;
+			status?: "public" | "private" | "unlisted";
+			tags: string[];
+		};
+		if (permissionLevel == "editor") delete update.status;
+		//Public log
+		if (update.status == "public" && bestiary.status != "public") {
+			publicLog("New public bestiary", `Bestiary "${data.name}" changed to public by ${user.username}.`, "https://" + req.hostname + "/bestiary-viewer/" + bestiary._id, user, colors.Blurple);
+		}
+		//Update:
+		let updatedId = await updateBestiary(update as Bestiary, data._id);
+		if (updatedId) {
+			log.info(`Updated bestiary with the id ${data._id}`);
+			return res.status(200).json(data);
+		}
+	} catch (err) {
+		log.log("critical", err);
+		return res.status(500).json({error: "Unknown server error occured, please try again."});
+	}
+});
+app.post("/api/bestiary/add", requireUser, async (req, res) => {
+	try {
+		//Get input
+		let user = await getUser(req.body.id);
+		if (!user) return res.status(404).json({error: "Couldn't find current user."});
 		if (!req.body.data) return res.status(400).json({error: "Bestiary data not found."});
 		let data = {
 			...({
@@ -116,61 +189,23 @@ app.post("/api/bestiary/:id?/update", requireUser, async (req, res) => {
 		//Remove bad words
 		if (data.status != "private") {
 			let nameError = checkBadwords(data.name);
-			if (!nameError) return res.status(400).json({error: "Bestiary name " + nameError});
+			if (nameError) return res.status(400).json({error: "Bestiary name " + nameError});
 			let descError = checkBadwords(data.description);
-			if (!descError) return res.status(400).json({error: "Bestiary description " + descError});
+			if (descError) return res.status(400).json({error: "Bestiary description " + descError});
 		}
 		//Public?
 		if (data.status == "public") {
 			if (data.creatures.length == 0) return res.status(400).json({error: "A bestiary must include at least 1 creature to be made public."});
 			if (data.name.toLowerCase().includes("new bestiary")) return res.status(400).json({error: "A bestiary must have a non default name."});
 		}
-		//Add or update
-		if (id) {
-			let _id = stringToId(id);
-			if (!_id) return res.status(400).json({error: "Bestiary id not valid."});
-			data._id = _id;
-			//Update existing bestiary
-			let bestiary = await getBestiary(data._id);
-			if (bestiary) {
-				let permissionLevel = checkBestiaryPermission(bestiary, user);
-				if (permissionLevel == "none" || permissionLevel == "view") return res.status(401).json({error: "You don't have permission to update this bestiary."});
-				//Limit properties that are editable:
-				let update = {
-					name: data.name,
-					description: data.description,
-					status: data.status,
-					tags: data.tags
-				} as {
-					name: string;
-					description: string;
-					status?: "public" | "private" | "unlisted";
-					tags: string[];
-				};
-				if (permissionLevel == "editor") delete update.status;
-				//Public log
-				if (update.status == "public" && bestiary.status != "public") {
-					publicLog("New public bestiary", `Bestiary "${data.name}" changed to public by ${user.username}.`, "https://" + req.hostname + "/bestiary-viewer/" + bestiary._id, user, colors.Blurple);
-				}
-				//Update:
-				let updatedId = await updateBestiary(update as Bestiary, data._id);
-				if (updatedId) {
-					log.info(`Updated bestiary with the id ${data._id}`);
-					return res.status(200).json(data);
-				}
-			} else {
-				return res.status(404).json({error: "No bestiary with that id found."});
-			}
-		} else {
-			//Create new bestiary
-			let _id = await updateBestiary(data);
-			if (!_id) return res.status(500).json({error: "Failed to create bestiary."});
-			await addBestiaryToUser(_id, user._id!);
-			data._id = _id;
-			data.owner = user._id!;
-			log.info(`Created new bestiary with the id ${_id}`);
-			return res.status(201).json(data);
-		}
+		//Create new bestiary
+		let _id = await updateBestiary(data);
+		if (!_id) return res.status(500).json({error: "Failed to create bestiary."});
+		await addBestiaryToUser(_id, user._id!);
+		data._id = _id;
+		data.owner = user._id!;
+		log.info(`Created new bestiary with the id ${_id}`);
+		return res.status(201).json(data);
 	} catch (err) {
 		log.log("critical", err);
 		return res.status(500).json({error: "Unknown server error occured, please try again."});

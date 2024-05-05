@@ -102,7 +102,7 @@ export default defineComponent({
 				creatures: [] as Id[]
 			} as Bestiary;
 			//Send data to server
-			await fetch("/api/bestiary/update", {
+			await fetch("/api/bestiary/add", {
 				method: "POST",
 				headers: {
 					Accept: "application/json",
