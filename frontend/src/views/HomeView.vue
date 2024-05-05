@@ -1,14 +1,4 @@
 <template>
-	<!-- <Breadcrumbs
-	:routes="[
-		{
-			path: '',
-			text: 'Home',
-			isCurrent: true
-		}
-	]"
-	:isLessWide="true"
-	/> -->
 	<div class="article-header">
 		<div class="header-content">
 			<h1 class="header-title">Bestiary Builder</h1>
@@ -35,48 +25,31 @@
 	</div>
 
 	<div class="content markdown less-wide">
-		<div v-if="content" v-html="content"></div>
+		<Markdown :text="dataFile" :options="{html: true, linkify: true, typographer: true}" />
 	</div>
 </template>
 
-<script lang="ts">
-import {defineComponent} from "vue";
-import markdownit from "markdown-it";
-const md = markdownit({html: true, linkify: true, typographer: true});
+<script setup lang="ts">
 import dataFile from "@/assets/documents/home.md";
-import Breadcrumbs from "@/components/Breadcrumbs.vue";
+import Markdown from "@/components/Markdown.vue";
 import {handleApiResponse} from "@/main";
-export default defineComponent({
-	data() {
-		return {
-			content: md.render(dataFile),
-			stats: null as {
-				creatures: number;
-				bestiaries: number;
-				users: number;
-			} | null
-		};
-	},
-	components: {
-		Breadcrumbs
-	},
-	async beforeMount() {
-		await fetch("/api/stats")
-			.then(handleApiResponse)
-			.then((result) => {
-				if (result.success) {
-					this.stats = result.data as {
-						creatures: number;
-						bestiaries: number;
-						users: number;
-					};
-				} else {
-					console.error("Failed to retrieve global stats.");
-					this.stats = null;
-				}
-			});
+import { onBeforeMount, ref } from "vue";
+import type { GlobalStats } from "../../../shared";
+
+const stats = ref<null | GlobalStats>(null);
+onBeforeMount(async () => {
+	await fetch("/api/stats")
+		.then(handleApiResponse)
+		.then((result) => {
+			if (result.success) {
+				stats.value = result.data as GlobalStats
+			} else {
+				console.error("Failed to retrieve global stats.");
+				stats.value = null;
+			}
+		});
 	}
-});
+)
 </script>
 <style scoped lang="less">
 @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&display=block");

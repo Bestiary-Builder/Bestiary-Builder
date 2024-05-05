@@ -1,6 +1,6 @@
 import {MongoClient, ServerApiVersion, Db, Collection} from "mongodb";
 import {log} from "@/utilities/logger";
-import {User, Bestiary, Creature, Id, Automation} from "~/shared";
+import {User, Bestiary, Creature, Automation, GlobalStats} from "~/shared";
 
 //Connect to database
 let database = null as Db | null;
@@ -53,11 +53,7 @@ export async function updateValue(collection: Collection<any>, key: string, valu
 }
 
 //Global stats
-export async function getGlobalStats(): Promise<{
-	creatures: number;
-	bestiaries: number;
-	users: number;
-} | null> {
+export async function getGlobalStats(): Promise<GlobalStats | null> {
 	try {
 		return {
 			creatures: (await collections.creatures?.countDocuments()) ?? 0,

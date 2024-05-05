@@ -111,7 +111,7 @@
 				<div class="left-side-container">
 					<div class="content-tile header-tile">
 						<h2>{{ bestiary.name ? bestiary.name : "..." }}</h2>
-						<p class="description" :class="{expanded: isExpanded}" v-html="md.render(bestiary.description || 'No description set.')"></p>
+						<Markdown class="description" :class="{expanded: isExpanded}" :text="bestiary.description || 'No description set.'" tag="p"/>
 						<button v-if="bestiary.description.length > 0" class="expand-btn" v-tooltip="'Expand description'" @click="isExpanded = !isExpanded" aria-label="Expand description">{{ isExpanded ? "▲" : "▼" }}</button>
 						<hr />
 						<div class="footer" :class="{'three-wide': isOwner}">
@@ -266,9 +266,8 @@ import {handleApiResponse, user, type error, toast, tags, type limitsType, async
 import {parseFromCritterDB} from "@/parser/parseFromCritterDB";
 import {displayCR} from "@/utils/displayFunctions";
 
-import markdownit from "markdown-it";
+import Markdown from "@/components/Markdown.vue";
 
-const md = markdownit();
 export default defineComponent({
 	data() {
 		return {
@@ -300,7 +299,6 @@ export default defineComponent({
 			},
 			sortMode: "Alphabetically",
 			displayCR,
-			md,
 			isMobile,
 			isExpanded: false,
 			showEditorModal: false,
@@ -315,7 +313,8 @@ export default defineComponent({
 		StatusIcon,
 		LabelledComponent,
 		LabelledNumberInput,
-		Modal
+		Modal,
+		Markdown
 	},
 	async created() {
 		this.limits = (await asyncLimits) ?? ({} as limitsType);
