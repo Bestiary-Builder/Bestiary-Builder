@@ -15,9 +15,7 @@ export default defineComponent({
 
 <template>
 	<div id="modal"></div>
-	<header>
-		<NavHeader />
-	</header>
+	<NavHeader />
 	<main>
 		<RouterView />
 	</main>
