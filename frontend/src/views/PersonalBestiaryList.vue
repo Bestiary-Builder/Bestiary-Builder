@@ -15,11 +15,11 @@
 	<div class="content">
 		<div class="tile-container" v-if="bestiaries">
 			<TransitionGroup name="popin">
-				<RouterLink class="content-tile bestiary-tile" v-for="(bestiary, index) in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" :key="bestiary._id?.toString()" :class="{'four-tall': bestiary.owner != userData?._id}" :aria-label="`Open Bestiary ${bestiary.name}`">
+				<RouterLink class="content-tile bestiary-tile" v-for="(bestiary, index) in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" :key="bestiary._id?.toString()" :class="{'four-tall': bestiary.owner != user?._id}" :aria-label="`Open Bestiary ${bestiary.name}`">
 					<div class="tile-header">
 						<h2>{{ bestiary.name }}</h2>
 					</div>
-					<span class="shared-notice" v-if="bestiary.owner != userData?._id">(shared)</span>
+					<span class="shared-notice" v-if="bestiary.owner != user?._id">(shared)</span>
 					<div class="tile-content" :class="{'tile-has-image': bestiaryImages[index]}">
 						<img class="tile-image" v-if="bestiaryImages[index]" :src="bestiaryImages[index]" />
 						<div class="tags">
@@ -29,7 +29,7 @@
 					</div>
 					<div class="tile-footer">
 						<span v-tooltip.left="bestiary.status"><StatusIcon :icon="bestiary.status" /></span>
-						<span role="button" @click.stop.prevent="openDeleteModal(bestiary)" class="edit-button" v-tooltip="'Delete bestiary'" v-if="bestiary.owner == userData?._id" aria-label="Delete bestiary"><font-awesome-icon :icon="['fas', 'trash']" /></span>
+						<span role="button" @click.stop.prevent="openDeleteModal(bestiary)" class="edit-button" v-tooltip="'Delete bestiary'" v-if="bestiary.owner == user?._id" aria-label="Delete bestiary"><font-awesome-icon :icon="['fas', 'trash']" /></span>
 						<span v-else>
 							<UserBanner :id="bestiary.owner" />
 						</span>
@@ -55,116 +55,111 @@
 	</Modal>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import UserBanner from "@/components/UserBanner.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import StatusIcon from "@/components/StatusIcon.vue";
 import Modal from "@/components/Modal.vue";
 
-import {RouterLink} from "vue-router";
-import {defineComponent} from "vue";
+import {RouterLink, useRouter} from "vue-router";
+import {onMounted, ref, computed} from "vue";
 
-import {handleApiResponse, toast, user} from "@/main";
+import {handleApiResponse, toast, user as getUser} from "@/main";
 import type {User, Bestiary, Id} from "~/shared";
 import type {error} from "@/main";
+import { useLoading } from "vue-loading-overlay";
+import { loadingOptions } from "@/main";
 
-export default defineComponent({
-	components: {
-		UserBanner,
-		Breadcrumbs,
-		StatusIcon,
-		Modal
-	},
-	data() {
-		return {
-			bestiaries: [] as Bestiary[],
-			userData: null as User | null,
-			deleteId: "" as string,
-			showDeleteModal: false,
-			selectedBestiary: null as Bestiary | null
-		};
-	},
-	async beforeMount() {
-		const loader = this.$loading.show();
+const $loading = useLoading(loadingOptions)
+const router = useRouter();
+const user = ref<User | null>(null);
 
-		this.userData = await user;
+onMounted(async () => {
+	const loader = $loading.show();
+	getBestiaries();
+	user.value = await getUser
 
-		this.getBestiaries();
-		loader.hide();
-	},
-	methods: {
-		async createBestiary() {
-			//Replace for actual creation data:
-			let data = {
-				name: "New bestiary",
-				description: "",
-				status: "private",
-				creatures: [] as Id[]
-			} as Bestiary;
-			//Send data to server
-			await fetch("/api/bestiary/add", {
-				method: "POST",
-				headers: {
-					Accept: "application/json",
-					"Content-Type": "application/json"
-				},
-				body: JSON.stringify({data: data})
-			}).then(async (response) => {
-				let result = await handleApiResponse<Bestiary>(response);
-				if (result.success) {
-					toast.success("Created bestiary");
-					this.$router.push("/bestiary-viewer/" + (result.data as Bestiary)._id);
-				} else {
-					toast.error((result.data as error).error);
-				}
-			});
-			await this.getBestiaries();
-		},
-		async deleteBestiary(bestiary: Bestiary | null) {
-			if (!bestiary) return;
-			const loader = this.$loading.show();
-			await fetch(`/api/bestiary/${bestiary._id}/delete`).then(async (response) => {
-				let result = await handleApiResponse(response);
-				if (result.success) {
-					toast.success("Deleted bestiary succesfully");
-					this.showDeleteModal = false;
-				} else {
-					toast.error((result.data as error).error);
-				}
-			});
-			loader.hide();
-			await this.getBestiaries();
-		},
-		async getBestiaries() {
-			//Request bestiary info
-			await fetch(`/api/my-bestiaries`).then(async (response) => {
-				let result = await handleApiResponse<Bestiary[]>(response);
-				if (result.success) this.bestiaries = result.data as Bestiary[];
-				else {
-					this.bestiaries = [];
-					toast.error((result.data as error).error);
-				}
-			});
-			///console.log(this.bestiaries);
-		},
-		openDeleteModal(bestiary: Bestiary) {
-			this.selectedBestiary = bestiary;
-			this.showDeleteModal = true;
+	loader.hide();
+})
+
+
+const bestiaries = ref<Bestiary[]>([]);
+
+const getBestiaries = async () => {
+	await fetch(`/api/my-bestiaries`)
+	.then(async (response) => {
+		let result = await handleApiResponse<Bestiary[]>(response);
+		if (result.success) bestiaries.value = result.data as Bestiary[];
+		else {
+			bestiaries.value = [];
+			toast.error((result.data as error).error);
 		}
-	},
-	computed: {
-		bestiaryImages(): string[] {
-			let bestiaryImages: string[] = [];
-			for (let bestiary of this.bestiaries) {
-				const match = bestiary.description.match(/\!\[.*?\]\((.*?)\)/);
-				const firstImageUrl = (match || [])[1];
-				if (match) bestiary.description = bestiary.description.replace(match[0], "");
-				bestiaryImages.push(firstImageUrl);
-			}
-			return bestiaryImages;
+	});
+}
+
+const createBestiary = async () => {
+	//Replace for actual creation data:
+	let data = {
+		name: "New bestiary",
+		description: "",
+		status: "private",
+		creatures: [] as Id[]
+	} as Bestiary;
+	//Send data to server
+	await fetch("/api/bestiary/add", {
+		method: "POST",
+		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify({data: data})
+	}).then(async (response) => {
+		let result = await handleApiResponse<Bestiary>(response);
+		if (result.success) {
+			toast.success("Created bestiary");
+			router.push("/bestiary-viewer/" + (result.data as Bestiary)._id);
+		} else {
+			toast.error((result.data as error).error);
 		}
+	});
+	await getBestiaries();
+}
+
+const deleteBestiary = async (bestiary: Bestiary | null) => {
+	if (!bestiary) return;
+	const loader = $loading.show();
+	await fetch(`/api/bestiary/${bestiary._id}/delete`).then(async (response) => {
+		let result = await handleApiResponse(response);
+		if (result.success) {
+			toast.success("Deleted bestiary succesfully");
+			showDeleteModal.value = false;
+		} else {
+			toast.error((result.data as error).error);
+		}
+	});
+	loader.hide();
+	await getBestiaries();
+}
+
+
+const showDeleteModal = ref(false);
+const selectedBestiary = ref<Bestiary | null>(null);
+const openDeleteModal = (bestiary: Bestiary) => {
+	selectedBestiary.value = bestiary;
+	showDeleteModal.value = true;
+}
+
+
+const bestiaryImages = computed(() => {
+	let bestiaryImages: string[] = [];
+	for (let bestiary of bestiaries.value) {
+		const match = bestiary.description.match(/\!\[.*?\]\((.*?)\)/);
+		const firstImageUrl = (match || [])[1];
+		if (match) bestiary.description = bestiary.description.replace(match[0], "");
+		bestiaryImages.push(firstImageUrl);
 	}
-});
+	return bestiaryImages;
+})
 </script>
 
 <style scoped lang="less">
