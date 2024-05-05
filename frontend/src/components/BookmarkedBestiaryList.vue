@@ -24,58 +24,48 @@
 	</div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {RouterLink} from "vue-router";
-import {defineComponent} from "vue";
+import {ref, onMounted, computed} from "vue";
 import UserBanner from "@/components/UserBanner.vue";
 import type {User, Bestiary} from "~/shared";
-import {handleApiResponse, toast, user} from "@/main";
+import {handleApiResponse, toast, user as getUser, loadingOptions} from "@/main";
 import type {error} from "@/main";
-export default defineComponent({
-	data() {
-		return {
-			bestiaries: [] as Bestiary[],
-			user: null as User | null
-		};
-	},
-	components: {
-		UserBanner,
-		RouterLink
-	},
-	async beforeMount() {
-		const loader = this.$loading.show();
+import { useLoading } from "vue-loading-overlay";
 
-		this.user = await user;
-		await this.getBestiaries();
-		loader.hide();
-	},
-	methods: {
-		async getBestiaries() {
-			//Request bestiary info
-			await fetch(`/api/user/bookmarks`).then(async (response) => {
-				let result = await handleApiResponse<Bestiary[]>(response);
-				if (result.success) this.bestiaries = result.data as Bestiary[];
-				else {
-					this.bestiaries = [];
-					toast.error((result.data as error).error);
-				}
-			});
-			///console.log(this.bestiaries);
+const bestiaries = ref<Bestiary[]>([]);
+const user = ref<User | null>(null);
+
+const $loading = useLoading(loadingOptions)
+onMounted(async () => {
+	const loader = $loading.show();
+	user.value = await getUser;
+	await getBestiaries();
+	loader.hide();
+})
+
+const getBestiaries = async () => {
+	//Request bestiary info
+	await fetch(`/api/user/bookmarks`).then(async (response) => {
+		let result = await handleApiResponse<Bestiary[]>(response);
+		if (result.success) bestiaries.value = result.data as Bestiary[];
+		else {
+			bestiaries.value = [];
+			toast.error((result.data as error).error);
 		}
-	},
-	computed: {
-		bestiaryImages(): string[] {
-			let bestiaryImages: string[] = [];
-			for (let bestiary of this.bestiaries) {
-				const match = bestiary.description.match(/\!\[.*?\]\((.*?)\)/);
-				const firstImageUrl = (match || [])[1];
-				if (match) bestiary.description = bestiary.description.replace(match[0], "");
-				bestiaryImages.push(firstImageUrl);
-			}
-			return bestiaryImages;
-		}
+	});
+}
+
+const bestiaryImages = computed(() => {
+	let bestiaryImages: string[] = [];
+	for (let bestiary of bestiaries.value) {
+		const match = bestiary.description.match(/\!\[.*?\]\((.*?)\)/);
+		const firstImageUrl = (match || [])[1];
+		if (match) bestiary.description = bestiary.description.replace(match[0], "");
+		bestiaryImages.push(firstImageUrl);
 	}
-});
+	return bestiaryImages;
+})
 </script>
 
 <style scoped lang="less">
