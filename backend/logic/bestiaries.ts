@@ -25,7 +25,7 @@ app.get("/api/bestiary/:id", possibleUser, async (req, res) => {
 		if (!bestiary) {
 			return res.status(404).json({error: "No bestiary with that id found."});
 		}
-		let user = await getUser(req.body.id);
+		let user = req.body.user;
 		let permissionLevel = checkBestiaryPermission(bestiary, user);
 		if (permissionLevel != "none") {
 			//Increment view count
@@ -52,7 +52,7 @@ app.get("/api/bestiary/:id", possibleUser, async (req, res) => {
 });
 app.get("/api/my-bestiaries", requireUser, async (req, res) => {
 	try {
-		let user = await getUser(req.body.id);
+		let user = req.body.user;
 		if (!user) return res.status(404).json({error: "Couldn't find user"});
 		let allBestiaries = (await collections.bestiaries?.find({$or: [{owner: user._id}, {editors: {$elemMatch: {$eq: user._id}}}]}).toArray()) ?? [];
 		log.info(`Retrieved all bestiaries from the current user with the id ${user._id}`);
@@ -65,7 +65,7 @@ app.get("/api/my-bestiaries", requireUser, async (req, res) => {
 app.get("/api/user/:userid/bestiaries", possibleUser, async (req, res) => {
 	try {
 		let allBestiaries = [];
-		let user = await getUser(req.body.id);
+		let user = req.body.user;
 		if (user && user._id == req.params.userid) {
 			//Own user
 			allBestiaries = (await collections.bestiaries?.find({owner: user._id}).toArray()) ?? [];
@@ -85,7 +85,7 @@ app.get("/api/user/:userid/bestiaries", possibleUser, async (req, res) => {
 app.post("/api/bestiary/:id/update", requireUser, async (req, res) => {
 	try {
 		//Get input
-		let user = await getUser(req.body.id);
+		let user = req.body.user;
 		if (!user) return res.status(404).json({error: "Couldn't find current user."});
 		let _id = stringToId(req.params.id);
 		if (!_id) return res.status(400).json({error: "Bestiary id not valid."});
@@ -105,7 +105,6 @@ app.post("/api/bestiary/:id/update", requireUser, async (req, res) => {
 			} as Bestiary),
 			...(req.body.data as Partial<Bestiary>)
 		} as Bestiary;
-		console.log(data, req.body.data);
 		data._id = _id;
 		//Check limits
 		data.tags = data.tags.filter((t) => tags.includes(t));
@@ -159,7 +158,7 @@ app.post("/api/bestiary/:id/update", requireUser, async (req, res) => {
 app.post("/api/bestiary/add", requireUser, async (req, res) => {
 	try {
 		//Get input
-		let user = await getUser(req.body.id);
+		let user = req.body.user;
 		if (!user) return res.status(404).json({error: "Couldn't find current user."});
 		if (!req.body.data) return res.status(400).json({error: "Bestiary data not found."});
 		let data = {
@@ -216,7 +215,7 @@ app.get("/api/bestiary/:id/delete", requireUser, async (req, res) => {
 		//Get input
 		let _id = stringToId(req.params.id);
 		if (!_id) return res.status(400).json({error: "Bestiary id not valid."});
-		let user = await getUser(req.body.id);
+		let user = req.body.user;
 		if (!user) return res.status(404).json({error: "Couldn't find current user."});
 		//Permissions
 		let bestiary = await getBestiary(_id);
@@ -246,7 +245,7 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 		let bestiary = await getBestiary(_id);
 		if (!bestiary) return res.status(404).json({error: "Bestiary not found"});
 		//Check owner
-		let user = await getUser(req.body.id);
+		let user = req.body.user;
 		if (!user) return res.status(404).json({error: "Couldn't find current user."});
 		let bestiaryPermissionLevel = checkBestiaryPermission(bestiary, user);
 		if (["none", "view"].includes(bestiaryPermissionLevel)) return res.status(401).json({error: "You don't have permission to add creatures to this bestiary."});
@@ -359,7 +358,7 @@ app.get("/api/bestiary/:bestiaryid/editors/add/:userid", requireUser, async (req
 		//Get input
 		let _id = stringToId(req.params.bestiaryid);
 		if (!_id) return res.status(400).json({error: "Bestiary id not valid."});
-		let currentUser = await getUser(req.body.id);
+		let currentUser = req.body.user;
 		if (!currentUser) {
 			return res.status(404).json({error: "Couldn't find current user."});
 		}
@@ -388,7 +387,7 @@ app.get("/api/bestiary/:bestiaryid/editors/remove/:userid", requireUser, async (
 		//Get input
 		let _id = stringToId(req.params.bestiaryid);
 		if (!_id) return res.status(400).json({error: "Bestiary id not valid."});
-		let currentUser = await getUser(req.body.id);
+		let currentUser = req.body.user;
 		if (!currentUser) {
 			return res.status(404).json({error: "Couldn't find current user."});
 		}
@@ -421,7 +420,7 @@ app.get("/api/bestiary/:id/bookmark/toggle", requireUser, async (req, res) => {
 		if (!_id) return res.status(400).json({error: "Bestiary id not valid."});
 		let bestiary = await getBestiary(_id);
 		if (!bestiary) return res.status(404).json({error: "Couldn't find bestiary."});
-		let user = await getUser(req.body.id);
+		let user = req.body.user;
 		if (!user) return res.status(404).json({error: "Couldn't find current user."});
 		//Permissions
 		if (checkBestiaryPermission(bestiary, user) == "none") {
@@ -458,7 +457,7 @@ app.get("/api/bestiary/:id/bookmark/get", requireUser, async (req, res) => {
 		if (!_id) return res.status(400).json({error: "Bestiary id not valid."});
 		let bestiary = await getBestiary(_id);
 		if (!bestiary) return res.status(404).json({error: "Couldn't find bestiary."});
-		let user = await getUser(req.body.id);
+		let user = req.body.user;
 		if (!user) return res.status(404).json({error: "Couldn't find current user."});
 		//Permissions
 		if (checkBestiaryPermission(bestiary, user) == "none") {

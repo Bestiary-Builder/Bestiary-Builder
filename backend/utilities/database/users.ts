@@ -8,7 +8,7 @@ let userCache = {} as {[key: string]: User};
 function resetUserCache(id: string) {
 	delete userCache[id];
 }
-let userSecretCache = {} as {[key: string]: string};
+let userSecretCache = {} as {[key: string]: User};
 //User functions
 export async function getUser(id: string) {
 	try {
@@ -27,9 +27,9 @@ export async function getUser(id: string) {
 export async function getUserFromSecret(secret: string) {
 	try {
 		if (!secret) return null;
-		let user = userSecretCache[secret] as string | null;
+		let user = userSecretCache[secret] as User | null;
 		if (!user) {
-			user = (await collections.users?.findOne({secret: secret}))?._id ?? null;
+			user = (await collections.users?.findOne({secret: secret})) ?? null;
 			if (user) userSecretCache[secret] = user;
 			log.log("database", "Reading user from secret.");
 		}

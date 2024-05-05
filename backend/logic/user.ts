@@ -6,7 +6,7 @@ import {User, Bestiary, Creature} from "../../shared";
 
 app.get("/api/user/bookmarks", requireUser, async (req, res) => {
 	try {
-		let user = await getUser(req.body.id);
+		let user = req.body.user;
 		if (user) {
 			let allBestiaries =
 				(await collections.bestiaries
@@ -32,7 +32,7 @@ app.get("/api/user/bookmarks", requireUser, async (req, res) => {
 
 app.get("/api/user", requireUser, async (req, res) => {
 	try {
-		let userData = (await getUser(req.body.id)) as User;
+		let userData = req.body.user as User;
 		if (userData) {
 			delete userData.secret;
 			log.info(`Retrieved user with the id ${userData._id}`);

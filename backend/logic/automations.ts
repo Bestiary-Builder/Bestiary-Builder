@@ -14,7 +14,7 @@ app.get("/api/automation/:id", requireUser, async (req, res) => {
 		if (!automation) {
 			return res.status(404).json({error: "No automation with that id found."});
 		}
-		let user = await getUser(req.body.id);
+		let user = req.body.user;
 		if (automation.owner == user?._id) {
 			//Return automation
 			log.info(`Retrieved automation with the id ${_id}`);
@@ -29,7 +29,7 @@ app.get("/api/automation/:id", requireUser, async (req, res) => {
 });
 app.get("/api/my-automations", requireUser, async (req, res) => {
 	try {
-		let user = await getUser(req.body.id);
+		let user = req.body.user;
 		if (!user) return res.status(404).json({error: "Couldn't find user"});
 		let allAutomations = (await collections.automations?.find({owner: user._id}).toArray()) ?? [];
 		log.info(`Retrieved ${allAutomations.length} automations from the current user with the id ${user._id}`);
@@ -42,7 +42,7 @@ app.get("/api/my-automations", requireUser, async (req, res) => {
 
 app.get("/api/my-automations/list", requireUser, async (req, res) => {
 	try {
-		let user = await getUser(req.body.id);
+		let user = req.body.user;
 		if (!user) return res.status(404).json({error: "Couldn't find user"});
 		let allAutomations = (await collections.automations?.find({owner: user._id}).toArray()) ?? [];
 		log.info(`Retrieved all automations in list form from the current user with the id ${req.params.userid}`);
@@ -61,7 +61,7 @@ app.get("/api/my-automations/list", requireUser, async (req, res) => {
 app.post("/api/automation/:id/update", requireUser, async (req, res) => {
 	try {
 		//Get input
-		let user = await getUser(req.body.id);
+		let user = req.body.user;
 		if (!user) return res.status(404).json({error: "Couldn't find current user."});
 		let _id = stringToId(req.params.id);
 		if (!_id) return res.status(400).json({error: "Invalid automation id."});
@@ -114,7 +114,7 @@ app.post("/api/automation/:id/update", requireUser, async (req, res) => {
 app.post("/api/automation/add", requireUser, async (req, res) => {
 	try {
 		//Get input
-		let user = await getUser(req.body.id);
+		let user = req.body.user;
 		if (!user) return res.status(404).json({error: "Couldn't find current user."});
 		if (!req.body.data) return res.status(400).json({error: "Automation data not found."});
 		let data = {
@@ -152,7 +152,7 @@ app.get("/api/automation/:id/delete", requireUser, async (req, res) => {
 		//Get input
 		let _id = stringToId(req.params.id);
 		if (!_id) return res.status(400).json({error: "Automation id not valid."});
-		let user = await getUser(req.body.id);
+		let user = req.body.user;
 		if (!user) return res.status(404).json({error: "Couldn't find current user."});
 		//Permissions
 		let automation = await getAutomation(_id);

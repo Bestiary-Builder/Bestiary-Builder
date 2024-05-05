@@ -17,7 +17,7 @@ import "./badwords";
 //Limits
 import l from "../staticData/limits.json";
 export const limits = l;
-import {Automation, Bestiary, Creature} from "../../shared";
+import {Automation, Bestiary, Creature, User} from "../../shared";
 export function checkCreatureAmountLimit(bestiary: Bestiary) {
 	if (bestiary.creatures.length > limits.creatureAmount) return `Number of creatures exceeds the limit of ${limits.creatureAmount}.`;
 }
@@ -37,4 +37,14 @@ export function checkAutomationLimits(automation: Automation) {
 	if (automation.name.length > limits.nameLength) return `Name exceeds the character limit of ${limits.nameLength} characters.`;
 	if (automation.name.length < limits.nameMin) return `Name is less than the minimum character limit of ${limits.nameMin} characters.`;
 	if (automation.description.length > limits.descriptionLength) return `Description exceeds the character limit of ${limits.descriptionLength} characters.`;
+}
+
+// Inject additional properties on express.Request
+declare module "express" {
+	interface Request {
+		body: {
+			user: User | null;
+			data: any;
+		};
+	}
 }

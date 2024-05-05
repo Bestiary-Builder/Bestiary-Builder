@@ -20,7 +20,7 @@ async function checkCreaturePermission(creature: Creature, user: User | null) {
 //Get info
 app.get("/api/creature/:id", possibleUser, async (req, res) => {
 	try {
-		let user = await getUser(req.body.id);
+		let user = req.body.user;
 		let _id = stringToId(req.params.id);
 		if (!_id) return res.status(400).json({error: "Creature id not valid."});
 		let creature = await getCreature(_id);
@@ -42,7 +42,7 @@ app.get("/api/creature/:id", possibleUser, async (req, res) => {
 });
 app.get("/api/bestiary/:id/creatures", possibleUser, async (req, res) => {
 	try {
-		let user = await getUser(req.body.id);
+		let user = req.body.user;
 		let bestiaryId = stringToId(req.params.id);
 		let bestiary = bestiaryId ? await getBestiary(bestiaryId) : null;
 		if (bestiary) {
@@ -79,7 +79,7 @@ app.post("/api/creature/add", requireUser, async (req, res) => {
 			if (!_id) return res.status(400).json({error: "Invalid bestiary id."});
 			data._id = _id;
 		}
-		let user = await getUser(req.body.id);
+		let user = req.body.user;
 		if (!user) return res.status(404).json({error: "Couldn't find current user."});
 
 		//Make sure all fields are present
@@ -167,7 +167,7 @@ app.post("/api/creature/:id/update", requireUser, async (req, res) => {
 			if (!_id) return res.status(400).json({error: "Invalid bestiary id."});
 			data._id = _id;
 		}
-		let user = await getUser(req.body.id);
+		let user = req.body.user;
 		if (!user) return res.status(404).json({error: "Couldn't find current user."});
 		//Make sure all fields are present
 		let oldStats = data.stats;
@@ -237,7 +237,7 @@ app.get("/api/creature/:id/delete", requireUser, async (req, res) => {
 		//Get input
 		let _id = stringToId(req.params.id);
 		if (!_id) return res.status(400).json({error: "Creature id not valid."});
-		let user = await getUser(req.body.id);
+		let user = req.body.user;
 		if (!user) return res.status(404).json({error: "Couldn't find current user."});
 		//Permissions
 		let creature = await getCreature(_id);
