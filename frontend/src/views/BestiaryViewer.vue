@@ -298,7 +298,6 @@ export default defineComponent({
 				faction: ""
 			},
 			sortMode: "Alphabetically",
-			displayCR,
 			isMobile,
 			isExpanded: false,
 			showEditorModal: false,
@@ -725,7 +724,8 @@ export default defineComponent({
 			}
 			if (isMinimumOption) this.searchOptions.minCr = cr;
 			else this.searchOptions.maxCr = cr;
-		}
+		},
+		displayCR,
 	},
 	watch: {
 		lastClickedCreature(): void {

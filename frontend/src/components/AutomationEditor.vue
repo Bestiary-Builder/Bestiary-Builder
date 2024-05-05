@@ -148,7 +148,6 @@ import LabelledComponent from "./LabelledComponent.vue";
 import Markdown from "./Markdown.vue";
 import Modal from "./Modal.vue";
 import {parseDescIntoAutomation} from "@/parser/utils";
-import markdownit from "markdown-it";
 import {isMobile} from "@/main";
 export default defineComponent({
 	props: ["data", "isStandAlone"],
@@ -165,7 +164,6 @@ export default defineComponent({
 			importedCustomAutomation: null as null | {name: string; _id: Id},
 			hasEditedName: false,
 			currentContext: "",
-			YAML,
 			isMobile
 		};
 	},

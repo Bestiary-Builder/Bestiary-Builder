@@ -497,9 +497,6 @@ export default defineComponent({
 			rawInfo: null as Creature | null,
 			bestiary: null as Bestiary | null,
 			list: [] as string[],
-			getSpellSlots: getSpellSlots,
-			spellListFlattened: spellListFlattened,
-			spellList: spellList,
 			innateSpells: {
 				0: [] as string[],
 				1: [] as string[],
@@ -521,6 +518,8 @@ export default defineComponent({
 			bestiaryBuilderJson: "",
 			notices: {} as {[key: string]: string[]},
 			madeChanges: false,
+			spellListFlattened,
+			spellList,
 			resistanceList: [
 				"Acid",
 				"Bludgeoning",
@@ -837,7 +836,8 @@ export default defineComponent({
 				}
 			});
 			loader.hide();
-		}
+		},
+		getSpellSlots,
 	},
 	async beforeMount() {
 		this.user = await user;

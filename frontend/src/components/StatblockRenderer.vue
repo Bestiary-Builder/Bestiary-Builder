@@ -222,11 +222,6 @@ export default defineComponent({
             required: true
         }
     },
-    data() {
-        return {
-            displayCR,
-        }
-    },
     components: {
         Markdown
     },
@@ -436,6 +431,7 @@ export default defineComponent({
         },
         displaySpeedOrSenses,
         displayInnateCasting,
+        displayCR,
     }
 
 })
