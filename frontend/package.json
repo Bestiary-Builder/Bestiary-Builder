@@ -35,7 +35,7 @@
 	},
 	"devDependencies": {
 		"@tsconfig/node18": "^18.2.2",
-		"@types/markdown-it": "^13.0.7",
+		"@types/markdown-it": "^13.0.8",
 		"@types/node": "^20.10.5",
 		"@types/vue-select": "^3.16.8",
 		"@vitejs/plugin-vue": "^5.0.0",

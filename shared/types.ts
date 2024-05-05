@@ -41,6 +41,10 @@ export class Automation {
 	constructor(public name: string, public description: string, public owner: string, public lastUpdated: number, public automation: null | object | object[], public _id?: Id) {}
 }
 
+export class GlobalStats {
+	constructor(public bestiaries: number, public creatures: number, public users: number) {}
+}
+
 export type SearchOptions = {
 	search: string;
 	page: number;

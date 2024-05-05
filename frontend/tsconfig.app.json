@@ -12,7 +12,10 @@
 		"paths": {
 			"@/*": ["./src/*"]
 		},
-		"lib": ["dom", "esnext"]
+		"lib": ["dom", "esnext"],
+		"types": [
+			"markdown-it"
+		]
 	},
 	"references": [
 		{

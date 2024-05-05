@@ -97,7 +97,8 @@
 		<div v-if="currentDocu" class="docs">
 			<hr />
 			<h3>Documentation: {{ currentContext }}</h3>
-			<p class="small" v-html="md.render(currentDocu.desc)" />
+			<!-- <p class="small" v-html="md.render(currentDocu.desc)" /> -->
+			<Markdown class="small" :text="currentDocu.desc" />
 
 			<div>
 				<hr />
@@ -117,10 +118,8 @@
 				<h4>Options</h4>
 				<ul>
 					<li v-for="(info, name) in currentDocu.opt">
-						<span>
-							<code class="highlight">{{ name }}</code>
-							<span v-html="md.render(info)" />
-						</span>
+						<span class="highlight">{{ name }}</span> 
+						<Markdown :text="info" />
 					</li>
 				</ul>
 			</div>
@@ -129,10 +128,9 @@
 				<h4>Exposed Variables</h4>
 				<ul>
 					<li v-for="(info, name) in currentDocu.variables">
-						<span
-							><span class="highlight">{{ name }}</span> [<code>{{ info.type }}</code
-							>] <span v-html="md.render(info.desc)" />
-						</span>
+						<span class="highlight">{{ name }}</span> 
+						[<code>{{ info.type }}</code>] 
+						<Markdown :text="info.desc" />
 					</li>
 				</ul>
 			</div>
@@ -147,11 +145,11 @@ import YAML from "yaml";
 import {toast, handleApiResponse, type error} from "@/main";
 import {Id, type FeatureEntity, type Automation} from "@/../../shared";
 import LabelledComponent from "./LabelledComponent.vue";
+import Markdown from "./Markdown.vue";
 import Modal from "./Modal.vue";
 import {parseDescIntoAutomation} from "@/parser/utils";
 import markdownit from "markdown-it";
 import {isMobile} from "@/main";
-const md = markdownit();
 export default defineComponent({
 	props: ["data", "isStandAlone"],
 	data() {
@@ -167,7 +165,6 @@ export default defineComponent({
 			importedCustomAutomation: null as null | {name: string; _id: Id},
 			hasEditedName: false,
 			currentContext: "",
-			md,
 			YAML,
 			isMobile
 		};
@@ -175,7 +172,8 @@ export default defineComponent({
 	components: {
 		LabelledComponent,
 		VueMonacoEditor,
-		Modal
+		Modal,
+		Markdown
 	},
 	setup() {
 		const editorRef = shallowRef();

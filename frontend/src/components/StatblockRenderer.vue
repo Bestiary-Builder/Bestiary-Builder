@@ -107,12 +107,12 @@
             <p v-if="data.misc.featureHeaderTexts.features"> {{ data.misc.featureHeaderTexts.features }} </p>
             <p v-for="feature in data.features.features">
                 <b> <i>{{ feature.name }}.</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup> </b>
-                <span class="feature-container__desc" v-html="md.render(feature.description)"> </span>
+                <Markdown class="feature-container__desc" :text="feature.description" tag="span"/>
             </p>
 
             <p v-if="showInnateCasting() && !data.spellcasting.innateSpells.displayAsAction">
                 <b><i>Innate Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics"> (Psionics)</span>.</i></b> 
-                <span class="feature-container__desc" v-html="md.render(displayInnateCasting(data))" />
+                <Markdown class="feature-container__desc" :text="displayInnateCasting(data)" tag="span"/>
             </p>
 
             <p v-if="showCasting() && data.spellcasting.casterSpells.castingClass && data.spellcasting.casterSpells.casterLevel &&  data.spellcasting.casterSpells.spellSlotList">
@@ -139,12 +139,12 @@
             <p v-if="data.misc.featureHeaderTexts.actions"> {{ data.misc.featureHeaderTexts.actions }} </p>
             <p v-for="feature in data.features.actions">
                 <b> <i>{{ feature.name }}.</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
-                <span class="feature-container__desc" v-html="md.render(feature.description)"> </span>
+                <Markdown class="feature-container__desc" :text="feature.description" tag="span"/>
             </p>
 
             <p v-if="showInnateCasting() && data.spellcasting.innateSpells.displayAsAction">
                 <b><i>Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics"> (Psionics)</span>.</i></b> 
-                <span class="feature-container__desc" v-html="md.render(displayInnateCasting(data))" />
+                <Markdown class="feature-container__desc" :text="displayInnateCasting(data)" tag="span"/>
             </p>
         </div>
 
@@ -153,7 +153,7 @@
                 <p v-if="data.misc.featureHeaderTexts.bonus"> {{ data.misc.featureHeaderTexts.bonus }} </p>
                 <p v-for="feature in data.features.bonus">
                 <b> <i>{{ feature.name }}.</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
-                <span class="feature-container__desc" v-html="md.render(feature.description)"> </span>
+                <Markdown class="feature-container__desc" :text="feature.description" tag="span"/>
             </p>
         </div>
 
@@ -162,7 +162,7 @@
                 <p v-if="data.misc.featureHeaderTexts.reactions"> {{ data.misc.featureHeaderTexts.reactions }} </p>
                 <p v-for="feature in data.features.reactions">
                 <b> <i>{{ feature.name }}.</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
-                <span class="feature-container__desc" v-html="md.render(feature.description)"> </span>
+                <Markdown class="feature-container__desc" :text="feature.description" tag="span"/>
             </p>
         </div>
 
@@ -171,7 +171,7 @@
                 <p v-if="data.misc.featureHeaderTexts.legendary"> {{ data.misc.featureHeaderTexts.legendary.replace("$NUM$", data.misc.legActionsPerRound.toString()) }} </p>
                 <p v-for="feature in data.features.legendary">
                 <b> <i>{{ feature.name }}.</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
-                <span class="feature-container__desc" v-html="md.render(feature.description)"> </span>
+                <Markdown class="feature-container__desc" :text="feature.description" tag="span"/>
             </p>
         </div>
 
@@ -180,7 +180,7 @@
                 <p v-if="data.misc.featureHeaderTexts.mythic"> {{ data.misc.featureHeaderTexts.mythic }} </p>
                 <p v-for="feature in data.features.mythic">
                 <b> <i>{{ feature.name }}.</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
-                <span class="feature-container__desc" v-html="md.render(feature.description)"> </span>
+                <Markdown class="feature-container__desc" :text="feature.description" tag="span"/>
             </p>
         </div>
 
@@ -189,7 +189,7 @@
                 <p v-if="data.misc.featureHeaderTexts.lair"> {{ data.misc.featureHeaderTexts.lair }} </p>
                 <p v-for="feature in data.features.lair">
                 <b> <i>{{ feature.name }}.</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
-                <span class="feature-container__desc" v-html="md.render(feature.description)"> </span>
+                <Markdown class="feature-container__desc" :text="feature.description" tag="span"/>
             </p>
         </div>
 
@@ -198,13 +198,13 @@
                 <p v-if="data.misc.featureHeaderTexts.regional"> {{ data.misc.featureHeaderTexts.regional }} </p>
                 <p v-for="feature in data.features.regional">
                 <b> <i>{{ feature.name }}.</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
-                <span class="feature-container__desc" v-html="md.render(feature.description)"> </span>
+                <Markdown class="feature-container__desc" :text="feature.description" tag="span"/>
             </p>
         </div>
     </div>
     <div v-if="data.description.description" class="description">
         <h2 class="feature-container__title"> Description </h2>
-        <div v-html="md.render(data.description.description)"></div>
+        <Markdown :text="data.description.description" />
     </div>
 </div>
 </template>
@@ -214,8 +214,7 @@ import { defineComponent } from 'vue';
 import type { Stat, SkillsEntity, Statblock, InnateSpells, CasterSpells } from '@/../../shared'
 import { stringify } from 'yaml'
 import { displayCR, displaySpeedOrSenses, displayInnateCasting } from '@/utils/displayFunctions';
-import markdownit from "markdown-it"
-const md = markdownit()
+import Markdown from './Markdown.vue';
 export default defineComponent({
     props: {
         data: {
@@ -226,8 +225,10 @@ export default defineComponent({
     data() {
         return {
             displayCR,
-            md
         }
+    },
+    components: {
+        Markdown
     },
     methods: {
         hpCalc(): number {

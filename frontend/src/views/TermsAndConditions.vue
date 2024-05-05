@@ -10,20 +10,13 @@
 		:isLessWide="true"
 	/>
 	<div class="content markdown less-wide">
-		<div v-if="content" v-html="content"></div>
+		<Markdown :text="dataFile" />
 	</div>
 </template>
 
-<script lang="ts">
-import {defineComponent} from "vue";
-import markdownit from "markdown-it";
-const md = markdownit();
+<script setup lang="ts">
 import dataFile from "@/assets/documents/terms-and-conditions.md";
-export default defineComponent({
-	data() {
-		return {
-			content: md.render(dataFile)
-		};
-	}
-});
+import Breadcrumbs from "@/components/Breadcrumbs.vue";
+import Markdown from "@/components/Markdown.vue";
 </script>
+
