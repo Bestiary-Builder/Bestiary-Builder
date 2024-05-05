@@ -544,7 +544,7 @@ export default defineComponent({
 				bestiary: this.bestiary?._id
 			} as Creature;
 			//Send data to server
-			await fetch("/api/creature/update", {
+			await fetch("/api/creature/add", {
 				method: "POST",
 				headers: {
 					Accept: "application/json",
@@ -555,7 +555,7 @@ export default defineComponent({
 				let result = await handleApiResponse<Creature>(response);
 				if (result.success) {
 					let data = result.data as Creature;
-					this.$router.push(`../statblock-editor/${data._id}`)
+					this.$router.push(`../statblock-editor/${data._id}`);
 				} else {
 					toast.error((result.data as error).error);
 				}
