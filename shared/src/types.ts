@@ -55,12 +55,11 @@ export type SearchOptions = {
 export interface AutomationDocumentationEntity {
 	desc: string;
 	url: string;
-	variables: Record<string, Record<'type' | 'desc', string>>
-	opt: Record<string, string>;
+	variables: {[key: string]: {type: string; desc: string}};
+	opt: {[key: string]: string};
 	ts: string;
 }
-export type AutomationDocumentation = Record<string, AutomationDocumentationEntity>
-
+export type AutomationDocumentation = {[key: string]: AutomationDocumentationEntity};
 
 export function stringToId(id: string): Id | null {
 	if (!id) return null;
@@ -408,7 +407,7 @@ export type Features = {
 export interface FeatureEntity {
 	name: string;
 	description: string;
-	automation: null | Record<string, unknown> | Record<string, unknown>[];
+	automation: null | {[key: string]: unknown} | {[key: string]: unknown}[];
 }
 
 export interface SpellCasting {

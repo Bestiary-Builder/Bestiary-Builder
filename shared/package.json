@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "build": "npx ts-interface-builder types.ts && tsc"
+    "build": "npx ts-interface-builder ./src/types.ts && tsc"
   },
   "dependencies": {
     "bson": "^6.2.0",
