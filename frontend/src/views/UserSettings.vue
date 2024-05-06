@@ -42,7 +42,7 @@
 <script setup lang="ts">
 import { onMounted, ref} from "vue";
 import type {User} from "~/shared";
-import {user as getUser, sendToLogin, getLoginRoute, fetchBackend} from "@/utils/functions";
+import {user as getUser, sendToLogin, getLoginRoute, useFetch} from "@/utils/functions";
 import {toast} from "@/main";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import JoinPatreon from "@/components/JoinPatreon.vue"
@@ -56,26 +56,24 @@ onMounted(async () => {
 	let code = search.get("code");
 	user.value = await getUser
 	if (code && !user.value) {
-		await fetchBackend("/api/login/" + code).then(async (result) => {
-			if (result.success) {
-				toast.success("Succesfully logged in");
-				window.location.href = getLoginRoute();
-			} else {
-				toast.error(result.error);
-				router.push("/user");
-			}
-		});
+		const {success, error} = await useFetch("/api/login/" + code)
+		if (success) {
+			toast.success("Succesfully logged in");
+			window.location.href = getLoginRoute();
+		} else {
+			toast.error(error);
+			router.push("/user");
+		}
 	}
 })
 
 const logoutClick = async () => {
-	await fetchBackend("/api/logout").then(async (result) => {
-		if (result.success) {
-			location.reload()
-		} else {
-			toast.error(result.error);
-		}
-	});
+	const {success, error} = await useFetch("/api/logout")
+	if (success) {
+		location.reload()
+	} else {
+		toast.error(error);
+	}
 }
 </script>
 <style scoped lang="less">

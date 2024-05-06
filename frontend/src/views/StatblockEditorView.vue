@@ -472,7 +472,7 @@ import {defineComponent} from "vue";
 
 import type {SkillsEntity, Statblock, Creature, Bestiary} from "~/shared";
 import {defaultStatblock, getSpellSlots, spellList, spellListFlattened, getXPbyCR, type User} from "~/shared";
-import {asyncLimits, type limitsType, user, fetchBackend} from "@/utils/functions";
+import {asyncLimits, type limitsType, user, useFetch} from "@/utils/functions";
 import {toast} from "@/main";
 import {parseFrom5eTools} from "../parser/parseFrom5eTools";
 import {capitalizeFirstLetter} from "@/parser/utils";
@@ -609,15 +609,15 @@ export default defineComponent({
 				let creature = JSON.parse(this.bestiaryBuilderJson);
 				if (Array.isArray(creature)) creature = creature[0];
 				//Validate input
-				let result = await fetchBackend("/api/validate/creature", "POST", creature);
+				const {success, data, error} = await useFetch("/api/validate/creature", "POST", creature);
 				//Succesful?:
-				if (result.success) {
+				if (success) {
 					this.data = creature;
 					this.notices = {};
 					this.bestiaryBuilderJson = "";
 					toast.success("Successfully imported " + this.data.description.name);
 				} else {
-					toast.error(result.error.replaceAll("\n", "<br />"), {
+					toast.error(error.replaceAll("\n", "<br />"), {
 						duration: 0
 					});
 				}
@@ -798,29 +798,28 @@ export default defineComponent({
 			this.data.spellcasting.casterSpells.spellBonusOverride = null;
 			this.data.spellcasting.casterSpells.spellDcOverride = null;
 		},
-		saveStatblock() {
+		async saveStatblock() {
 			///console.log(this.data);
 			if (!this.rawInfo) return;
 			this.rawInfo.stats = this.data;
 			const loader = this.$loading.show();
 			//Send to backend
-			fetchBackend<Creature>(`/api/creature/${this.rawInfo._id}/update`, "POST", this.rawInfo).then(async (result) => {
-				if (result.success) {
-					toast.success("Saved stat block");
-					this.madeChanges = false;
-					// watch data only once, as traversing the object deeply is expensive.
-					const unwatch = this.$watch(
-						"data",
-						() => {
-							this.madeChanges = true;
-							unwatch();
-						},
-						{deep: true}
-					);
-				} else {
-					toast.error("Error: " + result.error, {duration: 10000});
-				}
-			});
+			const {success, error} = await useFetch<Creature>(`/api/creature/${this.rawInfo._id}/update`, "POST", this.rawInfo);
+			if (success) {
+				toast.success("Saved stat block");
+				this.madeChanges = false;
+				// watch data only once, as traversing the object deeply is expensive.
+				const unwatch = this.$watch(
+					"data",
+					() => {
+						this.madeChanges = true;
+						unwatch();
+					},
+					{deep: true}
+				);
+			} else {
+				toast.error("Error: " + error, {duration: 10000});
+			}
 			loader.hide();
 		},
 		getSpellSlots
@@ -835,37 +834,35 @@ export default defineComponent({
 		this.showSlides(1);
 
 		//Fetch creature info
-		let fetchResult = await fetchBackend<Creature>("/api/creature/" + this.$route.params.id).then(async (result) => {
-			if (result.success) {
-				this.data = (result.data as Creature).stats;
-				this.rawInfo = result.data as Creature;
-				return true;
+		{
+			const {success, data, error} = await useFetch<Creature>("/api/creature/" + this.$route.params.id);
+			if (success) {
+				this.data = (data as Creature).stats;
+				this.rawInfo = data as Creature;
 			} else {
-				toast.error("Error: " + result.error);
+				toast.error("Error: " + error);
 				this.madeChanges = false;
 				this.$router.push("/error");
-				return false;
+				loader.hide();
+				return;
 			}
-		});
-		if (!fetchResult) {
-			loader.hide();
-			return;
 		}
 
 		document.title = `${this?.data.description.name.substring(0, 16)} | Bestiary Builder`;
 
 		// get bestiary info this creature belongs to so we can get the name of the bestiary
-		await fetchBackend<Bestiary>("/api/bestiary/" + this.rawInfo?.bestiary).then(async (result) => {
-			if (result.success) {
-				this.bestiary = result.data as Bestiary;
+		{
+			const {success, data, error} = await useFetch<Bestiary>("/api/bestiary/" + this.rawInfo?.bestiary);
+			if (success) {
+				this.bestiary = data as Bestiary;
 				this.isOwner = this.user?._id == this.bestiary.owner;
 				this.isEditor = (this.bestiary?.editors ?? []).includes(this.user?._id ?? "");
 				if (this.isOwner || this.isEditor) this.shouldShowEditor = true;
 			} else {
 				this.bestiary = null;
-				toast.error(result.error);
+				toast.error(error);
 			}
-		});
+		}
 		this.innateSpells = {
 			0: this.data.spellcasting.innateSpells.spellList[0].map((spell) => spell.spell),
 			1: this.data.spellcasting.innateSpells.spellList[1].map((spell) => spell.spell),

@@ -58,7 +58,7 @@ import BestiaryList from "@/components/BestiaryList.vue";
 import {ref, onMounted, watch} from "vue";
 import type {Bestiary} from "~/shared";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
-import {tags as getTags, fetchBackend} from "@/utils/functions";
+import {tags as getTags, useFetch} from "@/utils/functions";
 import {toast, isMobile} from "@/main";
 // @ts-ignore
 import {vue3Debounce as vDebounce} from "vue-debounce";
@@ -86,35 +86,30 @@ const totalPages = ref(1);
 
 const searchBestiaries = async () => {
 	//Request bestiary info
-	await fetchBackend<{results: Bestiary[]; pageAmount: number}>(`/api/search`, "POST", {
+	const {success, data, error} = await useFetch<{results: Bestiary[]; pageAmount: number}>(`/api/search`, "POST", {
 		search: search.value,
 		page: selectedPage.value - 1,
 		tags: selectedTags.value,
 		mode: viewMode.value.toLowerCase()
-	}).then(async (result) => {
-		if (result.success) {
-			let data = result.data as {results: Bestiary[]; pageAmount: number};
-			bestiaries.value = data.results;
-			totalPages.value = data.pageAmount;
-		} else {
-			bestiaries.value = [];
-			totalPages.value = 1;
-			toast.error(result.error);
-		}
 	});
+	if (success) {
+		bestiaries.value = data.results;
+		totalPages.value = data.pageAmount;
+	} else {
+		bestiaries.value = [];
+		totalPages.value = 1;
+		toast.error(error);
+	}
 };
 
 const getBookmarkedBestiaries = async () => {
-	console.log("Getting bookmarks");
 	//Request bestiary info
-	await fetchBackend<Bestiary[]>(`/api/user/bookmarks`).then(async (result) => {
-		if (result.success) bestiaries.value = result.data;
-		else {
-			bestiaries.value = [];
-			toast.error(result.error);
-		}
-	});
-	console.log(bestiaries.value);
+	const {success, data, error} = await useFetch<Bestiary[]>(`/api/user/bookmarks`);
+	if (success) bestiaries.value = data;
+	else {
+		bestiaries.value = [];
+		toast.error(error);
+	}
 };
 
 watch(selectedPage, () => searchBestiaries());
