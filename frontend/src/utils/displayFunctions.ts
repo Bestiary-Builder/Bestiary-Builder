@@ -1,7 +1,13 @@
 // Simple global functions used in several places in the UI
+import type {SenseEntity, SpeedEntity, SpellCasting, Statblock, Stat} from "~/shared";
+import {fullSpellAbilityName, statCalc, componentsString} from "~/shared";
 
-import type { SenseEntity, SpeedEntity, SpellCasting, Statblock, Stat} from "~/shared";
-import { fullSpellAbilityName, statCalc, componentsString } from "~/shared";
+export function displayCR(cr: number): string {
+	if (cr == 0.125) return "1/8";
+	if (cr == 0.25) return "1/4";
+	if (cr == 0.5) return "1/2";
+	return cr.toString();
+}
 
 export function displayInnateCasting(data: Statblock): string {
 	let sData = data.spellcasting.innateSpells;
@@ -11,7 +17,9 @@ export function displayInnateCasting(data: Statblock): string {
 	if (!data.description.isProperNoun && !sData.displayAsAction)
 		output += `The ${name.toLowerCase()}'s spellcasting ability is ${fullSpellAbilityName(sData.spellCastingAbility)} (spell save DC ${innateDC(data)}, ${innateSpellBonus(data)} to hit with spell attacks). It can innately cast the following spells${componentsString(sData.noComponentsOfType)}:`;
 	else if (!data.description.isProperNoun && sData.displayAsAction)
-		output += `The ${name.toLowerCase()} casts one of the following spells${componentsString(sData.noComponentsOfType)} and using ${fullSpellAbilityName(sData.spellCastingAbility)} as the spellcasting ability (spell save DC ${innateDC(data)}, ${innateSpellBonus(data)} to hit with spell attacks).`;
+		output += `The ${name.toLowerCase()} casts one of the following spells${componentsString(sData.noComponentsOfType)} and using ${fullSpellAbilityName(sData.spellCastingAbility)} as the spellcasting ability (spell save DC ${innateDC(data)}, ${innateSpellBonus(
+			data
+		)} to hit with spell attacks).`;
 	else if (data.description.isProperNoun && !sData.displayAsAction)
 		output += `${name}'s spellcasting ability is ${fullSpellAbilityName(sData.spellCastingAbility)} (spell save DC ${innateDC(data)}, ${innateSpellBonus(data)} to hit with spell attacks). ${name} can innately cast the following spells${componentsString(sData.noComponentsOfType)}:`;
 	else if (data.description.isProperNoun && sData.displayAsAction)
@@ -39,7 +47,6 @@ export function displayCasterCasting(data: Statblock): string {
 
 	return output;
 }
-
 
 function innateDC(data: Statblock): number {
 	let castingData = data.spellcasting.innateSpells;
