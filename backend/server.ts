@@ -24,9 +24,9 @@ httpServer.listen(parseInt(process.env.port ?? "5000"), () => {
 });
 
 //Load frontend
-import {routes, defaultMetaTags, Route} from "~/shared/routes";
+import {routes} from "~/shared";
 import {Id, stringToId} from "~/shared";
-async function getFrontendHtml(route: Route, req: Request) {
+async function getFrontendHtml(route: routes.Route, req: Request) {
 	//Get information
 	let title = "Bestiary Builder";
 	if (route.name) title = route.name + " | Bestiary Builder";
@@ -72,7 +72,7 @@ async function getFrontendHtml(route: Route, req: Request) {
 	//Create metatags
 	let metatags = [
 		`<title>${title}</title>`,
-		...defaultMetaTags.map((tagInfo) => {
+		...routes.defaultMetaTags.map((tagInfo) => {
 			let tagDef = {...tagInfo};
 			//Change content of tag:
 			if (tagDef.name.includes("title") || tagDef.name.includes("name")) tagDef.content = title;
@@ -86,7 +86,7 @@ async function getFrontendHtml(route: Route, req: Request) {
 	//Return index.html with tags
 	return html.replace("<!-- meta tags -->", metatags.join("\n		"));
 }
-for (let route of routes) {
+for (let route of routes.routes) {
 	app.get(route.path, async (req, res) => {
 		try {
 			let html = await getFrontendHtml(route, req);
@@ -111,7 +111,7 @@ discord.login(process.env.discordBotToken!).catch(() => log.error("Failed to con
 app.get("/api/*", (req, res) => res.status(404).json({error: "Path not found."}));
 app.get("/*", async (req, res) => {
 	try {
-		let html = await getFrontendHtml(routes.find((r) => r.path == "/notfound")!, req);
+		let html = await getFrontendHtml(routes.routes.find((r) => r.path == "/notfound")!, req);
 		return res.send(html);
 	} catch (err) {
 		log.error(err);

@@ -2,9 +2,9 @@ import {createRouter, createWebHistory} from "vue-router";
 
 // @ts-ignore
 import fileRoutes from "~pages";
-import {routes as relevantRoutes} from "~/shared/routes";
+import {routes as sharedRoutes} from "~/shared";
 import {user, sendToLogin} from "@/main";
-const routes = relevantRoutes.map((route) => {
+const routes = sharedRoutes.routes.map((route) => {
 	return {
 		...route,
 		...{component: fileRoutes.find((fileRoute: any) => fileRoute.name === route.file.replace(".vue", "").replace("/", "-"))?.component}
