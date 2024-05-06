@@ -134,7 +134,7 @@ import {VueMonacoEditor} from "@guolao/vue-monaco-editor";
 import YAML from "yaml";
 import {fetchBackend} from "@/utils/functions";
 import {toast} from "@/main";
-import {Id, type FeatureEntity, type Automation, type AutomationDocumentation, type AutomationDocumentationEntity} from "~/shared";
+import {Id, type FeatureEntity, type Automation, type AutomationDocumentation} from "~/shared";
 import LabelledComponent from "./LabelledComponent.vue";
 import Markdown from "./Markdown.vue";
 import {parseDescIntoAutomation} from "@/parser/utils";

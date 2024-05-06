@@ -1,7 +1,7 @@
 import {app} from "@/utilities/constants";
 import {log} from "@/utilities/logger";
 import {getBestiary, incrementBestiaryViewCount, collections} from "@/utilities/database";
-import {type Statblock, Id, stringToId} from "~/shared";
+import {type Statblock, Id, stringToId, SKILLS_BY_STAT, type Stat, type SkillsEntity, nthSuffix, hpCalc, statCalc, fullSpellAbilityName, componentsString, crAsString, ppCalc, type SpellCasting, type CasterSpells, type InnateSpells} from "~/shared";
 
 //Export data
 app.get("/api/public/bestiary/:id", (req, res) => res.redirect("/api/export/bestiary/" + req.params.id));
@@ -43,25 +43,19 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 });
 
 //Statblock functions:
-function displayCR(cr: number): string {
-	if (cr == 0.125) return "1/8";
-	if (cr == 0.25) return "1/4";
-	if (cr == 0.5) return "1/2";
-	return cr.toString();
-}
-
-function spellDc(innate = false, data: any): number {
-	let castingData;
+function spellDc(innate = false, data: Statblock): number {
+	let castingData : InnateSpells | CasterSpells;
 	if (innate) castingData = data.spellcasting.innateSpells;
 	else castingData = data.spellcasting.casterSpells;
+
 	if (castingData.spellDcOverride) return castingData.spellDcOverride;
-	else {
-		if (innate && castingData.spellCastingAbility) return 8 + statCalc(castingData.spellCastingAbility, data) + data.core.proficiencyBonus;
-		else return 8 + statCalc(castingData.spellCastingAbilityOveride ?? castingData.spellCastingAbility, data) + data.core.proficiencyBonus;
-	}
+
+	if (innate) return 8 + statCalc(castingData.spellCastingAbility, data) + data.core.proficiencyBonus;
+	else if ("spellCastingAbilityOverride" in castingData) return 8 + statCalc(castingData.spellCastingAbilityOverride, data) + data.core.proficiencyBonus
+	else return  8 + statCalc(castingData.spellCastingAbility, data) + data.core.proficiencyBonus
 }
 
-function knownSpells(data: any): any {
+function knownSpells(data: SpellCasting): any {
 	let dailySpells = {
 		"1": [],
 		"2": [],
@@ -84,14 +78,7 @@ function knownSpells(data: any): any {
 	return output;
 }
 
-function hpCalc(data: any): number {
-	return data.defenses.hp.override ?? Math.floor(data.defenses.hp.numOfHitDie * ((data.defenses.hp.sizeOfHitDie + 1) / 2 + statCalc("con", data)));
-}
 
-function statCalc(stat: string | null, data: any): number {
-	if (!stat) return 0;
-	return Math.floor(data.abilities.stats[stat] / 2) - 5;
-}
 
 function spellAttackBonus(innate = false, data: any) {
 	let castingData;
@@ -124,19 +111,12 @@ export function displaySpeedOrSenses(data: any[]): string {
 	return output;
 }
 
-export interface SkillsEntity {
-	skillName: string;
-	isHalfProficient: boolean;
-	isProficient: boolean;
-	isExpertise: boolean;
-	override: number | null;
-}
 
 function calcSkills(data: any) {
 	let skillData = data.abilities.skills as SkillsEntity[];
 	let output = {} as {[key: string]: {value: number; prof?: number; bonus: number; adv: number | null}};
 	for (let stat in SKILLS_BY_STAT) {
-		for (let skill of SKILLS_BY_STAT[stat]) {
+		for (let skill of SKILLS_BY_STAT[stat as Stat]) {
 			let raw = skillData.find((a) => a.skillName.replaceAll(" ", "").toLowerCase() == skill.toLowerCase());
 			if (raw == undefined) {
 				output[skill] = {
@@ -192,64 +172,14 @@ function calcSkills(data: any) {
 	return output;
 }
 
-function calcPP(override: null | number, finishedData: any): number {
-	if (override != null) return override;
-	return 10 + finishedData["skills"]["perception"]["value"];
-}
 
-const SKILLS_BY_STAT = {
-	str: ["athletics", "strength"],
-	dex: ["acrobatics", "sleightOfHand", "stealth", "initiative", "dexterity"],
-	con: ["constitution"],
-	int: ["arcana", "history", "investigation", "nature", "religion", "intelligence"],
-	wis: ["animalHandling", "insight", "medicine", "perception", "survival", "wisdom"],
-	cha: ["deception", "intimidation", "performance", "persuasion", "charisma"]
-} as {[key: string]: string[]};
-
-function nthSuffix(number: number): string {
-	switch (number) {
-		case 1:
-			return "1st";
-		case 2:
-			return "2nd";
-		case 3:
-			return "3rd";
-		default:
-			return number.toString() + "th";
-	}
-}
-
-function fullSpellAbilityName(abi: string): string {
-	// if (innate) abi = this.data.spellcasting.innateSpells.spellCastingAbility
-	// else abi = this.data.spellcasting.casterSpells.spellCastingAbilityOverride ?? this.data.spellcasting.casterSpells.spellCastingAbility
-
-	if (abi == "str") return "Strength";
-	if (abi == "dex") return "Dexterity";
-	if (abi == "con") return "Constitution";
-	if (abi == "wis") return "Wisdom";
-	if (abi == "int") return "Intelligence";
-	if (abi == "cha") return "Charisma";
-	return "Spellcasting Ability not found.";
-}
 
 function slots(num: number) {
 	if (num > 1) return `(${num} slots)`;
 	return `(${num} slot)`;
 }
 
-function componentsString(comp: string[]): string {
-	comp.sort();
-	if (comp.length == 0) return "";
-	if (comp.length == 3) return ", requiring no components";
-	if (comp.length == 2) {
-		let only = "material";
-		if (!comp.includes("Verbal")) only = "verbal";
-		if (!comp.includes("Somatic")) only = "somatic";
 
-		return `, requiring only ${only} components`;
-	}
-	return `, requiring no ${comp[0].toLowerCase()} components`;
-}
 
 export function getCreatureData(creature: Statblock) {
 	//HP:
@@ -275,36 +205,24 @@ export function getCreatureData(creature: Statblock) {
 	//Saves/stats
 	let saves = {} as any;
 	for (let key in creature.abilities.saves) {
-		let newKey;
-		switch (key) {
-			case "str":
-				newKey = "strengthSave";
-				break;
-			case "dex":
-				newKey = "dexteritySave";
-				break;
-			case "con":
-				newKey = "constitutionSave";
-				break;
-			case "wis":
-				newKey = "wisdomSave";
-				break;
-			case "int":
-				newKey = "intelligenceSave";
-				break;
-			case "cha":
-				newKey = "charismaSave";
-				break;
-			default:
-				continue;
-		}
-		let override = creature.abilities.saves[key].override;
+		const saveData = creature.abilities.saves[key as Stat]
+
+		let newKey = {
+			"str": "strengthSave",
+			"dex": "dexteritySave",
+			"con": "constitutionSave",
+			"wis": "wisdomSave",
+			"int": "intelligenceSave",
+			"cha": "charismaSave",
+		}[key] ?? ""
+
+		let override = saveData.override;
 		let value = statCalc(key, creature);
 		let prof = 0;
 		if (override != null) {
 			value = override;
 			prof = 1;
-		} else if (creature.abilities.saves[key].isProficient) {
+		} else if (saveData.isProficient) {
 			value += creature.core.proficiencyBonus;
 			prof = 1;
 		}
@@ -321,7 +239,7 @@ export function getCreatureData(creature: Statblock) {
 		proper: creature.description.isProperNoun,
 		image_url: creature.description.image || "",
 		languages: creature.core.languages,
-		cr: displayCR(creature.description.cr),
+		cr: crAsString(creature.description.cr),
 		xp: creature.description.xp,
 		alignment: creature.description.alignment,
 		size: creature.core.size,
@@ -357,16 +275,16 @@ export function getCreatureData(creature: Statblock) {
 		regional: creature.features.regional,
 		la_per_round: creature.misc.legActionsPerRound,
 		spellcasting: spellcasting,
-		passiveperc: undefined as number | undefined
+		passiveperc: ppCalc(creature)
 	};
-	creatureData.passiveperc = calcPP(null, creatureData);
+
 	let caster = creature["spellcasting"]["casterSpells"];
 	let isNoun = creature["description"]["isProperNoun"];
 	let name = creature["description"]["name"];
 
 	// best not to think about this too much.
 	if (caster.casterLevel && caster.castingClass && caster.spellList.flat().length > 0) {
-		let output = `${isNoun ? "" : "The "}${name} is a ${nthSuffix(caster.casterLevel)}-level spellcaster. ${isNoun ? "Their" : "Its"} spellcasting ability is ${fullSpellAbilityName(caster.spellCastingAbilityOverride ?? caster.spellCastingAbility ?? "")} (spell save DC ${spellDc(
+		let output = `${isNoun ? "" : "The "}${name} is a ${nthSuffix(caster.casterLevel)}-level spellcaster. ${isNoun ? "Their" : "Its"} spellcasting ability is ${fullSpellAbilityName(caster.spellCastingAbilityOverride ?? caster.spellCastingAbility)} (spell save DC ${spellDc(
 			false,
 			creature
 		)}, ${spellAttackBonus(false, creature) >= 0 ? "+" : ""}${spellAttackBonus(false, creature)} to hit with spell attacks). ${isNoun ? name : "It"} ${

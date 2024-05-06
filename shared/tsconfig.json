@@ -5,7 +5,10 @@
 		"rootDir": ".",
 		"outDir": "../build/shared",
 		"composite": true,
-		"lib": ["esnext"]
+		"lib": ["esnext"],
+		"target": "es2022",
+		"moduleResolution": "NodeNext",
+		"module": "NodeNext"
 	},
-	"references": []
+	"references": [],
 }
