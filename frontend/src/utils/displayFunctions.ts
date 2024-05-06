@@ -2,13 +2,6 @@
 import type {SenseEntity, SpeedEntity, SpellCasting, Statblock, Stat} from "~/shared";
 import {fullSpellAbilityName, statCalc, componentsString} from "~/shared";
 
-export function displayCR(cr: number): string {
-	if (cr == 0.125) return "1/8";
-	if (cr == 0.25) return "1/4";
-	if (cr == 0.5) return "1/2";
-	return cr.toString();
-}
-
 export function displayInnateCasting(data: Statblock): string {
 	let sData = data.spellcasting.innateSpells;
 	let name = data.description.name;
