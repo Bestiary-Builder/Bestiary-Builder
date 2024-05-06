@@ -20,29 +20,9 @@
         </div>
     </div>
     <div class="stat-block__row stat-block__abilities">
-        <div>
-            <div> <b>STR</b> </div>
-            <span> {{ data.abilities.stats.str }}  ({{ signedNumber(data.abilities.stats.str)}}{{ statCalc("str", data) }})</span>
-        </div>
-        <div>
-            <div> <b>DEX</b> </div>
-            <span> {{ data.abilities.stats.dex }}  ({{ signedNumber(data.abilities.stats.dex) }}{{ statCalc("dex", data) }})</span>
-        </div>
-        <div>
-            <div> <b>CON</b> </div>
-            <span> {{ data.abilities.stats.con }}  ({{ signedNumber(data.abilities.stats.con) }}{{ statCalc("con", data) }})</span>
-        </div>
-        <div>
-            <div> <b>INT</b> </div>
-            <span> {{ data.abilities.stats.int }}  ({{ signedNumber(data.abilities.stats.int) }}{{ statCalc("int", data) }})</span>
-        </div>
-        <div>
-            <div> <b>WIS</b> </div>
-            <span> {{ data.abilities.stats.wis }}  ({{signedNumber(data.abilities.stats.wis) }}{{ statCalc("wis", data) }})</span>
-        </div>
-        <div>
-            <div> <b>CHA</b> </div>
-            <span> {{ data.abilities.stats.cha }}  ({{ signedNumber(data.abilities.stats.cha) }}{{ statCalc("cha", data) }})</span>
+        <div v-for="stat in stats" :key="stat">
+            <div> <b> {{ stat.toUpperCase()}} </b></div>
+            <span> {{ data.abilities.stats[stat]}} ({{signedNumber(statCalc(stat, data))}})</span>
         </div>
     </div>
     <div class="stat-block__row">
@@ -59,30 +39,14 @@
             <b> Skills </b>
             {{ skillOutput }}
         </div>
-        <div class="stat-block__vuln-container" v-if="data.defenses.vulnerabilities && data.defenses.vulnerabilities.length > 0">
-            <b> Vulnerabilities </b>
-            <span v-for="vuln in alphaSort(data.defenses.vulnerabilities)">
-                <span>{{vuln.toLowerCase()}}<span class="ending-comma">, </span> </span>
-            </span>
-        </div>
-        <div class="stat-block__res-container" v-if="data.defenses.resistances && data.defenses.resistances.length > 0">
-            <b> Resistances </b>
-            <span v-for="res in alphaSort(data.defenses.resistances)">
-                <span>{{res.toLowerCase()}}<span class="ending-comma">, </span> </span>
-            </span>
-        </div>
-        <div class="stat-block__imm-container" v-if="data.defenses.immunities && data.defenses.immunities.length > 0">
-            <b> Immunities </b>
-            <span v-for="imm in alphaSort(data.defenses.immunities)">
-                <span>{{imm.toLowerCase()}}<span class="ending-comma">, </span> </span>
-            </span>
-        </div>
-        <div class="stat-block__imm-container" v-if="data.defenses.conditionImmunities && data.defenses.conditionImmunities.length > 0">
-            <b> Condition Immunities </b>
-            <span v-for="con in alphaSort(data.defenses.conditionImmunities)">
-                <span>{{con.toLowerCase()}}<span class="ending-comma">, </span> </span>
-            </span>
-        </div>
+        <template v-for="title, resType of resistanceGenerator">
+            <div class="stat-block__vuln-container" v-if="data.defenses[resType].length > 0">
+                <b> {{ title }}  </b>
+                <span v-for="res in alphaSort(data.defenses[resType])">
+                    <span> {{res.toLowerCase()}}<span class="ending-comma">, </span> </span>
+                </span>
+            </div>
+        </template>
         <div ckass="stat-block__senses-container">
             <b> Senses </b>
             {{ displaySpeedOrSenses(data.core.senses, true) }}
@@ -211,9 +175,10 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import type { Stat, SkillsEntity, Statblock, InnateSpells, CasterSpells } from "~/shared";
+import type { Stat, SkillsEntity, Statblock, InnateSpells, CasterSpells, Defenses } from "~/shared";
 import { SKILLS_BY_STAT, nthSuffix, statCalc, hpCalc, crAsString, ppCalc, fullSpellAbilityName, signedNumber, displaySpeedOrSenses } from "~/shared"
-import {  displayInnateCasting } from '@/utils/displayFunctions';
+import { displayInnateCasting } from '@/utils/displayFunctions';
+import { stats, resistanceGenerator } from '@/utils/constants';
 import Markdown from './Markdown.vue';
 export default defineComponent({
     props: {
@@ -224,6 +189,12 @@ export default defineComponent({
     },
     components: {
         Markdown
+    },
+    data() {
+        return {
+            stats,
+            resistanceGenerator
+        }
     },
     methods: {
         saveSign(stat: Stat): string {
