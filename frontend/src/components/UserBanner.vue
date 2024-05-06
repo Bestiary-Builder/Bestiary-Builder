@@ -15,26 +15,24 @@
 <script setup lang="ts">
 import {onMounted, defineProps, computed, ref} from "vue";
 import type {User} from "~/shared";
-import {handleApiResponse, user as getUser} from "@/main";
+import {handleApiResponse} from "@/main";
 import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/css/index.css";
 
 const user = ref<User | null>(null);
-const props = defineProps<{id: string}>()
+const props = defineProps<{id: string}>();
 
 onMounted(async () => {
-	user.value = await getUser;
 	await fetch("/api/user" + "/" + props.id).then(async (response: any) => {
 		let result = await handleApiResponse<User>(response);
 		if (result.success) user.value = result.data as User;
 		else user.value = null;
 	});
-})
+});
 
 const isLoading = computed(() => {
-	return user.value == null
-})
-
+	return user.value == null;
+});
 </script>
 
 <style scoped lang="less">
