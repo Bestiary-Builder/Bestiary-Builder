@@ -32,22 +32,20 @@
 <script setup lang="ts">
 import dataFile from "@/assets/documents/home.md";
 import Markdown from "@/components/Markdown.vue";
-import {handleApiResponse} from "@/utils/functions";
+import {fetchBackend} from "@/utils/functions";
 import {onBeforeMount, ref} from "vue";
 import type {GlobalStats} from "../../../shared";
 
 const stats = ref<null | GlobalStats>(null);
 onBeforeMount(async () => {
-	await fetch("/api/stats")
-		.then(handleApiResponse)
-		.then((result) => {
-			if (result.success) {
-				stats.value = result.data as GlobalStats;
-			} else {
-				console.error("Failed to retrieve global stats.");
-				stats.value = null;
-			}
-		});
+	await fetchBackend("/api/stats").then((result) => {
+		if (result.success) {
+			stats.value = result.data as GlobalStats;
+		} else {
+			console.error("Failed to retrieve global stats.");
+			stats.value = null;
+		}
+	});
 });
 </script>
 <style scoped lang="less">

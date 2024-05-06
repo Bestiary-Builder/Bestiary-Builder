@@ -472,7 +472,7 @@ import {defineComponent} from "vue";
 
 import type {SkillsEntity, Statblock, Creature, Bestiary} from "~/shared";
 import {defaultStatblock, getSpellSlots, spellList, spellListFlattened, getXPbyCR, type User} from "~/shared";
-import {handleApiResponse, type error, asyncLimits, type limitsType, user} from "@/utils/functions";
+import {asyncLimits, type limitsType, user, fetchBackend} from "@/utils/functions";
 import {toast} from "@/main";
 import {parseFrom5eTools} from "../parser/parseFrom5eTools";
 import {capitalizeFirstLetter} from "@/parser/utils";
@@ -609,14 +609,7 @@ export default defineComponent({
 				let creature = JSON.parse(this.bestiaryBuilderJson);
 				if (Array.isArray(creature)) creature = creature[0];
 				//Validate input
-				let result = await fetch("/api/validate/creature", {
-					method: "POST",
-					headers: {
-						Accept: "application/json",
-						"Content-Type": "application/json"
-					},
-					body: JSON.stringify({data: creature})
-				}).then(handleApiResponse);
+				let result = await fetchBackend("/api/validate/creature", "POST", creature);
 				//Succesful?:
 				if (result.success) {
 					this.data = creature;
@@ -624,7 +617,7 @@ export default defineComponent({
 					this.bestiaryBuilderJson = "";
 					toast.success("Successfully imported " + this.data.description.name);
 				} else {
-					toast.error((result.data as error).error.replaceAll("\n", "<br />"), {
+					toast.error(result.error.replaceAll("\n", "<br />"), {
 						duration: 0
 					});
 				}
@@ -811,15 +804,7 @@ export default defineComponent({
 			this.rawInfo.stats = this.data;
 			const loader = this.$loading.show();
 			//Send to backend
-			fetch(`/api/creature/${this.rawInfo._id}/update`, {
-				method: "POST",
-				headers: {
-					Accept: "application/json",
-					"Content-Type": "application/json"
-				},
-				body: JSON.stringify({data: this.rawInfo})
-			}).then(async (response) => {
-				let result = await handleApiResponse<Creature>(response);
+			fetchBackend<Creature>(`/api/creature/${this.rawInfo._id}/update`, "POST", this.rawInfo).then(async (result) => {
 				if (result.success) {
 					toast.success("Saved stat block");
 					this.madeChanges = false;
@@ -833,7 +818,7 @@ export default defineComponent({
 						{deep: true}
 					);
 				} else {
-					toast.error("Error: " + (result.data as error).error, {duration: 10000});
+					toast.error("Error: " + result.error, {duration: 10000});
 				}
 			});
 			loader.hide();
@@ -850,15 +835,13 @@ export default defineComponent({
 		this.showSlides(1);
 
 		//Fetch creature info
-		let fetchResult = await fetch("/api/creature/" + this.$route.params.id).then(async (response) => {
-			let result = await handleApiResponse<Creature>(response);
+		let fetchResult = await fetchBackend<Creature>("/api/creature/" + this.$route.params.id).then(async (result) => {
 			if (result.success) {
 				this.data = (result.data as Creature).stats;
 				this.rawInfo = result.data as Creature;
-
 				return true;
 			} else {
-				toast.error("Error: " + (result.data as error).error);
+				toast.error("Error: " + result.error);
 				this.madeChanges = false;
 				this.$router.push("/error");
 				return false;
@@ -872,8 +855,7 @@ export default defineComponent({
 		document.title = `${this?.data.description.name.substring(0, 16)} | Bestiary Builder`;
 
 		// get bestiary info this creature belongs to so we can get the name of the bestiary
-		await fetch("/api/bestiary/" + this.rawInfo?.bestiary).then(async (response) => {
-			let result = await handleApiResponse<Bestiary>(response);
+		await fetchBackend<Bestiary>("/api/bestiary/" + this.rawInfo?.bestiary).then(async (result) => {
 			if (result.success) {
 				this.bestiary = result.data as Bestiary;
 				this.isOwner = this.user?._id == this.bestiary.owner;
@@ -881,10 +863,9 @@ export default defineComponent({
 				if (this.isOwner || this.isEditor) this.shouldShowEditor = true;
 			} else {
 				this.bestiary = null;
-				toast.error((result.data as error).error);
+				toast.error(result.error);
 			}
 		});
-
 		this.innateSpells = {
 			0: this.data.spellcasting.innateSpells.spellList[0].map((spell) => spell.spell),
 			1: this.data.spellcasting.innateSpells.spellList[1].map((spell) => spell.spell),
@@ -915,17 +896,14 @@ export default defineComponent({
 				{deep: true}
 			);
 		}, 1);
-
 		loader.hide();
 	},
-
 	watch: {
 		"data.spellcasting.casterSpells.castingClass"(newValue, oldValue) {
 			if (newValue == null || newValue == undefined) {
 				this.clearCasting();
 				return;
 			}
-
 			const sClass = this.data.spellcasting.casterSpells.castingClass;
 			switch (sClass) {
 				case "Artificer":
@@ -940,7 +918,6 @@ export default defineComponent({
 				default:
 					this.data.spellcasting.casterSpells.spellCastingAbility = "cha";
 			}
-
 			// set spell slots in case they changed full caster/half caster/arti half/warlock
 			this.data.spellcasting.casterSpells.spellSlotList = getSpellSlots(sClass, this.data.spellcasting.casterSpells.casterLevel);
 		},
@@ -949,7 +926,6 @@ export default defineComponent({
 				this.clearCasting();
 				return;
 			}
-
 			// set spell slots when they change level
 			this.data.spellcasting.casterSpells.spellSlotList = getSpellSlots(this.data.spellcasting.casterSpells.castingClass, this.data.spellcasting.casterSpells.casterLevel);
 		},
@@ -968,7 +944,6 @@ export default defineComponent({
 						}
 					}
 				}
-
 				// remove spells that we have in the statblock data but not in the editor data
 				for (let times in list) {
 					for (let spell in list[times]) {
@@ -982,7 +957,6 @@ export default defineComponent({
 		},
 		"data.description.cr"() {
 			this.data.core.proficiencyBonus = Math.max(2, Math.min(9, Math.floor((this.data.description.cr + 3) / 4)) + 1);
-
 			this.data.description.xp = getXPbyCR(this.data.description.cr);
 		},
 		"data.description.name"() {

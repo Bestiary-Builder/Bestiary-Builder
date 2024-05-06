@@ -9,7 +9,7 @@ const amountPerPage = 12;
 app.post("/api/search", async (req, res) => {
 	try {
 		//Parse search inputs
-		let input = req.body.options as Partial<SearchOptions> | null;
+		let input = req.body.data as Partial<SearchOptions> | null;
 		let searchOptions = {
 			...({
 				search: ".",

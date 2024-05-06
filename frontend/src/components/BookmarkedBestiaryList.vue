@@ -29,7 +29,7 @@ import {RouterLink} from "vue-router";
 import {ref, onMounted, computed} from "vue";
 import UserBanner from "@/components/UserBanner.vue";
 import type {User, Bestiary} from "~/shared";
-import {handleApiResponse, user as getUser, type error} from "@/utils/functions";
+import {user as getUser, fetchBackend} from "@/utils/functions";
 import {toast, loadingOptions} from "@/main";
 import {useLoading} from "vue-loading-overlay";
 
@@ -46,12 +46,11 @@ onMounted(async () => {
 
 const getBestiaries = async () => {
 	//Request bestiary info
-	await fetch(`/api/user/bookmarks`).then(async (response) => {
-		let result = await handleApiResponse<Bestiary[]>(response);
-		if (result.success) bestiaries.value = result.data as Bestiary[];
+	await fetchBackend<Bestiary[]>(`/api/user/bookmarks`).then(async (result) => {
+		if (result.success) bestiaries.value = result.data;
 		else {
 			bestiaries.value = [];
-			toast.error((result.data as error).error);
+			toast.error(result.error);
 		}
 	});
 };

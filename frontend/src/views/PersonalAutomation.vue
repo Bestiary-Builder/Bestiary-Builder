@@ -63,7 +63,7 @@
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import {ref, onMounted, onUnmounted} from "vue";
 import {useLoading} from "vue-loading-overlay";
-import {user as getUser, handleApiResponse, type error} from "@/utils/functions";
+import {fetchBackend, user as getUser} from "@/utils/functions";
 import {toast, loadingOptions} from "@/main";
 import {type User, Automation} from "~/shared";
 import type {Id} from "~/shared";
@@ -95,43 +95,33 @@ const addAutomation = (name: string, automation = null, shouldNotify = true) => 
 		return;
 	}
 	const loader = $loading.show();
-	fetch(`/api/automation/add`, {
-		method: "POST",
-		headers: {
-			Accept: "application/json",
-			"Content-Type": "application/json"
-		},
-		body: JSON.stringify({data: {name: name, automation: automation}})
-	}).then(async (response) => {
-		let result = await handleApiResponse<Automation>(response);
+	fetchBackend<Automation>(`/api/automation/add`, "POST", {name: name, automation: automation}).then(async (result) => {
 		if (result.success) {
 			await getMyAutomations();
 			newAutomationName.value = "New Automation";
 			if (shouldNotify) toast.success("Successfully added automation: " + name);
 			selectedAutomation.value = data.value[data.value.length - 1];
-		} else toast.error((result.data as error).error);
+		} else toast.error(result.error);
 	});
 	loader.hide();
 };
 
 const deleteAutomation = (_id: Id) => {
 	const loader = $loading.show();
-	fetch(`/api/automation/${_id}/delete`).then(async (response) => {
-		let result = await handleApiResponse<{}>(response);
+	fetchBackend<{}>(`/api/automation/${_id}/delete`).then(async (result) => {
 		if (result.success) {
 			toast.success("Successfully deleted the automation!");
 			await getMyAutomations();
 			selectedAutomation.value = null;
-		} else toast.error((result.data as error).error);
+		} else toast.error(result.error);
 	});
 	loader.hide();
 };
 
 const getMyAutomations = async () => {
-	await fetch(`/api/my-automations`).then(async (response) => {
-		let result = await handleApiResponse<Automation[]>(response);
+	await fetchBackend<Automation[]>(`/api/my-automations`).then(async (result) => {
 		if (result.success) data.value = result.data as Automation[];
-		else toast.error((result.data as error).error);
+		else toast.error(result.error);
 	});
 	initialData = JSON.stringify(data.value);
 };

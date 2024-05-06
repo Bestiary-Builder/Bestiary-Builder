@@ -66,7 +66,7 @@ import {onMounted, ref, computed} from "vue";
 
 import {toast, loadingOptions} from "@/main";
 import type {User, Bestiary, Id} from "~/shared";
-import {type error, handleApiResponse, user as getUser} from "@/utils/functions";
+import {user as getUser, fetchBackend} from "@/utils/functions";
 import {useLoading} from "vue-loading-overlay";
 
 const $loading = useLoading(loadingOptions);
@@ -84,12 +84,11 @@ onMounted(async () => {
 const bestiaries = ref<Bestiary[]>([]);
 
 const getBestiaries = async () => {
-	await fetch(`/api/my-bestiaries`).then(async (response) => {
-		let result = await handleApiResponse<Bestiary[]>(response);
+	await fetchBackend(`/api/my-bestiaries`).then(async (result) => {
 		if (result.success) bestiaries.value = result.data as Bestiary[];
 		else {
 			bestiaries.value = [];
-			toast.error((result.data as error).error);
+			toast.error(result.error);
 		}
 	});
 };
@@ -103,20 +102,12 @@ const createBestiary = async () => {
 		creatures: [] as Id[]
 	} as Bestiary;
 	//Send data to server
-	await fetch("/api/bestiary/add", {
-		method: "POST",
-		headers: {
-			Accept: "application/json",
-			"Content-Type": "application/json"
-		},
-		body: JSON.stringify({data: data})
-	}).then(async (response) => {
-		let result = await handleApiResponse<Bestiary>(response);
+	await fetchBackend<Bestiary>("/api/bestiary/add", "POST", data).then(async (result) => {
 		if (result.success) {
 			toast.success("Created bestiary");
-			router.push("/bestiary-viewer/" + (result.data as Bestiary)._id);
+			router.push("/bestiary-viewer/" + result.data._id);
 		} else {
-			toast.error((result.data as error).error);
+			toast.error(result.error);
 		}
 	});
 	await getBestiaries();
@@ -125,13 +116,12 @@ const createBestiary = async () => {
 const deleteBestiary = async (bestiary: Bestiary | null) => {
 	if (!bestiary) return;
 	const loader = $loading.show();
-	await fetch(`/api/bestiary/${bestiary._id}/delete`).then(async (response) => {
-		let result = await handleApiResponse(response);
+	await fetchBackend(`/api/bestiary/${bestiary._id}/delete`).then(async (result) => {
 		if (result.success) {
 			toast.success("Deleted bestiary succesfully");
 			showDeleteModal.value = false;
 		} else {
-			toast.error((result.data as error).error);
+			toast.error(result.error);
 		}
 	});
 	loader.hide();

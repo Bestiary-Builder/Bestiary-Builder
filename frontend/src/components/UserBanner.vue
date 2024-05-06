@@ -15,7 +15,7 @@
 <script setup lang="ts">
 import {onMounted, defineProps, computed, ref} from "vue";
 import type {User} from "~/shared";
-import {handleApiResponse} from "@/utils/functions";
+import {fetchBackend} from "@/utils/functions";
 import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/css/index.css";
 
@@ -23,9 +23,8 @@ const user = ref<User | null>(null);
 const props = defineProps<{id: string}>();
 
 onMounted(async () => {
-	await fetch("/api/user" + "/" + props.id).then(async (response: any) => {
-		let result = await handleApiResponse<User>(response);
-		if (result.success) user.value = result.data as User;
+	await fetchBackend<User>("/api/user/" + props.id).then(async (result) => {
+		if (result.success) user.value = result.data;
 		else user.value = null;
 	});
 });

@@ -75,7 +75,7 @@ import {ref, onMounted, computed, watch} from "vue";
 import type {Bestiary} from "~/shared";
 import UserBanner from "@/components/UserBanner.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
-import {handleApiResponse, tags as getTags, type error} from "@/utils/functions";
+import {tags as getTags, fetchBackend} from "@/utils/functions";
 import {toast, isMobile} from "@/main";
 // @ts-ignore
 import {vue3Debounce as vDebounce} from "vue-debounce";
@@ -104,22 +104,12 @@ const totalPages = ref(1);
 
 const searchBestiaries = async () => {
 	//Request bestiary info
-	await fetch(`/api/search`, {
-		method: "POST",
-		headers: {
-			Accept: "application/json",
-			"Content-Type": "application/json"
-		},
-		body: JSON.stringify({
-			options: {
-				search: search.value,
-				page: selectedPage.value - 1,
-				tags: selectedTags.value,
-				mode: viewMode.value.toLowerCase()
-			}
-		})
-	}).then(async (response) => {
-		let result = await handleApiResponse<{results: Bestiary[]; pageAmount: number}>(response);
+	await fetchBackend<{results: Bestiary[]; pageAmount: number}>(`/api/search`, "POST", {
+		search: search.value,
+		page: selectedPage.value - 1,
+		tags: selectedTags.value,
+		mode: viewMode.value.toLowerCase()
+	}).then(async (result) => {
 		if (result.success) {
 			let data = result.data as {results: Bestiary[]; pageAmount: number};
 			bestiaries.value = data.results;
@@ -127,7 +117,7 @@ const searchBestiaries = async () => {
 		} else {
 			bestiaries.value = [];
 			totalPages.value = 1;
-			toast.error((result.data as error).error);
+			toast.error(result.error);
 		}
 	});
 };

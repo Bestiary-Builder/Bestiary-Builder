@@ -42,7 +42,7 @@
 <script setup lang="ts">
 import { onMounted, ref} from "vue";
 import type {User} from "~/shared";
-import {user as getUser, sendToLogin, getLoginRoute, handleApiResponse, type error} from "@/utils/functions";
+import {user as getUser, sendToLogin, getLoginRoute, fetchBackend} from "@/utils/functions";
 import {toast} from "@/main";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import JoinPatreon from "@/components/JoinPatreon.vue"
@@ -56,13 +56,12 @@ onMounted(async () => {
 	let code = search.get("code");
 	user.value = await getUser
 	if (code && !user.value) {
-		await fetch("/api/login/" + code).then(async (response) => {
-			let result = await handleApiResponse(response);
+		await fetchBackend("/api/login/" + code).then(async (result) => {
 			if (result.success) {
 				toast.success("Succesfully logged in");
 				window.location.href = getLoginRoute();
 			} else {
-				toast.error((result.data as error).error);
+				toast.error(result.error);
 				router.push("/user");
 			}
 		});
@@ -70,12 +69,11 @@ onMounted(async () => {
 })
 
 const logoutClick = async () => {
-	await fetch("/api/logout").then(async (response) => {
-		let result = await handleApiResponse(response);
+	await fetchBackend("/api/logout").then(async (result) => {
 		if (result.success) {
 			location.reload()
 		} else {
-			toast.error((result.data as error).error);
+			toast.error(result.error);
 		}
 	});
 }

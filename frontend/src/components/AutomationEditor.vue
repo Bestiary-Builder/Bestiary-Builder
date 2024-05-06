@@ -132,7 +132,7 @@
 import {shallowRef, ref, onUnmounted, defineProps, withDefaults, defineEmits, onMounted, watch, computed} from "vue";
 import {VueMonacoEditor} from "@guolao/vue-monaco-editor";
 import YAML from "yaml";
-import {handleApiResponse, type error} from "@/utils/functions";
+import {fetchBackend} from "@/utils/functions";
 import {toast} from "@/main";
 import {Id, type FeatureEntity, type Automation, type AutomationDocumentation, type AutomationDocumentationEntity} from "~/shared";
 import LabelledComponent from "./LabelledComponent.vue";
@@ -168,13 +168,11 @@ const loadedAutomation = ref<LoadedAutomation>({
 });
 
 const loadImportedAutomation = (apiPath: string, saveTo: keyof LoadedAutomation) => {
-	fetch(`/api/${apiPath}`).then(async (response: any) => {
-		const result = await handleApiResponse<string[] | myAutomationSkeleton>(response);
-		// @ts-ignore
+	fetchBackend<string[] & myAutomationSkeleton[]>(`/api/${apiPath}`).then(async (result) => {
 		if (result.success) loadedAutomation.value[saveTo] = result.data;
 		else {
 			loadedAutomation.value[saveTo] = [];
-			toast.error((result.data as error).error);
+			toast.error(result.error);
 		}
 	});
 };
@@ -187,45 +185,42 @@ onMounted(() => {
 
 type ImportedData = FeatureEntity | Automation;
 const importAutomation = async (apiPath: "automation" | "basic-example" | "srd-feature", name: string, _id: Id | null = null) => {
-	fetch(`/api/${apiPath}/` + encodeURIComponent(_id?.toString() ?? name)).then(async (response: any) => {
-		let feature: ImportedData | null = null;
+	const result = await fetchBackend(`/api/${apiPath}/` + encodeURIComponent(_id?.toString() ?? name));
+	let feature: ImportedData | null = null;
+	if (!result.success) {
+		toast.error("Error: " + result.error);
+		return;
+	}
+	feature = result.data as ImportedData | null;
 
-		let result = await handleApiResponse<ImportedData | null>(response);
-		if (!result.success) {
-			toast.error("Error: " + (result.data as error).error);
-			return;
+	if (!feature) {
+		toast.error(`Error: Failed to import ${name}`);
+		return;
+	}
+
+	if (props.data.name == "New Feature" || !hasEditedName.value) {
+		if (apiPath == "srd-feature" && feature.name.includes(" - ")) props.data.name = feature.name.split("-").slice(1).join("-").trim();
+		else props.data.name = feature.name;
+	}
+
+	if (feature.description) {
+		props.data.description = feature.description.replaceAll("$NAME$", props.creatureName);
+	}
+
+	// For basic examples, description is not set on the main object but only as the last text node in the automation.
+	if (!feature.description && apiPath == "basic-example" && feature.automation && !Array.isArray(feature.automation)) {
+		// @ts-ignore
+		props.data.description = feature.automation.automation[feature.automation.automation.length - 1].text;
+	}
+
+	if (Array.isArray(feature.automation)) {
+		for (let feat of feature.automation) {
+			if (apiPath == "srd-feature" && (feat.name as string).includes(" - ")) feat.name = (feat.name as string).split("-").slice(1).join("-").trim();
 		}
-		feature = result.data as ImportedData | null;
+	}
 
-		if (!feature) {
-			toast.error(`Error: Failed to import ${name}`);
-			return;
-		}
-
-		if (props.data.name == "New Feature" || !hasEditedName.value) {
-			if (apiPath == "srd-feature" && feature.name.includes(" - ")) props.data.name = feature.name.split("-").slice(1).join("-").trim();
-			else props.data.name = feature.name;
-		}
-
-		if (feature.description) {
-			props.data.description = feature.description.replaceAll("$NAME$", props.creatureName);
-		}
-
-		// For basic examples, description is not set on the main object but only as the last text node in the automation.
-		if (!feature.description && apiPath == "basic-example" && feature.automation && !Array.isArray(feature.automation)) {
-			// @ts-ignore
-			props.data.description = feature.automation.automation[feature.automation.automation.length - 1].text;
-		}
-
-		if (Array.isArray(feature.automation)) {
-			for (let feat of feature.automation) {
-				if (apiPath == "srd-feature" && (feat.name as string).includes(" - ")) feat.name = (feat.name as string).split("-").slice(1).join("-").trim();
-			}
-		}
-
-		automationString.value = YAML.stringify(feature.automation);
-		saveAutomation(false);
-	});
+	automationString.value = YAML.stringify(feature.automation);
+	saveAutomation(false);
 };
 
 // Automation
@@ -236,7 +231,7 @@ onMounted(() => {
 
 watch(automationString, () => validateYaml());
 
-const saveAutomation = (shouldNotify = false) => {
+const saveAutomation = async (shouldNotify = false) => {
 	// if standalone: saving commits the change to the database
 	// if not standalone: saving saves automation into the FeatureEntity object so it is preserved between opening/closen and dragging features, but not to the database
 	let parsed: Automation["automation"] = null;
@@ -251,40 +246,21 @@ const saveAutomation = (shouldNotify = false) => {
 	if (!parsed) props.data.automation = null;
 	else {
 		// validate it as valid avrae automation
-		fetch("/api/validate/automation", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json"
-			},
-			body: JSON.stringify({
-				data: parsed
-			})
-		})
-			.then(async (response) => response.json())
-			.then((data: {success: boolean; data?: string; error?: string}) => {
-				if (data.error) {
-					if (shouldNotify) toast.error(data.error);
-					return;
-				}
-			});
+		await fetchBackend("/api/validate/automation", "POST", parsed).then((result) => {
+			if (!result.success) {
+				if (shouldNotify) toast.error(result.error);
+				return;
+			}
+		});
 	}
 
 	if (props.isStandAlone && "_id" in props.data) {
 		// save standalone to database
-		fetch(`/api/automation/${props.data._id}/update`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json"
-			},
-			body: JSON.stringify({
-				data: props.data
-			})
-		}).then(async (response: any) => {
-			let result = await handleApiResponse<FeatureEntity>(response);
+		await fetchBackend<FeatureEntity>(`/api/automation/${props.data._id}/update`, "POST", props.data).then(async (result) => {
 			if (result.success && shouldNotify) {
 				emit("savedStandaloneData");
 			} else if (!result.success) {
-				if (shouldNotify) toast.error(`${props.data.name}:` + (result.data as error).error);
+				if (shouldNotify) toast.error(`${props.data.name}:` + result.error);
 				return;
 			}
 		});
@@ -345,9 +321,8 @@ const getContext = () => {
 const docu = ref<AutomationDocumentation>({});
 
 onMounted(() => {
-	fetch("/api/automationDocumentation").then(async (response: any) => {
-		let result = await handleApiResponse<AutomationDocumentation>(response);
-		if (result.success) docu.value = result.data as AutomationDocumentation;
+	fetchBackend<AutomationDocumentation>("/api/automationDocumentation").then(async (result) => {
+		if (result.success) docu.value = result.data;
 		else docu.value = {};
 	});
 });
@@ -448,19 +423,11 @@ const validateYaml = () => {
 // If a user saves automation from a non-standalone editor into their automations.
 const saveCustomAutomation = () => {
 	if (props.isStandAlone) return;
-	fetch(`/api/automation/add`, {
-		method: "POST",
-		headers: {
-			Accept: "application/json",
-			"Content-Type": "application/json"
-		},
-		body: JSON.stringify({data: {name: props.data.name, description: props.data.description, automation: props.data.automation}})
-	}).then(async (response) => {
-		let result = await handleApiResponse<{}>(response);
+	fetchBackend(`/api/automation/add`, "POST", {name: props.data.name, description: props.data.description, automation: props.data.automation}).then(async (result) => {
 		if (result.success) {
 			loadImportedAutomation("my-automations", "myAutomation");
 			toast.success("Successfully added automation!");
-		} else toast.error((result.data as error).error);
+		} else toast.error(result.error);
 	});
 };
 </script>
