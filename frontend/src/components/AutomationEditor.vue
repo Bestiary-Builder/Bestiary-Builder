@@ -129,7 +129,7 @@
 </template>
 
 <script setup lang="ts">
-import {shallowRef, ref, onUnmounted, defineProps, withDefaults, defineEmits, onMounted, watch, computed} from "vue";
+import {shallowRef, ref, onUnmounted, defineEmits, onMounted, watch, computed} from "vue";
 import {VueMonacoEditor} from "@guolao/vue-monaco-editor";
 import YAML from "yaml";
 import {fetchBackend} from "@/utils/functions";

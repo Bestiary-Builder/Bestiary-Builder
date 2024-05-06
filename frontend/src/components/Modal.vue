@@ -19,7 +19,7 @@
 	</Teleport>
 </template>
 <script setup lang="ts">
-import {defineProps, getCurrentInstance, nextTick, onMounted, onUnmounted, ref, watch} from "vue";
+import {getCurrentInstance, nextTick, onMounted, onUnmounted, ref, watch} from "vue";
 import {useFocusTrap} from "@vueuse/integrations/useFocusTrap";
 
 const props = withDefaults(defineProps<{show: boolean, fullScreen?: boolean}>(), {fullScreen: false})

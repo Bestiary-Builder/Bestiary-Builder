@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import {withDefaults, defineProps, ref} from "vue";
+import {ref} from "vue";
 const props = withDefaults(defineProps<{title: string, id?: number | undefined, takesCustomTextInput?: boolean}>(), {takesCustomTextInput: false, number: undefined})
 const elId = ref("")
 

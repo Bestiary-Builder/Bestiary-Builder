@@ -5,7 +5,6 @@
 </template>
 <script lang="ts" setup>
 import {Bestiary} from "~/shared";
-import { defineProps } from "vue";
 defineProps<{icon: Bestiary['status']}>()
 </script>
 

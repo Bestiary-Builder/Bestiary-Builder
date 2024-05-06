@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, defineProps, computed, ref} from "vue";
+import {onMounted, computed, ref} from "vue";
 import type {User} from "~/shared";
 import {fetchBackend} from "@/utils/functions";
 import Loading from "vue-loading-overlay";
