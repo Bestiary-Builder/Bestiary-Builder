@@ -38,48 +38,30 @@
 			</template>
 		</VDropdown>
 	</Breadcrumbs>
-	<div class="content" v-if="viewMode != 'Bookmarked'">
-		<div class="tile-container" v-if="bestiaries && bestiaries.length > 0">
-			<TransitionGroup name="popin">
-				<RouterLink class="content-tile bestiary-tile" v-for="(bestiary, index) in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" :key="bestiary._id?.toString()" :aria-label="`Open ${bestiary.name}`">
-					<h2 class="tile-header">{{ bestiary.name }}</h2>
-					<div class="tile-content" :class="{'tile-has-image': bestiaryImages[index]}">
-						<img class="tile-image" v-if="bestiaryImages[index]" :src="bestiaryImages[index]" />
-						<div class="tags">
-							{{ bestiary.tags.join(", ") }}
-						</div>
-						<p class="description">{{ bestiary.description }}</p>
-					</div>
-					<div class="tile-footer">
-						<UserBanner :id="bestiary.owner" />
-						<span>{{ bestiary.creatures.length }}<font-awesome-icon :icon="['fas', 'skull']" /></span>
-					</div>
-				</RouterLink>
-			</TransitionGroup>
-		</div>
+	<div class="content">
+		<BestiaryList :personal="false" :bestiaries v-if="bestiaries && bestiaries.length > 0"></BestiaryList>
 		<div v-else class="zero-found">
-			<span> Did not find any Bestiaries with that name or tags.</span>
-		</div>
-		<div class="page-nav__container" v-if="totalPages > 1">
-			<button aria-label="Decrease page number" @click="selectedPage = Math.max(1, selectedPage - 1)" v-tooltip="'Decrease page number'">-</button>
-			<span>{{ selectedPage }}/{{ totalPages }}</span>
-			<button aria-label="Increase page number" @click="selectedPage = Math.min(totalPages, selectedPage + 1)" v-tooltip="'Increase page number'">+</button>
+			<span v-if="viewMode != 'Bookmarked'"> Did not find any Bestiaries with that name or tags.</span>
+			<span v-else>You do not have any bookmarked bestiaries. View a Bestiary and click on the ⭐ icon to bookmark it.</span>
 		</div>
 	</div>
-	<BookmarkedBestiaryList v-else />
+	<div class="page-nav__container" v-if="totalPages > 1">
+		<button aria-label="Decrease page number" @click="selectedPage = Math.max(1, selectedPage - 1)" v-tooltip="'Decrease page number'">-</button>
+		<span>{{ selectedPage }}/{{ totalPages }}</span>
+		<button aria-label="Increase page number" @click="selectedPage = Math.min(totalPages, selectedPage + 1)" v-tooltip="'Increase page number'">+</button>
+	</div>
 </template>
 
 <script setup lang="ts">
-import {RouterLink} from "vue-router";
-import {ref, onMounted, computed, watch} from "vue";
+import BestiaryList from "@/components/BestiaryList.vue";
+
+import {ref, onMounted, watch} from "vue";
 import type {Bestiary} from "~/shared";
-import UserBanner from "@/components/UserBanner.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import {tags as getTags, fetchBackend} from "@/utils/functions";
 import {toast, isMobile} from "@/main";
 // @ts-ignore
 import {vue3Debounce as vDebounce} from "vue-debounce";
-import BookmarkedBestiaryList from "../components/BookmarkedBestiaryList.vue";
 import {useLoading} from "vue-loading-overlay";
 import {loadingOptions} from "@/main";
 
@@ -122,43 +104,35 @@ const searchBestiaries = async () => {
 	});
 };
 
+const getBookmarkedBestiaries = async () => {
+	console.log("Getting bookmarks");
+	//Request bestiary info
+	await fetchBackend<Bestiary[]>(`/api/user/bookmarks`).then(async (result) => {
+		if (result.success) bestiaries.value = result.data;
+		else {
+			bestiaries.value = [];
+			toast.error(result.error);
+		}
+	});
+	console.log(bestiaries.value);
+};
+
 watch(selectedPage, () => searchBestiaries());
 watch(selectedTags, () => searchBestiaries());
-watch(viewMode, (newValue) => {
+watch(viewMode, async (newValue) => {
 	if (newValue != "Bookmarked") {
 		const loader = $loading.show();
-		searchBestiaries();
+		await searchBestiaries();
+		loader.hide();
+	} else {
+		const loader = $loading.show();
+		await getBookmarkedBestiaries();
 		loader.hide();
 	}
-});
-
-const bestiaryImages = computed(() => {
-	let bestiaryImages: string[] = [];
-	for (let bestiary of bestiaries.value) {
-		const match = bestiary.description.match(/\!\[.*?\]\((.*?)\)/);
-		const firstImageUrl = (match || [])[1];
-		if (match) bestiary.description = bestiary.description.replace(match[0], "");
-		bestiaryImages.push(firstImageUrl);
-	}
-	return bestiaryImages;
 });
 </script>
 
 <style scoped lang="less">
-@import url("@/assets/styles/bestiary-list.less");
-
-.content-tile .tile-footer {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-
-	span:first-of-type {
-		text-align: left;
-	}
-	span:last-of-type {
-		text-align: right;
-	}
-}
-
 .page-nav__container {
 	display: flex;
 	justify-content: center;

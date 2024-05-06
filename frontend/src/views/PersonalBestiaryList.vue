@@ -13,31 +13,7 @@
 		</button>
 	</Breadcrumbs>
 	<div class="content">
-		<div class="tile-container" v-if="bestiaries">
-			<TransitionGroup name="popin">
-				<RouterLink class="content-tile bestiary-tile" v-for="(bestiary, index) in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" :key="bestiary._id?.toString()" :class="{'four-tall': bestiary.owner != user?._id}" :aria-label="`Open Bestiary ${bestiary.name}`">
-					<div class="tile-header">
-						<h2>{{ bestiary.name }}</h2>
-					</div>
-					<span class="shared-notice" v-if="bestiary.owner != user?._id">(shared)</span>
-					<div class="tile-content" :class="{'tile-has-image': bestiaryImages[index]}">
-						<img class="tile-image" v-if="bestiaryImages[index]" :src="bestiaryImages[index]" />
-						<div class="tags">
-							{{ bestiary.tags.join(", ") }}
-						</div>
-						<p class="description">{{ bestiary.description }}</p>
-					</div>
-					<div class="tile-footer">
-						<span v-tooltip.left="bestiary.status"><StatusIcon :icon="bestiary.status" /></span>
-						<span role="button" @click.stop.prevent="openDeleteModal(bestiary)" class="edit-button" v-tooltip="'Delete bestiary'" v-if="bestiary.owner == user?._id" aria-label="Delete bestiary"><font-awesome-icon :icon="['fas', 'trash']" /></span>
-						<span v-else>
-							<UserBanner :id="bestiary.owner" />
-						</span>
-						<span>{{ bestiary.creatures.length }}<font-awesome-icon :icon="['fas', 'skull']" /></span>
-					</div>
-				</RouterLink>
-			</TransitionGroup>
-		</div>
+		<BestiaryList :personal="true" :bestiaries v-if="bestiaries" @delete-bestiary="openDeleteModal"></BestiaryList>
 		<div v-else class="zero-found">
 			<span> You do not have any bestiaries. </span>
 			<button class="btn confirm" @click="createBestiary">Create a bestiary</button>
@@ -56,12 +32,11 @@
 </template>
 
 <script setup lang="ts">
-import UserBanner from "@/components/UserBanner.vue";
-import Breadcrumbs from "@/components/Breadcrumbs.vue";
-import StatusIcon from "@/components/StatusIcon.vue";
 import Modal from "@/components/Modal.vue";
+import BestiaryList from "@/components/BestiaryList.vue";
+import Breadcrumbs from "@/components/Breadcrumbs.vue";
 
-import {RouterLink, useRouter} from "vue-router";
+import {useRouter} from "vue-router";
 import {onMounted, ref, computed} from "vue";
 
 import {toast, loadingOptions} from "@/main";
@@ -146,22 +121,3 @@ const bestiaryImages = computed(() => {
 	return bestiaryImages;
 });
 </script>
-
-<style scoped lang="less">
-@import url("@/assets/styles/bestiary-list.less");
-.edit-button {
-	margin: auto;
-	color: orangered;
-	.scale-on-hover(1.2);
-}
-
-.four-tall {
-	grid-template-rows: 1fr 0.1fr 6fr 1fr;
-}
-
-.shared-notice {
-	margin: auto;
-	color: orangered;
-	translate: 0 -4px;
-}
-</style>
