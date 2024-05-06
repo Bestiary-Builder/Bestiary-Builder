@@ -9,7 +9,7 @@ export function interfaceValidation(validation: IErrorDetail[], nestlevel = 0 as
 	return message.replaceAll("is not a", "is not of type");
 }
 
-import types from "./types-ti";
+import types from "./build-types-ti";
 export const typeInterface = types;
 
 import type {IErrorDetail} from "ts-interface-checker";

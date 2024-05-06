@@ -11,25 +11,6 @@ export const SearchOptions = t.iface([], {
   "tags": t.array("string"),
 });
 
-export const AutomationDocumentationEntity = t.iface([], {
-  "desc": "string",
-  "url": "string",
-  "variables": t.iface([], {
-    [t.indexKey]: t.iface([], {
-      "type": "string",
-      "desc": "string",
-    }),
-  }),
-  "opt": t.iface([], {
-    [t.indexKey]: "string",
-  }),
-  "ts": "string",
-});
-
-export const AutomationDocumentation = t.iface([], {
-  [t.indexKey]: "AutomationDocumentationEntity",
-});
-
 export const Stat = t.union(t.lit("str"), t.lit("dex"), t.lit("con"), t.lit("int"), t.lit("cha"), t.lit("wis"));
 
 export const Statblock = t.iface([], {
@@ -226,8 +207,6 @@ export const SpellSlotEntity = t.iface([], {
 
 const exportedTypeSuite: t.ITypeSuite = {
   SearchOptions,
-  AutomationDocumentationEntity,
-  AutomationDocumentation,
   Stat,
   Statblock,
   Misc,

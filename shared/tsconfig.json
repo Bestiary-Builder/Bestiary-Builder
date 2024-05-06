@@ -10,5 +10,5 @@
 		"moduleResolution": "NodeNext",
 		"module": "NodeNext"
 	},
-	"references": [],
+	"references": []
 }
