@@ -3,7 +3,7 @@
 	<Modal :show="showFeatureModal" @close="showFeatureModal = false" :full-screen="true">
 		<template #header> Edit feature: {{ data.name }} </template>
 		<template #body>
-			<AutomationEditor :data="data" :is-stand-alone="false" />
+			<AutomationEditor :data="data" :is-stand-alone="false" :creature-name="creatureName" />
 		</template>
 	</Modal>
 </template>
@@ -12,8 +12,9 @@
 import { ref } from 'vue';
 import AutomationEditor from './AutomationEditor.vue';
 import Modal from './Modal.vue';
+import type {  FeatureEntity } from '~/shared';
 const showFeatureModal = ref(false);
-const props = defineProps<{data: any, type: string, index: number}>();
+const props = defineProps<{data: FeatureEntity, type: string, index: number, creatureName: string}>();
 </script>
 
 <style scoped lang="less">

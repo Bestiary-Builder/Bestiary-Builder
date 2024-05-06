@@ -382,13 +382,5 @@
       },
       "url": "Check",
       "ts": "{\n    type: \"check\";\n    ability: string | string[];\n    contestAbility?: string | string[];\n    dc?: IntExpression;\n    success?: Effect[];\n    fail?: Effect[];\n    contestTie?: \"fail\" | \"success\" | \"neither\";\n    adv?: -1 | 0 | 1;\n}"
-    },
-    "AnnotatedString": {
-      "desc": "An AnnotatedString is a string that can access saved variables. To access a variable, surround the name in brackets (e.g. `{damage}`). Available variables include:\n\n• Implicit variables from Effects (see relevant effect for a list of variables it provides)\n• Any defined in a `Roll` or `Set Variable` effect\n• All variables from the [Cvar Table](https://avrae.readthedocs.io/en/stable/aliasing/api.html#cvar-table)\n\nThis will replace the bracketed portion with the value of the meta variable.\n\nTo perform math inside an AnnotatedString, surround the formula with two curly braces (e.g. `{{floor(dexterityMod+spell)}}`).",
-      "url": "annotatedstring"
-    },
-    "IntExpression": {
-      "desc": "An IntExpression is similar to an AnnotatedString in its ability to use variables and functions. However, it has the following differences:\n\nCurly braces around the expression are not required\n\nAn IntExpression can only contain one expression\n\nThe result of an IntExpression must be an integer.\n\nThese are valid IntExpressions:\n\n• `8 + proficiencyBonus + dexterityMod`\n• `12`\n• `floor(level / 2)`\n\nThese are *not* valid IntExpressions:\n\n• `1d8`\n• `DC {8 + proficiencyBonus + dexterityMod}`",
-      "url": "intexpression"
     }
   }

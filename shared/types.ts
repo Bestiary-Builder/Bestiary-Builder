@@ -38,7 +38,7 @@ export class Creature {
 }
 
 export class Automation {
-	constructor(public name: string, public description: string, public owner: string, public lastUpdated: number, public automation: null | object | object[], public _id?: Id) {}
+	constructor(public name: string, public description: string, public owner: string, public lastUpdated: number, public automation: null | Record<string, unknown> | Record<string, unknown>[], public _id?: Id) {}
 }
 
 export class GlobalStats {
@@ -51,6 +51,16 @@ export type SearchOptions = {
 	mode: "popular" | "recent";
 	tags: string[];
 };
+
+export interface AutomationDocumentationEntity {
+	desc: string;
+	url: string;
+	variables: Record<string, Record<'type' | 'desc', string>>
+	opt: Record<string, string>;
+	ts: string;
+}
+export type AutomationDocumentation = Record<string, AutomationDocumentationEntity>
+
 
 export function stringToId(id: string): Id | null {
 	if (!id) return null;

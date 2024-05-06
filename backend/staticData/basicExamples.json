@@ -48,7 +48,7 @@
 	},
 	{
 		"name": "Breath Weapon with Recharge",
-		"desc": "",
+		"description": "",
 		"automation": {
 			"name": "Breath Weapon with Recharge",
 			"automation": [
@@ -95,7 +95,7 @@
 	},
 	{
 		"name": "Basic Attack with Save against Poison Damage",
-		"desc": "*Melee Weapon Attack:* +6 to hit, reach 10 ft., one target. *Hit:* 6 (1d4 + 4) piercing damage, and the target must make a DC 10 Constitution saving throw, taking 10 (3d6) poison damage on a failed save, or half as much damage on a successful one.",
+		"description": "*Melee Weapon Attack:* +6 to hit, reach 10 ft., one target. *Hit:* 6 (1d4 + 4) piercing damage, and the target must make a DC 10 Constitution saving throw, taking 10 (3d6) poison damage on a failed save, or half as much damage on a successful one.",
 		"automation": {
 			"name": "Basic Attack with Save against Poison",
 			"automation": [
@@ -121,7 +121,7 @@
 	},
 	{
 		"name": "Basic Attack with Grapple (Restrain)",
-		"desc": "",
+		"description": "",
 		"automation": {
 			"name": "Basic Attack with Grapple (Restrain)",
 			"automation": [
@@ -168,7 +168,7 @@
 	},
 	{
 		"name": "Basic Attack with Grapple (Restrain) with DMG at start of turn",
-		"desc": "",
+		"description": "",
 		"automation": {
 			"name": "Basic Attack with Grapple (Restrain) with DMG at start of turn)",
 			"automation": [

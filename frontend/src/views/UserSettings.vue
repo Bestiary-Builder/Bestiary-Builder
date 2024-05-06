@@ -51,10 +51,9 @@ const user = ref<User | null>(null);
 const router = useRouter();
 
 onMounted(async () => {
-	user.value = await getUser
 	let search = new URLSearchParams(window.location.search);
 	let code = search.get("code");
-	if (code && !user.value) {
+	if (code && !(await getUser)) {
 		await fetch("/api/login/" + code).then(async (response) => {
 			let result = await handleApiResponse(response);
 			if (result.success) {
@@ -65,7 +64,9 @@ onMounted(async () => {
 				router.push("/user");
 			}
 		});
-	} 
+	}  else {
+		user.value = await getUser
+	}
 })
 
 const logoutClick = async () => {
