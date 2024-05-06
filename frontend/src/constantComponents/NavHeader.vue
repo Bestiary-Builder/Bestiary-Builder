@@ -31,18 +31,17 @@
 	</header>
 </template>
 <script setup lang="ts">
-import {RouterLink, RouterView} from "vue-router";
-import {user as getUser, sendToLogin} from "@/main";
-import type {User} from "~/shared";
-import {onMounted, watchEffect} from "vue";
+import {RouterLink} from "vue-router";
+import {onMounted, watchEffect, ref} from "vue";
 import {onClickOutside, useElementSize} from "@vueuse/core";
-import {ref} from "vue";
+import {user as getUser, sendToLogin} from "@/utils/functions";
+import type {User} from "~/shared";
 
 const user = ref<User | null>(null);
 
 onMounted(async () => {
-	user.value = await getUser
-})
+	user.value = await getUser;
+});
 
 const isExpanded = ref(false);
 const navbar = ref<HTMLDivElement | null>(null);
@@ -58,7 +57,7 @@ if (window.screen.availWidth < 900) {
 
 watchEffect(() => {
 	document.body.style.setProperty("--navbar-height", `${height.value}px`);
-})
+});
 </script>
 <style scoped lang="less">
 .navbar {

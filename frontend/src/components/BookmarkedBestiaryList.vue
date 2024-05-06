@@ -29,20 +29,20 @@ import {RouterLink} from "vue-router";
 import {ref, onMounted, computed} from "vue";
 import UserBanner from "@/components/UserBanner.vue";
 import type {User, Bestiary} from "~/shared";
-import {handleApiResponse, toast, user as getUser, loadingOptions} from "@/main";
-import type {error} from "@/main";
-import { useLoading } from "vue-loading-overlay";
+import {handleApiResponse, user as getUser, type error} from "@/utils/functions";
+import {toast, loadingOptions} from "@/main";
+import {useLoading} from "vue-loading-overlay";
 
 const bestiaries = ref<Bestiary[]>([]);
 const user = ref<User | null>(null);
 
-const $loading = useLoading(loadingOptions)
+const $loading = useLoading(loadingOptions);
 onMounted(async () => {
 	const loader = $loading.show();
 	user.value = await getUser;
 	await getBestiaries();
 	loader.hide();
-})
+});
 
 const getBestiaries = async () => {
 	//Request bestiary info
@@ -54,7 +54,7 @@ const getBestiaries = async () => {
 			toast.error((result.data as error).error);
 		}
 	});
-}
+};
 
 const bestiaryImages = computed(() => {
 	let bestiaryImages: string[] = [];
@@ -65,7 +65,7 @@ const bestiaryImages = computed(() => {
 		bestiaryImages.push(firstImageUrl);
 	}
 	return bestiaryImages;
-})
+});
 </script>
 
 <style scoped lang="less">

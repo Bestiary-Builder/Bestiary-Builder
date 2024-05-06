@@ -43,19 +43,19 @@
 			<hr />
 			<div class="editor-field__container">
 				<LabelledComponent title="Import SRD feature">
-					<v-select :options="loadedAutomation.srdFeatures"  inputId="importsrdfeature" @option:selected="(selected : string) => (importAutomation('srd-feature', selected)) "/>
+					<v-select :options="loadedAutomation.srdFeatures" inputId="importsrdfeature" @option:selected="(selected : string) => (importAutomation('srd-feature', selected)) " />
 				</LabelledComponent>
 			</div>
 
 			<div class="editor-field__container">
 				<LabelledComponent title="Import basic example">
-					<v-select :options="loadedAutomation.basicExamples" inputId="importbasicexample" @option:selected="(selected : string) => (importAutomation('basic-example', selected))"/>
+					<v-select :options="loadedAutomation.basicExamples" inputId="importbasicexample" @option:selected="(selected : string) => (importAutomation('basic-example', selected))" />
 				</LabelledComponent>
 			</div>
 
 			<div class="editor-field__container" v-if="!isStandAlone">
 				<LabelledComponent title="Import custom automation">
-					<v-select :options="loadedAutomation.myAutomation"  inputId="importcustomautomation" label="name" @option:selected="(selected : myAutomationSkeleton) => (importAutomation('automation', selected.name, selected._id))"/>
+					<v-select :options="loadedAutomation.myAutomation" inputId="importcustomautomation" label="name" @option:selected="(selected : myAutomationSkeleton) => (importAutomation('automation', selected.name, selected._id))" />
 				</LabelledComponent>
 			</div>
 
@@ -78,14 +78,7 @@
 			</div>
 		</div>
 		<div class="automation-editor">
-			<VueMonacoEditor
-				v-model:value="automationString"
-				theme="vs-dark"
-				:options="{wordWrap: 'on', theme: 'vs-dark', minimap: {enabled: false}, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false}"
-				height="750px"
-				language="yaml"
-				@mount="handleMount"
-			/>
+			<VueMonacoEditor v-model:value="automationString" theme="vs-dark" :options="{wordWrap: 'on', theme: 'vs-dark', minimap: {enabled: false}, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false}" height="750px" language="yaml" @mount="handleMount" />
 			<span class="save-custom-automation" @click="saveCustomAutomation()" v-if="!isStandAlone && automationString">Click to save as a reusable custom automation!</span>
 		</div>
 	</div>
@@ -114,7 +107,7 @@
 				<h4>Options</h4>
 				<ul>
 					<li v-for="(info, name) in currentDocu.opt">
-						<span class="highlight">{{ name }}</span> 
+						<span class="highlight">{{ name }}</span>
 						<Markdown :text="info" />
 					</li>
 				</ul>
@@ -124,8 +117,9 @@
 				<h4>Exposed Variables</h4>
 				<ul>
 					<li v-for="(info, name) in currentDocu.variables">
-						<span class="highlight">{{ name }}</span> 
-						[<code>{{ info.type }}</code>] 
+						<span class="highlight">{{ name }}</span>
+						[<code>{{ info.type }}</code
+						>]
 						<Markdown :text="info.desc" />
 					</li>
 				</ul>
@@ -138,42 +132,40 @@
 import {shallowRef, ref, onUnmounted, defineProps, withDefaults, defineEmits, onMounted, watch, computed} from "vue";
 import {VueMonacoEditor} from "@guolao/vue-monaco-editor";
 import YAML from "yaml";
-import {toast, handleApiResponse, type error} from "@/main";
+import {handleApiResponse, type error} from "@/utils/functions";
+import {toast} from "@/main";
 import {Id, type FeatureEntity, type Automation, type AutomationDocumentation, type AutomationDocumentationEntity} from "~/shared";
 import LabelledComponent from "./LabelledComponent.vue";
 import Markdown from "./Markdown.vue";
 import {parseDescIntoAutomation} from "@/parser/utils";
 import {isMobile} from "@/main";
 
-const props = withDefaults(defineProps<{data: FeatureEntity | Automation, isStandAlone?: boolean, creatureName?: string}>(), { isStandAlone: false, creatureName: "$NAME$"})
+const props = withDefaults(defineProps<{data: FeatureEntity | Automation; isStandAlone?: boolean; creatureName?: string}>(), {isStandAlone: false, creatureName: "$NAME$"});
 
 const errorMessage = ref<null | string>(null);
 
 const hasEditedName = ref(false);
 
-
-const emit  = defineEmits<{
-	(e: 'savedStandaloneData'): void
-}>()
-
-
+const emit = defineEmits<{
+	(e: "savedStandaloneData"): void;
+}>();
 
 // Imported automation helpers
 interface myAutomationSkeleton {
-	name: string,
-	_id: Id
+	name: string;
+	_id: Id;
 }
 interface LoadedAutomation {
 	basicExamples: string[];
 	srdFeatures: string[];
-	myAutomation: myAutomationSkeleton[]
+	myAutomation: myAutomationSkeleton[];
 }
 
 const loadedAutomation = ref<LoadedAutomation>({
 	basicExamples: [],
 	srdFeatures: [],
 	myAutomation: []
-})
+});
 
 const loadImportedAutomation = (apiPath: string, saveTo: keyof LoadedAutomation) => {
 	fetch(`/api/${apiPath}`).then(async (response: any) => {
@@ -182,84 +174,81 @@ const loadImportedAutomation = (apiPath: string, saveTo: keyof LoadedAutomation)
 		if (result.success) loadedAutomation.value[saveTo] = result.data;
 		else {
 			loadedAutomation.value[saveTo] = [];
-			toast.error((result.data as error).error)
+			toast.error((result.data as error).error);
 		}
-	})
-}
+	});
+};
 
 onMounted(() => {
-	loadImportedAutomation('basic-examples/list', 'basicExamples')
-	loadImportedAutomation('srd-features/list', 'srdFeatures')
-	loadImportedAutomation('my-automations', 'myAutomation')
-})
+	loadImportedAutomation("basic-examples/list", "basicExamples");
+	loadImportedAutomation("srd-features/list", "srdFeatures");
+	loadImportedAutomation("my-automations", "myAutomation");
+});
 
-type ImportedData = FeatureEntity | Automation
-const importAutomation = async (apiPath: 'automation' | 'basic-example' | 'srd-feature' , name: string, _id : Id | null = null) => {
+type ImportedData = FeatureEntity | Automation;
+const importAutomation = async (apiPath: "automation" | "basic-example" | "srd-feature", name: string, _id: Id | null = null) => {
 	fetch(`/api/${apiPath}/` + encodeURIComponent(_id?.toString() ?? name)).then(async (response: any) => {
-		let feature : ImportedData | null = null;
+		let feature: ImportedData | null = null;
 
 		let result = await handleApiResponse<ImportedData | null>(response);
 		if (!result.success) {
 			toast.error("Error: " + (result.data as error).error);
 			return;
-		} 
+		}
 		feature = result.data as ImportedData | null;
 
 		if (!feature) {
-			toast.error(`Error: Failed to import ${name}`)
+			toast.error(`Error: Failed to import ${name}`);
 			return;
-		};
+		}
 
 		if (props.data.name == "New Feature" || !hasEditedName.value) {
-			if (apiPath == 'srd-feature' && feature.name.includes(" - ")) props.data.name = feature.name.split("-").slice(1).join("-").trim();
+			if (apiPath == "srd-feature" && feature.name.includes(" - ")) props.data.name = feature.name.split("-").slice(1).join("-").trim();
 			else props.data.name = feature.name;
 		}
-		
+
 		if (feature.description) {
 			props.data.description = feature.description.replaceAll("$NAME$", props.creatureName);
-		} 
-
-		// For basic examples, description is not set on the main object but only as the last text node in the automation.
-		if (!feature.description && apiPath == 'basic-example' && feature.automation && !Array.isArray(feature.automation)) {
-			// @ts-ignore
-			props.data.description  = feature.automation.automation[feature.automation.automation.length - 1].text
 		}
 
+		// For basic examples, description is not set on the main object but only as the last text node in the automation.
+		if (!feature.description && apiPath == "basic-example" && feature.automation && !Array.isArray(feature.automation)) {
+			// @ts-ignore
+			props.data.description = feature.automation.automation[feature.automation.automation.length - 1].text;
+		}
 
 		if (Array.isArray(feature.automation)) {
 			for (let feat of feature.automation) {
-				if (apiPath == 'srd-feature' && (feat.name as string).includes(" - ")) feat.name = (feat.name as string).split("-").slice(1).join("-").trim();
+				if (apiPath == "srd-feature" && (feat.name as string).includes(" - ")) feat.name = (feat.name as string).split("-").slice(1).join("-").trim();
 			}
-		} 
+		}
 
 		automationString.value = YAML.stringify(feature.automation);
 		saveAutomation(false);
 	});
-}
+};
 
 // Automation
-const automationString = ref("")
+const automationString = ref("");
 onMounted(() => {
 	automationString.value = YAML.stringify(props.data.automation) ?? YAML.stringify(null);
-})
+});
 
+watch(automationString, () => validateYaml());
 
-watch(automationString, () => validateYaml())
-
-	
 const saveAutomation = (shouldNotify = false) => {
 	// if standalone: saving commits the change to the database
 	// if not standalone: saving saves automation into the FeatureEntity object so it is preserved between opening/closen and dragging features, but not to the database
-	let parsed : Automation['automation'] = null;
+	let parsed: Automation["automation"] = null;
 	try {
-		parsed = YAML.parse(automationString.value)
+		parsed = YAML.parse(automationString.value);
 	} catch {
 		if (shouldNotify) toast.error("YAML contains Error. Failed to save automation");
 		return;
 	}
 
 	// parsed == null
-	if (!parsed) props.data.automation = null
+	if (!parsed) props.data.automation = null;
 	else {
 		// validate it as valid avrae automation
 		fetch("/api/validate/automation", {
@@ -271,17 +260,16 @@ const saveAutomation = (shouldNotify = false) => {
 				data: parsed
 			})
 		})
-		.then(async(response) => response.json())
-		.then((data : { success: boolean; data?: string, error?: string}) => {
-			if (data.error) {
-				if (shouldNotify) toast.error(data.error)
-				return;
-			}
-		})
+			.then(async (response) => response.json())
+			.then((data: {success: boolean; data?: string; error?: string}) => {
+				if (data.error) {
+					if (shouldNotify) toast.error(data.error);
+					return;
+				}
+			});
 	}
-	
 
-	if (props.isStandAlone && '_id' in props.data) {
+	if (props.isStandAlone && "_id" in props.data) {
 		// save standalone to database
 		fetch(`/api/automation/${props.data._id}/update`, {
 			method: "POST",
@@ -297,16 +285,16 @@ const saveAutomation = (shouldNotify = false) => {
 				emit("savedStandaloneData");
 			} else if (!result.success) {
 				if (shouldNotify) toast.error(`${props.data.name}:` + (result.data as error).error);
-				return
+				return;
 			}
 		});
 	} else {
 		// save not standalone into statblock object, but not commited to db.
-		props.data.automation = parsed
+		props.data.automation = parsed;
 	}
 
-	if (shouldNotify) toast.success("Successfully saved automation!")
-}
+	if (shouldNotify) toast.success("Successfully saved automation!");
+};
 
 // Documentation context by mouse location
 const currentContext = ref("");
@@ -323,7 +311,7 @@ onUnmounted(() => {
 	clearInterval(ourInterval);
 });
 
-watch(cursorPosition, () => getContext())
+watch(cursorPosition, () => getContext());
 
 const getContext = () => {
 	const textToTraverse = automationString.value;
@@ -351,7 +339,7 @@ const getContext = () => {
 	}
 
 	currentContext.value = type;
-}
+};
 
 // Documentation helpers
 const docu = ref<AutomationDocumentation>({});
@@ -361,14 +349,12 @@ onMounted(() => {
 		let result = await handleApiResponse<AutomationDocumentation>(response);
 		if (result.success) docu.value = result.data as AutomationDocumentation;
 		else docu.value = {};
-	})
-})
+	});
+});
 
 const currentDocu = computed(() => {
 	return docu.value[currentContext.value];
-})
-
-
+});
 
 // Description parity helpers
 const updateFeatureDescFromAutomationDesc = () => {
@@ -385,7 +371,7 @@ const updateFeatureDescFromAutomationDesc = () => {
 			return;
 		}
 	}
-}
+};
 
 const updateAutomationDescFromFeatureDesc = () => {
 	let auto;
@@ -403,9 +389,9 @@ const updateAutomationDescFromFeatureDesc = () => {
 			return;
 		}
 	}
-}
+};
 
-const getAutomationDescription = () : string | boolean =>  {
+const getAutomationDescription = (): string | boolean => {
 	let auto;
 	try {
 		auto = YAML.parse(automationString.value);
@@ -420,22 +406,21 @@ const getAutomationDescription = () : string | boolean =>  {
 		}
 	}
 	return "";
-}
+};
 
-const showDescriptionButtons = computed(()=> {
+const showDescriptionButtons = computed(() => {
 	const desc = props.data.description;
 	const autoDesc = getAutomationDescription();
 	if (Array.isArray(props.data.automation) || !desc || !autoDesc) return false;
 	if (desc != autoDesc) return true;
 	return false;
-})
-
+});
 
 // utils
 const copyAutomation = () => {
 	navigator.clipboard.writeText(automationString.value);
 	toast.success("Copied automation to clipboard!");
-}
+};
 
 const generateAutomation = () => {
 	const result = parseDescIntoAutomation(props.data.description, props.data.name, 0)[0];
@@ -447,7 +432,7 @@ const generateAutomation = () => {
 			toast.error("Something went when generating automation!");
 		}
 	}
-}
+};
 
 const validateYaml = () => {
 	try {
@@ -458,7 +443,7 @@ const validateYaml = () => {
 		errorMessage.value = err as string;
 		return false;
 	}
-}
+};
 
 // If a user saves automation from a non-standalone editor into their automations.
 const saveCustomAutomation = () => {
@@ -473,11 +458,11 @@ const saveCustomAutomation = () => {
 	}).then(async (response) => {
 		let result = await handleApiResponse<{}>(response);
 		if (result.success) {
-			loadImportedAutomation('my-automations', 'myAutomation')
+			loadImportedAutomation("my-automations", "myAutomation");
 			toast.success("Successfully added automation!");
 		} else toast.error((result.data as error).error);
 	});
-}
+};
 </script>
 
 <style scoped lang="less">
@@ -567,13 +552,12 @@ a {
 
 .save-custom-automation {
 	cursor: pointer;
-	transition: color ease-in-out .2s;
+	transition: color ease-in-out 0.2s;
 	&:hover {
-		color: orangered
+		color: orangered;
 	}
 }
 </style>
-
 
 <style lang="less">
 // html comes in from the validation api through v-html, therefore is not in scope.

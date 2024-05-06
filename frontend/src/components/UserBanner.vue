@@ -15,7 +15,7 @@
 <script setup lang="ts">
 import {onMounted, defineProps, computed, ref} from "vue";
 import type {User} from "~/shared";
-import {handleApiResponse} from "@/main";
+import {handleApiResponse} from "@/utils/functions";
 import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/css/index.css";
 

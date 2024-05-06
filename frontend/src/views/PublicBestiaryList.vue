@@ -75,22 +75,23 @@ import {ref, onMounted, computed, watch} from "vue";
 import type {Bestiary} from "~/shared";
 import UserBanner from "@/components/UserBanner.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
-import {handleApiResponse, toast, tags as getTags, type error, isMobile} from "@/main";
+import {handleApiResponse, tags as getTags, type error} from "@/utils/functions";
+import {toast, isMobile} from "@/main";
 // @ts-ignore
 import {vue3Debounce as vDebounce} from "vue-debounce";
 import BookmarkedBestiaryList from "../components/BookmarkedBestiaryList.vue";
-import { useLoading } from "vue-loading-overlay";
-import { loadingOptions } from "@/main";
+import {useLoading} from "vue-loading-overlay";
+import {loadingOptions} from "@/main";
 
 const tags = ref<string[] | null>([]);
 
-const $loading = useLoading(loadingOptions)
+const $loading = useLoading(loadingOptions);
 onMounted(async () => {
 	const loader = $loading.show();
 	tags.value = await getTags;
 	searchBestiaries();
 	loader.hide();
-})
+});
 
 const bestiaries = ref<Bestiary[]>([]);
 
@@ -129,17 +130,17 @@ const searchBestiaries = async () => {
 			toast.error((result.data as error).error);
 		}
 	});
-}
+};
 
-watch(selectedPage, () => searchBestiaries())
-watch(selectedTags, () => searchBestiaries())
+watch(selectedPage, () => searchBestiaries());
+watch(selectedTags, () => searchBestiaries());
 watch(viewMode, (newValue) => {
 	if (newValue != "Bookmarked") {
 		const loader = $loading.show();
 		searchBestiaries();
 		loader.hide();
 	}
-})
+});
 
 const bestiaryImages = computed(() => {
 	let bestiaryImages: string[] = [];
@@ -150,7 +151,7 @@ const bestiaryImages = computed(() => {
 		bestiaryImages.push(firstImageUrl);
 	}
 	return bestiaryImages;
-})
+});
 </script>
 
 <style scoped lang="less">

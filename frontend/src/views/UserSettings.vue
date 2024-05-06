@@ -42,7 +42,8 @@
 <script setup lang="ts">
 import { onMounted, ref} from "vue";
 import type {User} from "~/shared";
-import {user as getUser, sendToLogin, getLoginRoute, handleApiResponse, toast, type error} from "@/main";
+import {user as getUser, sendToLogin, getLoginRoute, handleApiResponse, type error} from "@/utils/functions";
+import {toast} from "@/main";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import JoinPatreon from "@/components/JoinPatreon.vue"
 import { useRouter } from "vue-router";

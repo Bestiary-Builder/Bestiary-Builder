@@ -32,9 +32,9 @@
 <script setup lang="ts">
 import dataFile from "@/assets/documents/home.md";
 import Markdown from "@/components/Markdown.vue";
-import {handleApiResponse} from "@/main";
-import { onBeforeMount, ref } from "vue";
-import type { GlobalStats } from "../../../shared";
+import {handleApiResponse} from "@/utils/functions";
+import {onBeforeMount, ref} from "vue";
+import type {GlobalStats} from "../../../shared";
 
 const stats = ref<null | GlobalStats>(null);
 onBeforeMount(async () => {
@@ -42,14 +42,13 @@ onBeforeMount(async () => {
 		.then(handleApiResponse)
 		.then((result) => {
 			if (result.success) {
-				stats.value = result.data as GlobalStats
+				stats.value = result.data as GlobalStats;
 			} else {
 				console.error("Failed to retrieve global stats.");
 				stats.value = null;
 			}
 		});
-	}
-)
+});
 </script>
 <style scoped lang="less">
 @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&display=block");

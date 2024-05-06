@@ -111,7 +111,7 @@
 				<div class="left-side-container">
 					<div class="content-tile header-tile">
 						<h2>{{ bestiary.name ? bestiary.name : "..." }}</h2>
-						<Markdown class="description" :class="{expanded: isExpanded}" :text="bestiary.description || 'No description set.'" tag="p"/>
+						<Markdown class="description" :class="{expanded: isExpanded}" :text="bestiary.description || 'No description set.'" tag="p" />
 						<button v-if="bestiary.description.length > 0" class="expand-btn" v-tooltip="'Expand description'" @click="isExpanded = !isExpanded" aria-label="Expand description">{{ isExpanded ? "▲" : "▼" }}</button>
 						<hr />
 						<div class="footer" :class="{'three-wide': isOwner}">
@@ -262,7 +262,8 @@ import {refDebounced} from "@vueuse/core";
 
 import {defaultStatblock} from "~/shared";
 import type {User, Bestiary, Creature, Statblock} from "~/shared";
-import {handleApiResponse, user, type error, toast, tags, type limitsType, asyncLimits, isMobile} from "@/main";
+import {handleApiResponse, user, type error, tags, type limitsType, asyncLimits} from "@/utils/functions";
+import {toast, isMobile} from "@/main";
 import {parseFromCritterDB} from "@/parser/parseFromCritterDB";
 import {displayCR} from "@/utils/displayFunctions";
 
@@ -725,7 +726,7 @@ export default defineComponent({
 			if (isMinimumOption) this.searchOptions.minCr = cr;
 			else this.searchOptions.maxCr = cr;
 		},
-		displayCR,
+		displayCR
 	},
 	watch: {
 		lastClickedCreature(): void {

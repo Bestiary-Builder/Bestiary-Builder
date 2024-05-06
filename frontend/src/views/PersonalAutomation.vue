@@ -63,7 +63,8 @@
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import {ref, onMounted, onUnmounted} from "vue";
 import {useLoading} from "vue-loading-overlay";
-import {user as getUser, handleApiResponse, toast, type error, loadingOptions} from "@/main";
+import {user as getUser, handleApiResponse, type error} from "@/utils/functions";
+import {toast, loadingOptions} from "@/main";
 import {type User, Automation} from "~/shared";
 import type {Id} from "~/shared";
 import LabelledComponent from "@/components/LabelledComponent.vue";
@@ -164,21 +165,20 @@ onBeforeRouteLeave(() => {
 	}
 });
 
-
 const unloadHandler = (event: Event) => {
 	if (initialData !== JSON.stringify(data.value)) {
 		const answer = window.confirm("Do you really want to leave? you have unsaved changes!");
 		event.preventDefault();
 		event.returnValue = true;
 	}
-}
+};
 
 onMounted(() => {
-	window.addEventListener("beforeunload", unloadHandler)
-})
+	window.addEventListener("beforeunload", unloadHandler);
+});
 onUnmounted(() => {
-	window.removeEventListener("beforeunload", unloadHandler)
-})
+	window.removeEventListener("beforeunload", unloadHandler);
+});
 </script>
 
 <style scoped lang="less">

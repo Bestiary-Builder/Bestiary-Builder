@@ -64,30 +64,27 @@ import Modal from "@/components/Modal.vue";
 import {RouterLink, useRouter} from "vue-router";
 import {onMounted, ref, computed} from "vue";
 
-import {handleApiResponse, toast, user as getUser} from "@/main";
+import {toast, loadingOptions} from "@/main";
 import type {User, Bestiary, Id} from "~/shared";
-import type {error} from "@/main";
-import { useLoading } from "vue-loading-overlay";
-import { loadingOptions } from "@/main";
+import {type error, handleApiResponse, user as getUser} from "@/utils/functions";
+import {useLoading} from "vue-loading-overlay";
 
-const $loading = useLoading(loadingOptions)
+const $loading = useLoading(loadingOptions);
 const router = useRouter();
 const user = ref<User | null>(null);
 
 onMounted(async () => {
 	const loader = $loading.show();
 	getBestiaries();
-	user.value = await getUser
+	user.value = await getUser;
 
 	loader.hide();
-})
-
+});
 
 const bestiaries = ref<Bestiary[]>([]);
 
 const getBestiaries = async () => {
-	await fetch(`/api/my-bestiaries`)
-	.then(async (response) => {
+	await fetch(`/api/my-bestiaries`).then(async (response) => {
 		let result = await handleApiResponse<Bestiary[]>(response);
 		if (result.success) bestiaries.value = result.data as Bestiary[];
 		else {
@@ -95,7 +92,7 @@ const getBestiaries = async () => {
 			toast.error((result.data as error).error);
 		}
 	});
-}
+};
 
 const createBestiary = async () => {
 	//Replace for actual creation data:
@@ -123,7 +120,7 @@ const createBestiary = async () => {
 		}
 	});
 	await getBestiaries();
-}
+};
 
 const deleteBestiary = async (bestiary: Bestiary | null) => {
 	if (!bestiary) return;
@@ -139,16 +136,14 @@ const deleteBestiary = async (bestiary: Bestiary | null) => {
 	});
 	loader.hide();
 	await getBestiaries();
-}
-
+};
 
 const showDeleteModal = ref(false);
 const selectedBestiary = ref<Bestiary | null>(null);
 const openDeleteModal = (bestiary: Bestiary) => {
 	selectedBestiary.value = bestiary;
 	showDeleteModal.value = true;
-}
-
+};
 
 const bestiaryImages = computed(() => {
 	let bestiaryImages: string[] = [];
@@ -159,7 +154,7 @@ const bestiaryImages = computed(() => {
 		bestiaryImages.push(firstImageUrl);
 	}
 	return bestiaryImages;
-})
+});
 </script>
 
 <style scoped lang="less">

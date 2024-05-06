@@ -318,7 +318,7 @@
 								<template #item="{element, index}">
 									<LabelledComponent :title="element.name || `Unnamed ${index}`">
 										<div class="feature-button__container">
-											<FeatureWidget :index="index" :type="fType" :data="data.features[fType][index]" :creature-name="data.description.name"/>
+											<FeatureWidget :index="index" :type="fType" :data="data.features[fType][index]" :creature-name="data.description.name" />
 											<span class="delete-button" @click="deleteFeature(fType, index)" aria-label="Delete feature"><font-awesome-icon :icon="['fas', 'trash']" /></span>
 											<font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle" />
 										</div>
@@ -472,7 +472,8 @@ import {defineComponent} from "vue";
 
 import type {SkillsEntity, Statblock, Creature, Bestiary} from "~/shared";
 import {defaultStatblock, getSpellSlots, spellList, spellListFlattened, getXPbyCR, type User} from "~/shared";
-import {handleApiResponse, type error, toast, asyncLimits, type limitsType, user} from "@/main";
+import {handleApiResponse, type error, asyncLimits, type limitsType, user} from "@/utils/functions";
+import {toast} from "@/main";
 import {parseFrom5eTools} from "../parser/parseFrom5eTools";
 import {capitalizeFirstLetter} from "@/parser/utils";
 const tabs = document.getElementsByClassName("editor-nav__tab") as HTMLCollectionOf<HTMLElement>;
@@ -837,7 +838,7 @@ export default defineComponent({
 			});
 			loader.hide();
 		},
-		getSpellSlots,
+		getSpellSlots
 	},
 	async beforeMount() {
 		this.user = await user;
