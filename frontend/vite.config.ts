@@ -5,7 +5,7 @@ import {fileURLToPath, URL} from "node:url";
 import {defineConfig} from "vite";
 import vue from "@vitejs/plugin-vue";
 //@ts-expect-error
-import {siteMapRoutes} from "../shared/routes";
+import {routes} from "../shared";
 import Pages from "vite-plugin-pages";
 import generateSitemap from "vite-plugin-pages-sitemap";
 import FontAwesome from "unplugin-vue-fontawesome/vite";
@@ -20,7 +20,7 @@ export default defineConfig({
 			onRoutesGenerated: (fileroutes) => {
 				//@ts-expect-error
 				generateSitemap({
-					routes: siteMapRoutes,
+					routes: routes.siteMapRoutes,
 					readable: true,
 					hostname: "https://bestiarybuilder.com"
 				});
