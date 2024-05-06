@@ -356,14 +356,14 @@ export type Stats = {
 	wis: number;
 };
 
-export type Saves = {
-	str: SaveEntity;
-	dex: SaveEntity;
-	con: SaveEntity;
-	int: SaveEntity;
-	cha: SaveEntity;
-	wis: SaveEntity;
-};
+export type Saves = Record<Stat, SaveEntity>
+	// str: SaveEntity;
+	// dex: SaveEntity;
+	// con: SaveEntity;
+	// int: SaveEntity;
+	// cha: SaveEntity;
+	// wis: SaveEntity;
+//};
 export interface SaveEntity {
 	isProficient: boolean;
 	override: number | null;

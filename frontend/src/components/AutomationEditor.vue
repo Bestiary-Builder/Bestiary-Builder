@@ -139,12 +139,11 @@ import {shallowRef, ref, onUnmounted, defineProps, withDefaults, defineEmits, on
 import {VueMonacoEditor} from "@guolao/vue-monaco-editor";
 import YAML from "yaml";
 import {toast, handleApiResponse, type error} from "@/main";
-import {Id, type FeatureEntity, type Automation, type AutomationDocumentation, type AutomationDocumentationEntity} from "~/shared";
+import {Id, type FeatureEntity, type Automation, type AutomationDocumentation} from "~/shared";
 import LabelledComponent from "./LabelledComponent.vue";
 import Markdown from "./Markdown.vue";
 import {parseDescIntoAutomation} from "@/parser/utils";
 import {isMobile} from "@/main";
-
 const props = withDefaults(defineProps<{data: FeatureEntity | Automation, isStandAlone?: boolean, creatureName?: string}>(), { isStandAlone: false, creatureName: "$NAME$"})
 
 const errorMessage = ref<null | string>(null);
@@ -177,7 +176,7 @@ const loadedAutomation = ref<LoadedAutomation>({
 
 const loadImportedAutomation = (apiPath: string, saveTo: keyof LoadedAutomation) => {
 	fetch(`/api/${apiPath}`).then(async (response: any) => {
-		const result = await handleApiResponse<string[] | myAutomationSkeleton>(response);
+		const result = await handleApiResponse<string[] | myAutomationSkeleton[]>(response);
 		// @ts-ignore
 		if (result.success) loadedAutomation.value[saveTo] = result.data;
 		else {
@@ -367,8 +366,6 @@ onMounted(() => {
 const currentDocu = computed(() => {
 	return docu.value[currentContext.value];
 })
-
-
 
 // Description parity helpers
 const updateFeatureDescFromAutomationDesc = () => {

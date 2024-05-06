@@ -1,6 +1,5 @@
-import {type CasterSpells, type Statblock, type InnateSpellsList, defaultStatblock, getXPbyCR, spellListFlattened, type SpellSlotEntity, type SkillsEntity, type SpeedEntity, type SenseEntity} from "~/shared";
+import {type CasterSpells, type Statblock, type InnateSpellsList, defaultStatblock, getXPbyCR, SKILLS_BY_STAT, spellListFlattened, type SpellSlotEntity, type SkillsEntity, type SpeedEntity, type SenseEntity, type Stat} from "~/shared";
 import {abilityParser, capitalizeFirstLetter} from "./utils";
-
 export function parseFrom5eTools(data: any): [Statblock, {[key: string]: string[]}] {
 	let outputData = {} as Statblock;
 	outputData.description = {
@@ -217,23 +216,15 @@ export function parseFrom5eTools(data: any): [Statblock, {[key: string]: string[
 
 			let output = [] as SkillsEntity[];
 
-			const SKILLS_BY_STAT = {
-				str: ["athletics"],
-				dex: ["acrobatics", "sleightofhand", "stealth"],
-				con: [],
-				int: ["arcana", "history", "investigation", "nature", "religion"],
-				wis: ["animalhandling", "insight", "medicine", "perception", "survival"],
-				cha: ["deception", "intimidation", "performance", "persuasion"]
-			} as any;
 
 			for (let sk in data.skill) {
 				let name = capitalizeFirstLetter(sk.replace("animal handling", "Animal Handling").replace("sleight of hand", "Sleight of Hand"));
 				let shortname = name.replace(" ", "").toLowerCase();
 
 				let ability;
-				for (let sk in SKILLS_BY_STAT) {
-					if (SKILLS_BY_STAT[sk].includes(shortname)) {
-						ability = sk;
+				for (let sk2 in SKILLS_BY_STAT) {
+					if (SKILLS_BY_STAT[sk2 as Stat].includes(shortname)) {
+						ability = sk2 as Stat;
 						break;
 					}
 				}

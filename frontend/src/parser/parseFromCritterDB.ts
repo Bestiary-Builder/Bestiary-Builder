@@ -2,7 +2,7 @@ import {toast} from "@/main";
 import {type CasterSpells, type Statblock, defaultStatblock, spellListFlattened, type SpellSlotEntity, type SkillsEntity, type Stat, type SpellCasting, type InnateSpellsEntity, type SpeedEntity, type SenseEntity} from "~/shared";
 
 import {abilityParser, descParser, parseDescIntoAutomation, capitalizeFirstLetter} from "./utils";
-
+import { SKILLS_BY_STAT } from "~/shared";
 let tData = [{}];
 export function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: string]: string[]} | null] {
 	let outputData = {} as Statblock;
@@ -204,23 +204,15 @@ export function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: s
 	outputData.abilities.skills = (() => {
 		let output = [] as SkillsEntity[];
 
-		const SKILLS_BY_STAT = {
-			str: ["athletics"],
-			dex: ["acrobatics", "sleightofhand", "stealth"],
-			con: [],
-			int: ["arcana", "history", "investigation", "nature", "religion"],
-			wis: ["animalhandling", "insight", "medicine", "perception", "survival"],
-			cha: ["deception", "intimidation", "performance", "persuasion"]
-		} as any;
 
 		for (let sk of data.stats.skills) {
 			let name = capitalizeFirstLetter(sk.name);
 			let shortname = name.replace(" ", "").toLowerCase();
 
 			let ability;
-			for (let sk in SKILLS_BY_STAT) {
-				if (SKILLS_BY_STAT[sk].includes(shortname)) {
-					ability = sk as Stat;
+			for (let sk2 in SKILLS_BY_STAT) {
+				if (SKILLS_BY_STAT[sk2 as Stat].includes(shortname)) {
+					ability = sk2 as Stat;
 					break;
 				}
 			}
