@@ -149,7 +149,7 @@
 											<font-awesome-icon :icon="['fas', 'eye']" v-else />
 										</RouterLink>
 									</button>
-									<span class="cr"> CR {{ displayCR(creature.stats.description.cr) }}</span>
+									<span class="cr"> CR {{ crAsString(creature.stats.description.cr) }}</span>
 								</div>
 							</div>
 						</TransitionGroup>
@@ -260,12 +260,12 @@ import {RouterLink} from "vue-router";
 import {defineComponent, ref} from "vue";
 import {refDebounced} from "@vueuse/core";
 
-import {defaultStatblock} from "~/shared";
+import {defaultStatblock, crAsString} from "~/shared";
 import type {User, Bestiary, Creature, Statblock} from "~/shared";
 import {user, tags, type limitsType, asyncLimits, fetchBackend} from "@/utils/functions";
 import {toast, isMobile} from "@/main";
 import {parseFromCritterDB} from "@/parser/parseFromCritterDB";
-import {displayCR} from "@/utils/displayFunctions";
+
 
 import Markdown from "@/components/Markdown.vue";
 
@@ -684,7 +684,7 @@ export default defineComponent({
 			if (isMinimumOption) this.searchOptions.minCr = cr;
 			else this.searchOptions.maxCr = cr;
 		},
-		displayCR
+		crAsString
 	},
 	watch: {
 		lastClickedCreature(): void {
