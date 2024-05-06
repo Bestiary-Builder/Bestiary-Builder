@@ -132,7 +132,7 @@
 import {shallowRef, ref, onUnmounted, onMounted, watch, computed} from "vue";
 import {VueMonacoEditor} from "@guolao/vue-monaco-editor";
 import YAML from "yaml";
-import {fetchBackend} from "@/utils/functions";
+import {useFetch} from "@/utils/functions";
 import {toast} from "@/main";
 import {Id, type FeatureEntity, type Automation, type AutomationDocumentation} from "~/shared";
 import LabelledComponent from "./LabelledComponent.vue";
@@ -167,14 +167,13 @@ const loadedAutomation = ref<LoadedAutomation>({
 	myAutomation: []
 });
 
-const loadImportedAutomation = (apiPath: string, saveTo: keyof LoadedAutomation) => {
-	fetchBackend<string[] & myAutomationSkeleton[]>(`/api/${apiPath}`).then(async (result) => {
-		if (result.success) loadedAutomation.value[saveTo] = result.data;
-		else {
-			loadedAutomation.value[saveTo] = [];
-			toast.error(result.error);
-		}
-	});
+const loadImportedAutomation = async (apiPath: string, saveTo: keyof LoadedAutomation) => {
+	const {success, data, error} = await useFetch<string[] & myAutomationSkeleton[]>(`/api/${apiPath}`);
+	if (success) loadedAutomation.value[saveTo] = data;
+	else {
+		loadedAutomation.value[saveTo] = [];
+		toast.error(error);
+	}
 };
 
 onMounted(() => {
@@ -185,7 +184,7 @@ onMounted(() => {
 
 type ImportedData = FeatureEntity | Automation;
 const importAutomation = async (apiPath: "automation" | "basic-example" | "srd-feature", name: string, _id: Id | null = null) => {
-	const result = await fetchBackend(`/api/${apiPath}/` + encodeURIComponent(_id?.toString() ?? name));
+	const result = await useFetch(`/api/${apiPath}/` + encodeURIComponent(_id?.toString() ?? name));
 	let feature: ImportedData | null = null;
 	if (!result.success) {
 		toast.error("Error: " + result.error);
@@ -246,24 +245,22 @@ const saveAutomation = async (shouldNotify = false) => {
 	if (!parsed) props.data.automation = null;
 	else {
 		// validate it as valid avrae automation
-		await fetchBackend("/api/validate/automation", "POST", parsed).then((result) => {
-			if (!result.success) {
-				if (shouldNotify) toast.error(result.error);
-				return;
-			}
-		});
+		const {success, data, error} = await useFetch("/api/validate/automation", "POST", parsed);
+		if (!success) {
+			if (shouldNotify) toast.error(error);
+			return;
+		}
 	}
 
 	if (props.isStandAlone && "_id" in props.data) {
 		// save standalone to database
-		await fetchBackend<FeatureEntity>(`/api/automation/${props.data._id}/update`, "POST", props.data).then(async (result) => {
-			if (result.success && shouldNotify) {
-				emit("savedStandaloneData");
-			} else if (!result.success) {
-				if (shouldNotify) toast.error(`${props.data.name}:` + result.error);
-				return;
-			}
-		});
+		const {success, data, error} = await useFetch<FeatureEntity>(`/api/automation/${props.data._id}/update`, "POST", props.data);
+		if (success && shouldNotify) {
+			emit("savedStandaloneData");
+		} else if (!success) {
+			if (shouldNotify) toast.error(`${props.data.name}:` + error);
+			return;
+		}
 	} else {
 		// save not standalone into statblock object, but not commited to db.
 		props.data.automation = parsed;
@@ -321,7 +318,7 @@ const getContext = () => {
 const docu = ref<AutomationDocumentation>({});
 
 onMounted(() => {
-	fetchBackend<AutomationDocumentation>("/api/automationDocumentation").then(async (result) => {
+	useFetch<AutomationDocumentation>("/api/automationDocumentation").then(async (result) => {
 		if (result.success) docu.value = result.data;
 		else docu.value = {};
 	});
@@ -421,14 +418,13 @@ const validateYaml = () => {
 };
 
 // If a user saves automation from a non-standalone editor into their automations.
-const saveCustomAutomation = () => {
+const saveCustomAutomation = async () => {
 	if (props.isStandAlone) return;
-	fetchBackend(`/api/automation/add`, "POST", {name: props.data.name, description: props.data.description, automation: props.data.automation}).then(async (result) => {
-		if (result.success) {
-			loadImportedAutomation("my-automations", "myAutomation");
-			toast.success("Successfully added automation!");
-		} else toast.error(result.error);
-	});
+	const {success, data, error} = await useFetch(`/api/automation/add`, "POST", {name: props.data.name, description: props.data.description, automation: props.data.automation});
+	if (success) {
+		loadImportedAutomation("my-automations", "myAutomation");
+		toast.success("Successfully added automation!");
+	} else toast.error(error);
 };
 </script>
 

@@ -262,10 +262,9 @@ import {refDebounced} from "@vueuse/core";
 
 import {defaultStatblock, crAsString} from "~/shared";
 import type {User, Bestiary, Creature, Statblock} from "~/shared";
-import {user, tags, type limitsType, asyncLimits, fetchBackend} from "@/utils/functions";
+import {user, tags, type limitsType, asyncLimits, useFetch} from "@/utils/functions";
 import {toast, isMobile} from "@/main";
 import {parseFromCritterDB} from "@/parser/parseFromCritterDB";
-
 
 import Markdown from "@/components/Markdown.vue";
 
@@ -467,29 +466,23 @@ export default defineComponent({
 			let hasFailed = false;
 			toast.info("Fetching bestiary data has started. This may take a while.");
 			let loader = this.$loading.show();
-			await fetchBackend<{
-				name: string;
-				description: string;
-				creatures: object[];
-			}>(`/api/critterdb/${link}/${isPublic}`).then((result) => {
-				if (result.success) {
-					data = result.data;
-				} else {
-					toast.error(result.error);
-					hasFailed = true;
-				}
-				loader.hide();
-			});
+			const {success, data: resultData, error} = await useFetch<{name: string; description: string; creatures: object[]}>(`/api/critterdb/${link}/${isPublic}`);
+			if (success) {
+				data = resultData;
+			} else {
+				toast.error(error);
+				hasFailed = true;
+			}
+			loader.hide();
 			if (hasFailed) {
 				return;
 			}
 			loader = this.$loading.show();
 			toast.info("Importing creatures has started. This may take a while.");
 			let creatures = data.creatures.map((a) => parseFromCritterDB(a)[0]);
-			await fetchBackend<{error?: string}>("/api/bestiary/" + this.bestiary?._id + "/addcreatures", "POST", creatures).then((result) => {
-				if (!result.success) toast.error(result.error);
-				else if (result.data.error) toast.error(result.data.error);
-			});
+			const {success: cSuccess, data: creatureData, error: cError} = await useFetch<{error?: string}>("/api/bestiary/" + this.bestiary?._id + "/addcreatures", "POST", creatures);
+			if (!cSuccess) toast.error(cError);
+			else if (creatureData.error) toast.error(creatureData.error);
 			await this.getBestiary();
 			loader.hide();
 			toast.success("Importing has finished!");
@@ -507,11 +500,11 @@ export default defineComponent({
 				return;
 			}
 			toast.info("Importing creatures has started. This may take a while.");
-			await fetchBackend<{error?: string}>("/api/bestiary/" + this.bestiary?._id + "/addcreatures", "POST", creatures).then((result) => {
-				if (!result.success) toast.error(result.error);
-				else if (result.data.error) toast.error(result.data.error);
-				else toast.success("Importing has finished!");
-			});
+			const {success, data, error} = await useFetch<{error?: string}>("/api/bestiary/" + this.bestiary?._id + "/addcreatures", "POST", creatures);
+			if (!success) toast.error(error);
+			else if (data.error) toast.error(data.error);
+			else toast.success("Importing has finished!");
+
 			await this.getBestiary();
 			loader.hide();
 			this.showImportModal = false;
@@ -527,14 +520,13 @@ export default defineComponent({
 				bestiary: this.bestiary?._id
 			} as Creature;
 			//Send data to server
-			await fetchBackend<Creature>("/api/creature/add", "POST", data).then(async (result) => {
-				if (result.success) {
-					let data = result.data as Creature;
-					this.$router.push(`../statblock-editor/${data._id}`);
-				} else {
-					toast.error(result.error);
-				}
-			});
+			const {success, data: resultData, error} = await useFetch<Creature>("/api/creature/add", "POST", data);
+			if (success) {
+				let data = resultData as Creature;
+				this.$router.push(`../statblock-editor/${data._id}`);
+			} else {
+				toast.error(error);
+			}
 			if (shouldRefresh) {
 				const tileContainer = document.getElementsByClassName("tile-container")[0] as HTMLDivElement;
 				tileContainer.scrollTop = tileContainer.scrollHeight;
@@ -543,42 +535,39 @@ export default defineComponent({
 		},
 		async deleteCreature(creature: Creature) {
 			const loader = this.$loading.show();
-			await fetchBackend(`/api/creature/${creature._id}/delete`).then(async (result) => {
-				if (result.success) {
-					toast.success("Deleted creature succesfully");
-					if (!this.bestiary) return;
-					this.bestiary.creatures = this.bestiary.creatures.filter((c) => c != creature._id);
-					this.creatures = this.creatures?.filter((c) => c._id != creature._id) ?? [];
-				} else {
-					toast.error(result.error);
-				}
-			});
+			const {success, error} = await useFetch(`/api/creature/${creature._id}/delete`);
+			if (success) {
+				toast.success("Deleted creature succesfully");
+				if (!this.bestiary) return;
+				this.bestiary.creatures = this.bestiary.creatures.filter((c) => c != creature._id);
+				this.creatures = this.creatures?.filter((c) => c._id != creature._id) ?? [];
+			} else {
+				toast.error(error);
+			}
 			loader.hide();
 		},
 		async addEditor() {
 			if (!this.bestiary) return;
 			let id = this.editorToAdd;
 			const loader = this.$loading.show();
-			await fetchBackend(`/api/bestiary/${this.bestiary._id}/editors/add/${id}`).then(async (result) => {
-				if (result.success) {
-					toast.success("Added editor succesfully");
-				} else {
-					toast.error(result.error);
-				}
-			});
+			const {success, error} = await useFetch(`/api/bestiary/${this.bestiary._id}/editors/add/${id}`);
+			if (success) {
+				toast.success("Added editor succesfully");
+			} else {
+				toast.error(error);
+			}
 			await this.getBestiary();
 			loader.hide();
 		},
 		async removeEditor(id: string) {
 			if (!this.bestiary) return;
 			const loader = this.$loading.show();
-			await fetchBackend(`/api/bestiary/${this.bestiary._id}/editors/remove/${id}`).then(async (result) => {
-				if (result.success) {
-					toast.success("Removed editor succesfully");
-				} else {
-					toast.error(result.error);
-				}
-			});
+			const {success, error} = await useFetch(`/api/bestiary/${this.bestiary._id}/editors/remove/${id}`);
+			if (success) {
+				toast.success("Removed editor succesfully");
+			} else {
+				toast.error(error);
+			}
 			await this.getBestiary();
 			loader.hide();
 		},
@@ -586,80 +575,76 @@ export default defineComponent({
 			//Get id
 			let id = this.$route.params.id;
 			//Request bestiary info
-			await fetchBackend<Bestiary>("/api/bestiary/" + id).then(async (result) => {
-				if (result.success) {
-					this.bestiary = result.data as Bestiary;
-					this.savedBestiary = this.bestiary;
-					this.isOwner = this.user?._id == this.bestiary.owner;
-					this.isEditor = (this.bestiary?.editors ?? []).includes(this.user?._id ?? "");
-					//Fetch creatures
-					await fetchBackend<Creature[]>("/api/bestiary/" + this.bestiary._id + "/creatures").then(async (creatureResult) => {
-						if (creatureResult.success) {
-							this.creatures = creatureResult.data as Creature[];
-						} else {
-							this.creatures = null;
-							toast.error(creatureResult.error);
-						}
-					});
-					//Fetch editors
-					this.editors = [] as User[];
-					for (let editorId of this.bestiary?.editors ?? []) {
-						await fetchBackend("/api/user/" + editorId).then((editorResult) => {
-							if (editorResult.success) {
-								this.editors.push(editorResult.data as User);
-							} else {
-								toast.error(editorResult.error);
-							}
-						});
-					}
-					//Bookmark state
-					if (this.user) {
-						await fetchBackend<{state: boolean}>(`/api/bestiary/${this.bestiary._id}/bookmark/get`).then(async (bookmarkResult) => {
-							if (bookmarkResult.success) {
-								this.bookmarked = (bookmarkResult.data as {state: boolean}).state;
-							} else {
-								this.bookmarked = false;
-								toast.error(bookmarkResult.error);
-							}
-						});
-					} else {
-						this.bookmarked = false;
-					}
+			const {success, data, error} = await useFetch<Bestiary>("/api/bestiary/" + id);
+			if (!success) {
+				this.bestiary = null;
+				toast.error(error);
+				return;
+			}
+			this.bestiary = data as Bestiary;
+			this.savedBestiary = this.bestiary;
+			this.isOwner = this.user?._id == this.bestiary.owner;
+			this.isEditor = (this.bestiary?.editors ?? []).includes(this.user?._id ?? "");
+			//Fetch creatures
+			await useFetch<Creature[]>("/api/bestiary/" + this.bestiary._id + "/creatures").then(async (creatureResult) => {
+				if (creatureResult.success) {
+					this.creatures = creatureResult.data as Creature[];
 				} else {
-					this.bestiary = null;
-					toast.error(result.error);
+					this.creatures = null;
+					toast.error(creatureResult.error);
 				}
 			});
+			//Fetch editors
+			this.editors = [] as User[];
+			for (let editorId of this.bestiary?.editors ?? []) {
+				await useFetch("/api/user/" + editorId).then((editorResult) => {
+					if (editorResult.success) {
+						this.editors.push(editorResult.data as User);
+					} else {
+						toast.error(editorResult.error);
+					}
+				});
+			}
+			//Bookmark state
+			if (this.user) {
+				await useFetch<{state: boolean}>(`/api/bestiary/${this.bestiary._id}/bookmark/get`).then(async (bookmarkResult) => {
+					if (bookmarkResult.success) {
+						this.bookmarked = (bookmarkResult.data as {state: boolean}).state;
+					} else {
+						this.bookmarked = false;
+						toast.error(bookmarkResult.error);
+					}
+				});
+			} else {
+				this.bookmarked = false;
+			}
 		},
 		async updateBestiary() {
 			if (!this.bestiary) return;
 			const loader = this.$loading.show();
 			//Send to backend
-			fetchBackend<Bestiary>(`/api/bestiary/${this.bestiary._id}/update`, "POST", this.bestiary).then(async (result) => {
-				if (result.success) {
-					toast.success("Saved bestiary");
-					this.savedBestiary = this.bestiary;
-					this.showEditorModal = false;
-				} else {
-					toast.error(result.error);
-				}
-			});
+			const {success, error} = await useFetch<Bestiary>(`/api/bestiary/${this.bestiary._id}/update`, "POST", this.bestiary);
+			if (success) {
+				toast.success("Saved bestiary");
+				this.savedBestiary = this.bestiary;
+				this.showEditorModal = false;
+			} else {
+				toast.error(error);
+			}
 			loader.hide();
 		},
 		async toggleBookmark() {
 			if (!this.bestiary) return;
 			const loader = this.$loading.show();
-
-			await fetchBackend<{state: boolean}>(`/api/bestiary/${this.bestiary._id}/bookmark/toggle`).then(async (bookmarkResult) => {
-				if (bookmarkResult.success) {
-					this.bookmarked = (bookmarkResult.data as {state: boolean}).state;
-					if (this.bookmarked) toast.success("Successfully bookmarked this bestiary!");
-					else toast.success("Successfully unbookmarked this bestiary!");
-				} else {
-					this.bookmarked = false;
-					toast.error(bookmarkResult.error);
-				}
-			});
+			const {success, data, error} = await useFetch<{state: boolean}>(`/api/bestiary/${this.bestiary._id}/bookmark/toggle`);
+			if (success) {
+				this.bookmarked = data.state;
+				if (this.bookmarked) toast.success("Successfully bookmarked this bestiary!");
+				else toast.success("Successfully unbookmarked this bestiary!");
+			} else {
+				this.bookmarked = false;
+				toast.error(error);
+			}
 			loader.hide();
 		},
 		setSelectedCreature(creature: any) {

@@ -63,7 +63,7 @@
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import {ref, onMounted, onUnmounted} from "vue";
 import {useLoading} from "vue-loading-overlay";
-import {fetchBackend, user as getUser} from "@/utils/functions";
+import {useFetch, user as getUser} from "@/utils/functions";
 import {toast, loadingOptions} from "@/main";
 import {type User, Automation} from "~/shared";
 import type {Id} from "~/shared";
@@ -89,40 +89,37 @@ onMounted(async () => {
 const selectedAutomation = ref<Automation | null>(null);
 
 const newAutomationName = ref<string>("New Automation");
-const addAutomation = (name: string, automation = null, shouldNotify = true) => {
+const addAutomation = async (name: string, automation = null, shouldNotify = true) => {
 	if (name == "New Automation") {
 		toast.warning("Automation must have a non-default name!");
 		return;
 	}
 	const loader = $loading.show();
-	fetchBackend<Automation>(`/api/automation/add`, "POST", {name: name, automation: automation}).then(async (result) => {
-		if (result.success) {
-			await getMyAutomations();
-			newAutomationName.value = "New Automation";
-			if (shouldNotify) toast.success("Successfully added automation: " + name);
-			selectedAutomation.value = data.value[data.value.length - 1];
-		} else toast.error(result.error);
-	});
+	const {success, error} = await useFetch<Automation>(`/api/automation/add`, "POST", {name: name, automation: automation});
+	if (success) {
+		await getMyAutomations();
+		newAutomationName.value = "New Automation";
+		if (shouldNotify) toast.success("Successfully added automation: " + name);
+		selectedAutomation.value = data.value[data.value.length - 1];
+	} else toast.error(error);
 	loader.hide();
 };
 
-const deleteAutomation = (_id: Id) => {
+const deleteAutomation = async (_id: Id) => {
 	const loader = $loading.show();
-	fetchBackend<{}>(`/api/automation/${_id}/delete`).then(async (result) => {
-		if (result.success) {
-			toast.success("Successfully deleted the automation!");
-			await getMyAutomations();
-			selectedAutomation.value = null;
-		} else toast.error(result.error);
-	});
+	const {success, error} = await useFetch<{}>(`/api/automation/${_id}/delete`);
+	if (success) {
+		toast.success("Successfully deleted the automation!");
+		await getMyAutomations();
+		selectedAutomation.value = null;
+	} else toast.error(error);
 	loader.hide();
 };
 
 const getMyAutomations = async () => {
-	await fetchBackend<Automation[]>(`/api/my-automations`).then(async (result) => {
-		if (result.success) data.value = result.data as Automation[];
-		else toast.error(result.error);
-	});
+	const {success, data: rData, error} = await useFetch<Automation[]>(`/api/my-automations`);
+	if (success) data.value = rData;
+	else toast.error(error);
 	initialData = JSON.stringify(data.value);
 };
 

@@ -41,7 +41,7 @@ import {onMounted, ref, computed} from "vue";
 
 import {toast, loadingOptions} from "@/main";
 import type {User, Bestiary, Id} from "~/shared";
-import {user as getUser, fetchBackend} from "@/utils/functions";
+import {user as getUser, useFetch} from "@/utils/functions";
 import {useLoading} from "vue-loading-overlay";
 
 const $loading = useLoading(loadingOptions);
@@ -59,46 +59,41 @@ onMounted(async () => {
 const bestiaries = ref<Bestiary[]>([]);
 
 const getBestiaries = async () => {
-	await fetchBackend(`/api/my-bestiaries`).then(async (result) => {
-		if (result.success) bestiaries.value = result.data as Bestiary[];
-		else {
-			bestiaries.value = [];
-			toast.error(result.error);
-		}
-	});
+	const {success, data, error} = await useFetch(`/api/my-bestiaries`);
+	if (success) bestiaries.value = data as Bestiary[];
+	else {
+		bestiaries.value = [];
+		toast.error(error);
+	}
 };
 
 const createBestiary = async () => {
-	//Replace for actual creation data:
-	let data = {
+	//Send data to server
+	const {success, data, error} = await useFetch<Bestiary>("/api/bestiary/add", "POST", {
 		name: "New bestiary",
 		description: "",
 		status: "private",
-		creatures: [] as Id[]
-	} as Bestiary;
-	//Send data to server
-	await fetchBackend<Bestiary>("/api/bestiary/add", "POST", data).then(async (result) => {
-		if (result.success) {
-			toast.success("Created bestiary");
-			router.push("/bestiary-viewer/" + result.data._id);
-		} else {
-			toast.error(result.error);
-		}
+		creatures: []
 	});
+	if (success) {
+		toast.success("Created bestiary");
+		router.push("/bestiary-viewer/" + data._id);
+	} else {
+		toast.error(error);
+	}
 	await getBestiaries();
 };
 
 const deleteBestiary = async (bestiary: Bestiary | null) => {
 	if (!bestiary) return;
 	const loader = $loading.show();
-	await fetchBackend(`/api/bestiary/${bestiary._id}/delete`).then(async (result) => {
-		if (result.success) {
-			toast.success("Deleted bestiary succesfully");
-			showDeleteModal.value = false;
-		} else {
-			toast.error(result.error);
-		}
-	});
+	const {success, error} = await useFetch(`/api/bestiary/${bestiary._id}/delete`);
+	if (success) {
+		toast.success("Deleted bestiary succesfully");
+		showDeleteModal.value = false;
+	} else {
+		toast.error(error);
+	}
 	loader.hide();
 	await getBestiaries();
 };

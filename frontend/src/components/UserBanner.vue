@@ -15,7 +15,7 @@
 <script setup lang="ts">
 import {onMounted, computed, ref} from "vue";
 import type {User} from "~/shared";
-import {fetchBackend} from "@/utils/functions";
+import {useFetch} from "@/utils/functions";
 import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/css/index.css";
 
@@ -23,10 +23,9 @@ const user = ref<User | null>(null);
 const props = defineProps<{id: string}>();
 
 onMounted(async () => {
-	await fetchBackend<User>("/api/user/" + props.id).then(async (result) => {
-		if (result.success) user.value = result.data;
-		else user.value = null;
-	});
+	const {success, data, error} = await useFetch<User>("/api/user/" + props.id);
+	if (success) user.value = data;
+	else user.value = null;
 });
 
 const isLoading = computed(() => {

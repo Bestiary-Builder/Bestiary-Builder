@@ -1,15 +1,15 @@
 //Api handling
-async function handleApiResponse<Type>(response: Response): Promise<{success: true; data: Type} | {success: false; error: string}> {
+async function handleApiResponse<Type>(response: Response): Promise<{success: true; data: Type; error: undefined} | {success: false; data: undefined; error: string}> {
 	let data = await response.json();
 	if (response.status >= 200 && response.status < 300) {
 		//Succesful
-		return {success: true, data: data as Type};
+		return {success: true, data: data as Type, error: undefined};
 	} else {
 		//Failed
-		return {success: false, error: data.error as string};
+		return {success: false, data: undefined, error: data.error as string};
 	}
 }
-export async function fetchBackend<Type>(url: string, method: "GET" | "POST" = "GET", body?: unknown) {
+export async function useFetch<Type>(url: string, method: "GET" | "POST" = "GET", body?: unknown) {
 	let result = await fetch(url, {
 		method: method,
 		headers: {
@@ -26,7 +26,7 @@ export async function fetchBackend<Type>(url: string, method: "GET" | "POST" = "
 }
 //Get logged in user
 import type {User} from "~/shared";
-export const user = fetchBackend<User>("/api/user").then(async (result) => {
+export const user = useFetch<User>("/api/user").then(async (result) => {
 	if (result.success) return result.data;
 	else return null;
 });
@@ -37,11 +37,11 @@ export type limitsType = {
 	creatureAmount: number;
 	imageFormats: string[];
 };
-export const asyncLimits = fetchBackend<limitsType>("/api/limits").then(async (result) => {
+export const asyncLimits = useFetch<limitsType>("/api/limits").then(async (result) => {
 	if (result.success) return result.data;
 	else return null;
 });
-export const tags = fetchBackend<string[]>("/api/tags").then(async (result) => {
+export const tags = useFetch<string[]>("/api/tags").then(async (result) => {
 	if (result.success) return result.data;
 	else return null;
 });
