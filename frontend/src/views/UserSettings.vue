@@ -53,7 +53,8 @@ const router = useRouter();
 onMounted(async () => {
 	let search = new URLSearchParams(window.location.search);
 	let code = search.get("code");
-	if (code && !(await getUser)) {
+	user.value = await getUser
+	if (code && !user.value) {
 		await fetch("/api/login/" + code).then(async (response) => {
 			let result = await handleApiResponse(response);
 			if (result.success) {
@@ -64,8 +65,6 @@ onMounted(async () => {
 				router.push("/user");
 			}
 		});
-	}  else {
-		user.value = await getUser
 	}
 })
 

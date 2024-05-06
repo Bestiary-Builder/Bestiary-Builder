@@ -532,10 +532,6 @@ a {
 	}
 }
 
-.move-down {
-	margin-top: 0.4rem;
-}
-
 .editor-field__container {
 	display: grid;
 	gap: 1rem 2rem;
@@ -578,7 +574,9 @@ a {
 }
 </style>
 
+
 <style lang="less">
+// html comes in from the validation api through v-html, therefore is not in scope.
 .yaml-error {
 	color: var(--color-destructive);
 	display: flex;
