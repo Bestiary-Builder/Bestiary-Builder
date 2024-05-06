@@ -28,6 +28,7 @@
     <div class="stat-block__row">
         <div v-if="Object.values(data.abilities.saves).some((val : any )=> (val.isProficient === true || val.override !== null))" class="stat-block__save-container"> 
             <b> Saving Throws </b>
+            <!-- TODO: Refactor this -->
             <span v-if="null !== data.abilities.saves.str.override"> Str {{ saveSign("str") }}{{data.abilities.saves.str.override }}<span class="ending-comma">,</span> </span> <span v-else-if="data.abilities.saves.str.isProficient"> Str {{ saveSign("str") }}{{statCalc("str", data)+data.core.proficiencyBonus  }}<span class="ending-comma">,</span></span>
             <span v-if="null !== data.abilities.saves.dex.override"> Dex {{ saveSign("dex") }}{{data.abilities.saves.dex.override }}<span class="ending-comma">,</span> </span> <span v-if="data.abilities.saves.dex.isProficient"> Dex {{ saveSign("dex") }}{{statCalc("dex", data)+data.core.proficiencyBonus  }}<span class="ending-comma">,</span></span>
             <span v-if="null !== data.abilities.saves.con.override"> Con {{ saveSign("con") }}{{data.abilities.saves.con.override }}<span class="ending-comma">,</span> </span> <span v-if="data.abilities.saves.con.isProficient"> Con {{ saveSign("con") }}{{statCalc("con", data)+data.core.proficiencyBonus  }}<span class="ending-comma">,</span></span>
@@ -40,11 +41,9 @@
             {{ skillOutput }}
         </div>
         <template v-for="title, resType of resistanceGenerator">
-            <div class="stat-block__vuln-container" v-if="data.defenses[resType].length > 0">
+            <div class="stat-block__res-container" v-if="data.defenses[resType].length > 0">
                 <b> {{ title }}  </b>
-                <span v-for="res in alphaSort(data.defenses[resType])">
-                    <span> {{res.toLowerCase()}}<span class="ending-comma">, </span> </span>
-                </span>
+                <span> {{  alphaSort(data.defenses[resType]).join(", ") }} </span>
             </div>
         </template>
         <div ckass="stat-block__senses-container">
@@ -55,11 +54,8 @@
         <div class="stat-block__language-container"> 
             <b> Languages </b>
             <span v-if="data.core.languages && data.core.languages.length == 0 && !data.misc.telepathy"> — </span>
-            <span v-else v-for="lang in data.core.languages?.sort()">
-                <span> {{ lang }}<span class="ending-comma">, </span></span>
-            </span>
+            <span v-else> {{ data.core.languages?.sort().join(", ") }} </span>
             <span v-if="data.misc.telepathy"> telepathy {{ data.misc.telepathy}}ft.</span>
-
         </div>
         <div class="challenge-prof">
             <span> <b> Challenge </b> {{ crAsString(data.description.cr) }} ({{ data.description.xp}} xp) </span>
@@ -112,59 +108,19 @@
             </p>
         </div>
 
-        <div class="feature-container" v-if="data.features.bonus.length > 0">
-            <h3 class="feature-container__title"> Bonus Actions </h3>
-                <p v-if="data.misc.featureHeaderTexts.bonus"> {{ data.misc.featureHeaderTexts.bonus }} </p>
-                <p v-for="feature in data.features.bonus">
-                <b> <i>{{ feature.name }}.</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
-                <Markdown class="feature-container__desc" :text="feature.description" tag="span"/>
-            </p>
-        </div>
-
-        <div class="feature-container" v-if="data.features.reactions.length > 0">
-            <h3 class="feature-container__title"> Reactions </h3>
-                <p v-if="data.misc.featureHeaderTexts.reactions"> {{ data.misc.featureHeaderTexts.reactions }} </p>
-                <p v-for="feature in data.features.reactions">
-                <b> <i>{{ feature.name }}.</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
-                <Markdown class="feature-container__desc" :text="feature.description" tag="span"/>
-            </p>
-        </div>
-
-        <div class="feature-container" v-if="data.features.legendary.length > 0">
-            <h3 class="feature-container__title"> Legendary Actions </h3>
-                <p v-if="data.misc.featureHeaderTexts.legendary"> {{ data.misc.featureHeaderTexts.legendary.replace("$NUM$", data.misc.legActionsPerRound.toString()) }} </p>
-                <p v-for="feature in data.features.legendary">
-                <b> <i>{{ feature.name }}.</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
-                <Markdown class="feature-container__desc" :text="feature.description" tag="span"/>
-            </p>
-        </div>
-
-        <div class="feature-container" v-if="data.features.mythic.length > 0">
-            <h3 class="feature-container__title"> Mythic Actions </h3>
-                <p v-if="data.misc.featureHeaderTexts.mythic"> {{ data.misc.featureHeaderTexts.mythic }} </p>
-                <p v-for="feature in data.features.mythic">
-                <b> <i>{{ feature.name }}.</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
-                <Markdown class="feature-container__desc" :text="feature.description" tag="span"/>
-            </p>
-        </div>
-
-        <div class="feature-container" v-if="data.features.lair.length > 0">
-            <h3 class="feature-container__title"> Lair Actions </h3>
-                <p v-if="data.misc.featureHeaderTexts.lair"> {{ data.misc.featureHeaderTexts.lair }} </p>
-                <p v-for="feature in data.features.lair">
-                <b> <i>{{ feature.name }}.</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
-                <Markdown class="feature-container__desc" :text="feature.description" tag="span"/>
-            </p>
-        </div>
-
-        <div class="feature-container" v-if="data.features.regional.length > 0">
-            <h3 class="feature-container__title"> Regional Effects </h3>
-                <p v-if="data.misc.featureHeaderTexts.regional"> {{ data.misc.featureHeaderTexts.regional }} </p>
-                <p v-for="feature in data.features.regional">
-                <b> <i>{{ feature.name }}.</i><sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup></b>
-                <Markdown class="feature-container__desc" :text="feature.description" tag="span"/>
-            </p>
-        </div>
+        <!-- TODO: Add features and actions to the generator here once they no longer need special handling because of spellcasting-->
+        <template v-for="title, fType of featureGenerator">
+            <div class="feature-container" v-if="data.features[fType].length > 0">
+                <h3 class="feature-container__title"> {{ title }}</h3>
+                <p v-if="fType == 'legendary' && data.misc.featureHeaderTexts[fType]"> {{ data.misc.featureHeaderTexts[fType].replace("$NUM$", data.misc.legActionsPerRound.toString()) }} </p>
+                <p v-else-if="data.misc.featureHeaderTexts[fType]"> {{ data.misc.featureHeaderTexts[fType] }} </p>
+                <p v-for="feature in data.features[fType]">
+                    <b> <i> {{ feature.name}}.</i></b>
+                    <sup class="feature-container__automation-icon" v-if="feature.automation" v-tooltip="'Has Automation'">†</sup>
+                    <Markdown class="feature-container__desc" :text="feature.description" tag="span"/>
+                </p>
+            </div>
+        </template>
     </div>
     <div v-if="data.description.description" class="description">
         <h2 class="feature-container__title"> Description </h2>
@@ -175,10 +131,10 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import type { Stat, SkillsEntity, Statblock, InnateSpells, CasterSpells, Defenses } from "~/shared";
+import type { Stat, SkillsEntity, Statblock, InnateSpells, CasterSpells, Features } from "~/shared";
 import { SKILLS_BY_STAT, nthSuffix, statCalc, hpCalc, crAsString, ppCalc, fullSpellAbilityName, signedNumber, displaySpeedOrSenses } from "~/shared"
 import { displayInnateCasting } from '@/utils/displayFunctions';
-import { stats, resistanceGenerator } from '@/utils/constants';
+import { stats, resistanceGenerator, featureGenerator } from '@/utils/constants';
 import Markdown from './Markdown.vue';
 export default defineComponent({
     props: {
@@ -193,7 +149,8 @@ export default defineComponent({
     data() {
         return {
             stats,
-            resistanceGenerator
+            resistanceGenerator,
+            featureGenerator
         }
     },
     methods: {
@@ -204,14 +161,13 @@ export default defineComponent({
             }
             return ""
         },
-
         alphaSort(list: string[]) : string[] {
             const sortByLastWord = (a :string , b :string) => {
                 const lastWordA = a.split(' ').pop();
                 const lastWordB = b.split(' ').pop();
                 return lastWordA!.localeCompare(lastWordB!);
-                };
-            return list.sort(sortByLastWord)
+            };
+            return list.sort(sortByLastWord).map(v => v.toLowerCase())
         },
         spellDc(innate = false) : number {
             let castingData;
@@ -390,16 +346,7 @@ export default defineComponent({
 .feature__has-automation-icodn {
     font-size: .7rem;
 }
-.stat-block__language-container > span:last-of-type > span > .ending-comma,
 
-.stat-block__cond-container > span:last-of-type > span > .ending-comma,
-
-.stat-block__vuln-container > span:last-of-type > span > .ending-comma,
-.stat-block__res-container > span:last-of-type > span > .ending-comma,
-.stat-block__imm-container > span:last-of-type > span > .ending-comma,
-
-.stat-block__senses-container > span:last-of-type > .ending-comma,
-.stat-block__speed-container > span:last-of-type > .ending-comma,
 .stat-block__save-container > span:last-of-type > .ending-comma {
     display: none;
 }
