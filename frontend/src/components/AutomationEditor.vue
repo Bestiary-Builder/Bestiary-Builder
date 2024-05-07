@@ -258,7 +258,7 @@ const saveAutomation = async (shouldNotify = false) => {
 		if (success && shouldNotify) {
 			emit("savedStandaloneData");
 		} else if (!success) {
-			if (shouldNotify) toast.error(`${props.data.name}:` + error);
+			if (shouldNotify) toast.error(`${props.data.name || 'Unnamed feature'}: ` + error);
 			return;
 		}
 	} else {
