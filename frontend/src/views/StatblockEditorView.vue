@@ -15,7 +15,7 @@
 				},
 				{
 					path: '',
-					text: data?.description.name || 'unnamed creature',
+					text: data?.description.name || 'Unnamed Creature',
 					isCurrent: true
 				}
 			]"
@@ -74,33 +74,7 @@
 							<LabelledComponent title="Alignment" takes-custom-text-input>
 								<v-select
 									v-model="data.description.alignment"
-									:options="[
-										'Unaligned',
-										'Good',
-										'Neutral',
-										'Evil',
-										'Lawful Good',
-										'Neutral Good',
-										'Chaotic Good',
-										'Lawful Neutral',
-										'Neutral',
-										'Chaotic Neutral',
-										'Lawful Evil',
-										'Neutral Evil',
-										'Chaotic Evil',
-										'Any Alignment',
-										'Typically Good',
-										'Typically Neutral',
-										'Typically Evil',
-										'Typically Lawful Good',
-										'Typically Neutral Good',
-										'Typically Chaotic Good',
-										'Typically Lawful Neutral',
-										'Typically Chaotic Neutral',
-										'Typically Lawful Evil',
-										'Typically Neutral Evil',
-										'Typically Chaotic Evil'
-									]"
+									:options="alignments"
 									:taggable="true"
 									:pushTags="true"
 									inputId="alignment"
@@ -126,10 +100,10 @@
 					<div class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-2" id="tabpanel-2">
 						<div class="editor-field__container two-wide">
 							<LabelledComponent title="Race" takes-custom-text-input>
-								<v-select v-model="data.core.race" :options="['Aberration', 'Beast', 'Celestial', 'Construct', 'Dragon', 'Elemental', 'Fey', 'Fiend', 'Giant', 'Humanoid', 'Monstrosity', 'Ooze', 'Plant', 'Undead']" :taggable="true" :pushTags="true" inputId="race" />
+								<v-select v-model="data.core.race" :options="creatureTypes" :taggable="true" :pushTags="true" inputId="race" />
 							</LabelledComponent>
 							<LabelledComponent title="Size" takes-custom-text-input>
-								<v-select v-model="data.core.size" :options="['Tiny', 'Small', 'Medium', 'Large', 'Huge', 'Gargantuan']" :taggable="true" :pushTags="true" inputId="size" />
+								<v-select v-model="data.core.size" :options="sizes" :taggable="true" :pushTags="true" inputId="size" />
 							</LabelledComponent>
 						</div>
 						<h2 class="group-header">Speed</h2>
@@ -303,7 +277,7 @@
 									multiple
 									:deselectFromDropdown="true"
 									:closeOnSelect="false"
-									:options="['Blinded', 'Charmed', 'Deafened', 'Disease', 'Exhaustion', 'Frightened', 'Grappled', 'Incapacitated', 'Invisible', 'Paralyzed', 'Petrified', 'Poisoned', 'Prone', 'Restrained', 'Stunned', 'Unconscious']"
+									:options="conditionList"
 									:taggable="true"
 									:pushTags="true"
 									inputId="conditionimmunities"
@@ -312,7 +286,7 @@
 						</div>
 					</div>
 					<div class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-5" id="tabpanel-5">
-						<div v-for="(descText, fType) in featureGenerator">
+						<div v-for="(descText, fType) in newFeatureGenerator">
 							<h2 class="group-header">{{ descText.replace("New ", "") }}s</h2>
 							<draggable :list="data.features[fType]" group="features" :item-key="getDraggableKey" handle=".handle" class="editor-field__container two-wide" :animation="150">
 								<template #item="{element, index}">
@@ -342,7 +316,7 @@
 						<h2 class="group-header">Innate Spellcasting</h2>
 						<div class="editor-field__container two-wide">
 							<LabelledComponent title="Casting ability">
-								<v-select :options="['str', 'dex', 'con', 'wis', 'int', 'cha']" v-model="data.spellcasting.innateSpells.spellCastingAbility" inputId="castingability" />
+								<v-select :options="stats" v-model="data.spellcasting.innateSpells.spellCastingAbility" inputId="castingability" />
 							</LabelledComponent>
 							<LabelledComponent title="Not these components">
 								<v-select :options="['Material', 'Verbal', 'Somatic']" v-model="data.spellcasting.innateSpells.noComponentsOfType" multiple :deselectFromDropdown="true" :closeOnSelect="false" inputId="notthesecomponents" />
@@ -378,10 +352,10 @@
 						<h2 class="group-header">Class spellcasting</h2>
 						<div class="editor-field__container two-wide">
 							<LabelledComponent title="Class">
-								<v-select v-model="data.spellcasting.casterSpells.castingClass" :options="['Artificer', 'Bard', 'Cleric', 'Druid', 'Paladin', 'Ranger', 'Sorcerer', 'Warlock', 'Wizard']" inputId="class" />
+								<v-select v-model="data.spellcasting.casterSpells.castingClass" :options="classes" inputId="class" />
 							</LabelledComponent>
 							<LabelledComponent title="Class level">
-								<v-select v-model="data.spellcasting.casterSpells.casterLevel" :options="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]" inputId="classlevel" />
+								<v-select v-model="data.spellcasting.casterSpells.casterLevel" :options="classLevels" inputId="classlevel" />
 							</LabelledComponent>
 
 							<LabelledNumberInput v-model="data.spellcasting.casterSpells.spellDcOverride" title="DC override" :step="1" :is-clearable="true" />
@@ -470,15 +444,16 @@ import draggable from "vuedraggable";
 
 import {defineComponent} from "vue";
 
-import type {SkillsEntity, Statblock, Creature, Bestiary} from "~/shared";
+import type { Statblock, Creature, Bestiary} from "~/shared";
 import {defaultStatblock, getSpellSlots, spellList, spellListFlattened, getXPbyCR, type User} from "~/shared";
 import {asyncLimits, type limitsType, user, useFetch} from "@/utils/functions";
 import {toast} from "@/main";
 import {parseFrom5eTools} from "../parser/parseFrom5eTools";
 import {capitalizeFirstLetter} from "@/parser/utils";
+import { resistanceList, languages, newFeatureGenerator, stats, alignments, sizes, creatureTypes, classes, classLevels, conditionList } from "@/utils/constants";
+
 const tabs = document.getElementsByClassName("editor-nav__tab") as HTMLCollectionOf<HTMLElement>;
 const tabsContent = document.getElementsByClassName("editor-content__tab-inner") as HTMLCollectionOf<HTMLElement>;
-let draggableKeyIndex = 0;
 
 export default defineComponent({
 	components: {
@@ -505,72 +480,12 @@ export default defineComponent({
 				3: [] as string[]
 			} as {[key: number]: string[]},
 			limits: {} as limitsType,
-			featureGenerator: {
-				features: "New Feature",
-				actions: "New Action",
-				bonus: "New Bonus Action",
-				reactions: "New Reaction",
-				legendary: "New Legendary Action",
-				lair: "New Lair Action",
-				mythic: "New Mythic Action",
-				regional: "New Regional Effect"
-			},
+
 			toolsjson: "",
 			bestiaryBuilderJson: "",
 			notices: {} as {[key: string]: string[]},
 			madeChanges: false,
-			spellListFlattened,
-			spellList,
-			resistanceList: [
-				"Acid",
-				"Bludgeoning",
-				"Cold",
-				"Fire",
-				"Force",
-				"Lightning",
-				"Necrotic",
-				"Piercing",
-				"Poison",
-				"Psychic",
-				"Radiant",
-				"Slashing",
-				"Thunder",
-				"Nonmagical Bludgeoning",
-				"Nonmagical Piercing",
-				"Nonmagical Slashing",
-				"Nonmagical Nonsilvered Bludgeoning",
-				"Nonmagical Nonsilvered Piercing",
-				"Nonmagical Nonsilvered Slashing"
-			],
-			languages: [
-				"All",
-				"All languages it knew in life",
-				"Abyssal",
-				"Aarakocra",
-				"Aquan",
-				"Auran",
-				"Celestial",
-				"Common",
-				"Deep Speech",
-				"Draconic",
-				"Druidic",
-				"Dwarvish",
-				"Elvish",
-				"Giant",
-				"Gith",
-				"Gnomish",
-				"Goblin",
-				"Halfling",
-				"Ignan",
-				"Infernal",
-				"Orc",
-				"Primordial",
-				"Sylvan",
-				"Terran",
-				"Thieves' Cant",
-				"Undercommon",
-				"Understands the languages of its creator but can't speak"
-			],
+
 			showImportModal: false,
 			showSpellModal: false,
 			capitalizeFirstLetter,
@@ -579,7 +494,20 @@ export default defineComponent({
 			isEditor: false,
 			newSkillName: "",
 			newSpeedName: "",
-			newSenseName: ""
+			newSenseName: "",
+			// constants we need in the template
+			resistanceList,
+			languages,
+			spellListFlattened,
+			spellList,
+			newFeatureGenerator,
+			stats,
+			alignments,
+			sizes,
+			creatureTypes,
+			classes,
+			classLevels,
+			conditionList
 		};
 	},
 	methods: {
