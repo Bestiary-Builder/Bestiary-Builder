@@ -45,7 +45,7 @@ import {useFetch} from "@/utils/utils";
 import { $loading } from "@/utils/app/loading";
 const router = useRouter();
 
-onMounted(async () => {
+onMounted(() => {
 	const loader = $loading.show();
 	getBestiaries();
 

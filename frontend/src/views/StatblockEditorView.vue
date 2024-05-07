@@ -437,7 +437,7 @@
 import FeatureWidget from "@/components/FeatureWidget.vue";
 import Modal from "@/components/Modal.vue";
 import StatblockRenderer from "../components/StatblockRenderer.vue";
-import Breadcrumbs from "../components/Breadcrumbs.vue";
+import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
 import LabelledNumberInput from "@/components/LabelledNumberInput.vue";
 import LabelledComponent from "@/components/LabelledComponent.vue";
 import draggable from "vuedraggable";
@@ -452,7 +452,7 @@ import {toast} from "@/utils/app/toast";
 import {parseFrom5eTools} from "../parser/parseFrom5eTools";
 import {capitalizeFirstLetter} from "@/parser/utils";
 import { resistanceList, languages, newFeatureGenerator, stats, alignments, sizes, creatureTypes, classes, classLevels, conditionList } from "@/utils/constants";
-
+import { $loading } from "@/utils/app/loading";
 const tabs = document.getElementsByClassName("editor-nav__tab") as HTMLCollectionOf<HTMLElement>;
 const tabsContent = document.getElementsByClassName("editor-content__tab-inner") as HTMLCollectionOf<HTMLElement>;
 
@@ -753,9 +753,8 @@ export default defineComponent({
 	},
 
 	async mounted() {
-		const loader = this.$loading.show();
 		this.showSlides(1);
-
+		const loader = $loading.show()
 		//Fetch creature info
 		{
 			const {success, data, error} = await useFetch<Creature>("/api/creature/" + this.$route.params.id);

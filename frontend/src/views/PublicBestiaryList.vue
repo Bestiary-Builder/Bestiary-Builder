@@ -65,7 +65,7 @@ import {toast} from "@/utils/app/toast";
 import {vue3Debounce as vDebounce} from "vue-debounce";
 import { $loading } from "@/utils/app/loading";
 
-onMounted(async () => {
+onMounted(() => {
 	const loader = $loading.show();
 	searchBestiaries();
 	loader.hide();

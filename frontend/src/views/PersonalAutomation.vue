@@ -77,8 +77,6 @@ let initialData = "";
 // get our data
 onMounted(async () => {
 	const loader = $loading.show();
-
-	//Request my automations
 	await getMyAutomations();
 	initialData = JSON.stringify(data.value);
 	loader.hide();

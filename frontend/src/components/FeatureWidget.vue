@@ -13,8 +13,9 @@ import { ref } from 'vue';
 import AutomationEditor from './AutomationEditor.vue';
 import Modal from './Modal.vue';
 import type {  FeatureEntity } from '~/shared';
+
 const showFeatureModal = ref(false);
-const props = defineProps<{data: FeatureEntity, type: string, index: number, creatureName: string}>();
+defineProps<{data: FeatureEntity, type: string, index: number, creatureName: string}>();
 </script>
 
 <style scoped lang="less">

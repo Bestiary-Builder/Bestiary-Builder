@@ -40,11 +40,6 @@ const emit = defineEmits<{
 	(e: "deleteBestiary", bestiary: Bestiary): void;
 }>();
 
-onMounted(async () => {
-	const loader = $loading.show();
-	loader.hide();
-});
-
 const openDeleteModal = (bestiary: Bestiary) => {
 	if (!bestiary) return;
 	emit("deleteBestiary", bestiary);
