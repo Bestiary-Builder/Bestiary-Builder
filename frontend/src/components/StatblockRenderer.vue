@@ -78,7 +78,7 @@
             <p v-if="showCasting && data.spellcasting.casterSpells.castingClass && data.spellcasting.casterSpells.casterLevel &&  data.spellcasting.casterSpells.spellSlotList">
                 <b><i>Spellcasting</i></b> 
                 <span class="feature-container__desc">
-                    <span v-if="!data.description.isProperNoun"> The </span> {{ data.description.isProperNoun ? data.description.name : data.description.name.toLowerCase() }} is a {{ nthSuffix(data.spellcasting.casterSpells.casterLevel) }}-level spellcaster. <span v-if="data.description.isProperNoun"> Their </span><span v-else> Its </span> spellcasting ability is {{ fullSpellAbilityName(data.spellcasting.casterSpells.spellCastingAbilityOverride ?? data.spellcasting.casterSpells.spellCastingAbility) }} (spell save DC {{ spellDc() }}, {{ spellAttackBonus() }} to hit with spell attacks). <span v-if="!data.description.isProperNoun"> It </span><span v-else> {{ data.description.name }}</span><span v-if='["Sorcerer", "Bard", "Ranger", "Warlock"].includes(data.spellcasting.casterSpells.castingClass)'> knows the following {{ data.spellcasting.casterSpells.castingClass.toLowerCase()}} spells: </span> 
+                    <span v-if="!data.description.isProperNoun"> The </span> {{ data.description.isProperNoun ? data.description.name : data.description.name.toLowerCase() }} is a {{ nthSuffix(data.spellcasting.casterSpells.casterLevel) }}-level spellcaster. <span v-if="data.description.isProperNoun"> Their </span><span v-else> Its </span> spellcasting ability is {{ fullSpellAbilityName(data.spellcasting.casterSpells.spellCastingAbilityOverride ?? data.spellcasting.casterSpells.spellCastingAbility) }} (spell save DC {{ spellDc(false, data) }}, {{ spellAttackBonus(false, data) }} to hit with spell attacks). <span v-if="!data.description.isProperNoun"> It </span><span v-else> {{ data.description.name }}</span><span v-if='["Sorcerer", "Bard", "Ranger", "Warlock"].includes(data.spellcasting.casterSpells.castingClass)'> knows the following {{ data.spellcasting.casterSpells.castingClass.toLowerCase()}} spells: </span> 
                         <span v-else> has the following {{ data.spellcasting.casterSpells.castingClass.toLowerCase()}} spells prepared: </span>
 
                     <div class="spell-list">
@@ -132,7 +132,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import type { Stat, SkillsEntity, Statblock, InnateSpells, CasterSpells, Features } from "~/shared";
-import { SKILLS_BY_STAT, nthSuffix, statCalc, hpCalc, crAsString, ppCalc, fullSpellAbilityName, signedNumber, displaySpeedOrSenses } from "~/shared"
+import { SKILLS_BY_STAT, nthSuffix, statCalc, hpCalc, crAsString, ppCalc, fullSpellAbilityName, signedNumber, displaySpeedOrSenses, spellDc, spellAttackBonus } from "~/shared"
 import { displayInnateCasting } from '@/utils/displayFunctions';
 import { stats, resistanceGenerator, featureGenerator } from '@/utils/constants';
 import Markdown from './Markdown.vue';
@@ -169,33 +169,6 @@ export default defineComponent({
             };
             return list.sort(sortByLastWord).map(v => v.toLowerCase())
         },
-        spellDc(innate = false) : number {
-            let castingData;
-            if (innate) castingData = this.data.spellcasting.innateSpells
-            else castingData = this.data.spellcasting.casterSpells
-
-            if (castingData.spellDcOverride) return castingData.spellDcOverride
-            else {
-                if (innate && castingData.spellCastingAbility) return 8 + statCalc(castingData.spellCastingAbility, this.data) + this.data.core.proficiencyBonus
-                else return 8 + statCalc((castingData as CasterSpells).spellCastingAbilityOverride ?? castingData.spellCastingAbility!, this.data) + this.data.core.proficiencyBonus
-            }
-        },
-        spellAttackBonus(innate = false): string {
-            let castingData;
-            if (innate) castingData = this.data.spellcasting.innateSpells as InnateSpells
-            else castingData = this.data.spellcasting.casterSpells as CasterSpells
-
-            let bonus = 0;
-            if (castingData.spellBonusOverride || castingData.spellBonusOverride === 0) bonus = castingData.spellBonusOverride
-            else {
-                if (innate && castingData.spellCastingAbility) bonus = statCalc(castingData.spellCastingAbility, this.data) + this.data.core.proficiencyBonus
-                else bonus = statCalc((castingData as CasterSpells).spellCastingAbilityOverride ?? castingData.spellCastingAbility!, this.data) + this.data.core.proficiencyBonus
-            }
-
-            if (bonus >= 0) return '+' + bonus
-            return bonus.toString()
-        },
-
         displaySpeedOrSenses,
         displayInnateCasting,
         crAsString,
@@ -204,7 +177,9 @@ export default defineComponent({
         hpCalc,
         ppCalc,
         fullSpellAbilityName,
-        signedNumber
+        signedNumber,
+        spellDc,
+        spellAttackBonus
     },
     computed: {
         showSkills() : boolean {

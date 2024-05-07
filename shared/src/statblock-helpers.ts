@@ -1,4 +1,4 @@
-import type { Stat, Statblock, SenseEntity, SpeedEntity } from "./types";
+import type { Stat, Statblock, SenseEntity, SpeedEntity, InnateSpells, CasterSpells } from "./types";
 
 export const SKILLS_BY_STAT = {
 	str: ["athletics", "strength"],
@@ -99,4 +99,31 @@ export const displaySpeedOrSenses = (data: SenseEntity[] | SpeedEntity[], hasEnd
 		if (hasEndingComma || (filteredLength != 1 && index != filteredLength - 1)) output += ", ";
 	}
 	return output;
+}
+
+export const spellDc = (innate = false, data: Statblock) => {
+	let castingData : InnateSpells | CasterSpells;
+	if (innate) castingData = data.spellcasting.innateSpells;
+	else castingData = data.spellcasting.casterSpells;
+
+	if (castingData.spellDcOverride) return castingData.spellDcOverride;
+
+	if (innate) return 8 + statCalc(castingData.spellCastingAbility, data) + data.core.proficiencyBonus;
+	else if ("spellCastingAbilityOverride" in castingData) return 8 + statCalc(castingData.spellCastingAbilityOverride, data) + data.core.proficiencyBonus
+	else return  8 + statCalc(castingData.spellCastingAbility, data) + data.core.proficiencyBonus
+}
+
+
+export const spellAttackBonus = (innate = false, data: Statblock) => {
+	let castingData;
+	if (innate) castingData = data.spellcasting.innateSpells;
+	else castingData = data.spellcasting.casterSpells;
+
+	let bonus = 0;
+	if (castingData.spellBonusOverride || castingData.spellBonusOverride === 0) bonus = castingData.spellBonusOverride;
+	else {
+		if (innate && castingData.spellCastingAbility) bonus = statCalc(castingData.spellCastingAbility, data) + data.core.proficiencyBonus;
+		else bonus = statCalc(castingData.spellCastingAbilityOveride ?? castingData.spellCastingAbility, data) + data.core.proficiencyBonus;
+	}
+	return bonus;
 }

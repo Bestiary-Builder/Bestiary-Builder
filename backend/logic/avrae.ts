@@ -1,7 +1,7 @@
 import {app} from "@/utilities/constants";
 import {log} from "@/utilities/logger";
 import {getBestiary, incrementBestiaryViewCount, collections} from "@/utilities/database";
-import {type Statblock, Id, stringToId, SKILLS_BY_STAT, type Stat, type SkillsEntity, nthSuffix, hpCalc, statCalc, fullSpellAbilityName, componentsString, crAsString, ppCalc, type SpellCasting, type CasterSpells, type InnateSpells} from "~/shared";
+import {type Statblock, Id, stringToId, SKILLS_BY_STAT, type Stat, type SkillsEntity, nthSuffix, hpCalc, statCalc, fullSpellAbilityName, componentsString, crAsString, ppCalc, type SpellCasting, displaySpeedOrSenses, spellDc, spellAttackBonus} from "~/shared";
 
 //Export data
 app.get("/api/public/bestiary/:id", (req, res) => res.redirect("/api/export/bestiary/" + req.params.id));
@@ -43,17 +43,7 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 });
 
 //Statblock functions:
-function spellDc(innate = false, data: Statblock): number {
-	let castingData : InnateSpells | CasterSpells;
-	if (innate) castingData = data.spellcasting.innateSpells;
-	else castingData = data.spellcasting.casterSpells;
 
-	if (castingData.spellDcOverride) return castingData.spellDcOverride;
-
-	if (innate) return 8 + statCalc(castingData.spellCastingAbility, data) + data.core.proficiencyBonus;
-	else if ("spellCastingAbilityOverride" in castingData) return 8 + statCalc(castingData.spellCastingAbilityOverride, data) + data.core.proficiencyBonus
-	else return  8 + statCalc(castingData.spellCastingAbility, data) + data.core.proficiencyBonus
-}
 
 function knownSpells(data: SpellCasting): any {
 	let dailySpells = {
@@ -80,39 +70,8 @@ function knownSpells(data: SpellCasting): any {
 
 
 
-function spellAttackBonus(innate = false, data: any) {
-	let castingData;
-	if (innate) castingData = data.spellcasting.innateSpells;
-	else castingData = data.spellcasting.casterSpells;
 
-	let bonus = 0;
-	if (castingData.spellBonusOverride || castingData.spellBonusOverride === 0) bonus = castingData.spellBonusOverride;
-	else {
-		if (innate && castingData.spellCastingAbility) bonus = statCalc(castingData.spellCastingAbility, data) + data.core.proficiencyBonus;
-		else bonus = statCalc(castingData.spellCastingAbilityOveride ?? castingData.spellCastingAbility, data) + data.core.proficiencyBonus;
-	}
-	return bonus;
-}
-
-export function displaySpeedOrSenses(data: any[]): string {
-	let output = "";
-	let filteredLength = data.filter((item) => item.name !== "New speed" && item.name !== "New sense").length;
-
-	let index = 0;
-	for (let item of data) {
-		if (item.name === "New speed" || item.name === "New sense") continue;
-		if (item.name != "Walk") output += item.name.toLowerCase() + " ";
-		output += item.value;
-		if (item.unit != "none") output += item.unit + ".";
-		if (item.comment) output += ` (${item.comment})`;
-		if (filteredLength != 1 && index != filteredLength - 1) output += ", ";
-		index++;
-	}
-	return output;
-}
-
-
-function calcSkills(data: any) {
+function calcSkills(data: Statblock) {
 	let skillData = data.abilities.skills as SkillsEntity[];
 	let output = {} as {[key: string]: {value: number; prof?: number; bonus: number; adv: number | null}};
 	for (let stat in SKILLS_BY_STAT) {
