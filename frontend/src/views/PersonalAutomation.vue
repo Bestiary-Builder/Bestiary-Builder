@@ -22,14 +22,14 @@
 					<ol v-if="data && data.length > 0">
 						<li v-for="(d, key) in data" :key="key" class="feature-button__container" @click="selectedAutomation = d" :class="{selected: d._id == selectedAutomation?._id}">
 							<p role="button" :aria-label="`Select automation: ${d.name} (${key})`">
-								{{ d.name || 'Unnamed feature'}}
+								{{ d.name || "Unnamed feature" }}
 							</p>
 						</li>
 					</ol>
 					<p v-else>You do not have any personal automations.</p>
 				</LabelledComponent>
 				<LabelledComponent title="Add new automation">
-					<input type="text" v-model="newAutomationName" id="addnewautomation" :minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength"/>
+					<input type="text" v-model="newAutomationName" id="addnewautomation" :minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength" />
 					<button class="btn confirm" @click="addAutomation(newAutomationName)">Add</button>
 				</LabelledComponent>
 				<LabelledComponent title="Delete automation" v-if="selectedAutomation">
@@ -60,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import Breadcrumbs from "@/components/Breadcrumbs.vue";
+import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
 import {ref, onMounted, onUnmounted} from "vue";
 import {useLoading} from "vue-loading-overlay";
 import {useFetch} from "@/utils/utils";
@@ -71,7 +71,7 @@ import LabelledComponent from "@/components/LabelledComponent.vue";
 import AutomationEditor from "@/components/AutomationEditor.vue";
 import Modal from "@/components/Modal.vue";
 import {onBeforeRouteLeave} from "vue-router";
-import { store } from "@/utils/store";
+import {store} from "@/utils/store";
 const $loading = useLoading(loadingOptions);
 const data = ref<Automation[]>([]);
 let initialData = "";

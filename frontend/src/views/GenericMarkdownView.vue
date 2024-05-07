@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import Breadcrumbs from "@/components/Breadcrumbs.vue";
+import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
 
 import {useRoute} from "vue-router";
 import {ref, watch, nextTick, onMounted} from "vue";

@@ -34,7 +34,7 @@
 <script setup lang="ts">
 import Modal from "@/components/Modal.vue";
 import BestiaryList from "@/components/BestiaryList.vue";
-import Breadcrumbs from "@/components/Breadcrumbs.vue";
+import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
 
 import {useRouter} from "vue-router";
 import {onMounted, ref} from "vue";
