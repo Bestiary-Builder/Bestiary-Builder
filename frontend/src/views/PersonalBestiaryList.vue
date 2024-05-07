@@ -37,21 +37,19 @@ import BestiaryList from "@/components/BestiaryList.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 
 import {useRouter} from "vue-router";
-import {onMounted, ref, computed} from "vue";
+import {onMounted, ref} from "vue";
 
 import {toast, loadingOptions} from "@/main";
-import type {User, Bestiary, Id} from "~/shared";
-import {user as getUser, useFetch} from "@/utils/functions";
+import type {Bestiary} from "~/shared";
+import {useFetch} from "@/utils/functions";
 import {useLoading} from "vue-loading-overlay";
 
 const $loading = useLoading(loadingOptions);
 const router = useRouter();
-const user = ref<User | null>(null);
 
 onMounted(async () => {
 	const loader = $loading.show();
 	getBestiaries();
-	user.value = await getUser;
 
 	loader.hide();
 });
@@ -104,15 +102,4 @@ const openDeleteModal = (bestiary: Bestiary) => {
 	selectedBestiary.value = bestiary;
 	showDeleteModal.value = true;
 };
-
-const bestiaryImages = computed(() => {
-	let bestiaryImages: string[] = [];
-	for (let bestiary of bestiaries.value) {
-		const match = bestiary.description.match(/\!\[.*?\]\((.*?)\)/);
-		const firstImageUrl = (match || [])[1];
-		if (match) bestiary.description = bestiary.description.replace(match[0], "");
-		bestiaryImages.push(firstImageUrl);
-	}
-	return bestiaryImages;
-});
 </script>

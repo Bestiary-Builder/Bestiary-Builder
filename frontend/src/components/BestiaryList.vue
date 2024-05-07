@@ -1,11 +1,11 @@
 <template>
 	<div class="tile-container">
 		<TransitionGroup name="popin">
-			<RouterLink class="content-tile bestiary-tile" v-for="(bestiary, index) in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" :key="bestiary._id?.toString()" :class="{'four-tall': bestiary.owner != user?._id}" :aria-label="`Open Bestiary ${bestiary.name}`">
+			<RouterLink class="content-tile bestiary-tile" v-for="(bestiary, index) in bestiaries" :to="'/bestiary-viewer/' + bestiary._id" :key="bestiary._id?.toString()" :class="{'four-tall': bestiary.owner != store.user?._id}" :aria-label="`Open Bestiary ${bestiary.name}`">
 				<div class="tile-header">
 					<h2>{{ bestiary.name }}</h2>
 				</div>
-				<span class="shared-notice" v-if="bestiary.owner != user?._id && personal">(shared)</span>
+				<span class="shared-notice" v-if="bestiary.owner != store.user?._id && personal">(shared)</span>
 				<div class="tile-content" :class="{'tile-has-image': bestiaryImages[index]}">
 					<img class="tile-image" v-if="bestiaryImages[index]" :src="bestiaryImages[index]" />
 					<div class="tags">
@@ -15,7 +15,7 @@
 				</div>
 				<div class="tile-footer">
 					<span v-if="personal" v-tooltip.left="bestiary.status"><StatusIcon :icon="bestiary.status" /></span>
-					<span role="button" @click.stop.prevent="openDeleteModal(bestiary)" class="edit-button" v-tooltip="'Delete bestiary'" v-if="personal && bestiary.owner == user?._id" aria-label="Delete bestiary"><font-awesome-icon :icon="['fas', 'trash']" /></span>
+					<span role="button" @click.stop.prevent="openDeleteModal(bestiary)" class="edit-button" v-tooltip="'Delete bestiary'" v-if="personal && bestiary.owner == store.user?._id" aria-label="Delete bestiary"><font-awesome-icon :icon="['fas', 'trash']" /></span>
 					<span v-else>
 						<UserBanner :id="bestiary.owner" />
 					</span>
@@ -30,12 +30,11 @@
 import UserBanner from "@/components/UserBanner.vue";
 import StatusIcon from "@/components/StatusIcon.vue";
 import {RouterLink} from "vue-router";
-import {onMounted, ref, computed} from "vue";
+import {onMounted, computed} from "vue";
 import {loadingOptions} from "@/main";
-import type {User, Bestiary} from "~/shared";
-import {user as getUser} from "@/utils/functions";
+import type {Bestiary} from "~/shared";
 import {useLoading} from "vue-loading-overlay";
-
+import { store } from "@/utils/store";
 const props = defineProps<{personal: boolean; bestiaries: Bestiary[]}>();
 
 const emit = defineEmits<{
@@ -43,11 +42,9 @@ const emit = defineEmits<{
 }>();
 
 const $loading = useLoading(loadingOptions);
-const user = ref<User | null>(null);
 
 onMounted(async () => {
 	const loader = $loading.show();
-	user.value = await getUser;
 	loader.hide();
 });
 

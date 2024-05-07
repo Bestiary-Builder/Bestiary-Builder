@@ -3,7 +3,7 @@
 		<div>
 			<div class="editor-field__container two-wide">
 				<LabelledComponent title="Feature name">
-					<input type="text" id="featurename" placeholder="Enter name" v-model="data.name" @change="hasEditedName = true" />
+					<input type="text" id="featurename" placeholder="Enter name" v-model="data.name" @change="hasEditedName = true" :minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength"/>
 				</LabelledComponent>
 				<LabelledComponent title="Documentation">
 					<div>
@@ -15,7 +15,7 @@
 
 			<div class="editor-field__container">
 				<LabelledComponent title="Feature description">
-					<textarea height="94" id="featuredescription" placeholder="Enter description" v-model="data.description" style="height: 93px" />
+					<textarea height="94" id="featuredescription" placeholder="Enter description" v-model="data.description" style="height: 93px" :maxlength="store.limits?.descriptionLength"/>
 				</LabelledComponent>
 			</div>
 
@@ -139,7 +139,7 @@ import LabelledComponent from "./LabelledComponent.vue";
 import Markdown from "./Markdown.vue";
 import {parseDescIntoAutomation} from "@/parser/utils";
 import {isMobile} from "@/main";
-
+import { store } from "@/utils/store";
 const props = withDefaults(defineProps<{data: FeatureEntity | Automation; isStandAlone?: boolean; creatureName?: string}>(), {isStandAlone: false, creatureName: "$NAME$"});
 
 const errorMessage = ref<null | string>(null);

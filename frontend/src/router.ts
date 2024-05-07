@@ -3,8 +3,9 @@ import {createRouter, createWebHistory} from "vue-router";
 // @ts-ignore
 import fileRoutes from "~pages";
 import {routes as sharedRoutes} from "~/shared";
-import {user, sendToLogin} from "@/utils/functions";
-import { nextTick } from "vue";
+import {sendToLogin} from "@/utils/functions";
+import {store} from "./utils/store";
+
 const routes = sharedRoutes.routes.map((route) => {
 	return {
 		...route,
@@ -29,8 +30,7 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
 	//Requires being logged in?
 	if (to.meta.loggedIn) {
-		let loggedIn = await user;
-		if (!loggedIn) {
+		if (!store.user) {
 			sendToLogin(to.path);
 			return;
 		}
