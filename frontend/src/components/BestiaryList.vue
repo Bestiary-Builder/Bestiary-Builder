@@ -30,10 +30,9 @@
 import UserBanner from "@/components/UserBanner.vue";
 import StatusIcon from "@/components/StatusIcon.vue";
 import {RouterLink} from "vue-router";
-import {onMounted, computed} from "vue";
+import {computed} from "vue";
 import type {Bestiary} from "~/shared";
 import { store } from "@/utils/store";
-import { $loading } from "@/utils/app/loading";
 const props = defineProps<{personal: boolean; bestiaries: Bestiary[]}>();
 
 const emit = defineEmits<{

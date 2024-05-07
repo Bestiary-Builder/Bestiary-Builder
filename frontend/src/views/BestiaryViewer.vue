@@ -30,7 +30,7 @@
 				</button>
 				<template #popper>
 					<div class="v-popper__custom-menu">
-						<LabelledComponent title="Sort creatures">
+						<LabelledComponent title="Sort creatures" for="sortcreatures">
 							<select v-model="sortMode" name="Sort bestiary by attribute" id="sortcreatures">
 								<option>Alphabetically</option>
 								<option>CR Ascending</option>
@@ -38,16 +38,16 @@
 								<option>Creature Type</option>
 							</select>
 						</LabelledComponent>
-						<LabelledComponent title="Filter">
+						<LabelledComponent title="Filter" for="searchtext">
 							<input type="text" v-model="searchText" id="searchtext" placeholder="Search by name..." />
 						</LabelledComponent>
-						<LabelledComponent title="Creature type">
+						<LabelledComponent title="Creature type" for="creatureType">
 							<div style="min-width: 300px">
 								<v-select
 									placeholder="Search by creature type"
 									v-model="searchOptions.tags"
 									multiple
-									:options="['Aberration', 'Beast', 'Celestial', 'Construct', 'Dragon', 'Elemental', 'Fey', 'Fiend', 'Giant', 'Humanoid', 'Monstrosity', 'Ooze', 'Plant', 'Undead']"
+									:options="creatureTypes"
 									inputId="creaturetype"
 									:taggable="true"
 								/>
@@ -76,10 +76,10 @@
 							</div>
 						</div>
 						<span class="warning" v-if="searchOptions.minCr > searchOptions.maxCr" style="text-align: center"> Min is bigger than max </span>
-						<LabelledComponent title="Environment">
+						<LabelledComponent title="Environment" for="environment">
 							<input type="text" v-model="searchEnv" id="environment" placeholder="Search by name..." />
 						</LabelledComponent>
-						<LabelledComponent title="Faction">
+						<LabelledComponent title="Faction" for="faction">
 							<input type="text" v-model="searchFaction" id="faction" placeholder="Search by name..." />
 						</LabelledComponent>
 					</div>
@@ -177,21 +177,21 @@
 		<Modal :show="showImportModal" @close="showImportModal = false" v-if="bestiary && isOwner">
 			<template #header>Import Creatures</template>
 			<template #body>
-				<LabelledComponent title="CritterDB bestiary link">
+				<LabelledComponent title="CritterDB bestiary link" for="critterlink">
 					<p>Insert a link to a critterDB bestiary to import all its creatures.</p>
 					<p>Make sure the bestiary is public or has link sharing enabled.</p>
 					<div class="flow-horizontally">
-						<input type="text" v-model="critterDbId" id="critterdbbestiarylink" placeholder="CritterDB bestiary link" />
+						<input type="text" v-model="critterDbId" id="critterlink" placeholder="CritterDB bestiary link" />
 						<button class="btn confirm" @click.prevent="importBestiaryFromCritterDB">Import</button>
 					</div>
 				</LabelledComponent>
 
 				<hr />
 
-				<LabelledComponent title="Bestiary Builder JSON">
+				<LabelledComponent title="Bestiary Builder JSON" for="bestiaryjson">
 					<p>Insert the JSON as text gotten from clicking export on another bestiary within Bestiary Builder.</p>
 					<div class="flow-horizontally">
-						<input type="text" v-model="bestiaryBuilderJson" id="bestiarybuilderjson" placeholder="Bestiary builder JSON" />
+						<input type="text" v-model="bestiaryBuilderJson" id="bestiaryjson" placeholder="Bestiary builder JSON" />
 						<button class="btn confirm" @click.prevent="importCreaturesFromBestiaryBuilder">Import</button>
 					</div>
 				</LabelledComponent>
@@ -201,18 +201,18 @@
 		<Modal :show="showEditorModal" @close="showEditorModal = false" v-if="bestiary && isOwner">
 			<template #header>Edit Bestiary</template>
 			<template #body>
-				<LabelledComponent title="Bestiary name">
+				<LabelledComponent title="Bestiary name" for="bestiaryname">
 					<input type="text" v-model="bestiary.name" :minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength" id="bestiaryname" />
 				</LabelledComponent>
-				<LabelledComponent title="Description">
+				<LabelledComponent title="Description" for="description">
 					<p>Supports markdown</p>
 					<textarea v-model="bestiary.description" :maxlength="store.limits?.descriptionLength" id="description" />
 				</LabelledComponent>
 				<div class="two-wide" v-if="isOwner">
-					<LabelledComponent title="Status">
+					<LabelledComponent title="Status" for="status">
 						<v-select v-model="bestiary.status" :options="['public', 'unlisted', 'private']" inputId="status" />
 					</LabelledComponent>
-					<LabelledComponent title="Tags">
+					<LabelledComponent title="Tags" for="tags">
 						<v-select placeholder="Select Tags" v-model="bestiary.tags" multiple :options="store.tags" inputId="tags" />
 					</LabelledComponent>
 				</div>
@@ -227,10 +227,10 @@
 							</p>
 						</div>
 					</div>
-					<LabelledComponent title="Add editor">
+					<LabelledComponent title="Add editor" for="addeditor">
 						<div class="button-container">
 							<input type="text" v-model="editorToAdd" inputmode="numeric" placeholder="Discord user ID" id="addeditor" />
-							<button class="btn" @click="addEditor()" id="add">Add</button>
+							<button class="btn" @click="addEditor()">Add</button>
 						</div>
 					</LabelledComponent>
 				</div>
@@ -267,7 +267,8 @@ import {toast} from "@/utils/app/toast";
 import {parseFromCritterDB} from "@/parser/parseFromCritterDB";
 import {store} from "@/utils/store";
 import Markdown from "@/components/Markdown.vue";
-
+import { creatureTypes } from "@/utils/constants";
+import { $loading } from "@/utils/app/loading";
 export default defineComponent({
 	data() {
 		return {
@@ -299,7 +300,8 @@ export default defineComponent({
 			showEditorModal: false,
 			showImportModal: false,
 			selectedCreature: null as Creature | null,
-			store
+			store,
+			creatureTypes
 		};
 	},
 	components: {
@@ -313,7 +315,7 @@ export default defineComponent({
 		Markdown
 	},
 	async beforeMount() {
-		const loader = this.$loading.show();
+		const loader = $loading.show();
 		await this.getBestiary();
 		loader.hide();
 
@@ -343,7 +345,7 @@ export default defineComponent({
 	computed: {
 		searchCreatures(): Creature[] | null {
 			if (this.creatures == null) return null;
-			const loader = this.$loading.show();
+			const loader = $loading.show();
 
 			let response = this.creatures?.filter(this.filterCreature) || null;
 
@@ -455,7 +457,7 @@ export default defineComponent({
 			};
 			let hasFailed = false;
 			toast.info("Fetching bestiary data has started. This may take a while.");
-			let loader = this.$loading.show();
+			let loader = $loading.show();
 			const {success, data: resultData, error} = await useFetch<{name: string; description: string; creatures: object[]}>(`/api/critterdb/${link}/${isPublic}`);
 			if (success) {
 				data = resultData;
@@ -467,7 +469,7 @@ export default defineComponent({
 			if (hasFailed) {
 				return;
 			}
-			loader = this.$loading.show();
+			loader = $loading.show();
 			toast.info("Importing creatures has started. This may take a while.");
 			let creatures = data.creatures.map((a) => parseFromCritterDB(a)[0]);
 			const {success: cSuccess, data: creatureData, error: cError} = await useFetch<{error?: string}>("/api/bestiary/" + this.bestiary?._id + "/addcreatures", "POST", creatures);
@@ -480,7 +482,7 @@ export default defineComponent({
 		},
 		async importCreaturesFromBestiaryBuilder() {
 			let creatures;
-			const loader = this.$loading.show();
+			const loader = $loading.show();
 			try {
 				creatures = JSON.parse(this.bestiaryBuilderJson);
 			} catch (e) {
@@ -502,7 +504,7 @@ export default defineComponent({
 		async createCreature(stats = defaultStatblock, shouldRefresh = true, shouldHaveLoader = true) {
 			let loader;
 			if (shouldHaveLoader) {
-				loader = this.$loading.show();
+				loader = $loading.show();
 			}
 			//Replace for actual creation data:
 			let data = {
@@ -524,7 +526,7 @@ export default defineComponent({
 			if (shouldHaveLoader && loader) loader.hide();
 		},
 		async deleteCreature(creature: Creature) {
-			const loader = this.$loading.show();
+			const loader = $loading.show();
 			const {success, error} = await useFetch(`/api/creature/${creature._id}/delete`);
 			if (success) {
 				toast.success("Deleted creature succesfully");
@@ -539,7 +541,7 @@ export default defineComponent({
 		async addEditor() {
 			if (!this.bestiary) return;
 			let id = this.editorToAdd;
-			const loader = this.$loading.show();
+			const loader = $loading.show();
 			const {success, error} = await useFetch(`/api/bestiary/${this.bestiary._id}/editors/add/${id}`);
 			if (success) {
 				toast.success("Added editor succesfully");
@@ -551,7 +553,7 @@ export default defineComponent({
 		},
 		async removeEditor(id: string) {
 			if (!this.bestiary) return;
-			const loader = this.$loading.show();
+			const loader = $loading.show();
 			const {success, error} = await useFetch(`/api/bestiary/${this.bestiary._id}/editors/remove/${id}`);
 			if (success) {
 				toast.success("Removed editor succesfully");
@@ -611,7 +613,7 @@ export default defineComponent({
 		},
 		async updateBestiary() {
 			if (!this.bestiary) return;
-			const loader = this.$loading.show();
+			const loader = $loading.show();
 			//Send to backend
 			const {success, error} = await useFetch<Bestiary>(`/api/bestiary/${this.bestiary._id}/update`, "POST", this.bestiary);
 			if (success) {
@@ -625,7 +627,7 @@ export default defineComponent({
 		},
 		async toggleBookmark() {
 			if (!this.bestiary) return;
-			const loader = this.$loading.show();
+			const loader = $loading.show();
 			const {success, data, error} = await useFetch<{state: boolean}>(`/api/bestiary/${this.bestiary._id}/bookmark/toggle`);
 			if (success) {
 				this.bookmarked = data.state;

@@ -26,7 +26,7 @@
 				</RouterLink>
 				<div v-else class="user login" @click.prevent="sendToLogin($route.path)">Login</div>
 			</div>
-			<span class="navbar-toggler" @click="isExpanded = !isExpanded" aria-label="Toggle navbar"> <font-awesome-icon :icon="['fas', 'bars']" /> </span>
+			<span class="navbar-toggler" @click="isExpanded = !isExpanded" role="button" aria-label="Toggle navbar"> <font-awesome-icon :icon="['fas', 'bars']" /> </span>
 		</nav>
 	</header>
 </template>

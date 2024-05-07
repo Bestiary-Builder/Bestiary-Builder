@@ -45,33 +45,33 @@
 				<div class="editor-content">
 					<div class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-1" id="tabpanel-1">
 						<div class="editor-field__container two-wide">
-							<LabelledComponent title="Creature name">
+							<LabelledComponent title="Creature name" for="creaturename">
 								<input type="text" :maxlength="store.limits?.nameLength" v-model="data.description.name" id="creaturename" />
 							</LabelledComponent>
 
-							<LabelledComponent title="Proper Noun">
+							<LabelledComponent title="Proper Noun" for="propernoun">
 								<span>
-									<input type="checkbox" v-model="data.description.isProperNoun" id="propernounbox" /> <label for="propernounbox">Toggles display as "{{ data.description.name }}" instead of "the {{ data.description.name }}"? </label>
+									<input type="checkbox" v-model="data.description.isProperNoun" id="propernoun" /> <label for="propernoun">Toggles display as "{{ data.description.name }}" instead of "the {{ data.description.name }}"? </label>
 								</span>
 							</LabelledComponent>
 						</div>
 
 						<div class="editor-field__container one-wide">
-							<LabelledComponent title="Description">
+							<LabelledComponent title="Description" for="description">
 								<textarea rows="20" :maxlength="store.limits?.descriptionLength" v-model="data.description.description" id="description" />
 							</LabelledComponent>
 						</div>
 						<div class="editor-field__container two-wide">
-							<LabelledComponent title="Image URL">
+							<LabelledComponent title="Image URL" for="imageurl">
 								<input type="text" v-model="data.description.image" id="imageurl" :pattern="store.limits?.imageFormats ? `(https:\/\/)(.+)(\\.${store.limits?.imageFormats.join('|\\.')})` : ''" />
 							</LabelledComponent>
-							<LabelledComponent title="Environment">
+							<LabelledComponent title="Environment" for="environment">
 								<input type="text" v-model="data.description.environment" id="environment" />
 							</LabelledComponent>
-							<LabelledComponent title="Faction">
+							<LabelledComponent title="Faction" for="faction">
 								<input type="text" v-model="data.description.faction" id="faction" />
 							</LabelledComponent>
-							<LabelledComponent title="Alignment" takes-custom-text-input>
+							<LabelledComponent title="Alignment" takes-custom-text-input for="alignment">
 								<v-select
 									v-model="data.description.alignment"
 									:options="alignments"
@@ -93,16 +93,16 @@
 								</div>
 							</div>
 
-							<LabelledNumberInput v-model="data.core.proficiencyBonus" :min="0" title="Proficiency Bonus" :step="1" />
-							<LabelledNumberInput v-model="data.description.xp" :min="0" :step="1" title="Experience Points" />
+							<LabelledNumberInput v-model="data.core.proficiencyBonus" :min="0" title="Proficiency Bonus" :step="1"  labelId="proficiencyBonus"/>
+							<LabelledNumberInput v-model="data.description.xp" :min="0" :step="1" title="Experience Points"  labelId="experience"/>
 						</div>
 					</div>
 					<div class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-2" id="tabpanel-2">
 						<div class="editor-field__container two-wide">
-							<LabelledComponent title="Race" takes-custom-text-input>
+							<LabelledComponent title="Race" takes-custom-text-input for="race">
 								<v-select v-model="data.core.race" :options="creatureTypes" :taggable="true" :pushTags="true" inputId="race" />
 							</LabelledComponent>
-							<LabelledComponent title="Size" takes-custom-text-input>
+							<LabelledComponent title="Size" takes-custom-text-input for="size">
 								<v-select v-model="data.core.size" :options="sizes" :taggable="true" :pushTags="true" inputId="size" />
 							</LabelledComponent>
 						</div>
@@ -111,8 +111,8 @@
 							<template #item="{element, index}">
 								<LabelledComponent :title="element.name">
 									<div class="grid eight-two">
-										<LabelledNumberInput title="" v-model="data.core.speed[index].value" />
-										<select v-model="data.core.speed[index].unit" class="ghost unit-selector">
+										<LabelledNumberInput title="" v-model="data.core.speed[index].value" :labelId="element.name" />
+										<select v-model="data.core.speed[index].unit" class="ghost unit-selector" title="Select speed unit">
 											<option>ft</option>
 											<option>m</option>
 											<option>km</option>
@@ -130,7 +130,7 @@
 								</LabelledComponent>
 							</template>
 							<template #footer>
-								<LabelledComponent title="Add speed" takes-custom-text-input>
+								<LabelledComponent title="Add speed" takes-custom-text-input for="addspeed">
 									<v-select v-model="newSpeedName" :options="['Walk', 'Swim', 'Fly', 'Climb', 'Burrow']" :taggable="true" :pushTags="true" inputId="addspeed" placeholder="Select speed" />
 									<button class="btn" @click="addNewSpeed">Create</button>
 								</LabelledComponent>
@@ -141,8 +141,8 @@
 							<template #item="{element, index}">
 								<LabelledComponent :title="element.name">
 									<div class="grid eight-two">
-										<LabelledNumberInput title="" v-model="element.value" />
-										<select v-model="element.unit" class="ghost unit-selector">
+										<LabelledNumberInput title="" v-model="element.value" :labelId="element.name"/>
+										<select v-model="element.unit" class="ghost unit-selector" title="Select sense unit">
 											<option>ft</option>
 											<option>m</option>
 											<option>km</option>
@@ -160,65 +160,65 @@
 								</LabelledComponent>
 							</template>
 							<template #footer>
-								<LabelledComponent title="Add sense" takes-custom-text-input>
+								<LabelledComponent title="Add sense" takes-custom-text-input for="addsense">
 									<v-select v-model="newSenseName" :options="['Darkvision', 'Blindsight', 'Truesight', 'Tremorsense']" :taggable="true" :pushTags="true" inputId="addsense" placeholder="Select sense" />
 									<button class="btn" @click="data.core.senses.push({name: newSenseName, value: 30, unit: 'ft', comment: ''})">Create</button>
 								</LabelledComponent>
-								<LabelledNumberInput v-model="data.misc.passivePerceptionOverride" title="Passive perc override" :step="1" :is-clearable="true" />
+								<LabelledNumberInput v-model="data.misc.passivePerceptionOverride" title="Passive perc override" :step="1" :is-clearable="true" labelId="passivePercOverride" />
 							</template>
 						</draggable>
 						<h2 class="group-header">Misc</h2>
 						<div class="editor-field__container two-wide">
-							<LabelledComponent title="Languages" takes-custom-text-input>
+							<LabelledComponent title="Languages" takes-custom-text-input for="languages">
 								<v-select placeholder="Select a Language or type one" v-model="data.core.languages" multiple :deselectFromDropdown="true" :closeOnSelect="false" :options="languages" :taggable="true" :pushTags="true" inputId="languages" />
 							</LabelledComponent>
-							<LabelledNumberInput v-model="data.misc.telepathy" title="Telepathy" />
+							<LabelledNumberInput v-model="data.misc.telepathy" title="Telepathy" labelId="telepathy"/>
 						</div>
 					</div>
 
 					<div class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-3" id="tabpanel-3">
 						<h2 class="group-header">Ability Scores</h2>
 						<div class="editor-field__container three-wide">
-							<LabelledNumberInput v-model="data.abilities.stats.str" title="Strength" :step="1" />
-							<LabelledNumberInput v-model="data.abilities.stats.dex" title="Dexterity" :step="1" />
-							<LabelledNumberInput v-model="data.abilities.stats.con" title="Constitution" :step="1" />
-							<LabelledNumberInput v-model="data.abilities.stats.int" title="Intelligence" :step="1" />
-							<LabelledNumberInput v-model="data.abilities.stats.wis" title="Wisdom" :step="1" />
-							<LabelledNumberInput v-model="data.abilities.stats.cha" title="Charisma" :step="1" />
+							<LabelledNumberInput v-model="data.abilities.stats.str" title="Strength" :step="1"  labelId="strStat"/>
+							<LabelledNumberInput v-model="data.abilities.stats.dex" title="Dexterity" :step="1"  labelId="dexStat"/>
+							<LabelledNumberInput v-model="data.abilities.stats.con" title="Constitution" :step="1"  labelId="conStat"/>
+							<LabelledNumberInput v-model="data.abilities.stats.int" title="Intelligence" :step="1"  labelId="intStat"/>
+							<LabelledNumberInput v-model="data.abilities.stats.wis" title="Wisdom" :step="1"  labelId="wisStat"/>
+							<LabelledNumberInput v-model="data.abilities.stats.cha" title="Charisma" :step="1"  labelId="chaStat"/>
 						</div>
 						<h2 class="group-header">Saving Throws</h2>
 						<div class="editor-field__container three-wide">
-							<LabelledNumberInput v-model="data.abilities.saves.str.override" title="Strength" :step="1" :is-clearable="true">
+							<LabelledNumberInput v-model="data.abilities.saves.str.override" title="Strength" :step="1" :is-clearable="true" labelId="strSave">
 								<p>
 									<input type="checkbox" v-model="data.abilities.saves.str.isProficient" id="strsaveprof" :is-clearable="true" />
 									<label for="strsaveprof" aria-label="strength save proficiency"> Proficient </label>
 								</p>
 							</LabelledNumberInput>
-							<LabelledNumberInput v-model="data.abilities.saves.dex.override" title="Dexterity" :step="1" :is-clearable="true">
+							<LabelledNumberInput v-model="data.abilities.saves.dex.override" title="Dexterity" :step="1" :is-clearable="true" labelId="dexSave">
 								<p>
 									<input type="checkbox" v-model="data.abilities.saves.dex.isProficient" id="dexsaveprof" />
 									<label for="dexsaveprof" aria-label="dexterity save proficiency"> Proficient </label>
 								</p>
 							</LabelledNumberInput>
-							<LabelledNumberInput v-model="data.abilities.saves.con.override" title="Constitution" :step="1" :is-clearable="true">
+							<LabelledNumberInput v-model="data.abilities.saves.con.override" title="Constitution" :step="1" :is-clearable="true" labelId="conSave">
 								<p>
-									<input type="checkbox" v-model="data.abilities.saves.con.isProficient" id="consaveprof" />
+									<input type="checkbox" v-model="data.abilities.saves.con.isProficient" id="consaveprof"/>
 									<label for="consaveprof" aria-label="constitution save proficiency"> Proficient </label>
 								</p>
 							</LabelledNumberInput>
-							<LabelledNumberInput v-model="data.abilities.saves.int.override" title="Intelligence" :step="1" :is-clearable="true">
+							<LabelledNumberInput v-model="data.abilities.saves.int.override" title="Intelligence" :step="1" :is-clearable="true" labelId="intSave">
 								<p>
 									<input type="checkbox" v-model="data.abilities.saves.int.isProficient" id="intsaveprof" />
 									<label for="intsaveprof" aria-label="intelligence save proficiency"> Proficient </label>
 								</p>
 							</LabelledNumberInput>
-							<LabelledNumberInput v-model="data.abilities.saves.wis.override" title="Wisdom" :step="1" :is-clearable="true">
+							<LabelledNumberInput v-model="data.abilities.saves.wis.override" title="Wisdom" :step="1" :is-clearable="true" labelId="wisSave">
 								<p>
 									<input type="checkbox" v-model="data.abilities.saves.wis.isProficient" id="wissaveprof" />
 									<label for="wissaveprof" aria-label="wisdom save proficiency"> Proficient </label>
 								</p>
 							</LabelledNumberInput>
-							<LabelledNumberInput v-model="data.abilities.saves.cha.override" title="Charisma" :step="1" :is-clearable="true">
+							<LabelledNumberInput v-model="data.abilities.saves.cha.override" title="Charisma" :step="1" :is-clearable="true" labelId="chaSave">
 								<p>
 									<input type="checkbox" v-model="data.abilities.saves.cha.isProficient" id="chasaveprof" />
 									<label for="chasaveprof" aria-label="charisma save proficiency"> Proficient </label>
@@ -238,39 +238,40 @@
 								</div>
 								<button class="btn" @click="deleteSkill(index)">Delete</button>
 							</LabelledComponent>
-							<LabelledComponent title="Add new skill">
+							<LabelledComponent title="Add new skill" for="addnewskill">
 								<v-select
 									placeholder="Select skill"
 									v-model="newSkillName"
 									:options="['Acrobatics', 'Animal Handling', 'Arcana', 'Athletics', 'Deception', 'History', 'Insight', 'Intimidation', 'Investigation', 'Medicine', 'Nature', 'Perception', 'Performance', 'Persuasion', 'Religion', 'Sleight of Hand', 'Stealth', 'Survival']"
+									inputId="addnewskill"
 								/>
-								<button class="btn editor-field__plus-button" id="addnewskill" @click="addNewSkill()">New Skill</button>
+								<button class="btn editor-field__plus-button" @click="addNewSkill()">New Skill</button>
 							</LabelledComponent>
 						</div>
 					</div>
 					<div class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-4" id="tabpanel-4">
 						<div class="editor-field__container three-wide">
-							<LabelledNumberInput v-model="data.defenses.hp.sizeOfHitDie" title="Hit Die Size" :step="2" />
-							<LabelledNumberInput v-model="data.defenses.hp.numOfHitDie" title="Hit Die Number" :step="1" />
-							<LabelledNumberInput v-model="data.defenses.hp.override" title="HP Override" :step="1" :is-clearable="true" />
+							<LabelledNumberInput v-model="data.defenses.hp.sizeOfHitDie" title="Hit Die Size" :step="2" labelId="hitDieSize"/>
+							<LabelledNumberInput v-model="data.defenses.hp.numOfHitDie" title="Hit Die Number" :step="1" labelId="hitDieNumber"/>
+							<LabelledNumberInput v-model="data.defenses.hp.override" title="HP Override" :step="1" :is-clearable="true" labelId="hpOverride"/>
 						</div>
 						<div class="editor-field__container two-wide">
-							<LabelledNumberInput v-model="data.defenses.ac.ac" title="Armor Class" :step="1" />
-							<LabelledComponent title="Armor Class source">
+							<LabelledNumberInput v-model="data.defenses.ac.ac" title="Armor Class" :step="1" labelId="armorClass"/>
+							<LabelledComponent title="Armor Class source" for="armorclasssource">
 								<input type="text" v-model="data.defenses.ac.acSource" id="armorclasssource" />
 							</LabelledComponent>
 						</div>
 						<div class="editor-field__container two-wide">
-							<LabelledComponent title="Vulnerabilities" takes-custom-text-input>
+							<LabelledComponent title="Vulnerabilities" takes-custom-text-input for="vulnerabilities">
 								<v-select placeholder="Type vulnerabilities..." v-model="data.defenses.vulnerabilities" multiple :deselectFromDropdown="true" :closeOnSelect="false" :options="resistanceList" :taggable="true" :pushTags="true" inputId="vulnerabilities" />
 							</LabelledComponent>
-							<LabelledComponent title="Resistances" takes-custom-text-input>
+							<LabelledComponent title="Resistances" takes-custom-text-input for="resistances">
 								<v-select placeholder="Type resistances..." v-model="data.defenses.resistances" multiple :deselectFromDropdown="true" :closeOnSelect="false" :options="resistanceList" :taggable="true" :pushTags="true" inputId="resistances" />
 							</LabelledComponent>
-							<LabelledComponent title="Immunities" takes-custom-text-input>
+							<LabelledComponent title="Immunities" takes-custom-text-input for="immunities">
 								<v-select placeholder="Type immunities..." v-model="data.defenses.immunities" multiple :deselectFromDropdown="true" :closeOnSelect="false" :options="resistanceList" :taggable="true" :pushTags="true" inputId="immunities" />
 							</LabelledComponent>
-							<LabelledComponent title="Condition Immunities" takes-custom-text-input>
+							<LabelledComponent title="Condition Immunities" takes-custom-text-input for="conditionimmunities">
 								<v-select
 									placeholder="Type condition immunities..."
 									v-model="data.defenses.conditionImmunities"
@@ -299,15 +300,15 @@
 									</LabelledComponent>
 								</template>
 								<template #footer>
-									<LabelledComponent :title="descText">
-										<button class="btn" @click="createNewFeature(fType)" :id="descText.toLowerCase().replaceAll(' ', '')">Create</button>
+									<LabelledComponent :title="descText" :for="descText">
+										<button class="btn" @click="createNewFeature(fType)" :id="descText">Create</button>
 									</LabelledComponent>
 
-									<LabelledComponent :title="capitalizeFirstLetter(fType) + ' Header'">
-										<textarea v-model="data.misc.featureHeaderTexts[fType]" :id="(fType + ' Header').toLowerCase().replaceAll(' ', '')" />
+									<LabelledComponent :title="capitalizeFirstLetter(fType) + ' Header'" :for="fType">
+										<textarea v-model="data.misc.featureHeaderTexts[fType]" :id="fType" />
 									</LabelledComponent>
 
-									<LabelledNumberInput v-model="data.misc.legActionsPerRound" v-if="fType == 'legendary' && data.features[fType].length > 0" title="Legendary Actions per round" :min="0" :step="1" />
+									<LabelledNumberInput v-model="data.misc.legActionsPerRound" v-if="fType == 'legendary' && data.features[fType].length > 0" title="Legendary Actions per round" :min="0" :step="1" for="legActionsPerRound"/>
 								</template>
 							</draggable>
 						</div>
@@ -315,58 +316,58 @@
 					<div class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-6" id="tabpanel-6">
 						<h2 class="group-header">Innate Spellcasting</h2>
 						<div class="editor-field__container two-wide">
-							<LabelledComponent title="Casting ability">
+							<LabelledComponent title="Casting ability" for="castingability">
 								<v-select :options="stats" v-model="data.spellcasting.innateSpells.spellCastingAbility" inputId="castingability" />
 							</LabelledComponent>
-							<LabelledComponent title="Not these components">
+							<LabelledComponent title="Not these components" for="notthesecomponents">
 								<v-select :options="['Material', 'Verbal', 'Somatic']" v-model="data.spellcasting.innateSpells.noComponentsOfType" multiple :deselectFromDropdown="true" :closeOnSelect="false" inputId="notthesecomponents" />
 							</LabelledComponent>
 						</div>
 						<div class="editor-field__container two-wide">
-							<LabelledNumberInput v-model="data.spellcasting.innateSpells.spellDcOverride" title="DC override" :step="1" :is-clearable="true" />
-							<LabelledNumberInput v-model="data.spellcasting.innateSpells.spellBonusOverride" title="Attack bonus override" :step="1" :is-clearable="true" />
-							<LabelledComponent title="At will" takes-custom-text-input>
+							<LabelledNumberInput v-model="data.spellcasting.innateSpells.spellDcOverride" title="DC override" :step="1" :is-clearable="true"  labelId="innateSpellDcOverride"/>
+							<LabelledNumberInput v-model="data.spellcasting.innateSpells.spellBonusOverride" title="Attack bonus override" :step="1" :is-clearable="true"  labelId="innateSpellBonusOverride"/>
+							<LabelledComponent title="At will" takes-custom-text-input for="atwill">
 								<v-select :options="spellListFlattened" v-model="innateSpells[0]" multiple :deselectFromDropdown="true" :closeOnSelect="false" inputId="atwill" :taggable="true" :pushTags="true" />
 							</LabelledComponent>
-							<LabelledComponent title="1/day" takes-custom-text-input>
+							<LabelledComponent title="1/day" takes-custom-text-input for="1/day">
 								<v-select :options="spellListFlattened" v-model="innateSpells[1]" multiple :deselectFromDropdown="true" :closeOnSelect="false" inputId="1/day" :taggable="true" :pushTags="true" />
 							</LabelledComponent>
-							<LabelledComponent title="2/day" takes-custom-text-input>
+							<LabelledComponent title="2/day" takes-custom-text-input for="2/day">
 								<v-select :options="spellListFlattened" v-model="innateSpells[2]" multiple :deselectFromDropdown="true" :closeOnSelect="false" inputId="2/day" :taggable="true" :pushTags="true" />
 							</LabelledComponent>
-							<LabelledComponent title="3/day" takes-custom-text-input>
+							<LabelledComponent title="3/day" takes-custom-text-input for="3/day">
 								<v-select :options="spellListFlattened" v-model="innateSpells[3]" multiple :deselectFromDropdown="true" :closeOnSelect="false" inputId="3/day" :taggable="true" :pushTags="true" />
 							</LabelledComponent>
 
-							<LabelledComponent title="Is psionics?">
-								<span> <input type="checkbox" v-model="data.spellcasting.innateSpells.isPsionics" id="ispsionics?" /> Toggles display as psionics </span>
+							<LabelledComponent title="Is psionics?" for="ispsionics">
+								<span> <input type="checkbox" v-model="data.spellcasting.innateSpells.isPsionics" id="ispsionics" /> Toggles display as psionics </span>
 							</LabelledComponent>
-							<LabelledComponent title="Display as action?">
-								<span> <input type="checkbox" v-model="data.spellcasting.innateSpells.displayAsAction" id="displayasaction?" /> Toggles display as action </span>
+							<LabelledComponent title="Display as action?" for="displayasaction">
+								<span> <input type="checkbox" v-model="data.spellcasting.innateSpells.displayAsAction" id="displayasaction" /> Toggles display as action </span>
 							</LabelledComponent>
 
-							<LabelledComponent title="Edit specific spells">
-								<button class="btn" @click="showSpellModal = true" id="editspecificspells">Edit cast level/add comment</button>
+							<LabelledComponent title="Edit specific spells" for="editspells">
+								<button class="btn" @click="showSpellModal = true" id="editspells">Edit cast level/add comment</button>
 							</LabelledComponent>
 						</div>
 						<h2 class="group-header">Class spellcasting</h2>
 						<div class="editor-field__container two-wide">
-							<LabelledComponent title="Class">
-								<v-select v-model="data.spellcasting.casterSpells.castingClass" :options="classes" inputId="class" />
+							<LabelledComponent title="Class" for="castingClass">
+								<v-select v-model="data.spellcasting.casterSpells.castingClass" :options="classes" inputId="castingClass" />
 							</LabelledComponent>
-							<LabelledComponent title="Class level">
-								<v-select v-model="data.spellcasting.casterSpells.casterLevel" :options="classLevels" inputId="classlevel" />
+							<LabelledComponent title="Class level" for="classLevel">
+								<v-select v-model="data.spellcasting.casterSpells.casterLevel" :options="classLevels" inputId="classLevel" />
 							</LabelledComponent>
 
-							<LabelledNumberInput v-model="data.spellcasting.casterSpells.spellDcOverride" title="DC override" :step="1" :is-clearable="true" />
-							<LabelledNumberInput v-model="data.spellcasting.casterSpells.spellBonusOverride" title="Attack bonus override" :step="1" />
+							<LabelledNumberInput v-model="data.spellcasting.casterSpells.spellDcOverride" title="DC override" :step="1" :is-clearable="true"  labelId="spellDcOverride"/>
+							<LabelledNumberInput v-model="data.spellcasting.casterSpells.spellBonusOverride" title="Attack bonus override" :step="1"  labelId="spellBonusOverride"/>
 						</div>
 						<div v-if="data.spellcasting.casterSpells.castingClass" class="editor-field__container two-wide">
-							<LabelledComponent title="Cantrips" v-if="!['Ranger', 'Paladin'].includes(data.spellcasting.casterSpells.castingClass)" takes-custom-text-input>
+							<LabelledComponent title="Cantrips" v-if="!['Ranger', 'Paladin'].includes(data.spellcasting.casterSpells.castingClass)" takes-custom-text-input for="cantrips">
 								<v-select v-model="data.spellcasting.casterSpells.spellList[0]" :options="spellList[0]" multiple :deselectFromDropdown="true" :closeOnSelect="false" :taggable="true" :pushTags="true" inputId="cantrips" />
 							</LabelledComponent>
-							<LabelledComponent v-for="level in spellLevelList()" :title="'Level ' + level" takes-custom-text-input>
-								<v-select v-model="data.spellcasting.casterSpells.spellList[level]" :options="getSpellsByLevel(level)" multiple :deselectFromDropdown="true" :closeOnSelect="false" :taggable="true" :pushTags="true" :title="'Level ' + level" />
+							<LabelledComponent v-for="level in spellLevelList()" :title="'Level ' + level" takes-custom-text-input :for="`spellLevel${level}`">
+								<v-select v-model="data.spellcasting.casterSpells.spellList[level]" :options="getSpellsByLevel(level)" multiple :deselectFromDropdown="true" :closeOnSelect="false" :taggable="true" :pushTags="true" :title="'Level ' + level" :inputId="`spellLevel${level}`"/>
 							</LabelledComponent>
 						</div>
 					</div>
@@ -386,7 +387,7 @@
 		<Modal :show="showImportModal" @close="showImportModal = false">
 			<template #header>Import Creatures</template>
 			<template #body>
-				<LabelledComponent title="Bestiary Builder JSON">
+				<LabelledComponent title="Bestiary Builder JSON" for="bestiarybuilderjson">
 					<p>Insert the JSON as text gotten from clicking export on another creature within Bestiary Builder.</p>
 					<div class="two-wide">
 						<input type="text" v-model="bestiaryBuilderJson" id="bestiarybuilderjson" />
@@ -394,10 +395,10 @@
 					</div>
 				</LabelledComponent>
 				<hr />
-				<LabelledComponent title="5e Tools JSON">
+				<LabelledComponent title="5e Tools JSON" for="toolsjson">
 					<p>Insert 5e.tools JSON as text into this field, gotten from clicking export on 5e.tools and copying the JSON.</p>
 					<div class="two-wide">
-						<input type="text" v-model="toolsjson" id="5etoolsjson" />
+						<input type="text" v-model="toolsjson" id="toolsjson" />
 						<button class="btn confirm" @click.prevent="import5etools">Import</button>
 					</div>
 				</LabelledComponent>
@@ -423,8 +424,8 @@
 				<p>You can use this to add text to specific spells such as "self only" or "at 5th level".</p>
 				<div class="two-wide">
 					<template v-for="times in data.spellcasting.innateSpells.spellList" :key="times">
-						<LabelledComponent v-for="(spell, index) in times" v-if="times.length > 0" :key="index" :title="spell.spell">
-							<input type="text" v-model="spell.comment" placeholder="comment" :id="spell.spell" />
+						<LabelledComponent v-for="(spell, index) in times" v-if="times.length > 0" :key="index" :title="spell.spell" :for="`editSpell${spell.spell}`">
+							<input type="text" v-model="spell.comment" placeholder="comment" :id="`editSpell${spell.spell}`" />
 						</LabelledComponent>
 					</template>
 				</div>
@@ -729,7 +730,7 @@ export default defineComponent({
 			///console.log(this.data);
 			if (!this.rawInfo) return;
 			this.rawInfo.stats = this.data;
-			const loader = this.$loading.show();
+			const loader = $loading.show();
 			//Send to backend
 			const {success, error} = await useFetch<Creature>(`/api/creature/${this.rawInfo._id}/update`, "POST", this.rawInfo);
 			if (success) {

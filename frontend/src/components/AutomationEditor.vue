@@ -2,7 +2,7 @@
 	<div class="two-wide uneven">
 		<div>
 			<div class="editor-field__container two-wide">
-				<LabelledComponent title="Feature name">
+				<LabelledComponent title="Feature name" for="featurename">
 					<input type="text" id="featurename" placeholder="Enter name" v-model="data.name" @change="hasEditedName = true" :minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength"/>
 				</LabelledComponent>
 				<LabelledComponent title="Documentation">
@@ -14,16 +14,16 @@
 			</div>
 
 			<div class="editor-field__container">
-				<LabelledComponent title="Feature description">
+				<LabelledComponent title="Feature description" for="featuredescription">
 					<textarea height="94" id="featuredescription" placeholder="Enter description" v-model="data.description" style="height: 93px" :maxlength="store.limits?.descriptionLength"/>
 				</LabelledComponent>
 			</div>
 
 			<div class="editor-field__container two-wide">
-				<LabelledComponent title="Save automation">
+				<LabelledComponent title="Save automation" for="saveautomation">
 					<button class="btn confirm" @click="saveAutomation(true)" id="saveautomation">Save</button>
 				</LabelledComponent>
-				<LabelledComponent title="Generate">
+				<LabelledComponent title="Generate" for="generate">
 					<button class="btn" @click="generateAutomation" v-tooltip="'Generate automation from description. May be incomplete or inaccurate. Only works for basic, to hit attacks.'" id="generate">
 						Generate
 						<font-awesome-icon :icon="['fas', 'circle-info']" />
@@ -32,29 +32,29 @@
 			</div>
 
 			<div class="editor-field__container two-wide" v-if="store.isMobile">
-				<LabelledComponent title="Clear automation">
+				<LabelledComponent title="Clear automation" for="clearautomation">
 					<button class="btn danger" @click="automationString = 'null'" id="clearautomation">Clear</button>
 				</LabelledComponent>
-				<LabelledComponent title="Copy Automation">
+				<LabelledComponent title="Copy Automation" for="copyautomation">
 					<button class="btn" @click="copyAutomation()" id="copyautomation">Copy</button>
 				</LabelledComponent>
 			</div>
 
 			<hr />
 			<div class="editor-field__container">
-				<LabelledComponent title="Import SRD feature">
+				<LabelledComponent title="Import SRD feature" for="importsrdfeature">
 					<v-select :options="loadedAutomation.srdFeatures" inputId="importsrdfeature" @option:selected="(selected : string) => (importAutomation('srd-feature', selected)) " />
 				</LabelledComponent>
 			</div>
 
 			<div class="editor-field__container">
-				<LabelledComponent title="Import basic example">
+				<LabelledComponent title="Import basic example" for="importbasicexample">
 					<v-select :options="loadedAutomation.basicExamples" inputId="importbasicexample" @option:selected="(selected : string) => (importAutomation('basic-example', selected))" />
 				</LabelledComponent>
 			</div>
 
 			<div class="editor-field__container" v-if="!isStandAlone">
-				<LabelledComponent title="Import custom automation">
+				<LabelledComponent title="Import custom automation" for="importcustomautomation">
 					<v-select :options="loadedAutomation.myAutomation" inputId="importcustomautomation" label="name" @option:selected="(selected : myAutomationSkeleton) => (importAutomation('automation', selected.name, selected._id))" />
 				</LabelledComponent>
 			</div>

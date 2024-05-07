@@ -1,8 +1,8 @@
 <template>
-	<LabelledComponent :title="title" :id="id">
+	<LabelledComponent :title="title" :for="labelId">
 		<slot></slot>
 		<div class="quantity">
-			<input ref="input" type="number" :name="title" :value="isNaN(value) ? '' : value" :min="min" :max="max" :step="step" inputmode="numeric" :id="title.toLowerCase().replaceAll(' ', '') + id" @change="change" :placeholder="placeholder" />
+			<input ref="input" type="number" :name="title" :value="isNaN(value) ? '' : value" :min="min" :max="max" :step="step" inputmode="numeric" :id="labelId"/>
 			<div class="quantity-nav">
 				<div class="quantity-button quantity-up" @click.prevent="increase" :aria-label="`Increase ${title} by ${step}`">+</div>
 				<div class="quantity-button quantity-down" @click.prevent="decrease" :aria-label="`Decrease ${title} by ${step}`">-</div>
@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, type Prop, type PropType} from "vue";
+import {defineComponent, type PropType} from "vue";
 import LabelledComponent from "./LabelledComponent.vue";
 const isNaN = Number.isNaN || window.isNaN;
 export default defineComponent({
@@ -46,13 +46,17 @@ export default defineComponent({
 		modelValue: {
 			type: Number as PropType<Number | null>,
 			default: NaN
+		},
+		labelId: {
+			type: String,
+			required: false,
+			default: ''
 		}
 	},
 	emits: ["update:modelValue"],
 	data() {
 		return {
 			value: NaN as any,
-			id: this.$.uid
 		};
 	},
 	methods: {

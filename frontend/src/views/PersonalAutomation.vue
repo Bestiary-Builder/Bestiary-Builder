@@ -28,7 +28,7 @@
 					</ol>
 					<p v-else>You do not have any personal automations.</p>
 				</LabelledComponent>
-				<LabelledComponent title="Add new automation">
+				<LabelledComponent title="Add new automation" for="addnewautomation">
 					<input type="text" v-model="newAutomationName" id="addnewautomation" :minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength" />
 					<button class="btn confirm" @click="addAutomation(newAutomationName)">Add</button>
 				</LabelledComponent>
@@ -47,10 +47,10 @@
 	<Modal :show="showImportModal" @close="showImportModal = false">
 		<template #header>Import Automation</template>
 		<template #body>
-			<LabelledComponent title="List of automation">
+			<LabelledComponent title="List of automation" for="listInput">
 				<p>Insert a list of automation in JSON format.</p>
 				<div class="two-wide">
-					<input type="text" v-model="importedListOfAutomation" id="listofautomation" placeholder="JSON" />
+					<input type="text" v-model="importedListOfAutomation" id="listInput" placeholder="JSON" />
 					<button class="btn confirm" @click="importAutomations">Import</button>
 				</div>
 			</LabelledComponent>

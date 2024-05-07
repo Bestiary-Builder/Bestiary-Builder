@@ -32,7 +32,7 @@
 			</button>
 			<template #popper>
 				<div class="v-popper__custom-menu">
-					<span> Search bestiaries by name or description</span>
+					<span><label for="searchinput"> Search bestiaries by name or description</label></span>
 					<input id="searchinput" type="text" v-model="search" placeholder="Search by bestiary name or description" v-debounce:600ms.fireonempty="searchBestiaries" />
 				</div>
 			</template>

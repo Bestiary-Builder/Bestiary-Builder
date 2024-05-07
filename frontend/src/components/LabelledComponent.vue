@@ -1,17 +1,16 @@
 <template>
 	<div class="container">
-		<label class="editor-field__title" :for="elId">{{ title }}<span v-if="takesCustomTextInput" v-tooltip="'Supports custom text input'">*</span></label>
+		<label class="editor-field__title" v-bind="$attrs">{{ title }}<span v-if="takesCustomTextInput" v-tooltip="'Supports custom text input'">*</span></label>
 		<slot></slot>
 	</div>
 </template>
 
 <script setup lang="ts">
-import {ref} from "vue";
-const props = withDefaults(defineProps<{title: string, id?: number | undefined, takesCustomTextInput?: boolean}>(), {takesCustomTextInput: false, number: undefined})
-const elId = ref("")
+const props = withDefaults(defineProps<{title: string, takesCustomTextInput?: boolean}>(), {takesCustomTextInput: false, number: undefined})
 
-if (props.id) elId.value = props.title.toLowerCase().replaceAll(" ", "") + props.id;
-else elId.value = props.title.toLowerCase().replaceAll(" ", "");
+defineOptions({
+	inheritAttrs: false
+})
 </script>
 
 <style scoped lang="less">

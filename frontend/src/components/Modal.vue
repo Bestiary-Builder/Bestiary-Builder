@@ -5,7 +5,7 @@
 				<div :class="{'fullscreen': fullScreen}" class="modal__content" @click.stop role="dialog" aria-modal="true" :aria-labelledby="`dialog${id}_label`" >
 					<div class="modal__header">
 						<h2 :id="`dialog${id}_label`"><slot name="header"></slot></h2>
-						<button class="modal__close-button" @click="emit('close')"><font-awesome-icon icon="fa-solid fa-xmark" /></button>
+						<button class="modal__close-button" @click="emit('close')"><font-awesome-icon icon="fa-solid fa-xmark" title="Close Modal"/> </button>
 					</div>
 					<div class="modal__body">
 						<slot name="body"></slot>
