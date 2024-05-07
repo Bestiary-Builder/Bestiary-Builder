@@ -43,7 +43,7 @@
 import { onMounted, ref} from "vue";
 import { store } from "@/utils/store";
 import { sendToLogin, getLoginRoute, useFetch} from "@/utils/utils";
-import {toast} from "@/main";
+import {toast} from "@/utils/app/toast";
 import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
 import JoinPatreon from "@/components/JoinPatreon.vue"
 import { useRouter } from "vue-router";

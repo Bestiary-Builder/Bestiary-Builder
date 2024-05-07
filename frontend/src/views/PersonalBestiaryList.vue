@@ -39,15 +39,13 @@ import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
 import {useRouter} from "vue-router";
 import {onMounted, ref} from "vue";
 
-import {toast, loadingOptions} from "@/main";
+import {toast} from "@/utils/app/toast";
 import type {Bestiary} from "~/shared";
 import {useFetch} from "@/utils/utils";
-import {useLoading} from "vue-loading-overlay";
-
-const $loading = useLoading(loadingOptions);
+import { $loading } from "@/utils/app/loading";
 const router = useRouter();
 
-onMounted(async () => {
+onMounted(() => {
 	const loader = $loading.show();
 	getBestiaries();
 

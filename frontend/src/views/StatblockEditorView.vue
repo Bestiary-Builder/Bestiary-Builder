@@ -739,9 +739,8 @@ export default defineComponent({
 	},
 
 	async mounted() {
-		const loader = this.$loading.show();
 		this.showSlides(1);
-
+		const loader = $loading.show();
 		//Fetch creature info
 		{
 			const {success, data, error} = await useFetch<Creature>("/api/creature/" + this.$route.params.id);

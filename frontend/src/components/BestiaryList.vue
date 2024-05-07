@@ -31,22 +31,14 @@ import UserBanner from "@/components/UserBanner.vue";
 import StatusIcon from "@/components/StatusIcon.vue";
 import {RouterLink} from "vue-router";
 import {onMounted, computed} from "vue";
-import {loadingOptions} from "@/main";
 import type {Bestiary} from "~/shared";
-import {useLoading} from "vue-loading-overlay";
 import { store } from "@/utils/store";
+import { $loading } from "@/utils/app/loading";
 const props = defineProps<{personal: boolean; bestiaries: Bestiary[]}>();
 
 const emit = defineEmits<{
 	(e: "deleteBestiary", bestiary: Bestiary): void;
 }>();
-
-const $loading = useLoading(loadingOptions);
-
-onMounted(async () => {
-	const loader = $loading.show();
-	loader.hide();
-});
 
 const openDeleteModal = (bestiary: Bestiary) => {
 	if (!bestiary) return;

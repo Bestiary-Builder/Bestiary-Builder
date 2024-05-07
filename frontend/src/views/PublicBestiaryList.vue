@@ -26,7 +26,7 @@
 			</template>
 		</VDropdown>
 
-		<VDropdown :distance="6" :positioning-disabled="isMobile">
+		<VDropdown :distance="6" :positioning-disabled="store.isMobile">
 			<button v-tooltip="'Search bestiaries'" aria-label="Search bestiaries">
 				<font-awesome-icon :icon="['fas', 'magnifying-glass']" />
 			</button>
@@ -58,16 +58,14 @@ import BestiaryList from "@/components/BestiaryList.vue";
 import {ref, onMounted, watch} from "vue";
 import type {Bestiary} from "~/shared";
 import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
-import {useFetch} from "@/utils/utils";
-import {store} from "@/utils/store";
-import {toast, isMobile} from "@/main";
+import { useFetch} from "@/utils/utils";
+import { store } from "@/utils/store";
+import {toast} from "@/utils/app/toast";
 // @ts-ignore
 import {vue3Debounce as vDebounce} from "vue-debounce";
-import {useLoading} from "vue-loading-overlay";
-import {loadingOptions} from "@/main";
+import { $loading } from "@/utils/app/loading";
 
-const $loading = useLoading(loadingOptions);
-onMounted(async () => {
+onMounted(() => {
 	const loader = $loading.show();
 	searchBestiaries();
 	loader.hide();

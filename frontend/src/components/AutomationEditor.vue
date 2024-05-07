@@ -31,7 +31,7 @@
 				</LabelledComponent>
 			</div>
 
-			<div class="editor-field__container two-wide" v-if="isMobile">
+			<div class="editor-field__container two-wide" v-if="store.isMobile">
 				<LabelledComponent title="Clear automation">
 					<button class="btn danger" @click="automationString = 'null'" id="clearautomation">Clear</button>
 				</LabelledComponent>
@@ -133,12 +133,10 @@ import {shallowRef, ref, onUnmounted, onMounted, watch, computed} from "vue";
 import {VueMonacoEditor} from "@guolao/vue-monaco-editor";
 import YAML from "yaml";
 import {useFetch} from "@/utils/utils";
-import {toast} from "@/main";
+import {toast} from "@/utils/app/toast";
 import {Id, type FeatureEntity, type Automation, type AutomationDocumentation, parseDescIntoAutomation} from "~/shared";
 import LabelledComponent from "./LabelledComponent.vue";
 import Markdown from "./Markdown.vue";
-
-import {isMobile} from "@/main";
 import {store} from "@/utils/store";
 const props = withDefaults(defineProps<{data: FeatureEntity | Automation; isStandAlone?: boolean; creatureName?: string}>(), {isStandAlone: false, creatureName: "$NAME$"});
 

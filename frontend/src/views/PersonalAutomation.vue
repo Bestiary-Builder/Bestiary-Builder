@@ -62,24 +62,21 @@
 <script setup lang="ts">
 import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
 import {ref, onMounted, onUnmounted} from "vue";
-import {useLoading} from "vue-loading-overlay";
 import {useFetch} from "@/utils/utils";
-import {toast, loadingOptions} from "@/main";
+import {toast} from "@/utils/app/toast";
 import {Automation} from "~/shared";
 import type {Id} from "~/shared";
 import LabelledComponent from "@/components/LabelledComponent.vue";
 import AutomationEditor from "@/components/AutomationEditor.vue";
 import Modal from "@/components/Modal.vue";
 import {onBeforeRouteLeave} from "vue-router";
-import {store} from "@/utils/store";
-const $loading = useLoading(loadingOptions);
+import { store } from "@/utils/store";
+import { $loading } from "@/utils/app/loading";
 const data = ref<Automation[]>([]);
 let initialData = "";
 // get our data
 onMounted(async () => {
 	const loader = $loading.show();
-
-	//Request my automations
 	await getMyAutomations();
 	initialData = JSON.stringify(data.value);
 	loader.hide();
