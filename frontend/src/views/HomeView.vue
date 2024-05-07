@@ -34,7 +34,7 @@ import dataFile from "@/assets/documents/home.md";
 import Markdown from "@/components/Markdown.vue";
 import {useFetch} from "@/utils/utils";
 import {onBeforeMount, ref} from "vue";
-import type {GlobalStats} from "../../../shared";
+import type {GlobalStats} from "~/shared";
 
 const stats = ref<null | GlobalStats>(null);
 onBeforeMount(async () => {

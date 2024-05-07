@@ -3,7 +3,7 @@
 		<div>
 			<div class="editor-field__container two-wide">
 				<LabelledComponent title="Feature name">
-					<input type="text" id="featurename" placeholder="Enter name" v-model="data.name" @change="hasEditedName = true" :minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength"/>
+					<input type="text" id="featurename" placeholder="Enter name" v-model="data.name" @change="hasEditedName = true" :minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength" />
 				</LabelledComponent>
 				<LabelledComponent title="Documentation">
 					<div>
@@ -15,7 +15,7 @@
 
 			<div class="editor-field__container">
 				<LabelledComponent title="Feature description">
-					<textarea height="94" id="featuredescription" placeholder="Enter description" v-model="data.description" style="height: 93px" :maxlength="store.limits?.descriptionLength"/>
+					<textarea height="94" id="featuredescription" placeholder="Enter description" v-model="data.description" style="height: 93px" :maxlength="store.limits?.descriptionLength" />
 				</LabelledComponent>
 			</div>
 
@@ -134,12 +134,12 @@ import {VueMonacoEditor} from "@guolao/vue-monaco-editor";
 import YAML from "yaml";
 import {useFetch} from "@/utils/utils";
 import {toast} from "@/main";
-import {Id, type FeatureEntity, type Automation, type AutomationDocumentation} from "~/shared";
+import {Id, type FeatureEntity, type Automation, type AutomationDocumentation, parseDescIntoAutomation} from "~/shared";
 import LabelledComponent from "./LabelledComponent.vue";
 import Markdown from "./Markdown.vue";
-import {parseDescIntoAutomation} from "@/parser/utils";
+
 import {isMobile} from "@/main";
-import { store } from "@/utils/store";
+import {store} from "@/utils/store";
 const props = withDefaults(defineProps<{data: FeatureEntity | Automation; isStandAlone?: boolean; creatureName?: string}>(), {isStandAlone: false, creatureName: "$NAME$"});
 
 const errorMessage = ref<null | string>(null);
@@ -258,7 +258,7 @@ const saveAutomation = async (shouldNotify = false) => {
 		if (success && shouldNotify) {
 			emit("savedStandaloneData");
 		} else if (!success) {
-			if (shouldNotify) toast.error(`${props.data.name || 'Unnamed feature'}: ` + error);
+			if (shouldNotify) toast.error(`${props.data.name || "Unnamed feature"}: ` + error);
 			return;
 		}
 	} else {

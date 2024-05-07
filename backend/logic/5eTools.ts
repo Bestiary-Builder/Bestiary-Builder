@@ -1,6 +1,29 @@
-import {type CasterSpells, type Statblock, type InnateSpellsList, defaultStatblock, getXPbyCR, SKILLS_BY_STAT, spellListFlattened, type SpellSlotEntity, type SkillsEntity, type SpeedEntity, type SenseEntity, type Stat} from "~/shared";
-import {abilityParser, capitalizeFirstLetter} from "./utils";
-export function parseFrom5eTools(data: any): [Statblock, {[key: string]: string[]}] {
+import {type CasterSpells, type Statblock, type InnateSpellsList, defaultStatblock, getXPbyCR, SKILLS_BY_STAT, spellListFlattened, type SpellSlotEntity, type SkillsEntity, type SpeedEntity, type SenseEntity, type Stat, capitalizeFirstLetter} from "~/shared";
+import {abilityParser} from "@/utilities/parsing";
+import {app} from "@/utilities/constants";
+import {log} from "@/utilities/logger";
+
+app.post("/api/5etools-import", async (req, res) => {
+	try {
+		const {data: input} = req.body;
+		const [data, notices] = parseFrom5eTools(input);
+		let oldStats = {...data};
+		let newData = {} as Statblock;
+		for (let key in defaultStatblock) {
+			//@ts-expect-error
+			newData[key] = {...defaultStatblock[key], ...oldStats[key]};
+		}
+		return res.json({
+			stats: newData,
+			notices
+		});
+	} catch (err) {
+		log.log("critical", err);
+		return res.status(500).json({error: "Unknown server error occured, please try again."});
+	}
+});
+
+function parseFrom5eTools(data: any): [Statblock, {[key: string]: string[]}] {
 	let outputData = {} as Statblock;
 	outputData.description = {
 		name: data.name,
@@ -44,7 +67,6 @@ export function parseFrom5eTools(data: any): [Statblock, {[key: string]: string[
 			if (typeof typeData?.tags[0] == "object") {
 				return capitalizeFirstLetter(baseType) + " " + typeData?.tags.map((t: any) => `${capitalizeFirstLetter(t.prefix)}} ${capitalizeFirstLetter(t.tag)}`).join(", ");
 			}
-			///console.log("Something is wrong in race", typeData);
 			return "";
 		})(),
 		size: (() => {
@@ -215,7 +237,6 @@ export function parseFrom5eTools(data: any): [Statblock, {[key: string]: string[
 			if (!data.skill) return [];
 
 			let output = [] as SkillsEntity[];
-
 
 			for (let sk in data.skill) {
 				let name = capitalizeFirstLetter(sk.replace("animal handling", "Animal Handling").replace("sleight of hand", "Sleight of Hand"));

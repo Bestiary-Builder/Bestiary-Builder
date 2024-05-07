@@ -265,7 +265,7 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 		let fixedData = [] as Creature[];
 		for (let creature of data) {
 			if (!creature) continue;
-			let oldStats = creature;
+			let oldStats = {...creature.stats};
 			creature.stats = {} as Statblock;
 			for (let key in defaultStatblock) {
 				//@ts-expect-error
@@ -278,7 +278,7 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 			//Set last updated
 			creature.lastUpdated = now;
 			//Check limits
-			if (!checkCreatureLimits(creature)) {
+			if (checkCreatureLimits(creature)) {
 				ignoredCreatures.push(creature.stats.description.name);
 				continue;
 			}

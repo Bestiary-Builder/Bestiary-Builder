@@ -1,4 +1,4 @@
-import type { Statblock} from "~/shared";
+import type {Statblock} from "~/shared";
 import {fullSpellAbilityName, componentsString, spellDc, spellAttackBonus} from "~/shared";
 
 export function displayInnateCasting(data: Statblock): string {
@@ -7,9 +7,14 @@ export function displayInnateCasting(data: Statblock): string {
 	let output = "";
 	if (!sData.spellCastingAbility) return output;
 	if (!data.description.isProperNoun && !sData.displayAsAction)
-		output += `The ${name.toLowerCase()}'s spellcasting ability is ${fullSpellAbilityName(sData.spellCastingAbility)} (spell save DC ${spellDc(true, data)}, ${spellAttackBonus(true, data)} to hit with spell attacks). It can innately cast the following spells${componentsString(sData.noComponentsOfType)}:`;
+		output += `The ${name.toLowerCase()}'s spellcasting ability is ${fullSpellAbilityName(sData.spellCastingAbility)} (spell save DC ${spellDc(true, data)}, ${spellAttackBonus(true, data)} to hit with spell attacks). It can innately cast the following spells${componentsString(
+			sData.noComponentsOfType
+		)}:`;
 	else if (!data.description.isProperNoun && sData.displayAsAction)
-		output += `The ${name.toLowerCase()} casts one of the following spells${componentsString(sData.noComponentsOfType)} and using ${fullSpellAbilityName(sData.spellCastingAbility)} as the spellcasting ability (spell save DC ${spellDc(true, data)}, ${spellAttackBonus(true,data)} to hit with spell attacks).`;
+		output += `The ${name.toLowerCase()} casts one of the following spells${componentsString(sData.noComponentsOfType)} and using ${fullSpellAbilityName(sData.spellCastingAbility)} as the spellcasting ability (spell save DC ${spellDc(true, data)}, ${spellAttackBonus(
+			true,
+			data
+		)} to hit with spell attacks).`;
 	else if (data.description.isProperNoun && !sData.displayAsAction)
 		output += `${name}'s spellcasting ability is ${fullSpellAbilityName(sData.spellCastingAbility)} (spell save DC ${spellDc(true, data)}, ${spellAttackBonus(true, data)} to hit with spell attacks). ${name} can innately cast the following spells${componentsString(sData.noComponentsOfType)}:`;
 	else if (data.description.isProperNoun && sData.displayAsAction)
@@ -36,4 +41,8 @@ export function displayCasterCasting(data: Statblock): string {
 	if (!sData.spellCastingAbility) return output;
 
 	return output;
+}
+
+export function capitalizeFirstLetter(string: string) {
+	return string.charAt(0).toUpperCase() + string.slice(1);
 }

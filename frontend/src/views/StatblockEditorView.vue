@@ -72,13 +72,7 @@
 								<input type="text" v-model="data.description.faction" id="faction" />
 							</LabelledComponent>
 							<LabelledComponent title="Alignment" takes-custom-text-input>
-								<v-select
-									v-model="data.description.alignment"
-									:options="alignments"
-									:taggable="true"
-									:pushTags="true"
-									inputId="alignment"
-								/>
+								<v-select v-model="data.description.alignment" :options="alignments" :taggable="true" :pushTags="true" inputId="alignment" />
 							</LabelledComponent>
 						</div>
 						<div class="editor-field__container three-wide">
@@ -271,17 +265,7 @@
 								<v-select placeholder="Type immunities..." v-model="data.defenses.immunities" multiple :deselectFromDropdown="true" :closeOnSelect="false" :options="resistanceList" :taggable="true" :pushTags="true" inputId="immunities" />
 							</LabelledComponent>
 							<LabelledComponent title="Condition Immunities" takes-custom-text-input>
-								<v-select
-									placeholder="Type condition immunities..."
-									v-model="data.defenses.conditionImmunities"
-									multiple
-									:deselectFromDropdown="true"
-									:closeOnSelect="false"
-									:options="conditionList"
-									:taggable="true"
-									:pushTags="true"
-									inputId="conditionimmunities"
-								/>
+								<v-select placeholder="Type condition immunities..." v-model="data.defenses.conditionImmunities" multiple :deselectFromDropdown="true" :closeOnSelect="false" :options="conditionList" :taggable="true" :pushTags="true" inputId="conditionimmunities" />
 							</LabelledComponent>
 						</div>
 					</div>
@@ -436,22 +420,21 @@
 <script lang="ts">
 import FeatureWidget from "@/components/FeatureWidget.vue";
 import Modal from "@/components/Modal.vue";
-import StatblockRenderer from "../components/StatblockRenderer.vue";
-import Breadcrumbs from "../components/Breadcrumbs.vue";
+import StatblockRenderer from "@/components/StatblockRenderer.vue";
+import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
 import LabelledNumberInput from "@/components/LabelledNumberInput.vue";
 import LabelledComponent from "@/components/LabelledComponent.vue";
 import draggable from "vuedraggable";
 
 import {defineComponent} from "vue";
 
-import type { Statblock, Creature, Bestiary} from "~/shared";
+import type {Statblock, Creature, Bestiary} from "~/shared";
 import {defaultStatblock, getSpellSlots, spellList, spellListFlattened, getXPbyCR} from "~/shared";
 import {useFetch} from "@/utils/utils";
 import {store} from "@/utils/store";
 import {toast} from "@/main";
-import {parseFrom5eTools} from "../parser/parseFrom5eTools";
-import {capitalizeFirstLetter} from "@/parser/utils";
-import { resistanceList, languages, newFeatureGenerator, stats, alignments, sizes, creatureTypes, classes, classLevels, conditionList } from "@/utils/constants";
+import {capitalizeFirstLetter} from "@/utils/displayFunctions";
+import {resistanceList, languages, newFeatureGenerator, stats, alignments, sizes, creatureTypes, classes, classLevels, conditionList} from "@/utils/constants";
 
 const tabs = document.getElementsByClassName("editor-nav__tab") as HTMLCollectionOf<HTMLElement>;
 const tabsContent = document.getElementsByClassName("editor-content__tab-inner") as HTMLCollectionOf<HTMLElement>;
@@ -517,13 +500,17 @@ export default defineComponent({
 			navigator.clipboard.writeText(JSON.stringify(this.data, null, 2));
 			toast.info("Exported this statblock to your clipboard.");
 		},
-		import5etools(): void {
+		async import5etools() {
 			if (this.toolsjson.startsWith("___")) {
 				toast.error("You copied the markdown code, not the JSON.");
 				return;
 			}
 			try {
-				[this.data, this.notices] = parseFrom5eTools(JSON.parse(this.toolsjson));
+				let data = JSON.parse(this.toolsjson);
+				const {success, data: result, error} = await useFetch<{stats: Statblock; notices: {[key: string]: string[]}}>("/api/5etools-import", "POST", data);
+				if (!success) throw error;
+				this.data = result?.stats;
+				this.notices = result?.notices;
 				this.toolsjson = "";
 				toast.success("Successfully imported " + this.data.description.name);
 			} catch (e) {
@@ -726,7 +713,6 @@ export default defineComponent({
 			this.data.spellcasting.casterSpells.spellDcOverride = null;
 		},
 		async saveStatblock() {
-			///console.log(this.data);
 			if (!this.rawInfo) return;
 			this.rawInfo.stats = this.data;
 			const loader = this.$loading.show();
