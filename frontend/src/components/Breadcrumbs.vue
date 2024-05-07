@@ -21,7 +21,7 @@
 import {ref, watchEffect} from "vue";
 import {isClient} from "@vueuse/shared";
 import {useShare, useElementSize} from "@vueuse/core";
-import {toast} from "@/main";
+import {toast} from "@/utils/app/toast";
 
 const props = withDefaults(defineProps<{routes: links, isLessWide?: boolean}>(),{isLessWide: false})
 

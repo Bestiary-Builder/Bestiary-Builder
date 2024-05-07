@@ -24,7 +24,7 @@
 			<button @click="showEditorModal = true" v-tooltip="'Edit bestiary!'" v-if="isOwner" aria-label="Edit bestiary">
 				<font-awesome-icon :icon="['fas', 'pen-to-square']" />
 			</button>
-			<VDropdown :distance="6" :positioning-disabled="isMobile">
+			<VDropdown :distance="6" :positioning-disabled="store.isMobile">
 				<button v-tooltip="'Filter bestiary'" aria-label="Filter bestiary">
 					<font-awesome-icon :icon="['fas', 'tag']" />
 				</button>
@@ -90,7 +90,7 @@
 				<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
 			</button>
 
-			<VDropdown :distance="6" :positioning-disabled="isMobile">
+			<VDropdown :distance="6" :positioning-disabled="store.isMobile">
 				<button v-tooltip="'Export bestiary'" aria-label="Export bestiary">
 					<font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" />
 				</button>
@@ -132,7 +132,7 @@
 									<span>{{ creature.stats?.core?.size }} {{ creature.stats?.core?.race }}{{ creature.stats?.description?.alignment ? ", " + creature.stats?.description?.alignment : "" }}</span>
 								</div>
 								<div class="right-side">
-									<VDropdown :distance="6" v-if="isOwner || isEditor" :positioning-disabled="isMobile">
+									<VDropdown :distance="6" v-if="isOwner || isEditor" :positioning-disabled="store.isMobile">
 										<button v-tooltip="'Delete creature'" @click.stop.prevent="" :aria-label="`Delete ${creature.stats.description.name}`">
 											<font-awesome-icon :icon="['fas', 'trash']" />
 										</button>
@@ -263,7 +263,7 @@ import {refDebounced} from "@vueuse/core";
 import {defaultStatblock, crAsString} from "~/shared";
 import type {User, Bestiary, Creature, Statblock} from "~/shared";
 import {useFetch} from "@/utils/utils";
-import {toast, isMobile} from "@/main";
+import {toast} from "@/utils/app/toast";
 import {parseFromCritterDB} from "@/parser/parseFromCritterDB";
 import {store} from "@/utils/store";
 import Markdown from "@/components/Markdown.vue";
@@ -295,7 +295,6 @@ export default defineComponent({
 				faction: ""
 			},
 			sortMode: "Alphabetically",
-			isMobile,
 			isExpanded: false,
 			showEditorModal: false,
 			showImportModal: false,
