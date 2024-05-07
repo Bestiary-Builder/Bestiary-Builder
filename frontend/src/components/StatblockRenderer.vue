@@ -22,19 +22,17 @@
     <div class="stat-block__row stat-block__abilities">
         <div v-for="stat in stats" :key="stat">
             <div> <b> {{ stat.toUpperCase()}} </b></div>
-            <span> {{ data.abilities.stats[stat]}} ({{signedNumber(statCalc(stat, data))}})</span>
+            <span> {{ data.abilities.stats[stat]}} ({{signedNumber(statCalc(stat, data)) }})</span>
         </div>
     </div>
     <div class="stat-block__row">
         <div v-if="Object.values(data.abilities.saves).some((val : any )=> (val.isProficient === true || val.override !== null))" class="stat-block__save-container"> 
             <b> Saving Throws </b>
-            <!-- TODO: Refactor this -->
-            <span v-if="null !== data.abilities.saves.str.override"> Str {{ saveSign("str") }}{{data.abilities.saves.str.override }}<span class="ending-comma">,</span> </span> <span v-else-if="data.abilities.saves.str.isProficient"> Str {{ saveSign("str") }}{{statCalc("str", data)+data.core.proficiencyBonus  }}<span class="ending-comma">,</span></span>
-            <span v-if="null !== data.abilities.saves.dex.override"> Dex {{ saveSign("dex") }}{{data.abilities.saves.dex.override }}<span class="ending-comma">,</span> </span> <span v-if="data.abilities.saves.dex.isProficient"> Dex {{ saveSign("dex") }}{{statCalc("dex", data)+data.core.proficiencyBonus  }}<span class="ending-comma">,</span></span>
-            <span v-if="null !== data.abilities.saves.con.override"> Con {{ saveSign("con") }}{{data.abilities.saves.con.override }}<span class="ending-comma">,</span> </span> <span v-if="data.abilities.saves.con.isProficient"> Con {{ saveSign("con") }}{{statCalc("con", data)+data.core.proficiencyBonus  }}<span class="ending-comma">,</span></span>
-            <span v-if="null !== data.abilities.saves.int.override"> Int {{ saveSign("int") }}{{data.abilities.saves.int.override }}<span class="ending-comma">,</span> </span> <span v-if="data.abilities.saves.int.isProficient"> Int {{ saveSign("int") }}{{statCalc("int", data)+data.core.proficiencyBonus  }}<span class="ending-comma">,</span></span>
-            <span v-if="null !== data.abilities.saves.wis.override"> Wis {{ saveSign("wis") }}{{data.abilities.saves.wis.override }}<span class="ending-comma">,</span> </span> <span v-if="data.abilities.saves.wis.isProficient"> Wis {{ saveSign("wis") }}{{statCalc("wis", data)+data.core.proficiencyBonus  }}<span class="ending-comma">,</span></span>
-            <span v-if="null !== data.abilities.saves.cha.override"> Cha {{ saveSign("cha") }}{{data.abilities.saves.cha.override }}<span class="ending-comma">,</span> </span> <span v-if="data.abilities.saves.cha.isProficient"> Cha {{ saveSign("cha") }}{{statCalc("cha", data)+data.core.proficiencyBonus  }}<span class="ending-comma">,</span></span>
+            <template v-for="stat in stats" :key="index">
+                <span v-if="data.abilities.saves[stat].override !== null"> {{ capitalizeFirstLetter(stat) }} {{ signedNumber(data.abilities.saves[stat].override || 0) }} </span>
+                <span v-else-if="data.abilities.saves[stat].isProficient"> {{ capitalizeFirstLetter(stat) }} {{ signedNumber(data.core.proficiencyBonus + statCalc(stat, data)) }} </span>
+                <span v-if="data.abilities.saves[stat].override !== null || data.abilities.saves[stat].isProficient" class="ending-comma">, </span> 
+            </template>
         </div>
         <div class="stat-block__skills-container" v-if="showSkills">
             <b> Skills </b>
@@ -131,10 +129,11 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import type { Stat, SkillsEntity, Statblock, InnateSpells, CasterSpells, Features } from "~/shared";
+import type { Stat, SkillsEntity, Statblock } from "~/shared";
 import { SKILLS_BY_STAT, nthSuffix, statCalc, hpCalc, crAsString, ppCalc, fullSpellAbilityName, signedNumber, displaySpeedOrSenses, spellDc, spellAttackBonus } from "~/shared"
 import { displayInnateCasting } from '@/utils/displayFunctions';
 import { stats, resistanceGenerator, featureGenerator } from '@/utils/constants';
+import { capitalizeFirstLetter } from '@/parser/utils';
 import Markdown from './Markdown.vue';
 export default defineComponent({
     props: {
@@ -179,7 +178,8 @@ export default defineComponent({
         fullSpellAbilityName,
         signedNumber,
         spellDc,
-        spellAttackBonus
+        spellAttackBonus,
+        capitalizeFirstLetter
     },
     computed: {
         showSkills() : boolean {
@@ -322,7 +322,7 @@ export default defineComponent({
     font-size: .7rem;
 }
 
-.stat-block__save-container > span:last-of-type > .ending-comma {
+.stat-block__save-container  .ending-comma:last-of-type {
     display: none;
 }
 

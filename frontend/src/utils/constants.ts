@@ -1,5 +1,7 @@
 import type { Stat } from "~/shared"
 
+// Generators which are used to create UI programmatically in the StatblockRender
+
 export const stats : Stat[] = [ 'str', 'dex', 'con', 'int', 'wis', 'cha'] 
 
 export const resistanceGenerator = {
