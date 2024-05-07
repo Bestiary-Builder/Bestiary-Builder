@@ -16,7 +16,7 @@
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 
 import {useRoute} from "vue-router";
-import {ref, watch, nextTick} from "vue";
+import {ref, watch, nextTick, onMounted} from "vue";
 
 import markdownit from "markdown-it";
 import anchor from "markdown-it-anchor";
@@ -36,19 +36,22 @@ md.use(anchor, {
 	})
 });
 
+onMounted(() => {
+	if (route.hash) window.scrollTo({top: 0, behavior: "instant"});
+});
+
 watch(
 	() => route.fullPath,
 	() => {
 		import(`../assets/documents/${props.filePath}.md`).then(async (doc) => {
 			dataFile.value = doc.default;
-
 			if (!route.hash) return;
 			await nextTick();
 			const el = document.getElementById(route.hash.replace("#", ""));
 			if (el) {
 				const bodyStyles = document.body.style;
 				const yOffset = parseFloat(bodyStyles.getPropertyValue("--breadcrumbs-height")) + parseFloat(bodyStyles.getPropertyValue("--navbar-height"));
-				const y = el.getBoundingClientRect().top + yOffset + 50 + (window.scrollY - 263);
+				const y = el.getBoundingClientRect().y - 50 - yOffset + window.scrollY;
 				window.scrollTo({top: y, behavior: "smooth"});
 			}
 		});
