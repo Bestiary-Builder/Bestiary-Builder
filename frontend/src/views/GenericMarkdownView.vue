@@ -23,6 +23,8 @@ import anchor from "markdown-it-anchor";
 // @ts-ignore
 import markdownItAttrs from "markdown-it-attrs";
 
+import {prefersReducedMotion} from "@/utils/utils";
+
 const dataFile = ref("");
 const route = useRoute();
 const props = defineProps<{filePath: string}>();
@@ -52,7 +54,7 @@ watch(
 				const bodyStyles = document.body.style;
 				const yOffset = parseFloat(bodyStyles.getPropertyValue("--breadcrumbs-height")) + parseFloat(bodyStyles.getPropertyValue("--navbar-height"));
 				const y = el.getBoundingClientRect().y - 50 - yOffset + window.scrollY;
-				window.scrollTo({top: y, behavior: "smooth"});
+				window.scrollTo({top: y, behavior: prefersReducedMotion.matches ? "auto" : "smooth"});
 			}
 		});
 	},
