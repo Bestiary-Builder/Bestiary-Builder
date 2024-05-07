@@ -249,7 +249,7 @@
 
 <script lang="ts">
 import UserBanner from "@/components/UserBanner.vue";
-import Breadcrumbs from "@/components/Breadcrumbs.vue";
+import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
 import StatusIcon from "@/components/StatusIcon.vue";
 import LabelledComponent from "@/components/LabelledComponent.vue";
 import LabelledNumberInput from "@/components/LabelledNumberInput.vue";

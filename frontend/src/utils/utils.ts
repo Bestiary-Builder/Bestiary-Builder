@@ -26,6 +26,7 @@ export async function useFetch<Type>(url: string, method: "GET" | "POST" = "GET"
 	return result;
 }
 
+//Login stuff:
 const clientId = import.meta.env.VITE_DISCORD_ID ?? "";
 const loginLink = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&response_type=code&scope=identify+email&redirect_uri=${encodeURIComponent(window.location.origin + "/user")}`;
 
@@ -50,3 +51,6 @@ export function getLoginRoute() {
 	}
 	return "";
 }
+
+//Prefers reduced motion
+export const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
