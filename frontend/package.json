@@ -24,6 +24,8 @@
 		"js-yaml": "^4.1.0",
 		"less": "^4.2.0",
 		"markdown-it": "^14.0.0",
+		"markdown-it-anchor": "^8.6.7",
+		"markdown-it-attrs": "^4.1.6",
 		"vue": "^3.4.0",
 		"vue-debounce": "^4.0.1",
 		"vue-loading-overlay": "6.0",

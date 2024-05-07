@@ -4,6 +4,7 @@ import {createRouter, createWebHistory} from "vue-router";
 import fileRoutes from "~pages";
 import {routes as sharedRoutes} from "~/shared";
 import {user, sendToLogin} from "@/utils/functions";
+import { nextTick } from "vue";
 const routes = sharedRoutes.routes.map((route) => {
 	return {
 		...route,
