@@ -1,5 +1,5 @@
 import { reactive } from "vue";
-import { useFetch } from "./functions";
+import { useFetch } from "./utils";
 import type {User} from "~/shared";
 
 const user = useFetch<User>("/api/user").then(async (result) => {

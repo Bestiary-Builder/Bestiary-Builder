@@ -58,7 +58,7 @@ import BestiaryList from "@/components/BestiaryList.vue";
 import {ref, onMounted, watch} from "vue";
 import type {Bestiary} from "~/shared";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
-import { useFetch} from "@/utils/functions";
+import { useFetch} from "@/utils/utils";
 import { store } from "@/utils/store";
 import {toast, isMobile} from "@/main";
 // @ts-ignore

@@ -446,7 +446,7 @@ import {defineComponent} from "vue";
 
 import type { Statblock, Creature, Bestiary} from "~/shared";
 import {defaultStatblock, getSpellSlots, spellList, spellListFlattened, getXPbyCR} from "~/shared";
-import {useFetch} from "@/utils/functions";
+import {useFetch} from "@/utils/utils";
 import {store} from "@/utils/store";
 import {toast} from "@/main";
 import {parseFrom5eTools} from "../parser/parseFrom5eTools";

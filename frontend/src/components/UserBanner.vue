@@ -15,7 +15,7 @@
 <script setup lang="ts">
 import {onMounted, computed, ref} from "vue";
 import type {User} from "~/shared";
-import {useFetch} from "@/utils/functions";
+import {useFetch} from "@/utils/utils";
 import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/css/index.css";
 

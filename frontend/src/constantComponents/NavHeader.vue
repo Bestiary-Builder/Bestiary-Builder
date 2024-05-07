@@ -34,7 +34,7 @@
 import {RouterLink} from "vue-router";
 import {watchEffect, ref} from "vue";
 import {onClickOutside, useElementSize} from "@vueuse/core";
-import {sendToLogin} from "@/utils/functions";
+import {sendToLogin} from "@/utils/utils";
 import {store} from "@/utils/store";
 
 const isExpanded = ref(false);

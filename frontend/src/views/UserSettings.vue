@@ -42,7 +42,7 @@
 <script setup lang="ts">
 import { onMounted, ref} from "vue";
 import { store } from "@/utils/store";
-import { sendToLogin, getLoginRoute, useFetch} from "@/utils/functions";
+import { sendToLogin, getLoginRoute, useFetch} from "@/utils/utils";
 import {toast} from "@/main";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import JoinPatreon from "@/components/JoinPatreon.vue"

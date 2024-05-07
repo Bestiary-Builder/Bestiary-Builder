@@ -41,7 +41,7 @@ import {onMounted, ref} from "vue";
 
 import {toast, loadingOptions} from "@/main";
 import type {Bestiary} from "~/shared";
-import {useFetch} from "@/utils/functions";
+import {useFetch} from "@/utils/utils";
 import {useLoading} from "vue-loading-overlay";
 
 const $loading = useLoading(loadingOptions);

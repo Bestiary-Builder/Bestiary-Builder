@@ -262,7 +262,7 @@ import {refDebounced} from "@vueuse/core";
 
 import {defaultStatblock, crAsString} from "~/shared";
 import type {User, Bestiary, Creature, Statblock} from "~/shared";
-import {useFetch} from "@/utils/functions";
+import {useFetch} from "@/utils/utils";
 import {toast, isMobile} from "@/main";
 import {parseFromCritterDB} from "@/parser/parseFromCritterDB";
 import {store} from "@/utils/store";

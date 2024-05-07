@@ -3,7 +3,7 @@ import {createRouter, createWebHistory} from "vue-router";
 // @ts-ignore
 import fileRoutes from "~pages";
 import {routes as sharedRoutes} from "~/shared";
-import {sendToLogin} from "@/utils/functions";
+import {sendToLogin} from "@/utils/utils";
 import {store} from "./utils/store";
 
 const routes = sharedRoutes.routes.map((route) => {

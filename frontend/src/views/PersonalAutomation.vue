@@ -63,7 +63,7 @@
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import {ref, onMounted, onUnmounted} from "vue";
 import {useLoading} from "vue-loading-overlay";
-import {useFetch} from "@/utils/functions";
+import {useFetch} from "@/utils/utils";
 import {toast, loadingOptions} from "@/main";
 import {Automation} from "~/shared";
 import type {Id} from "~/shared";

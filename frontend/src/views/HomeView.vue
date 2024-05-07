@@ -32,7 +32,7 @@
 <script setup lang="ts">
 import dataFile from "@/assets/documents/home.md";
 import Markdown from "@/components/Markdown.vue";
-import {useFetch} from "@/utils/functions";
+import {useFetch} from "@/utils/utils";
 import {onBeforeMount, ref} from "vue";
 import type {GlobalStats} from "../../../shared";
 

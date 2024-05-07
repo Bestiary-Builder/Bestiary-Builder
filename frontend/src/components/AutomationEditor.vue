@@ -132,7 +132,7 @@
 import {shallowRef, ref, onUnmounted, onMounted, watch, computed} from "vue";
 import {VueMonacoEditor} from "@guolao/vue-monaco-editor";
 import YAML from "yaml";
-import {useFetch} from "@/utils/functions";
+import {useFetch} from "@/utils/utils";
 import {toast} from "@/main";
 import {Id, type FeatureEntity, type Automation, type AutomationDocumentation} from "~/shared";
 import LabelledComponent from "./LabelledComponent.vue";
