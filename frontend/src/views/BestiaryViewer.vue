@@ -264,6 +264,7 @@ import {defaultStatblock, crAsString} from "~/shared";
 import type {User, Bestiary, Creature, Statblock} from "~/shared";
 import {useFetch} from "@/utils/utils";
 import {toast} from "@/utils/app/toast";
+import {$loading} from "@/utils/app/loading";
 import {store} from "@/utils/store";
 import Markdown from "@/components/Markdown.vue";
 
@@ -312,7 +313,7 @@ export default defineComponent({
 		Markdown
 	},
 	async beforeMount() {
-		const loader = this.$loading.show();
+		const loader = $loading.show();
 		await this.getBestiary();
 		loader.hide();
 
@@ -342,7 +343,7 @@ export default defineComponent({
 	computed: {
 		searchCreatures(): Creature[] | null {
 			if (this.creatures == null) return null;
-			const loader = this.$loading.show();
+			const loader = $loading.show();
 
 			let response = this.creatures?.filter(this.filterCreature) || null;
 
@@ -449,7 +450,7 @@ export default defineComponent({
 			link = linkEls[linkEls.length - 1];
 			let hasFailed = false;
 			toast.info("Fetching bestiary data has started. This may take a while.");
-			let loader = this.$loading.show();
+			let loader = $loading.show();
 			const {success, data, error} = await useFetch<{
 				data: {
 					creatures: Statblock[];
@@ -476,7 +477,7 @@ export default defineComponent({
 		},
 		async importCreaturesFromBestiaryBuilder() {
 			let creatures;
-			const loader = this.$loading.show();
+			const loader = $loading.show();
 			try {
 				creatures = JSON.parse(this.bestiaryBuilderJson);
 			} catch (e) {
@@ -498,7 +499,7 @@ export default defineComponent({
 		async createCreature(stats = defaultStatblock, shouldRefresh = true, shouldHaveLoader = true) {
 			let loader;
 			if (shouldHaveLoader) {
-				loader = this.$loading.show();
+				loader = $loading.show();
 			}
 			//Replace for actual creation data:
 			let data = {
@@ -520,7 +521,7 @@ export default defineComponent({
 			if (shouldHaveLoader && loader) loader.hide();
 		},
 		async deleteCreature(creature: Creature) {
-			const loader = this.$loading.show();
+			const loader = $loading.show();
 			const {success, error} = await useFetch(`/api/creature/${creature._id}/delete`);
 			if (success) {
 				toast.success("Deleted creature succesfully");
@@ -535,7 +536,7 @@ export default defineComponent({
 		async addEditor() {
 			if (!this.bestiary) return;
 			let id = this.editorToAdd;
-			const loader = this.$loading.show();
+			const loader = $loading.show();
 			const {success, error} = await useFetch(`/api/bestiary/${this.bestiary._id}/editors/add/${id}`);
 			if (success) {
 				toast.success("Added editor succesfully");
@@ -547,7 +548,7 @@ export default defineComponent({
 		},
 		async removeEditor(id: string) {
 			if (!this.bestiary) return;
-			const loader = this.$loading.show();
+			const loader = $loading.show();
 			const {success, error} = await useFetch(`/api/bestiary/${this.bestiary._id}/editors/remove/${id}`);
 			if (success) {
 				toast.success("Removed editor succesfully");
@@ -607,7 +608,7 @@ export default defineComponent({
 		},
 		async updateBestiary() {
 			if (!this.bestiary) return;
-			const loader = this.$loading.show();
+			const loader = $loading.show();
 			//Send to backend
 			const {success, error} = await useFetch<Bestiary>(`/api/bestiary/${this.bestiary._id}/update`, "POST", this.bestiary);
 			if (success) {
@@ -621,7 +622,7 @@ export default defineComponent({
 		},
 		async toggleBookmark() {
 			if (!this.bestiary) return;
-			const loader = this.$loading.show();
+			const loader = $loading.show();
 			const {success, data, error} = await useFetch<{state: boolean}>(`/api/bestiary/${this.bestiary._id}/bookmark/toggle`);
 			if (success) {
 				this.bookmarked = data.state;

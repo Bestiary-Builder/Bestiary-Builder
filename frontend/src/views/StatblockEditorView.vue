@@ -432,7 +432,8 @@ import type {Statblock, Creature, Bestiary} from "~/shared";
 import {defaultStatblock, getSpellSlots, spellList, spellListFlattened, getXPbyCR} from "~/shared";
 import {useFetch} from "@/utils/utils";
 import {store} from "@/utils/store";
-import {toast} from "@/main";
+import {$loading} from "@/utils/app/loading";
+import {toast} from "@/utils/app/toast";
 import {capitalizeFirstLetter} from "@/utils/displayFunctions";
 import {resistanceList, languages, newFeatureGenerator, stats, alignments, sizes, creatureTypes, classes, classLevels, conditionList} from "@/utils/constants";
 
@@ -715,7 +716,7 @@ export default defineComponent({
 		async saveStatblock() {
 			if (!this.rawInfo) return;
 			this.rawInfo.stats = this.data;
-			const loader = this.$loading.show();
+			const loader = $loading.show();
 			//Send to backend
 			const {success, error} = await useFetch<Creature>(`/api/creature/${this.rawInfo._id}/update`, "POST", this.rawInfo);
 			if (success) {
