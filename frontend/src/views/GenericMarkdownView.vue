@@ -45,9 +45,9 @@ watch(() => route.fullPath, () => {
 		const el = document.getElementById(route.hash.replace("#", ""))
 		if (el) {
 			const bodyStyles = document.body.style
-			
+
 			const yOffset = parseFloat(bodyStyles.getPropertyValue("--breadcrumbs-height")) + parseFloat(bodyStyles.getPropertyValue("--navbar-height"))
-			const y = el.getBoundingClientRect().top + yOffset + 60;
+			const y = el.getBoundingClientRect().top + yOffset + 50;
 
 			window.scrollTo({top: y, behavior: 'smooth'});
 		} 
