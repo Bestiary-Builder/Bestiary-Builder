@@ -21,7 +21,7 @@
 			<template #popper>
 				<div class="v-popper__custom-menu">
 					<span><label for="tagsInput">Filter by tags</label></span>
-					<v-select placeholder="Select Tags" v-model="selectedTags" multiple :options="tags" inputId="tagsInput" />
+					<v-select placeholder="Select Tags" v-model="selectedTags" multiple :options="store.tags" inputId="tagsInput" />
 				</div>
 			</template>
 		</VDropdown>
@@ -58,19 +58,18 @@ import BestiaryList from "@/components/BestiaryList.vue";
 import {ref, onMounted, watch} from "vue";
 import type {Bestiary} from "~/shared";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
-import {tags as getTags, useFetch} from "@/utils/functions";
+import { useFetch} from "@/utils/functions";
+import { store } from "@/utils/store";
 import {toast, isMobile} from "@/main";
 // @ts-ignore
 import {vue3Debounce as vDebounce} from "vue-debounce";
 import {useLoading} from "vue-loading-overlay";
 import {loadingOptions} from "@/main";
 
-const tags = ref<string[] | null>([]);
 
 const $loading = useLoading(loadingOptions);
 onMounted(async () => {
 	const loader = $loading.show();
-	tags.value = await getTags;
 	searchBestiaries();
 	loader.hide();
 });

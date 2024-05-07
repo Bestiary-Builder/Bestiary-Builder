@@ -202,18 +202,18 @@
 			<template #header>Edit Bestiary</template>
 			<template #body>
 				<LabelledComponent title="Bestiary name">
-					<input type="text" v-model="bestiary.name" :minlength="limits.nameMin" :maxlength="limits.nameLength" id="bestiaryname" />
+					<input type="text" v-model="bestiary.name" :minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength" id="bestiaryname" />
 				</LabelledComponent>
 				<LabelledComponent title="Description">
 					<p>Supports markdown</p>
-					<textarea v-model="bestiary.description" :maxlength="limits.descriptionLength" id="description" />
+					<textarea v-model="bestiary.description" :maxlength="store.limits?.descriptionLength" id="description" />
 				</LabelledComponent>
 				<div class="two-wide" v-if="isOwner">
 					<LabelledComponent title="Status">
 						<v-select v-model="bestiary.status" :options="['public', 'unlisted', 'private']" inputId="status" />
 					</LabelledComponent>
 					<LabelledComponent title="Tags">
-						<v-select placeholder="Select Tags" v-model="bestiary.tags" multiple :options="allTags" inputId="tags" />
+						<v-select placeholder="Select Tags" v-model="bestiary.tags" multiple :options="store.tags" inputId="tags" />
 					</LabelledComponent>
 				</div>
 				<div class="editor-block">
@@ -262,10 +262,10 @@ import {refDebounced} from "@vueuse/core";
 
 import {defaultStatblock, crAsString} from "~/shared";
 import type {User, Bestiary, Creature, Statblock} from "~/shared";
-import {user, tags, type limitsType, asyncLimits, useFetch} from "@/utils/functions";
+import {useFetch} from "@/utils/functions";
 import {toast, isMobile} from "@/main";
 import {parseFromCritterDB} from "@/parser/parseFromCritterDB";
-
+import {store} from "@/utils/store";
 import Markdown from "@/components/Markdown.vue";
 
 export default defineComponent({
@@ -276,12 +276,9 @@ export default defineComponent({
 			creatures: null as Creature[] | null,
 			searchCreatureList: [] as Creature[] | null,
 			editors: [] as User[],
-			user: null as User | null,
 			lastHoveredCreature: null as null | Statblock,
 			lastClickedCreature: null as null | Statblock,
 			hasPinnedBefore: false as boolean,
-			limits: {} as limitsType,
-			allTags: [] as string[],
 			bookmarked: false as boolean,
 			isOwner: false,
 			isEditor: false,
@@ -302,7 +299,8 @@ export default defineComponent({
 			isExpanded: false,
 			showEditorModal: false,
 			showImportModal: false,
-			selectedCreature: null as Creature | null
+			selectedCreature: null as Creature | null,
+			store
 		};
 	},
 	components: {
@@ -315,15 +313,8 @@ export default defineComponent({
 		Modal,
 		Markdown
 	},
-	async created() {
-		this.limits = (await asyncLimits) ?? ({} as limitsType);
-		tags.then((t) => {
-			this.allTags = t ?? ([] as string[]);
-		});
-	},
 	async beforeMount() {
 		const loader = this.$loading.show();
-		this.user = await user;
 		await this.getBestiary();
 		loader.hide();
 
@@ -583,8 +574,8 @@ export default defineComponent({
 			}
 			this.bestiary = data as Bestiary;
 			this.savedBestiary = this.bestiary;
-			this.isOwner = this.user?._id == this.bestiary.owner;
-			this.isEditor = (this.bestiary?.editors ?? []).includes(this.user?._id ?? "");
+			this.isOwner = store.user?._id == this.bestiary.owner;
+			this.isEditor = (this.bestiary?.editors ?? []).includes(store.user?._id ?? "");
 			//Fetch creatures
 			await useFetch<Creature[]>("/api/bestiary/" + this.bestiary._id + "/creatures").then(async (creatureResult) => {
 				if (creatureResult.success) {
@@ -606,7 +597,7 @@ export default defineComponent({
 				});
 			}
 			//Bookmark state
-			if (this.user) {
+			if (store.user) {
 				await useFetch<{state: boolean}>(`/api/bestiary/${this.bestiary._id}/bookmark/get`).then(async (bookmarkResult) => {
 					if (bookmarkResult.success) {
 						this.bookmarked = (bookmarkResult.data as {state: boolean}).state;

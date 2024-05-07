@@ -7,28 +7,28 @@
 }
 ]" :isLessWide="true"/> 
 <div class="content less-wide">
-	<div v-if="!user">
+	<div v-if="!store.user">
 		<p> You are not logged in. Login with Discord to log in.</p>
 		<hr />
 		<button class="btn confirm" @click.prevent="sendToLogin($route.path)">Login</button>
 	</div>
 	<div v-else>
-		<p> You are logged in to Bestiary Builder with Discord as <b> {{ user.username }} </b>.</p>
-		<p> You have been a user of Bestiary Builder since <b>{{ user.joinedAt ? new Date(user.joinedAt).toDateString() : "Not Found" }}</b>.</p>
-		<p> You have created <b>{{ user.bestiaries.length }}</b> bestiaries since then.</p>
-		<p> Your user id is <code>{{ user._id }}</code>.</p>
-		<p v-if="user.supporter == 0" class="patreon" >
+		<p> You are logged in to Bestiary Builder with Discord as <b> {{ store.user.username }} </b>.</p>
+		<p> You have been a user of Bestiary Builder since <b>{{ store.user.joinedAt ? new Date(store.user.joinedAt).toDateString() : "Not Found" }}</b>.</p>
+		<p> You have created <b>{{ store.user.bestiaries.length }}</b> bestiaries since then.</p>
+		<p> Your store.user id is <code>{{ store.user._id }}</code>.</p>
+		<p v-if="store.user.supporter == 0" class="patreon" >
 			<p> 
 				If you enjoy using our site, consider supporting us on Patreon! 
 				As a Patreon, you will have several benefits and your support will help Bestiary Builder stay online.
 			</p>
 			<span class="center"> <JoinPatreon /></span>
 		</p>
-		<p v-if="user.supporter == 1">
+		<p v-if="store.user.supporter == 1">
 			You support us on Patreon as a <b> Wyrmling </b> Tier supporter. Thank you so much for your pledge!
 			If you cannot see your name display change on the website yet, make sure to join our discord.
 		</p>
-		<p v-if="user.supporter == 2">
+		<p v-if="store.user.supporter == 2">
 			You support us on Patreon as a <b> Greatwyrm </b> Tier supporter. Thank you so much for your support!
 			If you cannot see your name display change on the website yet, make sure to join our discord.
 		</p>
@@ -41,21 +41,19 @@
 
 <script setup lang="ts">
 import { onMounted, ref} from "vue";
-import type {User} from "~/shared";
-import {user as getUser, sendToLogin, getLoginRoute, useFetch} from "@/utils/functions";
+import { store } from "@/utils/store";
+import { sendToLogin, getLoginRoute, useFetch} from "@/utils/functions";
 import {toast} from "@/main";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import JoinPatreon from "@/components/JoinPatreon.vue"
 import { useRouter } from "vue-router";
 
-const user = ref<User | null>(null);
 const router = useRouter();
 
 onMounted(async () => {
 	let search = new URLSearchParams(window.location.search);
 	let code = search.get("code");
-	user.value = await getUser
-	if (code && !user.value) {
+	if (code && !store.user) {
 		const {success, error} = await useFetch("/api/login/" + code)
 		if (success) {
 			toast.success("Succesfully logged in");

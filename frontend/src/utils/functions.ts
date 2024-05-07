@@ -9,6 +9,7 @@ async function handleApiResponse<Type>(response: Response): Promise<{success: tr
 		return {success: false, data: undefined, error: data.error as string};
 	}
 }
+
 export async function useFetch<Type>(url: string, method: "GET" | "POST" = "GET", body?: unknown) {
 	let result = await fetch(url, {
 		method: method,
@@ -24,27 +25,7 @@ export async function useFetch<Type>(url: string, method: "GET" | "POST" = "GET"
 	}).then((response) => handleApiResponse<Type>(response));
 	return result;
 }
-//Get logged in user
-import type {User} from "~/shared";
-export const user = useFetch<User>("/api/user").then(async (result) => {
-	if (result.success) return result.data;
-	else return null;
-});
-export type limitsType = {
-	nameLength: number;
-	nameMin: number;
-	descriptionLength: number;
-	creatureAmount: number;
-	imageFormats: string[];
-};
-export const asyncLimits = useFetch<limitsType>("/api/limits").then(async (result) => {
-	if (result.success) return result.data;
-	else return null;
-});
-export const tags = useFetch<string[]>("/api/tags").then(async (result) => {
-	if (result.success) return result.data;
-	else return null;
-});
+
 const clientId = import.meta.env.VITE_DISCORD_ID ?? "";
 const loginLink = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&response_type=code&scope=identify+email&redirect_uri=${encodeURIComponent(window.location.origin + "/user")}`;
 

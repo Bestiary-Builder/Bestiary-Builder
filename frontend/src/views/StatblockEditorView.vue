@@ -46,7 +46,7 @@
 					<div class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-1" id="tabpanel-1">
 						<div class="editor-field__container two-wide">
 							<LabelledComponent title="Creature name">
-								<input type="text" :maxlength="limits.nameLength" v-model="data.description.name" id="creaturename" />
+								<input type="text" :maxlength="store.limits?.nameLength" v-model="data.description.name" id="creaturename" />
 							</LabelledComponent>
 
 							<LabelledComponent title="Proper Noun">
@@ -58,12 +58,12 @@
 
 						<div class="editor-field__container one-wide">
 							<LabelledComponent title="Description">
-								<textarea rows="20" :maxlength="limits.descriptionLength" v-model="data.description.description" id="description" />
+								<textarea rows="20" :maxlength="store.limits?.descriptionLength" v-model="data.description.description" id="description" />
 							</LabelledComponent>
 						</div>
 						<div class="editor-field__container two-wide">
 							<LabelledComponent title="Image URL">
-								<input type="text" v-model="data.description.image" id="imageurl" :pattern="limits.imageFormats ? `(https:\/\/)(.+)(\\.${limits.imageFormats.join('|\\.')})` : ''" />
+								<input type="text" v-model="data.description.image" id="imageurl" :pattern="store.limits?.imageFormats ? `(https:\/\/)(.+)(\\.${store.limits?.imageFormats.join('|\\.')})` : ''" />
 							</LabelledComponent>
 							<LabelledComponent title="Environment">
 								<input type="text" v-model="data.description.environment" id="environment" />
@@ -445,8 +445,9 @@ import draggable from "vuedraggable";
 import {defineComponent} from "vue";
 
 import type { Statblock, Creature, Bestiary} from "~/shared";
-import {defaultStatblock, getSpellSlots, spellList, spellListFlattened, getXPbyCR, type User} from "~/shared";
-import {asyncLimits, type limitsType, user, useFetch} from "@/utils/functions";
+import {defaultStatblock, getSpellSlots, spellList, spellListFlattened, getXPbyCR} from "~/shared";
+import {useFetch} from "@/utils/functions";
+import {store} from "@/utils/store";
 import {toast} from "@/main";
 import {parseFrom5eTools} from "../parser/parseFrom5eTools";
 import {capitalizeFirstLetter} from "@/parser/utils";
@@ -468,7 +469,6 @@ export default defineComponent({
 	data() {
 		return {
 			slideIndex: 2,
-			user: null as User | null,
 			data: defaultStatblock as Statblock,
 			rawInfo: null as Creature | null,
 			bestiary: null as Bestiary | null,
@@ -479,8 +479,6 @@ export default defineComponent({
 				2: [] as string[],
 				3: [] as string[]
 			} as {[key: number]: string[]},
-			limits: {} as limitsType,
-
 			toolsjson: "",
 			bestiaryBuilderJson: "",
 			notices: {} as {[key: string]: string[]},
@@ -507,7 +505,8 @@ export default defineComponent({
 			creatureTypes,
 			classes,
 			classLevels,
-			conditionList
+			conditionList,
+			store
 		};
 	},
 	methods: {
@@ -752,13 +751,9 @@ export default defineComponent({
 		},
 		getSpellSlots
 	},
-	async beforeMount() {
-		this.user = await user;
-	},
+
 	async mounted() {
 		const loader = this.$loading.show();
-		this.limits = (await asyncLimits) ?? ({} as limitsType);
-		///console.log("Statblock id: " + this.$route.params.id);
 		this.showSlides(1);
 
 		//Fetch creature info
@@ -783,8 +778,8 @@ export default defineComponent({
 			const {success, data, error} = await useFetch<Bestiary>("/api/bestiary/" + this.rawInfo?.bestiary);
 			if (success) {
 				this.bestiary = data as Bestiary;
-				this.isOwner = this.user?._id == this.bestiary.owner;
-				this.isEditor = (this.bestiary?.editors ?? []).includes(this.user?._id ?? "");
+				this.isOwner = store.user?._id == this.bestiary.owner;
+				this.isEditor = (this.bestiary?.editors ?? []).includes(store.user?._id ?? "");
 				if (this.isOwner || this.isEditor) this.shouldShowEditor = true;
 			} else {
 				this.bestiary = null;
