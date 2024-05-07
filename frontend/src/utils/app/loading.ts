@@ -1,7 +1,6 @@
 import {useLoading} from "vue-loading-overlay";
 import "vue-loading-overlay/dist/css/index.css";
 
-
 export const $loading = useLoading({
 	loader: "dots",
 	color: "orangered",
