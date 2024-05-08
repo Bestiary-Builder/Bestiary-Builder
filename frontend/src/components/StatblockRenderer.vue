@@ -131,9 +131,8 @@
 import { defineComponent } from 'vue';
 import type { Stat, SkillsEntity, Statblock } from "~/shared";
 import { SKILLS_BY_STAT, nthSuffix, statCalc, hpCalc, crAsString, ppCalc, fullSpellAbilityName, signedNumber, displaySpeedOrSenses, spellDc, spellAttackBonus } from "~/shared"
-import { displayInnateCasting } from '@/utils/displayFunctions';
+import { displayInnateCasting, capitalizeFirstLetter } from '@/utils/displayFunctions';
 import { stats, resistanceGenerator, featureGenerator } from '@/utils/constants';
-import { capitalizeFirstLetter } from '@/parser/utils';
 import Markdown from './Markdown.vue';
 export default defineComponent({
     props: {

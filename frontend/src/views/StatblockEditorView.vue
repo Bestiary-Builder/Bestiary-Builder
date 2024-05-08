@@ -437,7 +437,7 @@
 <script lang="ts">
 import FeatureWidget from "@/components/FeatureWidget.vue";
 import Modal from "@/components/Modal.vue";
-import StatblockRenderer from "../components/StatblockRenderer.vue";
+import StatblockRenderer from "@/components/StatblockRenderer.vue";
 import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
 import LabelledNumberInput from "@/components/LabelledNumberInput.vue";
 import LabelledComponent from "@/components/LabelledComponent.vue";
@@ -445,15 +445,15 @@ import draggable from "vuedraggable";
 
 import {defineComponent} from "vue";
 
-import type { Statblock, Creature, Bestiary} from "~/shared";
+import type {Statblock, Creature, Bestiary} from "~/shared";
 import {defaultStatblock, getSpellSlots, spellList, spellListFlattened, getXPbyCR} from "~/shared";
 import {useFetch} from "@/utils/utils";
 import {store} from "@/utils/store";
+import {$loading} from "@/utils/app/loading";
 import {toast} from "@/utils/app/toast";
-import {parseFrom5eTools} from "../parser/parseFrom5eTools";
-import {capitalizeFirstLetter} from "@/parser/utils";
-import { resistanceList, languages, newFeatureGenerator, stats, alignments, sizes, creatureTypes, classes, classLevels, conditionList } from "@/utils/constants";
-import { $loading } from "@/utils/app/loading";
+import {capitalizeFirstLetter} from "@/utils/displayFunctions";
+import {resistanceList, languages, newFeatureGenerator, stats, alignments, sizes, creatureTypes, classes, classLevels, conditionList} from "@/utils/constants";
+
 const tabs = document.getElementsByClassName("editor-nav__tab") as HTMLCollectionOf<HTMLElement>;
 const tabsContent = document.getElementsByClassName("editor-content__tab-inner") as HTMLCollectionOf<HTMLElement>;
 
@@ -518,13 +518,17 @@ export default defineComponent({
 			navigator.clipboard.writeText(JSON.stringify(this.data, null, 2));
 			toast.info("Exported this statblock to your clipboard.");
 		},
-		import5etools(): void {
+		async import5etools() {
 			if (this.toolsjson.startsWith("___")) {
 				toast.error("You copied the markdown code, not the JSON.");
 				return;
 			}
 			try {
-				[this.data, this.notices] = parseFrom5eTools(JSON.parse(this.toolsjson));
+				let data = JSON.parse(this.toolsjson);
+				const {success, data: result, error} = await useFetch<{stats: Statblock; notices: {[key: string]: string[]}}>("/api/5etools-import", "POST", data);
+				if (!success) throw error;
+				this.data = result?.stats;
+				this.notices = result?.notices;
 				this.toolsjson = "";
 				toast.success("Successfully imported " + this.data.description.name);
 			} catch (e) {
@@ -727,7 +731,6 @@ export default defineComponent({
 			this.data.spellcasting.casterSpells.spellDcOverride = null;
 		},
 		async saveStatblock() {
-			///console.log(this.data);
 			if (!this.rawInfo) return;
 			this.rawInfo.stats = this.data;
 			const loader = $loading.show();
@@ -755,7 +758,7 @@ export default defineComponent({
 
 	async mounted() {
 		this.showSlides(1);
-		const loader = $loading.show()
+		const loader = $loading.show();
 		//Fetch creature info
 		{
 			const {success, data, error} = await useFetch<Creature>("/api/creature/" + this.$route.params.id);

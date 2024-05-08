@@ -264,7 +264,6 @@ import {defaultStatblock, crAsString} from "~/shared";
 import type {User, Bestiary, Creature, Statblock} from "~/shared";
 import {useFetch} from "@/utils/utils";
 import {toast} from "@/utils/app/toast";
-import {parseFromCritterDB} from "@/parser/parseFromCritterDB";
 import {store} from "@/utils/store";
 import Markdown from "@/components/Markdown.vue";
 import { creatureTypes } from "@/utils/constants";
@@ -450,29 +449,26 @@ export default defineComponent({
 			}
 			let linkEls = link.split("/");
 			link = linkEls[linkEls.length - 1];
-			let data = {} as {
-				name: string;
-				description: string;
-				creatures: object[];
-			};
 			let hasFailed = false;
 			toast.info("Fetching bestiary data has started. This may take a while.");
 			let loader = $loading.show();
-			const {success, data: resultData, error} = await useFetch<{name: string; description: string; creatures: object[]}>(`/api/critterdb/${link}/${isPublic}`);
+			const {success, data, error} = await useFetch<{
+				data: {
+					creatures: Statblock[];
+					name: string;
+					description: string;
+				};
+				failedCreatures: string[];
+			}>(`/api/critterdb/${link}/${isPublic}`);
 			if (success) {
-				data = resultData;
+				if (data.failedCreatures.length > 0) toast.error(`Failed to parse ${data.failedCreatures.length} creatures.\nFailed creatures: "${data.failedCreatures.join(",")}"`);
 			} else {
 				toast.error(error);
-				hasFailed = true;
-			}
-			loader.hide();
-			if (hasFailed) {
+				loader.hide();
 				return;
 			}
-			loader = $loading.show();
-			toast.info("Importing creatures has started. This may take a while.");
-			let creatures = data.creatures.map((a) => parseFromCritterDB(a)[0]);
-			const {success: cSuccess, data: creatureData, error: cError} = await useFetch<{error?: string}>("/api/bestiary/" + this.bestiary?._id + "/addcreatures", "POST", creatures);
+			toast.info("Saving creatures has started. This may take a while.");
+			const {success: cSuccess, data: creatureData, error: cError} = await useFetch<{error?: string}>("/api/bestiary/" + this.bestiary?._id + "/addcreatures", "POST", data.data.creatures);
 			if (!cSuccess) toast.error(cError);
 			else if (creatureData.error) toast.error(creatureData.error);
 			await this.getBestiary();
