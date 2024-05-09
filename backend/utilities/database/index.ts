@@ -34,7 +34,7 @@ export async function startConnection() {
 			let result = await collections.creatures.updateMany({}, {$pull: {"stats.core.speed": {value: 0, name: {$ne: "Walk"}}, "stats.core.senses": {value: 0}}});
 			log.log("database", `Updated ${result.modifiedCount} creatures to remove empty speed and senses.`);
 		}
-	} catch (err: any) {
+	} catch (err) {
 		log.log("critical", err);
 		// Ensures that the client will close on error
 		await client.close();

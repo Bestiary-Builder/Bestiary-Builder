@@ -43,14 +43,7 @@
 						</LabelledComponent>
 						<LabelledComponent title="Creature type" for="creatureType">
 							<div style="min-width: 300px">
-								<v-select
-									placeholder="Search by creature type"
-									v-model="searchOptions.tags"
-									multiple
-									:options="creatureTypes"
-									inputId="creaturetype"
-									:taggable="true"
-								/>
+								<v-select placeholder="Search by creature type" v-model="searchOptions.tags" multiple :options="creatureTypes" inputId="creaturetype" :taggable="true" />
 							</div>
 						</LabelledComponent>
 						<div class="two-wide">
@@ -266,8 +259,8 @@ import {useFetch} from "@/utils/utils";
 import {toast} from "@/utils/app/toast";
 import {store} from "@/utils/store";
 import Markdown from "@/components/Markdown.vue";
-import { creatureTypes } from "@/utils/constants";
-import { $loading } from "@/utils/app/loading";
+import {creatureTypes} from "@/utils/constants";
+import {$loading} from "@/utils/app/loading";
 export default defineComponent({
 	data() {
 		return {
@@ -635,7 +628,7 @@ export default defineComponent({
 			}
 			loader.hide();
 		},
-		setSelectedCreature(creature: any) {
+		setSelectedCreature(creature: Statblock) {
 			this.lastHoveredCreature = creature;
 		},
 		changeCR(isIncrease: boolean, isMinimumOption: boolean): void {

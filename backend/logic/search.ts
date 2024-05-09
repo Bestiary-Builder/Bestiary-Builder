@@ -10,15 +10,15 @@ app.post("/api/search", async (req, res) => {
 	try {
 		//Parse search inputs
 		let input = req.body.data as Partial<SearchOptions> | null;
-		let searchOptions = {
-			...({
+		let searchOptions: SearchOptions = {
+			...{
 				search: ".",
 				page: 0,
 				mode: "popular",
 				tags: []
-			} as SearchOptions),
+			},
 			...(input ?? {})
-		} as SearchOptions;
+		};
 		if (!validateSearchInput(searchOptions, res)) return;
 		if (searchOptions.page < 0) return res.status(400).json({error: "Page out of bounds"});
 		//Filter
@@ -89,7 +89,7 @@ import {createCheckers} from "ts-interface-checker";
 import {Response} from "express";
 import {typeInterface, interfaceValidation} from "~/shared";
 const {SearchOptions: SearchChecker} = createCheckers(typeInterface);
-function validateSearchInput(input: any, res: Response) {
+function validateSearchInput(input: SearchOptions, res: Response) {
 	if (SearchChecker.test(input)) {
 		return true;
 	} else {

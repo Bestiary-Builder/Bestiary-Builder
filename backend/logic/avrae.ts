@@ -1,7 +1,7 @@
 import {app} from "@/utilities/constants";
 import {log} from "@/utilities/logger";
 import {getBestiary, incrementBestiaryViewCount, collections} from "@/utilities/database";
-import {type Statblock, Id, stringToId, SKILLS_BY_STAT, type Stat, type SkillsEntity, nthSuffix, hpCalc, statCalc, fullSpellAbilityName, componentsString, crAsString, ppCalc, type SpellCasting, displaySpeedOrSenses, spellDc, spellAttackBonus} from "~/shared";
+import {type Statblock, Id, stringToId, SKILLS_BY_STAT, type Stat, type SkillsEntity, nthSuffix, hpCalc, statCalc, fullSpellAbilityName, componentsString, crAsString, ppCalc, type SpellCasting, displaySpeedOrSenses, spellDc, spellAttackBonus, InnateSpellsEntity} from "~/shared";
 
 //Export data
 app.get("/api/public/bestiary/:id", (req, res) => res.redirect("/api/export/bestiary/" + req.params.id));
@@ -44,8 +44,7 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 
 //Statblock functions:
 
-
-function knownSpells(data: SpellCasting): any {
+function knownSpells(data: SpellCasting) {
 	let dailySpells = {
 		"1": [],
 		"2": [],
@@ -62,14 +61,11 @@ function knownSpells(data: SpellCasting): any {
 	}
 	let output = {
 		caster_spells: data.casterSpells.spellList.flat(),
-		at_will: data.innateSpells.spellList[0].map((sp: any) => sp.spell),
+		at_will: data.innateSpells.spellList[0].map((sp: InnateSpellsEntity) => sp.spell),
 		daily_spells: dailySpells
 	};
 	return output;
 }
-
-
-
 
 function calcSkills(data: Statblock) {
 	let skillData = data.abilities.skills as SkillsEntity[];
@@ -131,14 +127,10 @@ function calcSkills(data: Statblock) {
 	return output;
 }
 
-
-
 function slots(num: number) {
 	if (num > 1) return `(${num} slots)`;
 	return `(${num} slot)`;
 }
-
-
 
 export function getCreatureData(creature: Statblock) {
 	//HP:
@@ -162,18 +154,19 @@ export function getCreatureData(creature: Statblock) {
 	};
 
 	//Saves/stats
-	let saves = {} as any;
+	let saves = {} as {[key: string]: unknown};
 	for (let key in creature.abilities.saves) {
-		const saveData = creature.abilities.saves[key as Stat]
+		const saveData = creature.abilities.saves[key as Stat];
 
-		let newKey = {
-			"str": "strengthSave",
-			"dex": "dexteritySave",
-			"con": "constitutionSave",
-			"wis": "wisdomSave",
-			"int": "intelligenceSave",
-			"cha": "charismaSave",
-		}[key] ?? ""
+		let newKey =
+			{
+				str: "strengthSave",
+				dex: "dexteritySave",
+				con: "constitutionSave",
+				wis: "wisdomSave",
+				int: "intelligenceSave",
+				cha: "charismaSave"
+			}[key] ?? "";
 
 		let override = saveData.override;
 		let value = statCalc(key, creature);
@@ -243,10 +236,9 @@ export function getCreatureData(creature: Statblock) {
 
 	// best not to think about this too much.
 	if (caster.casterLevel && caster.castingClass && caster.spellList.flat().length > 0) {
-		let output = `${isNoun ? "" : "The "}${name} is a ${nthSuffix(caster.casterLevel)}-level spellcaster. ${isNoun ? "Their" : "Its"} spellcasting ability is ${fullSpellAbilityName(caster.spellCastingAbilityOverride ?? caster.spellCastingAbility)} (spell save DC ${spellDc(
-			false,
-			creature
-		)}, ${spellAttackBonus(false, creature) >= 0 ? "+" : ""}${spellAttackBonus(false, creature)} to hit with spell attacks). ${isNoun ? name : "It"} ${
+		let output = `${isNoun ? "" : "The "}${name} is a ${nthSuffix(caster.casterLevel)}-level spellcaster. ${isNoun ? "Their" : "Its"} spellcasting ability is ${fullSpellAbilityName(caster.spellCastingAbilityOverride ?? caster.spellCastingAbility)} (spell save DC ${spellDc(false, creature)}, ${
+			spellAttackBonus(false, creature) >= 0 ? "+" : ""
+		}${spellAttackBonus(false, creature)} to hit with spell attacks). ${isNoun ? name : "It"} ${
 			["Sorcerer", "Bard", "Ranger", "Warlock"].includes(caster.castingClass) ? `knowns the following ${caster.castingClass.toLowerCase()} spells` : `has the following ${caster.castingClass.toLowerCase()} spells prepared`
 		}:${!["Ranger", "Paladin"].includes(caster.castingClass) && caster.spellList[0].length > 0 ? `\n\nCantrips (at will): ${caster.spellList[0].sort().join(", ").toLowerCase()}` : ""}${
 			caster.spellList[1].length > 0 ? `\n\n1st level ${slots(caster.spellSlotList![1])}: ${caster.spellList[1].sort().join(", ").toLowerCase()}` : ""
@@ -284,25 +276,25 @@ export function getCreatureData(creature: Statblock) {
 
 		if (innateCaster.spellList[0].length > 0)
 			output += `\n\nAt will: ${innateCaster.spellList[0]
-				.map((x: any) => (x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell))
+				.map((x) => (x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell))
 				.sort()
 				.join(", ")
 				.toLowerCase()}`;
 		if (innateCaster.spellList[3].length > 0)
 			output += `\n\n3/day each: ${innateCaster.spellList[3]
-				.map((x: any) => (x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell))
+				.map((x) => (x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell))
 				.sort()
 				.join(", ")
 				.toLowerCase()}`;
 		if (innateCaster.spellList[2].length > 0)
 			output += `\n\n2/day each: ${innateCaster.spellList[2]
-				.map((x: any) => (x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell))
+				.map((x) => (x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell))
 				.sort()
 				.join(", ")
 				.toLowerCase()}`;
 		if (innateCaster.spellList[1].length > 0)
 			output += `\n\n1/day each: ${innateCaster.spellList[1]
-				.map((x: any) => (x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell))
+				.map((x) => (x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell))
 				.sort()
 				.join(", ")
 				.toLowerCase()}`;

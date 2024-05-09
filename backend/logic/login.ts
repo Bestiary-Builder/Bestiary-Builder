@@ -86,7 +86,7 @@ export const requireUser = async (req: Request, res: Response, next: NextFunctio
 		let token = req.cookies.userToken;
 		if (!token) return res.status(401).json({error: "Not logged in."});
 		try {
-			const decoded = jwt.verify(token, process.env.JWTKEY ?? "key") as any;
+			const decoded = jwt.verify(token, process.env.JWTKEY ?? "key") as {id: string};
 			let user = await getUserFromSecret(decoded.id);
 			if (!user) return res.status(401).send({error: "User token doesn't correspond to any user."});
 			req.body.user = user;
@@ -105,7 +105,7 @@ export const possibleUser = async (req: Request, res: Response, next: NextFuncti
 		req.body.user = null;
 		if (token) {
 			try {
-				const decoded = jwt.verify(token, process.env.JWTKEY ?? "key") as any;
+				const decoded = jwt.verify(token, process.env.JWTKEY ?? "key") as {id: string};
 				let user = await getUserFromSecret(decoded.id);
 				req.body.user = user;
 			} catch (err) {}

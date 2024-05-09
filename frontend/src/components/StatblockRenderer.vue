@@ -26,7 +26,7 @@
         </div>
     </div>
     <div class="stat-block__row">
-        <div v-if="Object.values(data.abilities.saves).some((val : any )=> (val.isProficient === true || val.override !== null))" class="stat-block__save-container"> 
+        <div v-if="Object.values(data.abilities.saves).some((val)=> (val.isProficient === true || val.override !== null))" class="stat-block__save-container"> 
             <b> Saving Throws </b>
             <template v-for="stat in stats" :key="stat">
                 <span v-if="data.abilities.saves[stat].override !== null"> {{ capitalizeFirstLetter(stat) }} {{ signedNumber(data.abilities.saves[stat].override || 0) }} </span>

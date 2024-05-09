@@ -19,11 +19,11 @@ const router = createRouter({
 	routes: routes,
 	scrollBehavior(to, from, savedPosition) {
 		if (savedPosition) {
-		  return savedPosition
+			return savedPosition;
 		} else {
-		  return { top: 0, behavior: 'smooth' }
+			return {top: 0, behavior: "smooth"};
 		}
-	  },
+	}
 });
 
 //Check logged in

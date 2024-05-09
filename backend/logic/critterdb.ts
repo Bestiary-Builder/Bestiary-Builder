@@ -14,7 +14,7 @@ app.get("/api/critterdb/:id/:published", async (req, res) => {
 });
 
 async function fromCritterdb(url: string, published: boolean): Promise<{data: {creatures: Statblock[]; name: string; description: string}; failedCreatures: string[]} | null> {
-	let data = {creatures: [] as any[], name: "", description: ""};
+	let data = {creatures: [] as Statblock[], name: "", description: ""};
 	log.info(`CritterDB | Getting bestiary ID ${url}...`);
 	let apiBase = published ? "https://critterdb.com:443/api/publishedbestiaries" : "https://critterdb.com:443/api/bestiaries";
 
@@ -45,7 +45,7 @@ async function fromCritterdb(url: string, published: boolean): Promise<{data: {c
 				return result[0];
 			}
 		})
-		.filter((a) => a != null);
+		.filter((a) => a != null) as Statblock[];
 	return {data, failedCreatures: errors};
 }
 
@@ -183,7 +183,7 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: string]:
 	outputData.abilities = {
 		stats: {} as any,
 		saves: {} as any,
-		skills: [] as any
+		skills: [] as any[]
 	};
 
 	outputData.abilities.stats = {
@@ -423,7 +423,7 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: string]:
 		let spellList: CasterSpells["spellList"] = [[], [], [], [], [], [], [], [], [], []];
 		let spellSlotList: SpellSlotEntity = {};
 		const SPELL_INFO_RE = new RegExp(/(?:(?<level>\d)[stndrh]{2}\slevel \((?<slots>\d+) slots?\)|Cantrip(?:s)? \(at will\)): (?<spells>.+)$/, "gmi");
-		let spellsInfo: any = Array.from(sData.matchAll(SPELL_INFO_RE));
+		let spellsInfo: any[] = Array.from(sData.matchAll(SPELL_INFO_RE));
 		for (let l of spellsInfo) {
 			// cantrips
 			spellList[l.groups?.level || 0] = spellListConstructor(l.groups?.spells);
@@ -498,7 +498,7 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: string]:
 
 		// match for per day spells
 		const PER_DAY_RE = new RegExp(/(?<times>\d+)\/day(?: each)?: (?<spells>.+)$/, "gmi");
-		const perDayMatch: any = Array.from(sData.matchAll(PER_DAY_RE));
+		const perDayMatch: any[] = Array.from(sData.matchAll(PER_DAY_RE));
 
 		// set our values - currently only 1/2/3 times per day is supported on bestiary builder, so we filter to those
 		let oncePerDay: InnateSpellsEntity[] = [];

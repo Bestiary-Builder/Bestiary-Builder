@@ -8,7 +8,7 @@
 				</RouterLink>
 			</div>
 			<div class="navbar-center">
-				<RouterLink v-for="route in $router.options.routes.filter((a: any) => a.meta.navbar)" :to="route.path" class="nav-link" @click="isExpanded = false">
+				<RouterLink v-for="route in $router.options.routes.filter((a) => a.meta?.navbar)" :to="route.path" class="nav-link" @click="isExpanded = false">
 					<span class="header-item">{{ route.name }}</span>
 				</RouterLink>
 			</div>

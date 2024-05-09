@@ -58,16 +58,16 @@ import BestiaryList from "@/components/BestiaryList.vue";
 import {ref, onMounted, watch} from "vue";
 import type {Bestiary} from "~/shared";
 import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
-import { useFetch} from "@/utils/utils";
-import { store } from "@/utils/store";
+import {useFetch} from "@/utils/utils";
+import {store} from "@/utils/store";
 import {toast} from "@/utils/app/toast";
 // @ts-ignore
 import {vue3Debounce as vDebounce} from "vue-debounce";
-import { $loading } from "@/utils/app/loading";
+import {$loading} from "@/utils/app/loading";
 
-onMounted(() => {
+onMounted(async () => {
 	const loader = $loading.show();
-	searchBestiaries();
+	await searchBestiaries();
 	loader.hide();
 });
 
