@@ -1,12 +1,16 @@
 //Api handling
 async function handleApiResponse<Type>(response: Response): Promise<{success: true; data: Type; error: undefined} | {success: false; data: undefined; error: string}> {
-	let data = await response.json();
-	if (response.status >= 200 && response.status < 300) {
-		//Succesful
-		return {success: true, data: data as Type, error: undefined};
-	} else {
-		//Failed
-		return {success: false, data: undefined, error: data.error as string};
+	try {
+		let data = await response.json();
+		if (response.status >= 200 && response.status < 300) {
+			//Succesful
+			return {success: true, data: data as Type, error: undefined};
+		} else {
+			//Failed
+			return {success: false, data: undefined, error: data.error as string};
+		}
+	} catch {
+		return {success: false, data: undefined, error: "Unrecognized server response"};
 	}
 }
 
