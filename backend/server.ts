@@ -29,9 +29,9 @@ import {Id, stringToId} from "~/shared";
 async function getFrontendHtml(route: routes.Route, req: Request) {
 	//Get information
 	let title = "Bestiary Builder";
-	if (route.name) title = route.name + " | Bestiary Builder";
-	let description = route.meta.description;
-	if (route.meta.dynamic) {
+	if (route?.name) title = route.name + " | Bestiary Builder";
+	let description = route?.meta?.description;
+	if (route?.meta?.dynamic) {
 		switch (route.path) {
 			case "/bestiary-viewer/:id":
 				let bId = stringToId(req.params.id);
@@ -65,10 +65,6 @@ async function getFrontendHtml(route: routes.Route, req: Request) {
 				break;
 		}
 	}
-	//Get index.html
-	let html = null;
-	const filePath = path.join(process.env.frontendPath as string, "index.html");
-	html = fs.readFileSync(filePath, {encoding: "utf-8"});
 	//Create metatags
 	let metatags = [
 		`<title>${title}</title>`,
@@ -77,12 +73,16 @@ async function getFrontendHtml(route: routes.Route, req: Request) {
 			//Change content of tag:
 			if (tagDef.name.includes("title") || tagDef.name.includes("name")) tagDef.content = title;
 			if (tagDef.name.includes("description") && description) tagDef.content = description;
-			if (tagDef.name.includes("image") && route.meta.image) tagDef.content = route.meta.image;
-			if (tagDef.name.includes("keywords") && route.meta.keywords) tagDef.content = route.meta.keywords;
+			if (tagDef.name.includes("image") && route?.meta?.image) tagDef.content = route.meta.image;
+			if (tagDef.name.includes("keywords") && route?.meta?.keywords) tagDef.content = route.meta.keywords;
 			//Return new tag
 			return `<meta ${tagDef.type}="${tagDef.name}" content="${tagDef.content}">`;
 		})
 	];
+	//Get index.html
+	let html = null;
+	const filePath = path.join(process.env.frontendPath as string, "index.html");
+	html = fs.readFileSync(filePath, {encoding: "utf-8"});
 	//Return index.html with tags
 	return html.replace("<!-- meta tags -->", metatags.join("\n		"));
 }
