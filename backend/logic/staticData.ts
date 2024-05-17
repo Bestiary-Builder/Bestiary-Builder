@@ -53,3 +53,9 @@ import data from "@/staticData/automationDocumentation.json";
 app.get("/api/automationDocumentation", async (req, res) => {
 	res.json(data);
 });
+
+//Automation documentation
+import metadata from "@/staticData/automationMetaData.json";
+app.get("/api/automationMetaData", async (req, res) => {
+	res.json(metadata);
+});

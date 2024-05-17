@@ -77,6 +77,7 @@ app.post("/api/automation/:id/update", requireUser, async (req, res) => {
 			...(req.body.data as Partial<Automation>)
 		} as Automation;
 		data._id = _id;
+
 		//Check limits
 		const limitError = checkAutomationLimits(data);
 		if (limitError) return res.status(400).json({error: limitError});

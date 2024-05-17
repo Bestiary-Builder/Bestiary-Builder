@@ -16,7 +16,7 @@
 		<p> You are logged in to Bestiary Builder with Discord as <b> {{ store.user.username }} </b>.</p>
 		<p> You have been a user of Bestiary Builder since <b>{{ store.user.joinedAt ? new Date(store.user.joinedAt).toDateString() : "Not Found" }}</b>.</p>
 		<p> You have created <b>{{ store.user.bestiaries.length }}</b> bestiaries since then.</p>
-		<p> Your store.user id is <code>{{ store.user._id }}</code>.</p>
+		<p> Your user id is <code>{{ store.user._id }}</code>.</p>
 		<p v-if="store.user.supporter == 0" class="patreon" >
 			<p> 
 				If you enjoy using our site, consider supporting us on Patreon! 

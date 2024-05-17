@@ -78,7 +78,10 @@
 			</div>
 		</div>
 		<div class="automation-editor">
-			<VueMonacoEditor v-model:value="automationString" theme="vs-dark" :options="{wordWrap: 'on', theme: 'vs-dark', minimap: {enabled: false}, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false}" height="750px" language="yaml" @mount="handleMount" />
+			<LabelledComponent title="Change Editors" @click="isVisualEditor = !isVisualEditor">
+				<VueMonacoEditor  v-model:value="automationString" theme="vs-dark" :options="{wordWrap: 'on', theme: 'vs-dark', minimap: {enabled: false}, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false}" height="750px" language="yaml" @mount="handleMount" />
+				<!-- <TreeRoot v-else :data="automationString" /> -->
+			</LabelledComponent>
 			<span class="save-custom-automation" @click="saveCustomAutomation()" v-if="!isStandAlone && automationString">Click to save as a reusable custom automation!</span>
 		</div>
 	</div>
@@ -138,11 +141,15 @@ import {Id, type FeatureEntity, type Automation, type AutomationDocumentation, p
 import LabelledComponent from "./LabelledComponent.vue";
 import Markdown from "./Markdown.vue";
 import {store} from "@/utils/store";
+import TreeRoot from "./VisualEditor/TreeRoot.vue";
 const props = withDefaults(defineProps<{data: FeatureEntity | Automation; isStandAlone?: boolean; creatureName?: string}>(), {isStandAlone: false, creatureName: "$NAME$"});
 
 const errorMessage = ref<null | string>(null);
 
 const hasEditedName = ref(false);
+
+// unfinished
+const isVisualEditor = ref(false);
 
 const emit = defineEmits<{
 	(e: "savedStandaloneData"): void;
@@ -238,13 +245,13 @@ const saveAutomation = async (shouldNotify = false) => {
 		if (shouldNotify) toast.error("YAML contains Error. Failed to save automation");
 		return;
 	}
-
 	// parsed == null
 	if (!parsed) props.data.automation = null;
 	else {
 		// validate it as valid avrae automation
 		const {success, data, error} = await useFetch("/api/validate/automation", "POST", parsed);
-		if (!success) {
+		if (success) props.data.automation = parsed
+		else {
 			if (shouldNotify) toast.error(error);
 			return;
 		}
