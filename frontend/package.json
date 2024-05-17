@@ -1,15 +1,17 @@
 {
 	"name": "bestiary-builder",
+	"type": "module",
 	"version": "0.0.0",
 	"private": true,
-	"type": "module",
 	"scripts": {
 		"dev": "vite",
 		"build": "cd ../shared && npm run build && cd ../frontend && run-p type-check build-only",
 		"preview": "vite preview",
 		"build-only": "vite build",
 		"type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
-		"test": "vitest"
+		"test": "vitest",
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix"
 	},
 	"dependencies": {
 		"@fortawesome/fontawesome-svg-core": "^6.5.1",
@@ -21,13 +23,11 @@
 		"@vueuse/integrations": "^10.7.1",
 		"floating-vue": "^2.0.0-beta.24",
 		"focus-trap": "^7.5.4",
-		"js-yaml": "^4.1.0",
 		"less": "^4.2.0",
 		"markdown-it": "^14.0.0",
 		"markdown-it-anchor": "^8.6.7",
 		"markdown-it-attrs": "^4.1.6",
 		"vue": "^3.4.0",
-		"vue-debounce": "^4.0.1",
 		"vue-loading-overlay": "6.0",
 		"vue-router": "^4.2.5",
 		"vue-select": "^4.0.0-beta.6",
@@ -36,12 +36,15 @@
 		"yaml": "^2.3.4"
 	},
 	"devDependencies": {
+		"@antfu/eslint-config": "^2.18.0",
 		"@tsconfig/node18": "^18.2.2",
 		"@types/markdown-it": "^13.0.8",
 		"@types/node": "^20.10.5",
 		"@types/vue-select": "^3.16.8",
 		"@vitejs/plugin-vue": "^5.0.0",
 		"@vue/tsconfig": "^0.5.1",
+		"eslint": "8.57.0",
+		"eslint-plugin-format": "^0.1.1",
 		"npm-run-all": "^4.1.5",
 		"typescript": "~5.3.3",
 		"unplugin-vue-fontawesome": "^1.0.6",

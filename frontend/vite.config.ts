@@ -1,15 +1,15 @@
 /// <reference types="vitest" />
 
-import {fileURLToPath, URL} from "node:url";
+import { URL, fileURLToPath } from "node:url";
 
-import {defineConfig} from "vite";
+import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
-//@ts-expect-error
-import {routes} from "../shared";
 import Pages from "vite-plugin-pages";
 import generateSitemap from "vite-plugin-pages-sitemap";
 import FontAwesome from "unplugin-vue-fontawesome/vite";
 import rawloader from "vite-raw-plugin";
+// @ts-expect-error Magic
+import routes from "../shared/";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -17,17 +17,18 @@ export default defineConfig({
 		vue(),
 		Pages({
 			dirs: "src/views",
-			onRoutesGenerated: (fileroutes) => {
-				//@ts-expect-error
+			onRoutesGenerated: (_fileroutes) => {
+				// @ts-expect-error untyped
 				generateSitemap({
 					routes: routes.siteMapRoutes,
 					readable: true,
 					hostname: "https://bestiarybuilder.com"
 				});
+				// eslint-disable-next-line no-console
 				console.log("\nSitemap generated");
 			}
 		}),
-		//@ts-expect-error
+		// @ts-expect-error untyped
 		rawloader({
 			fileRegex: /\.md$/
 		}),

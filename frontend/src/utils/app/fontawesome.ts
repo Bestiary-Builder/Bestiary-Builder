@@ -1,31 +1,32 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 
 import {
-    faTrash,
-    faLock,
-    faSkull,
-    faBars,
-    faPenToSquare, 
-	faStar, 
-	faHourglass,
-    faUserLock,
-    faScaleBalanced,
-    faShareNodes,
-    faArrowRightFromBracket,
-    faArrowRightToBracket,
-    faLink,
-    faEarthEurope,
-    faXmark,
-    faPlus,
-    faThumbTack, 
-	faMagnifyingGlass,
-    faTag, 
+	faArrowRightFromBracket,
+	faArrowRightToBracket,
+	faBars,
+	faCircleInfo,
+	faEarthEurope,
+	faEye,
+	faEyeSlash,
 	faGripVertical,
-    faEyeSlash,
-    faEye,
-    faCircleInfo
+	faHourglass,
+	faLink,
+	faLock,
+	faMagnifyingGlass,
+	faPenToSquare,
+	faPlus,
+	faScaleBalanced,
+	faShareNodes,
+	faSkull,
+	faStar,
+	faTag,
+	faThumbTack,
+	faTrash,
+	faUserLock,
+	faXmark
 } from "@fortawesome/free-solid-svg-icons";
-import { faDiscord, faPatreon, faGithub } from "@fortawesome/free-brands-svg-icons";
+import { faDiscord, faGithub, faPatreon } from "@fortawesome/free-brands-svg-icons";
+
 library.add(
 	faTrash,
 	faXmark,

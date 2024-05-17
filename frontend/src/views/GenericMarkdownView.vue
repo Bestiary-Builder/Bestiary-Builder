@@ -1,34 +1,18 @@
-<template>
-	<Breadcrumbs
-		:routes="[
-			{
-				path: '',
-				text: $route.name as string ?? 'Name not found',
-				isCurrent: true
-			}
-		]"
-		:isLessWide="true"
-	/>
-	<div class="content markdown less-wide" v-html="md.render(dataFile)" />
-</template>
-
 <script setup lang="ts">
-import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
-
-import {useRoute} from "vue-router";
-import {ref, watch, nextTick, onMounted} from "vue";
+import { useRoute } from "vue-router";
+import { nextTick, onMounted, ref, watch } from "vue";
 
 import markdownit from "markdown-it";
 import anchor from "markdown-it-anchor";
-// @ts-ignore
+// @ts-expect-error untyped
 import markdownItAttrs from "markdown-it-attrs";
+import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
 
-import {prefersReducedMotion} from "@/utils/utils";
+import { prefersReducedMotion } from "@/utils/utils";
 
+const props = defineProps<{ filePath: string }>();
 const dataFile = ref("");
 const route = useRoute();
-const props = defineProps<{filePath: string}>();
-
 const md = markdownit();
 md.use(markdownItAttrs);
 md.use(anchor, {
@@ -39,25 +23,41 @@ md.use(anchor, {
 });
 
 onMounted(() => {
-	if (route.hash) window.scrollTo({top: 0, behavior: "instant"});
+	if (route.hash)
+		window.scrollTo({ top: 0, behavior: "instant" });
 });
 
 watch(
 	() => route.fullPath,
-	() => {
+	async () => {
 		import(`../assets/documents/${props.filePath}.md`).then(async (doc) => {
 			dataFile.value = doc.default;
-			if (!route.hash) return;
+			if (!route.hash)
+				return;
 			await nextTick();
 			const el = document.getElementById(route.hash.replace("#", ""));
 			if (el) {
 				const bodyStyles = document.body.style;
-				const yOffset = parseFloat(bodyStyles.getPropertyValue("--breadcrumbs-height")) + parseFloat(bodyStyles.getPropertyValue("--navbar-height"));
+				const yOffset = Number.parseFloat(bodyStyles.getPropertyValue("--breadcrumbs-height")) + Number.parseFloat(bodyStyles.getPropertyValue("--navbar-height"));
 				const y = el.getBoundingClientRect().y - 50 - yOffset + window.scrollY;
-				window.scrollTo({top: y, behavior: prefersReducedMotion.matches ? "auto" : "smooth"});
+				window.scrollTo({ top: y, behavior: prefersReducedMotion.matches ? "auto" : "smooth" });
 			}
-		});
+		}).catch(() => {});
 	},
-	{immediate: true}
+	{ immediate: true }
 );
 </script>
+
+<template>
+	<Breadcrumbs
+		:routes="[
+			{
+				path: '',
+				text: $route.name as string ?? 'Name not found',
+				isCurrent: true
+			}
+		]"
+		:is-less-wide="true"
+	/>
+	<div class="content markdown less-wide" v-html="md.render(dataFile)" />
+</template>

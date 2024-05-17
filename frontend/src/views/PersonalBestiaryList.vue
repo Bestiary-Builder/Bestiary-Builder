@@ -1,53 +1,20 @@
-<template>
-	<Breadcrumbs
-		:routes="[
-			{
-				path: '',
-				text: 'My Bestiaries',
-				isCurrent: true
-			}
-		]"
-	>
-		<button @click="createBestiary" v-tooltip="'Create bestiary!'" class="inverted" aria-label="Create bestiary">
-			<font-awesome-icon :icon="['fas', 'plus']" />
-		</button>
-	</Breadcrumbs>
-	<div class="content">
-		<BestiaryList :personal="true" :bestiaries v-if="bestiaries" @delete-bestiary="openDeleteModal"></BestiaryList>
-		<div v-else class="zero-found">
-			<span> You do not have any bestiaries. </span>
-			<button class="btn confirm" @click="createBestiary">Create a bestiary</button>
-		</div>
-	</div>
-	<Modal :show="showDeleteModal" @close="showDeleteModal = false">
-		<template #header>Are you sure you want to delete {{ selectedBestiary?.name }}</template>
-		<template #body>
-			<p class="modal-desc">Please confirm you want to permanently delete this bestiary. This action is not reversible.</p>
-		</template>
-		<template #footer>
-			<button class="btn" @click="showDeleteModal = false">Cancel</button>
-			<button class="btn danger" @click.prevent="() => deleteBestiary(selectedBestiary)">Confirm</button>
-		</template>
-	</Modal>
-</template>
-
 <script setup lang="ts">
+import { useRouter } from "vue-router";
+import { onMounted, ref } from "vue";
 import Modal from "@/components/Modal.vue";
 import BestiaryList from "@/components/BestiaryList.vue";
 import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
 
-import {useRouter} from "vue-router";
-import {onMounted, ref} from "vue";
-
-import {toast} from "@/utils/app/toast";
-import type {Bestiary} from "~/shared";
-import {useFetch} from "@/utils/utils";
+import { toast } from "@/utils/app/toast";
+import type { Bestiary } from "~/shared";
+import { useFetch } from "@/utils/utils";
 import { $loading } from "@/utils/app/loading";
+
 const router = useRouter();
 
-onMounted(() => {
+onMounted(async () => {
 	const loader = $loading.show();
-	getBestiaries();
+	await getBestiaries();
 
 	loader.hide();
 });
@@ -55,8 +22,10 @@ onMounted(() => {
 const bestiaries = ref<Bestiary[]>([]);
 
 const getBestiaries = async () => {
-	const {success, data, error} = await useFetch(`/api/my-bestiaries`);
-	if (success) bestiaries.value = data as Bestiary[];
+	const { success, data, error } = await useFetch(`/api/my-bestiaries`);
+	if (success) {
+		bestiaries.value = data as Bestiary[];
+	}
 	else {
 		bestiaries.value = [];
 		toast.error(error);
@@ -64,8 +33,8 @@ const getBestiaries = async () => {
 };
 
 const createBestiary = async () => {
-	//Send data to server
-	const {success, data, error} = await useFetch<Bestiary>("/api/bestiary/add", "POST", {
+	// Send data to server
+	const { success, data, error } = await useFetch<Bestiary>("/api/bestiary/add", "POST", {
 		name: "New bestiary",
 		description: "",
 		status: "private",
@@ -73,21 +42,24 @@ const createBestiary = async () => {
 	});
 	if (success) {
 		toast.success("Created bestiary");
-		router.push("/bestiary-viewer/" + data._id);
-	} else {
+		await router.push(`/bestiary-viewer/${data._id}`);
+	}
+	else {
 		toast.error(error);
 	}
 	await getBestiaries();
 };
 
 const deleteBestiary = async (bestiary: Bestiary | null) => {
-	if (!bestiary) return;
+	if (!bestiary)
+		return;
 	const loader = $loading.show();
-	const {success, error} = await useFetch(`/api/bestiary/${bestiary._id}/delete`);
+	const { success, error } = await useFetch(`/api/bestiary/${bestiary._id}/delete`);
 	if (success) {
 		toast.success("Deleted bestiary succesfully");
 		showDeleteModal.value = false;
-	} else {
+	}
+	else {
 		toast.error(error);
 	}
 	loader.hide();
@@ -101,3 +73,46 @@ const openDeleteModal = (bestiary: Bestiary) => {
 	showDeleteModal.value = true;
 };
 </script>
+
+<template>
+	<Breadcrumbs
+		:routes="[
+			{
+				path: '',
+				text: 'My Bestiaries',
+				isCurrent: true
+			}
+		]"
+	>
+		<button v-tooltip="'Create bestiary!'" class="inverted" aria-label="Create bestiary" @click="createBestiary">
+			<font-awesome-icon :icon="['fas', 'plus']" />
+		</button>
+	</Breadcrumbs>
+	<div class="content">
+		<BestiaryList v-if="bestiaries" :personal="true" :bestiaries @delete-bestiary="openDeleteModal" />
+		<div v-else class="zero-found">
+			<span> You do not have any bestiaries. </span>
+			<button class="btn confirm" @click="createBestiary">
+				Create a bestiary
+			</button>
+		</div>
+	</div>
+	<Modal :show="showDeleteModal" @close="showDeleteModal = false">
+		<template #header>
+			Are you sure you want to delete {{ selectedBestiary?.name }}
+		</template>
+		<template #body>
+			<p class="modal-desc">
+				Please confirm you want to permanently delete this bestiary. This action is not reversible.
+			</p>
+		</template>
+		<template #footer>
+			<button class="btn" @click="showDeleteModal = false">
+				Cancel
+			</button>
+			<button class="btn danger" @click.prevent="() => deleteBestiary(selectedBestiary)">
+				Confirm
+			</button>
+		</template>
+	</Modal>
+</template>

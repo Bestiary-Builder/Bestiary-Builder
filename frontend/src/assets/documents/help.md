@@ -54,6 +54,6 @@ Press the Export button at the top right of the page. You can choose to copy it 
 3. Press Import again. It will start importing the creatures, which might take a while for larger bestiaries.
 
 ----
-## Markdown Support 
-Bestiary, Creature, and Feature descriptions support [Markdown Syntax](https://www.markdownguide.org/basic-syntax/), which will also import into Avrae that way usually. 
+## Markdown Support
+Bestiary, Creature, and Feature descriptions support [Markdown Syntax](https://www.markdownguide.org/basic-syntax/), which will also import into Avrae that way usually.
 A special case is made for Bestiary descriptions, where the first image will be displayed on the card in the Public, Personal, and Bookmarked bestiary list.

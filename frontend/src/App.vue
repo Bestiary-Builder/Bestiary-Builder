@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import {RouterView} from "vue-router";
+import { RouterView } from "vue-router";
 import Footer from "@/constantComponents/Footer.vue";
 import NavHeader from "@/constantComponents/NavHeader.vue";
 </script>
 
 <template>
-	<div id="modal"></div>
+	<div id="modal" />
 	<NavHeader />
 	<main>
 		<RouterView />
 	</main>
 	<footer>
-		<Footer></Footer>
+		<Footer />
 	</footer>
 </template>

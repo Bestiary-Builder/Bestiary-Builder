@@ -1,42 +1,23 @@
-<template>
-	<Teleport to="#modal">
-		<Transition name="modal">
-			<div class="modal__bg" @click="$emit('close')" v-show="show" ref="target" :class="{'open-modal': show}">
-				<div :class="{'fullscreen': fullScreen}" class="modal__content" @click.stop role="dialog" aria-modal="true" :aria-labelledby="`dialog${id}_label`" >
-					<div class="modal__header">
-						<h2 :id="`dialog${id}_label`"><slot name="header"></slot></h2>
-						<button class="modal__close-button" @click="emit('close')"><font-awesome-icon icon="fa-solid fa-xmark" title="Close Modal"/> </button>
-					</div>
-					<div class="modal__body">
-						<slot name="body"></slot>
-					</div>
-					<div class="modal__footer modal__buttons">
-						<slot name="footer"></slot>
-					</div>
-				</div>
-			</div>
-		</Transition>
-	</Teleport>
-</template>
 <script setup lang="ts">
-import {getCurrentInstance, nextTick, onMounted, onUnmounted, ref, watch} from "vue";
-import {useFocusTrap} from "@vueuse/integrations/useFocusTrap";
+import { getCurrentInstance, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
+import { useFocusTrap } from "@vueuse/integrations/useFocusTrap";
 
-const props = withDefaults(defineProps<{show: boolean, fullScreen?: boolean}>(), {fullScreen: false})
-const emit  = defineEmits<{
-	(e: 'close',): void
-}>()
+const props = withDefaults(defineProps<{ show: boolean; fullScreen?: boolean }>(), { fullScreen: false });
+const emit = defineEmits<{
+	(e: "close",): void;
+}>();
 
 // TODO: Don't use this.
-const id    = getCurrentInstance()?.uid;
+const id = getCurrentInstance()?.uid;
 
 const target = ref();
-const {hasFocus, activate, deactivate} = useFocusTrap(target);
+const { activate, deactivate } = useFocusTrap(target);
 
 watch(
 	() => props.show,
 	async (newValue, oldValue) => {
-		if (newValue === oldValue) return;
+		if (newValue === oldValue)
+			return;
 		if (newValue === true) {
 			await nextTick();
 			activate();
@@ -49,17 +30,41 @@ watch(
 );
 
 const escapeHandler = (e: KeyboardEvent) => {
-	if (e.key == "Escape" && props.show) {
+	if (e.key === "Escape" && props.show)
 		emit("close");
-	}
-}
+};
 onMounted(() => {
-	document.addEventListener("keydown", escapeHandler)
-})
+	document.addEventListener("keydown", escapeHandler);
+});
 onUnmounted(() => {
-	document.removeEventListener("keydown", escapeHandler)
-})
+	document.removeEventListener("keydown", escapeHandler);
+});
 </script>
+
+<template>
+	<Teleport to="#modal">
+		<Transition name="modal">
+			<div v-show="show" ref="target" class="modal__bg" :class="{ 'open-modal': show }" @click="$emit('close')">
+				<div :class="{ fullscreen: fullScreen }" class="modal__content" role="dialog" aria-modal="true" :aria-labelledby="`dialog${id}_label`" @click.stop>
+					<div class="modal__header">
+						<h2 :id="`dialog${id}_label`">
+							<slot name="header" />
+						</h2>
+						<button class="modal__close-button" @click="emit('close')">
+							<font-awesome-icon icon="fa-solid fa-xmark" title="Close Modal" />
+						</button>
+					</div>
+					<div class="modal__body">
+						<slot name="body" />
+					</div>
+					<div class="modal__footer modal__buttons">
+						<slot name="footer" />
+					</div>
+				</div>
+			</div>
+		</Transition>
+	</Teleport>
+</template>
 
 <style lang="less">
 .modal__bg {

@@ -1,7 +1,29 @@
+<script setup lang="ts">
+import { onBeforeMount, ref } from "vue";
+import dataFile from "@/assets/documents/home.md";
+import Markdown from "@/components/Markdown.vue";
+import { useFetch } from "@/utils/utils";
+import type { GlobalStats } from "~/shared";
+
+const stats = ref<null | GlobalStats>(null);
+onBeforeMount(async () => {
+	const { success, data } = await useFetch<GlobalStats>("/api/stats");
+	if (success) {
+		stats.value = data;
+	}
+	else {
+		console.error("Failed to retrieve global stats.");
+		stats.value = null;
+	}
+});
+</script>
+
 <template>
 	<div class="article-header">
 		<div class="header-content">
-			<h1 class="header-title">Bestiary Builder</h1>
+			<h1 class="header-title">
+				Bestiary Builder
+			</h1>
 			<div class="call-to-action">
 				<ul class="left">
 					<li>
@@ -21,32 +43,14 @@
 				</ul>
 			</div>
 		</div>
-		<img src="/mmcover.jpg" alt="" class="header-image" />
+		<img src="/mmcover.jpg" alt="" class="header-image">
 	</div>
 
 	<div class="content markdown less-wide">
-		<Markdown :text="dataFile" :options="{html: true, linkify: true, typographer: true}" />
+		<Markdown :text="dataFile" :options="{ html: true, linkify: true, typographer: true }" />
 	</div>
 </template>
 
-<script setup lang="ts">
-import dataFile from "@/assets/documents/home.md";
-import Markdown from "@/components/Markdown.vue";
-import {useFetch} from "@/utils/utils";
-import {onBeforeMount, ref} from "vue";
-import type {GlobalStats} from "~/shared";
-
-const stats = ref<null | GlobalStats>(null);
-onBeforeMount(async () => {
-	const {success, data} = await useFetch<GlobalStats>("/api/stats");
-	if (success) {
-		stats.value = data;
-	} else {
-		console.error("Failed to retrieve global stats.");
-		stats.value = null;
-	}
-});
-</script>
 <style scoped lang="less">
 @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&display=block");
 .content {
@@ -70,7 +74,8 @@ onBeforeMount(async () => {
 		h1 {
 			font-size: 12vw;
 			text-transform: uppercase;
-			font-family: "Bebas Neue", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+			font-family: "Bebas Neue", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
+				"Helvetica Neue", sans-serif;
 			letter-spacing: 3px;
 		}
 	}

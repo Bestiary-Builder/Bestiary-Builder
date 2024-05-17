@@ -39,7 +39,7 @@ a {
 	}
 }
 
-input[type=checkbox] {
+input[type="checkbox"] {
 	appearance: none;
 	background-color: transparent;
 	margin: 0;
@@ -57,7 +57,6 @@ input[type=checkbox] {
 		border: 0.1rem solid color-mix(in srgb, orangered, rgba(0, 0, 0, 0));
 		cursor: pointer !important;
 	}
-	
 
 	&::before {
 		content: "";
@@ -68,11 +67,11 @@ input[type=checkbox] {
 		background-color: orangered;
 		position: absolute;
 		left: 16%;
-		top: 15% ;
+		top: 15%;
 	}
 }
 
-input[type=checkbox]:checked {
+input[type="checkbox"]:checked {
 	border-color: orangered;
 
 	&::before {
@@ -80,10 +79,9 @@ input[type=checkbox]:checked {
 	}
 }
 
-input[type=checkbox] + label {
+input[type="checkbox"] + label {
 	cursor: pointer;
 }
-
 
 .btn {
 	padding: 6px 12px;
@@ -322,7 +320,9 @@ body .v-popper--theme-dropdown .v-popper__inner {
 	overflow-y: visible;
 }
 
-body .v-popper--theme-dropdown :is(.v-popper__arrow-outer, .v-popper__arrow-inner) {
+body
+	.v-popper--theme-dropdown
+	:is(.v-popper__arrow-outer, .v-popper__arrow-inner) {
 	border-color: orangered;
 }
 
@@ -344,7 +344,7 @@ body:has(.v-popper__popper--no-positioning[aria-hidden="false"]) {
 }
 // or while a modal is open
 html:has(.open-modal) {
-  	overflow: hidden;
+	overflow: hidden;
 }
 
 .v-popper__popper--no-positioning {

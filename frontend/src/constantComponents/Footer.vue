@@ -3,8 +3,12 @@
 		<div class="citizen-footer__container">
 			<section class="citizen-footer__content">
 				<div class="citizen-footer__siteinfo">
-					<div id="footer-sitetitle" class="mw-wiki-title">Bestiary Builder</div>
-					<p id="footer-desc">Welcome to Bestiary Builder</p>
+					<div id="footer-sitetitle" class="mw-wiki-title">
+						Bestiary Builder
+					</div>
+					<p id="footer-desc">
+						Welcome to Bestiary Builder
+					</p>
 				</div>
 				<nav id="footer-places">
 					<ul>
@@ -34,6 +38,7 @@
 		</div>
 	</footer>
 </template>
+
 <style scoped lang="less">
 .citizen-footer {
 	padding: 2rem 5vw;
@@ -169,7 +174,7 @@
 		justify-content: space-around;
 
 		& > * {
-			width: 100%
+			width: 100%;
 		}
 	}
 

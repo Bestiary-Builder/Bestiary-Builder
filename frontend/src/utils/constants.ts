@@ -1,4 +1,4 @@
-import type {Stat} from "~/shared";
+import type { Stat } from "~/shared";
 
 // Generators which are used to create UI programmatically in the StatblockRender
 
@@ -57,22 +57,22 @@ export const resistanceList = [
 ] as const;
 
 export const conditionList = [
-    "Blinded", 
-    "Charmed", 
-    "Deafened", 
-    "Disease", 
-    "Exhaustion", 
-    "Frightened", 
-    "Grappled", 
-    "Incapacitated", 
-    "Invisible", 
-    "Paralyzed", 
-    "Petrified", 
-    "Poisoned", 
-    "Prone", 
-    "Restrained", 
-    "Stunned", 
-    "Unconscious"
+	"Blinded",
+	"Charmed",
+	"Deafened",
+	"Disease",
+	"Exhaustion",
+	"Frightened",
+	"Grappled",
+	"Incapacitated",
+	"Invisible",
+	"Paralyzed",
+	"Petrified",
+	"Poisoned",
+	"Prone",
+	"Restrained",
+	"Stunned",
+	"Unconscious"
 ] as const;
 
 export const languages = [

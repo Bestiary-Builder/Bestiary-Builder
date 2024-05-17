@@ -1,12 +1,14 @@
-<template>
-	<font-awesome-icon :icon="['fas', 'earth-europe']" v-if="icon == 'public'" />
-	<font-awesome-icon :icon="['fas', 'link']" v-if="icon == 'unlisted'" />
-	<font-awesome-icon :icon="['fas', 'lock']" v-if="icon == 'private'" />
-</template>
 <script lang="ts" setup>
-import {Bestiary} from "~/shared";
-defineProps<{icon: Bestiary['status']}>()
+import type { Bestiary } from "~/shared";
+
+defineProps<{ icon: Bestiary["status"] }>();
 </script>
+
+<template>
+	<font-awesome-icon v-if="icon === 'public'" :icon="['fas', 'earth-europe']" />
+	<font-awesome-icon v-if="icon === 'unlisted'" :icon="['fas', 'link']" />
+	<font-awesome-icon v-if="icon === 'private'" :icon="['fas', 'lock']" />
+</template>
 
 <style scoped>
 svg {

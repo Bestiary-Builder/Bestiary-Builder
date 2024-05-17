@@ -8,7 +8,7 @@ _April 30th, 2024_
 - If you'd like to see a full visual automation editor like [Avrae Dashboard](https://avrae.io/dashboard/characters) directly within Bestiary Builder, consider supporting us on [Patreon](https://www.patreon.com/BestiaryBuilder)!
 
 ---
-## v1.3.4 
+## v1.3.4
 _April 24th, 2024_
 
 - Improved the home page, adding statistics about the number of users, bestiaries, and creatures.
@@ -21,7 +21,7 @@ _April 18th, 2024_
 - Adds some missing automation documentation.
 
 ---
-## v1.3.2 
+## v1.3.2
 _April 17th, 2024_
 
 - Fixes some issues with the help page where it referenced old locations of some buttons.
@@ -54,7 +54,7 @@ _April 12th, 2024_
 ## v1.2.8
 _April 10th, 2024_
 
-- Fixes an issue where clearing the caster level field would break casting cantrips with the -cantripdice # option in avrae. 
+- Fixes an issue where clearing the caster level field would break casting cantrips with the -cantripdice # option in avrae.
 
 ---
 ## v1.2.7
@@ -62,7 +62,7 @@ _April 8th, 2024_
 
 - Makes lists in statblocks have normal spacing between its list items.
 - Makes unnamed features display an Unnamed name in the editor rather than nothing.
-- Fixes an issue where SRD features with no automation did not import their name into the feature editor. 
+- Fixes an issue where SRD features with no automation did not import their name into the feature editor.
 - Fixes an issue where imported features with automation only replaced the first placeholder $NAME$ rather than all.
 
 ---
@@ -96,7 +96,7 @@ _February 24th, 2024_
 - Improved Automation Editor:
     - Importing an SRD feature will automatically remove the name of the origin creature, e.g. Frog - Bite will import as Bite.
     - It now checks if the feature description and last automation text node differ. If they do, prompt the user to update one of the other with a button.
-    - Made it full screen since it was getting cluttered. This is an experimental change until we have a better way to edit automation. 
+    - Made it full screen since it was getting cluttered. This is an experimental change until we have a better way to edit automation.
         - **Please leave feedback on this change!**
 - Importing Bestiary Builder Json will now check if everything is of the right type, stopping the import if things are typed wrongly. This should prevent errors when manually creating or modifying Bestiary Builder JSON.
 
@@ -120,7 +120,7 @@ _February 8th, 2024_
 - Fixes Animal Handling/Sleight of Hand not being imported properly into Avrae.
 - Fixes an issue with empty spell slot lists sometimes causing issues on import.
 - Filtering a bestiary now allows custom creature types.
-- Fixes the custom styling of the scrollbar having disappeared. 
+- Fixes the custom styling of the scrollbar having disappeared.
 - Fixes an issue where deleting an element from a draggable list did not update the buttons after it.
 - Improves 5e.tools import slightly to allow some homebrew creature options to import too, as well as parse more types of attacks correctly.
 - Enables full markdown rendering (including images) in the description of features.
@@ -142,7 +142,7 @@ _January 21st, 2024_
 ## v1.1.2
 _January 20th, 2024_
 
-- Senses and speed have been reworked to be more flexible, covering a wider range of use cases. You can now set the unit (ft, m, km, mi, none) as well as set flavour text for each. You can now have custom senses and speed as well. 
+- Senses and speed have been reworked to be more flexible, covering a wider range of use cases. You can now set the unit (ft, m, km, mi, none) as well as set flavour text for each. You can now have custom senses and speed as well.
 
 ---
 ## v1.1.1

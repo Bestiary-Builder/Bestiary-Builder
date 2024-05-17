@@ -1,267 +1,51 @@
-<template>
-	<div>
-		<Breadcrumbs
-			v-if="bestiary"
-			:routes="[
-				{
-					path: isOwner || isEditor ? '../my-bestiaries/' : '../bestiaries',
-					text: isOwner || isEditor ? 'My Bestiaries' : 'Bestiaries',
-					isCurrent: false
-				},
-				{
-					path: '',
-					text: bestiary?.name,
-					isCurrent: true
-				}
-			]"
-		>
-			<button @click="createCreature()" v-tooltip="'Create creature!'" class="inverted" v-if="isOwner || isEditor" aria-label="Create creature">
-				<font-awesome-icon :icon="['fas', 'plus']" />
-			</button>
-			<button v-if="lastClickedCreature" @click="lastClickedCreature = null" v-tooltip="'Unpin currently pinned creature!'" style="rotate: 45deg" aria-label="Unpin currently pinned creature">
-				<font-awesome-icon :icon="['fas', 'thumbtack']" />
-			</button>
-			<button @click="showEditorModal = true" v-tooltip="'Edit bestiary!'" v-if="isOwner" aria-label="Edit bestiary">
-				<font-awesome-icon :icon="['fas', 'pen-to-square']" />
-			</button>
-			<VDropdown :distance="6" :positioning-disabled="store.isMobile">
-				<button v-tooltip="'Filter bestiary'" aria-label="Filter bestiary">
-					<font-awesome-icon :icon="['fas', 'tag']" />
-				</button>
-				<template #popper>
-					<div class="v-popper__custom-menu">
-						<LabelledComponent title="Sort creatures" for="sortcreatures">
-							<select v-model="sortMode" name="Sort bestiary by attribute" id="sortcreatures">
-								<option>Alphabetically</option>
-								<option>CR Ascending</option>
-								<option>CR Descending</option>
-								<option>Creature Type</option>
-							</select>
-						</LabelledComponent>
-						<LabelledComponent title="Filter" for="searchtext">
-							<input type="text" v-model="searchText" id="searchtext" placeholder="Search by name..." />
-						</LabelledComponent>
-						<LabelledComponent title="Creature type" for="creatureType">
-							<div style="min-width: 300px">
-								<v-select placeholder="Search by creature type" v-model="searchOptions.tags" multiple :options="creatureTypes" inputId="creaturetype" :taggable="true" />
-							</div>
-						</LabelledComponent>
-						<div class="two-wide">
-							<div class="flow-vertically">
-								<label class="editor-field__title" for="challengerating"><span class="text"> Minimum CR</span></label>
-								<div class="quantity">
-									<input type="number" v-model="searchOptions.minCr" min="0" max="30" inputmode="numeric" id="minimumcr" />
-									<div class="quantity-nav">
-										<div class="quantity-button quantity-up" @click="changeCR(true, true)" aria-label="Increase minimum CR">+</div>
-										<div class="quantity-button quantity-down" @click="changeCR(false, true)" aria-label="Decrease maximum CR">-</div>
-									</div>
-								</div>
-							</div>
-							<div class="flow-vertically">
-								<label class="editor-field__title" for="challengerating"><span class="text"> Maximum CR</span></label>
-								<div class="quantity">
-									<input type="number" v-model="searchOptions.maxCr" min="0" max="30" inputmode="numeric" id="maximumcr" />
-									<div class="quantity-nav">
-										<div class="quantity-button quantity-up" @click="changeCR(true, false)" aria-label="Increase minimum CR">+</div>
-										<div class="quantity-button quantity-down" @click="changeCR(false, false)" aria-label="Decrease maximum CR">-</div>
-									</div>
-								</div>
-							</div>
-						</div>
-						<span class="warning" v-if="searchOptions.minCr > searchOptions.maxCr" style="text-align: center"> Min is bigger than max </span>
-						<LabelledComponent title="Environment" for="environment">
-							<input type="text" v-model="searchEnv" id="environment" placeholder="Search by name..." />
-						</LabelledComponent>
-						<LabelledComponent title="Faction" for="faction">
-							<input type="text" v-model="searchFaction" id="faction" placeholder="Search by name..." />
-						</LabelledComponent>
-					</div>
-				</template>
-			</VDropdown>
-
-			<button @click="showImportModal = true" v-tooltip="'Import bestiary'" v-if="isOwner" aria-label="Import bestiary">
-				<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
-			</button>
-
-			<VDropdown :distance="6" :positioning-disabled="store.isMobile">
-				<button v-tooltip="'Export bestiary'" aria-label="Export bestiary">
-					<font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" />
-				</button>
-				<template #popper>
-					<div class="v-popper__custom-menu">
-						<span>
-							Export this Bestiary as JSON<br />
-							to clipboard or to file
-						</span>
-						<button class="btn confirm" v-close-popper @click="exportBestiary(false)">Clipboard</button>
-						<button class="btn confirm" v-close-popper @click="exportBestiary(true)">File</button>
-					</div>
-				</template>
-			</VDropdown>
-		</Breadcrumbs>
-		<div class="content">
-			<div class="bestiary" v-if="bestiary">
-				<div class="left-side-container">
-					<div class="content-tile header-tile">
-						<h2>{{ bestiary.name ? bestiary.name : "..." }}</h2>
-						<Markdown class="description" :class="{expanded: isExpanded}" :text="bestiary.description || 'No description set.'" tag="p" />
-						<button v-if="bestiary.description.length > 0" class="expand-btn" v-tooltip="'Expand description'" @click="isExpanded = !isExpanded" aria-label="Expand description">{{ isExpanded ? "▲" : "▼" }}</button>
-						<hr />
-						<div class="footer" :class="{'three-wide': isOwner}">
-							<UserBanner :id="bestiary.owner" />
-							<div v-tooltip.left="bestiary.status"><StatusIcon :icon="bestiary.status" /></div>
-							<div>{{ bestiary.creatures.length }}<font-awesome-icon :icon="['fas', 'skull']" /></div>
-							<div role="button" aria-label="Toggle bookmark status" @click.prevent="toggleBookmark" class="bookmark" v-if="!isOwner">
-								<span v-if="bookmarked" v-tooltip="'Unbookmark this bestiary'" class="bookmark-enabled"><font-awesome-icon :icon="['fas', 'star']" /></span>
-								<span v-else v-tooltip="'Bookmark this bestiary'" class="bookmark-disabled"><font-awesome-icon :icon="['fas', 'star']" /></span>
-							</div>
-						</div>
-					</div>
-					<div class="tile-container list-tiles">
-						<TransitionGroup name="slide-fade">
-							<div v-for="creature in searchCreatures" :key="creature._id?.toString()" class="content-tile creature-tile" @mouseover="lastHoveredCreature = creature.stats" @click="lastClickedCreature = creature.stats">
-								<div class="left-side">
-									<h3>{{ creature.stats?.description?.name }}</h3>
-									<span>{{ creature.stats?.core?.size }} {{ creature.stats?.core?.race }}{{ creature.stats?.description?.alignment ? ", " + creature.stats?.description?.alignment : "" }}</span>
-								</div>
-								<div class="right-side">
-									<VDropdown :distance="6" v-if="isOwner || isEditor" :positioning-disabled="store.isMobile">
-										<button v-tooltip="'Delete creature'" @click.stop.prevent="" :aria-label="`Delete ${creature.stats.description.name}`">
-											<font-awesome-icon :icon="['fas', 'trash']" />
-										</button>
-										<template #popper>
-											<div class="v-popper__custom-menu">
-												<span> Are you sure you want to delete this creature? </span>
-												<button class="btn danger" @click.stop="deleteCreature(creature)" v-close-popper>Confirm</button>
-											</div>
-										</template>
-									</VDropdown>
-									<button v-tooltip="`${isOwner || isEditor ? 'Edit' : 'View'} creature`" :aria-label="`${isOwner || isEditor ? 'Edit' : 'View'} ${creature.stats.description.name}`" class="edit-creature" @click.stop="() => {}">
-										<RouterLink class="creature" :to="'/statblock-editor/' + creature._id" :aria-label="`${isOwner || isEditor ? 'Edit' : 'View'} creature`">
-											<font-awesome-icon :icon="['fas', 'pen-to-square']" v-if="isOwner || isEditor" />
-											<font-awesome-icon :icon="['fas', 'eye']" v-else />
-										</RouterLink>
-									</button>
-									<span class="cr"> CR {{ crAsString(creature.stats.description.cr) }}</span>
-								</div>
-							</div>
-						</TransitionGroup>
-						<div class="create-tile" v-if="isOwner || isEditor">
-							<span role="button" class="create-text" @click="createCreature()">Add Creature</span>
-						</div>
-					</div>
-				</div>
-				<div class="statblock-container" v-if="creatures && lastHoveredCreature">
-					<span v-if="lastClickedCreature" class="pin-notice">
-						<span class="unpin-button" @click="lastClickedCreature = null" role="button" aria-label="unpin currently pinned creature"><b>unpin</b></span
-						>📌
-					</span>
-					<Transition name="fade" mode="out-in">
-						<StatblockRenderer :data="lastClickedCreature || lastHoveredCreature" :key="lastClickedCreature?.description.name || lastHoveredCreature.description.name" />
-					</Transition>
-				</div>
-				<div class="statblock-container" v-else>
-					<div class="no-creature-text">
-						<p>Hover or click on a creature to see its statblock</p>
-					</div>
-				</div>
-			</div>
-		</div>
-		<Modal :show="showImportModal" @close="showImportModal = false" v-if="bestiary && isOwner">
-			<template #header>Import Creatures</template>
-			<template #body>
-				<LabelledComponent title="CritterDB bestiary link" for="critterlink">
-					<p>Insert a link to a critterDB bestiary to import all its creatures.</p>
-					<p>Make sure the bestiary is public or has link sharing enabled.</p>
-					<div class="flow-horizontally">
-						<input type="text" v-model="critterDbId" id="critterlink" placeholder="CritterDB bestiary link" />
-						<button class="btn confirm" @click.prevent="importBestiaryFromCritterDB">Import</button>
-					</div>
-				</LabelledComponent>
-
-				<hr />
-
-				<LabelledComponent title="Bestiary Builder JSON" for="bestiaryjson">
-					<p>Insert the JSON as text gotten from clicking export on another bestiary within Bestiary Builder.</p>
-					<div class="flow-horizontally">
-						<input type="text" v-model="bestiaryBuilderJson" id="bestiaryjson" placeholder="Bestiary builder JSON" />
-						<button class="btn confirm" @click.prevent="importCreaturesFromBestiaryBuilder">Import</button>
-					</div>
-				</LabelledComponent>
-			</template>
-		</Modal>
-
-		<Modal :show="showEditorModal" @close="showEditorModal = false" v-if="bestiary && isOwner">
-			<template #header>Edit Bestiary</template>
-			<template #body>
-				<LabelledComponent title="Bestiary name" for="bestiaryname">
-					<input type="text" v-model="bestiary.name" :minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength" id="bestiaryname" />
-				</LabelledComponent>
-				<LabelledComponent title="Description" for="description">
-					<p>Supports markdown</p>
-					<textarea v-model="bestiary.description" :maxlength="store.limits?.descriptionLength" id="description" />
-				</LabelledComponent>
-				<div class="two-wide" v-if="isOwner">
-					<LabelledComponent title="Status" for="status">
-						<v-select v-model="bestiary.status" :options="['public', 'unlisted', 'private']" inputId="status" />
-					</LabelledComponent>
-					<LabelledComponent title="Tags" for="tags">
-						<v-select placeholder="Select Tags" v-model="bestiary.tags" multiple :options="store.tags" inputId="tags" />
-					</LabelledComponent>
-				</div>
-				<div class="editor-block">
-					<h3>Editors</h3>
-					<p v-if="isOwner">Editors can add, edit, and remove creatures. They can edit the name of the bestiary and its description. Editors cannot change the status of the bestiary or delete the bestiary. Editors cannot add other editors. The owner can remove editors at any time.</p>
-					<div class="editor-container">
-						<div v-for="editor in editors" class="editor-list">
-							<p>
-								<UserBanner :id="editor._id" />
-								<span v-if="isOwner" role="button" @click="removeEditor(editor._id)" class="delete-creature"> <span>🗑️</span> </span>
-							</p>
-						</div>
-					</div>
-					<LabelledComponent title="Add editor" for="addeditor">
-						<div class="button-container">
-							<input type="text" v-model="editorToAdd" inputmode="numeric" placeholder="Discord user ID" id="addeditor" />
-							<button class="btn" @click="addEditor()">Add</button>
-						</div>
-					</LabelledComponent>
-				</div>
-				<p class="warning" v-if="showWarning">
-					By changing the bestiary status to public I confirm that I am the copyright holder of the content within, or that I have permission from the copyright holder to share this content. I hereby agree to the <RouterLink to="../content-policy">Content Policy</RouterLink> and agree to
-					be fully liable for the content within. I affirm that the content does not include any official non-free D&D content. Bestiaries that breach these terms may have their status changed to private or be outright removed, and may result in a ban if the content breaches our content
-					policy.
-				</p>
-			</template>
-			<template #footer>
-				<button class="btn confirm" @click.prevent="updateBestiary">Save changes</button>
-			</template>
-		</Modal>
-	</div>
-</template>
-
 <script lang="ts">
+import { defineComponent, ref } from "vue";
+import { refDebounced } from "@vueuse/core";
 import UserBanner from "@/components/UserBanner.vue";
 import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
 import StatusIcon from "@/components/StatusIcon.vue";
 import LabelledComponent from "@/components/LabelledComponent.vue";
-import LabelledNumberInput from "@/components/LabelledNumberInput.vue";
 import Modal from "@/components/Modal.vue";
 import StatblockRenderer from "@/components/StatblockRenderer.vue";
 
-import {RouterLink} from "vue-router";
-import {defineComponent, ref} from "vue";
-import {refDebounced} from "@vueuse/core";
-
-import {defaultStatblock, crAsString} from "~/shared";
-import type {User, Bestiary, Creature, Statblock} from "~/shared";
-import {useFetch} from "@/utils/utils";
-import {toast} from "@/utils/app/toast";
-import {store} from "@/utils/store";
+import { crAsString, defaultStatblock } from "~/shared";
+import type { Bestiary, Creature, Statblock, User } from "~/shared";
+import { useFetch } from "@/utils/utils";
+import { toast } from "@/utils/app/toast";
+import { store } from "@/utils/store";
 import Markdown from "@/components/Markdown.vue";
-import {creatureTypes} from "@/utils/constants";
-import {$loading} from "@/utils/app/loading";
+import { creatureTypes } from "@/utils/constants";
+import { $loading } from "@/utils/app/loading";
+
 export default defineComponent({
+	components: {
+		UserBanner,
+		StatblockRenderer,
+		Breadcrumbs,
+		StatusIcon,
+		LabelledComponent,
+		Modal,
+		Markdown
+	},
+	setup() {
+		const searchText = ref("");
+		const debouncedSearch = refDebounced(searchText, 500);
+
+		const searchEnv = ref("");
+		const debouncedEnv = refDebounced(searchEnv, 500);
+
+		const searchFaction = ref("");
+		const debouncedFaction = refDebounced(searchFaction, 500);
+
+		return {
+			searchText,
+			debouncedSearch,
+			searchEnv,
+			debouncedEnv,
+			searchFaction,
+			debouncedFaction
+		};
+	},
 	data() {
 		return {
 			bestiary: null as Bestiary | null,
@@ -296,72 +80,42 @@ export default defineComponent({
 			creatureTypes
 		};
 	},
-	components: {
-		UserBanner,
-		StatblockRenderer,
-		Breadcrumbs,
-		StatusIcon,
-		LabelledComponent,
-		LabelledNumberInput,
-		Modal,
-		Markdown
-	},
-	async beforeMount() {
-		const loader = $loading.show();
-		await this.getBestiary();
-		loader.hide();
-
-		if (this?.bestiary?.name) {
-			document.title = `${this?.bestiary?.name.substring(0, 16)} | Bestiary Builder`;
-		}
-	},
-	setup() {
-		const searchText = ref("");
-		const debouncedSearch = refDebounced(searchText, 500);
-
-		const searchEnv = ref("");
-		const debouncedEnv = refDebounced(searchEnv, 500);
-
-		const searchFaction = ref("");
-		const debouncedFaction = refDebounced(searchFaction, 500);
-
-		return {
-			searchText,
-			debouncedSearch,
-			searchEnv,
-			debouncedEnv,
-			searchFaction,
-			debouncedFaction
-		};
-	},
 	computed: {
 		searchCreatures(): Creature[] | null {
-			if (this.creatures == null) return null;
+			if (this.creatures == null)
+				return null;
 			const loader = $loading.show();
 
-			let response = this.creatures?.filter(this.filterCreature) || null;
+			const response = this.creatures?.filter((creature: Creature) => this.filterCreature(creature)) || null;
 
-			if (this.sortMode == "Alphabetically") {
+			if (this.sortMode === "Alphabetically") {
 				response.sort((a, b) => {
 					const nameA = a.stats.description.name.toLowerCase();
 					const nameB = b.stats.description.name.toLowerCase();
-					if (nameA < nameB) return -1;
-					if (nameA > nameB) return 1;
+					if (nameA < nameB)
+						return -1;
+					if (nameA > nameB)
+						return 1;
 					return 0;
 				});
-			} else if (this.sortMode == "Creature Type") {
+			}
+			else if (this.sortMode === "Creature Type") {
 				response.sort((a, b) => {
 					const nameA = a.stats.core.race.toLowerCase();
 					const nameB = b.stats.core.race.toLowerCase();
-					if (nameA < nameB) return -1;
-					if (nameA > nameB) return 1;
+					if (nameA < nameB)
+						return -1;
+					if (nameA > nameB)
+						return 1;
 					return 0;
 				});
-			} else if (this.sortMode == "CR Descending") {
+			}
+			else if (this.sortMode === "CR Descending") {
 				response.sort((a, b) => {
 					return b.stats.description.cr - a.stats.description.cr;
 				});
-			} else if (this.sortMode == "CR Ascending") {
+			}
+			else if (this.sortMode === "CR Ascending") {
 				response.sort((a, b) => {
 					return a.stats.description.cr - b.stats.description.cr;
 				});
@@ -371,36 +125,68 @@ export default defineComponent({
 			return response;
 		}
 	},
+	watch: {
+		lastClickedCreature(): void {
+			if (this.hasPinnedBefore)
+				return;
+			if (!this.hasPinnedBefore)
+				this.hasPinnedBefore = true;
+
+			toast.info("Pinned creature to the view. Click unpin there to go back to hover behaviour.");
+		},
+		"bestiary.status": function (newValue, _oldValue): void {
+			if (newValue === "private")
+				this.showWarning = false;
+			if (newValue === "public")
+				this.showWarning = true;
+		},
+		"bestiary.name": function (): void {
+			document.title = `${this?.bestiary?.name.substring(0, 16)} | Bestiary Builder`;
+		},
+		debouncedSearch() {
+			this.searchOptions.text = this.searchText;
+		},
+		debouncedEnv() {
+			this.searchOptions.env = this.searchEnv;
+		},
+		debouncedFaction() {
+			this.searchOptions.faction = this.searchFaction;
+		}
+	},
+	mounted() {
+		const loader = $loading.show();
+		void this.getBestiary();
+		loader.hide();
+
+		if (this?.bestiary?.name)
+			document.title = `${this?.bestiary?.name.substring(0, 16)} | Bestiary Builder`;
+	},
 	methods: {
 		filterCreature(data: Creature) {
-			let filterChecks: boolean[] = [];
-			if (this.searchOptions.text != "") {
+			const filterChecks: boolean[] = [];
+			if (this.searchOptions.text !== "")
 				filterChecks.push(data.stats.description.name.toLowerCase().includes(this.searchOptions.text.toLowerCase().trim()));
-			}
 
-			if (this.searchOptions.env != "") {
+			if (this.searchOptions.env !== "")
 				filterChecks.push(data.stats.description.environment.toLowerCase().includes(this.searchOptions.env.toLowerCase().trim()));
-			}
 
-			if (this.searchOptions.faction != "") {
+			if (this.searchOptions.faction !== "")
 				filterChecks.push(data.stats.description.faction.toLowerCase().includes(this.searchOptions.faction.toLowerCase().trim()));
-			}
 
-			if (this.searchOptions.tags.length > 0) {
-				filterChecks.push(this.searchOptions.tags.some((item) => data.stats.core.race.toLowerCase().includes(item.toLowerCase())));
-			}
+			if (this.searchOptions.tags.length > 0)
+				filterChecks.push(this.searchOptions.tags.some(item => data.stats.core.race.toLowerCase().includes(item.toLowerCase())));
 
-			if (this.searchOptions.minCr != 0 || this.searchOptions.maxCr != 30) {
+			if (this.searchOptions.minCr !== 0 || this.searchOptions.maxCr !== 30)
 				filterChecks.push(this.searchOptions.minCr <= data.stats.description.cr && data.stats.description.cr <= this.searchOptions.maxCr);
-			}
-			return filterChecks.every((_) => _);
+
+			return filterChecks.every(_ => _);
 		},
-		exportBestiary(asFile: boolean): void {
+		async exportBestiary(asFile: boolean) {
 			if (asFile) {
 				const file = new File(
 					[
 						JSON.stringify(
-							this.creatures?.map((obj) => obj.stats),
+							this.creatures?.map(obj => obj.stats),
 							null,
 							2
 						)
@@ -422,10 +208,11 @@ export default defineComponent({
 
 				document.body.removeChild(link);
 				window.URL.revokeObjectURL(url);
-			} else {
-				navigator.clipboard.writeText(
+			}
+			else {
+				await navigator.clipboard.writeText(
 					JSON.stringify(
-						this.creatures?.map((obj) => obj.stats),
+						this.creatures?.map(obj => obj.stats),
 						null,
 						2
 					)
@@ -435,17 +222,17 @@ export default defineComponent({
 		},
 		async importBestiaryFromCritterDB() {
 			let link = this.critterDbId.trim();
-			let isPublic = link.includes("publishedbestiary");
+			const isPublic = link.includes("publishedbestiary");
 			if (!link.startsWith("https://critterdb.com") && !link.startsWith("critterdb.com")) {
 				toast.error("Could not recognize link as a link to a CritterDB bestiary");
 				return;
 			}
-			let linkEls = link.split("/");
+			const linkEls = link.split("/");
 			link = linkEls[linkEls.length - 1];
-			let hasFailed = false;
+
 			toast.info("Fetching bestiary data has started. This may take a while.");
-			let loader = $loading.show();
-			const {success, data, error} = await useFetch<{
+			const loader = $loading.show();
+			const { success, data, error } = await useFetch<{
 				data: {
 					creatures: Statblock[];
 					name: string;
@@ -454,16 +241,20 @@ export default defineComponent({
 				failedCreatures: string[];
 			}>(`/api/critterdb/${link}/${isPublic}`);
 			if (success) {
-				if (data.failedCreatures.length > 0) toast.error(`Failed to parse ${data.failedCreatures.length} creatures.\nFailed creatures: "${data.failedCreatures.join(",")}"`);
-			} else {
+				if (data.failedCreatures.length > 0)
+					toast.error(`Failed to parse ${data.failedCreatures.length} creatures.\nFailed creatures: "${data.failedCreatures.join(",")}"`);
+			}
+			else {
 				toast.error(error);
 				loader.hide();
 				return;
 			}
 			toast.info("Saving creatures has started. This may take a while.");
-			const {success: cSuccess, data: creatureData, error: cError} = await useFetch<{error?: string}>("/api/bestiary/" + this.bestiary?._id + "/addcreatures", "POST", data.data.creatures);
-			if (!cSuccess) toast.error(cError);
-			else if (creatureData.error) toast.error(creatureData.error);
+			const { success: cSuccess, data: creatureData, error: cError } = await useFetch<{ error?: string }>(`/api/bestiary/${this.bestiary?._id}/addcreatures`, "POST", data.data.creatures);
+			if (!cSuccess)
+				toast.error(cError);
+			else if (creatureData.error)
+				toast.error(creatureData.error);
 			await this.getBestiary();
 			loader.hide();
 			toast.success("Importing has finished!");
@@ -474,16 +265,19 @@ export default defineComponent({
 			const loader = $loading.show();
 			try {
 				creatures = JSON.parse(this.bestiaryBuilderJson);
-			} catch (e) {
+			}
+			catch (e) {
 				console.error(e);
 				toast.error("Something is wrong with the format of your JSON");
 				loader.hide();
 				return;
 			}
 			toast.info("Importing creatures has started. This may take a while.");
-			const {success, data, error} = await useFetch<{error?: string}>("/api/bestiary/" + this.bestiary?._id + "/addcreatures", "POST", creatures);
-			if (!success) toast.error(error);
-			else if (data.error) toast.error(data.error);
+			const { success, data, error } = await useFetch<{ error?: string }>(`/api/bestiary/${this.bestiary?._id}/addcreatures`, "POST", creatures);
+			if (!success)
+				toast.error(error);
+			else if (data.error)
+				toast.error(data.error);
 			else toast.success("Importing has finished!");
 
 			await this.getBestiary();
@@ -492,137 +286,150 @@ export default defineComponent({
 		},
 		async createCreature(stats = defaultStatblock, shouldRefresh = true, shouldHaveLoader = true) {
 			let loader;
-			if (shouldHaveLoader) {
+			if (shouldHaveLoader)
 				loader = $loading.show();
-			}
-			//Replace for actual creation data:
-			let data = {
-				stats: stats,
+
+			// Replace for actual creation data:
+			const data = {
+				stats,
 				bestiary: this.bestiary?._id
 			} as Creature;
-			//Send data to server
-			const {success, data: resultData, error} = await useFetch<Creature>("/api/creature/add", "POST", data);
+			// Send data to server
+			const { success, data: resultData, error } = await useFetch<Creature>("/api/creature/add", "POST", data);
 			if (success) {
-				let data = resultData as Creature;
-				this.$router.push(`../statblock-editor/${data._id}`);
-			} else {
+				const data = resultData;
+				await this.$router.push(`../statblock-editor/${data._id}`);
+			}
+			else {
 				toast.error(error);
 			}
 			if (shouldRefresh) {
 				const tileContainer = document.getElementsByClassName("tile-container")[0] as HTMLDivElement;
 				tileContainer.scrollTop = tileContainer.scrollHeight;
 			}
-			if (shouldHaveLoader && loader) loader.hide();
+			if (shouldHaveLoader && loader)
+				loader.hide();
 		},
 		async deleteCreature(creature: Creature) {
 			const loader = $loading.show();
-			const {success, error} = await useFetch(`/api/creature/${creature._id}/delete`);
+			const { success, error } = await useFetch(`/api/creature/${creature._id}/delete`);
 			if (success) {
 				toast.success("Deleted creature succesfully");
-				if (!this.bestiary) return;
-				this.bestiary.creatures = this.bestiary.creatures.filter((c) => c != creature._id);
-				this.creatures = this.creatures?.filter((c) => c._id != creature._id) ?? [];
-			} else {
+				if (!this.bestiary)
+					return;
+				this.bestiary.creatures = this.bestiary.creatures.filter(c => c !== creature._id);
+				this.creatures = this.creatures?.filter(c => c._id !== creature._id) ?? [];
+			}
+			else {
 				toast.error(error);
 			}
 			loader.hide();
 		},
 		async addEditor() {
-			if (!this.bestiary) return;
-			let id = this.editorToAdd;
+			if (!this.bestiary)
+				return;
+			const id = this.editorToAdd;
 			const loader = $loading.show();
-			const {success, error} = await useFetch(`/api/bestiary/${this.bestiary._id}/editors/add/${id}`);
-			if (success) {
+			const { success, error } = await useFetch(`/api/bestiary/${this.bestiary._id}/editors/add/${id}`);
+			if (success)
 				toast.success("Added editor succesfully");
-			} else {
+			else
 				toast.error(error);
-			}
+
 			await this.getBestiary();
 			loader.hide();
 		},
 		async removeEditor(id: string) {
-			if (!this.bestiary) return;
+			if (!this.bestiary)
+				return;
 			const loader = $loading.show();
-			const {success, error} = await useFetch(`/api/bestiary/${this.bestiary._id}/editors/remove/${id}`);
-			if (success) {
+			const { success, error } = await useFetch(`/api/bestiary/${this.bestiary._id}/editors/remove/${id}`);
+			if (success)
 				toast.success("Removed editor succesfully");
-			} else {
+			else
 				toast.error(error);
-			}
+
 			await this.getBestiary();
 			loader.hide();
 		},
 		async getBestiary() {
-			//Get id
-			let id = this.$route.params.id;
-			//Request bestiary info
-			const {success, data, error} = await useFetch<Bestiary>("/api/bestiary/" + id);
+			// Get id
+			const id = this.$route.params.id;
+			// Request bestiary info
+			const { success, data, error } = await useFetch<Bestiary>(`/api/bestiary/${id.toString()}`);
 			if (!success) {
 				this.bestiary = null;
 				toast.error(error);
 				return;
 			}
-			this.bestiary = data as Bestiary;
+			this.bestiary = data;
 			this.savedBestiary = this.bestiary;
-			this.isOwner = store.user?._id == this.bestiary.owner;
+			this.isOwner = store.user?._id === this.bestiary.owner;
 			this.isEditor = (this.bestiary?.editors ?? []).includes(store.user?._id ?? "");
-			//Fetch creatures
-			await useFetch<Creature[]>("/api/bestiary/" + this.bestiary._id + "/creatures").then(async (creatureResult) => {
+			// Fetch creatures
+			await useFetch<Creature[]>(`/api/bestiary/${this.bestiary._id}/creatures`).then(async (creatureResult) => {
 				if (creatureResult.success) {
-					this.creatures = creatureResult.data as Creature[];
-				} else {
+					this.creatures = creatureResult.data;
+				}
+				else {
 					this.creatures = null;
 					toast.error(creatureResult.error);
 				}
 			});
-			//Fetch editors
+			// Fetch editors
 			this.editors = [] as User[];
-			for (let editorId of this.bestiary?.editors ?? []) {
-				await useFetch("/api/user/" + editorId).then((editorResult) => {
-					if (editorResult.success) {
+			for (const editorId of this.bestiary?.editors ?? []) {
+				await useFetch(`/api/user/${editorId}`).then((editorResult) => {
+					if (editorResult.success)
 						this.editors.push(editorResult.data as User);
-					} else {
+					else
 						toast.error(editorResult.error);
-					}
 				});
 			}
-			//Bookmark state
+			// Bookmark state
 			if (store.user) {
-				await useFetch<{state: boolean}>(`/api/bestiary/${this.bestiary._id}/bookmark/get`).then(async (bookmarkResult) => {
+				await useFetch<{ state: boolean }>(`/api/bestiary/${this.bestiary._id}/bookmark/get`).then(async (bookmarkResult) => {
 					if (bookmarkResult.success) {
-						this.bookmarked = (bookmarkResult.data as {state: boolean}).state;
-					} else {
+						this.bookmarked = (bookmarkResult.data as { state: boolean }).state;
+					}
+					else {
 						this.bookmarked = false;
 						toast.error(bookmarkResult.error);
 					}
 				});
-			} else {
+			}
+			else {
 				this.bookmarked = false;
 			}
 		},
 		async updateBestiary() {
-			if (!this.bestiary) return;
+			if (!this.bestiary)
+				return;
 			const loader = $loading.show();
-			//Send to backend
-			const {success, error} = await useFetch<Bestiary>(`/api/bestiary/${this.bestiary._id}/update`, "POST", this.bestiary);
+			// Send to backend
+			const { success, error } = await useFetch<Bestiary>(`/api/bestiary/${this.bestiary._id}/update`, "POST", this.bestiary);
 			if (success) {
 				toast.success("Saved bestiary");
 				this.savedBestiary = this.bestiary;
 				this.showEditorModal = false;
-			} else {
+			}
+			else {
 				toast.error(error);
 			}
 			loader.hide();
 		},
 		async toggleBookmark() {
-			if (!this.bestiary) return;
+			if (!this.bestiary)
+				return;
 			const loader = $loading.show();
-			const {success, data, error} = await useFetch<{state: boolean}>(`/api/bestiary/${this.bestiary._id}/bookmark/toggle`);
+			const { success, data, error } = await useFetch<{ state: boolean }>(`/api/bestiary/${this.bestiary._id}/bookmark/toggle`);
 			if (success) {
 				this.bookmarked = data.state;
-				if (this.bookmarked) toast.success("Successfully bookmarked this bestiary!");
+				if (this.bookmarked)
+					toast.success("Successfully bookmarked this bestiary!");
 				else toast.success("Successfully unbookmarked this bestiary!");
-			} else {
+			}
+			else {
 				this.bookmarked = false;
 				toast.error(error);
 			}
@@ -633,51 +440,306 @@ export default defineComponent({
 		},
 		changeCR(isIncrease: boolean, isMinimumOption: boolean): void {
 			let cr;
-			if (isMinimumOption) cr = this.searchOptions.minCr;
+			if (isMinimumOption)
+				cr = this.searchOptions.minCr;
 			else cr = this.searchOptions.maxCr;
-			if (cr == 0 && isIncrease) cr = 0.125;
-			else if (cr == 0.125 && isIncrease) cr = 0.25;
-			else if (cr == 0.25 && isIncrease) cr = 0.5;
-			else if (cr == 0.5 && isIncrease) cr = 1;
-			else if (cr == 0.125 && !isIncrease) cr = 0;
-			else if (cr == 0.25 && !isIncrease) cr = 0.125;
-			else if (cr == 0.5 && !isIncrease) cr = 0.25;
-			else if (cr == 1 && !isIncrease) cr = 0.5;
+			if (cr === 0 && isIncrease) { cr = 0.125; }
+			else if (cr === 0.125 && isIncrease) { cr = 0.25; }
+			else if (cr === 0.25 && isIncrease) { cr = 0.5; }
+			else if (cr === 0.5 && isIncrease) { cr = 1; }
+			else if (cr === 0.125 && !isIncrease) { cr = 0; }
+			else if (cr === 0.25 && !isIncrease) { cr = 0.125; }
+			else if (cr === 0.5 && !isIncrease) { cr = 0.25; }
+			else if (cr === 1 && !isIncrease) { cr = 0.5; }
 			else {
-				if (isIncrease) cr = Math.min(30, cr + 1);
-				else cr = Math.max(0, cr - 1);
+				if (isIncrease)
+					cr = Math.min(30, cr + 1);
+				else
+					cr = Math.max(0, cr - 1);
 			}
-			if (isMinimumOption) this.searchOptions.minCr = cr;
+			if (isMinimumOption)
+				this.searchOptions.minCr = cr;
 			else this.searchOptions.maxCr = cr;
 		},
 		crAsString
-	},
-	watch: {
-		lastClickedCreature(): void {
-			if (this.hasPinnedBefore) return;
-			if (!this.hasPinnedBefore) this.hasPinnedBefore = true;
-
-			toast.info("Pinned creature to the view. Click unpin there to go back to hover behaviour.");
-		},
-		"bestiary.status"(newValue, oldValue): void {
-			if (newValue == "private") this.showWarning = false;
-			if (newValue == "public") this.showWarning = true;
-		},
-		"bestiary.name"(): void {
-			document.title = `${this?.bestiary?.name.substring(0, 16)} | Bestiary Builder`;
-		},
-		debouncedSearch() {
-			this.searchOptions.text = this.searchText;
-		},
-		debouncedEnv() {
-			this.searchOptions.env = this.searchEnv;
-		},
-		debouncedFaction() {
-			this.searchOptions.faction = this.searchFaction;
-		}
 	}
 });
 </script>
+
+<template>
+	<div>
+		<Breadcrumbs
+			v-if="bestiary"
+			:routes="[
+				{
+					path: isOwner || isEditor ? '../my-bestiaries/' : '../bestiaries',
+					text: isOwner || isEditor ? 'My Bestiaries' : 'Bestiaries',
+					isCurrent: false
+				},
+				{
+					path: '',
+					text: bestiary?.name,
+					isCurrent: true
+				}
+			]"
+		>
+			<button v-if="isOwner || isEditor" v-tooltip="'Create creature!'" class="inverted" aria-label="Create creature" @click="createCreature()">
+				<font-awesome-icon :icon="['fas', 'plus']" />
+			</button>
+			<button v-if="lastClickedCreature" v-tooltip="'Unpin currently pinned creature!'" style="rotate: 45deg" aria-label="Unpin currently pinned creature" @click="lastClickedCreature = null">
+				<font-awesome-icon :icon="['fas', 'thumbtack']" />
+			</button>
+			<button v-if="isOwner" v-tooltip="'Edit bestiary!'" aria-label="Edit bestiary" @click="showEditorModal = true">
+				<font-awesome-icon :icon="['fas', 'pen-to-square']" />
+			</button>
+			<VDropdown :distance="6" :positioning-disabled="store.isMobile">
+				<button v-tooltip="'Filter bestiary'" aria-label="Filter bestiary">
+					<font-awesome-icon :icon="['fas', 'tag']" />
+				</button>
+				<template #popper>
+					<div class="v-popper__custom-menu">
+						<LabelledComponent title="Sort creatures" for="sortcreatures">
+							<select id="sortcreatures" v-model="sortMode" name="Sort bestiary by attribute">
+								<option>Alphabetically</option>
+								<option>CR Ascending</option>
+								<option>CR Descending</option>
+								<option>Creature Type</option>
+							</select>
+						</LabelledComponent>
+						<LabelledComponent title="Filter" for="searchtext">
+							<input id="searchtext" v-model="searchText" type="text" placeholder="Search by name...">
+						</LabelledComponent>
+						<LabelledComponent title="Creature type" for="creatureType">
+							<div style="min-width: 300px">
+								<v-select v-model="searchOptions.tags" placeholder="Search by creature type" multiple :options="creatureTypes" input-id="creaturetype" :taggable="true" />
+							</div>
+						</LabelledComponent>
+						<div class="two-wide">
+							<div class="flow-vertically">
+								<label class="editor-field__title" for="challengerating"><span class="text"> Minimum CR</span></label>
+								<div class="quantity">
+									<input id="minimumcr" v-model="searchOptions.minCr" type="number" min="0" max="30" inputmode="numeric">
+									<div class="quantity-nav">
+										<div class="quantity-button quantity-up" aria-label="Increase minimum CR" @click="changeCR(true, true)">
+											+
+										</div>
+										<div class="quantity-button quantity-down" aria-label="Decrease maximum CR" @click="changeCR(false, true)">
+											-
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="flow-vertically">
+								<label class="editor-field__title" for="challengerating"><span class="text"> Maximum CR</span></label>
+								<div class="quantity">
+									<input id="maximumcr" v-model="searchOptions.maxCr" type="number" min="0" max="30" inputmode="numeric">
+									<div class="quantity-nav">
+										<div class="quantity-button quantity-up" aria-label="Increase minimum CR" @click="changeCR(true, false)">
+											+
+										</div>
+										<div class="quantity-button quantity-down" aria-label="Decrease maximum CR" @click="changeCR(false, false)">
+											-
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<span v-if="searchOptions.minCr > searchOptions.maxCr" class="warning" style="text-align: center"> Min is bigger than max </span>
+						<LabelledComponent title="Environment" for="environment">
+							<input id="environment" v-model="searchEnv" type="text" placeholder="Search by name...">
+						</LabelledComponent>
+						<LabelledComponent title="Faction" for="faction">
+							<input id="faction" v-model="searchFaction" type="text" placeholder="Search by name...">
+						</LabelledComponent>
+					</div>
+				</template>
+			</VDropdown>
+
+			<button v-if="isOwner" v-tooltip="'Import bestiary'" aria-label="Import bestiary" @click="showImportModal = true">
+				<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
+			</button>
+
+			<VDropdown :distance="6" :positioning-disabled="store.isMobile">
+				<button v-tooltip="'Export bestiary'" aria-label="Export bestiary">
+					<font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" />
+				</button>
+				<template #popper>
+					<div class="v-popper__custom-menu">
+						<span>
+							Export this Bestiary as JSON<br>
+							to clipboard or to file
+						</span>
+						<button v-close-popper class="btn confirm" @click="exportBestiary(false)">
+							Clipboard
+						</button>
+						<button v-close-popper class="btn confirm" @click="exportBestiary(true)">
+							File
+						</button>
+					</div>
+				</template>
+			</VDropdown>
+		</Breadcrumbs>
+		<div class="content">
+			<div v-if="bestiary" class="bestiary">
+				<div class="left-side-container">
+					<div class="content-tile header-tile">
+						<h2>{{ bestiary.name ? bestiary.name : "..." }}</h2>
+						<Markdown class="description" :class="{ expanded: isExpanded }" :text="bestiary.description || 'No description set.'" tag="p" />
+						<button v-if="bestiary.description.length > 0" v-tooltip="'Expand description'" class="expand-btn" aria-label="Expand description" @click="isExpanded = !isExpanded">
+							{{ isExpanded ? "▲" : "▼" }}
+						</button>
+						<hr>
+						<div class="footer" :class="{ 'three-wide': isOwner }">
+							<UserBanner :id="bestiary.owner" />
+							<div v-tooltip.left="bestiary.status">
+								<StatusIcon :icon="bestiary.status" />
+							</div>
+							<div>{{ bestiary.creatures.length }}<font-awesome-icon :icon="['fas', 'skull']" /></div>
+							<div v-if="!isOwner" role="button" aria-label="Toggle bookmark status" class="bookmark" @click.prevent="toggleBookmark">
+								<span v-if="bookmarked" v-tooltip="'Unbookmark this bestiary'" class="bookmark-enabled"><font-awesome-icon :icon="['fas', 'star']" /></span>
+								<span v-else v-tooltip="'Bookmark this bestiary'" class="bookmark-disabled"><font-awesome-icon :icon="['fas', 'star']" /></span>
+							</div>
+						</div>
+					</div>
+					<div class="tile-container list-tiles">
+						<TransitionGroup name="slide-fade">
+							<div v-for="creature in searchCreatures" :key="creature._id?.toString()" class="content-tile creature-tile" @mouseover="lastHoveredCreature = creature.stats" @click="lastClickedCreature = creature.stats">
+								<div class="left-side">
+									<h3>{{ creature.stats?.description?.name }}</h3>
+									<span>{{ creature.stats?.core?.size }} {{ creature.stats?.core?.race }}{{ creature.stats?.description?.alignment ? `, ${creature.stats?.description?.alignment}` : "" }}</span>
+								</div>
+								<div class="right-side">
+									<VDropdown v-if="isOwner || isEditor" :distance="6" :positioning-disabled="store.isMobile">
+										<button v-tooltip="'Delete creature'" :aria-label="`Delete ${creature.stats.description.name}`" @click.stop.prevent="">
+											<font-awesome-icon :icon="['fas', 'trash']" />
+										</button>
+										<template #popper>
+											<div class="v-popper__custom-menu">
+												<span> Are you sure you want to delete this creature? </span>
+												<button v-close-popper class="btn danger" @click.stop="deleteCreature(creature)">
+													Confirm
+												</button>
+											</div>
+										</template>
+									</VDropdown>
+									<button v-tooltip="`${isOwner || isEditor ? 'Edit' : 'View'} creature`" :aria-label="`${isOwner || isEditor ? 'Edit' : 'View'} ${creature.stats.description.name}`" class="edit-creature" @click.stop="() => {}">
+										<RouterLink class="creature" :to="`/statblock-editor/${creature._id}`" :aria-label="`${isOwner || isEditor ? 'Edit' : 'View'} creature`">
+											<font-awesome-icon v-if="isOwner || isEditor" :icon="['fas', 'pen-to-square']" />
+											<font-awesome-icon v-else :icon="['fas', 'eye']" />
+										</RouterLink>
+									</button>
+									<span class="cr"> CR {{ crAsString(creature.stats.description.cr) }}</span>
+								</div>
+							</div>
+						</TransitionGroup>
+						<div v-if="isOwner || isEditor" class="create-tile">
+							<span role="button" class="create-text" @click="createCreature()">Add Creature</span>
+						</div>
+					</div>
+				</div>
+				<div v-if="creatures && lastHoveredCreature" class="statblock-container">
+					<span v-if="lastClickedCreature" class="pin-notice">
+						<span class="unpin-button" role="button" aria-label="unpin currently pinned creature" @click="lastClickedCreature = null"><b>unpin</b></span>📌
+					</span>
+					<Transition name="fade" mode="out-in">
+						<StatblockRenderer :key="lastClickedCreature?.description.name || lastHoveredCreature.description.name" :data="lastClickedCreature || lastHoveredCreature" />
+					</Transition>
+				</div>
+				<div v-else class="statblock-container">
+					<div class="no-creature-text">
+						<p>Hover or click on a creature to see its statblock</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<Modal v-if="bestiary && isOwner" :show="showImportModal" @close="showImportModal = false">
+			<template #header>
+				Import Creatures
+			</template>
+			<template #body>
+				<LabelledComponent title="CritterDB bestiary link" for="critterlink">
+					<p>Insert a link to a critterDB bestiary to import all its creatures.</p>
+					<p>Make sure the bestiary is public or has link sharing enabled.</p>
+					<div class="flow-horizontally">
+						<input id="critterlink" v-model="critterDbId" type="text" placeholder="CritterDB bestiary link">
+						<button class="btn confirm" @click.prevent="importBestiaryFromCritterDB">
+							Import
+						</button>
+					</div>
+				</LabelledComponent>
+
+				<hr>
+
+				<LabelledComponent title="Bestiary Builder JSON" for="bestiaryjson">
+					<p>Insert the JSON as text gotten from clicking export on another bestiary within Bestiary Builder.</p>
+					<div class="flow-horizontally">
+						<input id="bestiaryjson" v-model="bestiaryBuilderJson" type="text" placeholder="Bestiary builder JSON">
+						<button class="btn confirm" @click.prevent="importCreaturesFromBestiaryBuilder">
+							Import
+						</button>
+					</div>
+				</LabelledComponent>
+			</template>
+		</Modal>
+
+		<Modal v-if="bestiary && isOwner" :show="showEditorModal" @close="showEditorModal = false">
+			<template #header>
+				Edit Bestiary
+			</template>
+			<template #body>
+				<LabelledComponent title="Bestiary name" for="bestiaryname">
+					<input id="bestiaryname" v-model="bestiary.name" type="text" :minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength">
+				</LabelledComponent>
+				<LabelledComponent title="Description" for="description">
+					<p>Supports markdown</p>
+					<textarea id="description" v-model="bestiary.description" :maxlength="store.limits?.descriptionLength" />
+				</LabelledComponent>
+				<div v-if="isOwner" class="two-wide">
+					<LabelledComponent title="Status" for="status">
+						<v-select v-model="bestiary.status" :options="['public', 'unlisted', 'private']" input-id="status" />
+					</LabelledComponent>
+					<LabelledComponent title="Tags" for="tags">
+						<v-select v-model="bestiary.tags" placeholder="Select Tags" multiple :options="store.tags" input-id="tags" />
+					</LabelledComponent>
+				</div>
+				<div class="editor-block">
+					<h3>Editors</h3>
+					<p v-if="isOwner">
+						Editors can add, edit, and remove creatures. They can edit the name of the bestiary and its description. Editors cannot change the status of the bestiary or delete the bestiary. Editors cannot add other editors. The owner can remove editors at any time.
+					</p>
+					<div class="editor-container">
+						<div v-for="editor in editors" :key="editor._id" class="editor-list">
+							<p>
+								<UserBanner :id="editor._id" />
+								<span v-if="isOwner" role="button" class="delete-creature" @click="removeEditor(editor._id)"> <span>🗑️</span> </span>
+							</p>
+						</div>
+					</div>
+					<LabelledComponent title="Add editor" for="addeditor">
+						<div class="button-container">
+							<input id="addeditor" v-model="editorToAdd" type="text" inputmode="numeric" placeholder="Discord user ID">
+							<button class="btn" @click="addEditor()">
+								Add
+							</button>
+						</div>
+					</LabelledComponent>
+				</div>
+				<p v-if="showWarning" class="warning">
+					By changing the bestiary status to public I confirm that I am the copyright holder of the content within, or that I have permission from the copyright holder to share this content. I hereby agree to the <RouterLink to="../content-policy">
+						Content Policy
+					</RouterLink> and agree to
+					be fully liable for the content within. I affirm that the content does not include any official non-free D&D content. Bestiaries that breach these terms may have their status changed to private or be outright removed, and may result in a ban if the content breaches our content
+					policy.
+				</p>
+			</template>
+			<template #footer>
+				<button class="btn confirm" @click.prevent="updateBestiary">
+					Save changes
+				</button>
+			</template>
+		</Modal>
+	</div>
+</template>
 
 <style scoped lang="less">
 @import url("@/assets/styles/number-input.less");
@@ -721,7 +783,9 @@ export default defineComponent({
 		background: var(--color-surface-1);
 		color: white;
 		padding: 1rem;
-		box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+		box-shadow:
+			rgba(0, 0, 0, 0.19) 0px 10px 20px,
+			rgba(0, 0, 0, 0.23) 0px 6px 6px;
 		cursor: pointer;
 		transition: all 1s;
 		transition-timing-function: cubic-bezier(0.06, 0.975, 0.195, 0.985);
