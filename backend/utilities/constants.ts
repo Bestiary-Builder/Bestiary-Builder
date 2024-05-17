@@ -7,7 +7,7 @@ export const isProduction = (process.env.NODE_ENV == "production") as boolean;
 
 //Bad-words filter
 import BadWordsNext from "bad-words-next";
-export const badwords = new BadWordsNext({placeholder: ""});
+export const badwords = new BadWordsNext({placeholder: "", specialChars: /\d|[!@#$%^&*()[\];:'",.?\-_=+~`|]|(?:the)|(?:el)|(?:la)/});
 import ar from "../staticData/badwordsData/ar.json";
 badwords.add(ar);
 import ch from "../staticData/badwordsData/ch.json";
