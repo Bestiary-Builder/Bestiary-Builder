@@ -210,7 +210,7 @@ app.post("/api/bestiary/add", requireUser, async (req, res) => {
 		return res.status(500).json({error: "Unknown server error occured, please try again."});
 	}
 });
-app.get<string, {id: string}>("/api/bestiary/:id/delete", requireUser, async (req, res) => {
+app.get("/api/bestiary/:id/delete", requireUser, async (req, res) => {
 	try {
 		//Get input
 		let _id = stringToId(req.params.id);
@@ -480,7 +480,6 @@ app.get("/api/bestiary/:id/bookmark/get", requireUser, async (req, res) => {
 import {createCheckers} from "ts-interface-checker";
 import {typeInterface, interfaceValidation} from "~/shared";
 import {checkBadwords} from "@/utilities/badwords";
-import {S} from "vitest/dist/reporters-BXNXFKfg";
 const {Statblock: StatblockChecker} = createCheckers(typeInterface);
 function validateStatblockInput(input: Statblock[]) {
 	for (let block of input) {
