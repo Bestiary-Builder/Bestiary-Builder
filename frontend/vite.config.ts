@@ -9,7 +9,7 @@ import generateSitemap from "vite-plugin-pages-sitemap";
 import FontAwesome from "unplugin-vue-fontawesome/vite";
 import rawloader from "vite-raw-plugin";
 // @ts-expect-error Magic
-import routes from "../shared/";
+import { routes } from "../shared/";
 
 // https://vitejs.dev/config/
 export default defineConfig({

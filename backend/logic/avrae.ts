@@ -1,33 +1,37 @@
-import {app} from "@/utilities/constants";
-import {log} from "@/utilities/logger";
-import {getBestiary, incrementBestiaryViewCount, collections} from "@/utilities/database";
-import {type Statblock, Id, stringToId, SKILLS_BY_STAT, type Stat, type SkillsEntity, nthSuffix, hpCalc, statCalc, fullSpellAbilityName, componentsString, crAsString, ppCalc, type SpellCasting, displaySpeedOrSenses, spellDc, spellAttackBonus, InnateSpellsEntity} from "~/shared";
+import { app } from "@/utilities/constants";
+import { log } from "@/utilities/logger";
+import { collections, getBestiary, incrementBestiaryViewCount } from "@/utilities/database";
+import { Id, type InnateSpellsEntity, SKILLS_BY_STAT, type SkillsEntity, type SpellCasting, type Stat, type Statblock, componentsString, crAsString, displaySpeedOrSenses, fullSpellAbilityName, hpCalc, nthSuffix, ppCalc, spellAttackBonus, spellDc, statCalc, stringToId } from "~/shared";
 
-//Export data
-app.get("/api/public/bestiary/:id", (req, res) => res.redirect("/api/export/bestiary/" + req.params.id));
+// Export data
+app.get("/api/public/bestiary/:id", (req, res) => res.redirect(`/api/export/bestiary/${req.params.id}`));
 app.get("/api/export/bestiary/:id", async (req, res) => {
 	/////////////////////////////////////////////////////////////////////////////////////
-	//// STOP. EDITING THIS FUNCTION CAN BREAK AVRAE IMPORTS. TEST BEFORE CHANGING  ////
+	/// / STOP. EDITING THIS FUNCTION CAN BREAK AVRAE IMPORTS. TEST BEFORE CHANGING  ////
 	///////////////////////////////////////////////////////////////////////////////////
 	try {
-		let _id = stringToId(req.params.id);
-		if (!_id) return res.status(400).json({error: "Bestiary id not valid."});
-		let bestiary = await getBestiary(_id);
-		if (!bestiary) return res.status(404).json({error: "No bestiary with that id found."});
-		if (bestiary.status == "private") return res.status(401).json({error: "This bestiary is private"});
-		//Increment view count
+		const _id = stringToId(req.params.id);
+		if (!_id)
+			return res.status(400).json({ error: "Bestiary id not valid." });
+		const bestiary = await getBestiary(_id);
+		if (!bestiary)
+			return res.status(404).json({ error: "No bestiary with that id found." });
+		if (bestiary.status === "private")
+			return res.status(401).json({ error: "This bestiary is private" });
+		// Increment view count
 		incrementBestiaryViewCount(_id);
-		//Get creatures
-		let creatures = [];
-		for (let creatureId of bestiary.creatures) {
-			let creature = await collections.creatures?.findOne({_id: new Id(creatureId)});
-			if (!creature) continue;
+		// Get creatures
+		const creatures = [];
+		for (const creatureId of bestiary.creatures) {
+			const creature = await collections.creatures?.findOne({ _id: new Id(creatureId) });
+			if (!creature)
+				continue;
 
 			const creatureData = getCreatureData(creature.stats);
 			creatures.push(creatureData);
 		}
-		//Return bestiary in specific format
-		let data = {
+		// Return bestiary in specific format
+		const data = {
 			metadata: {
 				name: bestiary.name,
 				description: bestiary.description
@@ -36,30 +40,31 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 		};
 		log.info(`Export - Retrieved bestiary with the id ${_id}`);
 		return res.json(data);
-	} catch (err) {
+	}
+	catch (err) {
 		log.log("critical", err);
-		return res.status(500).json({error: "Unknown server error occured. Please contact the developers of Bestiary Builder, not Avrae."});
+		return res.status(500).json({ error: "Unknown server error occured. Please contact the developers of Bestiary Builder, not Avrae." });
 	}
 });
 
-//Statblock functions:
+// Statblock functions:
 
 function knownSpells(data: SpellCasting) {
-	let dailySpells = {
-		"1": [],
-		"2": [],
-		"3": []
+	const dailySpells = {
+		1: [],
+		2: [],
+		3: []
 	} as {
 		[key: string]: unknown[];
 	};
 
-	for (let times in data.innateSpells.spellList) {
-		if (times == "0") continue;
-		for (let sp of data.innateSpells.spellList[times]) {
+	for (const times in data.innateSpells.spellList) {
+		if (times === "0")
+			continue;
+		for (const sp of data.innateSpells.spellList[times])
 			dailySpells[times].push(sp.spell);
-		}
 	}
-	let output = {
+	const output = {
 		caster_spells: data.casterSpells.spellList.flat(),
 		at_will: data.innateSpells.spellList[0].map((sp: InnateSpellsEntity) => sp.spell),
 		daily_spells: dailySpells
@@ -68,19 +73,20 @@ function knownSpells(data: SpellCasting) {
 }
 
 function calcSkills(data: Statblock) {
-	let skillData = data.abilities.skills as SkillsEntity[];
-	let output = {} as {[key: string]: {value: number; prof?: number; bonus: number; adv: number | null}};
-	for (let stat in SKILLS_BY_STAT) {
-		for (let skill of SKILLS_BY_STAT[stat as Stat]) {
-			let raw = skillData.find((a) => a.skillName.replaceAll(" ", "").toLowerCase() == skill.toLowerCase());
-			if (raw == undefined) {
+	const skillData = data.abilities.skills as SkillsEntity[];
+	const output = {} as { [key: string]: { value: number; prof?: number; bonus: number; adv: number | null } };
+	for (const stat in SKILLS_BY_STAT) {
+		for (const skill of SKILLS_BY_STAT[stat as Stat]) {
+			const raw = skillData.find(a => a.skillName.replaceAll(" ", "").toLowerCase() === skill.toLowerCase());
+			if (raw === undefined) {
 				output[skill] = {
 					value: statCalc(stat, data),
 					prof: 0,
 					bonus: 0,
 					adv: null
 				};
-			} else {
+			}
+			else {
 				if (raw.override != null) {
 					output[skill] = {
 						value: raw.override,
@@ -89,8 +95,9 @@ function calcSkills(data: Statblock) {
 						bonus: 0,
 						adv: null
 					};
-				} else {
-					let base = statCalc(stat, data);
+				}
+				else {
+					const base = statCalc(stat, data);
 					if (raw.isHalfProficient) {
 						output[skill] = {
 							value: base + Math.floor(data.core.proficiencyBonus / 2),
@@ -98,21 +105,24 @@ function calcSkills(data: Statblock) {
 							bonus: 0,
 							adv: null
 						};
-					} else if (raw.isProficient) {
+					}
+					else if (raw.isProficient) {
 						output[skill] = {
 							value: base + data.core.proficiencyBonus,
 							prof: 1,
 							bonus: 0,
 							adv: null
 						};
-					} else if (raw.isExpertise) {
+					}
+					else if (raw.isExpertise) {
 						output[skill] = {
 							value: base + data.core.proficiencyBonus * 2,
 							prof: 2,
 							bonus: 0,
 							adv: null
 						};
-					} else {
+					}
+					else {
 						output[skill] = {
 							value: base,
 							prof: 0,
@@ -128,20 +138,21 @@ function calcSkills(data: Statblock) {
 }
 
 function slots(num: number) {
-	if (num > 1) return `(${num} slots)`;
+	if (num > 1)
+		return `(${num} slots)`;
 	return `(${num} slot)`;
 }
 
 export function getCreatureData(creature: Statblock) {
-	//HP:
-	let hpObject = creature.defenses.hp;
-	let hp = hpCalc(creature);
-	let hitdice = `${hpObject.numOfHitDie + "d" + hpObject.sizeOfHitDie} + ${hpObject.numOfHitDie * statCalc("con", creature)}`;
+	// HP:
+	const hpObject = creature.defenses.hp;
+	const hp = hpCalc(creature);
+	const hitdice = `${`${hpObject.numOfHitDie}d${hpObject.sizeOfHitDie}`} + ${hpObject.numOfHitDie * statCalc("con", creature)}`;
 
-	//Spellcastin:
-	let spellcastInnateObj = creature.spellcasting.innateSpells;
-	let spellcastCasterObj = creature.spellcasting.casterSpells;
-	let spellcasting = {
+	// Spellcastin:
+	const spellcastInnateObj = creature.spellcasting.innateSpells;
+	const spellcastCasterObj = creature.spellcasting.casterSpells;
+	const spellcasting = {
 		caster_level: spellcastCasterObj.casterLevel || 0,
 		slots: spellcastCasterObj.spellSlotList || {},
 		known_spells: knownSpells(creature.spellcasting),
@@ -153,13 +164,13 @@ export function getCreatureData(creature: Statblock) {
 		innate_mod: statCalc(spellcastInnateObj.spellCastingAbility, creature)
 	};
 
-	//Saves/stats
-	let saves = {} as {[key: string]: unknown};
-	for (let key in creature.abilities.saves) {
+	// Saves/stats
+	const saves = {} as { [key: string]: unknown };
+	for (const key in creature.abilities.saves) {
 		const saveData = creature.abilities.saves[key as Stat];
 
-		let newKey =
-			{
+		const newKey
+			= {
 				str: "strengthSave",
 				dex: "dexteritySave",
 				con: "constitutionSave",
@@ -168,25 +179,26 @@ export function getCreatureData(creature: Statblock) {
 				cha: "charismaSave"
 			}[key] ?? "";
 
-		let override = saveData.override;
+		const override = saveData.override;
 		let value = statCalc(key, creature);
 		let prof = 0;
 		if (override != null) {
 			value = override;
 			prof = 1;
-		} else if (saveData.isProficient) {
+		}
+		else if (saveData.isProficient) {
 			value += creature.core.proficiencyBonus;
 			prof = 1;
 		}
 		saves[newKey] = {
-			value: value,
-			prof: prof,
+			value,
+			prof,
 			adv: null,
 			bonus: 0
 		};
 	}
-	//Final data
-	let creatureData = {
+	// Final data
+	const creatureData = {
 		name: creature.description.name,
 		proper: creature.description.isProperNoun,
 		image_url: creature.description.image || "",
@@ -198,8 +210,8 @@ export function getCreatureData(creature: Statblock) {
 		race: creature.core.race,
 		ac: creature.defenses.ac.ac,
 		armortype: creature.defenses.ac.acSource,
-		hp: hp,
-		hitdice: hitdice,
+		hp,
+		hitdice,
 		speed: displaySpeedOrSenses(creature.core.speed),
 		ability_scores: {
 			prof_bonus: creature.core.proficiencyBonus,
@@ -210,7 +222,7 @@ export function getCreatureData(creature: Statblock) {
 			wisdom: creature.abilities.stats.wis,
 			charisma: creature.abilities.stats.cha
 		},
-		saves: saves,
+		saves,
 		skills: calcSkills(creature),
 		senses: displaySpeedOrSenses(creature.core.senses),
 		resistances: creature.defenses.resistances,
@@ -226,17 +238,17 @@ export function getCreatureData(creature: Statblock) {
 		lair: creature.features.lair,
 		regional: creature.features.regional,
 		la_per_round: creature.misc.legActionsPerRound,
-		spellcasting: spellcasting,
+		spellcasting,
 		passiveperc: ppCalc(creature)
 	};
 
-	let caster = creature["spellcasting"]["casterSpells"];
-	let isNoun = creature["description"]["isProperNoun"];
-	let name = creature["description"]["name"];
+	const caster = creature.spellcasting.casterSpells;
+	const isNoun = creature.description.isProperNoun;
+	const name = creature.description.name;
 
 	// best not to think about this too much.
 	if (caster.casterLevel && caster.castingClass && caster.spellList.flat().length > 0) {
-		let output = `${isNoun ? "" : "The "}${name} is a ${nthSuffix(caster.casterLevel)}-level spellcaster. ${isNoun ? "Their" : "Its"} spellcasting ability is ${fullSpellAbilityName(caster.spellCastingAbilityOverride ?? caster.spellCastingAbility)} (spell save DC ${spellDc(false, creature)}, ${
+		const output = `${isNoun ? "" : "The "}${name} is a ${nthSuffix(caster.casterLevel)}-level spellcaster. ${isNoun ? "Their" : "Its"} spellcasting ability is ${fullSpellAbilityName(caster.spellCastingAbilityOverride ?? caster.spellCastingAbility)} (spell save DC ${spellDc(false, creature)}, ${
 			spellAttackBonus(false, creature) >= 0 ? "+" : ""
 		}${spellAttackBonus(false, creature)} to hit with spell attacks). ${isNoun ? name : "It"} ${
 			["Sorcerer", "Bard", "Ranger", "Warlock"].includes(caster.castingClass) ? `knowns the following ${caster.castingClass.toLowerCase()} spells` : `has the following ${caster.castingClass.toLowerCase()} spells prepared`
@@ -259,45 +271,50 @@ export function getCreatureData(creature: Statblock) {
 		});
 	}
 
-	let innateCaster = creature["spellcasting"]["innateSpells"];
+	const innateCaster = creature.spellcasting.innateSpells;
 	if (innateCaster.spellCastingAbility && (innateCaster.spellList[0].length > 0 || innateCaster.spellList[1].length > 0 || innateCaster.spellList[2].length > 0 || innateCaster.spellList[3].length > 0)) {
-		let fName = `Innate Spellcasting${innateCaster.isPsionics ? " (Psionics)" : ""}`;
+		const fName = `Innate Spellcasting${innateCaster.isPsionics ? " (Psionics)" : ""}`;
 		let output = "";
 
 		if (!innateCaster.displayAsAction) {
 			output += `${isNoun ? "" : "The "}${name}'s spellcasting ability is ${fullSpellAbilityName(innateCaster.spellCastingAbility)} (spell save DC ${spellDc(true, creature)}, ${spellAttackBonus(true, creature) >= 0 ? "+" : ""}${spellAttackBonus(true, creature)} to hit with spell attacks). ${
 				isNoun ? name : "It"
 			} can innately cast the following spells${componentsString(innateCaster.noComponentsOfType)}:`;
-		} else {
+		}
+		else {
 			output += `${isNoun ? "" : "The "}${name} casts one of the following spells${componentsString(innateCaster.noComponentsOfType)} and using ${fullSpellAbilityName(innateCaster.spellCastingAbility)} as the spellcasting ability (spell save DC ${spellDc(true, creature)}, ${
 				spellAttackBonus(true, creature) >= 0 ? "+" : ""
 			}${spellAttackBonus(true, creature)} to hit with spell attacks):`;
 		}
 
-		if (innateCaster.spellList[0].length > 0)
+		if (innateCaster.spellList[0].length > 0) {
 			output += `\n\nAt will: ${innateCaster.spellList[0]
-				.map((x) => (x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell))
+				.map(x => (x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell))
 				.sort()
 				.join(", ")
 				.toLowerCase()}`;
-		if (innateCaster.spellList[3].length > 0)
+		}
+		if (innateCaster.spellList[3].length > 0) {
 			output += `\n\n3/day each: ${innateCaster.spellList[3]
-				.map((x) => (x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell))
+				.map(x => (x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell))
 				.sort()
 				.join(", ")
 				.toLowerCase()}`;
-		if (innateCaster.spellList[2].length > 0)
+		}
+		if (innateCaster.spellList[2].length > 0) {
 			output += `\n\n2/day each: ${innateCaster.spellList[2]
-				.map((x) => (x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell))
+				.map(x => (x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell))
 				.sort()
 				.join(", ")
 				.toLowerCase()}`;
-		if (innateCaster.spellList[1].length > 0)
+		}
+		if (innateCaster.spellList[1].length > 0) {
 			output += `\n\n1/day each: ${innateCaster.spellList[1]
-				.map((x) => (x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell))
+				.map(x => (x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell))
 				.sort()
 				.join(", ")
 				.toLowerCase()}`;
+		}
 
 		creatureData[innateCaster.displayAsAction ? "actions" : "traits"].push({
 			name: fName,

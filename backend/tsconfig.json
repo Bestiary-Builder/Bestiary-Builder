@@ -1,21 +1,21 @@
 {
 	"compilerOptions": {
 		"target": "es5",
-		"module": "commonjs",
 		"lib": ["es2022"],
-		"skipLibCheck": true,
-		"allowJs": true,
-		"outDir": "../build/backend",
 		"rootDir": ".",
-		"sourceMap": false,
-		"strict": true,
-		"noImplicitAny": true,
-		"esModuleInterop": true,
-		"resolveJsonModule": true,
+		"module": "commonjs",
 		"paths": {
 			"@/*": ["./*"],
 			"~/*": ["../*"]
-		}
+		},
+		"resolveJsonModule": true,
+		"allowJs": true,
+		"strict": true,
+		"noImplicitAny": true,
+		"outDir": "../build/backend",
+		"sourceMap": false,
+		"esModuleInterop": true,
+		"skipLibCheck": true
 	},
 	"hooks": ["copy-files"],
 	"references": [

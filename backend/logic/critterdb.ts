@@ -1,67 +1,76 @@
-import {app} from "@/utilities/constants";
-import {log} from "@/utilities/logger";
 import fetch from "node-fetch";
+import { app } from "@/utilities/constants";
+import { log } from "@/utilities/logger";
+
+// Parsing
+import { type CasterSpells, type InnateSpellsEntity, type SenseEntity, type SkillsEntity, type SpeedEntity, type SpellCasting, type SpellSlotEntity, type Stat, type Statblock, capitalizeFirstLetter, defaultStatblock, spellListFlattened } from "~/shared";
+import { abilityParser } from "@/utilities/parsing";
+import { SKILLS_BY_STAT } from "~/shared";
 
 app.get("/api/critterdb/:id/:published", async (req, res) => {
-	let id = req.params.id;
-	let published = req.params.published.toLowerCase() == "true";
-	let result = await fromCritterdb(id, published);
-	if (!result) {
-		return res.status(500).json({error: "Failed to fetch info from critterdb.com. Are you sure the link is right?"});
-	} else {
+	const id = req.params.id;
+	const published = req.params.published.toLowerCase() === "true";
+	const result = await fromCritterdb(id, published);
+	if (!result)
+		return res.status(500).json({ error: "Failed to fetch info from critterdb.com. Are you sure the link is right?" });
+	else
 		return res.json(result);
-	}
 });
 
-async function fromCritterdb(url: string, published: boolean): Promise<{data: {creatures: Statblock[]; name: string; description: string}; failedCreatures: string[]} | null> {
-	let data = {creatures: [] as Statblock[], name: "", description: ""};
+async function fromCritterdb(url: string, published: boolean): Promise<{ data: { creatures: Statblock[]; name: string; description: string }; failedCreatures: string[] } | null> {
+	const data = { creatures: [] as Statblock[], name: "", description: "" };
 	log.info(`CritterDB | Getting bestiary ID ${url}...`);
-	let apiBase = published ? "https://critterdb.com:443/api/publishedbestiaries" : "https://critterdb.com:443/api/bestiaries";
+	const apiBase = published ? "https://critterdb.com:443/api/publishedbestiaries" : "https://critterdb.com:443/api/bestiaries";
 
 	let errored = false;
 	await fetch(`${apiBase}/${url}`).then(async (resp) => {
 		try {
-			let raw = (await resp.json()) as any;
-			data.name = raw["name"];
-			data.description = raw["description"];
-		} catch (error) {
+			const raw = (await resp.json()) as any;
+			data.name = raw.name;
+			data.description = raw.description;
+		}
+		catch (error) {
 			log.error(`CritterDB | Error importing bestiary metadata. Id: "${url}" Published: ${published}`);
 			errored = true;
 		}
 	});
-	if (errored) return null;
-	if (published) data.creatures = await getPublishedBestiaryCreatures(url, apiBase);
+	if (errored)
+		return null;
+	if (published)
+		data.creatures = await getPublishedBestiaryCreatures(url, apiBase);
 	else data.creatures = (await getLinkSharedBestiaryCreatures(url, apiBase)) ?? [];
 
-	//Parse creatures
-	let errors: string[] = [];
+	// Parse creatures
+	const errors: string[] = [];
 	data.creatures = data.creatures
 		.map((a) => {
-			let result = parseFromCritterDB(a);
+			const result = parseFromCritterDB(a);
 			if (!result) {
 				errors.push(data.name);
 				return null;
-			} else {
+			}
+			else {
 				return result[0];
 			}
 		})
-		.filter((a) => a != null) as Statblock[];
-	return {data, failedCreatures: errors};
+		.filter(a => a != null) as Statblock[];
+	return { data, failedCreatures: errors };
 }
 
 export async function getPublishedBestiaryCreatures(id: string, apiBase: string) {
 	log.info(`CritterDB | Getting link published bestiary ${id}...`);
-	let creatures = [] as any[];
-	for (let index = 1; index <= 100 /* 100 pages max */; index++) {
+	const creatures = [] as any[];
+	for (let index = 1; index <= 100; index++) {
 		log.info(`CritterDB | Getting page ${index} of ${id}...`);
-		let rawCreatures = (await fetch(`${apiBase}/${id}/creatures/${index}`).then(async (resp) => {
+		const rawCreatures = (await fetch(`${apiBase}/${id}/creatures/${index}`).then(async (resp) => {
 			if (!(resp.status >= 200 && resp.status < 300)) {
 				log.error(`CritterDB | Error importing published bestiary creatures. Id: "${id}".`);
 				return null;
 			}
 			return resp.json();
 		})) as any[] | null;
-		if (!rawCreatures || rawCreatures.length == 0) break;
+		if (!rawCreatures || rawCreatures.length === 0)
+			break;
 		creatures.push(rawCreatures);
 	}
 	return creatures.flat();
@@ -69,10 +78,11 @@ export async function getPublishedBestiaryCreatures(id: string, apiBase: string)
 
 async function getLinkSharedBestiaryCreatures(id: string, apiBase: string) {
 	log.info(`CritterDB | Getting link shared bestiary ${id}...`);
-	let creatures = await fetch(`${apiBase}/${id}/creatures`).then(async (resp) => {
-		if (resp.status == 400) {
+	const creatures = await fetch(`${apiBase}/${id}/creatures`).then(async (resp) => {
+		if (resp.status === 400) {
 			log.error(`CritterDB | Permission error importing link shared bestiary creatures. Id: "${id}".`);
-		} else if (!(resp.status >= 200 && resp.status < 300)) {
+		}
+		else if (!(resp.status >= 200 && resp.status < 300)) {
 			log.error(`CritterDB | Unkown error importing link shared bestiary creatures. Id: "${id}".`);
 			return null;
 		}
@@ -81,16 +91,12 @@ async function getLinkSharedBestiaryCreatures(id: string, apiBase: string) {
 	return creatures;
 }
 
-//Parsing
-import {type CasterSpells, type Statblock, defaultStatblock, spellListFlattened, type SpellSlotEntity, type SkillsEntity, type Stat, type SpellCasting, type InnateSpellsEntity, type SpeedEntity, type SenseEntity, Creature, capitalizeFirstLetter} from "~/shared";
-import {abilityParser} from "@/utilities/parsing";
-import {SKILLS_BY_STAT} from "~/shared";
-let tData = [{}];
-function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: string]: string[]}] | null {
-	let outputData = {} as Statblock;
-	if (!data.flavor || !data.stats) {
+const tData = [{}];
+function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: string]: string[] }] | null {
+	const outputData = {} as Statblock;
+	if (!data.flavor || !data.stats)
 		return null;
-	}
+
 	outputData.description = {
 		name: data.name,
 		description: data.flavor.description.replaceAll("<i>", "*").replaceAll("</i>", "*").replaceAll("<b>", "**").replaceAll("</b>", "**"),
@@ -109,73 +115,86 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: string]:
 		size: data.stats.size,
 		languages: data.stats.languages,
 		senses: (() => {
-			let output: SenseEntity[] = [];
-			for (let s of data.stats.senses ?? []) {
-				let value = parseInt(s.replace(/[a-zA-Z]/g, ""));
+			const output: SenseEntity[] = [];
+			for (const s of data.stats.senses ?? []) {
+				const value = Number.parseInt(s.replace(/[a-z]/gi, ""));
 				let name = "";
 				let isBlind = false;
 
-				if (s.toLowerCase().includes("dark")) name = "Darkvision";
+				if (s.toLowerCase().includes("dark")) {
+					name = "Darkvision";
+				}
 				else if (s.toLowerCase().includes("blind")) {
 					name = "Blindsight";
 					isBlind = !!(data.stats.senses ?? []).find((str: string) => str.includes("blind beyond this radius"));
-				} else if (s.toLowerCase().includes("true")) name = "Truesight";
-				else if (s.toLowerCase().includes("tremor")) name = "Tremorsense";
+				}
+				else if (s.toLowerCase().includes("true")) {
+					name = "Truesight";
+				}
+				else if (s.toLowerCase().includes("tremor")) {
+					name = "Tremorsense";
+				}
 
-				if (name)
+				if (name) {
 					output.push({
-						name: name,
-						value: value,
+						name,
+						value,
 						unit: "ft",
 						comment: isBlind ? "blind beyond this radius" : ""
 					});
+				}
 			}
 			return output;
 		})(),
 		speed: (() => {
-			let output: SpeedEntity[] = [];
-			let fly = parseInt((data?.stats.speed.match(/fly\s*(\d+)\s*ft\.?/) || [])[1]) || 0;
-			let isHover = data?.stats?.speed.toLowerCase().includes("hover");
-			let swim = parseInt((data?.stats.speed.match(/swim\s*(\d+)\s*ft\.?/) || [])[1]) || 0;
-			let burrow = parseInt((data?.stats.speed.match(/burrow\s*(\d+)\s*ft\.?/) || [])[1]) || 0;
-			let climb = parseInt((data?.stats.speed.match(/climb\s*(\d+)\s*ft\.?/) || [])[1]) || 0;
-			let walk = parseInt((data?.stats.speed.match(/^(\d+)\s*ft\.?/) || [])[1]) || 0;
+			const output: SpeedEntity[] = [];
+			const fly = Number.parseInt((data?.stats.speed.match(/fly\s*(\d+)\s*ft\.?/) || [])[1]) || 0;
+			const isHover = data?.stats?.speed.toLowerCase().includes("hover");
+			const swim = Number.parseInt((data?.stats.speed.match(/swim\s*(\d+)\s*ft\.?/) || [])[1]) || 0;
+			const burrow = Number.parseInt((data?.stats.speed.match(/burrow\s*(\d+)\s*ft\.?/) || [])[1]) || 0;
+			const climb = Number.parseInt((data?.stats.speed.match(/climb\s*(\d+)\s*ft\.?/) || [])[1]) || 0;
+			const walk = Number.parseInt((data?.stats.speed.match(/^(\d+)\s*ft\.?/) || [])[1]) || 0;
 
-			if (walk)
+			if (walk) {
 				output.push({
 					name: "Walk",
 					value: walk,
 					comment: "",
 					unit: "ft"
 				});
-			if (fly)
+			}
+			if (fly) {
 				output.push({
 					name: "Fly",
 					value: fly,
 					comment: isHover ? "hover" : "",
 					unit: "ft"
 				});
-			if (climb)
+			}
+			if (climb) {
 				output.push({
 					name: "Climb",
 					value: climb,
 					comment: "",
 					unit: "ft"
 				});
-			if (swim)
+			}
+			if (swim) {
 				output.push({
 					name: "Swim",
 					value: swim,
 					comment: "",
 					unit: "ft"
 				});
-			if (burrow)
+			}
+			if (burrow) {
 				output.push({
 					name: "Burrow",
 					value: burrow,
 					comment: "",
 					unit: "ft"
 				});
+			}
 			return output;
 		})()
 	};
@@ -197,8 +216,8 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: string]:
 
 	outputData.abilities.saves = {
 		str: (() => {
-			for (let s of data.stats.savingThrows) {
-				if (s.ability == "strength") {
+			for (const s of data.stats.savingThrows) {
+				if (s.ability === "strength") {
 					return {
 						isProficient: s.proficient,
 						override: s?.value || null
@@ -211,8 +230,8 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: string]:
 			};
 		})(),
 		dex: (() => {
-			for (let s of data.stats.savingThrows) {
-				if (s.ability == "dexterity") {
+			for (const s of data.stats.savingThrows) {
+				if (s.ability === "dexterity") {
 					return {
 						isProficient: s.proficient,
 						override: s?.value || null
@@ -225,8 +244,8 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: string]:
 			};
 		})(),
 		con: (() => {
-			for (let s of data.stats.savingThrows) {
-				if (s.ability == "constitution") {
+			for (const s of data.stats.savingThrows) {
+				if (s.ability === "constitution") {
 					return {
 						isProficient: s.proficient,
 						override: s?.value || null
@@ -239,8 +258,8 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: string]:
 			};
 		})(),
 		int: (() => {
-			for (let s of data.stats.savingThrows) {
-				if (s.ability == "intelligence") {
+			for (const s of data.stats.savingThrows) {
+				if (s.ability === "intelligence") {
 					return {
 						isProficient: s.proficient,
 						override: s?.value || null
@@ -253,8 +272,8 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: string]:
 			};
 		})(),
 		wis: (() => {
-			for (let s of data.stats.savingThrows) {
-				if (s.ability == "wisdom") {
+			for (const s of data.stats.savingThrows) {
+				if (s.ability === "wisdom") {
 					return {
 						isProficient: s.proficient,
 						override: s?.value || null
@@ -267,8 +286,8 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: string]:
 			};
 		})(),
 		cha: (() => {
-			for (let s of data.stats.savingThrows) {
-				if (s.ability == "charisma") {
+			for (const s of data.stats.savingThrows) {
+				if (s.ability === "charisma") {
 					return {
 						isProficient: s.proficient,
 						override: s?.value || null
@@ -283,31 +302,32 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: string]:
 	};
 
 	outputData.abilities.skills = (() => {
-		let output = [] as SkillsEntity[];
+		const output = [] as SkillsEntity[];
 
-		for (let sk of data.stats.skills) {
-			let name = capitalizeFirstLetter(sk.name);
-			let shortname = name.replace(" ", "").toLowerCase();
+		for (const sk of data.stats.skills) {
+			const name = capitalizeFirstLetter(sk.name);
+			const shortname = name.replace(" ", "").toLowerCase();
 
 			let ability;
-			for (let sk2 in SKILLS_BY_STAT) {
+			for (const sk2 in SKILLS_BY_STAT) {
 				if (SKILLS_BY_STAT[sk2 as Stat].includes(shortname)) {
 					ability = sk2 as Stat;
 					break;
 				}
 			}
-			if (!ability) continue;
+			if (!ability)
+				continue;
 
-			let isProf = sk.proficient;
-			let value = sk.value || NaN;
-			let isExpertise = value == Math.floor(outputData.core.proficiencyBonus * 2) + (Math.floor(outputData.abilities.stats[ability] / 2) - 5);
-			let isHalfProficient = value == Math.floor(outputData.core.proficiencyBonus / 2) + (Math.floor(outputData.abilities.stats[ability] / 2) - 5);
+			const isProf = sk.proficient;
+			const value = sk.value || Number.NaN;
+			const isExpertise = value === Math.floor(outputData.core.proficiencyBonus * 2) + (Math.floor(outputData.abilities.stats[ability] / 2) - 5);
+			const isHalfProficient = value === Math.floor(outputData.core.proficiencyBonus / 2) + (Math.floor(outputData.abilities.stats[ability] / 2) - 5);
 
 			output.push({
 				skillName: name,
 				isProficient: isProf,
-				isExpertise: isExpertise,
-				isHalfProficient: isHalfProficient,
+				isExpertise,
+				isHalfProficient,
 				override: !isProf && !isExpertise && !isHalfProficient ? sk.value || null : null
 			});
 		}
@@ -334,10 +354,13 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: string]:
 	outputData.misc = {
 		legActionsPerRound: data.stats.legendaryActionsPerRound || 3,
 		telepathy: (() => {
-			if (!data.stats.languages) return 0;
-			for (let s of data.stats.languages ?? []) {
-				if (s.toLowerCase().includes("telepathy")) return parseInt(s.replace(/[a-zA-Z]/g, ""));
+			if (!data.stats.languages)
+				return 0;
+			for (const s of data.stats.languages ?? []) {
+				if (s.toLowerCase().includes("telepathy"))
+					return Number.parseInt(s.replace(/[a-z]/gi, ""));
 			}
+
 			return 0;
 		})(),
 		passivePerceptionOverride: null,
@@ -360,44 +383,56 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: string]:
 		let displayAsAction = false;
 		let sData = null;
 
-		for (let a of data.stats.actions) {
+		for (const a of data.stats.actions) {
 			if (a.name.toLowerCase().includes("spellcasting") && !a.name.toLowerCase().includes("innate")) {
 				sData = a.description;
 				displayAsAction = false;
 			}
 		}
 
-		if (!sData)
-			for (let a of data.stats.additionalAbilities) {
-				if (a.name.toLowerCase().includes("spellcasting") && !a.name.toLowerCase().includes("innate")) {
+		if (!sData) {
+			for (const a of data.stats.additionalAbilities) {
+				if (a.name.toLowerCase().includes("spellcasting") && !a.name.toLowerCase().includes("innate"))
 					sData = a.description;
-				}
 			}
-		if (!sData) return defaultStatblock.spellcasting.casterSpells;
+		}
+		if (!sData)
+			return defaultStatblock.spellcasting.casterSpells;
 
 		sData = sData.replaceAll("<i>", "").replaceAll("</i>", "").replaceAll("<b>", "").replaceAll("</b>", "");
 
 		const typeMatch = sData.match(/spellcasting ability is (\w+) \(spell save DC (\d+), [+\-](\d+) to hit/);
-		if (!typeMatch) return defaultStatblock.spellcasting.casterSpells;
+		if (!typeMatch)
+			return defaultStatblock.spellcasting.casterSpells;
 
-		let dc = typeMatch ? parseInt(typeMatch[2]) : null;
-		let bonus = typeMatch ? parseInt(typeMatch[3]) : null;
+		let dc = typeMatch ? Number.parseInt(typeMatch[2]) : null;
+		let bonus = typeMatch ? Number.parseInt(typeMatch[3]) : null;
 		const ability: Stat = typeMatch ? typeMatch[1].toLowerCase().slice(0, 3) : null;
 
 		let casterLevel = sData.match(/(\d+)[stndrh]{2}-level/);
-		if (!casterLevel) return defaultStatblock.spellcasting.casterSpells;
-		casterLevel = parseInt(casterLevel[1]);
+		if (!casterLevel)
+			return defaultStatblock.spellcasting.casterSpells;
+		casterLevel = Number.parseInt(casterLevel[1]);
 
 		let casterClass: null | CasterSpells["castingClass"] = null;
-		if (sData.toLowerCase().includes("wizard")) casterClass = "Wizard";
-		else if (sData.toLowerCase().includes("sorcerer")) casterClass = "Sorcerer";
-		else if (sData.toLowerCase().includes("bard")) casterClass = "Bard";
-		else if (sData.toLowerCase().includes("druid")) casterClass = "Druid";
-		else if (sData.toLowerCase().includes("artificer")) casterClass = "Artificer";
-		else if (sData.toLowerCase().includes("cleric")) casterClass = "Cleric";
-		else if (sData.toLowerCase().includes("warlock")) casterClass = "Warlock";
-		else if (sData.toLowerCase().includes("paladin")) casterClass = "Paladin";
-		else if (sData.toLowerCase().includes("ranger")) casterClass = "Ranger";
+		if (sData.toLowerCase().includes("wizard"))
+			casterClass = "Wizard";
+		else if (sData.toLowerCase().includes("sorcerer"))
+			casterClass = "Sorcerer";
+		else if (sData.toLowerCase().includes("bard"))
+			casterClass = "Bard";
+		else if (sData.toLowerCase().includes("druid"))
+			casterClass = "Druid";
+		else if (sData.toLowerCase().includes("artificer"))
+			casterClass = "Artificer";
+		else if (sData.toLowerCase().includes("cleric"))
+			casterClass = "Cleric";
+		else if (sData.toLowerCase().includes("warlock"))
+			casterClass = "Warlock";
+		else if (sData.toLowerCase().includes("paladin"))
+			casterClass = "Paladin";
+		else if (sData.toLowerCase().includes("ranger"))
+			casterClass = "Ranger";
 
 		let defaultAbility: Stat | null = null;
 		switch (casterClass) {
@@ -414,32 +449,35 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: string]:
 				defaultAbility = "cha";
 		}
 
-		let prof = outputData.core.proficiencyBonus;
-		let mod = Math.floor(outputData.abilities.stats[defaultAbility == ability ? defaultAbility : ability] / 2) - 5;
+		const prof = outputData.core.proficiencyBonus;
+		const mod = Math.floor(outputData.abilities.stats[defaultAbility === ability ? defaultAbility : ability] / 2) - 5;
 
-		if (dc === 8 + prof + mod) dc = null;
-		if (bonus === prof + mod) bonus = null;
+		if (dc === 8 + prof + mod)
+			dc = null;
+		if (bonus === prof + mod)
+			bonus = null;
 
-		let spellList: CasterSpells["spellList"] = [[], [], [], [], [], [], [], [], [], []];
-		let spellSlotList: SpellSlotEntity = {};
-		const SPELL_INFO_RE = new RegExp(/(?:(?<level>\d)[stndrh]{2}\slevel \((?<slots>\d+) slots?\)|Cantrip(?:s)? \(at will\)): (?<spells>.+)$/, "gmi");
-		let spellsInfo: any[] = Array.from(sData.matchAll(SPELL_INFO_RE));
-		for (let l of spellsInfo) {
+		const spellList: CasterSpells["spellList"] = [[], [], [], [], [], [], [], [], [], []];
+		const spellSlotList: SpellSlotEntity = {};
+		const SPELL_INFO_RE = /(?:(?<level>\d)[stndrh]{2}\slevel \((?<slots>\d+) slots?\)|Cantrips? \(at will\)): (?<spells>.+)$/gim;
+		const spellsInfo: any[] = Array.from(sData.matchAll(SPELL_INFO_RE));
+		for (const l of spellsInfo) {
 			// cantrips
 			spellList[l.groups?.level || 0] = spellListConstructor(l.groups?.spells);
-			if (l.groups?.level && l.groups?.slots) spellSlotList[parseInt(l.groups.level)] = parseInt(l.groups?.slots);
+			if (l.groups?.level && l.groups?.slots)
+				spellSlotList[Number.parseInt(l.groups.level)] = Number.parseInt(l.groups?.slots);
 		}
 
 		return {
-			casterLevel: casterLevel,
+			casterLevel,
 			castingClass: casterClass,
 			spellCastingAbility: defaultAbility,
-			spellCastingAbilityOverride: defaultAbility == ability ? null : ability,
+			spellCastingAbilityOverride: defaultAbility === ability ? null : ability,
 			spellBonusOverride: bonus,
 			spellDcOverride: dc,
-			spellList: spellList,
-			spellSlotList: spellSlotList,
-			displayAsAction: displayAsAction
+			spellList,
+			spellSlotList,
+			displayAsAction
 		};
 	})();
 
@@ -449,7 +487,7 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: string]:
 		let isPsionics = false;
 		let sData = null;
 
-		for (let a of data.stats.actions) {
+		for (const a of data.stats.actions) {
 			if (a.name.toLowerCase().includes("innate spellcasting") || (a.name.toLowerCase().includes("spellcasting") && !a.description.match(/(\d+)[stndrh]{2}-level/))) {
 				sData = a.description;
 				isPsionics = a.name.toLowerCase().includes("psionics");
@@ -457,47 +495,59 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: string]:
 			}
 		}
 
-		if (!sData)
-			for (let a of data.stats.additionalAbilities) {
+		if (!sData) {
+			for (const a of data.stats.additionalAbilities) {
 				if (a.name.toLowerCase().includes("innate spellcasting")) {
 					sData = a.description;
 					isPsionics = a.name.toLowerCase().includes("psionics");
 				}
 			}
-		if (!sData) return defaultStatblock.spellcasting.innateSpells;
+		}
+		if (!sData)
+			return defaultStatblock.spellcasting.innateSpells;
 
 		sData = sData.replaceAll("<i>", "").replaceAll("</i>", "").replaceAll("<b>", "").replaceAll("</b>", "");
 
 		const typeMatch = sData.match(/spellcasting ability is (\w+) \(spell save DC (\d+), [+\-](\d+) to hit/i);
-		if (!typeMatch) return defaultStatblock.spellcasting.innateSpells;
+		if (!typeMatch)
+			return defaultStatblock.spellcasting.innateSpells;
 		// figure out dc/bonus/abilities
-		let dc = typeMatch ? parseInt(typeMatch[2]) : null;
-		let bonus = typeMatch ? parseInt(typeMatch[3]) : null;
+		let dc = typeMatch ? Number.parseInt(typeMatch[2]) : null;
+		let bonus = typeMatch ? Number.parseInt(typeMatch[3]) : null;
 
 		const ability: Stat = typeMatch ? typeMatch[1].toLowerCase().slice(0, 3) : null;
 
 		// figure out which components they don't cast with, defaulting to no components
 		let noComponentsOfType = ["Material", "Somatic", "Verbal"];
-		if (sData.includes("requiring no components") || sData.includes("requiring no spell components")) noComponentsOfType = ["Material", "Somatic", "Verbal"];
-		if (sData.includes("requiring only verbal")) noComponentsOfType = ["Material", "Somatic"];
-		if (sData.includes("requiring only somatic")) noComponentsOfType = ["Material", "Verbal"];
-		if (sData.includes("requiring only material")) noComponentsOfType = ["Somatic", "Verbal"];
-		if (sData.includes("requiring no material")) noComponentsOfType = ["Material"];
-		if (sData.includes("requiring no somatic")) noComponentsOfType = ["Somatic"];
-		if (sData.includes("requiring no verbal")) noComponentsOfType = ["Verbal"];
+		if (sData.includes("requiring no components") || sData.includes("requiring no spell components"))
+			noComponentsOfType = ["Material", "Somatic", "Verbal"];
+		if (sData.includes("requiring only verbal"))
+			noComponentsOfType = ["Material", "Somatic"];
+		if (sData.includes("requiring only somatic"))
+			noComponentsOfType = ["Material", "Verbal"];
+		if (sData.includes("requiring only material"))
+			noComponentsOfType = ["Somatic", "Verbal"];
+		if (sData.includes("requiring no material"))
+			noComponentsOfType = ["Material"];
+		if (sData.includes("requiring no somatic"))
+			noComponentsOfType = ["Somatic"];
+		if (sData.includes("requiring no verbal"))
+			noComponentsOfType = ["Verbal"];
 
-		let prof = outputData.core.proficiencyBonus;
-		let mod = Math.floor(outputData.abilities.stats[ability] / 2) - 5;
+		const prof = outputData.core.proficiencyBonus;
+		const mod = Math.floor(outputData.abilities.stats[ability] / 2) - 5;
 
 		// if our found dc is equal to the normal dc, do not set an override.
-		if (dc === 8 + prof + mod) dc = null;
-		if (bonus === prof + mod) bonus = null;
+		if (dc === 8 + prof + mod)
+			dc = null;
+		if (bonus === prof + mod)
+			bonus = null;
 
 		// match for at will spells
 		const atWillMatch = sData.match(/At will: (?<spells>.+)$/im);
 
 		// match for per day spells
-		const PER_DAY_RE = new RegExp(/(?<times>\d+)\/day(?: each)?: (?<spells>.+)$/, "gmi");
+		const PER_DAY_RE = /(?<times>\d+)\/day(?: each)?: (?<spells>.+)$/gim;
 		const perDayMatch: any[] = Array.from(sData.matchAll(PER_DAY_RE));
 
 		// set our values - currently only 1/2/3 times per day is supported on bestiary builder, so we filter to those
@@ -505,11 +555,14 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: string]:
 		let twicePerDay: InnateSpellsEntity[] = [];
 		let thricePerDay: InnateSpellsEntity[] = [];
 		if (perDayMatch) {
-			for (let l of perDayMatch) {
+			for (const l of perDayMatch) {
 				if ("123".includes(l?.groups?.times)) {
-					if (l?.groups?.times == "1") oncePerDay = innateSpellListConstructor(l?.groups?.spells);
-					if (l?.groups?.times == "2") twicePerDay = innateSpellListConstructor(l?.groups?.spells);
-					if (l?.groups?.times == "3") thricePerDay = innateSpellListConstructor(l?.groups?.spells);
+					if (l?.groups?.times === "1")
+						oncePerDay = innateSpellListConstructor(l?.groups?.spells);
+					if (l?.groups?.times === "2")
+						twicePerDay = innateSpellListConstructor(l?.groups?.spells);
+					if (l?.groups?.times === "3")
+						thricePerDay = innateSpellListConstructor(l?.groups?.spells);
 				}
 			}
 		}
@@ -520,22 +573,22 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: string]:
 				2: twicePerDay,
 				3: thricePerDay
 			},
-			displayAsAction: displayAsAction,
-			isPsionics: isPsionics,
+			displayAsAction,
+			isPsionics,
 			spellCastingAbility: ability,
 			spellBonusOverride: bonus,
 			spellDcOverride: dc,
-			noComponentsOfType: noComponentsOfType
+			noComponentsOfType
 		};
 	})();
-	let [features, FnoteList] = abilityParser(data.stats.additionalAbilities, 2);
-	let [actions, AnoteList] = abilityParser(data.stats.actions, 1);
-	let [bonus, BnoteList] = [[], []];
-	let [reactions, RnoteList] = abilityParser(data.stats.reactions, 4);
-	let [legendary, LenoteList] = abilityParser(data.stats.legendaryActions, 9);
-	let [lair, LanoteList] = [[], []];
-	let [mythic, MnoteList] = [[], []];
-	let [regional, RenoteList] = [[], []];
+	const [features, FnoteList] = abilityParser(data.stats.additionalAbilities, 2);
+	const [actions, AnoteList] = abilityParser(data.stats.actions, 1);
+	const [bonus, BnoteList] = [[], []];
+	const [reactions, RnoteList] = abilityParser(data.stats.reactions, 4);
+	const [legendary, LenoteList] = abilityParser(data.stats.legendaryActions, 9);
+	const [lair, LanoteList] = [[], []];
+	const [mythic, MnoteList] = [[], []];
+	const [regional, RenoteList] = [[], []];
 
 	const notices = {
 		features: FnoteList,
@@ -549,14 +602,14 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: string]:
 	};
 
 	outputData.features = {
-		features: features,
-		actions: actions,
-		bonus: bonus,
-		reactions: reactions,
-		legendary: legendary,
-		lair: lair,
-		mythic: mythic,
-		regional: regional
+		features,
+		actions,
+		bonus,
+		reactions,
+		legendary,
+		lair,
+		mythic,
+		regional
 	};
 
 	return [outputData, notices];
@@ -564,21 +617,27 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, {[key: string]:
 
 function parseDamageTypes(data: string[]): string[] {
 	// limited parsing only due to possible weird formatting
-	let output: string[] = [];
-	for (let d of data) {
-		let type = d.trim().toLowerCase();
+	const output: string[] = [];
+	for (const d of data) {
+		const type = d.trim().toLowerCase();
 		if (type.includes(" ") && type.includes("bludgeoning") && type.includes("slashing") && type.includes("piercing")) {
 			let modifiers = "";
-			if (type.includes("nonmagical")) modifiers += "Nonmagical ";
-			if (type.includes("nonsilvered")) modifiers += "Nonsilvered ";
-			if (type.includes("nonadamantine")) modifiers += "Nonadamantine ";
-			if (type.includes(" aren't magical")) modifiers += "Nonmagical ";
-			if (type.includes(" aren't silvered")) modifiers += "Nonsilvered ";
-			if (type.includes(" aren't adamantine")) modifiers += "Nonadamantine ";
-			for (let i of ["Bludgeoning", "Piercing", "Slashing"]) {
+			if (type.includes("nonmagical"))
+				modifiers += "Nonmagical ";
+			if (type.includes("nonsilvered"))
+				modifiers += "Nonsilvered ";
+			if (type.includes("nonadamantine"))
+				modifiers += "Nonadamantine ";
+			if (type.includes(" aren't magical"))
+				modifiers += "Nonmagical ";
+			if (type.includes(" aren't silvered"))
+				modifiers += "Nonsilvered ";
+			if (type.includes(" aren't adamantine"))
+				modifiers += "Nonadamantine ";
+			for (const i of ["Bludgeoning", "Piercing", "Slashing"])
 				output.push(`${modifiers}${i}`);
-			}
-		} else output.push(capitalizeFirstLetter(d));
+		}
+		else { output.push(capitalizeFirstLetter(d)); }
 	}
 	return output;
 }
@@ -588,17 +647,17 @@ function spellListConstructor(spells: string): string[] {
 	// removes any special characters or markers that people might use
 	// if it can't find it in our list, use the cleaned up input string
 	return spells.split(", ").map(
-		(s) =>
+		s =>
 			spellListFlattened.find(
 				(item: string) =>
-					item.toLowerCase() ===
-					s
+					item.toLowerCase()
+					=== s
 						.trim()
 						.replace(/[.$*_]/g, "")
 						.replace(/\(.+\)/, "")
 						.toLowerCase()
-			) ||
-			s
+			)
+			|| s
 				.trim()
 				.replaceAll(/[.$*_]/g, "")
 				.replace(/\(.+\)/, "")
@@ -606,32 +665,33 @@ function spellListConstructor(spells: string): string[] {
 }
 
 function innateSpellListConstructor(spellString: string): InnateSpellsEntity[] {
-	if (spellString == "") return [];
+	if (spellString === "")
+		return [];
 
-	let output = [];
+	const output = [];
 
-	let spellList = spellString.split(", ");
-	for (let sp of spellList) {
-		let commentMatch = sp.match(/\((.*?)\)/i);
-		let comment = commentMatch ? commentMatch[1] : "";
-		let spell =
-			spellListFlattened.find(
+	const spellList = spellString.split(", ");
+	for (const sp of spellList) {
+		const commentMatch = sp.match(/\((.*?)\)/);
+		const comment = commentMatch ? commentMatch[1] : "";
+		const spell
+			= spellListFlattened.find(
 				(item: string) =>
-					item.toLowerCase() ===
-					sp
+					item.toLowerCase()
+					=== sp
 						.trim()
 						.replace(/[.$*_]/g, "")
 						.replace(/\(.+\)/, "")
 						.trim()
-			) ||
-			sp
+			)
+			|| sp
 				.trim()
 				.replace(/[.$*_]/g, "")
 				.replace(/\(.+\)/, "")
 				.trim();
 		output.push({
-			spell: spell,
-			comment: comment
+			spell,
+			comment
 		});
 	}
 	return output;

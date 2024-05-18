@@ -1,14 +1,14 @@
 {
 	"compilerOptions": {
+		"composite": true,
+		"target": "es2022",
+		"lib": ["esnext"],
+		"rootDir": ".",
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
 		"declaration": true,
 		"declarationMap": true,
-		"rootDir": ".",
-		"outDir": "../build/shared",
-		"composite": true,
-		"lib": ["esnext"],
-		"target": "es2022",
-		"moduleResolution": "NodeNext",
-		"module": "NodeNext"
+		"outDir": "../build/shared"
 	},
 	"references": []
 }

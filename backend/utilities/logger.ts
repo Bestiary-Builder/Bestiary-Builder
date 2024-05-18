@@ -1,12 +1,12 @@
-import {isProduction} from "./constants";
+import fs from "node:fs";
 import winston from "winston";
-import fs from "fs";
+import { isProduction } from "./constants";
 
-//Format
+// Format
 const format = winston.format.printf((info) => {
-	return `[${info.timestamp}]-(${info.label}) ${info.level} > ${info.message}${info.stack ? "\n" + info.stack : ""}`;
+	return `[${info.timestamp}]-(${info.label}) ${info.level} > ${info.message}${info.stack ? `\n${info.stack}` : ""}`;
 });
-//Levels
+// Levels
 const winstonLevels = {
 	levels: {
 		critical: 0,
@@ -26,7 +26,7 @@ const winstonLevels = {
 	}
 };
 winston.addColors(winstonLevels.colors);
-//Logger
+// Logger
 export const log = winston.createLogger({
 	levels: winstonLevels.levels,
 	format: winston.format.combine(
@@ -34,8 +34,8 @@ export const log = winston.createLogger({
 		winston.format.timestamp({
 			format: "YYYY-MM-DD HH:mm:ss"
 		}),
-		winston.format.errors({stack: true}),
-		winston.format.label({label: "Bestiary Builder"})
+		winston.format.errors({ stack: true }),
+		winston.format.label({ label: "Bestiary Builder" })
 	),
 	transports: [
 		new winston.transports.Console({
@@ -48,8 +48,8 @@ export const log = winston.createLogger({
 				winston.format.timestamp({
 					format: "DD-MM-YYYY HH:mm:ss"
 				}),
-				winston.format.label({label: "Bestiary Builder"}),
-				winston.format.colorize({all: true}),
+				winston.format.label({ label: "Bestiary Builder" }),
+				winston.format.colorize({ all: true }),
 				format
 			)
 		})
@@ -57,17 +57,18 @@ export const log = winston.createLogger({
 });
 
 const splitFiles = false;
-//Save to file in production
+// Save to file in production
 if (isProduction) {
-	//Save old files
+	// Save old files
 	if (splitFiles && fs.existsSync("logs/combined.log")) {
-		if (!fs.existsSync("logs/old")) fs.mkdirSync("logs/old");
-		let date = new Date();
-		let dateString = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}_${date.getUTCHours()}.${date.getUTCMinutes()}.${date.getUTCSeconds()}`;
-		fs.renameSync("logs/combined.log", "logs/old/combined_" + dateString + ".log");
-		fs.renameSync("logs/error.log", "logs/old/error_" + dateString + ".log");
+		if (!fs.existsSync("logs/old"))
+			fs.mkdirSync("logs/old");
+		const date = new Date();
+		const dateString = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}_${date.getUTCHours()}.${date.getUTCMinutes()}.${date.getUTCSeconds()}`;
+		fs.renameSync("logs/combined.log", `logs/old/combined_${dateString}.log`);
+		fs.renameSync("logs/error.log", `logs/old/error_${dateString}.log`);
 	}
-	//Add new transports
+	// Add new transports
 	log.add(
 		new winston.transports.File({
 			level: "request",

@@ -1,9 +1,9 @@
-export type SearchOptions = {
+export interface SearchOptions {
 	search: string;
 	page: number;
 	mode: "popular" | "recent";
 	tags: string[];
-};
+}
 
 export type Stat = "str" | "dex" | "con" | "int" | "cha" | "wis";
 
@@ -83,23 +83,23 @@ export interface Abilities {
 	saves: Saves;
 	skills: SkillsEntity[];
 }
-export type Stats = {
+export interface Stats {
 	str: number;
 	dex: number;
 	con: number;
 	int: number;
 	cha: number;
 	wis: number;
-};
+}
 
-export type Saves = {
+export interface Saves {
 	str: SaveEntity;
 	dex: SaveEntity;
 	con: SaveEntity;
 	int: SaveEntity;
 	cha: SaveEntity;
 	wis: SaveEntity;
-};
+}
 export interface SaveEntity {
 	isProficient: boolean;
 	override: number | null;
@@ -129,7 +129,7 @@ export interface Ac {
 	ac: number;
 	acSource: string;
 }
-export type Features = {
+export interface Features {
 	features: FeatureEntity[];
 	actions: FeatureEntity[];
 	bonus: FeatureEntity[];
@@ -138,12 +138,12 @@ export type Features = {
 	mythic: FeatureEntity[];
 	lair: FeatureEntity[];
 	regional: FeatureEntity[];
-};
+}
 
 export interface FeatureEntity {
 	name: string;
 	description: string;
-	automation: null | {[key: string]: unknown} | {[key: string]: unknown}[];
+	automation: null | { [key: string]: unknown } | { [key: string]: unknown }[];
 }
 
 export interface SpellCasting {

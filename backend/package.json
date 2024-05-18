@@ -1,21 +1,23 @@
 {
 	"name": "server",
 	"version": "1.0.0",
-	"description": "",
 	"private": true,
+	"description": "",
+	"author": "Stevnbak",
+	"license": "MPL-2.0",
 	"main": "server.ts",
+	"engines": {
+		"node": ">=21.4.0"
+	},
 	"scripts": {
 		"start": "npx nodemon",
 		"build": "cd ../shared && npm run build && cd ../backend && npx tsc",
 		"postbuild": "cp package.json ../build/backend/package.json && cp ../shared/package.json ../build/shared/package.json & cd ../build/backend && npm install --omit=dev && cd ../shared && npm install --omit=dev",
 		"compile": "cd ../shared && npm run build && cd ../backend && bun build server.ts --target bun --outfile ../build/server.js",
-		"test": "vitest run"
+		"test": "vitest run",
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix"
 	},
-	"engines": {
-		"node": ">=21.4.0"
-	},
-	"author": "Stevnbak",
-	"license": "MPL-2.0",
 	"dependencies": {
 		"bad-words-next": "^2.2.1",
 		"body-parser": "^1.20.2",
@@ -38,6 +40,7 @@
 		"winston": "^3.11.0"
 	},
 	"devDependencies": {
+		"@antfu/eslint-config": "^2.18.1",
 		"@types/compression": "^1.7.2",
 		"@types/cookie-parser": "^1.4.6",
 		"@types/cors": "^2.8.17",
@@ -45,6 +48,7 @@
 		"@types/jsonwebtoken": "^9.0.5",
 		"@types/node": "^20.2.5",
 		"@types/node-fetch": "^2.6.9",
+		"eslint": "8.57.0",
 		"nodemon": "^3.0.2",
 		"tsx": "^4.6.2",
 		"typescript": "^5.3.3",

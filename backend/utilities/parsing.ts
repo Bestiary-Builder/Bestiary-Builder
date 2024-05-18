@@ -1,37 +1,41 @@
-import {parseDescIntoAutomation, type FeatureEntity} from "~/shared";
+/* eslint-disable regexp/no-super-linear-backtracking */
+import { type FeatureEntity, parseDescIntoAutomation } from "~/shared";
 
 export function abilityParser(fData: any, activationType: number): [FeatureEntity[], string[]] {
-	let output = [] as FeatureEntity[];
-	let notices = [] as string[];
-	for (let f of fData ?? []) {
-		let name = markdownReplacer(f.name);
+	const output = [] as FeatureEntity[];
+	const notices = [] as string[];
+	for (const f of fData ?? []) {
+		const name = markdownReplacer(f.name);
 
 		// if critterDB, don't attempt to parse spellcasting in this step.
-		if (f.description && name.toLowerCase().includes("spellcasting")) continue;
+		if (f.description && name.toLowerCase().includes("spellcasting"))
+			continue;
 
-		//f.entries for 5etools, f.description for critterdb
-		let description = descParser(f.entries || f.description.replaceAll("<i>", "*").replaceAll("<b>", "**").replaceAll("</i>", "*").replaceAll("</b>", "**"));
-		let [automation, notice] = parseDescIntoAutomation(description, name, activationType);
-		if (notice) notices.push(notice);
+		// f.entries for 5etools, f.description for critterdb
+		const description = descParser(f.entries || f.description.replaceAll("<i>", "*").replaceAll("<b>", "**").replaceAll("</i>", "*").replaceAll("</b>", "**"));
+		const [automation, notice] = parseDescIntoAutomation(description, name, activationType);
+		if (notice)
+			notices.push(notice);
 		output.push({
-			name: name,
+			name,
 			description: description.replace(/<avrae hidden>.*?<\/avrae>/gis, ""),
-			automation: automation
+			automation
 		});
 	}
 	return [output, notices];
 }
 
 export function descParser(dData: any) {
-	if (typeof dData == "string") return dData;
-	let output = [];
-	for (let d of dData) {
-		if (typeof d == "string") output.push(markdownReplacer(d));
+	if (typeof dData == "string")
+		return dData;
+	const output = [];
+	for (const d of dData) {
+		if (typeof d == "string")
+			output.push(markdownReplacer(d));
 		if (typeof d == "object") {
-			if (d.type == "list") {
-				for (let i of d.items) {
+			if (d.type === "list") {
+				for (const i of d.items)
 					output.push(`<br><b class="indent">${markdownReplacer(i.name)}</b> ${markdownReplacer(i.entry || i?.entries.join("\n"))}`);
-				}
 			}
 		}
 	}
@@ -55,8 +59,8 @@ export function markdownReplacer(text: string): string {
 		.replace(/\{@condition\s+([^}]+)\}/g, "<u>$1</u>")
 		.replace(/\{@recharge\s+(\d+)\}/g, "(Recharge $1-6)")
 		.replace(
-			/\{@quickref\s+[a-z\s]+[|]+[0-9]+\}/,
-			"$1".replace(/(^|\s)\S/g, function (t) {
+			/\{@quickref\s[a-z\s]+\|+\d+\}/,
+			"$1".replace(/(?:^|\s)\S/g, (t) => {
 				return t.toUpperCase();
 			})
 		)

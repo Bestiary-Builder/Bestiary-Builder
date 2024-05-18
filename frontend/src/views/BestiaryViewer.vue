@@ -77,7 +77,8 @@ export default defineComponent({
 			showImportModal: false,
 			selectedCreature: null as Creature | null,
 			store,
-			creatureTypes
+			creatureTypes,
+			defaultStatblock
 		};
 	},
 	computed: {
@@ -284,7 +285,7 @@ export default defineComponent({
 			loader.hide();
 			this.showImportModal = false;
 		},
-		async createCreature(stats = defaultStatblock, shouldRefresh = true, shouldHaveLoader = true) {
+		async createCreature(stats = defaultStatblock, shouldHaveLoader = true) {
 			let loader;
 			if (shouldHaveLoader)
 				loader = $loading.show();
@@ -303,10 +304,7 @@ export default defineComponent({
 			else {
 				toast.error(error);
 			}
-			if (shouldRefresh) {
-				const tileContainer = document.getElementsByClassName("tile-container")[0] as HTMLDivElement;
-				tileContainer.scrollTop = tileContainer.scrollHeight;
-			}
+
 			if (shouldHaveLoader && loader)
 				loader.hide();
 		},

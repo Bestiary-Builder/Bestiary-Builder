@@ -239,50 +239,50 @@ export default defineComponent({
 				</p>
 			</div>
 		</div>
-	</div>
 
-	<div v-if="data.features.actions.length > 0 || (showInnateCasting && data.spellcasting.innateSpells.displayAsAction)" class="feature-container">
-		<h3 class="feature-container__title">
-			Actions
-		</h3>
-		<p v-if="data.misc.featureHeaderTexts.actions">
-			{{ data.misc.featureHeaderTexts.actions }}
-		</p>
-		<p v-for="(feature, index) in data.features.actions" :key="index">
-			<b> <i>{{ feature.name }}.</i><sup v-if="feature.automation" v-tooltip="'Has Automation'" class="feature-container__automation-icon">†</sup></b>
-			<Markdown class="feature-container__desc" :text="feature.description" tag="span" />
-		</p>
-
-		<p v-if="showInnateCasting && data.spellcasting.innateSpells.displayAsAction">
-			<b><i>Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics"> (Psionics)</span>.</i></b>
-			<Markdown class="feature-container__desc" :text="displayInnateCasting(data)" tag="span" />
-		</p>
-	</div>
-
-	<!-- TODO: Add features and actions to the generator here once they no longer need special handling because of spellcasting -->
-	<template v-for="title, fType of featureGenerator">
-		<div v-if="data.features[fType].length > 0" :key="fType" class="feature-container">
+		<div v-if="data.features.actions.length > 0 || (showInnateCasting && data.spellcasting.innateSpells.displayAsAction)" class="feature-container">
 			<h3 class="feature-container__title">
-				{{ title }}
+				Actions
 			</h3>
-			<p v-if="fType === 'legendary' && data.misc.featureHeaderTexts[fType]">
-				{{ data.misc.featureHeaderTexts[fType].replace("$NUM$", data.misc.legActionsPerRound.toString()) }}
+			<p v-if="data.misc.featureHeaderTexts.actions">
+				{{ data.misc.featureHeaderTexts.actions }}
 			</p>
-			<p v-else-if="data.misc.featureHeaderTexts[fType]">
-				{{ data.misc.featureHeaderTexts[fType] }}
-			</p>
-			<p v-for="(feature, index) in data.features[fType]" :key="index">
-				<b> <i> {{ feature.name }}.</i></b>
-				<sup v-if="feature.automation" v-tooltip="'Has Automation'" class="feature-container__automation-icon">†</sup>
+			<p v-for="(feature, index) in data.features.actions" :key="index">
+				<b> <i>{{ feature.name }}.</i><sup v-if="feature.automation" v-tooltip="'Has Automation'" class="feature-container__automation-icon">†</sup></b>
 				<Markdown class="feature-container__desc" :text="feature.description" tag="span" />
 			</p>
+
+			<p v-if="showInnateCasting && data.spellcasting.innateSpells.displayAsAction">
+				<b><i>Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics"> (Psionics)</span>.</i></b>
+				<Markdown class="feature-container__desc" :text="displayInnateCasting(data)" tag="span" />
+			</p>
 		</div>
-	</template>
-	<div v-if="data.description.description" class="description">
-		<h2 class="feature-container__title">
-			Description
-		</h2>
-		<Markdown :text="data.description.description" />
+
+		<!-- TODO: Add features and actions to the generator here once they no longer need special handling because of spellcasting -->
+		<template v-for="title, fType of featureGenerator">
+			<div v-if="data.features[fType].length > 0" :key="fType" class="feature-container">
+				<h3 class="feature-container__title">
+					{{ title }}
+				</h3>
+				<p v-if="fType === 'legendary' && data.misc.featureHeaderTexts[fType]">
+					{{ data.misc.featureHeaderTexts[fType].replace("$NUM$", data.misc.legActionsPerRound.toString()) }}
+				</p>
+				<p v-else-if="data.misc.featureHeaderTexts[fType]">
+					{{ data.misc.featureHeaderTexts[fType] }}
+				</p>
+				<p v-for="(feature, index) in data.features[fType]" :key="index">
+					<b> <i> {{ feature.name }}.</i></b>
+					<sup v-if="feature.automation" v-tooltip="'Has Automation'" class="feature-container__automation-icon">†</sup>
+					<Markdown class="feature-container__desc" :text="feature.description" tag="span" />
+				</p>
+			</div>
+		</template>
+		<div v-if="data.description.description" class="description">
+			<h2 class="feature-container__title">
+				Description
+			</h2>
+			<Markdown :text="data.description.description" />
+		</div>
 	</div>
 </template>
 
