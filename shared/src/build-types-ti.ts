@@ -158,7 +158,11 @@ export const Features = t.iface([], {
 export const FeatureEntity = t.iface([], {
   "name": "string",
   "description": "string",
-  "automation": t.union("null", "object", t.array("object")),
+  "automation": t.union("null", t.iface([], {
+    [t.indexKey]: "unknown",
+  }), t.array(t.iface([], {
+    [t.indexKey]: "unknown",
+  }))),
 });
 
 export const SpellCasting = t.iface([], {

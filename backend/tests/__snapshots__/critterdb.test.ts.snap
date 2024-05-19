@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`CritterDB export to be unchanged 1`] = `
+exports[`critterDB export to be unchanged 1`] = `
 [
   {
     "__v": 0,

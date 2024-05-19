@@ -6,7 +6,7 @@
 			"request": "launch",
 			"name": "Firefox: Debug both backend and frontend",
 			"url": "http://localhost:5173",
-			"preLaunchTask": "debug-both",
+			"preLaunchTask": "debug",
 			"webRoot": "${workspaceFolder}"
 		},
 		{
@@ -14,14 +14,7 @@
 			"request": "launch",
 			"name": "Chrome: Debug both backend and frontend",
 			"url": "http://localhost:5173",
-			"preLaunchTask": "debug-both"
-		},
-		{
-			"type": "chrome",
-			"request": "launch",
-			"name": "Chrome: Debug only frontend",
-			"url": "http://localhost:5173",
-			"preLaunchTask": "debug-frontend"
+			"preLaunchTask": "debug"
 		}
 	]
 }

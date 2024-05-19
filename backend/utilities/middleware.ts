@@ -1,27 +1,27 @@
-import {log} from "./logger";
-//Setup express settings
-import express, {NextFunction, Request, Response} from "express";
+// Setup express settings
+import type { NextFunction, Request, Response } from "express";
+import express from "express";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import cors from "cors";
 import compression from "compression";
 import cookieParser from "cookie-parser";
-import {app, badwords, isProduction} from "./constants";
+import { log } from "./logger";
+import { app, isProduction } from "./constants";
 
-//Function to run on all requests
+// Function to run on all requests
 app.use(async (req, res, next) => {
 	log.log("request", `Request for URL "${req.url}" recieved.`);
-	//Set Permissions Policy
+	// Set Permissions Policy
 	res.setHeader("Permissions-Policy", "fullscreen=('self'), accelerometer=(), autoplay=(), camera=(), geolocation=('self'), gyroscope=(), interest-cohort=(), magnetometer=(), microphone=(), payment=(), sync-xhr=()");
 	next();
 });
-//Body parsing
-app.use(express.json({limit: "50mb"}));
-app.use(express.urlencoded({limit: "50mb", extended: true}));
-//Cookies
-//@ts-ignore
+// Body parsing
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
+// Cookies
 app.use(cookieParser());
-//Security stuff
+// Security stuff
 app.use(
 	helmet({
 		contentSecurityPolicy: {
@@ -42,27 +42,27 @@ app.use(
 	})
 );
 app.disable("x-powered-by");
-//Rate limiting
+// Rate limiting
 app.use(
 	rateLimit({
 		windowMs: 1000, // 1 second
 		max: isProduction ? 100 : 1000 // limit each IP to 50/1000 requests per windowMs
 	})
 );
-//CORS
+// CORS
 app.use(cors());
-//Compression
+// Compression
 app.use(compression());
 
-//Error handling
-function errorHandler(err: Error, req: Request, res: Response, next: NextFunction) {
+// Error handling
+function errorHandler(err: Error, req: Request, res: Response, _next: NextFunction) {
 	log.log("critical", err);
-	res.status(500).json({error: "An unknown error occured."});
+	res.status(500).json({ error: "An unknown error occured." });
 }
 app.use(errorHandler);
 process.on("uncaughtException", (err) => {
-	log.log("critical", "Uncaught exception: " + err);
+	log.log("critical", `Uncaught exception: ${err}`);
 });
 process.on("unhandledRejection", (err) => {
-	log.log("critical", "Unhandled rejection: " + err);
+	log.log("critical", `Unhandled rejection: ${err}`);
 });

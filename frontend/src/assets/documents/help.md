@@ -1,4 +1,4 @@
-## Importing a Bestiary from CritterDB
+## Importing a Bestiary from CritterDB {#critterdb}
 
 It is possible to import a bestiary from [CritterDB](https://critterdb.com):
 
@@ -13,9 +13,10 @@ It is possible to import a bestiary from [CritterDB](https://critterdb.com):
 
 1. CritterDB stores damage resistances in a weird manner. It may fail to import these correctly
 2. Since CritterDB does not have fields for bonus actions, mythic actions, lair actions, and regional effects, they will be imported as the action type you set on CritterDB
-3. It will generate automation for attacks that did not already have automation set through the <code>\<avrae hidden\></code> tag. However, this automation might be incomplete for more complicated attacks, such as attacks that apply an effect on hit
+3. It will generate automation for attacks that did not already have automation set through the `<avrae hidden>` tag. However, this automation might be incomplete for more complicated attacks, such as attacks that apply an effect on hit
 
-## Importing a Creature from 5e.tools
+----
+## Importing a Creature from 5e.tools {#dnd5etools}
 
 It is possible to import a single creature from [5etools](https://5e.tools), to make it easier to create your own:
 
@@ -31,7 +32,8 @@ It is possible to import a single creature from [5etools](https://5e.tools), to 
 2. It will attempt to generate automation for attacks, but the generated automation might be incomplete or not there in the case of save based attacks
 3. **It is against our [Content Policy](/content-policy) to publish official non-free D&D content. So if you want to publish your bestiary with the imported creature, make sure you modify it to create your own creature out of it!**
 
-## Copying within Bestiary Builder
+----
+## Copying within Bestiary Builder {#copying}
 
 It is possible to copy creatures or bestiaries from within Bestiary Builder by exporting and importing them as JSON
 
@@ -51,6 +53,7 @@ Press the Export button at the top right of the page. You can choose to copy it 
 2. Press the Import button and paste the copied JSON into the Bestiary Builder input field
 3. Press Import again. It will start importing the creatures, which might take a while for larger bestiaries.
 
+----
 ## Markdown Support
-Bestiary, Creature, and Feature descriptions support [Markdown Syntax](https://www.markdownguide.org/basic-syntax/), which will also import into Avrae that way usually. 
+Bestiary, Creature, and Feature descriptions support [Markdown Syntax](https://www.markdownguide.org/basic-syntax/), which will also import into Avrae that way usually.
 A special case is made for Bestiary descriptions, where the first image will be displayed on the card in the Public, Personal, and Bookmarked bestiary list.

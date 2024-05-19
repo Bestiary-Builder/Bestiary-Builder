@@ -1,81 +1,56 @@
-<template>
-	<!-- <Breadcrumbs
-	:routes="[
-		{
-			path: '',
-			text: 'Home',
-			isCurrent: true
-		}
-	]"
-	:isLessWide="true"
-	/> -->
-	<div class="article-header">
-		<div class="header-content">
-			<h1 class="header-title">Bestiary Builder</h1>
-			<div class="call-to-action">
-				<ul class="left">
-					<li> Join our <b>{{ stats?.users }}</b> users! </li>
-					<li> Flip through our <b>{{ stats?.bestiaries }}</b> bestiaries! </li>
-					<li> Frighten your players with our <b>{{ stats?.creatures }}</b> creatures! </li>
-				</ul>
-				<ul class="right">
-					<li>Welcome to Bestiary Builder, <i>the</i> convenient Bestiary Creator for <span style="display: inline-block"><b>D&D 5e</b>,</span> designed for incredible integration with <b><a href="https://avrae.io/"> Avrae</a></b> and convenience of use!</li>
-				</ul>
-			</div>
-		</div>
-		<img src="/mmcover.jpg" alt="" class="header-image" />
-	</div>
-
-	<div class="content markdown less-wide">
-		<div v-if="content" v-html="content"></div>
-	</div>
-</template>
-
-<script lang="ts">
-import {defineComponent} from "vue";
-// @ts-ignore
-import markdownit from "markdown-it";
-const md = markdownit({html: true, linkify: true, typographer: true});
+<script setup lang="ts">
+import { onBeforeMount, ref } from "vue";
 import dataFile from "@/assets/documents/home.md";
-import Breadcrumbs from "@/components/Breadcrumbs.vue";
-import {handleApiResponse} from "@/main";
-export default defineComponent({
-	data() {
-		return {
-			content: md.render(dataFile),
-			stats: null as {
-				creatures: number;
-				bestiaries: number;
-				users: number;
-			} | null
-		};
-	},
-	components: {
-		Breadcrumbs
-	},
-	async beforeMount() {
-		await fetch("/api/stats")
-			.then(handleApiResponse)
-			.then((result) => {
-				if (result.success) {
-					this.stats = result.data as {
-						creatures: number;
-						bestiaries: number;
-						users: number;
-					};
-				} else {
-					console.error("Failed to retrieve global stats.");
-					this.stats = null;
-				}
-			});
+import Markdown from "@/components/Markdown.vue";
+import { useFetch } from "@/utils/utils";
+import type { GlobalStats } from "~/shared";
+
+const stats = ref<null | GlobalStats>(null);
+onBeforeMount(async () => {
+	const { success, data } = await useFetch<GlobalStats>("/api/stats");
+	if (success) {
+		stats.value = data;
+	}
+	else {
+		console.error("Failed to retrieve global stats.");
+		stats.value = null;
 	}
 });
 </script>
-<style scoped>
-html {
-	overflow-y: unset;
-}
-</style>
+
+<template>
+	<div class="article-header">
+		<div class="header-content">
+			<h1 class="header-title">
+				Bestiary Builder
+			</h1>
+			<div class="call-to-action">
+				<ul class="left">
+					<li>
+						Join our <b>{{ stats?.users }}</b> users!
+					</li>
+					<li>
+						Flip through our <b>{{ stats?.bestiaries }}</b> bestiaries!
+					</li>
+					<li>
+						Frighten your players with our <b>{{ stats?.creatures }}</b> creatures!
+					</li>
+				</ul>
+				<ul class="right">
+					<li>
+						Welcome to Bestiary Builder, <i>the</i> convenient Bestiary Creator for <span style="display: inline-block"><b>D&D 5e</b>,</span> designed for incredible integration with <b><a href="https://avrae.io/"> Avrae</a></b> and convenience of use!
+					</li>
+				</ul>
+			</div>
+		</div>
+		<img src="/mmcover.jpg" alt="" class="header-image">
+	</div>
+
+	<div class="content markdown less-wide">
+		<Markdown :text="dataFile" :options="{ html: true, linkify: true, typographer: true }" />
+	</div>
+</template>
+
 <style scoped lang="less">
 @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&display=block");
 .content {
@@ -99,11 +74,10 @@ html {
 		h1 {
 			font-size: 12vw;
 			text-transform: uppercase;
-			font-family: "Bebas Neue", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+			font-family: "Bebas Neue", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
+				"Helvetica Neue", sans-serif;
 			letter-spacing: 3px;
 		}
-
-
 	}
 	.header-image {
 		grid-column: 1 / -1;
@@ -131,14 +105,13 @@ html {
 			margin: auto;
 
 			li {
-				font-weight: 100;				
+				font-weight: 100;
 			}
-			
+
 			b {
 				font-size: 2rem;
 				display: inline-block;
 			}
-
 		}
 
 		.left {
@@ -151,7 +124,6 @@ html {
 			b {
 				color: white;
 			}
-
 		}
 		.right {
 			text-wrap: balance;
@@ -162,13 +134,12 @@ html {
 			}
 
 			b {
-				&, a {
+				&,
+				a {
 					color: orangered;
 				}
 			}
 		}
-
-
 	}
 
 	@media screen and (max-width: 950px) {
@@ -176,7 +147,8 @@ html {
 			grid-template-columns: 1fr;
 			gap: 1rem;
 
-			.left, .right {
+			.left,
+			.right {
 				text-align: left;
 				font-size: 1rem;
 				b {
@@ -187,7 +159,7 @@ html {
 			.right {
 				text-wrap: unset;
 			}
-		}	
+		}
 	}
 }
 

@@ -3,8 +3,12 @@
 		<div class="citizen-footer__container">
 			<section class="citizen-footer__content">
 				<div class="citizen-footer__siteinfo">
-					<div id="footer-sitetitle" class="mw-wiki-title">Bestiary Builder</div>
-					<p id="footer-desc">Welcome to Bestiary Builder</p>
+					<div id="footer-sitetitle" class="mw-wiki-title">
+						Bestiary Builder
+					</div>
+					<p id="footer-desc">
+						Welcome to Bestiary Builder
+					</p>
 				</div>
 				<nav id="footer-places">
 					<ul>
@@ -30,19 +34,11 @@
 					</ul>
 				</nav>
 			</section>
-			<section class="citizen-footer__bottom"></section>
+			<!-- <section class="citizen-footer__bottom"></section> -->
 		</div>
 	</footer>
 </template>
-<script lang="ts">
-import {defineComponent} from "vue";
 
-export default defineComponent({
-	name: "Footer",
-	data: () => ({}) as {},
-	async mounted() {}
-});
-</script>
 <style scoped lang="less">
 .citizen-footer {
 	padding: 2rem 5vw;
@@ -54,8 +50,6 @@ export default defineComponent({
 
 	&__container {
 		width: 100%;
-		//margin-right: var(--space-md);
-		//margin-left: var(--space-md);
 	}
 
 	&__content,
@@ -172,6 +166,21 @@ export default defineComponent({
 	#footer-sitetitle {
 		font-size: 2rem;
 		font-weight: 700;
+	}
+}
+
+@media (max-width: 1000px) {
+	.citizen-footer__content {
+		justify-content: space-around;
+
+		& > * {
+			width: 100%;
+		}
+	}
+
+	.citizen-footer__siteinfo {
+		text-align: center;
+		max-width: 100%;
 	}
 }
 </style>

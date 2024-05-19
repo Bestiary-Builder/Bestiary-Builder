@@ -1,19 +1,20 @@
-import {isProduction, JWTKey, app} from "../utilities/constants";
-import {log} from "../utilities/logger";
 import fetch from "node-fetch";
 import jwt from "jsonwebtoken";
-import {getUser, getUserFromSecret, updateUser} from "../utilities/database";
-import {NextFunction, Response, Request} from "express";
+import type { NextFunction, Request, Response } from "express";
+import { app, isProduction } from "@/utilities/constants";
+import { log } from "@/utilities/logger";
+import { getUserFromSecret, updateUser } from "@/utilities/database";
 
 app.head("/api/login/:code", async (req, res) => {
 	return res.sendStatus(200);
 });
 app.get("/api/login/:code", async (req, res) => {
 	try {
-		let code = req.params.code;
-		let redirectUrl = (isProduction ? "https" : "http") + "://" + req.get("host") + "/user";
-		if (!isProduction) redirectUrl = redirectUrl.replace("5000", "5173");
-		const tokenResponseData = await fetch("https://discord.com/api/oauth2/token", {
+		const code = req.params.code;
+		let redirectUrl = `${isProduction ? "https" : "http"}://${req.get("host")}/user`;
+		if (!isProduction)
+			redirectUrl = redirectUrl.replace("5000", "5173");
+		const oauthData = (await fetch("https://discord.com/api/oauth2/token", {
 			method: "POST",
 			body: new URLSearchParams({
 				client_id: process.env.clientId ?? "",
@@ -25,59 +26,57 @@ app.get("/api/login/:code", async (req, res) => {
 			}).toString(),
 			headers: {
 				"Content-Type": "application/x-www-form-urlencoded",
-				Accept: "application/json"
+				"Accept": "application/json"
 			}
-		});
-		const oauthData = (await tokenResponseData.json()) as {
+		}).then(res => res.json())) as {
 			token_type: string;
 			access_token: string;
 			error?: string;
 			error_description?: string;
 		};
-		if (!oauthData.error) {
-			const userResult = (await (
-				await fetch("https://discord.com/api/users/@me", {
-					headers: {
-						authorization: `${oauthData?.token_type} ${oauthData?.access_token}`
-					}
-				})
-			).json()) as {
-				id: string;
-				username: string;
-				avatar: string;
-				email: string;
-				verified: boolean;
-				banner_color: string;
-				global_name: string;
-			};
-			if (userResult) {
-				//Update user
-				let secret = await updateUser({
-					_id: userResult.id,
-					username: userResult.username,
-					avatar: userResult.avatar,
-					email: userResult.email,
-					verified: userResult.verified,
-					banner_color: userResult.banner_color,
-					global_name: userResult.global_name
-				});
-				//Create token
-				const token = jwt.sign({id: secret}, JWTKey, {
-					expiresIn: "7d"
-				});
-				res.cookie("userToken", token, {expires: new Date(new Date().getTime() + 60 * 60 * 1000 * 24 * 7), sameSite: "strict", secure: true, httpOnly: true});
-				log.info(`User with the id ${userResult.id} logged in`);
-				return res.json({});
-			} else {
-				return res.status(400).json({error: "No user recieved from discord."});
-			}
-		} else {
-			log.error("Discord login failed: " + oauthData.error_description + " | Code: " + code);
-			return res.status(401).json({error: "Failed to authenticate discord login."});
+		if (oauthData.error) {
+			log.error(`Discord login failed: ${oauthData.error_description} | Code: ${code}`);
+			return res.status(401).json({ error: "Failed to authenticate discord login." });
 		}
-	} catch (err) {
+		const userResult = (await fetch("https://discord.com/api/users/@me", {
+			headers: {
+				authorization: `${oauthData?.token_type} ${oauthData?.access_token}`
+			}
+		}).then(res => res.json())) as {
+			id: string;
+			username: string;
+			avatar: string;
+			email: string;
+			verified: boolean;
+			banner_color: string;
+			global_name: string;
+		};
+		if (userResult) {
+			// Update user
+			const secret = await updateUser({
+				_id: userResult.id,
+				username: userResult.username,
+				avatar: userResult.avatar,
+				email: userResult.email,
+				verified: userResult.verified,
+				banner_color: userResult.banner_color,
+				global_name: userResult.global_name
+			});
+			// Create JWT token
+			const token = jwt.sign({ id: secret }, process.env.JWTKEY ?? "key", {
+				expiresIn: "7d"
+			});
+			res.cookie("userToken", token, { expires: new Date(new Date().getTime() + 60 * 60 * 1000 * 24 * 7), sameSite: "strict", secure: true, httpOnly: true });
+			log.info(`User with the id ${userResult.id} logged in`);
+			return res.json({});
+		}
+		else {
+			return res.status(400).json({ error: "No user recieved from discord." });
+		}
+	}
+	catch (err) {
 		log.log("critical", err);
-		return res.status(500).json({error: "Unknown server error occured, please try again"});
+		return res.status(500).json({ error: "Unknown server error occured, please try again" });
 	}
 });
 app.get("/api/logout", async (req, res) => {
@@ -86,42 +85,42 @@ app.get("/api/logout", async (req, res) => {
 });
 export const requireUser = async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		let token = req.cookies.userToken;
-		if (!token) {
-			return res.status(401).json({error: "Not logged in."});
-		}
+		const token = req.cookies.userToken;
+		if (!token)
+			return res.status(401).json({ error: "Not logged in." });
 		try {
-			const decoded = jwt.verify(token, JWTKey) as any;
-			let user = await getUserFromSecret(decoded.id);
-			if (!user) {
-				return res.status(401).send({error: "User token doesn't correspond to any user."});
-			}
-			req.body.id = user;
-		} catch (err) {
-			return res.status(401).send({error: "Invalid user token."});
+			const decoded = jwt.verify(token, process.env.JWTKEY ?? "key") as { id: string };
+			const user = await getUserFromSecret(decoded.id);
+			if (!user)
+				return res.status(401).send({ error: "User token doesn't correspond to any user." });
+			req.body.user = user;
+		}
+		catch (err) {
+			return res.status(401).send({ error: "Invalid user token." });
 		}
 		return next();
-	} catch (err) {
+	}
+	catch (err) {
 		log.log("critical", err);
-		return res.status(500).json({error: "Unknown server error occured, please try again."});
+		return res.status(500).json({ error: "Unknown server error occured, please try again." });
 	}
 };
 export const possibleUser = async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		let token = req.cookies.userToken;
-		req.body.id = null;
+		const token = req.cookies.userToken;
+		req.body.user = null;
 		if (token) {
 			try {
-				const decoded = jwt.verify(token, JWTKey) as any;
-				let user = await getUserFromSecret(decoded.id);
-				if (user) {
-					req.body.id = user;
-				}
-			} catch (err) {}
+				const decoded = jwt.verify(token, process.env.JWTKEY ?? "key") as { id: string };
+				const user = await getUserFromSecret(decoded.id);
+				req.body.user = user;
+			}
+			catch (err) {}
 		}
 		return next();
-	} catch (err) {
+	}
+	catch (err) {
 		log.log("critical", err);
-		return res.status(500).json({error: "Unknown server error occured, please try again."});
+		return res.status(500).json({ error: "Unknown server error occured, please try again." });
 	}
 };

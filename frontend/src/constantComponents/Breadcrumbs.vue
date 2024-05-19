@@ -1,78 +1,62 @@
-<template>
-	<nav class="breadcrumbs__container" :class="{'less-wide': isLessWide}" aria-label="Header" id="breadcrumb" ref="breadcrumbs">
-		<ol class="breadcrumbs__links" aria-label="Breadcrumbs">
-			<li v-for="(route, index) in routes" :key="index">
-				<RouterLink v-if="!route.isCurrent" :to="route.path"> {{ route.text }} </RouterLink>
-				<h1 v-else class="current-page" aria-current="page">{{ route.text }}</h1>
-				<span v-if="index + 1 != routes.length" class="seperator"> ></span>
-			</li>
-		</ol>
+<script setup lang="ts">
+import { ref, watchEffect } from "vue";
+import { isClient } from "@vueuse/shared";
+import { useElementSize, useShare } from "@vueuse/core";
+import { toast } from "@/utils/app/toast";
 
-		<div class="right-buttons">
-			<slot></slot>
-			<button @click="startShare" v-tooltip="'Share this page!'" aria-label="Share this page">
-				<font-awesome-icon :icon="['fas', 'share-nodes']" />
-			</button>
-		</div>
-	</nav>
-</template>
-
-<script lang="ts">
-import {ref, defineComponent} from "vue";
-import {isClient} from "@vueuse/shared";
-import {useShare, useElementSize} from "@vueuse/core";
-import {toast} from "@/main";
+withDefaults(defineProps<{ routes: links; isLessWide?: boolean }>(), { isLessWide: false });
 
 type links = {
 	path: string;
 	text: string;
 	isCurrent: boolean;
 }[];
-export default defineComponent({
-	setup() {
-		const options = ref({
-			title: "Bestiary Builder",
-			text: "Check my creation out on Bestiary Builder!",
-			url: isClient ? location.href : ""
-		});
 
-		const {share, isSupported} = useShare(options);
+const options = ref({
+	title: "Bestiary Builder",
+	text: "Check my creation out on Bestiary Builder!",
+	url: isClient ? location.href : ""
+});
 
-		async function startShare() {
-			if (isSupported && isSupported.value) return share().catch((err) => err);
-			// webshare API is not supported
-			navigator.clipboard.writeText(options.value.url);
-			toast.success("Copied link to clipboard!");
-		}
+const { share, isSupported } = useShare(options);
 
-		const breadcrumbs = ref(null)
-		const { width, height } = useElementSize(breadcrumbs)
+async function startShare() {
+	if (isSupported && isSupported.value)
+		return share().catch(err => err);
+	// webshare API is not supported
+	await navigator.clipboard.writeText(options.value.url);
+	toast.success("Copied link to clipboard!");
+}
 
-		return {
-			isSupported,
-			startShare,
-			breadcrumbs,
-			height
-		};
-	},
-	props: {
-		routes: {
-			type: Array as () => links,
-			required: true
-		},
-		isLessWide: {
-			type: Boolean,
-			default: false,
-			required: false
-		}
-	},
-	watch: {
-		height() {
-			document.body.style.setProperty("--breadcrumbs-height", `${this.height}px`);
-		}
-	}
+const breadcrumbs = ref(null);
+const { height } = useElementSize(breadcrumbs);
+watchEffect(() => {
+	document.body.style.setProperty("--breadcrumbs-height", `${height.value}px`);
 });
 </script>
+
+<template>
+	<nav id="breadcrumb" ref="breadcrumbs" class="breadcrumbs__container" :class="{ 'less-wide': isLessWide }" aria-label="Header">
+		<ol class="breadcrumbs__links" aria-label="Breadcrumbs">
+			<li v-for="(route, index) in routes" :key="index">
+				<RouterLink v-if="!route.isCurrent" :to="route.path">
+					{{ route.text }}
+				</RouterLink>
+				<h1 v-else class="current-page" aria-current="page">
+					{{ route.text }}
+				</h1>
+				<span v-if="index + 1 !== routes.length" class="seperator"> ></span>
+			</li>
+		</ol>
+
+		<div class="right-buttons">
+			<slot />
+			<button v-tooltip="'Share this page!'" aria-label="Share this page" @click="startShare">
+				<font-awesome-icon :icon="['fas', 'share-nodes']" />
+			</button>
+		</div>
+	</nav>
+</template>
 
 <style lang="less">
 .breadcrumbs__container {

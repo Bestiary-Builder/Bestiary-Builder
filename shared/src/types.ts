@@ -1,7 +1,12 @@
-export {ObjectId as Id} from "bson";
-import {ObjectId as Id} from "bson";
+import { ObjectId as Id } from "bson";
+import type { SpellSlotEntity, Statblock } from "./build-types";
 
-//Database types
+export { ObjectId as Id } from "bson";
+
+// Built types
+export * from "./build-types";
+
+// Database types
 export class User {
 	constructor(
 		public username: string,
@@ -15,7 +20,7 @@ export class User {
 		public supporter: 0 | 1 | 2,
 		public joinedAt: number,
 		public _id: string,
-		public secret?: string
+		public secret?: string,
 	) {}
 }
 export class Bestiary {
@@ -30,7 +35,7 @@ export class Bestiary {
 		public viewCount: number,
 		public bookmarks: number,
 		public lastUpdated: number,
-		public _id?: Id
+		public _id?: Id,
 	) {}
 }
 export class Creature {
@@ -38,24 +43,32 @@ export class Creature {
 }
 
 export class Automation {
-	constructor(public name: string, public description: string, public owner: string, public lastUpdated: number, public automation: null | object | object[], public _id?: Id) {}
+	constructor(public name: string, public description: string, public owner: string, public lastUpdated: number, public automation: null | Record<string, unknown> | Record<string, unknown>[], public _id?: Id) {}
 }
 
-export type SearchOptions = {
-	search: string;
-	page: number;
-	mode: "popular" | "recent";
-	tags: string[];
-};
+export class GlobalStats {
+	constructor(public bestiaries: number, public creatures: number, public users: number) {}
+}
+
+export interface AutomationDocumentationEntity {
+	desc: string;
+	url: string;
+	variables: { [key: string]: { type: string; desc: string } };
+	opt: { [key: string]: string };
+	ts: string;
+}
+export interface AutomationDocumentation { [key: string]: AutomationDocumentationEntity }
 
 export function stringToId(id: string): Id | null {
-	if (!id) return null;
-	if (id.length != 24) return null;
+	if (!id)
+		return null;
+	if (id.length !== 24)
+		return null;
 	return new Id(id);
 }
 
-//Frontend types
-export const defaultStatblock = {
+// Frontend types
+export const defaultStatblock: Statblock = {
 	description: {
 		name: "New Creature",
 		isProperNoun: false,
@@ -65,7 +78,7 @@ export const defaultStatblock = {
 		environment: "",
 		alignment: "Unaligned",
 		cr: 0,
-		xp: 0
+		xp: 0,
 	},
 	core: {
 		proficiencyBonus: 2,
@@ -76,11 +89,11 @@ export const defaultStatblock = {
 				name: "Walk",
 				value: 30,
 				unit: "ft",
-				comment: ""
-			}
+				comment: "",
+			},
 		],
 		senses: [],
-		languages: []
+		languages: [],
 	},
 	abilities: {
 		stats: {
@@ -89,32 +102,32 @@ export const defaultStatblock = {
 			con: 10,
 			wis: 10,
 			int: 10,
-			cha: 10
+			cha: 10,
 		},
 		saves: {
-			str: {isProficient: false, override: null},
-			dex: {isProficient: false, override: null},
-			con: {isProficient: false, override: null},
-			wis: {isProficient: false, override: null},
-			int: {isProficient: false, override: null},
-			cha: {isProficient: false, override: null}
+			str: { isProficient: false, override: null },
+			dex: { isProficient: false, override: null },
+			con: { isProficient: false, override: null },
+			wis: { isProficient: false, override: null },
+			int: { isProficient: false, override: null },
+			cha: { isProficient: false, override: null },
 		},
-		skills: []
+		skills: [],
 	},
 	defenses: {
 		hp: {
 			numOfHitDie: 1,
 			sizeOfHitDie: 6,
-			override: null
+			override: null,
 		},
 		ac: {
 			ac: 10,
-			acSource: "natural armor"
+			acSource: "natural armor",
 		},
 		vulnerabilities: [],
 		resistances: [],
 		immunities: [],
-		conditionImmunities: []
+		conditionImmunities: [],
 	},
 	features: {
 		features: [],
@@ -124,7 +137,7 @@ export const defaultStatblock = {
 		legendary: [],
 		lair: [],
 		mythic: [],
-		regional: []
+		regional: [],
 	},
 	spellcasting: {
 		innateSpells: {
@@ -132,14 +145,14 @@ export const defaultStatblock = {
 				0: [],
 				1: [],
 				2: [],
-				3: []
+				3: [],
 			},
 			spellDcOverride: null,
 			spellBonusOverride: null,
 			spellCastingAbility: null,
 			noComponentsOfType: ["Material", "Verbal", "Somatic"],
 			isPsionics: false,
-			displayAsAction: false
+			displayAsAction: false,
 		},
 		casterSpells: {
 			casterLevel: null,
@@ -150,8 +163,8 @@ export const defaultStatblock = {
 			spellSlotList: {},
 			spellDcOverride: null,
 			spellBonusOverride: null,
-			displayAsAction: false
-		}
+			displayAsAction: false,
+		},
 	},
 	misc: {
 		legActionsPerRound: 3,
@@ -165,276 +178,132 @@ export const defaultStatblock = {
 			legendary: "The creature can take $NUM$ legendary actions, choosing from the options below. Only one legendary action can be used at a time and only at the end of another creature's turn. The creature regains spent legendary actions at the start of its turn.",
 			lair: "On initiative count 20 (losing initiative ties), the creature can take one of the following lair actions; it can't take the same lair action two rounds in a row",
 			mythic: "If the creatures' Mythic trait is active, it can use the options below as legendary actions.",
-			regional: "The region containing the creatures lair can be transformed by its presence, creating one or more of the following effects:"
-		}
-	}
-} as Statblock;
+			regional: "The region containing the creatures lair can be transformed by its presence, creating one or more of the following effects:",
+		},
+	},
+};
 export const XPbyCR = [
 	// skips 1/8 1/4 1/2
-	0, 200, 450, 700, 1100, 1800, 2300, 2900, 3900, 5000, 5900, 7200, 8400, 10000, 11500, 13000, 15000, 18000, 20000, 22000, 25000, 33000, 41000, 50000, 62000, 75000, 90000, 105000, 120000, 135000, 255000
+	0,
+	200,
+	450,
+	700,
+	1100,
+	1800,
+	2300,
+	2900,
+	3900,
+	5000,
+	5900,
+	7200,
+	8400,
+	10000,
+	11500,
+	13000,
+	15000,
+	18000,
+	20000,
+	22000,
+	25000,
+	33000,
+	41000,
+	50000,
+	62000,
+	75000,
+	90000,
+	105000,
+	120000,
+	135000,
+	255000,
 ];
 
 export function getXPbyCR(cr: number) {
-	if (cr == 0.125) return 25;
-	else if (cr == 0.25) return 50;
-	else if (cr == 0.5) return 100;
+	if (cr === 0.125)
+		return 25;
+	else if (cr === 0.25)
+		return 50;
+	else if (cr === 0.5)
+		return 100;
 	else return XPbyCR[cr] ?? 0;
 }
 
 export function getSpellSlots(sClass: string | null, level: number | null): SpellSlotEntity | undefined {
-	if (!sClass || !level) return {};
-	if (sClass == "Warlock") {
+	if (!sClass || !level)
+		return {};
+	if (sClass === "Warlock") {
 		return {
-			1: {1: 1},
-			2: {1: 2},
-			3: {2: 2},
-			4: {2: 2},
-			5: {3: 2},
-			6: {3: 2},
-			7: {4: 2},
-			8: {4: 2},
-			9: {5: 2},
-			10: {5: 2},
-			11: {5: 3},
-			12: {5: 3},
-			13: {5: 3},
-			14: {5: 3},
-			15: {5: 3},
-			16: {5: 3},
-			17: {5: 4},
-			18: {5: 4},
-			19: {5: 4},
-			20: {5: 4}
-		}[level];
-	} else if (["Ranger", "Paladin", "Artificer"].includes(sClass)) {
-		if (level == 1 && sClass == "Artificer") return {1: 2};
-		return {
-			1: {},
-			2: {1: 2},
-			3: {1: 3},
-			4: {1: 3},
-			5: {1: 4, 2: 2},
-			6: {1: 4, 2: 2},
-			7: {1: 4, 2: 3},
-			8: {1: 4, 2: 3},
-			9: {1: 4, 2: 3, 3: 2},
-			10: {1: 4, 2: 3, 3: 2},
-			11: {1: 4, 2: 3, 3: 3},
-			12: {1: 4, 2: 3, 3: 3},
-			13: {1: 4, 2: 3, 3: 3, 4: 1},
-			14: {1: 4, 2: 3, 3: 3, 4: 1},
-			15: {1: 4, 2: 3, 3: 3, 4: 2},
-			16: {1: 4, 2: 3, 3: 3, 4: 2},
-			17: {1: 4, 2: 3, 3: 3, 4: 3, 5: 1},
-			18: {1: 4, 2: 3, 3: 3, 4: 3, 5: 1},
-			19: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2},
-			20: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2}
-		}[level];
-	} else {
-		return {
-			1: {1: 2},
-			2: {1: 3},
-			3: {1: 4, 2: 2},
-			4: {1: 4, 2: 3},
-			5: {1: 4, 2: 3, 3: 2},
-			6: {1: 4, 2: 3, 3: 3},
-			7: {1: 4, 2: 3, 3: 3, 4: 1},
-			8: {1: 4, 2: 3, 3: 3, 4: 2},
-			9: {1: 4, 2: 3, 3: 3, 4: 3, 5: 1},
-			10: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2},
-			11: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2},
-			12: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1},
-			13: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1},
-			14: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1},
-			15: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1, 8: 1},
-			16: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1, 8: 1},
-			17: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1, 8: 1, 9: 1},
-			18: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1, 8: 1, 9: 1},
-			19: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 2, 7: 1, 8: 1, 9: 1},
-			20: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 2, 7: 2, 8: 1, 9: 1}
+			1: { 1: 1 },
+			2: { 1: 2 },
+			3: { 2: 2 },
+			4: { 2: 2 },
+			5: { 3: 2 },
+			6: { 3: 2 },
+			7: { 4: 2 },
+			8: { 4: 2 },
+			9: { 5: 2 },
+			10: { 5: 2 },
+			11: { 5: 3 },
+			12: { 5: 3 },
+			13: { 5: 3 },
+			14: { 5: 3 },
+			15: { 5: 3 },
+			16: { 5: 3 },
+			17: { 5: 4 },
+			18: { 5: 4 },
+			19: { 5: 4 },
+			20: { 5: 4 },
 		}[level];
 	}
-}
-
-export type Stat = "str" | "dex" | "con" | "int" | "cha" | "wis";
-
-export interface Statblock {
-	description: Description;
-	core: Core;
-	abilities: Abilities;
-	defenses: Defenses;
-	features: Features;
-	spellcasting: SpellCasting;
-	misc: Misc;
-}
-
-export interface Misc {
-	legActionsPerRound: number;
-	telepathy: number;
-	passivePerceptionOverride: number | null;
-	featureHeaderTexts: FeatureHeaderTexts;
-}
-
-export interface FeatureHeaderTexts {
-	features: string;
-	actions: string;
-	bonus: string;
-	reactions: string;
-	legendary: string;
-	lair: string;
-	mythic: string;
-	regional: string;
-}
-export interface Description {
-	name: string;
-	isProperNoun: boolean;
-	description: string;
-	image: string;
-	faction: string;
-	environment: string;
-	alignment: string;
-	cr: number;
-	xp: number;
-}
-export interface Core {
-	proficiencyBonus: number;
-	race: string;
-	size: string;
-	speed: SpeedEntity[];
-	senses: SenseEntity[];
-	languages: string[] | null;
-}
-export interface Speed {
-	walk: number;
-	fly: number;
-	isHover: boolean;
-	burrow: number;
-	swim: number;
-	climb: number;
-}
-
-export type Unit = "ft" | "m" | "km" | "mi" | "none";
-
-export interface SpeedEntity {
-	name: string;
-	value: number;
-	unit: Unit;
-	comment: string;
-}
-
-export interface SenseEntity {
-	name: string;
-	value: number;
-	unit: Unit;
-	comment: string;
-}
-
-export interface Abilities {
-	stats: Stats;
-	saves: Saves;
-	skills: SkillsEntity[];
-}
-export type Stats = {
-	str: number;
-	dex: number;
-	con: number;
-	int: number;
-	cha: number;
-	wis: number;
-};
-
-export type Saves = {
-	str: SaveEntity;
-	dex: SaveEntity;
-	con: SaveEntity;
-	int: SaveEntity;
-	cha: SaveEntity;
-	wis: SaveEntity;
-};
-export interface SaveEntity {
-	isProficient: boolean;
-	override: number | null;
-}
-
-export interface SkillsEntity {
-	skillName: string;
-	isHalfProficient: boolean;
-	isProficient: boolean;
-	isExpertise: boolean;
-	override: number | null;
-}
-export interface Defenses {
-	hp: Hp;
-	ac: Ac;
-	vulnerabilities: string[];
-	resistances: string[];
-	immunities: string[];
-	conditionImmunities: string[];
-}
-export interface Hp {
-	numOfHitDie: number;
-	sizeOfHitDie: number;
-	override: number | null;
-}
-export interface Ac {
-	ac: number;
-	acSource: string;
-}
-export type Features = {
-	features: FeatureEntity[];
-	actions: FeatureEntity[];
-	bonus: FeatureEntity[];
-	reactions: FeatureEntity[];
-	legendary: FeatureEntity[];
-	mythic: FeatureEntity[];
-	lair: FeatureEntity[];
-	regional: FeatureEntity[];
-};
-
-export interface FeatureEntity {
-	name: string;
-	description: string;
-	automation: null | object | object[];
-}
-
-export interface SpellCasting {
-	innateSpells: InnateSpells;
-	casterSpells: CasterSpells;
-}
-
-export interface InnateSpells {
-	spellList: InnateSpellsList;
-	spellDcOverride: null | number;
-	spellBonusOverride: null | number;
-	spellCastingAbility: Stat | null;
-	noComponentsOfType: string[];
-	isPsionics: boolean;
-	displayAsAction: boolean;
-}
-
-export interface CasterSpells {
-	casterLevel: number | null;
-	castingClass: "Wizard" | "Druid" | "Cleric" | "Bard" | "Sorcerer" | "Paladin" | "Ranger" | "Artificer" | "Warlock" | null;
-	spellList: string[][];
-	spellSlotList: SpellSlotEntity | undefined;
-	spellDcOverride: null | number;
-	spellBonusOverride: null | number;
-	spellCastingAbility: Stat | null;
-	spellCastingAbilityOverride: Stat | null;
-	displayAsAction: boolean;
-}
-
-export interface InnateSpellsList {
-	[key: number]: InnateSpellsEntity[];
-}
-
-export interface InnateSpellsEntity {
-	spell: string;
-	comment: string;
-}
-
-export interface SpellSlotEntity {
-	[index: number]: number;
+	else if (["Ranger", "Paladin", "Artificer"].includes(sClass)) {
+		if (level === 1 && sClass === "Artificer")
+			return { 1: 2 };
+		return {
+			1: {},
+			2: { 1: 2 },
+			3: { 1: 3 },
+			4: { 1: 3 },
+			5: { 1: 4, 2: 2 },
+			6: { 1: 4, 2: 2 },
+			7: { 1: 4, 2: 3 },
+			8: { 1: 4, 2: 3 },
+			9: { 1: 4, 2: 3, 3: 2 },
+			10: { 1: 4, 2: 3, 3: 2 },
+			11: { 1: 4, 2: 3, 3: 3 },
+			12: { 1: 4, 2: 3, 3: 3 },
+			13: { 1: 4, 2: 3, 3: 3, 4: 1 },
+			14: { 1: 4, 2: 3, 3: 3, 4: 1 },
+			15: { 1: 4, 2: 3, 3: 3, 4: 2 },
+			16: { 1: 4, 2: 3, 3: 3, 4: 2 },
+			17: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 1 },
+			18: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 1 },
+			19: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2 },
+			20: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2 },
+		}[level];
+	}
+	else {
+		return {
+			1: { 1: 2 },
+			2: { 1: 3 },
+			3: { 1: 4, 2: 2 },
+			4: { 1: 4, 2: 3 },
+			5: { 1: 4, 2: 3, 3: 2 },
+			6: { 1: 4, 2: 3, 3: 3 },
+			7: { 1: 4, 2: 3, 3: 3, 4: 1 },
+			8: { 1: 4, 2: 3, 3: 3, 4: 2 },
+			9: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 1 },
+			10: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2 },
+			11: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2 },
+			12: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1 },
+			13: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1 },
+			14: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1 },
+			15: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1, 8: 1 },
+			16: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1, 8: 1 },
+			17: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1, 8: 1, 9: 1 },
+			18: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1, 8: 1, 9: 1 },
+			19: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 2, 7: 1, 8: 1, 9: 1 },
+			20: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 2, 7: 2, 8: 1, 9: 1 },
+		}[level];
+	}
 }
 
 export const spellList = {
@@ -484,7 +353,7 @@ export const spellList = {
 		"Toll the Dead",
 		"True Strike",
 		"Vicious Mockery",
-		"Word of Radiance"
+		"Word of Radiance",
 	],
 	1: [
 		"Absorb Elements",
@@ -567,7 +436,7 @@ export const spellList = {
 		"Unseen Servant",
 		"Witch Bolt",
 		"Wrathful Smite",
-		"Zephyr Strike"
+		"Zephyr Strike",
 	],
 	2: [
 		"Acid Arrow",
@@ -659,7 +528,7 @@ export const spellList = {
 		"Web",
 		"Wither and Bloom",
 		"Wristpocket",
-		"Zone of Truth"
+		"Zone of Truth",
 	],
 	3: [
 		"Animate Dead",
@@ -737,7 +606,7 @@ export const spellList = {
 		"Wall of Water",
 		"Water Breathing",
 		"Water Walk",
-		"Wind Wall"
+		"Wind Wall",
 	],
 	4: [
 		"Arcane Eye",
@@ -797,7 +666,7 @@ export const spellList = {
 		"Summon Greater Demon",
 		"Vitriolic Sphere",
 		"Wall of Fire",
-		"Watery Sphere"
+		"Watery Sphere",
 	],
 	5: [
 		"Animate Objects",
@@ -864,7 +733,7 @@ export const spellList = {
 		"Wall of Force",
 		"Wall of Light",
 		"Wall of Stone",
-		"Wrath of Nature"
+		"Wrath of Nature",
 	],
 	6: [
 		"Arcane Gate",
@@ -916,7 +785,7 @@ export const spellList = {
 		"Wall of Ice",
 		"Wall of Thorns",
 		"Wind Walk",
-		"Word of Recall"
+		"Word of Recall",
 	],
 	7: [
 		"Conjure Celestial",
@@ -947,7 +816,7 @@ export const spellList = {
 		"Teleport",
 		"Temple of the Gods",
 		"Tether Essence",
-		"Whirlwind"
+		"Whirlwind",
 	],
 	8: [
 		"Abi-Dalzim's Horrid Wilting",
@@ -973,7 +842,7 @@ export const spellList = {
 		"Reality Break",
 		"Sunburst",
 		"Telepathy",
-		"Tsunami"
+		"Tsunami",
 	],
 	9: [
 		"Astral Projection",
@@ -997,14 +866,12 @@ export const spellList = {
 		"True Polymorph",
 		"True Resurrection",
 		"Weird",
-		"Wish"
-	]
+		"Wish",
+	],
 };
 
-export let spellListFlattened = [];
-for (let l in spellList) {
-	// @ts-ignore
-	spellListFlattened = spellListFlattened.concat(spellList[l]);
-}
-
-spellListFlattened.sort();
+let spellListFlattenedTemp: string[] = [];
+for (const list of Object.values(spellList))
+	spellListFlattenedTemp = spellListFlattenedTemp.concat(list);
+spellListFlattenedTemp.sort();
+export const spellListFlattened = [...spellListFlattenedTemp];

@@ -1,40 +1,17 @@
+<script setup lang="ts">
+defineOptions({
+	inheritAttrs: false
+});
+
+withDefaults(defineProps<{ title: string; takesCustomTextInput?: boolean }>(), { takesCustomTextInput: false, number: undefined });
+</script>
+
 <template>
 	<div class="container">
-		<label class="editor-field__title" :for="elId">{{ title }}<span v-if="takesCustomTextInput" v-tooltip="'Supports custom text input'">*</span></label>
-		<slot></slot>
+		<label class="editor-field__title" v-bind="$attrs">{{ title }}<span v-if="takesCustomTextInput" v-tooltip="'Supports custom text input'">*</span></label>
+		<slot />
 	</div>
 </template>
-
-<script lang="ts">
-import {defineComponent} from "vue";
-
-export default defineComponent({
-	props: {
-		title: {
-			type: String,
-			required: true
-		},
-		id: {
-			type: Number,
-			required: false
-		},
-		takesCustomTextInput: {
-			type: Boolean,
-			required: false,
-			default: false
-		}
-	},
-	data() {
-		return {
-			elId: ""
-		};
-	},
-	mounted() {
-		if (this.id) this.elId = this.title.toLowerCase().replaceAll(" ", "") + this.id;
-		else this.elId = this.title.toLowerCase().replaceAll(" ", "");
-	}
-});
-</script>
 
 <style scoped lang="less">
 .container {

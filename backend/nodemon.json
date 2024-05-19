@@ -1,5 +1,5 @@
 {
-	"watch": [""],
+	"watch": [".", "../shared"],
 	"ext": ".ts,.js",
 	"ignore": [],
 	"exec": "npx tsx ./server.ts"

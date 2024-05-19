@@ -1,29 +1,16 @@
-<script lang="ts">
-import {RouterView} from "vue-router";
+<script setup lang="ts">
+import { RouterView } from "vue-router";
 import Footer from "@/constantComponents/Footer.vue";
 import NavHeader from "@/constantComponents/NavHeader.vue";
-import {defineComponent} from "vue";
-export default defineComponent({
-	name: "App",
-	components: {
-		NavHeader,
-		Footer,
-		RouterView
-	}
-});
 </script>
 
 <template>
-	<div id="modal"></div>
-	<header>
-		<NavHeader />
-	</header>
+	<div id="modal" />
+	<NavHeader />
 	<main>
 		<RouterView />
 	</main>
 	<footer>
-		<Footer></Footer>
+		<Footer />
 	</footer>
 </template>
-
-<style scoped></style>

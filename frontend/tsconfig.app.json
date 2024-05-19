@@ -1,22 +1,22 @@
 {
 	"extends": "@vue/tsconfig/tsconfig.dom.json",
-	"include": ["env.d.ts", "src/**/*", "src/**/*.vue", "src/**/*.ts", "src/**/*.tsx", "src/**/*.js", "src/**/*.json"],
-	"exclude": ["src/**/__tests__/*"],
 	"compilerOptions": {
 		"composite": true,
-		"target": "es2021",
-		"module": "esnext",
-		"allowSyntheticDefaultImports": true,
+		"target": "esnext",
+		"lib": ["dom", "es2022"],
 		"baseUrl": ".",
-		"noEmit": false,
+		"rootDir": "..",
+		"module": "esnext",
 		"paths": {
-			"@/*": ["./src/*"]
+			"@/*": ["./src/*"],
+			"~/*": ["../*"]
 		},
-		"lib": ["dom", "esnext"]
+		"types": [
+			"markdown-it"
+		],
+		"noEmit": false,
+		"allowSyntheticDefaultImports": true
 	},
-	"references": [
-		{
-			"path": "../shared"
-		}
-	]
+	"include": ["env.d.ts", "src/**/*", "src/**/*.vue", "src/**/*.ts", "src/**/*.tsx", "src/**/*.js", "src/**/*.json", "../shared/**/*", "../shared/test.ts"],
+	"exclude": ["src/**/__tests__/*"]
 }

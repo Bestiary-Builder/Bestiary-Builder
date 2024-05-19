@@ -1,0 +1,144 @@
+{
+	"target": {
+		"target": ["all", "each", "int", "self", "parent", "children"],
+		"effects": "Effects[]",
+		"sortBy?": ["hp_asc", "hp_desc"],
+		"self_target?": "boolean"
+	},
+	"attack": {
+		"hit": "Effects[]",
+		"miss": "Effects[]",
+		"attackBonus?": "IntExpression",
+		"adv?": "IntExpression"
+	},
+	"save": {
+		"stat": ["str", "dex", "con", "int", "wis", "cha"],
+		"fail": "Effects[]",
+		"success": "Effects[]",
+		"dc?": "IntExpression",
+		"adv?": [-1, 0, 1]
+	},
+	"damage": {
+		"damage": "AnnotatedString",
+		"overheal?": "boolean",
+		"higher?": { "int": "string" },
+		"cantripScale?": "boolean",
+		"fixedValue?": "boolean"
+	},
+	"temphp": {
+		"amount": "AnnotatedString",
+		"higher?": { "int": "string" },
+		"cantripScale?": "boolean"
+	},
+	"ieffect2": {
+		"name": "AnnotatedString",
+		"duration?": ["int", "IntExpression"],
+		"effects?": "PassiveEffects",
+		"attacks?": "AttackInteraction[]",
+		"buttons?": "ButtonInteraction[]",
+		"end?": "boolean",
+		"conc?": "boolean",
+		"desc?": "AnnotatedString",
+		"stacking?": "boolean",
+		"save_as?": "string",
+		"parent?": "string",
+		"target_self?": "boolean",
+		"tick_on_caster?": "boolean"
+	},
+	"PassiveEffects": {
+		"attack_advantage?": "IntExpression",
+		"to_hit_bonus?": "*optional* - A bonus that this effect grants to all of the combatant’s to-hit rolls.",
+		"damage_bonus?": "*optional* - A bonus that this effect grants to all of the combatant’s damage rolls.",
+		"magical_damage?": "IntExpression",
+		"silvered_damage?": "IntExpression",
+		"resistances?": "string[]",
+		"immunities?": "string[]",
+		"vulnerabilities?": "string[]",
+		"ignored_resistances?": "string[]",
+		"ac_value?": "IntExpression",
+		"ac_bonus?": "IntExpression",
+		"max_hp_value?": "IntExpression",
+		"max_hp_bonus?": "IntExpression",
+		"save_bonus?": "AnnotatedString",
+		"save_adv?": ["all", "strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"],
+		"save_dis?": ["all", "strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"],
+		"check_bonus?": "AnnotatedString",
+		"check_adv?": "AnnotatedString[]",
+		"check_dis?": "AnnotatedString[]",
+		"dc_bonus?": "*IntExpression"
+	},
+	"AttackInteraction": {
+		"attack": "Attack",
+		"defaultDC?": "IntExpression",
+		"defaultAttackBonus?": "IntExpression",
+		"defaultCastingMod?": "IntExpression"
+	},
+	"ButtonInteraction": {
+		"automation": "Effect[]",
+		"label": "AnnotatedString",
+		"verb?": "AnnotatedString",
+		"style?": [1, 2, 3, 4],
+		"defaultDC?": "IntExpression",
+		"defaultAttackBonus?": "IntExpression",
+		"defaultCastingMod?": "IntExpression"
+	},
+	"remove_ieffect": {
+		"removeParent?": [null, "always", "if_no_children"]
+	},
+	"roll": {
+		"dice": "AnnotatedString",
+		"name": "string",
+		"higher?": { "int": "string" },
+		"cantripScale?": "boolean",
+		"hidden?": "boolean",
+		"displayName?": "string",
+		"fixedValue?": "boolean"
+	},
+	"text": {
+		"text": ["AnnotatedString", "AbilityReference"],
+		"title": "string"
+	},
+	"variable": {
+		"name": "string",
+		"value": "IntExpression",
+		"higher?": { "int": "string" },
+		"onError?": "IntExpression"
+	},
+	"condition": {
+		"condition": "IntExpression",
+		"onTrue": "Effect[]",
+		"onFalse": "Effect[]",
+		"errorBehaviour?": ["true", "false", "both", "neither", "raise"]
+	},
+	"counter": {
+		"counter": ["string", "SpellSlotReference", "AbilityReference"],
+		"amount": "IntExpression",
+		"allowOverflow?": "boolean",
+		"errorBehaviour?": ["warn", "raise", "ignore"],
+		"fixedValue?": "boolean"
+	},
+	"SpellSlotReference": {
+		"slot": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+	},
+	"AbilityReference": {
+		"id": "number",
+		"typeId": "typeId"
+	},
+	"spell": {
+		"id": "int",
+		"level?": "int",
+		"dc?": "IntExpression",
+		"attackBonus?": "IntExpression",
+		"castingMod?": "IntExpression",
+		"parent?": "string"
+	},
+	"check": {
+		"ability": ["string"],
+		"contestAbility?": ["string"],
+		"dc?": "IntExpression",
+		"success?": "Effect[]",
+		"fail?": "Effect[]",
+		"contestTie?": ["fail", "success", "neither"],
+		"adv?": [-1, 0, 1]
+	}
+}

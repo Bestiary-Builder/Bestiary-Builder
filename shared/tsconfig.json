@@ -1,11 +1,15 @@
 {
 	"compilerOptions": {
-		"declaration": true,
-		"declarationMap": true,
+		"target": "esnext",
+		"lib": ["es2022"],
 		"rootDir": ".",
-		"outDir": "../build/shared",
-		"composite": true,
-		"lib": ["esnext"]
-	},
-	"references": []
+		"module": "commonjs",
+		"resolveJsonModule": true,
+		"allowJs": true,
+		"strict": true,
+		"noImplicitAny": true,
+		"sourceMap": false,
+		"esModuleInterop": true,
+		"skipLibCheck": true
+	}
 }
