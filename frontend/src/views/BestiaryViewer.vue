@@ -243,7 +243,7 @@ export default defineComponent({
 			}>(`/api/critterdb/${link}/${isPublic}`);
 			if (success) {
 				if (data.failedCreatures.length > 0)
-					toast.error(`Failed to parse ${data.failedCreatures.length} creatures.\nFailed creatures: "${data.failedCreatures.join(",")}"`);
+					toast.error(`Failed to parse ${data.failedCreatures.length} creatures.\nFailed creatures: "${data.failedCreatures.join(",")}"`, { duration: 0 });
 			}
 			else {
 				toast.error(error);
@@ -255,7 +255,7 @@ export default defineComponent({
 			if (!cSuccess)
 				toast.error(cError);
 			else if (creatureData.error)
-				toast.error(creatureData.error);
+				toast.error(creatureData.error, { duration: 0 });
 			await this.getBestiary();
 			loader.hide();
 			toast.success("Importing has finished!");
