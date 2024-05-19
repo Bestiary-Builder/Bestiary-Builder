@@ -1,3 +1,47 @@
+## 2.0.0
+_May 19th, 2024_
+
+This update brings immense changes to the code that powers Bestiary Builder behind the scenes. Immense effort has been made to make the code able to be maintained long term, and every file and page has received changes.
+
+Few of these changes will affect you (beyond increased performance and the accidental bug fix), but we are sure these changes will make it much easier to work on new features in the future.
+
+If you appreciate our effort made, consider supporting us on [Patreon](https://www.patreon.com/BestiaryBuilder). These changes have taken two weeks of continued work, so all support is loved!
+
+Here follows a list of the technical changes made:
+
+- Added Initiative as a valid skill to set in the statblock editor.
+- All explicit event listeners are destroyed upon the component being unmounted.
+- Improved types, removing most mentions of the `any` or `unknown` type unless they are valid.
+- Added a `useFetch` wrapper which cleans up the code regarding fetching information from the backend.
+- Moved page routes to our shared folder so they are no longer duplicated between frontend and backend, which could cause bugs.
+- Improved code flow around saving automation.
+- Made a generic BestiaryList component for bookmarks, my bestiaries, and public bestiaries.
+- Deduplicated functions related to rendering the statblock, content parsers, and avrae export by moving them to a shared folder.
+- Refactored the statblock renderer component to not duplicate logic.
+- Moved static lists of options in the statblock editor component to a constants file.
+- Improved how things are imported from our shared folder.
+- Removed some old code from the automation editor which is unnecessary since the new Monaco editor.
+- Moved the avrae export into its own file.
+- Improved code flow around logging in.
+- Removed unused fonts from being imported, decreasing page load times.
+- Added a button to text-only pages to link to that specific section, so you can link to specific parts of the help, for example.
+- Extracted some reused logic surrounding user state (among others) to a global store.
+- Checking user upon a backend request now fetches the user from our database only once.
+- Extracted database logic into their own file instead of one massive file.
+- Added ESLint to lint code and make sure it follows one complete style.
+- Removed unnecessary `@ts-ignore` and `@ts-expect-error`.
+- Cleaned up the page footer.
+- Converted almost all components and pages from Options API into Composition API, making it easier to update in the future.
+- Make a generic Markdown component to render Markdown anywhere.
+- Google Analytics is now only imported on the production site.
+- Extracted logic from `main.ts` into their own folder so there are no more exports from the entry point.
+- Improved accessibility regarding labelled components.
+- Improved the build process for the site and shared folder.
+- Created a generic markdown page to deduplicate 4 identical pages (help, changelog, etc).
+- Errors occuring on the site should automatically report themselves to us, in addition to the backend errors already doing that.
+- Added tests to the build process to guarantee that critterDB import/avrae export remain unchanged and that the backend launches properly.
+- Moved parsing critterDB/5etools to the backend.
+
 ## v1.4.0
 _April 30th, 2024_
 
