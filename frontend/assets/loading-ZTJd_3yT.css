@@ -1,0 +1,1 @@
+.vl-shown{overflow:hidden}.vl-overlay{inset:0;position:absolute;align-items:center;display:none;justify-content:center;overflow:hidden;z-index:9999}.vl-overlay.vl-active{display:flex}.vl-overlay.vl-full-page{z-index:9999;position:fixed}.vl-overlay .vl-background{inset:0;position:absolute;background:#fff;opacity:.5}.vl-overlay .vl-icon,.vl-parent{position:relative}
