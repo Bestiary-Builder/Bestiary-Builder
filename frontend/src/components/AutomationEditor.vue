@@ -136,7 +136,7 @@ const saveAutomation = async (shouldNotify = false) => {
 
 	if (props.isStandAlone && "_id" in props.data) {
 		// save standalone to database
-		const { success, error } = await useFetch<FeatureEntity>(`/api/automation/${props.data._id}/update`, "POST", props.data);
+		const { success, error } = await useFetch<FeatureEntity>(`/api/automation/${props.data._id?.toString()}/update`, "POST", props.data);
 		if (success && shouldNotify) {
 			emit("savedStandaloneData");
 		}

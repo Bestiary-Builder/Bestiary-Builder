@@ -49,7 +49,7 @@ export default defineComponent({
 	data() {
 		return {
 			slideIndex: 2,
-			data: defaultStatblock as Statblock,
+			data: defaultStatblock,
 			rawInfo: null as Creature | null,
 			bestiary: null as Bestiary | null,
 			list: [] as string[],
@@ -180,7 +180,7 @@ export default defineComponent({
 
 		// get bestiary info this creature belongs to so we can get the name of the bestiary
 		{
-			const { success, data, error } = await useFetch<Bestiary>(`/api/bestiary/${this.rawInfo?.bestiary}`);
+			const { success, data, error } = await useFetch<Bestiary>(`/api/bestiary/${this.rawInfo?.bestiary.toString()}`);
 			if (success) {
 				this.bestiary = data;
 				this.isOwner = store.user?._id === this.bestiary.owner;
@@ -461,7 +461,7 @@ export default defineComponent({
 			this.rawInfo.stats = this.data;
 			const loader = $loading.show();
 			// Send to backend
-			const { success, error } = await useFetch<Creature>(`/api/creature/${this.rawInfo._id}/update`, "POST", this.rawInfo);
+			const { success, error } = await useFetch<Creature>(`/api/creature/${this.rawInfo._id?.toString()}/update`, "POST", this.rawInfo);
 			if (success) {
 				toast.success("Saved stat block");
 				this.madeChanges = false;

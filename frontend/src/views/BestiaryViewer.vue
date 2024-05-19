@@ -251,7 +251,7 @@ export default defineComponent({
 				return;
 			}
 			toast.info("Saving creatures has started. This may take a while.");
-			const { success: cSuccess, data: creatureData, error: cError } = await useFetch<{ error?: string }>(`/api/bestiary/${this.bestiary?._id}/addcreatures`, "POST", data.data.creatures);
+			const { success: cSuccess, data: creatureData, error: cError } = await useFetch<{ error?: string }>(`/api/bestiary/${this.bestiary?._id?.toString()}/addcreatures`, "POST", data.data.creatures);
 			if (!cSuccess)
 				toast.error(cError);
 			else if (creatureData.error)
@@ -274,7 +274,7 @@ export default defineComponent({
 				return;
 			}
 			toast.info("Importing creatures has started. This may take a while.");
-			const { success, data, error } = await useFetch<{ error?: string }>(`/api/bestiary/${this.bestiary?._id}/addcreatures`, "POST", creatures);
+			const { success, data, error } = await useFetch<{ error?: string }>(`/api/bestiary/${this.bestiary?._id?.toString()}/addcreatures`, "POST", creatures);
 			if (!success)
 				toast.error(error);
 			else if (data.error)
@@ -299,7 +299,7 @@ export default defineComponent({
 			const { success, data: resultData, error } = await useFetch<Creature>("/api/creature/add", "POST", data);
 			if (success) {
 				const data = resultData;
-				await this.$router.push(`../statblock-editor/${data._id}`);
+				await this.$router.push(`../statblock-editor/${data._id?.toString()}`);
 			}
 			else {
 				toast.error(error);
@@ -310,7 +310,7 @@ export default defineComponent({
 		},
 		async deleteCreature(creature: Creature) {
 			const loader = $loading.show();
-			const { success, error } = await useFetch(`/api/creature/${creature._id}/delete`);
+			const { success, error } = await useFetch(`/api/creature/${creature._id?.toString()}/delete`);
 			if (success) {
 				toast.success("Deleted creature succesfully");
 				if (!this.bestiary)
@@ -328,7 +328,7 @@ export default defineComponent({
 				return;
 			const id = this.editorToAdd;
 			const loader = $loading.show();
-			const { success, error } = await useFetch(`/api/bestiary/${this.bestiary._id}/editors/add/${id}`);
+			const { success, error } = await useFetch(`/api/bestiary/${this.bestiary._id?.toString()}/editors/add/${id}`);
 			if (success)
 				toast.success("Added editor succesfully");
 			else
@@ -341,7 +341,7 @@ export default defineComponent({
 			if (!this.bestiary)
 				return;
 			const loader = $loading.show();
-			const { success, error } = await useFetch(`/api/bestiary/${this.bestiary._id}/editors/remove/${id}`);
+			const { success, error } = await useFetch(`/api/bestiary/${this.bestiary._id?.toString()}/editors/remove/${id}`);
 			if (success)
 				toast.success("Removed editor succesfully");
 			else
@@ -365,7 +365,7 @@ export default defineComponent({
 			this.isOwner = store.user?._id === this.bestiary.owner;
 			this.isEditor = (this.bestiary?.editors ?? []).includes(store.user?._id ?? "");
 			// Fetch creatures
-			await useFetch<Creature[]>(`/api/bestiary/${this.bestiary._id}/creatures`).then(async (creatureResult) => {
+			await useFetch<Creature[]>(`/api/bestiary/${this.bestiary._id?.toString()}/creatures`).then(async (creatureResult) => {
 				if (creatureResult.success) {
 					this.creatures = creatureResult.data;
 				}
@@ -386,7 +386,7 @@ export default defineComponent({
 			}
 			// Bookmark state
 			if (store.user) {
-				await useFetch<{ state: boolean }>(`/api/bestiary/${this.bestiary._id}/bookmark/get`).then(async (bookmarkResult) => {
+				await useFetch<{ state: boolean }>(`/api/bestiary/${this.bestiary._id?.toString()}/bookmark/get`).then(async (bookmarkResult) => {
 					if (bookmarkResult.success) {
 						this.bookmarked = (bookmarkResult.data as { state: boolean }).state;
 					}
@@ -405,7 +405,7 @@ export default defineComponent({
 				return;
 			const loader = $loading.show();
 			// Send to backend
-			const { success, error } = await useFetch<Bestiary>(`/api/bestiary/${this.bestiary._id}/update`, "POST", this.bestiary);
+			const { success, error } = await useFetch<Bestiary>(`/api/bestiary/${this.bestiary._id?.toString()}/update`, "POST", this.bestiary);
 			if (success) {
 				toast.success("Saved bestiary");
 				this.savedBestiary = this.bestiary;
@@ -420,7 +420,7 @@ export default defineComponent({
 			if (!this.bestiary)
 				return;
 			const loader = $loading.show();
-			const { success, data, error } = await useFetch<{ state: boolean }>(`/api/bestiary/${this.bestiary._id}/bookmark/toggle`);
+			const { success, data, error } = await useFetch<{ state: boolean }>(`/api/bestiary/${this.bestiary._id?.toString()}/bookmark/toggle`);
 			if (success) {
 				this.bookmarked = data.state;
 				if (this.bookmarked)

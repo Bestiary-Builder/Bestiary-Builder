@@ -1,11 +1,24 @@
 name: Check status of branch
 on:
     pull_request:
-        types: [opened, reopened]
 env:
     NODE_ENV: production
 jobs:
-    test:
+    eslint:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
+              with:
+                node-version: 16
+            - run: npm i
+            - uses: sibiraj-s/action-eslint@v3
+              with:
+                token: ${{ secrets.GITHUB_TOKEN }}
+                eslint-args: '--ignore-path=.gitignore --quiet'
+                extensions: 'js,jsx,ts,tsx'
+                annotations: true
+    tests:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@master

@@ -45,7 +45,7 @@ const addAutomation = async (name: string, automation = null, shouldNotify = tru
 
 const deleteAutomation = async (_id: Id) => {
 	const loader = $loading.show();
-	const { success, error } = await useFetch(`/api/automation/${_id}/delete`);
+	const { success, error } = await useFetch(`/api/automation/${_id.toString()}/delete`);
 	if (success) {
 		toast.success("Successfully deleted the automation!");
 		await getMyAutomations();

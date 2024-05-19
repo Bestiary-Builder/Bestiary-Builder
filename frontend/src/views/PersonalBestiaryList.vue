@@ -42,7 +42,7 @@ const createBestiary = async () => {
 	});
 	if (success) {
 		toast.success("Created bestiary");
-		await router.push(`/bestiary-viewer/${data._id}`);
+		await router.push(`/bestiary-viewer/${data._id?.toString()}`);
 	}
 	else {
 		toast.error(error);
@@ -54,7 +54,7 @@ const deleteBestiary = async (bestiary: Bestiary | null) => {
 	if (!bestiary)
 		return;
 	const loader = $loading.show();
-	const { success, error } = await useFetch(`/api/bestiary/${bestiary._id}/delete`);
+	const { success, error } = await useFetch(`/api/bestiary/${bestiary._id?.toString()}/delete`);
 	if (success) {
 		toast.success("Deleted bestiary succesfully");
 		showDeleteModal.value = false;
