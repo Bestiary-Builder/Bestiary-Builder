@@ -1,12 +1,15 @@
 ## 2.0.0
 _May 19th, 2024_
 
+---
 This update brings immense changes to the code that powers Bestiary Builder behind the scenes. Immense effort has been made to make the code able to be maintained long term, and every file and page has received changes.
 
 Few of these changes will affect you (beyond increased performance and the accidental bug fix), but we are sure these changes will make it much easier to work on new features in the future.
 
+---
 If you appreciate our effort made, consider supporting us on [Patreon](https://www.patreon.com/BestiaryBuilder). These changes have taken two weeks of continued work, so all support is loved!
 
+---
 Here follows a list of the technical changes made:
 
 - Added Initiative as a valid skill to set in the statblock editor.
@@ -42,6 +45,7 @@ Here follows a list of the technical changes made:
 - Added tests to the build process to guarantee that critterDB import/avrae export remain unchanged and that the backend launches properly.
 - Moved parsing critterDB/5etools to the backend.
 
+---
 ## v1.4.0
 _April 30th, 2024_
 
