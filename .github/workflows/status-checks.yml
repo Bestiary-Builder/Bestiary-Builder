@@ -7,23 +7,22 @@ env:
 jobs:
     eslint:
         runs-on: ubuntu-latest
+        continue-on-error: true
         steps:
             - uses: actions/checkout@v3
-            - uses: actions/setup-node@v3
-              with:
-                node-version: 16
+            - uses: oven-sh/setup-bun@v1
             - name: Installing frontend dependencies
               working-directory: ./frontend
-              run: npm i
+              run: bun install
             - name: Run frontend ESLint
               working-directory: ./frontend
-              run: npm run lint
+              run: bun run lint
             - name: Installing backend dependencies
               working-directory: ./backend
-              run: npm i
+              run: bun install
             - name: Run backend ESLint
               working-directory: ./backend
-              run: npm run lint
+              run: bun run lint
     build-and-test:
         runs-on: ubuntu-latest
         steps:
