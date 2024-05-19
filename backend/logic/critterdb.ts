@@ -8,13 +8,19 @@ import { abilityParser } from "@/utilities/parsing";
 import { SKILLS_BY_STAT } from "~/shared";
 
 app.get("/api/critterdb/:id/:published", async (req, res) => {
-	const id = req.params.id;
-	const published = req.params.published.toLowerCase() === "true";
-	const result = await fromCritterdb(id, published);
-	if (!result)
-		return res.status(500).json({ error: "Failed to fetch info from critterdb.com. Are you sure the link is right?" });
-	else
-		return res.json(result);
+	try {
+		const id = req.params.id;
+		const published = req.params.published.toLowerCase() === "true";
+		const result = await fromCritterdb(id, published);
+		if (!result)
+			return res.status(500).json({ error: "Failed to fetch info from critterdb.com. Are you sure the link is right?" });
+		else
+			return res.json(result);
+	}
+	catch (err) {
+		log.log("critical", err);
+		return res.status(500).json({ error: "Unknown server error occured, please try again." });
+	}
 });
 
 async function fromCritterdb(url: string, published: boolean): Promise<{ data: { creatures: Statblock[]; name: string; description: string }; failedCreatures: string[] } | null> {
@@ -37,8 +43,9 @@ async function fromCritterdb(url: string, published: boolean): Promise<{ data: {
 	if (errored)
 		return null;
 	if (published)
-		data.creatures = await getPublishedBestiaryCreatures(url, apiBase);
-	else data.creatures = (await getLinkSharedBestiaryCreatures(url, apiBase)) ?? [];
+		data.creatures = (await getPublishedBestiaryCreatures(url, apiBase)) ?? [];
+	else
+		data.creatures = (await getLinkSharedBestiaryCreatures(url, apiBase)) ?? [];
 
 	// Parse creatures
 	const errors: string[] = [];
@@ -81,6 +88,7 @@ async function getLinkSharedBestiaryCreatures(id: string, apiBase: string) {
 	const creatures = await fetch(`${apiBase}/${id}/creatures`).then(async (resp) => {
 		if (resp.status === 400) {
 			log.error(`CritterDB | Permission error importing link shared bestiary creatures. Id: "${id}".`);
+			return null;
 		}
 		else if (!(resp.status >= 200 && resp.status < 300)) {
 			log.error(`CritterDB | Unkown error importing link shared bestiary creatures. Id: "${id}".`);
