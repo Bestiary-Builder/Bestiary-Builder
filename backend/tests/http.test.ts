@@ -14,7 +14,7 @@ it("basic http requests", async () => {
 	expect(await fetch(`${baseURL}/`).then(r => r.headers.get("Content-Security-Policy"))).toContain("default-src 'self';");
 });
 
-it("aPI requests", async () => {
+it("api requests", async () => {
 	// 404 error:
 	expect(await fetch(`${baseURL}/api/404`).then(r => r.text())).toMatch(`{"error":"Path not found."}`);
 	// Not logged in

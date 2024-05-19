@@ -20,6 +20,6 @@ watch(() => props.data, () => {
 <template>
 	<span v-if="!parsedAutomation"> No data set </span>
 	<p v-for="node in parsedAutomation.automation ?? []" v-else :key="node">
-		<TreeNode :data="node" :depth :parent-type />
+		<TreeNode :data="node" :depth="depth" :parent-type="parentType" />
 	</p>
 </template>

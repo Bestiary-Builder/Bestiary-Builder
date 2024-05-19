@@ -3,6 +3,7 @@ on:
     pull_request:
 env:
     NODE_ENV: production
+    frontendPath: ../build/frontend
 jobs:
     eslint:
         runs-on: ubuntu-latest
@@ -11,31 +12,19 @@ jobs:
             - uses: actions/setup-node@v3
               with:
                 node-version: 16
-            - run: npm i
-            - uses: sibiraj-s/action-eslint@v3
-              with:
-                token: ${{ secrets.GITHUB_TOKEN }}
-                eslint-args: '--ignore-path=.gitignore --quiet'
-                extensions: 'js,jsx,ts,tsx'
-                annotations: true
-    tests:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@master
-            - uses: oven-sh/setup-bun@v1
-            - name: Installing shared project dependencies
-              working-directory: ./shared
-              run: bun install
             - name: Installing frontend dependencies
               working-directory: ./frontend
-              run: bun install
+              run: npm i
+            - name: Run frontend ESLint
+              working-directory: ./frontend
+              run: npm run lint
             - name: Installing backend dependencies
               working-directory: ./backend
-              run: bun install
-            - name: Running backend tests
+              run: npm i
+            - name: Run backend ESLint
               working-directory: ./backend
-              run: bun run test
-    build:
+              run: npm run lint
+    build-and-test:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@master
@@ -55,3 +44,6 @@ jobs:
             - name: Building the backend
               working-directory: ./backend
               run: bun run compile
+            - name: Running backend tests
+              working-directory: ./backend
+              run: bun run test

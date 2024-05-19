@@ -8,15 +8,23 @@ export const collections: { users?: Collection<User>; bestiaries?: Collection<Be
 
 let database = null as Db | null;
 export async function startConnection() {
-	// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-	const client = new MongoClient(process.env.MongoDB!, {
-		serverApi: {
-			version: ServerApiVersion.v1,
-			strict: true,
-			deprecationErrors: false
-		},
-		monitorCommands: true
-	});
+	let client;
+	try {
+		// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+		client = new MongoClient(process.env.MongoDB ?? "", {
+			serverApi: {
+				version: ServerApiVersion.v1,
+				strict: true,
+				deprecationErrors: false
+			},
+			monitorCommands: true
+		});
+	}
+	catch (err) {
+		log.log("critical", `Invalid mongodb connection url. ${err}`);
+		return;
+	}
+
 	try {
 		// Connect the client to the server
 		await client.connect();
