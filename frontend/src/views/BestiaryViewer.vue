@@ -441,14 +441,30 @@ export default defineComponent({
 			if (isMinimumOption)
 				cr = this.searchOptions.minCr;
 			else cr = this.searchOptions.maxCr;
-			if (cr === 0 && isIncrease) { cr = 0.125; }
-			else if (cr === 0.125 && isIncrease) { cr = 0.25; }
-			else if (cr === 0.25 && isIncrease) { cr = 0.5; }
-			else if (cr === 0.5 && isIncrease) { cr = 1; }
-			else if (cr === 0.125 && !isIncrease) { cr = 0; }
-			else if (cr === 0.25 && !isIncrease) { cr = 0.125; }
-			else if (cr === 0.5 && !isIncrease) { cr = 0.25; }
-			else if (cr === 1 && !isIncrease) { cr = 0.5; }
+			if (cr === 0 && isIncrease) {
+				cr = 0.125;
+			}
+			else if (cr === 0.125 && isIncrease) {
+				cr = 0.25;
+			}
+			else if (cr === 0.25 && isIncrease) {
+				cr = 0.5;
+			}
+			else if (cr === 0.5 && isIncrease) {
+				cr = 1;
+			}
+			else if (cr === 0.125 && !isIncrease) {
+				cr = 0;
+			}
+			else if (cr === 0.25 && !isIncrease) {
+				cr = 0.125;
+			}
+			else if (cr === 0.5 && !isIncrease) {
+				cr = 0.25;
+			}
+			else if (cr === 1 && !isIncrease) {
+				cr = 0.5;
+			}
 			else {
 				if (isIncrease)
 					cr = Math.min(30, cr + 1);

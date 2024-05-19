@@ -137,6 +137,7 @@ export default defineComponent({
 				}
 				// remove spells that we have in the statblock data but not in the editor data
 				for (const times in list) {
+					// eslint-disable-next-line ts/no-for-in-array
 					for (const spell in list[times]) {
 						if (!this.innateSpells[times].includes(list[times][spell].spell))
 							delete list[times][spell];
@@ -339,14 +340,30 @@ export default defineComponent({
 		changeCR(isIncrease: boolean): void {
 			let cr = this.data.description.cr;
 
-			if (cr === 0 && isIncrease) { cr = 0.125; }
-			else if (cr === 0.125 && isIncrease) { cr = 0.25; }
-			else if (cr === 0.25 && isIncrease) { cr = 0.5; }
-			else if (cr === 0.5 && isIncrease) { cr = 1; }
-			else if (cr === 0.125 && !isIncrease) { cr = 0; }
-			else if (cr === 0.25 && !isIncrease) { cr = 0.125; }
-			else if (cr === 0.5 && !isIncrease) { cr = 0.25; }
-			else if (cr === 1 && !isIncrease) { cr = 0.5; }
+			if (cr === 0 && isIncrease) {
+				cr = 0.125;
+			}
+			else if (cr === 0.125 && isIncrease) {
+				cr = 0.25;
+			}
+			else if (cr === 0.25 && isIncrease) {
+				cr = 0.5;
+			}
+			else if (cr === 0.5 && isIncrease) {
+				cr = 1;
+			}
+			else if (cr === 0.125 && !isIncrease) {
+				cr = 0;
+			}
+			else if (cr === 0.25 && !isIncrease) {
+				cr = 0.125;
+			}
+			else if (cr === 0.5 && !isIncrease) {
+				cr = 0.25;
+			}
+			else if (cr === 1 && !isIncrease) {
+				cr = 0.5;
+			}
 			else {
 				if (isIncrease)
 					cr = Math.min(30, cr + 1);
