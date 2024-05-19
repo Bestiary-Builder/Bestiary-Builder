@@ -20,7 +20,7 @@ const errorMessage = ref<null | string>(null);
 const hasEditedName = ref(false);
 
 // unfinished
-const isVisualEditor = ref(false);
+const _isVisualEditor = ref(false);
 
 // Imported automation helpers
 interface myAutomationSkeleton {
@@ -418,10 +418,10 @@ const saveCustomAutomation = async () => {
 			</div>
 		</div>
 		<div class="automation-editor">
-			<LabelledComponent title="Change Editors" @click="isVisualEditor = !isVisualEditor">
-				<VueMonacoEditor v-model:value="automationString" theme="vs-dark" :options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false }" height="750px" language="yaml" @mount="handleMount" />
-				<!-- <TreeRoot v-else :data="automationString" /> -->
-			</LabelledComponent>
+			<!-- <LabelledComponent title="Change Editors" @click="isVisualEditor = !isVisualEditor"> -->
+			<VueMonacoEditor v-model:value="automationString" theme="vs-dark" :options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false }" height="750px" language="yaml" @mount="handleMount" />
+			<!-- <TreeRoot v-else :data="automationString" /> -->
+			<!-- </LabelledComponent> -->
 			<span v-if="!isStandAlone && automationString" class="save-custom-automation" @click="saveCustomAutomation()">Click to save as a reusable custom automation!</span>
 		</div>
 	</div>
