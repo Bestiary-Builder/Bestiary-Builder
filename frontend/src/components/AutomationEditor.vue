@@ -20,7 +20,7 @@ const errorMessage = ref<null | string>(null);
 const hasEditedName = ref(false);
 
 // unfinished
-const isVisualEditor = ref(false);
+const _isVisualEditor = ref(false);
 
 // Imported automation helpers
 interface myAutomationSkeleton {
