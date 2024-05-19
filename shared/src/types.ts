@@ -870,10 +870,8 @@ export const spellList = {
 	],
 };
 
-let spellListFlattenedTemp = [];
-for (const l in spellList)
-	spellListFlattenedTemp = spellListFlattenedTemp.concat(spellList[l]);
-
+let spellListFlattenedTemp: string[] = [];
+for (const list of Object.values(spellList))
+	spellListFlattenedTemp = spellListFlattenedTemp.concat(list);
 spellListFlattenedTemp.sort();
-
 export const spellListFlattened = [...spellListFlattenedTemp];

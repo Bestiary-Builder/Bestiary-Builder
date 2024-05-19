@@ -2,11 +2,11 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "debug-both",
+			"label": "debug",
 			"type": "shell",
 			"group": "test",
 			"dependsOrder": "sequence",
-			"dependsOn": ["start-backend", "debug-frontend"]
+			"dependsOn": ["debug-backend", "debug-frontend"]
 		},
 		{
 			"label": "debug-frontend",
@@ -41,12 +41,12 @@
 			]
 		},
 		{
-			"label": "start-backend",
+			"label": "debug-backend",
 			"type": "shell",
 			"options": {
 				"cwd": "${workspaceFolder}/backend"
 			},
-			"command": "npm run start",
+			"command": "npm run dev",
 			"isBackground": true,
 			"group": "test",
 			"problemMatcher": [

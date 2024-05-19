@@ -11,6 +11,12 @@ jobs:
         steps:
             - uses: actions/checkout@v3
             - uses: oven-sh/setup-bun@v1
+            - name: Installing shared dependencies
+              working-directory: ./shared
+              run: bun install
+            - name: Run shared ESLint
+              working-directory: ./shared
+              run: bun run lint
             - name: Installing frontend dependencies
               working-directory: ./frontend
               run: bun install

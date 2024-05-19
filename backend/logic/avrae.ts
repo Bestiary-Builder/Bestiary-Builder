@@ -80,7 +80,7 @@ function calcSkills(data: Statblock) {
 			const raw = skillData.find(a => a.skillName.replaceAll(" ", "").toLowerCase() === skill.toLowerCase());
 			if (raw === undefined) {
 				output[skill] = {
-					value: statCalc(stat, data),
+					value: statCalc(stat as Stat, data),
 					prof: 0,
 					bonus: 0,
 					adv: null
@@ -97,7 +97,7 @@ function calcSkills(data: Statblock) {
 					};
 				}
 				else {
-					const base = statCalc(stat, data);
+					const base = statCalc(stat as Stat, data);
 					if (raw.isHalfProficient) {
 						output[skill] = {
 							value: base + Math.floor(data.core.proficiencyBonus / 2),
@@ -158,7 +158,7 @@ export function getCreatureData(creature: Statblock) {
 		known_spells: knownSpells(creature.spellcasting),
 		caster_dc: spellDc(false, creature),
 		caster_sab: spellAttackBonus(false, creature),
-		caster_mod: statCalc(spellcastCasterObj.spellCastingAbilityOverride ?? spellcastCasterObj.spellCastingAbility ?? "", creature),
+		caster_mod: statCalc(spellcastCasterObj.spellCastingAbilityOverride ?? spellcastCasterObj.spellCastingAbility ?? null, creature),
 		innate_dc: spellDc(true, creature),
 		innate_sab: spellAttackBonus(true, creature),
 		innate_mod: statCalc(spellcastInnateObj.spellCastingAbility, creature)
@@ -180,7 +180,7 @@ export function getCreatureData(creature: Statblock) {
 			}[key] ?? "";
 
 		const override = saveData.override;
-		let value = statCalc(key, creature);
+		let value = statCalc(key as Stat, creature);
 		let prof = 0;
 		if (override != null) {
 			value = override;

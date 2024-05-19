@@ -1,8 +1,8 @@
 {
 	"compilerOptions": {
-		"target": "es5",
+		"target": "esnext",
 		"lib": ["es2022"],
-		"rootDir": ".",
+		"rootDir": "..",
 		"module": "commonjs",
 		"paths": {
 			"@/*": ["./*"],
@@ -16,11 +16,5 @@
 		"sourceMap": false,
 		"esModuleInterop": true,
 		"skipLibCheck": true
-	},
-	"hooks": ["copy-files"],
-	"references": [
-		{
-			"path": "../shared"
-		}
-	]
+	}
 }

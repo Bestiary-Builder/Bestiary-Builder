@@ -29,7 +29,7 @@ export function hpCalc(data: Statblock): number {
 	return Math.floor(data.defenses.hp.numOfHitDie * ((data.defenses.hp.sizeOfHitDie + 1) / 2 + statCalc("con", data)));
 }
 
-export function statCalc(stat: string | null, data: Statblock) {
+export function statCalc(stat: Stat | null, data: Statblock) {
 	if (!stat)
 		return 0;
 	return Math.floor(data.abilities.stats[stat] / 2) - 5;
@@ -158,7 +158,7 @@ export function spellAttackBonus(innate = false, data: Statblock) {
 	else {
 		if (innate && castingData.spellCastingAbility)
 			bonus = statCalc(castingData.spellCastingAbility, data) + data.core.proficiencyBonus;
-		else bonus = statCalc(castingData.spellCastingAbilityOveride ?? castingData.spellCastingAbility, data) + data.core.proficiencyBonus;
+		else bonus = statCalc((castingData as CasterSpells).spellCastingAbilityOverride ?? castingData.spellCastingAbility, data) + data.core.proficiencyBonus;
 	}
 	return bonus;
 }

@@ -10,10 +10,9 @@
 		"node": ">=21.4.0"
 	},
 	"scripts": {
-		"start": "npx nodemon",
-		"build": "cd ../shared && npm run build && cd ../backend && npx tsc",
-		"postbuild": "cp package.json ../build/backend/package.json && cp ../shared/package.json ../build/shared/package.json & cd ../build/backend && npm install --omit=dev && cd ../shared && npm install --omit=dev",
-		"compile": "cd ../shared && npm run build && cd ../backend && bun build server.ts --target bun --outfile ../build/server.js",
+		"dev": "npx nodemon",
+		"prebuild": "cd ../shared && npm install && npx ts-interface-builder ./src/build-types.ts",
+		"build": "bun build server.ts --target node --outfile ../build/server.js",
 		"test": "vitest run",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix"
@@ -50,6 +49,7 @@
 		"@types/node-fetch": "^2.6.9",
 		"eslint": "8.57.0",
 		"nodemon": "^3.0.2",
+		"ts-interface-builder": "^0.3.3",
 		"tsx": "^4.6.2",
 		"typescript": "^5.3.3",
 		"vitest": "^1.5.3"
