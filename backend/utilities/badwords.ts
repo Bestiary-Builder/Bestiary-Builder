@@ -39,7 +39,7 @@ import tr from "@/staticData/badwordsData/tr.json";
 import ua from "@/staticData/badwordsData/ua.json";
 import zh from "@/staticData/badwordsData/zh.json";
 
-export const badwords = new BadWordsNext({ placeholder: "" });
+export const badwords = new BadWordsNext({ placeholder: "", specialChars: /[\d!@#$%^&*()[\];:'",.?\-_=+~`|]|the|el|la/ });
 export function checkBadwords(value: string): string | undefined {
 	const usedBadwords: string[] = [];
 	badwords.filter(value, (badword) => {

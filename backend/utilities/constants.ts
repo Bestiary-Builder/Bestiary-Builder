@@ -15,6 +15,7 @@ export const app = express();
 
 // Is production
 export const isProduction = (process.env.NODE_ENV === "production") as boolean;
+
 export function generateUserSecret(): string {
 	return crypto.randomBytes(64).toString("hex");
 }
