@@ -12,7 +12,7 @@
 	"scripts": {
 		"dev": "npx nodemon",
 		"prebuild": "cd ../shared && npm install && npx ts-interface-builder ./src/build-types.ts",
-		"build": "bun build server.ts --target node --outfile ../build/server.js",
+		"build": "bun build server.ts --target bun --outfile ../build/server.js",
 		"test": "vitest run",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix"
