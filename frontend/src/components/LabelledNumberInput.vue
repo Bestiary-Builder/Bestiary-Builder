@@ -138,7 +138,7 @@ export default defineComponent({
 		},
 		clear() {
 			this.setValue(null);
-		}
+		},
 	}
 });
 </script>
@@ -147,7 +147,7 @@ export default defineComponent({
 	<LabelledComponent :title="title" :for="labelId">
 		<slot />
 		<div class="quantity">
-			<input :id="labelId" ref="input" type="number" :name="title" :value="isNaN(value) ? '' : value" :min="min" :max="max" :step="step" inputmode="numeric">
+			<input :id="labelId" ref="input" :value="isNaN(value) ? '' : value" type="number" :name="title" :min="min" :max="max" :step="step" inputmode="numeric" @change="change">
 			<div class="quantity-nav">
 				<div class="quantity-button quantity-up" :aria-label="`Increase ${title} by ${step}`" @click.prevent="increase">
 					+
