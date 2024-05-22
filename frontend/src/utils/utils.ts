@@ -17,19 +17,24 @@ async function handleApiResponse<Type>(response: Response): Promise<{ success: t
 }
 
 export async function useFetch<Type>(url: string, method: "GET" | "POST" = "GET", body?: unknown) {
-	const result = await fetch(url, {
-		method,
-		headers: {
-			"Accept": "application/json",
-			"Content-Type": "application/json"
-		},
-		body: body
-			? JSON.stringify({
-				data: body
-			})
-			: undefined
-	}).then(response => handleApiResponse<Type>(response));
-	return result;
+	try {
+		const result = await fetch(url, {
+			method,
+			headers: {
+				"Accept": "application/json",
+				"Content-Type": "application/json"
+			},
+			body: body
+				? JSON.stringify({
+					data: body
+				})
+				: undefined
+		}).then(response => handleApiResponse<Type>(response));
+		return result;
+	}
+	catch {
+		return { success: false, error: "Connection to backend failed.", data: undefined } as { success: false; data: undefined; error: string };
+	}
 }
 
 // Login stuff:
