@@ -387,7 +387,7 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 		let error = "";
 		// Failed creatures:
 		if (ignoredCreatures.length > 0)
-			error += `Failed to add ${ignoredCreatures.length} creatures, due to invalid data.\nCreature errors: ${ignoredCreatures.map(c => `${c.creature}: "${c.error}"`).join("\n ")}`;
+			error += `Failed to add ${ignoredCreatures.length} creatures, due to invalid data.`;
 
 		// Check amount of creatures:
 		if (bestiary.creatures.length + fixedData.length > limits.creatureAmount) {
@@ -409,7 +409,7 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 		else {
 			error += "0 valid creatures found.";
 		}
-		return res.status(201).json({ error });
+		return res.status(201).json({ error, ignoredCreatures });
 	}
 	catch (err) {
 		log.log("critical", err);

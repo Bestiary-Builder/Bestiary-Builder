@@ -63,6 +63,7 @@ export default defineComponent({
 			showWarning: false as boolean,
 			critterDbId: "" as string,
 			bestiaryBuilderJson: "" as string,
+			notices: {} as { [key: string]: string },
 			searchOptions: {
 				text: "",
 				tags: [] as string[],
@@ -243,7 +244,9 @@ export default defineComponent({
 			}>(`/api/critterdb/${link}/${isPublic}`);
 			if (success) {
 				if (data.failedCreatures.length > 0)
-					toast.error(`Failed to parse ${data.failedCreatures.length} creatures, due to invalid data recieved.<br />Failed creatures: "${data.failedCreatures.join(",")}"`, { duration: 0 });
+					toast.error(`Failed to parse ${data.failedCreatures.length} creatures, due to invalid data recieved.`);
+				for (const creature of data.failedCreatures)
+					this.notices[creature] = "Failed to parse, due to unrecognized data.";
 			}
 			else {
 				toast.error(error);
@@ -251,15 +254,22 @@ export default defineComponent({
 				return;
 			}
 			toast.info("Saving creatures has started. This may take a while.");
-			const { success: cSuccess, data: creatureData, error: cError } = await useFetch<{ error?: string }>(`/api/bestiary/${this.bestiary?._id?.toString()}/addcreatures`, "POST", data.data.creatures);
-			if (!cSuccess)
+			const { success: cSuccess, data: creatureData, error: cError } = await useFetch<{ error?: string; ignoredCreatures: { creature: string; error: string }[] }>(`/api/bestiary/${this.bestiary?._id?.toString()}/addcreatures`, "POST", data.data.creatures);
+			if (!cSuccess) {
+				this.notices = {};
 				toast.error(cError);
-			else if (creatureData.error)
-				toast.error(creatureData.error.replaceAll("\n", "<br />"), { duration: 0 });
+			}
+			else if (creatureData.error) {
+				toast.error("The import was completed with errors.");
+				this.notices.Errors = creatureData.error;
+				for (const error of creatureData.ignoredCreatures)
+					this.notices[error.creature] = error.error;
+			}
 			await this.getBestiary();
 			loader.hide();
 			toast.success("Importing has finished!");
-			this.showImportModal = false;
+			if (cSuccess && !creatureData.error)
+				this.showImportModal = false;
 		},
 		async importCreaturesFromBestiaryBuilder() {
 			let creatures;
@@ -274,16 +284,25 @@ export default defineComponent({
 				return;
 			}
 			toast.info("Importing creatures has started. This may take a while.");
-			const { success, data, error } = await useFetch<{ error?: string }>(`/api/bestiary/${this.bestiary?._id?.toString()}/addcreatures`, "POST", creatures);
-			if (!success)
+			const { success, data, error } = await useFetch<{ error?: string; ignoredCreatures: { creature: string; error: string }[] }>(`/api/bestiary/${this.bestiary?._id?.toString()}/addcreatures`, "POST", creatures);
+			if (!success) {
+				this.notices = {};
 				toast.error(error);
-			else if (data.error)
-				toast.error(data.error.replaceAll("\n", "<br />"), { duration: 0 });
-			else toast.success("Importing has finished!");
+			}
+			else if (data.error) {
+				toast.error("The import was completed with errors.");
+				this.notices.Errors = data.error;
+				for (const error of data.ignoredCreatures)
+					this.notices[error.creature] = error.error;
+			}
+			else {
+				toast.success("Importing has finished!");
+			}
 
 			await this.getBestiary();
 			loader.hide();
-			this.showImportModal = false;
+			if (success && !data.error)
+				this.showImportModal = false;
 		},
 		async createCreature(stats = defaultStatblock, shouldHaveLoader = true) {
 			let loader;
@@ -693,6 +712,22 @@ export default defineComponent({
 						</button>
 					</div>
 				</LabelledComponent>
+
+				<hr>
+
+				<div v-if="JSON.stringify(notices) !== '{}'">
+					<p class="warning">
+						<b>Please note the following for this import:</b>
+					</p>
+					<div v-for="(notice, creature) in notices" :key="creature">
+						<h3>
+							{{ creature }}
+						</h3>
+						<p>
+							{{ notice }}
+						</p>
+					</div>
+				</div>
 			</template>
 		</Modal>
 
