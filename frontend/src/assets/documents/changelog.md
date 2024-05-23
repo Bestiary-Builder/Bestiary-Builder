@@ -1,3 +1,10 @@
+## 2.0.1
+_May 23rd, 2024_
+
+- Improved error messages for importing multiple creatures at once.
+- Fixed some blocked words bugs.
+
+---
 ## 2.0.0
 _May 19th, 2024_
 
