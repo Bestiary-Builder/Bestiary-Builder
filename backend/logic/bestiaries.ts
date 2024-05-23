@@ -313,7 +313,7 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 			return res.status(400).json({ error: "Failed to parse creature data." });
 		const now = Date.now();
 		// Make sure all fields are present in all creatures
-		const ignoredCreatures = [] as string[];
+		const ignoredCreatures = [] as { creature: string; error: string }[];
 		const fixedData = [] as Creature[];
 		for (const creature of data) {
 			if (!creature)
@@ -331,8 +331,9 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 			// Set last updated
 			creature.lastUpdated = now;
 			// Check limits
-			if (checkCreatureLimits(creature)) {
-				ignoredCreatures.push(creature.stats.description.name);
+			const creatureLimits = checkCreatureLimits(creature);
+			if (creatureLimits) {
+				ignoredCreatures.push({ creature: creature.stats.description.name, error: creatureLimits });
 				continue;
 			}
 			// Check image link
@@ -345,7 +346,7 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 				}
 				catch (err) {
 					log.error(`Image url not recognized. (${image})`);
-					ignoredCreatures.push(creature.stats.description.name);
+					ignoredCreatures.push({ creature: creature.stats.description.name, error: "Image url not recognized." });
 					continue;
 				}
 			}
@@ -369,8 +370,14 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 			}
 			// Badwords check
 			if (bestiary.status !== "private") {
-				if (checkBadwords(creature.stats.description.name) || checkBadwords(creature.stats.description.description)) {
-					ignoredCreatures.push(creature.stats.description.name);
+				const badwordsName = checkBadwords(creature.stats.description.name);
+				if (badwordsName) {
+					ignoredCreatures.push({ creature: creature.stats.description.name, error: badwordsName });
+					continue;
+				}
+				const badwordsDesc = checkBadwords(creature.stats.description.description);
+				if (badwordsDesc) {
+					ignoredCreatures.push({ creature: creature.stats.description.name, error: badwordsDesc });
 					continue;
 				}
 			}
@@ -380,7 +387,7 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 		let error = "";
 		// Failed creatures:
 		if (ignoredCreatures.length > 0)
-			error += `Ignored ${ignoredCreatures.length}, due to invalid data. Import these individually instead: ${ignoredCreatures.join(", ")}\n`;
+			error += `Failed to add ${ignoredCreatures.length} creatures, due to invalid data.`;
 
 		// Check amount of creatures:
 		if (bestiary.creatures.length + fixedData.length > limits.creatureAmount) {
@@ -402,7 +409,7 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 		else {
 			error += "0 valid creatures found.";
 		}
-		return res.status(201).json({ error });
+		return res.status(201).json({ error, ignoredCreatures });
 	}
 	catch (err) {
 		log.log("critical", err);
