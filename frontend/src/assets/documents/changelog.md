@@ -1,11 +1,20 @@
-## 2.0.1
+## v2.1.0
+_May 25th, 2024_
+
+- Added the ability to export a statblock to an image
+- Restored the ability to see other's unlisted creatures if provided with the link
+- Fixed that statblocks would sometimes render with an extra orange line.
+- Dragging senses/speed/features to reorder them is disabled temporarily as the package upstream (ie: not made by us) seems to have broken. It will be restored when a fix is found.
+
+---
+## v2.0.1
 _May 23rd, 2024_
 
 - Improved error messages for importing multiple creatures at once.
 - Fixed some blocked words bugs.
 
 ---
-## 2.0.0
+## v2.0.0
 _May 19th, 2024_
 
 ---

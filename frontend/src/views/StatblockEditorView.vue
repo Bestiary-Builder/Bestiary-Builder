@@ -1,6 +1,7 @@
 <script lang="ts">
 import draggable from "vuedraggable";
 import { defineComponent } from "vue";
+import { toJpeg } from "html-to-image";
 import FeatureWidget from "@/components/FeatureWidget.vue";
 import Modal from "@/components/Modal.vue";
 import StatblockRenderer from "@/components/StatblockRenderer.vue";
@@ -497,6 +498,37 @@ export default defineComponent({
 			}
 			loader.hide();
 		},
+		async exportToImage() {
+			const filter = (node: HTMLElement) => {
+				return (node.tagName !== "IMG");
+			};
+
+			const doc = document.getElementById("statblock");
+			if (!doc)
+				return;
+
+			// The image converter breaks when it encounters css styles imported by monaco. Remove that from the dom, run the function, then add it again.
+			const monacoCss = document.head.querySelector(`[data-name="vs/editor/editor.main"]`);
+			monacoCss?.remove();
+
+			// convert it to an image
+			await toJpeg(doc, { filter })
+				.then((dataUrl) => {
+					const link = document.createElement("a");
+					link.download = `${this.data.description.name} from BestiaryBuilder.jpg`;
+					link.href = dataUrl;
+					link.click();
+
+					// timeout because otherwise the browser download window shows up after the toast is shown.
+					setTimeout(() => {
+						toast.success("Statblock successfully exported to an image!");
+						toast.warning("If the statblock contained images, these were ignored due to technical limitations.");
+					}, 1000);
+				});
+
+			if (monacoCss)
+				document.head.appendChild(monacoCss);
+		},
 		getSpellSlots
 	}
 });
@@ -533,6 +565,9 @@ export default defineComponent({
 			</button>
 			<button v-if="isOwner || isEditor" v-tooltip="'Export this creature as JSON to your clipboard.'" aria-label="Export a creature's statblock" @click="exportStatblock()">
 				<font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" />
+			</button>
+			<button v-tooltip="'Export creature as image'" aria-label="Export creature as image" @click="exportToImage">
+				<font-awesome-icon :icon="['far', 'image']" />
 			</button>
 		</Breadcrumbs>
 		<div class="content" :class="{ 'is-statblock-only': !shouldShowEditor }">
@@ -646,7 +681,7 @@ export default defineComponent({
 										<input v-model="data.core.speed[index].comment" type="text" placeholder="Comment...">
 										<span class="grid five-five">
 											<font-awesome-icon v-tooltip="'Delete this speed'" :icon="['fas', 'trash']" class="button-icon" @click="data.core.speed.splice(index, 1)" />
-											<font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle button-icon" />
+											<!-- <font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle button-icon" /> -->
 										</span>
 									</div>
 								</LabelledComponent>
@@ -680,7 +715,7 @@ export default defineComponent({
 										<input v-model="element.comment" type="text" placeholder="Comment...">
 										<span class="grid five-five">
 											<font-awesome-icon v-tooltip="'Delete this sense'" :icon="['fas', 'trash']" class="button-icon" @click="data.core.senses.splice(index, 1)" />
-											<font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle button-icon" />
+											<!-- <font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle button-icon" /> -->
 										</span>
 									</div>
 								</LabelledComponent>
@@ -837,7 +872,7 @@ export default defineComponent({
 										<div class="feature-button__container">
 											<FeatureWidget :index="index" :type="fType" :data="data.features[fType][index]" :creature-name="data.description.name" />
 											<span class="delete-button" aria-label="Delete feature" @click="deleteFeature(fType, index)"><font-awesome-icon :icon="['fas', 'trash']" /></span>
-											<font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle" />
+											<!-- <font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle" /> -->
 										</div>
 									</LabelledComponent>
 								</template>
@@ -932,7 +967,7 @@ export default defineComponent({
 				</div>
 			</div>
 			<div class="content-container__inner">
-				<StatblockRenderer :data="data" />
+				<StatblockRenderer id="statblock" :data="data" />
 			</div>
 		</div>
 

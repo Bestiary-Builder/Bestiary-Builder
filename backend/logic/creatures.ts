@@ -16,7 +16,7 @@ async function checkCreaturePermission(creature: Creature, user: User | null) {
 	if (!bestiary)
 		return false;
 	const bestiaryPermissionLevel = checkBestiaryPermission(bestiary, user);
-	if (bestiaryPermissionLevel === "none" || bestiaryPermissionLevel === "view")
+	if (bestiaryPermissionLevel === "none")
 		return false;
 	else return true;
 }
@@ -36,11 +36,11 @@ app.get("/api/creature/:id", possibleUser, async (req, res) => {
 				return res.json(creature);
 			}
 			else {
-				return res.status(401).json({ error: "You don't have permission to view this creature-" });
+				return res.status(401).json({ error: "You don't have permission to view this creature." });
 			}
 		}
 		else {
-			return res.status(404).json({ error: "No creature with that id found-" });
+			return res.status(404).json({ error: "No creature with that id found." });
 		}
 	}
 	catch (err) {
