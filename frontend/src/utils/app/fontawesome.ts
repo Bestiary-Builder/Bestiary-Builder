@@ -26,6 +26,7 @@ import {
 	faXmark
 } from "@fortawesome/free-solid-svg-icons";
 import { faDiscord, faGithub, faPatreon } from "@fortawesome/free-brands-svg-icons";
+import { faImage } from "@fortawesome/free-regular-svg-icons";
 
 library.add(
 	faTrash,
@@ -53,5 +54,6 @@ library.add(
 	faGripVertical,
 	faEyeSlash,
 	faEye,
-	faCircleInfo
+	faCircleInfo,
+	faImage
 );

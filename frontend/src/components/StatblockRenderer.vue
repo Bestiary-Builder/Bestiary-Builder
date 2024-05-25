@@ -1,143 +1,105 @@
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
+import { computed } from "vue";
 import Markdown from "./Markdown.vue";
 import type { SkillsEntity, Stat, Statblock } from "~/shared";
 import { SKILLS_BY_STAT, crAsString, displaySpeedOrSenses, fullSpellAbilityName, hpCalc, nthSuffix, ppCalc, signedNumber, spellAttackBonus, spellDc, statCalc } from "~/shared";
 import { capitalizeFirstLetter, displayInnateCasting } from "@/utils/displayFunctions";
 import { featureGenerator, resistanceGenerator, stats } from "@/utils/constants";
 
-export default defineComponent({
-	components: {
-		Markdown
-	},
-	props: {
-		data: {
-			type: Object as () => Statblock,
-			required: true
-		}
-	},
-	data() {
-		return {
-			stats,
-			resistanceGenerator,
-			featureGenerator
-		};
-	},
-	computed: {
-		showSkills(): boolean {
-			for (const skill of this.data.abilities.skills) {
-				if (skill.isProficient || skill.isHalfProficient || skill.isExpertise || skill.override || skill.override === 0)
-					return true;
-			}
+const props = defineProps<{ data: Statblock }>();
 
+const showSkills = computed(() => {
+	for (const skill of props.data.abilities.skills) {
+		if (skill.isProficient || skill.isHalfProficient || skill.isExpertise || skill.override || skill.override === 0)
+			return true;
+	}
+
+	return false;
+});
+
+const showCasterCasting = computed(() => {
+	return !!((props.data.spellcasting.casterSpells.casterLevel) && props.data.spellcasting.casterSpells.castingClass);
+});
+
+const showInnateCasting = computed(() => {
+	return (props.data.spellcasting.innateSpells.spellCastingAbility != null) && (
+		props.data.spellcasting.innateSpells.spellList[0].length > 0
+		|| props.data.spellcasting.innateSpells.spellList[1].length > 0
+		|| props.data.spellcasting.innateSpells.spellList[2].length > 0
+		|| props.data.spellcasting.innateSpells.spellList[3].length > 0
+	);
+});
+
+const skillOutput = computed(() => {
+	let skills: SkillsEntity[] = Array.from(props.data.abilities.skills);
+	skills.sort((a: SkillsEntity, b: SkillsEntity) => {
+		return a.skillName.localeCompare(b.skillName);
+	});
+
+	const seenSkillNames = new Set();
+
+	// Use the filter method to create a new array without duplicates
+	skills = skills.filter((obj) => {
+		if (seenSkillNames.has(obj.skillName)) {
+			// If the skill name is already seen, filter it out
 			return false;
-		},
-		showCasting(): boolean {
-			return !!((this.data.spellcasting.casterSpells.casterLevel) && this.data.spellcasting.casterSpells.castingClass);
-		},
-		showInnateCasting(): boolean {
-			return (this.data.spellcasting.innateSpells.spellCastingAbility != null) && (
-				this.data.spellcasting.innateSpells.spellList[0].length > 0
-				|| this.data.spellcasting.innateSpells.spellList[1].length > 0
-				|| this.data.spellcasting.innateSpells.spellList[2].length > 0
-				|| this.data.spellcasting.innateSpells.spellList[3].length > 0
-			);
-		},
-		showFeatures(): boolean {
-			return Object.values(this.data.features).some(v => v.length > 0);
-		},
-		skillOutput() {
-			let skills: SkillsEntity[] = Array.from(this.data.abilities.skills);
-			skills.sort((a: SkillsEntity, b: SkillsEntity) => {
-				return a.skillName.localeCompare(b.skillName);
-			});
+		}
+		else {
+			// Otherwise, add it to the set and include it in the result
+			seenSkillNames.add(obj.skillName);
+			return true;
+		}
+	});
 
-			const seenSkillNames = new Set();
+	const output = [];
+	for (const skill of skills) {
+		if (!skill.isExpertise && !skill.isHalfProficient && !skill.isProficient && !skill.override)
+			continue;
 
-			// Use the filter method to create a new array without duplicates
-			skills = skills.filter((obj) => {
-				if (seenSkillNames.has(obj.skillName)) {
-					// If the skill name is already seen, filter it out
-					return false;
+		let bonus = 0;
+		for (const stat in SKILLS_BY_STAT) {
+			if (SKILLS_BY_STAT[stat as Stat].includes(skill.skillName.replaceAll(" ", "").toLowerCase())) {
+				if (skill.override && skill.override !== null) {
+					const over = skill.override;
+					output.push(`${skill.skillName} ${(over ?? 0) >= 0 ? "+" : ""}${over}`);
 				}
 				else {
-					// Otherwise, add it to the set and include it in the result
-					seenSkillNames.add(obj.skillName);
-					return true;
+					bonus = statCalc(stat as Stat, props.data);
+					if (skill.isHalfProficient)
+						bonus += Math.floor(props.data.core.proficiencyBonus / 2);
+					else if (skill.isProficient)
+						bonus += props.data.core.proficiencyBonus;
+					else if (skill.isExpertise)
+						bonus += props.data.core.proficiencyBonus * 2;
+
+					output.push(`${skill.skillName} ${bonus >= 0 ? "+" : ""}${bonus}`);
 				}
-			});
-
-			const output = [];
-			for (const skill of skills) {
-				if (!skill.isExpertise && !skill.isHalfProficient && !skill.isProficient && !skill.override)
-					continue;
-
-				let bonus = 0;
-				for (const stat in SKILLS_BY_STAT) {
-					if (SKILLS_BY_STAT[stat as Stat].includes(skill.skillName.replaceAll(" ", "").toLowerCase())) {
-						if (skill.override && skill.override !== null) {
-							const over = skill.override;
-							output.push(`${skill.skillName} ${(over ?? 0) >= 0 ? "+" : ""}${over}`);
-						}
-						else {
-							bonus = statCalc(stat as Stat, this.data);
-							if (skill.isHalfProficient)
-								bonus += Math.floor(this.data.core.proficiencyBonus / 2);
-							else if (skill.isProficient)
-								bonus += this.data.core.proficiencyBonus;
-							else if (skill.isExpertise)
-								bonus += this.data.core.proficiencyBonus * 2;
-
-							output.push(`${skill.skillName} ${bonus >= 0 ? "+" : ""}${bonus}`);
-						}
-						break;
-					}
-					else { continue; }
-				}
+				break;
 			}
-			return output.join(", ");
-		},
-		hitDieBonus(): string {
-			const hp = this.data.defenses.hp.numOfHitDie * statCalc("con", this.data);
-			if (hp !== 0) {
-				if (hp > 0)
-					return `+${hp.toString()}`;
-				else return hp.toString();
-			}
-			return "";
-		},
-	},
-	methods: {
-		saveSign(stat: Stat): string {
-			if (!this.data.abilities.saves)
-				return "";
-			if (statCalc(stat, this.data) + this.data.core.proficiencyBonus >= 0 || (this.data.abilities.saves[stat] && this.data.abilities.saves[stat].override))
-				return "+";
-
-			return "";
-		},
-		alphaSort(list: string[]): string[] {
-			const sortByLastWord = (a: string, b: string) => {
-				const lastWordA = a.split(" ").pop();
-				const lastWordB = b.split(" ").pop();
-				return lastWordA!.localeCompare(lastWordB!);
-			};
-			return list.sort(sortByLastWord).map(v => v.toLowerCase());
-		},
-		displaySpeedOrSenses,
-		displayInnateCasting,
-		crAsString,
-		nthSuffix,
-		statCalc,
-		hpCalc,
-		ppCalc,
-		fullSpellAbilityName,
-		signedNumber,
-		spellDc,
-		spellAttackBonus,
-		capitalizeFirstLetter
+			else { continue; }
+		}
 	}
+	return output.join(", ");
 });
+
+const hitDieBonus = computed(() => {
+	const hp = props.data.defenses.hp.numOfHitDie * statCalc("con", props.data);
+	if (hp !== 0) {
+		if (hp > 0)
+			return `+${hp.toString()}`;
+		else return hp.toString();
+	}
+	return "";
+});
+
+const alphaSort = (list: string[]) => {
+	const sortByLastWord = (a: string, b: string) => {
+		const lastWordA = a.split(" ").pop();
+		const lastWordB = b.split(" ").pop();
+		return lastWordA!.localeCompare(lastWordB!);
+	};
+	return list.sort(sortByLastWord).map(v => v.toLowerCase());
+};
 </script>
 
 <template>
@@ -205,8 +167,8 @@ export default defineComponent({
 			</div>
 		</div>
 
-		<div v-if="showFeatures || showCasting || showInnateCasting" class="stat-block__row">
-			<div v-if="data.features.features.length > 0 || showCasting || showInnateCasting" class="feature-container">
+		<div v-if="data.features.features.length > 0 || showCasterCasting || (showInnateCasting && !data.spellcasting.innateSpells.displayAsAction)" id="yes" class="stat-block__row">
+			<div class="feature-container">
 				<p v-if="data.misc.featureHeaderTexts.features">
 					{{ data.misc.featureHeaderTexts.features }}
 				</p>
@@ -220,7 +182,7 @@ export default defineComponent({
 					<Markdown class="feature-container__desc" :text="displayInnateCasting(data)" tag="span" />
 				</p>
 
-				<p v-if="showCasting && data.spellcasting.casterSpells.castingClass && data.spellcasting.casterSpells.casterLevel && data.spellcasting.casterSpells.spellSlotList">
+				<p v-if="showCasterCasting && data.spellcasting.casterSpells.castingClass && data.spellcasting.casterSpells.casterLevel && data.spellcasting.casterSpells.spellSlotList">
 					<b><i>Spellcasting</i></b>
 					<span class="feature-container__desc">
 						<span v-if="!data.description.isProperNoun"> The </span> {{ data.description.isProperNoun ? data.description.name : data.description.name.toLowerCase() }} is a {{ nthSuffix(data.spellcasting.casterSpells.casterLevel) }}-level spellcaster. <span v-if="data.description.isProperNoun"> Their </span><span v-else> Its </span> spellcasting ability is {{ fullSpellAbilityName(data.spellcasting.casterSpells.spellCastingAbilityOverride ?? data.spellcasting.casterSpells.spellCastingAbility) }} (spell save DC {{ spellDc(false, data) }}, {{ spellAttackBonus(false, data) }} to hit with spell attacks). <span v-if="!data.description.isProperNoun"> It </span><span v-else> {{ data.description.name }}</span><span v-if="[&quot;Sorcerer&quot;, &quot;Bard&quot;, &quot;Ranger&quot;, &quot;Warlock&quot;].includes(data.spellcasting.casterSpells.castingClass)"> knows the following {{ data.spellcasting.casterSpells.castingClass.toLowerCase() }} spells: </span>
