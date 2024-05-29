@@ -77,6 +77,7 @@ export default defineComponent({
 			showEditorModal: false,
 			showImportModal: false,
 			selectedCreature: null as Creature | null,
+			srdCreatures: [] as string[],
 			store,
 			creatureTypes,
 			defaultStatblock
@@ -155,13 +156,20 @@ export default defineComponent({
 			this.searchOptions.faction = this.searchFaction;
 		}
 	},
-	mounted() {
+	async mounted() {
 		const loader = $loading.show();
 		void this.getBestiary();
 		loader.hide();
 
 		if (this?.bestiary?.name)
 			document.title = `${this?.bestiary?.name.substring(0, 16)} | Bestiary Builder`;
+
+		const { success, data, error } = await useFetch<string[]>(`/api/srd-creatures/list`);
+		if (success)
+			this.srdCreatures = data;
+
+		if (error)
+			toast.error(error);
 	},
 	methods: {
 		filterCreature(data: Creature) {
@@ -342,6 +350,16 @@ export default defineComponent({
 			}
 			loader.hide();
 		},
+		async importSrdCreature(creature: string) {
+			const { success, data, error } = await useFetch<Statblock>(`/api/srd-creature/${encodeURIComponent(creature)}`);
+			if (success) {
+				await this.createCreature(data);
+				return data;
+			}
+			else {
+				toast.error(error);
+			}
+		},
 		async addEditor() {
 			if (!this.bestiary)
 				return;
@@ -516,9 +534,24 @@ export default defineComponent({
 				}
 			]"
 		>
-			<button v-if="isOwner || isEditor" v-tooltip="'Create creature!'" class="inverted" aria-label="Create creature" @click="createCreature()">
-				<font-awesome-icon :icon="['fas', 'plus']" />
-			</button>
+			<VDropdown v-if="isOwner || isEditor" :distance="6" placement="top" :positioning-disabled="store.isMobile">
+				<button v-tooltip="'Create creature!'" class="inverted" aria-label="Create creature">
+					<font-awesome-icon :icon="['fas', 'plus']" />
+				</button>
+				<template #popper>
+					<div class="v-popper__custom-menu">
+						<LabelledComponent title="From Scratch" for="fromScratch">
+							<button id="fromScratch" v-close-popper class="btn" @click.stop="createCreature()">
+								From scratch
+							</button>
+						</LabelledComponent>
+						<LabelledComponent title="From SRD Creature" for="fromSrd">
+							<v-select :options="srdCreatures" input-id="fromSrd" placeholder="Select SRD creature" style="min-width: 300px" @option:selected="(selected : string) => (importSrdCreature(selected))" />
+						</LabelledComponent>
+					</div>
+				</template>
+			</VDropdown>
+
 			<button v-if="lastClickedCreature" v-tooltip="'Unpin currently pinned creature!'" style="rotate: 45deg" aria-label="Unpin currently pinned creature" @click="lastClickedCreature = null">
 				<font-awesome-icon :icon="['fas', 'thumbtack']" />
 			</button>
@@ -666,7 +699,21 @@ export default defineComponent({
 							</div>
 						</TransitionGroup>
 						<div v-if="isOwner || isEditor" class="create-tile">
-							<span role="button" class="create-text" @click="createCreature()">Add Creature</span>
+							<VDropdown v-if="isOwner || isEditor" :distance="6" placement="top" :positioning-disabled="store.isMobile">
+								<span role="button" class="create-text">Add Creature</span>
+								<template #popper>
+									<div class="v-popper__custom-menu">
+										<LabelledComponent title="From Scratch" for="fromScratch">
+											<button id="fromScratch" v-close-popper class="btn" @click.stop="createCreature()">
+												From scratch
+											</button>
+										</LabelledComponent>
+										<LabelledComponent title="From SRD Creature" for="fromSrd">
+											<v-select :options="srdCreatures" input-id="fromSrd" placeholder="Select SRD creature" style="min-width: 300px" @option:selected="(selected : string) => (importSrdCreature(selected))" />
+										</LabelledComponent>
+									</div>
+								</template>
+							</VDropdown>
 						</div>
 					</div>
 				</div>

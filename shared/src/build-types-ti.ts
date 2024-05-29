@@ -48,7 +48,7 @@ export const Description = t.iface([], {
   "image": "string",
   "faction": "string",
   "environment": "string",
-  "alignment": "string",
+  "alignment": t.union("string", "null"),
   "cr": "number",
   "xp": "number",
 });
