@@ -5,6 +5,7 @@ _May 29th, 2024_
 - Added support for having alignment not set on a creature.
 - Fixed three 5e.tools importer edge cases.
 
+---
 ## v2.1.0
 _May 25th, 2024_
 
