@@ -1,0 +1,2 @@
+import{a as e}from"./index-DV2nZWyY.js";e.config.errorHandler=(o,r,t)=>{fetch("https://discord.com/api/webhooks/1238145494941700226/E62DBeJ8o8axa24dB2fg-hwm1lmvDZ3GrEc8zVglzhXsMDMBZrUX9mNYo12uUDC-f1tM",{method:"POST",headers:{Accept:"application/json","Content-Type":"application/json"},body:JSON.stringify({content:`Frontend error: 
+${o.stack??o}`,username:"Bestiary Builder",avatar_url:"https://bestiarybuilder.com/logo.png"})}).catch(()=>{console.error("Failed to send error message.")})};

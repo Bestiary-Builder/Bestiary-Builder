@@ -1,15 +1,4 @@
-const e=`<<<<<<< HEAD
-## v2.2.0
-_May 29th, 2024_
-
-- Added the ability to choose between creature from scratch or from an SRD Creature when creating a new creature.
-- Added support for having alignment not set on a creature.
-- Fixed three 5e.tools importer edge cases.
-
----
-=======
->>>>>>> parent of 452ee54 (v2.2.0)
-## v2.1.0
+const e=`## v2.1.0
 _May 25th, 2024_
 
 - Added the ability to export a statblock to an image
