@@ -4,8 +4,6 @@ import "@/assets/styles/main.less";
 // Vue
 import { type Component, createApp, } from "vue";
 
-// Router
-
 // Floating vue
 import FloatingVue from "floating-vue";
 import "floating-vue/dist/style.css";
@@ -24,6 +22,7 @@ import "vue-select/dist/vue-select.css";
 
 // monaco editor
 import { loader } from "@guolao/vue-monaco-editor";
+
 import router from "@/router";
 import App from "@/App.vue";
 
@@ -45,7 +44,7 @@ loader.config({
 
 // Google analytics
 if (import.meta.env.MODE === "production")
-	import("./utils/gtag.js" as any);
+	import("./utils/app/gtag.js" as any);
 
 // error handling
 if (import.meta.env.MODE === "production")

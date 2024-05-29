@@ -205,7 +205,7 @@ export function getCreatureData(creature: Statblock) {
 		languages: creature.core.languages,
 		cr: crAsString(creature.description.cr),
 		xp: creature.description.xp,
-		alignment: creature.description.alignment,
+		alignment: creature.description.alignment || "",
 		size: creature.core.size,
 		race: creature.core.race,
 		ac: creature.defenses.ac.ac,

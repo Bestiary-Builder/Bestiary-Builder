@@ -1,18 +1,11 @@
 import { app } from "@/utilities/constants";
 import basicExamples from "@/staticData/basicExamples.json";
 import srdFeatures from "@/staticData/srdFeatures.json";
+import srdCreatures from "@/staticData/srdCreatures.json";
 import tOF from "@/staticData/textOnlyFeatures.json";
-
-// Tags
 import tags from "@/staticData/tags.json";
-
-// Limits
 import limits from "@/staticData/limits.json";
-
-// Automation documentation
 import data from "@/staticData/automationDocumentation.json";
-
-// Automation documentation
 import metadata from "@/staticData/automationMetaData.json";
 
 const textOnlyFeatures = tOF as { [key: string]: string };
@@ -33,6 +26,7 @@ app.get("/api/basic-example/:name", async (req, res) => {
 	else
 		return res.status(404).json({ error: "No example found with that name" });
 });
+
 // Features
 app.get("/api/srd-features/list", async (req, res) => {
 	const names = allSrdFeatures.map(a => a.name) ?? [];
@@ -46,6 +40,22 @@ app.get("/api/srd-feature/:name", async (req, res) => {
 	else
 		return res.status(404).json({ error: "No srd feature found with that name" });
 });
+
+// Creatures
+
+app.get("/api/srd-creatures/list", async (req, res) => {
+	return res.json(Object.keys(srdCreatures));
+});
+app.get("/api/srd-creature/:name", async (req, res) => {
+	const name = decodeURIComponent(req.params.name);
+	const data = (srdCreatures as any)[name];
+	if (data)
+		return res.json(data);
+	else
+		return res.status(404).json({ error: "No srd creature found with that name" });
+});
+
+// json files
 app.get("/api/tags", async (req, res) => {
 	res.json(tags);
 });

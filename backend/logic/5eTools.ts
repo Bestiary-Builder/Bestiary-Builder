@@ -24,7 +24,7 @@ app.post("/api/5etools-import", async (req, res) => {
 	}
 });
 
-function parseFrom5eTools(data: any): [Statblock, { [key: string]: string[] }] {
+export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string[] }] {
 	const outputData = {} as Statblock;
 	outputData.description = {
 		name: data.name,
@@ -197,7 +197,7 @@ function parseFrom5eTools(data: any): [Statblock, { [key: string]: string[] }] {
 				if (mod === saveBonus)
 					return { isProficient: true, override: null };
 				if (mod !== saveBonus)
-					return { isProficient: false, override: mod };
+					return { isProficient: false, override: Number.parseInt(mod.toString()) };
 
 				return { isProficient: false, override: null };
 			})(),
@@ -210,7 +210,7 @@ function parseFrom5eTools(data: any): [Statblock, { [key: string]: string[] }] {
 				if (mod === saveBonus)
 					return { isProficient: true, override: null };
 				if (mod !== saveBonus)
-					return { isProficient: false, override: mod };
+					return { isProficient: false, override: Number.parseInt(mod.toString()) };
 
 				return { isProficient: false, override: null };
 			})(),
@@ -223,7 +223,7 @@ function parseFrom5eTools(data: any): [Statblock, { [key: string]: string[] }] {
 				if (mod === saveBonus)
 					return { isProficient: true, override: null };
 				if (mod !== saveBonus)
-					return { isProficient: false, override: mod };
+					return { isProficient: false, override: Number.parseInt(mod.toString()) };
 
 				return { isProficient: false, override: null };
 			})(),
@@ -236,7 +236,7 @@ function parseFrom5eTools(data: any): [Statblock, { [key: string]: string[] }] {
 				if (mod === saveBonus)
 					return { isProficient: true, override: null };
 				if (mod !== saveBonus)
-					return { isProficient: false, override: mod };
+					return { isProficient: false, override: Number.parseInt(mod.toString()) };
 
 				return { isProficient: false, override: null };
 			})(),
@@ -249,7 +249,7 @@ function parseFrom5eTools(data: any): [Statblock, { [key: string]: string[] }] {
 				if (mod === saveBonus)
 					return { isProficient: true, override: null };
 				if (mod !== saveBonus)
-					return { isProficient: false, override: mod };
+					return { isProficient: false, override: Number.parseInt(mod.toString()) };
 
 				return { isProficient: false, override: null };
 			})(),
@@ -262,7 +262,7 @@ function parseFrom5eTools(data: any): [Statblock, { [key: string]: string[] }] {
 				if (mod === saveBonus)
 					return { isProficient: true, override: null };
 				if (mod !== saveBonus)
-					return { isProficient: false, override: mod };
+					return { isProficient: false, override: Number.parseInt(mod.toString()) };
 
 				return { isProficient: false, override: null };
 			})()
@@ -319,7 +319,10 @@ function parseFrom5eTools(data: any): [Statblock, { [key: string]: string[] }] {
 			acSource: (() => {
 				if (typeof data.ac[0] != "object")
 					return "";
-				return (data.ac[0].from[0] ?? "").replace(/\{@item\s[^|]+\|[^|]+\|([^}]+)\}/, "$1");
+				if (data.ac[0].from)
+					return (data.ac[0].from[0] ?? "").replace(/\{@item\s[^|]+\|[^|]+\|([^}]+)\}/, "$1");
+				else
+					return "";
 			})()
 		},
 		immunities: (() => {
@@ -327,6 +330,7 @@ function parseFrom5eTools(data: any): [Statblock, { [key: string]: string[] }] {
 
 			if (!data.immune)
 				return [];
+
 			for (const v of data?.immune) {
 				if (typeof v == "string") {
 					output.push(capitalizeFirstLetter(v));
@@ -363,8 +367,10 @@ function parseFrom5eTools(data: any): [Statblock, { [key: string]: string[] }] {
 						if (v.note.includes("not made with adamantine"))
 							modifier += "Nonadamantine ";
 					}
-					for (const t of types)
-						output.push(`${modifier}${capitalizeFirstLetter(t)}`);
+					if (types) {
+						for (const t of types)
+							output.push(`${modifier}${capitalizeFirstLetter(t)}`);
+					}
 				}
 			}
 			return output;
@@ -410,7 +416,7 @@ function parseFrom5eTools(data: any): [Statblock, { [key: string]: string[] }] {
 						if (v.note.includes("not made with adamantine"))
 							modifier += "Nonadamantine ";
 					}
-					for (const t of types)
+					for (const t of types || [])
 						output.push(`${modifier}${capitalizeFirstLetter(t)}`);
 				}
 			}
@@ -457,7 +463,7 @@ function parseFrom5eTools(data: any): [Statblock, { [key: string]: string[] }] {
 						if (v.note.includes("not made with adamantine"))
 							modifier += "Nonadamantine ";
 					}
-					for (const t of types)
+					for (const t of types || [])
 						output.push(`${modifier}${capitalizeFirstLetter(t)}`);
 				}
 			}

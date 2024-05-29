@@ -1,3 +1,10 @@
+## v2.2.0
+_May 29th, 2024_
+
+- Added the ability to choose between creature from scratch or from an SRD Creature when creating a new creature.
+- Added support for having alignment not set on a creature.
+- Fixed three 5e.tools importer edge cases.
+
 ## v2.1.0
 _May 25th, 2024_
 

@@ -41,7 +41,7 @@ export interface Description {
 	image: string;
 	faction: string;
 	environment: string;
-	alignment: string;
+	alignment: string | null;
 	cr: number;
 	xp: number;
 }
