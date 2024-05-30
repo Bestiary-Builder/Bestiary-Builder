@@ -28,9 +28,8 @@ const output: Record<string, unknown> = {};
 
 const parsedCreatures = [];
 
-for (const creature of data) {
+for (const creature of data)
 	parsedCreatures.push(parseFrom5eTools(creature)[0]);
-}
 
 // for each srd feature (#903)
 for (const feat of features) {
