@@ -128,5 +128,3 @@ app.get("/*", async (req, res) => {
 		return res.status(500).send("Internal Server Error");
 	}
 });
-
-import("./scripts/parseSrdCreaturesFrom5eTools");
