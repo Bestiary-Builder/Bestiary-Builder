@@ -4,6 +4,7 @@ _May 31st, 2024_
 - Added the ability to paste a Bestiary Builder statblock directly into the current statblock if it was exported using the export button.
   - This means you no longer need to open a menu and paste the json directly. Simply press export on one page, and press paste on the other.
 - Fixes an issue where Animal Handling and Sleight of Hand skills would not show on the statblock since v2.0.0.
+- Fixes an issue where the feature editor could freeze and break when incomplete data is used.
 
 ---
 ## v2.2.0

@@ -266,7 +266,7 @@ const getAutomationDescription = (): string | boolean => {
 	if (props.data.automation || !auto || auto?.automation?.length === 0)
 		return false;
 	for (const field of auto?.automation?.reverse() || []) {
-		if (field.type === "text")
+		if (field?.type === "text")
 			return field.text;
 	}
 	return "";
