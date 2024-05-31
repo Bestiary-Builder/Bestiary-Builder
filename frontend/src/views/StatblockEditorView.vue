@@ -1,14 +1,14 @@
 <script lang="ts">
 import draggable from "vuedraggable";
-import { defineComponent } from "vue";
+import { computed, defineComponent, watch } from "vue";
 import { toJpeg } from "html-to-image";
+import { useClipboard, usePermission } from "@vueuse/core";
 import FeatureWidget from "@/components/FeatureWidget.vue";
 import Modal from "@/components/Modal.vue";
 import StatblockRenderer from "@/components/StatblockRenderer.vue";
 import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
 import LabelledNumberInput from "@/components/LabelledNumberInput.vue";
 import LabelledComponent from "@/components/LabelledComponent.vue";
-
 import type { Bestiary, Creature, Statblock } from "~/shared";
 import { defaultStatblock, getSpellSlots, getXPbyCR, spellList, spellListFlattened } from "~/shared";
 import { useFetch } from "@/utils/utils";
@@ -74,6 +74,8 @@ export default defineComponent({
 			newSkillName: "",
 			newSpeedName: "",
 			newSenseName: "",
+			clipboardText: "",
+			clipboardInterval: 0,
 			// constants we need in the template
 			resistanceList,
 			languages,
@@ -89,6 +91,17 @@ export default defineComponent({
 			conditionList,
 			store
 		};
+	},
+	computed: {
+		canPasteBBStatblock() {
+			try {
+				const parsed = JSON.parse(this.clipboardText);
+				return !!parsed?.isBB;
+			}
+			catch {
+				return false;
+			}
+		}
 	},
 	watch: {
 		"data.spellcasting.casterSpells.castingClass": function (newValue, _oldValue) {
@@ -212,6 +225,18 @@ export default defineComponent({
 			}
 		});
 
+		const getClipboardText = async () => {
+			if (document.hasFocus()) {
+				try {
+					this.clipboardText = await navigator.clipboard.readText();
+				}
+				catch {}
+			}
+		};
+		//call immediately and then check every two seconds.
+		await getClipboardText();
+		this.clipboardInterval = setInterval(getClipboardText, 2000);
+
 		// watch data only once, as traversing the object deeply is expensive.
 		// re-registered upon saving.
 		// need a set time out otherwise it triggers upon mounting for some reason
@@ -227,13 +252,29 @@ export default defineComponent({
 		}, 1);
 		loader.hide();
 	},
+	unmounted() {
+		clearInterval(this.clipboardInterval);
+	},
 	methods: {
 		getDraggableKey(item: any) {
 			return item;
 		},
 		async exportStatblock() {
-			await navigator.clipboard.writeText(JSON.stringify(this.data, null, 2));
+			const text = JSON.stringify({ ...this.data, isBB: true }, null, 2);
+			await navigator.clipboard.writeText(text);
+			this.clipboardText = text;
 			toast.info("Exported this statblock to your clipboard.");
+		},
+		async importFromPaste() {
+			if (!this.canPasteBBStatblock)
+				return;
+			try {
+				const parsed = JSON.parse(this.clipboardText);
+				delete parsed.isBB;
+				this.data = parsed;
+				toast.success("Successfully pasted creature!");
+			}
+			catch {}
 		},
 		async import5etools() {
 			if (this.toolsjson.startsWith("___")) {
@@ -560,10 +601,14 @@ export default defineComponent({
 				<font-awesome-icon v-if="!shouldShowEditor" :icon="['fas', 'eye']" />
 				<font-awesome-icon v-else :icon="['fas', 'eye-slash']" />
 			</button>
+			<button v-if="canPasteBBStatblock" v-tooltip="'Paste copied creature'" aria-label="Paste copied creature" style="position: relative" @click="importFromPaste">
+				<font-awesome-icon :icon="['far', 'clipboard']" />
+				<div class="notice-dot" />
+			</button>
 			<button v-if="isOwner || isEditor" v-tooltip="'Import a creature\'s statblock'" aria-label="Import a creature's statblock" @click="showImportModal = true">
 				<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
 			</button>
-			<button v-if="isOwner || isEditor" v-tooltip="'Export this creature as JSON to your clipboard.'" aria-label="Export a creature's statblock" @click="exportStatblock()">
+			<button v-if="isOwner || isEditor" v-tooltip="'Export this creature as JSON to your clipboard.'" aria-label="Export a creature's statblock" @click="exportStatblock">
 				<font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" />
 			</button>
 			<button v-tooltip="'Export creature as image'" aria-label="Export creature as image" @click="exportToImage">
@@ -1249,5 +1294,15 @@ export default defineComponent({
 .unit-selector {
 	height: 40px;
 	translate: 0 5px;
+}
+
+.notice-dot {
+	position: absolute;
+	width: 12px;
+	height: 12px;
+	top: -10%;
+	background: red;
+	border-radius: 50%;
+	right: -10%;
 }
 </style>

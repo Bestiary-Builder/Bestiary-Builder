@@ -50,15 +50,16 @@ const skillOutput = computed(() => {
 			return true;
 		}
 	});
-
+	console.log(SKILLS_BY_STAT);
 	const output = [];
 	for (const skill of skills) {
+		console.log(skill.skillName);
 		if (!skill.isExpertise && !skill.isHalfProficient && !skill.isProficient && !skill.override)
 			continue;
 
 		let bonus = 0;
 		for (const stat in SKILLS_BY_STAT) {
-			if (SKILLS_BY_STAT[stat as Stat].includes(skill.skillName.replaceAll(" ", "").toLowerCase())) {
+			if (SKILLS_BY_STAT[stat as Stat].includes(skill.skillName.replaceAll(" ", "").toLowerCase().replace("animalh", "animalH").replace("sleightofh", "sleightOfH"))) {
 				if (skill.override && skill.override !== null) {
 					const over = skill.override;
 					output.push(`${skill.skillName} ${(over ?? 0) >= 0 ? "+" : ""}${over}`);
