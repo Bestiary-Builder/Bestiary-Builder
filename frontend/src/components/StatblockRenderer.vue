@@ -50,10 +50,8 @@ const skillOutput = computed(() => {
 			return true;
 		}
 	});
-	console.log(SKILLS_BY_STAT);
 	const output = [];
 	for (const skill of skills) {
-		console.log(skill.skillName);
 		if (!skill.isExpertise && !skill.isHalfProficient && !skill.isProficient && !skill.override)
 			continue;
 
