@@ -26,7 +26,7 @@ const router = createRouter({
 });
 
 // Check logged in
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, _from) => {
 	// Requires being logged in?
 	if (to.meta.loggedIn) {
 		if (!store.user) {
@@ -34,15 +34,15 @@ router.beforeEach(async (to, from, next) => {
 			return;
 		}
 	}
-	next();
+	return true;
 });
 // Change title on route change
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from) => {
 	let name = `${to.name?.toString() ?? ""} | Bestiary Builder`;
 	if (name.startsWith(" | "))
 		name = "Bestiary Builder";
 	document.title = name;
-	next();
+	return true;
 });
 
 // Export

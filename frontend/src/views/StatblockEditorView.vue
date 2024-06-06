@@ -1,15 +1,16 @@
-<script lang="ts">
-import draggable from "vuedraggable";
-import { computed, defineComponent, watch } from "vue";
+<script setup lang="ts">
+import Draggable from "vuedraggable";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { toJpeg } from "html-to-image";
-import { useClipboard, usePermission } from "@vueuse/core";
+import { usePermission } from "@vueuse/core";
+import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
 import FeatureWidget from "@/components/FeatureWidget.vue";
 import Modal from "@/components/Modal.vue";
 import StatblockRenderer from "@/components/StatblockRenderer.vue";
 import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
 import LabelledNumberInput from "@/components/LabelledNumberInput.vue";
 import LabelledComponent from "@/components/LabelledComponent.vue";
-import type { Bestiary, Creature, Statblock } from "~/shared";
+import type { Bestiary, Creature, Features, Statblock } from "~/shared";
 import { defaultStatblock, getSpellSlots, getXPbyCR, spellList, spellListFlattened } from "~/shared";
 import { useFetch } from "@/utils/utils";
 import { store } from "@/utils/store";
@@ -18,561 +19,546 @@ import { toast } from "@/utils/app/toast";
 import { capitalizeFirstLetter } from "@/utils/displayFunctions";
 import { alignments, classLevels, classes, conditionList, creatureTypes, languages, newFeatureGenerator, resistanceList, sizes, stats } from "@/utils/constants";
 
+const $route = useRoute();
+const $router = useRouter();
+
+const data = ref<Statblock>(defaultStatblock);
+const rawInfo = ref<Creature | null>(null);
+
+// load creature data
+onMounted(async () => {
+	const loader = $loading.show();
+	const { success, data: cData, error } = await useFetch<Creature>(`/api/creature/${$route.params.id.toString()}`);
+	if (success) {
+		data.value = (cData).stats;
+		rawInfo.value = cData;
+		await loadRawInfo();
+		loader.hide();
+	}
+	else {
+		toast.error(`Error: ${error}`);
+		madeChanges.value = false;
+		await $router.push("/error");
+		loader.hide();
+	}
+});
+
+// ownership
+const bestiary = ref<Bestiary | null>(null);
+const isOwner = ref(false);
+const isEditor = ref(false);
+const shouldShowEditor = ref(false);
+const loadRawInfo = async () => {
+	const { success, data, error } = await useFetch<Bestiary>(`/api/bestiary/${rawInfo.value?.bestiary.toString()}`);
+	if (success) {
+		bestiary.value = data;
+		isOwner.value = store.user?._id === bestiary.value.owner;
+		isEditor.value = (bestiary.value?.editors ?? []).includes(store.user?._id ?? "");
+		if (isOwner.value || isEditor.value)
+			shouldShowEditor.value = true;
+	}
+	else {
+		toast.error(error);
+	}
+};
+
+// saving
+const saveStatblock = async () => {
+	if (!rawInfo.value)
+		return;
+	rawInfo.value.stats = data.value;
+	const loader = $loading.show();
+	// Send to backend
+	const { success, error } = await useFetch<Creature>(`/api/creature/${rawInfo.value._id?.toString()}/update`, "POST", rawInfo.value);
+	if (success) {
+		toast.success("Saved stat block");
+		madeChanges.value = false;
+		// watch data only once, as traversing the object deeply is expensive.
+		const unwatch = watch(
+			() => data.value,
+			() => {
+				madeChanges.value = true;
+				unwatch();
+			},
+			{ deep: true }
+		);
+	}
+	else {
+		toast.error(`Error: ${error}`, { duration: 10000 });
+	}
+	loader.hide();
+};
+// update xp and prof bonus whenever a user changes cr.
+watch(() => data.value.description.cr, () => {
+	data.value.core.proficiencyBonus = Math.max(2, Math.min(9, Math.floor((data.value.description.cr + 3) / 4)) + 1);
+	data.value.description.xp = getXPbyCR(data.value.description.cr);
+});
+
+// end of lifecycle
+const madeChanges = ref(false);
+
+const unwatch = watch(() => data.value,	() => {
+	madeChanges.value = true;
+	unwatch();
+},	{ deep: true });
+
+onBeforeRouteUpdate(() => {
+	// just in case the user manages to navigate to a page that also uses StatblockEditorView
+	if (madeChanges.value && (isOwner.value || isEditor.value)) {
+		const answer = window.confirm("Do you really want to leave? you have unsaved changes!");
+		if (!answer)
+			return false;
+	}
+});
+onBeforeRouteLeave(() => {
+	// when the user leaves this route
+	if (madeChanges.value && (isOwner.value || isEditor.value)) {
+		const answer = window.confirm("Do you really want to leave? you have unsaved changes!");
+		if (!answer)
+			return false;
+	}
+});
+
+const beforeUnLoad = (event: Event) => {
+	if (madeChanges.value && (isOwner.value || isEditor.value)) {
+		event.preventDefault();
+		event.returnValue = true;
+	}
+};
+window.addEventListener("beforeunload", beforeUnLoad);
+onUnmounted(() => {
+	window.removeEventListener("beforeunload", beforeUnLoad);
+});
+
+// Pasting BB statblock from clipboard
+const clipboardText = ref("");
+const permissionRead = usePermission("clipboard-read");
+const canPasteBBStatblock = computed(() => {
+	try {
+		const parsed = JSON.parse(clipboardText.value);
+		return !!parsed?.isBB;
+	}
+	catch {
+		return false;
+	}
+});
+
+const importFromPaste = async () => {
+	if (!canPasteBBStatblock.value)
+		return;
+	try {
+		const parsed = JSON.parse(clipboardText.value);
+		delete parsed.isBB;
+		data.value = parsed;
+		toast.success("Successfully pasted creature!");
+	}
+	catch {}
+};
+
+const onTabFocus = async () => {
+	if (!permissionRead.value)
+		return;
+	if (document.hidden)
+		return;
+	setTimeout(async () => {
+		if (!document.hasFocus())
+			clipboardText.value = await navigator.clipboard.readText();
+	}, 200);
+};
+onMounted(() => document.addEventListener("visibilitychange", onTabFocus));
+onUnmounted(() => document.removeEventListener("visibilitychange", onTabFocus));
+
+const onCopy = async () => {
+	if (!permissionRead.value)
+		return;
+	clipboardText.value = await navigator.clipboard.readText();
+};
+onMounted(() => document.addEventListener("copy", onCopy));
+onUnmounted(() => document.removeEventListener("copy", onCopy));
+
+// document title handling
+const setDocumentTitle = () => {
+	document.title = `${data.value.description.name.substring(0, 16)} | Bestiary Builder`;
+};
+
+setDocumentTitle();
+watch(() => data.value.description.name, () => {
+	setDocumentTitle();
+});
+
+// draggable stuff
+const getDraggableKey = (item: any) => {
+	return item;
+};
+
+// import
+const showImportModal = ref(false);
+const notices = ref<{ [key: string]: string[] }>({});
+const toolsjson = ref("");
+
+const import5etools = async () => {
+	if (toolsjson.value.startsWith("___")) {
+		toast.error("You copied the markdown code, not the JSON.");
+		return;
+	}
+	try {
+		const json = JSON.parse(toolsjson.value);
+		const { success, data: cData, error } = await useFetch<{ stats: Statblock; notices: { [key: string]: string[] } }>("/api/5etools-import", "POST", json);
+		if (!success)
+			throw error;
+		data.value = cData?.stats;
+		notices.value = cData?.notices;
+		toolsjson.value = "";
+		toast.success(`Successfully imported ${data.value.description.name}`);
+	}
+	catch (e) {
+		console.error(e);
+		toast.error("Failed to import this creature");
+	}
+};
+
+const bestiaryBuilderJson = ref("");
+const importBestiaryBuilder = async () => {
+	try {
+		let creature = JSON.parse(bestiaryBuilderJson.value);
+		if (Array.isArray(creature))
+			creature = creature[0];
+		// Validate input
+		const { success, error } = await useFetch("/api/validate/creature", "POST", creature);
+		// Succesful?:
+		if (success) {
+			data.value = creature;
+			notices.value = {};
+			bestiaryBuilderJson.value = "";
+			toast.success(`Successfully imported ${data.value.description.name}`);
+		}
+		else {
+			toast.error(error.replaceAll("\n", "<br />"), {
+				duration: 0
+			});
+		}
+		showImportModal.value = false;
+	}
+	catch (e) {
+		console.error(e);
+		toast.error("Failed to import this creature");
+	}
+};
+
+// export
+const exportStatblock = async () => {
+	const text = JSON.stringify({ ...data.value, isBB: true }, null, 2);
+	await navigator.clipboard.writeText(text);
+	clipboardText.value = text;
+	toast.info("Exported this statblock to your clipboard.");
+};
+
+const exportToImage = async () => {
+	const filter = (node: HTMLElement) => {
+		return (node.tagName !== "IMG");
+	};
+
+	const doc = document.getElementById("statblock");
+	if (!doc)
+		return;
+
+	// The image converter breaks when it encounters css styles imported by monaco. Remove that from the dom, run the function, then add it again.
+	const monacoCss = document.head.querySelector(`[data-name="vs/editor/editor.main"]`);
+	monacoCss?.remove();
+
+	// convert it to an image
+	await toJpeg(doc, { filter })
+		.then((dataUrl) => {
+			const link = document.createElement("a");
+			link.download = `${data.value.description.name} from BestiaryBuilder.jpg`;
+			link.href = dataUrl;
+			link.click();
+
+			// timeout because otherwise the browser download window shows up after the toast is shown.
+			setTimeout(() => {
+				toast.success("Statblock successfully exported to an image!");
+				toast.warning("If the statblock contained images, these were ignored due to technical limitations.");
+			}, 1000);
+		});
+
+	if (monacoCss)
+		document.head.appendChild(monacoCss);
+};
+
+// helpers for adding speed or senses
+const addNewSpeed = (newSpeedName: string) => {
+	if (!newSpeedName) {
+		toast.error("No speed chosen.");
+		return;
+	}
+	if (data.value.core.speed.some(obj => obj.name === newSpeedName)) {
+		toast.error("You already have this speed.");
+		return;
+	}
+	data.value.core.speed.push({ name: newSpeedName, value: 30, unit: "ft", comment: "" });
+};
+const addNewSense = (newSenseName: string) => {
+	if (!newSenseName) {
+		toast.error("No sense chosen.");
+		return;
+	}
+	if (data.value.core.senses.some(obj => obj.name === newSenseName)) {
+		toast.error("You already have this sense.");
+		return;
+	}
+	data.value.core.senses.push({ name: newSenseName, value: 30, unit: "ft", comment: "" });
+};
+
+// helpers for skills
+const deleteSkill = (index: number) => {
+	data.value.abilities.skills?.splice(index, 1);
+};
+
+const addNewSkill = (newSkillName: string) => {
+	if (!newSkillName) {
+		toast.error("No skill chosen.");
+		return;
+	}
+	if (data.value.abilities.skills.some(obj => obj.skillName === newSkillName)) {
+		toast.error("You already have this skill.");
+		return;
+	}
+
+	data.value.abilities.skills.push({
+		skillName: newSkillName,
+		isHalfProficient: false,
+		isProficient: true,
+		isExpertise: false,
+		override: null
+	});
+};
+
+const disableOtherSkills = (index: number, type: "prof" | "exp" | "halfprof", value: boolean) => {
+	if (!value && data.value.abilities.skills) {
+		if (type === "prof") {
+			data.value.abilities.skills[index].isExpertise = false;
+			data.value.abilities.skills[index].isHalfProficient = false;
+		}
+		if (type === "exp") {
+			data.value.abilities.skills[index].isProficient = false;
+			data.value.abilities.skills[index].isHalfProficient = false;
+		}
+		if (type === "halfprof") {
+			data.value.abilities.skills[index].isExpertise = false;
+			data.value.abilities.skills[index].isProficient = false;
+		}
+	}
+};
+
+// helpers for features
+const deleteFeature = (type: keyof Features, index: number) => {
+	data.value.features[type].splice(index, 1);
+};
+const createNewFeature = (type: keyof Features) => {
+	// TODO: .push instead?
+	data.value.features[type].push({
+		name: `New Feature ${data.value.features[type].length + 1}`,
+		description: "",
+		automation: null
+	});
+};
+
+// helpers for spells
+const showSpellModal = ref(false);
+
+const spellLevelList = (): number[] => {
+	const sClass = data.value.spellcasting.casterSpells.castingClass;
+	const slots = data.value.spellcasting.casterSpells.spellSlotList;
+
+	if (sClass === "Warlock" && slots) {
+		// @ts-expect-error It's complicated
+		return Array.from({ length: Object.keys(slots)[0] }, (_, index) => index + 1);
+	}
+	if (slots)
+		return Object.keys(slots).map(str => Number.parseInt(str));
+	return [];
+};
+
+const getSpellsByLevel = (level: number): string[] => {
+	// this function is needed for typescript.
+	if (level < 0 || level > 9)
+		return [];
+	return spellList[level as 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9];
+};
+
+// helpers for managing spellcasting
+const clearCasting = () => {
+	data.value.spellcasting.casterSpells = defaultStatblock.spellcasting.casterSpells;
+};
+
+watch(() => data.value.spellcasting.casterSpells.casterLevel, (newValue) => {
+	if (newValue == null || newValue === undefined) {
+		clearCasting();
+		return;
+	}
+	// set spell slots when they change level
+	data.value.spellcasting.casterSpells.spellSlotList = getSpellSlots(data.value.spellcasting.casterSpells.castingClass, data.value.spellcasting.casterSpells.casterLevel);
+});
+
+watch(() => data.value.spellcasting.casterSpells.castingClass, (newValue) => {
+	if (newValue == null || newValue === undefined) {
+		clearCasting();
+		return;
+	}
+	const sClass = data.value.spellcasting.casterSpells.castingClass;
+	switch (sClass) {
+		case "Artificer":
+		case "Wizard":
+			data.value.spellcasting.casterSpells.spellCastingAbility = "int";
+			break;
+		case "Cleric":
+		case "Druid":
+		case "Ranger":
+			data.value.spellcasting.casterSpells.spellCastingAbility = "wis";
+			break;
+		default:
+			data.value.spellcasting.casterSpells.spellCastingAbility = "cha";
+	}
+	// set spell slots in case they changed full caster/half caster/arti half/warlock
+	data.value.spellcasting.casterSpells.spellSlotList = getSpellSlots(sClass, data.value.spellcasting.casterSpells.casterLevel);
+});
+
+const innateSpells = ref<{ [key: number]: string[] }>({
+	0: data.value.spellcasting.innateSpells.spellList[0].map(spell => spell.spell),
+	1: data.value.spellcasting.innateSpells.spellList[1].map(spell => spell.spell),
+	2: data.value.spellcasting.innateSpells.spellList[2].map(spell => spell.spell),
+	3: data.value.spellcasting.innateSpells.spellList[3].map(spell => spell.spell)
+});
+// TODO: innate spell handler or rewrite?
+
+watch(() => innateSpells.value, () => {
+	const list = data.value.spellcasting.innateSpells.spellList;
+	// add spells to our data that we did not have in our statblock data yet but we did in our editor data
+	for (const times in innateSpells.value) {
+		for (const spell of innateSpells.value[times]) {
+			// the spell is not in our stat block data yet, so we add it.
+			if (!list[times].map(obj => obj.spell).includes(spell)) {
+				list[times].push({
+					spell,
+					comment: ""
+				});
+			}
+		}
+	}
+	// remove spells that we have in the statblock data but not in the editor data
+	for (const times in list) {
+		// eslint-disable-next-line ts/no-for-in-array
+		for (const spell in list[times]) {
+			if (!innateSpells.value[times].includes(list[times][spell].spell))
+				delete list[times][spell];
+		}
+
+		// remove all falsy (null/undefined/etc) from our array which delete leaves behind.
+		list[times] = list[times].filter(Boolean);
+	}
+}, { deep: true });
+
+// slide managers for accessibility:
+const slideIndex = ref(2);
 const tabs = document.getElementsByClassName("editor-nav__tab") as HTMLCollectionOf<HTMLElement>;
 const tabsContent = document.getElementsByClassName("editor-content__tab-inner") as HTMLCollectionOf<HTMLElement>;
 
-export default defineComponent({
-	components: {
-		StatblockRenderer,
-		FeatureWidget,
-		Breadcrumbs,
-		LabelledNumberInput,
-		LabelledComponent,
-		Modal,
-		Draggable: draggable
-	},
-	beforeRouteUpdate() {
-		// just in case the user manages to navigate to a page that also uses StatblockEditorView
-		if (this.madeChanges && (this.isOwner || this.isEditor)) {
-			const answer = window.confirm("Do you really want to leave? you have unsaved changes!");
-			if (!answer)
-				return false;
+onMounted(() => showSlides(1));
+const showSlides = (n: number) => {
+	if (slideIndex.value === n)
+		return;
+
+	for (let i = 0; i < tabs.length; i++) {
+		const tab = tabs[i];
+		if (i !== n - 1) {
+			tab.setAttribute("aria-selected", "false");
+			tab.tabIndex = -1;
 		}
-	},
-	beforeRouteLeave() {
-		// when the user leaves this route
-		if (this.madeChanges && (this.isOwner || this.isEditor)) {
-			const answer = window.confirm("Do you really want to leave? you have unsaved changes!");
-			if (!answer)
-				return false;
+		else {
+			tab.setAttribute("aria-selected", "true");
+			tab.removeAttribute("tabindex");
+			tab.focus();
 		}
-	},
-	data() {
-		return {
-			slideIndex: 2,
-			data: defaultStatblock,
-			rawInfo: null as Creature | null,
-			bestiary: null as Bestiary | null,
-			list: [] as string[],
-			innateSpells: {
-				0: [] as string[],
-				1: [] as string[],
-				2: [] as string[],
-				3: [] as string[]
-			} as { [key: number]: string[] },
-			toolsjson: "",
-			bestiaryBuilderJson: "",
-			notices: {} as { [key: string]: string[] },
-			madeChanges: false,
-
-			showImportModal: false,
-			showSpellModal: false,
-			capitalizeFirstLetter,
-			shouldShowEditor: false,
-			isOwner: false,
-			isEditor: false,
-			newSkillName: "",
-			newSpeedName: "",
-			newSenseName: "",
-			clipboardText: "",
-			clipboardInterval: 0,
-			// constants we need in the template
-			resistanceList,
-			languages,
-			spellListFlattened,
-			spellList,
-			newFeatureGenerator,
-			stats,
-			alignments,
-			sizes,
-			creatureTypes,
-			classes,
-			classLevels,
-			conditionList,
-			store
-		};
-	},
-	computed: {
-		canPasteBBStatblock() {
-			try {
-				const parsed = JSON.parse(this.clipboardText);
-				return !!parsed?.isBB;
-			}
-			catch {
-				return false;
-			}
-		}
-	},
-	watch: {
-		"data.spellcasting.casterSpells.castingClass": function (newValue, _oldValue) {
-			if (newValue == null || newValue === undefined) {
-				this.clearCasting();
-				return;
-			}
-			const sClass = this.data.spellcasting.casterSpells.castingClass;
-			switch (sClass) {
-				case "Artificer":
-				case "Wizard":
-					this.data.spellcasting.casterSpells.spellCastingAbility = "int";
-					break;
-				case "Cleric":
-				case "Druid":
-				case "Ranger":
-					this.data.spellcasting.casterSpells.spellCastingAbility = "wis";
-					break;
-				default:
-					this.data.spellcasting.casterSpells.spellCastingAbility = "cha";
-			}
-			// set spell slots in case they changed full caster/half caster/arti half/warlock
-			this.data.spellcasting.casterSpells.spellSlotList = getSpellSlots(sClass, this.data.spellcasting.casterSpells.casterLevel);
-		},
-		"data.spellcasting.casterSpells.casterLevel": function (newValue) {
-			if (newValue == null || newValue === undefined) {
-				this.clearCasting();
-				return;
-			}
-			// set spell slots when they change level
-			this.data.spellcasting.casterSpells.spellSlotList = getSpellSlots(this.data.spellcasting.casterSpells.castingClass, this.data.spellcasting.casterSpells.casterLevel);
-		},
-		"innateSpells": {
-			handler() {
-				const list = this.data.spellcasting.innateSpells.spellList;
-				// add spells to our data that we did not have in our statblock data yet but we did in our editor data
-				for (const times in this.innateSpells) {
-					for (const spell of this.innateSpells[times]) {
-						// the spell is not in our stat block data yet, so we add it.
-						if (!list[times].map(obj => obj.spell).includes(spell)) {
-							list[times].push({
-								spell,
-								comment: ""
-							});
-						}
-					}
-				}
-				// remove spells that we have in the statblock data but not in the editor data
-				for (const times in list) {
-					// eslint-disable-next-line ts/no-for-in-array
-					for (const spell in list[times]) {
-						if (!this.innateSpells[times].includes(list[times][spell].spell))
-							delete list[times][spell];
-					}
-
-					// remove all falsy (null/undefined/etc) from our array which delete leaves behind.
-					list[times] = list[times].filter(Boolean);
-				}
-			},
-			deep: true
-		},
-		"data.description.cr": function () {
-			this.data.core.proficiencyBonus = Math.max(2, Math.min(9, Math.floor((this.data.description.cr + 3) / 4)) + 1);
-			this.data.description.xp = getXPbyCR(this.data.description.cr);
-		},
-		"data.description.name": function () {
-			document.title = `${this?.data.description.name.substring(0, 16)} | Bestiary Builder`;
-		}
-	},
-
-	async mounted() {
-		this.showSlides(1);
-		const loader = $loading.show();
-		// Fetch creature info
-		{
-			const { success, data, error } = await useFetch<Creature>(`/api/creature/${this.$route.params.id.toString()}`);
-			if (success) {
-				this.data = (data).stats;
-				this.rawInfo = data;
-			}
-			else {
-				toast.error(`Error: ${error}`);
-				this.madeChanges = false;
-				await this.$router.push("/error");
-				loader.hide();
-				return;
-			}
-		}
-
-		document.title = `${this?.data.description.name.substring(0, 16)} | Bestiary Builder`;
-
-		// get bestiary info this creature belongs to so we can get the name of the bestiary
-		{
-			const { success, data, error } = await useFetch<Bestiary>(`/api/bestiary/${this.rawInfo?.bestiary.toString()}`);
-			if (success) {
-				this.bestiary = data;
-				this.isOwner = store.user?._id === this.bestiary.owner;
-				this.isEditor = (this.bestiary?.editors ?? []).includes(store.user?._id ?? "");
-				if (this.isOwner || this.isEditor)
-					this.shouldShowEditor = true;
-			}
-			else {
-				this.bestiary = null;
-				toast.error(error);
-			}
-		}
-		this.innateSpells = {
-			0: this.data.spellcasting.innateSpells.spellList[0].map(spell => spell.spell),
-			1: this.data.spellcasting.innateSpells.spellList[1].map(spell => spell.spell),
-			2: this.data.spellcasting.innateSpells.spellList[2].map(spell => spell.spell),
-			3: this.data.spellcasting.innateSpells.spellList[3].map(spell => spell.spell)
-		};
-
-		// if the user had changes without saving, stop them from closing the page without confirming.
-		window.addEventListener("beforeunload", (event) => {
-			// haven't figured out yet how to destroy the event listener upon unmount so for now this confirms that the
-			// warning only shows if they are in the statblock editor
-			if (this.madeChanges && (this.isOwner || this.isEditor) && location.pathname.split("/")[1] === "statblock-editor") {
-				event.preventDefault();
-				event.returnValue = true;
-			}
-		});
-
-		const getClipboardText = async () => {
-			if (document.hasFocus()) {
-				try {
-					this.clipboardText = await navigator.clipboard.readText();
-				}
-				catch {}
-			}
-		};
-		//call immediately and then check every two seconds.
-		await getClipboardText();
-		this.clipboardInterval = setInterval(getClipboardText, 2000);
-
-		// watch data only once, as traversing the object deeply is expensive.
-		// re-registered upon saving.
-		// need a set time out otherwise it triggers upon mounting for some reason
-		setTimeout(() => {
-			const unwatch = this.$watch(
-				"data",
-				() => {
-					this.madeChanges = true;
-					unwatch();
-				},
-				{ deep: true }
-			);
-		}, 1);
-		loader.hide();
-	},
-	unmounted() {
-		clearInterval(this.clipboardInterval);
-	},
-	methods: {
-		getDraggableKey(item: any) {
-			return item;
-		},
-		async exportStatblock() {
-			const text = JSON.stringify({ ...this.data, isBB: true }, null, 2);
-			await navigator.clipboard.writeText(text);
-			this.clipboardText = text;
-			toast.info("Exported this statblock to your clipboard.");
-		},
-		async importFromPaste() {
-			if (!this.canPasteBBStatblock)
-				return;
-			try {
-				const parsed = JSON.parse(this.clipboardText);
-				delete parsed.isBB;
-				this.data = parsed;
-				toast.success("Successfully pasted creature!");
-			}
-			catch {}
-		},
-		async import5etools() {
-			if (this.toolsjson.startsWith("___")) {
-				toast.error("You copied the markdown code, not the JSON.");
-				return;
-			}
-			try {
-				const json = JSON.parse(this.toolsjson);
-				const { success, data, error } = await useFetch<{ stats: Statblock; notices: { [key: string]: string[] } }>("/api/5etools-import", "POST", json);
-				if (!success)
-					throw error;
-				this.data = data?.stats;
-				this.notices = data?.notices;
-				this.toolsjson = "";
-				toast.success(`Successfully imported ${this.data.description.name}`);
-			}
-			catch (e) {
-				console.error(e);
-				toast.error("Failed to import this creature");
-			}
-		},
-		async importBestiaryBuilder() {
-			try {
-				let creature = JSON.parse(this.bestiaryBuilderJson);
-				if (Array.isArray(creature))
-					creature = creature[0];
-				// Validate input
-				const { success, error } = await useFetch("/api/validate/creature", "POST", creature);
-				// Succesful?:
-				if (success) {
-					this.data = creature;
-					this.notices = {};
-					this.bestiaryBuilderJson = "";
-					toast.success(`Successfully imported ${this.data.description.name}`);
-				}
-				else {
-					toast.error(error.replaceAll("\n", "<br />"), {
-						duration: 0
-					});
-				}
-				this.showImportModal = false;
-			}
-			catch (e) {
-				console.error(e);
-				toast.error("Failed to import this creature");
-			}
-		},
-		showSlides(n: number): void {
-			if (this.slideIndex === n)
-				return;
-
-			for (let i = 0; i < tabs.length; i++) {
-				const tab = tabs[i];
-				if (i !== n - 1) {
-					tab.setAttribute("aria-selected", "false");
-					tab.tabIndex = -1;
-				}
-				else {
-					tab.setAttribute("aria-selected", "true");
-					tab.removeAttribute("tabindex");
-					tab.focus();
-				}
-			}
-
-			for (let i = 0; i < tabsContent.length; i++) {
-				if (i !== n - 1)
-					tabsContent[i].style.display = "none";
-				else
-					tabsContent[i].style.display = "block";
-			}
-
-			this.slideIndex = n;
-		},
-		moveSlide(event: KeyboardEvent): void {
-			const currentSlide = this.slideIndex;
-			let moveToSlide = 0;
-			switch (event.key) {
-				case "ArrowLeft":
-					if (currentSlide === 1)
-						moveToSlide = tabs.length;
-					else moveToSlide = currentSlide - 1;
-					break;
-
-				case "ArrowRight":
-					if (currentSlide === tabs.length)
-						moveToSlide = 1;
-					else moveToSlide = currentSlide + 1;
-					break;
-
-				case "Home":
-					moveToSlide = 1;
-					break;
-
-				case "End":
-					moveToSlide = tabs.length;
-					break;
-			}
-
-			if (moveToSlide) {
-				event.stopPropagation();
-				event.preventDefault();
-				this.showSlides(moveToSlide);
-			}
-		},
-		changeCR(isIncrease: boolean): void {
-			let cr = this.data.description.cr;
-
-			if (cr === 0 && isIncrease) {
-				cr = 0.125;
-			}
-			else if (cr === 0.125 && isIncrease) {
-				cr = 0.25;
-			}
-			else if (cr === 0.25 && isIncrease) {
-				cr = 0.5;
-			}
-			else if (cr === 0.5 && isIncrease) {
-				cr = 1;
-			}
-			else if (cr === 0.125 && !isIncrease) {
-				cr = 0;
-			}
-			else if (cr === 0.25 && !isIncrease) {
-				cr = 0.125;
-			}
-			else if (cr === 0.5 && !isIncrease) {
-				cr = 0.25;
-			}
-			else if (cr === 1 && !isIncrease) {
-				cr = 0.5;
-			}
-			else {
-				if (isIncrease)
-					cr = Math.min(30, cr + 1);
-				else cr = Math.max(0, cr - 1);
-			}
-
-			this.data.description.cr = cr;
-		},
-		addNewSkill(): void {
-			if (!this.newSkillName) {
-				this.$toast.error("No skill chosen.");
-				return;
-			}
-			if (this.data.abilities.skills.some(obj => obj.skillName === this.newSkillName)) {
-				this.$toast.error("You already have this skill.");
-				return;
-			}
-
-			this.data.abilities.skills.push({
-				skillName: this.newSkillName,
-				isHalfProficient: false,
-				isProficient: true,
-				isExpertise: false,
-				override: null
-			});
-
-			this.newSkillName = "";
-		},
-		addNewSpeed() {
-			if (!this.newSpeedName) {
-				this.$toast.error("No speed chosen.");
-				return;
-			}
-			if (this.data.core.speed.some(obj => obj.name === this.newSpeedName)) {
-				this.$toast.error("You already have this speed.");
-				return;
-			}
-			this.data.core.speed.push({ name: this.newSpeedName, value: 30, unit: "ft", comment: "" });
-			this.newSpeedName = "";
-		},
-		addNewSense() {
-			if (!this.newSenseName) {
-				this.$toast.error("No sense chosen.");
-				return;
-			}
-			if (this.data.core.senses.some(obj => obj.name === this.newSenseName)) {
-				this.$toast.error("You already have this sense.");
-				return;
-			}
-			this.data.core.senses.push({ name: this.newSenseName, value: 30, unit: "ft", comment: "" });
-			this.newSenseName = "";
-		},
-		disableOtherSkills(index: number, type: "prof" | "exp" | "halfprof", value: boolean): void {
-			if (!value && this.data.abilities.skills) {
-				if (type === "prof") {
-					this.data.abilities.skills[index].isExpertise = false;
-					this.data.abilities.skills[index].isHalfProficient = false;
-				}
-				if (type === "exp") {
-					this.data.abilities.skills[index].isProficient = false;
-					this.data.abilities.skills[index].isHalfProficient = false;
-				}
-				if (type === "halfprof") {
-					this.data.abilities.skills[index].isExpertise = false;
-					this.data.abilities.skills[index].isProficient = false;
-				}
-			}
-		},
-		deleteSkill(index: number): void {
-			this.data.abilities.skills?.splice(index, 1);
-		},
-		deleteFeature(type: "features" | "actions" | "bonus" | "reactions" | "legendary" | "mythic" | "lair" | "regional", index: number): void {
-			this.data.features[type].splice(index, 1);
-		},
-		createNewFeature(type: "features" | "actions" | "bonus" | "reactions" | "legendary" | "mythic" | "lair" | "regional"): void {
-			this.data.features[type][this.data.features[type].length] = {
-				name: `New Feature ${this.data.features[type].length + 1}`,
-				description: "",
-				automation: null
-			};
-		},
-		spellLevelList(): number[] {
-			const sClass = this.data.spellcasting.casterSpells.castingClass;
-			const slots = this.data.spellcasting.casterSpells.spellSlotList;
-
-			if (sClass === "Warlock" && slots) {
-				// @ts-expect-error It's complicated
-				return Array.from({ length: Object.keys(slots)[0] }, (_, index) => index + 1);
-			}
-			if (slots)
-				return Object.keys(slots).map(str => Number.parseInt(str));
-			return [];
-		},
-		getSpellsByLevel(level: number): string[] {
-			// this function is needed for typescript.
-			if (level < 0 || level > 9)
-				return [];
-			return spellList[level as 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9];
-		},
-		clearCasting() {
-			this.data.spellcasting.casterSpells.castingClass = null;
-			this.data.spellcasting.casterSpells.casterLevel = null;
-			this.data.spellcasting.casterSpells.spellList = [[], [], [], [], [], [], [], [], [], []];
-			this.data.spellcasting.casterSpells.spellSlotList = {};
-			this.data.spellcasting.casterSpells.spellCastingAbility = null;
-			this.data.spellcasting.casterSpells.spellBonusOverride = null;
-			this.data.spellcasting.casterSpells.spellDcOverride = null;
-		},
-		async saveStatblock() {
-			if (!this.rawInfo)
-				return;
-			this.rawInfo.stats = this.data;
-			const loader = $loading.show();
-			// Send to backend
-			const { success, error } = await useFetch<Creature>(`/api/creature/${this.rawInfo._id?.toString()}/update`, "POST", this.rawInfo);
-			if (success) {
-				toast.success("Saved stat block");
-				this.madeChanges = false;
-				// watch data only once, as traversing the object deeply is expensive.
-				const unwatch = this.$watch(
-					"data",
-					() => {
-						this.madeChanges = true;
-						unwatch();
-					},
-					{ deep: true }
-				);
-			}
-			else {
-				toast.error(`Error: ${error}`, { duration: 10000 });
-			}
-			loader.hide();
-		},
-		async exportToImage() {
-			const filter = (node: HTMLElement) => {
-				return (node.tagName !== "IMG");
-			};
-
-			const doc = document.getElementById("statblock");
-			if (!doc)
-				return;
-
-			// The image converter breaks when it encounters css styles imported by monaco. Remove that from the dom, run the function, then add it again.
-			const monacoCss = document.head.querySelector(`[data-name="vs/editor/editor.main"]`);
-			monacoCss?.remove();
-
-			// convert it to an image
-			await toJpeg(doc, { filter })
-				.then((dataUrl) => {
-					const link = document.createElement("a");
-					link.download = `${this.data.description.name} from BestiaryBuilder.jpg`;
-					link.href = dataUrl;
-					link.click();
-
-					// timeout because otherwise the browser download window shows up after the toast is shown.
-					setTimeout(() => {
-						toast.success("Statblock successfully exported to an image!");
-						toast.warning("If the statblock contained images, these were ignored due to technical limitations.");
-					}, 1000);
-				});
-
-			if (monacoCss)
-				document.head.appendChild(monacoCss);
-		},
-		getSpellSlots
 	}
-});
+
+	for (let i = 0; i < tabsContent.length; i++) {
+		if (i !== n - 1)
+			tabsContent[i].style.display = "none";
+		else
+			tabsContent[i].style.display = "block";
+	}
+
+	slideIndex.value = n;
+};
+
+const moveSlide = (event: KeyboardEvent) => {
+	const currentSlide = slideIndex.value;
+	let moveToSlide = 0;
+	switch (event.key) {
+		case "ArrowLeft":
+			if (currentSlide === 1)
+				moveToSlide = tabs.length;
+			else moveToSlide = currentSlide - 1;
+			break;
+
+		case "ArrowRight":
+			if (currentSlide === tabs.length)
+				moveToSlide = 1;
+			else moveToSlide = currentSlide + 1;
+			break;
+
+		case "Home":
+			moveToSlide = 1;
+			break;
+
+		case "End":
+			moveToSlide = tabs.length;
+			break;
+	}
+
+	if (moveToSlide) {
+		event.stopPropagation();
+		event.preventDefault();
+		showSlides(moveToSlide);
+	}
+};
+
+// utils
+const changeCR = (isIncrease: boolean) => {
+	let cr = data.value.description.cr;
+
+	if (cr === 0 && isIncrease) {
+		cr = 0.125;
+	}
+	else if (cr === 0.125 && isIncrease) {
+		cr = 0.25;
+	}
+	else if (cr === 0.25 && isIncrease) {
+		cr = 0.5;
+	}
+	else if (cr === 0.5 && isIncrease) {
+		cr = 1;
+	}
+	else if (cr === 0.125 && !isIncrease) {
+		cr = 0;
+	}
+	else if (cr === 0.25 && !isIncrease) {
+		cr = 0.125;
+	}
+	else if (cr === 0.5 && !isIncrease) {
+		cr = 0.25;
+	}
+	else if (cr === 1 && !isIncrease) {
+		cr = 0.5;
+	}
+	else {
+		if (isIncrease)
+			cr = Math.min(30, cr + 1);
+		else cr = Math.max(0, cr - 1);
+	}
+
+	data.value.description.cr = cr;
+};
 </script>
 
 <template>
@@ -726,17 +712,14 @@ export default defineComponent({
 										<input v-model="data.core.speed[index].comment" type="text" placeholder="Comment...">
 										<span class="grid five-five">
 											<font-awesome-icon v-tooltip="'Delete this speed'" :icon="['fas', 'trash']" class="button-icon" @click="data.core.speed.splice(index, 1)" />
-											<!-- <font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle button-icon" /> -->
+											<font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle button-icon" />
 										</span>
 									</div>
 								</LabelledComponent>
 							</template>
 							<template #footer>
 								<LabelledComponent title="Add speed" takes-custom-text-input for="addspeed">
-									<v-select v-model="newSpeedName" :options="['Walk', 'Swim', 'Fly', 'Climb', 'Burrow']" :taggable="true" :push-tags="true" input-id="addspeed" placeholder="Select speed" />
-									<button class="btn" @click="addNewSpeed">
-										Create
-									</button>
+									<v-select :options="['Walk', 'Swim', 'Fly', 'Climb', 'Burrow']" :taggable="true" :push-tags="true" input-id="addspeed" placeholder="Select speed" @option:selected="(selected : string) => (addNewSpeed(selected))" />
 								</LabelledComponent>
 							</template>
 						</Draggable>
@@ -760,17 +743,14 @@ export default defineComponent({
 										<input v-model="element.comment" type="text" placeholder="Comment...">
 										<span class="grid five-five">
 											<font-awesome-icon v-tooltip="'Delete this sense'" :icon="['fas', 'trash']" class="button-icon" @click="data.core.senses.splice(index, 1)" />
-											<!-- <font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle button-icon" /> -->
+											<font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle button-icon" />
 										</span>
 									</div>
 								</LabelledComponent>
 							</template>
 							<template #footer>
 								<LabelledComponent title="Add sense" takes-custom-text-input for="addsense">
-									<v-select v-model="newSenseName" :options="['Darkvision', 'Blindsight', 'Truesight', 'Tremorsense']" :taggable="true" :push-tags="true" input-id="addsense" placeholder="Select sense" />
-									<button class="btn" @click="data.core.senses.push({ name: newSenseName, value: 30, unit: 'ft', comment: '' })">
-										Create
-									</button>
+									<v-select :options="['Darkvision', 'Blindsight', 'Truesight', 'Tremorsense']" :taggable="true" :push-tags="true" input-id="addsense" placeholder="Select sense" @option:selected="(selected : string) => (addNewSense(selected))" />
 								</LabelledComponent>
 								<LabelledNumberInput v-model="data.misc.passivePerceptionOverride" title="Passive perc override" :step="1" :is-clearable="true" label-id="passivePercOverride" />
 							</template>
@@ -858,14 +838,11 @@ export default defineComponent({
 							</LabelledComponent>
 							<LabelledComponent title="Add new skill" for="addnewskill">
 								<v-select
-									v-model="newSkillName"
 									placeholder="Select skill"
 									:options="['Acrobatics', 'Animal Handling', 'Arcana', 'Athletics', 'Deception', 'History', 'Initiative', 'Insight', 'Intimidation', 'Investigation', 'Medicine', 'Nature', 'Perception', 'Performance', 'Persuasion', 'Religion', 'Sleight of Hand', 'Stealth', 'Survival']"
 									input-id="addnewskill"
+									@option:selected="(selected : string) => (addNewSkill(selected))"
 								/>
-								<button class="btn editor-field__plus-button" @click="addNewSkill()">
-									New Skill
-								</button>
 							</LabelledComponent>
 						</div>
 					</div>
@@ -917,7 +894,7 @@ export default defineComponent({
 										<div class="feature-button__container">
 											<FeatureWidget :index="index" :type="fType" :data="data.features[fType][index]" :creature-name="data.description.name" />
 											<span class="delete-button" aria-label="Delete feature" @click="deleteFeature(fType, index)"><font-awesome-icon :icon="['fas', 'trash']" /></span>
-											<!-- <font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle" /> -->
+											<font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle" />
 										</div>
 									</LabelledComponent>
 								</template>
@@ -1285,6 +1262,7 @@ export default defineComponent({
 	padding-bottom: 8px;
 	cursor: grab;
 	color: orangered;
+	z-index: 100;
 
 	&:active {
 		cursor: grabbing;

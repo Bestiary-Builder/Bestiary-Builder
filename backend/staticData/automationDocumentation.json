@@ -33,7 +33,7 @@
 		"opt": {
 			"hit": "A list of effects to execute on a hit.",
 			"miss": "A list of effects to execute on a miss.",
-			"attackBonus": "*optional* - An IntExpression that details what attack bonus to use (defaults to caster’s spell attack mod).",
+			"attackBonus": "*optional* - An IntExpression that details what attack bonus to use (defaults to caster's spell attack mod).",
 			"adv": "*optional* - An IntExpression that details whether the attack has inherent advantage or not. `0` for flat, `1` for Advantage, `2` for Elven Accuracy, `-1` for Disadvantage (Default is flat)."
 		},
 		"variables": {
@@ -67,7 +67,7 @@
 			"stat": "The type of saving throw.",
 			"fail": "A list of effects to execute on a failed save.",
 			"success": "A list of effects to execute on a successful save.",
-			"dc": "*optional* - An IntExpression that details what DC to use (defaults to caster’s spell DC).",
+			"dc": "*optional* - An IntExpression that details what DC to use (defaults to caster's spell DC).",
 			"adv": "*optional* - Whether the saving throw should have advantage by default (`-1` = disadvantage, `1` = advantage, `0` = no advantage)."
 		},
 		"variables": {
@@ -102,7 +102,7 @@
 			"overheal": "*optional* - Whether this damage should allow a target to exceed its hit point maximum.",
 			"higher": "*optional* - How much to add to the damage when a spell is cast at a certain level.",
 			"cantripScale": "*optional* - Whether this roll should scale like a cantrip.",
-			"fixedValue": "*optional* - If `true`, won’t add any bonuses to damage from `-d` arguments or damage bonus effects."
+			"fixedValue": "*optional* - If `true`, won't add any bonuses to damage from `-d` arguments or damage bonus effects."
 		},
 		"variables": {
 			"lastDamage": {
@@ -114,7 +114,7 @@
 		"ts": "{\n    type: \"damage\";\n    damage: AnnotatedString;\n    overheal?: boolean;\n    higher?: {int: string};\n    cantripScale?: boolean;\n    fixedValue?: boolean;\n}"
 	},
 	"temphp": {
-		"desc": "Sets the target’s THP. It must be inside a Target effect.",
+		"desc": "Sets the target's THP. It must be inside a Target effect.",
 		"opt": {
 			"amount": "How much temp HP the target should have. Can use variables defined in a Meta tag.",
 			"higher": "*optional* - How much to add to the THP when a spell is cast at a certain level.",
@@ -139,19 +139,19 @@
 			"buttons": "*optional, default no effects* - The buttons granted by this effect. See [ButtonInteraction](https://avrae.readthedocs.io/en/stable/automation_ref.html#buttoninteraction)",
 			"end": "*optional, default false* - Whether the effect timer should tick on the end of the turn, rather than start.",
 			"conc": "*optional, default false* - Whether the effect requires concentration.",
-			"desc": "*optional* - The description of the effect (displays on combatant’s turn).",
+			"desc": "*optional* - The description of the effect (displays on combatant's turn).",
 			"stacking": "*optional, default false* - If true, if another effect with the same name is found on the target, instead of overwriting, add a child effect with name `{name} x{count}` and no description, duration, concentration, attacks, or buttons.",
-			"save_as": "*optional, default None* - If supplied, saves an `IEffectMetaVar` to the automation runtime, which can be used in another IEffect’s `parent` key to set its parent to this effect. Must be a valid identifier.",
-			"parent": "*optional, default None* - If supplied, sets the created effect’s parent to the given effect. This must be the name of an existing `IEffectMetaVar`.\n - If `parent` is supplied but the parent effect does not exist, will not set a parent.\n - If `conc` is true, the given parent effect will take priority over the concentration effect.\n - If `stacking` is true and a valid stack parent exists, the stack parent will take priority over the given parent.",
+			"save_as": "*optional, default None* - If supplied, saves an `IEffectMetaVar` to the automation runtime, which can be used in another IEffect's `parent` key to set its parent to this effect. Must be a valid identifier.",
+			"parent": "*optional, default None* - If supplied, sets the created effect's parent to the given effect. This must be the name of an existing `IEffectMetaVar`.\n - If `parent` is supplied but the parent effect does not exist, will not set a parent.\n - If `conc` is true, the given parent effect will take priority over the concentration effect.\n - If `stacking` is true and a valid stack parent exists, the stack parent will take priority over the given parent.",
 			"target_self": "*optional, default false* - If true, the effect will be applied to the caster of the action, rather than the target.",
-			"tick_on_caster": "*optional, default false* - If true, the effect’s duration will be dependent on the caster of the action, rather than the target. For example, a `tick_on_caster` effect with a duration of 1 will last until the target of the *caster’s* next turn, rather than the *target’s*.\n\nIf the caster is not in combat, this has no effect."
+			"tick_on_caster": "*optional, default false* - If true, the effect's duration will be dependent on the caster of the action, rather than the target. For example, a `tick_on_caster` effect with a duration of 1 will last until the target of the *caster's* next turn, rather than the *target's*.\n\nIf the caster is not in combat, this has no effect."
 		},
 		"url": "ieffect",
 		"ts": "{\n    type: \"ieffect2\";\n    name: string;\n    duration?: int | IntExpression;\n    effects?: PassiveEffects;\n    attacks?: AttackInteraction[];\n    buttons?: ButtonInteraction[];\n    end?: boolean;\n    conc?: boolean;\n    desc?: AnnotatedString;\n    stacking?: boolean;\n    save_as?: string;\n    parent?: string;\n    target_self?: boolean;\n    tick_on_caster?: boolean;\n}",
 		"variables": {
 			"(supplied save_as)": {
 				"type": "IEffectMetaVar or None",
-				"desc": "A reference to the effect that was added to the target. Use this in another IEffect’s `parent` key to set that IEffect’s parent to the given one."
+				"desc": "A reference to the effect that was added to the target. Use this in another IEffect's `parent` key to set that IEffect's parent to the given one."
 			}
 		}
 	},
@@ -159,51 +159,51 @@
 		"desc": "Used to specify the passive effects granted by an initiative effect.",
 		"opt": {
 			"attack_advantage": "*optional, default no advantage* - Whether this effect gives the combatant advantage on all attacks. -1 for dis, 1 for adv, 2 for elven accuracy.",
-			"to_hit_bonus": "*optional* - A bonus that this effect grants to all of the combatant’s to-hit rolls.",
-			"damage_bonus": "*optional* - A bonus that this effect grants to all of the combatant’s damage rolls.",
-			"magical_damage": "*optional, default false* - Whether this effect makes all of the combatant’s attacks do magical damage. 0 for false, anything else for true.",
-			"silvered_damage": "*optional, default false* - Whether this effect makes all of the combatant’s attacks do silvered damage. 0 for false, anything else for true.",
+			"to_hit_bonus": "*optional* - A bonus that this effect grants to all of the combatant's to-hit rolls.",
+			"damage_bonus": "*optional* - A bonus that this effect grants to all of the combatant's damage rolls.",
+			"magical_damage": "*optional, default false* - Whether this effect makes all of the combatant's attacks do magical damage. 0 for false, anything else for true.",
+			"silvered_damage": "*optional, default false* - Whether this effect makes all of the combatant's attacks do silvered damage. 0 for false, anything else for true.",
 			"resistances": "*optional* - A list of damage types and optionally modifiers (e.g. “fire”, “nonmagical slashing”) that the combatant should be resistant to while this effect is active.",
 			"immunities": "*optional* - A list of damage types and optionally modifiers (e.g. “fire”, “nonmagical slashing”) that the combatant should be immune to while this effect is active.",
 			"vulnerabilities": "*optional* - A list of damage types and optionally modifiers (e.g. “fire”, “nonmagical slashing”) that the combatant should be vulnerable to while this effect is active.",
 			"ignored_resistances": "*optional* - A list of damage types and optionally modifiers (e.g. “fire”, “nonmagical slashing”) that the combatant should not be resistant, immune, or vulnerable to while this effect is active.",
-			"ac_value": "*optional* - A value to set the combatant’s armor class to while this effect is active.\n\n**Note:** If both `ac_value` and `ac_bonus` are specified, the resulting value will be equal to `ac_value + ac_bonus`. If multiple effects specify `ac_value`, the highest value will be used.",
-			"ac_bonus": "*optional* - A bonus added to the combatant’s armor class while this effect is active.",
-			"max_hp_value": "*optional* - A value to set the combatant’s maximum hit points to while this effect is active.\n\n**Note:** If both `max_hp_value` and `max_hp_bonus` are specified, the resulting value will be equal to `max_hp_value + max_hp_bonus`. If multiple effects specify `max_hp_value`, the highest value will be used.",
-			"max_hp_bonus": "*optional* - A bonus added to the combatant’s maximum hit points while this effect is active.",
-			"save_bonus": "*optional* - A bonus that this effect grants to all of the combatant’s saving throws.",
+			"ac_value": "*optional* - A value to set the combatant's armor class to while this effect is active.\n\n**Note:** If both `ac_value` and `ac_bonus` are specified, the resulting value will be equal to `ac_value + ac_bonus`. If multiple effects specify `ac_value`, the highest value will be used.",
+			"ac_bonus": "*optional* - A bonus added to the combatant's armor class while this effect is active.",
+			"max_hp_value": "*optional* - A value to set the combatant's maximum hit points to while this effect is active.\n\n**Note:** If both `max_hp_value` and `max_hp_bonus` are specified, the resulting value will be equal to `max_hp_value + max_hp_bonus`. If multiple effects specify `max_hp_value`, the highest value will be used.",
+			"max_hp_bonus": "*optional* - A bonus added to the combatant's maximum hit points while this effect is active.",
+			"save_bonus": "*optional* - A bonus that this effect grants to all of the combatant's saving throws.",
 			"save_adv": "*optional* - A list of stat names (e.g. `strength`) that the combatant should have advantage on for their respective saving throws while this effect is active. Use `all` as a stat name to specify all stats.",
 			"save_dis": "*optional* - A list of stat names (e.g. `strength`) that the combatant should have disadvantage on for their respective saving throws while this effect is active. Use `all` as a stat name to specify all stats.",
-			"check_bonus": "*optional* - A bonus that this effect grants to all of the combatant’s skill checks.",
+			"check_bonus": "*optional* - A bonus that this effect grants to all of the combatant's skill checks.",
 			"check_adv": "*optional* - A list of skill names (e.g. `sleightOfHand`, `strength`) that the combatant should have advantage on for ability checks for while this effect is active. If a base ability is given, the advantage will apply to all skills based on that ability (e.g. strength gives advantage on athletics checks). Use `all` as a stat name to specify all skills.",
 			"check_dis": "*optional* - A list of skill names (e.g. `sleightOfHand`, `strength`) that the combatant should have disadvantage on for ability checks for while this effect is active. If a base ability is given, the disadvantage will apply to all skills based on that ability (e.g. `strength` gives disadvantage on athletics checks). Use `all` as a stat name to specify all skills.",
-			"dc_bonus": "*optional* - A bonus added to the all of the combatant’s save DCs while this effect is active."
+			"dc_bonus": "*optional* - A bonus added to the all of the combatant's save DCs while this effect is active."
 
 		},
 		"url": "PassiveEffects",
 		"ts": "{\n    attack_advantage?: IntExpression;\n    to_hit_bonus?: AnnotatedString;\n    damage_bonus?: AnnotatedString;\n    magical_damage?: IntExpression;\n    silvered_damage?: IntExpression;\n    resistances?: AnnotatedString[];\n    immunities?: AnnotatedString[];\n    vulnerabilities?: AnnotatedString[];\n    ignored_resistances?: AnnotatedString[];\n    ac_value?: IntExpression;\n    ac_bonus?: IntExpression;\n    max_hp_value?: IntExpression;\n    max_hp_bonus?: IntExpression;\n    save_bonus?: AnnotatedString;\n    save_adv?: AnnotatedString[];\n    save_dis?: AnnotatedString[];\n    check_bonus?: AnnotatedString;\n    check_adv?: AnnotatedString[];\n    check_dis?: AnnotatedString[];\n    dc_bonus?: IntExpression;\n}"
 	},
 	"AttackInteraction": {
-		"desc": "Used to specify an attack granted by an initiative effect: some automation that appears in the combatant’s `!action list` and can be run with a command.",
+		"desc": "Used to specify an attack granted by an initiative effect: some automation that appears in the combatant's `!action list` and can be run with a command.",
 		"opt": {
 			"attack": "The Attack model is any valid individual entity as exported by the attack editor on the Avrae Dashboard:```ts\n{\n    _v: 2;\n    name: string;\n    automation: Effect[];\n    verb?: string;\n    proper?: boolean;\n    criton?: number;\n    phrase?: string;\n    thumb?: string;\n    extra_crit_damage?: string;\n}```",
-			"defaultDC": "*optional* - The default saving throw DC to use when running the automation. If not provided, defaults to the targeted combatant’s default spellcasting DC (or any DC specified in the automation). Use this if the effect’s DC depends on the original caster’s DC, rather than the target’s DC.",
-			"defaultAttackBonus": "*optional* - The default attack bonus to use when running the automation. If not provided, defaults to the targeted combatant’s default attack bonus (or any attack bonus specified in the automation). Use this if the effect’s attack bonus depends on the original caster’s attack bonus, rather than the target’s attack bonus.",
-			"defaultCastingMod": "*optional* - The default spellcasting modifier to use when running the automation. If not provided, defaults to the targeted combatant’s default spellcasting modifier. Use this if the effect’s spellcasting modifier depends on the original caster’s spellcasting modifier, rather than the target’s spellcasting modifier."
+			"defaultDC": "*optional* - The default saving throw DC to use when running the automation. If not provided, defaults to the targeted combatant's default spellcasting DC (or any DC specified in the automation). Use this if the effect's DC depends on the original caster's DC, rather than the target's DC.",
+			"defaultAttackBonus": "*optional* - The default attack bonus to use when running the automation. If not provided, defaults to the targeted combatant's default attack bonus (or any attack bonus specified in the automation). Use this if the effect's attack bonus depends on the original caster's attack bonus, rather than the target's attack bonus.",
+			"defaultCastingMod": "*optional* - The default spellcasting modifier to use when running the automation. If not provided, defaults to the targeted combatant's default spellcasting modifier. Use this if the effect's spellcasting modifier depends on the original caster's spellcasting modifier, rather than the target's spellcasting modifier."
 		},
 		"url": "attackinteraction",
 		"ts": "{\n    attack: Attack;\n    defaultDC?: IntExpression;\n    defaultAttackBonus?: IntExpression;\n    defaultCastingMod?: IntExpression;\n}"
 	},
 	"ButtonInteraction": {
-		"desc": "Used to specify a button that will appear on the targeted combatant’s turn and execute some automation when pressed.\n\n**Note:** Any initiative effects applying an offensive effect to the caster will not be considered when a ButtonInteraction is run, to prevent scenarios where an effect granting a damage bonus to the caster increases the damage done by a damage over time effect and other similar scenarios.\n\nYou may think of this as a ButtonInteraction’s caster being a temporary actor without any active initiative effects.",
+		"desc": "Used to specify a button that will appear on the targeted combatant's turn and execute some automation when pressed.\n\n**Note:** Any initiative effects applying an offensive effect to the caster will not be considered when a ButtonInteraction is run, to prevent scenarios where an effect granting a damage bonus to the caster increases the damage done by a damage over time effect and other similar scenarios.\n\nYou may think of this as a ButtonInteraction's caster being a temporary actor without any active initiative effects.",
 		"opt": {
 			"automation": "The automation to run when this button is pressed.",
 			"label": "The label displayed on the button.",
 			"verb": "*optional, default “uses {label}”* - The verb to use for the displayed output when the button is pressed (e.g. “is on fire” would display “NAME is on fire!”).",
 			"style": "*optional, default blurple* - The color of the button (1 = blurple, 2 = grey, 3 = green, 4 = red).",
-			"defaultDC": "*optional* - The default saving throw DC to use when running the automation. If not provided, defaults to the targeted combatant’s default spellcasting DC (or any DC specified in the automation). Use this if the effect’s DC depends on the original caster’s DC, rather than the target’s DC.",
-			"defaultAttackBonus": "*optional* - The default attack bonus to use when running the automation. If not provided, defaults to the targeted combatant’s default attack bonus (or any attack bonus specified in the automation). Use this if the effect’s attack bonus depends on the original caster’s attack bonus, rather than the target’s attack bonus.",
-			"defaultCastingMod": "*optional* - The default spellcasting modifier to use when running the automation. If not provided, defaults to the targeted combatant’s default spellcasting modifier. Use this if the effect’s spellcasting modifier depends on the original caster’s spellcasting modifier, rather than the target’s spellcasting modifier."
+			"defaultDC": "*optional* - The default saving throw DC to use when running the automation. If not provided, defaults to the targeted combatant's default spellcasting DC (or any DC specified in the automation). Use this if the effect's DC depends on the original caster's DC, rather than the target's DC.",
+			"defaultAttackBonus": "*optional* - The default attack bonus to use when running the automation. If not provided, defaults to the targeted combatant's default attack bonus (or any attack bonus specified in the automation). Use this if the effect's attack bonus depends on the original caster's attack bonus, rather than the target's attack bonus.",
+			"defaultCastingMod": "*optional* - The default spellcasting modifier to use when running the automation. If not provided, defaults to the targeted combatant's default spellcasting modifier. Use this if the effect's spellcasting modifier depends on the original caster's spellcasting modifier, rather than the target's spellcasting modifier."
 		},
 		"url": "buttoninteraction",
 		"ts": "{\n    automation: Effect[];\n    label: AnnotatedString;\n    verb?: AnnotatedString;\n    style?: IntExpression;\n    defaultDC?: IntExpression;\n    defaultAttackBonus?: IntExpression;\n    defaultCastingMod?: IntExpression;\n}"
@@ -223,9 +223,9 @@
 			"name": "What to save the result as.",
 			"higher": "*optional* - How much to add to the roll when a spell is cast at a certain level.",
 			"cantripScale": "*optional* - Whether this roll should scale like a cantrip.",
-			"hidden": "*optional* - If `true`, won’t display the roll in the Meta field, or apply any bonuses from `-d`.",
+			"hidden": "*optional* - If `true`, won't display the roll in the Meta field, or apply any bonuses from `-d`.",
 			"displayName": "The name to display in the Meta field. If left blank, it will use the saved name.",
-			"fixedValue": "*optional* - If `true`, won’t add any bonuses to damage from `-d` arguments or damage bonus effects."
+			"fixedValue": "*optional* - If `true`, won't add any bonuses to damage from `-d` arguments or damage bonus effects."
 		},
 		"variables": {
 			"(supplied name)": {
@@ -243,7 +243,7 @@
 	"text": {
 		"desc": "Outputs a short amount of text in the resulting embed.",
 		"opt": {
-			"text": "Either:\n\nAn AnnotatedString (the text to display).\n\nAn AbilityReference (see [AbilityReference](https://avrae.readthedocs.io/en/stable/automation_ref.html#abilityreference)). Displays the ability’s description in whole.",
+			"text": "Either:\n\nAn AnnotatedString (the text to display).\n\nAn AbilityReference (see [AbilityReference](https://avrae.readthedocs.io/en/stable/automation_ref.html#abilityreference)). Displays the ability's description in whole.",
 			"title": "*optional* - Allows you to set the name of the field. Defaults to \"Effect\""
 		},
 		"url": "text",
@@ -272,13 +272,13 @@
 		"ts": "{\n    type: \"condition\";\n    condition: IntExpression;\n    onTrue: Effect[];\n    onFalse: Effect[];\n    errorBehaviour?: \"true\" | \"false\" | \"both\" | \"neither\" | \"raise\";\n}"
 	},
 	"counter": {
-		"desc": "Uses a number of charges of the given counter, and displays the remaining amount and delta.\n\n**Note:** Regardless of the current target, this effect will always use the *caster’s* counter/spell slots!",
+		"desc": "Uses a number of charges of the given counter, and displays the remaining amount and delta.\n\n**Note:** Regardless of the current target, this effect will always use the *caster's* counter/spell slots!",
 		"opt": {
 			"counter": "The name of the counter to use (case-sensitive, full match only), or a reference to a spell slot (see [SpellSlotReference](https://avrae.readthedocs.io/en/stable/automation_ref.html#spellslotreference)).",
 			"amount": "The number of charges to use. If negative, will add charges instead of using them.",
 			"allowOverflow": "*optional, default False* - If False, attempting to overflow/underflow a counter (i.e. use more charges than available or add charges exceeding max) will error instead of clipping to bounds.",
 			"errorBehaviour": "*optional, default \"warn\"* - How to behave if modifying the counter raises an error:\n`null`: All errors are silently consumed.\n`\"warn\"`: Automation will continue to run, and any errors will appear in the output. (default)\n`\"raise\"`: Raise the error and halt execution.\nSome, but not all, possible error conditions are:\nThe target does not have counters (e.g. they are a monster)\nThe counter does not exist\n`allowOverflow` is false and the new value is out of bounds",
-			"fixedValue": "*optional* - If true, won’t take into account `-amt` arguments."
+			"fixedValue": "*optional* - If true, won't take into account `-amt` arguments."
 
 		},
 		"variables": {
@@ -311,7 +311,7 @@
 		"ts": "{\n    slot: number | IntExpression;\n}"
 	},
 	"AbilityReference": {
-		"desc": "In most cases, an `AbilityReference` should not be constructed manually; use the Automation editor to select an ability instead. A list of valid abilities can be retrieved from the API at `/gamedata/limiteduse`.\n\n**Note:** The Automation Engine will make a best effort at discovering the appropriate counter to use for the given ability - in most cases this won’t affect the chosen counter, but in some cases, it may lead to some unexpected behaviour. Some examples of counter discovery include:\n\nChoosing `Channel Divinity (Paladin)` may discover a counter granted by the Cleric’s Channel Divinity feature\nChoosing `Breath Weapon (Gold)` may discover a counter for a breath weapon of a different color\nChoosing `Sorcery Points (Sorcerer)` may discover a counter granted by the Metamagic Adept feat",
+		"desc": "In most cases, an `AbilityReference` should not be constructed manually; use the Automation editor to select an ability instead. A list of valid abilities can be retrieved from the API at `/gamedata/limiteduse`.\n\n**Note:** The Automation Engine will make a best effort at discovering the appropriate counter to use for the given ability - in most cases this won't affect the chosen counter, but in some cases, it may lead to some unexpected behaviour. Some examples of counter discovery include:\n\nChoosing `Channel Divinity (Paladin)` may discover a counter granted by the Cleric's Channel Divinity feature\nChoosing `Breath Weapon (Gold)` may discover a counter for a breath weapon of a different color\nChoosing `Sorcery Points (Sorcerer)` may discover a counter granted by the Metamagic Adept feat",
 		"opt": {
 			"id": "The ID of the ability referenced.",
 			"typeId": "The DDB entity type ID of the ability referenced."
@@ -320,14 +320,14 @@
 		"ts": "{\n    id: number;\n    typeId: number;\n}"
 	},
 	"spell": {
-		"desc": "Executes the given spell’s automation as if it were immediately cast. Does not use a spell slot to cast the spell. Can only be used at the root of automation. Cannot be used inside a spell’s automation.\n\nThis is usually used in features that cast spells using alternate resources (i.e. Use Counter, Cast Spell).",
+		"desc": "Executes the given spell's automation as if it were immediately cast. Does not use a spell slot to cast the spell. Can only be used at the root of automation. Cannot be used inside a spell's automation.\n\nThis is usually used in features that cast spells using alternate resources (i.e. Use Counter, Cast Spell).",
 		"opt": {
 			"id": "The DDB entity id of the spell to cast. Use the `/gamedata/spells` API endpoint to retrieve a list of valid IDs.",
 			"level": "*optional* - The (slot) level to cast the spell at.",
-			"dc": "*optional* - The saving throw DC to use when casting the spell. If not provided, defaults to the caster’s default spellcasting DC (or any DC specified in the spell automation).",
-			"attackBonus": "*optional* - The spell attack bonus to use when casting the spell. If not provided, defaults to the caster’s default spell attack bonus (or any attack bonus specified in the spell automation).",
-			"castingMod": "*optional* - The spellcasting modifier to use when casting the spell. If not provided, defaults to the caster’s default spellcasting modifier.",
-			"parent": "*optional, default None* - If supplied, sets the spells created effect’s parent to the given effect. This must be the name of an existing `IEffectMetaVar`. Useful for handling concentration."
+			"dc": "*optional* - The saving throw DC to use when casting the spell. If not provided, defaults to the caster's default spellcasting DC (or any DC specified in the spell automation).",
+			"attackBonus": "*optional* - The spell attack bonus to use when casting the spell. If not provided, defaults to the caster's default spell attack bonus (or any attack bonus specified in the spell automation).",
+			"castingMod": "*optional* - The spellcasting modifier to use when casting the spell. If not provided, defaults to the caster's default spellcasting modifier.",
+			"parent": "*optional, default None* - If supplied, sets the spells created effect's parent to the given effect. This must be the name of an existing `IEffectMetaVar`. Useful for handling concentration."
 		},
 		"url": "cast-spell",
 		"ts": "{\n    type: \"spell\";\n    id: int;\n    level?: int;\n    dc?: IntExpression;\n    attackBonus?: IntExpression;\n    castingMod?: IntExpression;\n    parent?: string\n}"
@@ -336,8 +336,8 @@
 		"desc": "An Ability Check effect forces a targeted creature to make an ability check, optionally as a contest against the caster. It must be inside a Target effect.",
 		"opt": {
 			"ability": "The ability to make a check for. Must be one of or a list of the following:\n\n\"acrobatics\",  \"animalHandling\",  \"arcana\",  \"athletics\",  \"deception\",  \"history\",  \"initiative\",  \"insight\",  \"intimidation\",  \"investigation\",  \"medicine\",  \"nature\",  \"perception\",  \"performance\",  \"persuasion\",  \"religion\",  \"sleightOfHand\",  \"stealth\",  \"survival\",  \"strength\",  \"dexterity\",  \"constitution\",  \"intelligence\",  \"wisdom\",  \"charisma\"\n\nIf multiple skills are specified, uses the highest modifier of all the specified skills.",
-			"contestAbility": "*optional* - Which ability of the caster’s to make a contest against. Must be one of or a list of the valid skills listed above. If multiple skills are specified, uses the highest modifier of all the specified skills.\n\nMutually exclusive with `dc`.",
-			"dc": "*optional* - An IntExpression that specifies the check’s DC. If neither dc nor contestAbility is given, the check will not run either the fail or success nodes.\n\nMutually exclusive with `contestAbility`.",
+			"contestAbility": "*optional* - Which ability of the caster's to make a contest against. Must be one of or a list of the valid skills listed above. If multiple skills are specified, uses the highest modifier of all the specified skills.\n\nMutually exclusive with `dc`.",
+			"dc": "*optional* - An IntExpression that specifies the check's DC. If neither dc nor contestAbility is given, the check will not run either the fail or success nodes.\n\nMutually exclusive with `contestAbility`.",
 			"success": "*optional* - A list of effects to execute on a successful check or if the target wins the contest. Requires the `contestAbility` or `dc` attribute to be set.",
 			"fail": "*optional* - A list of effects to execute on a failed check or if the target loses the contest. Requires the `contestAbility` or `dc` attribute to be set.",
 			"contestTie": "*optional, default success* - Which list of effects to run if the ability contest results in a tie.",
@@ -366,11 +366,11 @@
 			},
 			"lastContestRollTotal": {
 				"type": "int or None",
-				"desc": "The result of the caster’s contest roll; `None` if no contest was made."
+				"desc": "The result of the caster's contest roll; `None` if no contest was made."
 			},
 			"lastContestNaturalRoll": {
 				"type": "int or None",
-				"desc": "The natural roll of the caster’s contest roll (e.g. 10 in 1d20 (10) + 5 = 15; `None` if no contest was made)."
+				"desc": "The natural roll of the caster's contest roll (e.g. 10 in 1d20 (10) + 5 = 15; `None` if no contest was made)."
 			},
 			"lastContestAbility": {
 				"type": "str or None",
