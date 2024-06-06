@@ -1262,7 +1262,6 @@ const changeCR = (isIncrease: boolean) => {
 	padding-bottom: 8px;
 	cursor: grab;
 	color: orangered;
-	z-index: 100;
 
 	&:active {
 		cursor: grabbing;
