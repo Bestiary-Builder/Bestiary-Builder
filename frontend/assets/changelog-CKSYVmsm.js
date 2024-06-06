@@ -3,6 +3,7 @@ _June 6th, 2024_
 
 - Fixed an issue where on Firefox, editing the statblock would show a paste button every two seconds and stop you from typing.
 
+---
 ## v2.2.1
 _May 31st, 2024_
 
