@@ -1,5 +1,6 @@
 const e=`## v2.2.3
 _June 7th, 2024_
+
 - Fixed an issue where full-casters would not receive a 6th level spellslot at 11th level, which has been an unnoticed bug since launch!
 
 ---
