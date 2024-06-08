@@ -25,6 +25,7 @@ coverage
 
 # Project specific
 frontend/public/sitemap.xml
+*-ti.ts
 backend/.env
 .jwtkey
 build/
