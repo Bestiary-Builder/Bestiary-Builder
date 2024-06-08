@@ -39,11 +39,13 @@ export async function startConnection() {
 		log.log("database", `Established connection to ${database.databaseName} with ${(await database.collections()).length} collections.`);
 
 		// Database change
-		const runDataBaseChange = false;
+		const runDataBaseChange = true;
 		if (runDataBaseChange) {
-			// Change speed & senses (remove 0 values)
-			const result = await collections.creatures.updateMany({}, { $pull: { "stats.core.speed": { value: 0, name: { $ne: "Walk" } }, "stats.core.senses": { value: 0 } } });
-			log.log("database", `Updated ${result.modifiedCount} creatures to remove empty speed and senses.`);
+			// Add customDescription to spells
+			const result1 = await collections.creatures.updateMany({ "stats.spellcasting.innateSpells.customDescription": { $exists: false } }, { $set: { "stats.spellcasting.innateSpells.customDescription": "" } });
+			const result2 = await collections.creatures.updateMany({ "stats.spellcasting.casterSpells.customDescription": { $exists: false } }, { $set: { "stats.spellcasting.casterSpells.customDescription": "" } });
+			log.log("database", `Updated ${result1.modifiedCount} creatures to add customDescription to innateSpells.`);
+			log.log("database", `Updated ${result2.modifiedCount} creatures to add customDescription to casterSpells.`);
 		}
 	}
 	catch (err) {
