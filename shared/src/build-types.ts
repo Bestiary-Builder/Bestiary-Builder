@@ -159,7 +159,7 @@ export interface InnateSpells {
 	noComponentsOfType: string[];
 	isPsionics: boolean;
 	displayAsAction: boolean;
-	customDescription: "";
+	customDescription: string;
 }
 
 export interface CasterSpells {
@@ -172,7 +172,7 @@ export interface CasterSpells {
 	spellCastingAbility: Stat | null;
 	spellCastingAbilityOverride: Stat | null;
 	displayAsAction: boolean;
-	customDescription: "";
+	customDescription: string;
 }
 
 export interface InnateSpellsList {
