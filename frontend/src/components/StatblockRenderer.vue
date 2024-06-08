@@ -2,8 +2,7 @@
 import { computed } from "vue";
 import Markdown from "./Markdown.vue";
 import type { SkillsEntity, Stat, Statblock } from "~/shared";
-import { SKILLS_BY_STAT, crAsString, displaySpeedOrSenses, fullSpellAbilityName, hpCalc, nthSuffix, ppCalc, signedNumber, spellAttackBonus, spellDc, statCalc } from "~/shared";
-import { capitalizeFirstLetter, displayInnateCasting } from "@/utils/displayFunctions";
+import { SKILLS_BY_STAT, capitalizeFirstLetter, crAsString, displayCasterCasting, displayInnateCasting, displaySpeedOrSenses, fullSpellAbilityName, getSpellSlots, hpCalc, nthSuffix, ppCalc, signedNumber, spellAttackBonus, spellDc, statCalc } from "~/shared";
 import { featureGenerator, resistanceGenerator, stats } from "@/utils/constants";
 
 const props = defineProps<{ data: Statblock }>();
@@ -183,20 +182,7 @@ const alphaSort = (list: string[]) => {
 
 				<p v-if="showCasterCasting && data.spellcasting.casterSpells.castingClass && data.spellcasting.casterSpells.casterLevel && data.spellcasting.casterSpells.spellSlotList">
 					<b><i>Spellcasting</i></b>
-					<span class="feature-container__desc">
-						<span v-if="!data.description.isProperNoun"> The </span> {{ data.description.isProperNoun ? data.description.name : data.description.name.toLowerCase() }} is a {{ nthSuffix(data.spellcasting.casterSpells.casterLevel) }}-level spellcaster. <span v-if="data.description.isProperNoun"> Their </span><span v-else> Its </span> spellcasting ability is {{ fullSpellAbilityName(data.spellcasting.casterSpells.spellCastingAbilityOverride ?? data.spellcasting.casterSpells.spellCastingAbility) }} (spell save DC {{ spellDc(false, data) }}, {{ spellAttackBonus(false, data) }} to hit with spell attacks). <span v-if="!data.description.isProperNoun"> It </span><span v-else> {{ data.description.name }}</span><span v-if="[&quot;Sorcerer&quot;, &quot;Bard&quot;, &quot;Ranger&quot;, &quot;Warlock&quot;].includes(data.spellcasting.casterSpells.castingClass)"> knows the following {{ data.spellcasting.casterSpells.castingClass.toLowerCase() }} spells: </span>
-						<span v-else> has the following {{ data.spellcasting.casterSpells.castingClass.toLowerCase() }} spells prepared: </span>
-
-						<div class="spell-list">
-							<div v-for="(spells, level) in data.spellcasting.casterSpells.spellList" :key="level">
-								<div v-if="(level === 0 && !['Ranger', 'Paladin'].includes(data.spellcasting.casterSpells.castingClass)) || Object.keys(data.spellcasting.casterSpells.spellSlotList).includes(level.toString())">
-									<span v-if="level === 0 && spells.length > 0"> Cantrips (at will): </span>
-									<span v-else-if="spells.length > 0"> {{ nthSuffix(level) }} level ({{ data.spellcasting.casterSpells.spellSlotList[level] }} slots): </span>
-									<i> {{ spells.sort().join(", ") }} </i>
-								</div>
-							</div>
-						</div>
-					</span>
+					<Markdown class="feature-container__desc" :text="displayCasterCasting(data)" tag="span" />
 				</p>
 			</div>
 		</div>

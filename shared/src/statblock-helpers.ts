@@ -163,6 +163,99 @@ export function spellAttackBonus(innate = false, data: Statblock) {
 	return bonus;
 }
 
+export function displayInnateCasting(data: Statblock): string {
+	if (data.spellcasting.innateSpells.customDescription.length > 0)
+		return data.spellcasting.innateSpells.customDescription;
+
+	const sData = data.spellcasting.innateSpells;
+	const name = data.description.name;
+	let output = "";
+	if (!sData.spellCastingAbility)
+		return output;
+	if (!data.description.isProperNoun && !sData.displayAsAction) {
+		output += `The ${name.toLowerCase()}'s spellcasting ability is ${fullSpellAbilityName(sData.spellCastingAbility)} (spell save DC ${spellDc(true, data)}, ${signedNumber(spellAttackBonus(true, data))} to hit with spell attacks). It can innately cast the following spells${componentsString(
+			sData.noComponentsOfType
+		)}:`;
+	}
+	else if (!data.description.isProperNoun && sData.displayAsAction) {
+		output += `The ${name.toLowerCase()} casts one of the following spells${componentsString(sData.noComponentsOfType)} and using ${fullSpellAbilityName(sData.spellCastingAbility)} as the spellcasting ability (spell save DC ${spellDc(true, data)}, ${signedNumber(spellAttackBonus(true, data))} to hit with spell attacks).`;
+	}
+	else if (data.description.isProperNoun && !sData.displayAsAction) {
+		output += `${name}'s spellcasting ability is ${fullSpellAbilityName(sData.spellCastingAbility)} (spell save DC ${spellDc(true, data)}, ${signedNumber(spellAttackBonus(true, data))} to hit with spell attacks). ${name} can innately cast the following spells${componentsString(sData.noComponentsOfType)}:`;
+	}
+	else if (data.description.isProperNoun && sData.displayAsAction) {
+		output += `${name} casts one of the following spells${componentsString(sData.noComponentsOfType)} and using ${fullSpellAbilityName(sData.spellCastingAbility)} as the spellcasting ability (spell save DC ${spellDc(true, data)}, ${signedNumber(spellAttackBonus(true, data))} to hit with spell attacks).`;
+	}
+
+	for (const times in sData.spellList) {
+		if (sData.spellList[times].length === 0)
+			continue;
+
+		if (Number.parseInt(times) === 0)
+			output += "\nAt will: ";
+		else output += `\n${times}/day${sData.spellList[times].length > 1 ? " each" : ""}: `;
+
+		output += sData.spellList[times]
+			.map(x => (x.comment.length > 0 ? `*${x.spell.toLowerCase()} (${x.comment})*` : `*${x.spell.toLowerCase()}*`))
+			.sort()
+			.join(", ");
+	}
+	return output;
+}
+
+export function displayCasterCasting(data: Statblock): string {
+	if (data.spellcasting.casterSpells.customDescription.length > 0)
+		return data.spellcasting.casterSpells.customDescription;
+	let desc = "";
+	let spellStr = "";
+	const sData = data.spellcasting.casterSpells;
+	const isProperNoun = data.description.isProperNoun;
+	const name = isProperNoun ? data.description.name : data.description.name.toLowerCase();
+	const sClass = sData.castingClass;
+	const level = sData.casterLevel;
+	const spells = sData.spellList;
+	const slots = sData.spellSlotList;
+	const abi = fullSpellAbilityName(sData.spellCastingAbilityOverride ?? sData.spellCastingAbility);
+	if (!level || !slots || !sClass)
+		return "";
+
+	const isKnownCaster = ["Sorcerer", "Bard", "Ranger", "Warlock"].includes(sClass);
+
+	desc += `${!isProperNoun ? "The " : ""}${name} is a ${nthSuffix(level)}-level spellcaster. ${isProperNoun ? "Their" : "Its"} spellcasting ability is ${abi} (spell save DC ${spellDc(false, data)}, ${spellAttackBonus(false, data)} to hit with spell attacks).`;
+	if (isKnownCaster)
+		desc += ` ${isProperNoun ? name : "It"} knows the following ${sClass.toLowerCase()} spells:`;
+	else desc += ` ${isProperNoun ? name : "It"} has the following ${sClass.toLowerCase()} spells prepared:`;
+
+	if (sClass === "Warlock") {
+		// cantrips
+		if (spells[0].length > 0)
+			spellStr += `Cantrips (at will): *${spells[0].sort().join(", ").toLowerCase()}*`;
+
+		if (level < 3) { spellStr += `\n1st level (${slots["1"]} slots): *${spells.slice(1).flat().sort().join(",").toLowerCase()}*`; }
+		else {
+			const highestSlot = Number.parseInt(Object.keys(slots ?? { 1: 1 })[0]);
+
+			spellStr += `\n1st-${nthSuffix(highestSlot)} level (${nthSuffix(slots[highestSlot])}-level slots): *${spells.slice(1).flat().sort().join(", ").toLowerCase()}*`;
+		}
+	}
+	else {
+		const noCantrips = ["Ranger", "Paladin"].includes(sClass);
+		for (const level in spells) {
+			const lSpells = spells[level];
+			if (lSpells.length > 0) {
+				if (noCantrips && level === "0")
+					break;
+				if (level === "0") { spellStr += `\nCantrips (at will): *${lSpells.sort().join(", ").toLowerCase()}*`; }
+				else {
+					const s = slots[level] > 1 ? "s" : "";
+					spellStr += `\n${nthSuffix(Number.parseInt(level))} level (${slots[level]} slot${s}): *${lSpells.sort().join(", ").toLowerCase()}*`;
+				}
+			}
+		}
+	}
+	return desc + spellStr;
+}
+
 // Adapted from: https://github.com/avrae/avrae/blob/master/cogs5e/models/homebrew/bestiary.py#L273
 // eslint-disable-next-line regexp/no-super-linear-backtracking
 const AVRAE_ATTACK_OVERRIDES_RE = /<avrae hidden>(?:(?<simple>(.*?)\|([+-]?\d*)\|(.*?))|(?<freeform>.*?))<\/avrae>/gis;

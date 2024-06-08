@@ -2,7 +2,7 @@
 import Draggable from "vuedraggable";
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { toJpeg } from "html-to-image";
-import { usePermission } from "@vueuse/core";
+import { timestamp, usePermission } from "@vueuse/core";
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
 import FeatureWidget from "@/components/FeatureWidget.vue";
 import Modal from "@/components/Modal.vue";
@@ -11,12 +11,11 @@ import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
 import LabelledNumberInput from "@/components/LabelledNumberInput.vue";
 import LabelledComponent from "@/components/LabelledComponent.vue";
 import type { Bestiary, Creature, Features, Statblock } from "~/shared";
-import { defaultStatblock, getSpellSlots, getXPbyCR, spellList, spellListFlattened } from "~/shared";
+import { capitalizeFirstLetter, defaultStatblock, getSpellSlots, getXPbyCR, spellList, spellListFlattened } from "~/shared";
 import { useFetch } from "@/utils/utils";
 import { store } from "@/utils/store";
 import { $loading } from "@/utils/app/loading";
 import { toast } from "@/utils/app/toast";
-import { capitalizeFirstLetter } from "@/utils/displayFunctions";
 import { alignments, classLevels, classes, conditionList, creatureTypes, languages, newFeatureGenerator, resistanceList, sizes, stats } from "@/utils/constants";
 
 const $route = useRoute();
@@ -161,8 +160,10 @@ const onTabFocus = async () => {
 	if (document.hidden)
 		return;
 	setTimeout(async () => {
-		if (!document.hasFocus())
-			clipboardText.value = await navigator.clipboard.readText();
+		if (!document.hasFocus()) {
+			try { clipboardText.value = await navigator.clipboard.readText(); }
+			catch {}
+		}
 	}, 200);
 };
 onMounted(() => document.addEventListener("visibilitychange", onTabFocus));
@@ -171,7 +172,8 @@ onUnmounted(() => document.removeEventListener("visibilitychange", onTabFocus));
 const onCopy = async () => {
 	if (!permissionRead.value)
 		return;
-	clipboardText.value = await navigator.clipboard.readText();
+	try { clipboardText.value = await navigator.clipboard.readText(); }
+	catch {}
 };
 onMounted(() => document.addEventListener("copy", onCopy));
 onUnmounted(() => document.removeEventListener("copy", onCopy));
@@ -212,7 +214,6 @@ const import5etools = async () => {
 		toast.success(`Successfully imported ${data.value.description.name}`);
 	}
 	catch (e) {
-		console.error(e);
 		toast.error("Failed to import this creature");
 	}
 };
@@ -423,40 +424,17 @@ watch(() => data.value.spellcasting.casterSpells.castingClass, (newValue) => {
 	data.value.spellcasting.casterSpells.spellSlotList = getSpellSlots(sClass, data.value.spellcasting.casterSpells.casterLevel);
 });
 
-const innateSpells = ref<{ [key: number]: string[] }>({
-	0: data.value.spellcasting.innateSpells.spellList[0].map(spell => spell.spell),
-	1: data.value.spellcasting.innateSpells.spellList[1].map(spell => spell.spell),
-	2: data.value.spellcasting.innateSpells.spellList[2].map(spell => spell.spell),
-	3: data.value.spellcasting.innateSpells.spellList[3].map(spell => spell.spell)
-});
-// TODO: innate spell handler or rewrite?
+const newDailyAmount = ref<number | null>(null);
 
-watch(() => innateSpells.value, () => {
-	const list = data.value.spellcasting.innateSpells.spellList;
-	// add spells to our data that we did not have in our statblock data yet but we did in our editor data
-	for (const times in innateSpells.value) {
-		for (const spell of innateSpells.value[times]) {
-			// the spell is not in our stat block data yet, so we add it.
-			if (!list[times].map(obj => obj.spell).includes(spell)) {
-				list[times].push({
-					spell,
-					comment: ""
-				});
-			}
-		}
+const addNewDaily = () => {
+	if (!newDailyAmount.value) {
+		toast.error("You did not choose an amount per day");
+		return;
 	}
-	// remove spells that we have in the statblock data but not in the editor data
-	for (const times in list) {
-		// eslint-disable-next-line ts/no-for-in-array
-		for (const spell in list[times]) {
-			if (!innateSpells.value[times].includes(list[times][spell].spell))
-				delete list[times][spell];
-		}
-
-		// remove all falsy (null/undefined/etc) from our array which delete leaves behind.
-		list[times] = list[times].filter(Boolean);
-	}
-}, { deep: true });
+	if (newDailyAmount.value >= 4)
+		data.value.spellcasting.innateSpells.spellList[newDailyAmount.value] = [];
+	newDailyAmount.value = null;
+};
 
 // slide managers for accessibility:
 const slideIndex = ref(2);
@@ -929,17 +907,21 @@ const changeCR = (isIncrease: boolean) => {
 						<div class="editor-field__container two-wide">
 							<LabelledNumberInput v-model="data.spellcasting.innateSpells.spellDcOverride" title="DC override" :step="1" :is-clearable="true" label-id="innateSpellDcOverride" />
 							<LabelledNumberInput v-model="data.spellcasting.innateSpells.spellBonusOverride" title="Attack bonus override" :step="1" :is-clearable="true" label-id="innateSpellBonusOverride" />
-							<LabelledComponent title="At will" takes-custom-text-input for="atwill">
-								<v-select v-model="innateSpells[0]" :options="spellListFlattened" multiple :deselect-from-dropdown="true" :close-on-select="false" input-id="atwill" :taggable="true" :push-tags="true" />
-							</LabelledComponent>
-							<LabelledComponent title="1/day" takes-custom-text-input for="1/day">
-								<v-select v-model="innateSpells[1]" :options="spellListFlattened" multiple :deselect-from-dropdown="true" :close-on-select="false" input-id="1/day" :taggable="true" :push-tags="true" />
-							</LabelledComponent>
-							<LabelledComponent title="2/day" takes-custom-text-input for="2/day">
-								<v-select v-model="innateSpells[2]" :options="spellListFlattened" multiple :deselect-from-dropdown="true" :close-on-select="false" input-id="2/day" :taggable="true" :push-tags="true" />
-							</LabelledComponent>
-							<LabelledComponent title="3/day" takes-custom-text-input for="3/day">
-								<v-select v-model="innateSpells[3]" :options="spellListFlattened" multiple :deselect-from-dropdown="true" :close-on-select="false" input-id="3/day" :taggable="true" :push-tags="true" />
+							<TransitionGroup name="list">
+								<template v-for="_, times in data.spellcasting.innateSpells.spellList" :key="times">
+									<LabelledComponent :title="times === '0' ? 'At will' : `${times}/day`" takes-custom-text-input :for="`innateSpellTimes${times}`">
+										<div :class="{ 'select-with-delete': parseInt(times.toString()) > 3 }">
+											<v-select v-model="data.spellcasting.innateSpells.spellList[times]" :reduce="(sp : any) => ({ spell: sp.spell ?? sp, comment: sp.comment ?? '' })" width="100%" label="spell" :options="spellListFlattened" multiple :deselect-from-dropdown="true" :close-on-select="false" :input-id="`innateSpellTimes${times}`" :taggable="true" :push-tags="true" />
+											<font-awesome-icon v-if="parseInt(times.toString()) > 3" v-tooltip="'Delete this daily amount'" :icon="['fas', 'trash']" class="delete-button button-icon" @click="delete data.spellcasting.innateSpells.spellList[times]" />
+										</div>
+									</LabelledComponent>
+								</template>
+							</TransitionGroup>
+							<LabelledComponent title="Add daily amount" for="innateSpellDailyAmount">
+								<LabelledNumberInput v-model="newDailyAmount" title="" :min="4" :step="1" :is-clearable="true" label-id="innateSpellDailyAmount" />
+								<button class="btn" @click="addNewDaily()">
+									Add
+								</button>
 							</LabelledComponent>
 
 							<LabelledComponent title="Is psionics?" for="ispsionics">
@@ -953,6 +935,9 @@ const changeCR = (isIncrease: boolean) => {
 								<button id="editspells" class="btn" @click="showSpellModal = true">
 									Edit cast level/add comment
 								</button>
+							</LabelledComponent>
+							<LabelledComponent title="Description override" for="innateDescription">
+								<textarea id="innateDescription" v-model="data.spellcasting.innateSpells.customDescription" rows="20" :maxlength="store.limits?.descriptionLength" />
 							</LabelledComponent>
 						</div>
 						<h2 class="group-header">
@@ -968,6 +953,9 @@ const changeCR = (isIncrease: boolean) => {
 
 							<LabelledNumberInput v-model="data.spellcasting.casterSpells.spellDcOverride" title="DC override" :step="1" :is-clearable="true" label-id="spellDcOverride" />
 							<LabelledNumberInput v-model="data.spellcasting.casterSpells.spellBonusOverride" title="Attack bonus override" :step="1" label-id="spellBonusOverride" />
+							<LabelledComponent title="Description override" for="casterDescription">
+								<textarea id="casterDescription" v-model="data.spellcasting.casterSpells.customDescription" rows="20" :maxlength="store.limits?.descriptionLength" />
+							</LabelledComponent>
 						</div>
 						<div v-if="data.spellcasting.casterSpells.castingClass" class="editor-field__container two-wide">
 							<LabelledComponent v-if="!['Ranger', 'Paladin'].includes(data.spellcasting.casterSpells.castingClass)" title="Cantrips" takes-custom-text-input for="cantrips">
@@ -1148,8 +1136,9 @@ const changeCR = (isIncrease: boolean) => {
 
 		.group-header {
 			text-align: center;
+			letter-spacing: -1px;
 			margin-bottom: 0.5rem;
-			border-bottom: 1px solid orangered;
+			border-bottom: 2px dotted var(--border-color-base);
 		}
 
 		.editor-field__container {
@@ -1246,10 +1235,6 @@ const changeCR = (isIncrease: boolean) => {
 	}
 }
 
-.editor hr {
-	border-color: orangered;
-}
-
 .buttons {
 	display: grid;
 	gap: 1rem;
@@ -1281,5 +1266,32 @@ const changeCR = (isIncrease: boolean) => {
 	background: red;
 	border-radius: 50%;
 	right: -10%;
+}
+
+.select-with-delete {
+	display: flex;
+
+	.v-select {
+		width: 90%;
+	}
+
+	.button-icon {
+		justify-content: center;
+		translate: 0 -5px;
+	}
+}
+
+.list-enter-active,
+.list-leave-active {
+	transition: all 0.5s ease-in-out;
+}
+
+.list-enter-from {
+	opacity: 0;
+	translate: 0 10px;
+}
+.list-leave-to {
+	opacity: 0;
+	translate: 0 -10px;
 }
 </style>

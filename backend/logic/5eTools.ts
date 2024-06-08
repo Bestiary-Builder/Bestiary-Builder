@@ -606,7 +606,8 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 				}
 
 				return false;
-			})()
+			})(),
+			customDescription: ""
 		},
 		casterSpells: {
 			casterLevel: (() => {
@@ -747,7 +748,8 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 					return null;
 				return sData.ability;
 			})(),
-			displayAsAction: false
+			displayAsAction: false,
+			customDescription: ""
 		}
 	};
 

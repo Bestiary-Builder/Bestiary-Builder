@@ -263,7 +263,7 @@ const getAutomationDescription = (): string | boolean => {
 	}
 	if (Array.isArray(auto))
 		return false;
-	if (props.data.automation || !auto || auto?.automation?.length === 0)
+	if (!props.data.automation || !auto || auto?.automation?.length === 0)
 		return false;
 	for (const field of auto?.automation?.reverse() || []) {
 		if (field?.type === "text")
@@ -397,7 +397,7 @@ const saveCustomAutomation = async () => {
 				<hr>
 				<span class="yaml-error" v-html="errorMessage" />
 			</div>
-			<div v-if="showDescriptionButtons && (errorMessage === null || errorMessage?.length === 0)">
+			<div v-if="showDescriptionButtons && (!errorMessage || errorMessage.length === 0)">
 				<hr>
 				<p class="warning">
 					Feature description and last automation text node do not match.

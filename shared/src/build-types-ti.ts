@@ -178,6 +178,7 @@ export const InnateSpells = t.iface([], {
   "noComponentsOfType": t.array("string"),
   "isPsionics": "boolean",
   "displayAsAction": "boolean",
+  "customDescription": "string"
 });
 
 export const CasterSpells = t.iface([], {
@@ -190,6 +191,7 @@ export const CasterSpells = t.iface([], {
   "spellCastingAbility": t.union("Stat", "null"),
   "spellCastingAbilityOverride": t.union("Stat", "null"),
   "displayAsAction": "boolean",
+  "customDescription": "string"
 });
 
 export const InnateSpellsList = t.iface([], {

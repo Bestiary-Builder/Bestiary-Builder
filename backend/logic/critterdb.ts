@@ -485,7 +485,8 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: string]
 			spellDcOverride: dc,
 			spellList,
 			spellSlotList,
-			displayAsAction
+			displayAsAction,
+			customDescription: ""
 		};
 	})();
 
@@ -558,7 +559,7 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: string]
 		const PER_DAY_RE = /(?<times>\d+)\/day(?: each)?: (?<spells>.+)$/gim;
 		const perDayMatch: any[] = Array.from(sData.matchAll(PER_DAY_RE));
 
-		// set our values - currently only 1/2/3 times per day is supported on bestiary builder, so we filter to those
+		// set our values
 		let oncePerDay: InnateSpellsEntity[] = [];
 		let twicePerDay: InnateSpellsEntity[] = [];
 		let thricePerDay: InnateSpellsEntity[] = [];
@@ -586,7 +587,8 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: string]
 			spellCastingAbility: ability,
 			spellBonusOverride: bonus,
 			spellDcOverride: dc,
-			noComponentsOfType
+			noComponentsOfType,
+			customDescription: ""
 		};
 	})();
 	const [features, FnoteList] = abilityParser(data.stats.additionalAbilities, 2);

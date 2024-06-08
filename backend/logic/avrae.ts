@@ -1,7 +1,7 @@
 import { app } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
 import { collections, getBestiary, incrementBestiaryViewCount } from "@/utilities/database";
-import { Id, type InnateSpellsEntity, SKILLS_BY_STAT, type SkillsEntity, type SpellCasting, type Stat, type Statblock, componentsString, crAsString, displaySpeedOrSenses, fullSpellAbilityName, hpCalc, nthSuffix, ppCalc, spellAttackBonus, spellDc, statCalc, stringToId } from "~/shared";
+import { Id, type InnateSpellsEntity, SKILLS_BY_STAT, type SkillsEntity, type SpellCasting, type Stat, type Statblock, crAsString, displayCasterCasting, displayInnateCasting, displaySpeedOrSenses, hpCalc, ppCalc, spellAttackBonus, spellDc, statCalc, stringToId } from "~/shared";
 
 // Export data
 app.get("/api/public/bestiary/:id", (req, res) => res.redirect(`/api/export/bestiary/${req.params.id}`));
@@ -50,19 +50,12 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 // Statblock functions:
 
 function knownSpells(data: SpellCasting) {
-	const dailySpells = {
-		1: [],
-		2: [],
-		3: []
-	} as {
-		[key: string]: unknown[];
-	};
+	const dailySpells: Record<string, string[]> = {};
 
 	for (const times in data.innateSpells.spellList) {
 		if (times === "0")
 			continue;
-		for (const sp of data.innateSpells.spellList[times])
-			dailySpells[times].push(sp.spell);
+		dailySpells[times] = data.innateSpells.spellList[times].map(spell => spell.spell);
 	}
 	const output = {
 		caster_spells: data.casterSpells.spellList.flat(),
@@ -135,12 +128,6 @@ function calcSkills(data: Statblock) {
 		}
 	}
 	return output;
-}
-
-function slots(num: number) {
-	if (num > 1)
-		return `(${num} slots)`;
-	return `(${num} slot)`;
 }
 
 export function getCreatureData(creature: Statblock) {
@@ -243,82 +230,23 @@ export function getCreatureData(creature: Statblock) {
 	};
 
 	const caster = creature.spellcasting.casterSpells;
-	const isNoun = creature.description.isProperNoun;
-	const name = creature.description.name;
 
 	// best not to think about this too much.
 	if (caster.casterLevel && caster.castingClass && caster.spellList.flat().length > 0) {
-		const output = `${isNoun ? "" : "The "}${name} is a ${nthSuffix(caster.casterLevel)}-level spellcaster. ${isNoun ? "Their" : "Its"} spellcasting ability is ${fullSpellAbilityName(caster.spellCastingAbilityOverride ?? caster.spellCastingAbility)} (spell save DC ${spellDc(false, creature)}, ${
-			spellAttackBonus(false, creature) >= 0 ? "+" : ""
-		}${spellAttackBonus(false, creature)} to hit with spell attacks). ${isNoun ? name : "It"} ${
-			["Sorcerer", "Bard", "Ranger", "Warlock"].includes(caster.castingClass) ? `knowns the following ${caster.castingClass.toLowerCase()} spells` : `has the following ${caster.castingClass.toLowerCase()} spells prepared`
-		}:${!["Ranger", "Paladin"].includes(caster.castingClass) && caster.spellList[0].length > 0 ? `\n\nCantrips (at will): ${caster.spellList[0].sort().join(", ").toLowerCase()}` : ""}${
-			caster.spellList[1].length > 0 ? `\n\n1st level ${slots(caster.spellSlotList![1])}: ${caster.spellList[1].sort().join(", ").toLowerCase()}` : ""
-		}${caster.spellList[2].length > 0 ? `\n\n2nd level ${slots(caster.spellSlotList![2])}: ${caster.spellList[2].sort().join(", ").toLowerCase()}` : ""}${
-			caster.spellList[3].length > 0 ? `\n\n3rd level ${slots(caster.spellSlotList![3])}: ${caster.spellList[3].sort().join(", ").toLowerCase()}` : ""
-		}${caster.spellList[4].length > 0 ? `\n\n4th level ${slots(caster.spellSlotList![4])}: ${caster.spellList[4].sort().join(", ").toLowerCase()}` : ""}${
-			caster.spellList[5].length > 0 ? `\n\n5th level ${slots(caster.spellSlotList![5])}: ${caster.spellList[5].sort().join(", ").toLowerCase()}` : ""
-		}${caster.spellList[6].length > 0 ? `\n\n6th level ${slots(caster.spellSlotList![6])}: ${caster.spellList[6].sort().join(", ").toLowerCase()}` : ""}${
-			caster.spellList[7].length > 0 ? `\n\n7th level ${slots(caster.spellSlotList![7])}: ${caster.spellList[7].sort().join(", ").toLowerCase()}` : ""
-		}${caster.spellList[8].length > 0 ? `\n\n8th level ${slots(caster.spellSlotList![8])}: ${caster.spellList[8].sort().join(", ").toLowerCase()}` : ""}${
-			caster.spellList[9].length > 0 ? `\n\n9th level ${slots(caster.spellSlotList![9])}: ${caster.spellList[9].sort().join(", ").toLowerCase()}` : ""
-		}`.replaceAll("\t", "");
-
 		creatureData.traits.push({
 			name: "Spellcasting",
-			description: output,
+			description: displayCasterCasting(creature),
 			automation: null
 		});
 	}
 
 	const innateCaster = creature.spellcasting.innateSpells;
 	if (innateCaster.spellCastingAbility && (innateCaster.spellList[0].length > 0 || innateCaster.spellList[1].length > 0 || innateCaster.spellList[2].length > 0 || innateCaster.spellList[3].length > 0)) {
-		const fName = `Innate Spellcasting${innateCaster.isPsionics ? " (Psionics)" : ""}`;
-		let output = "";
-
-		if (!innateCaster.displayAsAction) {
-			output += `${isNoun ? "" : "The "}${name}'s spellcasting ability is ${fullSpellAbilityName(innateCaster.spellCastingAbility)} (spell save DC ${spellDc(true, creature)}, ${spellAttackBonus(true, creature) >= 0 ? "+" : ""}${spellAttackBonus(true, creature)} to hit with spell attacks). ${
-				isNoun ? name : "It"
-			} can innately cast the following spells${componentsString(innateCaster.noComponentsOfType)}:`;
-		}
-		else {
-			output += `${isNoun ? "" : "The "}${name} casts one of the following spells${componentsString(innateCaster.noComponentsOfType)} and using ${fullSpellAbilityName(innateCaster.spellCastingAbility)} as the spellcasting ability (spell save DC ${spellDc(true, creature)}, ${
-				spellAttackBonus(true, creature) >= 0 ? "+" : ""
-			}${spellAttackBonus(true, creature)} to hit with spell attacks):`;
-		}
-
-		if (innateCaster.spellList[0].length > 0) {
-			output += `\n\nAt will: ${innateCaster.spellList[0]
-				.map(x => (x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell))
-				.sort()
-				.join(", ")
-				.toLowerCase()}`;
-		}
-		if (innateCaster.spellList[3].length > 0) {
-			output += `\n\n3/day each: ${innateCaster.spellList[3]
-				.map(x => (x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell))
-				.sort()
-				.join(", ")
-				.toLowerCase()}`;
-		}
-		if (innateCaster.spellList[2].length > 0) {
-			output += `\n\n2/day each: ${innateCaster.spellList[2]
-				.map(x => (x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell))
-				.sort()
-				.join(", ")
-				.toLowerCase()}`;
-		}
-		if (innateCaster.spellList[1].length > 0) {
-			output += `\n\n1/day each: ${innateCaster.spellList[1]
-				.map(x => (x.comment.length > 0 ? `${x.spell} (${x.comment})` : x.spell))
-				.sort()
-				.join(", ")
-				.toLowerCase()}`;
-		}
+		const featureName = `Innate Spellcasting${innateCaster.isPsionics ? " (Psionics)" : ""}`;
 
 		creatureData[innateCaster.displayAsAction ? "actions" : "traits"].push({
-			name: fName,
-			description: output,
+			name: featureName,
+			description: displayInnateCasting(creature),
 			automation: null
 		});
 	}

@@ -1,3 +1,13 @@
+## v2.3.0
+_June 8th, 2024_
+
+- You can now have innate spellcasting spells of any daily amount, not just 1-3.
+- You can now set custom descriptions of the spellcasting features, for when you just need a little more finegrained control.
+- Fixed an issue where the + symbol would not display for positive innate spellcasting modifiers.
+- Fixed an issue where the update from automation/description buttons for the feature editor would not display.
+- Slightly changed Statblock Editor styles to look a bit nicer.
+
+---
 ## v2.2.3
 _June 7th, 2024_
 
@@ -15,8 +25,8 @@ _May 31st, 2024_
 
 - Added the ability to paste a Bestiary Builder statblock directly into the current statblock if it was exported using the export button.
   - This means you no longer need to open a menu and paste the json directly. Simply press export on one page, and press paste on the other.
-- Fixes an issue where Animal Handling and Sleight of Hand skills would not show on the statblock since v2.0.0.
-- Fixes an issue where the feature editor could freeze and break when incomplete data is used.
+- Fixed an issue where Animal Handling and Sleight of Hand skills would not show on the statblock since v2.0.0.
+- Fixed an issue where the feature editor could freeze and break when incomplete data is used.
 
 ---
 ## v2.2.0

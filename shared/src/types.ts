@@ -153,6 +153,7 @@ export const defaultStatblock: Statblock = {
 			noComponentsOfType: ["Material", "Verbal", "Somatic"],
 			isPsionics: false,
 			displayAsAction: false,
+			customDescription: ""
 		},
 		casterSpells: {
 			casterLevel: null,
@@ -164,6 +165,7 @@ export const defaultStatblock: Statblock = {
 			spellDcOverride: null,
 			spellBonusOverride: null,
 			displayAsAction: false,
+			customDescription: ""
 		},
 	},
 	misc: {
