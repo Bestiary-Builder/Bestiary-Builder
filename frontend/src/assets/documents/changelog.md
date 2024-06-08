@@ -3,6 +3,7 @@ _June 8th, 2024_
 
 - You can now have innate spellcasting spells of any daily amount, not just 1-3.
 - You can now set custom descriptions of the spellcasting features, for when you just need a little more finegrained control.
+- Fixed an issue where the spell list of warlock would not display properly.
 - Fixed an issue where the + symbol would not display for positive innate spellcasting modifiers.
 - Fixed an issue where the update from automation/description buttons for the feature editor would not display.
 - Slightly changed Statblock Editor styles to look a bit nicer.
