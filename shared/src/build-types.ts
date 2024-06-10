@@ -166,7 +166,7 @@ export interface CasterSpells {
 	casterLevel: number | null;
 	castingClass: "Wizard" | "Druid" | "Cleric" | "Bard" | "Sorcerer" | "Paladin" | "Ranger" | "Artificer" | "Warlock" | null;
 	spellList: string[][];
-	spellSlotList: SpellSlotList;
+	spellSlotList: SpellSlotList | undefined;
 	spellDcOverride: null | number;
 	spellBonusOverride: null | number;
 	spellCastingAbility: Stat | null;
