@@ -231,8 +231,7 @@ export function getCreatureData(creature: Statblock) {
 
 	const caster = creature.spellcasting.casterSpells;
 
-	// best not to think about this too much.
-	if (caster.casterLevel && caster.castingClass && caster.spellList.flat().length > 0) {
+	if (caster.casterLevel && caster.castingClass && caster.spellList.flat().length > 0 && Object.keys(caster.spellSlotList).length > 0) {
 		creatureData.traits.push({
 			name: "Spellcasting",
 			description: displayCasterCasting(creature),
