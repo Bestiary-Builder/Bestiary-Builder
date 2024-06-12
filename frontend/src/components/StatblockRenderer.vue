@@ -2,7 +2,7 @@
 import { computed } from "vue";
 import Markdown from "./Markdown.vue";
 import type { SkillsEntity, Stat, Statblock } from "~/shared";
-import { SKILLS_BY_STAT, capitalizeFirstLetter, crAsString, displayCasterCasting, displayInnateCasting, displaySpeedOrSenses, fullSpellAbilityName, getSpellSlots, hpCalc, nthSuffix, ppCalc, signedNumber, spellAttackBonus, spellDc, statCalc } from "~/shared";
+import { SKILLS_BY_STAT, capitalizeFirstLetter, crAsString, displayCasterCasting, displayInnateCasting, displaySpeedOrSenses, hpCalc, ppCalc, signedNumber, statCalc } from "~/shared";
 import { featureGenerator, resistanceGenerator, stats } from "@/utils/constants";
 
 const props = defineProps<{ data: Statblock }>();

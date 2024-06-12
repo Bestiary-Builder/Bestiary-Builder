@@ -39,27 +39,11 @@ export async function useFetch<Type>(url: string, method: "GET" | "POST" = "GET"
 
 // Login stuff:
 const clientId = import.meta.env.VITE_DISCORD_ID ?? "";
-const loginLink = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&response_type=code&scope=identify+email&redirect_uri=${encodeURIComponent(`${window.location.origin}/user`)}`;
+const loginLink = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&response_type=code&scope=identify+email&redirect_uri=${encodeURIComponent(`${window.location.origin}/api/login`)}`;
 
 export function sendToLogin(route: string) {
 	window.document.cookie = `route=${route}`;
 	window.location.href = loginLink;
-}
-export function getLoginRoute() {
-	const name = "route=";
-	const decodedCookie = decodeURIComponent(document.cookie);
-	const ca = decodedCookie.split(";");
-	// Reset cookie
-	document.cookie = "route=;";
-	for (let i = 0; i < ca.length; i++) {
-		let c = ca[i];
-		while (c.charAt(0) === " ")
-			c = c.substring(1);
-
-		if (c.indexOf(name) === 0)
-			return c.substring(name.length, c.length);
-	}
-	return "";
 }
 
 // Prefers reduced motion

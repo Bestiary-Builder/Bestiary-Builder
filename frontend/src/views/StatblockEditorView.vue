@@ -2,7 +2,7 @@
 import Draggable from "vuedraggable";
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { toJpeg } from "html-to-image";
-import { timestamp, usePermission } from "@vueuse/core";
+import { usePermission } from "@vueuse/core";
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
 import FeatureWidget from "@/components/FeatureWidget.vue";
 import Modal from "@/components/Modal.vue";
@@ -161,7 +161,9 @@ const onTabFocus = async () => {
 		return;
 	setTimeout(async () => {
 		if (!document.hasFocus()) {
-			try { clipboardText.value = await navigator.clipboard.readText(); }
+			try {
+				clipboardText.value = await navigator.clipboard.readText();
+			}
 			catch {}
 		}
 	}, 200);
@@ -172,7 +174,9 @@ onUnmounted(() => document.removeEventListener("visibilitychange", onTabFocus));
 const onCopy = async () => {
 	if (!permissionRead.value)
 		return;
-	try { clipboardText.value = await navigator.clipboard.readText(); }
+	try {
+		clipboardText.value = await navigator.clipboard.readText();
+	}
 	catch {}
 };
 onMounted(() => document.addEventListener("copy", onCopy));

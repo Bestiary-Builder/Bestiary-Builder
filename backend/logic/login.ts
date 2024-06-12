@@ -5,13 +5,13 @@ import { app, isProduction } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
 import { getUserFromSecret, updateUser } from "@/utilities/database";
 
-app.head("/api/login/:code", async (req, res) => {
+app.head("/api/login", async (req, res) => {
 	return res.sendStatus(200);
 });
-app.get("/api/login/:code", async (req, res) => {
+app.get("/api/login", async (req, res) => {
 	try {
-		const code = req.params.code;
-		let redirectUrl = `${isProduction ? "https" : "http"}://${req.get("host")}/user`;
+		const code = (req.query.code ?? "") as string;
+		let redirectUrl = `${isProduction ? "https" : "http"}://${req.get("host")}/api/login`;
 		if (!isProduction)
 			redirectUrl = redirectUrl.replace("5000", "5173");
 		const oauthData = (await fetch("https://discord.com/api/oauth2/token", {
@@ -36,7 +36,7 @@ app.get("/api/login/:code", async (req, res) => {
 		};
 		if (oauthData.error) {
 			log.error(`Discord login failed: ${oauthData.error_description} | Code: ${code}`);
-			return res.status(401).json({ error: "Failed to authenticate discord login." });
+			return res.redirect(`/user?loginError=${encodeURIComponent("Failed to authenticate discord login.")}`);
 		}
 		const userResult = (await fetch("https://discord.com/api/users/@me", {
 			headers: {
@@ -68,15 +68,17 @@ app.get("/api/login/:code", async (req, res) => {
 			});
 			res.cookie("userToken", token, { expires: new Date(new Date().getTime() + 60 * 60 * 1000 * 24 * 7), sameSite: "strict", secure: true, httpOnly: true });
 			log.info(`User with the id ${userResult.id} logged in`);
-			return res.json({});
+			// Get route cooklie
+			const route = req.cookies.route ?? "/";
+			return res.redirect(`${route}?loginSuccess=true`);
 		}
 		else {
-			return res.status(400).json({ error: "No user recieved from discord." });
+			return res.redirect(`/user?loginError=${encodeURIComponent("No user recieved from discord.")}`);
 		}
 	}
 	catch (err) {
 		log.log("critical", err);
-		return res.status(500).json({ error: "Unknown server error occured, please try again" });
+		return res.redirect(`/user?loginError=${encodeURIComponent("Unknown server error occured, please try again")}`);
 	}
 });
 app.get("/api/logout", async (req, res) => {

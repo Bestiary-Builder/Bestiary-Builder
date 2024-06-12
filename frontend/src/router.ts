@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 
 import { store } from "./utils/store";
+import { app } from "./main";
 // @ts-expect-error Comes in from vite-plugin-pages
 import fileRoutes from "~pages";
 import { routes as sharedRoutes } from "~/shared";
@@ -43,6 +44,25 @@ router.beforeEach((to, _from) => {
 		name = "Bestiary Builder";
 	document.title = name;
 	return true;
+});
+
+// Show login messages
+router.afterEach((to) => {
+	const keys = Object.keys(to.query);
+	if (keys.includes("loginSuccess") || keys.includes("loginError")) {
+		if (to.query.loginSuccess) {
+			app.config.globalProperties.$toast.success("Succesfully logged in");
+			delete to.query.loginSuccess;
+		}
+		if (to.query.loginError) {
+			app.config.globalProperties.$toast.error(`Login failed: ${to.query.loginError.toString()}`, { duration: 0 });
+			delete to.query.loginError;
+		}
+		// Remove queries from parameter
+		router.replace({ query: to.query, force: true }).catch((err) => {
+			console.error(err);
+		});
+	}
 });
 
 // Export

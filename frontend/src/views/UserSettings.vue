@@ -1,29 +1,9 @@
 <script setup lang="ts">
-import { onMounted } from "vue";
-import { useRouter } from "vue-router";
 import { store } from "@/utils/store";
-import { getLoginRoute, sendToLogin, useFetch } from "@/utils/utils";
+import { sendToLogin, useFetch } from "@/utils/utils";
 import { toast } from "@/utils/app/toast";
 import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
 import JoinPatreon from "@/components/JoinPatreon.vue";
-
-const router = useRouter();
-
-onMounted(async () => {
-	const search = new URLSearchParams(window.location.search);
-	const code = search.get("code");
-	if (code && !store.user) {
-		const { success, error } = await useFetch(`/api/login/${code}`);
-		if (success) {
-			toast.success("Succesfully logged in");
-			window.location.href = getLoginRoute();
-		}
-		else {
-			toast.error(error);
-			await router.push("/user");
-		}
-	}
-});
 
 const logoutClick = async () => {
 	const { success, error } = await useFetch("/api/logout");
