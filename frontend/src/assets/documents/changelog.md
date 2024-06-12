@@ -1,3 +1,9 @@
+## v2.3.1
+_June 12th, 2024_
+
+- Improved the login flow, and fixed some related bugs.
+
+---
 ## v2.3.0
 _June 8th, 2024_
 
