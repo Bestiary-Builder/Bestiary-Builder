@@ -19,7 +19,7 @@ export function nthSuffix(number: number) {
 		case 3:
 			return "3rd";
 		default:
-			return `${number.toString()}th`;
+			return `${(number || 0).toString()}th`;
 	}
 }
 
@@ -216,7 +216,7 @@ export function displayCasterCasting(data: Statblock): string {
 	const spells = sData.spellList;
 	const slots = sData.spellSlotList;
 	const abi = fullSpellAbilityName(sData.spellCastingAbilityOverride ?? sData.spellCastingAbility);
-	if (!level || !slots || !sClass)
+	if (!level || !slots || Object.keys(slots).length === 0 || !sClass)
 		return "";
 
 	const isKnownCaster = ["Sorcerer", "Bard", "Ranger", "Warlock"].includes(sClass);

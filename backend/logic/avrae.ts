@@ -26,9 +26,14 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 			const creature = await collections.creatures?.findOne({ _id: new Id(creatureId) });
 			if (!creature)
 				continue;
-
-			const creatureData = getCreatureData(creature.stats);
-			creatures.push(creatureData);
+			try {
+				const creatureData = getCreatureData(creature.stats);
+				creatures.push(creatureData);
+			}
+			catch (err) {
+				log.log("critical", err);
+				return res.status(500).json({ error: `Error exporting ${creature.stats.description.name}. Please contact the developers of Bestiary Builder, not Avrae.` });
+			}
 		}
 		// Return bestiary in specific format
 		const data = {
@@ -231,8 +236,7 @@ export function getCreatureData(creature: Statblock) {
 
 	const caster = creature.spellcasting.casterSpells;
 
-	// best not to think about this too much.
-	if (caster.casterLevel && caster.castingClass && caster.spellList.flat().length > 0) {
+	if (caster.casterLevel && caster.castingClass && caster.spellList.flat().length > 0 && Object.keys(caster.spellSlotList ?? {}).length > 0) {
 		creatureData.traits.push({
 			name: "Spellcasting",
 			description: displayCasterCasting(creature),

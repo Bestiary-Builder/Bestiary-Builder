@@ -166,7 +166,7 @@ export interface CasterSpells {
 	casterLevel: number | null;
 	castingClass: "Wizard" | "Druid" | "Cleric" | "Bard" | "Sorcerer" | "Paladin" | "Ranger" | "Artificer" | "Warlock" | null;
 	spellList: string[][];
-	spellSlotList: SpellSlotEntity | undefined;
+	spellSlotList: SpellSlotList | undefined;
 	spellDcOverride: null | number;
 	spellBonusOverride: null | number;
 	spellCastingAbility: Stat | null;
@@ -184,6 +184,6 @@ export interface InnateSpellsEntity {
 	comment: string;
 }
 
-export interface SpellSlotEntity {
-	[index: number]: number;
+export interface SpellSlotList {
+	[key: string]: number;
 }

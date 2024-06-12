@@ -1,5 +1,5 @@
 import { ObjectId as Id } from "bson";
-import type { SpellSlotEntity, Statblock } from "./build-types";
+import type { SpellSlotList, Statblock } from "./build-types";
 
 export { ObjectId as Id } from "bson";
 
@@ -229,7 +229,7 @@ export function getXPbyCR(cr: number) {
 	else return XPbyCR[cr] ?? 0;
 }
 
-export function getSpellSlots(sClass: string | null, level: number | null): SpellSlotEntity | undefined {
+export function getSpellSlots(sClass: string | null, level: number | null): SpellSlotList | undefined {
 	if (!sClass || !level)
 		return {};
 	if (sClass === "Warlock") {
