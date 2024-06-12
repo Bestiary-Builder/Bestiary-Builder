@@ -56,7 +56,7 @@ export const log = winston.createLogger({
 	]
 });
 
-const splitFiles = false;
+const splitFiles = true;
 // Save to file in production
 if (isProduction) {
 	// Save old files
