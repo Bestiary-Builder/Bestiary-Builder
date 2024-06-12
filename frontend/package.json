@@ -4,8 +4,9 @@
 	"version": "2.0.0",
 	"private": true,
 	"scripts": {
-		"dev": "vite",
-		"build": "run-p type-check build-only",
+		"dev": "run-p shared && vite",
+		"build": "run-p shared type-check build-only",
+		"shared": "cd ../shared && npm install && npx ts-interface-builder ./src/build-types.ts",
 		"preview": "vite preview",
 		"build-only": "vite build",
 		"type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
