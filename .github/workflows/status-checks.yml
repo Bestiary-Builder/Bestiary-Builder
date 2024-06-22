@@ -43,6 +43,9 @@ jobs:
             - name: Building the frontend
               working-directory: ./frontend
               run: bun run build
+              env:
+                  VITE_DISCORD_ID: ${{ secrets.VITE_DISCORD_ID }}
+                  VITE_ERROR_WEBHOOK: ${{ secrets.VITE_ERROR_WEBHOOK }}
             - name: Installing backend dependencies
               working-directory: ./backend
               run: bun install
