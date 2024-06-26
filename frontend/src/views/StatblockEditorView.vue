@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Draggable from "vuedraggable";
-import { computed, onMounted, onUnmounted, ref, watch } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import { toJpeg } from "html-to-image";
 import { usePermission } from "@vueuse/core";
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
@@ -30,6 +30,7 @@ onMounted(async () => {
 	const { success, data: cData, error } = await useFetch<Creature>(`/api/creature/${$route.params.id.toString()}`);
 	if (success) {
 		data.value = (cData).stats;
+		await nextTick(() => { madeChanges.value = false; });
 		rawInfo.value = cData;
 		await loadRawInfo();
 		loader.hide();
@@ -187,10 +188,9 @@ const setDocumentTitle = () => {
 	document.title = `${data.value.description.name.substring(0, 16)} | Bestiary Builder`;
 };
 
-setDocumentTitle();
 watch(() => data.value.description.name, () => {
 	setDocumentTitle();
-});
+}, { immediate: true });
 
 // draggable stuff
 const getDraggableKey = (item: any) => {
@@ -975,7 +975,7 @@ const changeCR = (isIncrease: boolean) => {
 				<hr>
 
 				<div class="buttons">
-					<button class="btn confirm" @click="saveStatblock()">
+					<button class="btn" :class="{ confirm: madeChanges }" :disabled="!madeChanges" @click="saveStatblock">
 						Save statblock
 					</button>
 				</div>
@@ -1244,6 +1244,10 @@ const changeCR = (isIncrease: boolean) => {
 	gap: 1rem;
 	grid-template-columns: 1fr;
 	margin: 1rem 25%;
+
+	:disabled {
+		cursor: not-allowed;
+	}
 }
 
 .handle {

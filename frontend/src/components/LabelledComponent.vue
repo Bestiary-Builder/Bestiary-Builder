@@ -1,14 +1,10 @@
 <script setup lang="ts">
-defineOptions({
-	inheritAttrs: false
-});
-
-withDefaults(defineProps<{ title: string; takesCustomTextInput?: boolean }>(), { takesCustomTextInput: false, number: undefined });
+const props = withDefaults(defineProps<{ title: string; takesCustomTextInput?: boolean; for?: string }>(), { takesCustomTextInput: false, number: undefined });
 </script>
 
 <template>
 	<div class="container">
-		<label class="editor-field__title" v-bind="$attrs">{{ title }}<span v-if="takesCustomTextInput" v-tooltip="'Supports custom text input'">*</span></label>
+		<label class="editor-field__title" :for="props.for">{{ title }}<span v-if="takesCustomTextInput" v-tooltip="'Supports custom text input'">*</span></label>
 		<slot />
 	</div>
 </template>

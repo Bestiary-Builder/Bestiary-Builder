@@ -1,3 +1,10 @@
+## v2.3.2
+_June 26th, 2024_
+
+- Fixed an issue where dragging to reorder speed, senses, and features was not working properly.
+- The save statblock button is now greyed out when no changes have been made.
+
+---
 ## v2.3.1
 _June 12th, 2024_
 
