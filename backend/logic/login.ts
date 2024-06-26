@@ -11,6 +11,8 @@ app.head("/api/login", async (req, res) => {
 app.get("/api/login", async (req, res) => {
 	try {
 		const code = (req.query.code ?? "") as string;
+		if (!code)
+			return res.redirect(`/user?loginError=${encodeURIComponent("No login code recieved.")}`);
 		let redirectUrl = `${isProduction ? "https" : "http"}://${req.get("host")}/api/login`;
 		if (!isProduction)
 			redirectUrl = redirectUrl.replace("5000", "5173");
