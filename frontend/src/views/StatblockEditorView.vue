@@ -975,7 +975,7 @@ const changeCR = (isIncrease: boolean) => {
 				<hr>
 
 				<div class="buttons">
-					<button class="btn" :class="{ confirm: madeChanges }" :disabled="!madeChanges" @click="saveStatblock">
+					<button class="btn" :class="{ confirm: madeChanges }" @click="saveStatblock">
 						Save statblock
 					</button>
 				</div>
