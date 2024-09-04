@@ -46,7 +46,7 @@ app.disable("x-powered-by");
 app.use(
 	rateLimit({
 		windowMs: 1000, // 1 second
-		max: isProduction ? 100 : 1000 // limit each IP to 50/1000 requests per windowMs
+		max: isProduction ? 100 : 1000 // limit each IP to 100/1000 requests per windowMs
 	})
 );
 // CORS
@@ -60,9 +60,9 @@ function errorHandler(err: Error, req: Request, res: Response, _next: NextFuncti
 	res.status(500).json({ error: "An unknown error occured." });
 }
 app.use(errorHandler);
-process.on("uncaughtException", (err) => {
-	log.log("critical", `Uncaught exception: ${err}`);
+process.on("unhandledRejection", (err, origin) => {
+	log.log("critical", `Unhandled rejection: ${err}; From: ${origin} `);
 });
-process.on("unhandledRejection", (err) => {
-	log.log("critical", `Unhandled rejection: ${err}`);
+process.on("uncaughtException", (err, origin) => {
+	log.log("critical", `Uncaught exception: ${err}. From: ${origin}`);
 });
