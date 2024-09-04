@@ -46,7 +46,7 @@
 	clear: both;
 	color: orangered;
 	direction: ltr;
-	font-size: 0.875rem;
+	font-size: 0.8rem;
 
 	&__container {
 		width: 100%;
@@ -98,7 +98,7 @@
 #footer {
 	&-sitetitle {
 		color: var(--color-base--emphasized);
-		font-size: 1.25rem;
+		font-size: 1rem;
 		font-weight: 500;
 
 		img.mw-logo-wordmark {
@@ -164,7 +164,7 @@
 	}
 
 	#footer-sitetitle {
-		font-size: 2rem;
+		font-size: 1.5rem;
 		font-weight: 700;
 	}
 }

@@ -1,6 +1,7 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import { refDebounced } from "@vueuse/core";
+import { toast } from "vue-sonner";
 import UserBanner from "@/components/UserBanner.vue";
 import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
 import StatusIcon from "@/components/StatusIcon.vue";
@@ -11,7 +12,6 @@ import StatblockRenderer from "@/components/StatblockRenderer.vue";
 import { crAsString, defaultStatblock } from "~/shared";
 import type { Bestiary, Creature, Statblock, User } from "~/shared";
 import { useFetch } from "@/utils/utils";
-import { toast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import Markdown from "@/components/Markdown.vue";
 import { creatureTypes } from "@/utils/constants";
@@ -135,7 +135,7 @@ export default defineComponent({
 			if (!this.hasPinnedBefore)
 				this.hasPinnedBefore = true;
 
-			toast.info("Pinned creature to the view. Click unpin there to go back to hover behaviour.");
+			toast.info("Pinned creature to the view", { description: "Click unpin there to go back to hover behaviour." });
 		},
 		"bestiary.status": function (newValue, _oldValue): void {
 			if (newValue === "private")
@@ -252,7 +252,7 @@ export default defineComponent({
 			}>(`/api/critterdb/${link}/${isPublic}`);
 			if (success) {
 				if (data.failedCreatures.length > 0)
-					toast.error(`Failed to parse ${data.failedCreatures.length} creatures, due to invalid data recieved.`);
+					toast.error(`Failed to parse ${data.failedCreatures.length} creatures.`, { description: "Received invalid data." });
 				for (const creature of data.failedCreatures)
 					this.notices[creature] = "Failed to parse, due to unrecognized data.";
 			}
@@ -261,7 +261,7 @@ export default defineComponent({
 				loader.hide();
 				return;
 			}
-			toast.info("Saving creatures has started. This may take a while.");
+			toast.info("Saving creatures has started.", { description: "This may take a while." });
 			const { success: cSuccess, data: creatureData, error: cError } = await useFetch<{ error?: string; ignoredCreatures: { creature: string; error: string }[] }>(`/api/bestiary/${this.bestiary?._id?.toString()}/addcreatures`, "POST", data.data.creatures);
 			if (!cSuccess) {
 				this.notices = {};
@@ -287,11 +287,11 @@ export default defineComponent({
 			}
 			catch (e) {
 				console.error(e);
-				toast.error("Something is wrong with the format of your JSON");
+				toast.error("Something is wrong with the format of your JSON.");
 				loader.hide();
 				return;
 			}
-			toast.info("Importing creatures has started. This may take a while.");
+			toast.info("Importing creatures has started.", { description: "This may take a while." });
 			const { success, data, error } = await useFetch<{ error?: string; ignoredCreatures: { creature: string; error: string }[] }>(`/api/bestiary/${this.bestiary?._id?.toString()}/addcreatures`, "POST", creatures);
 			if (!success) {
 				this.notices = {};
@@ -304,7 +304,7 @@ export default defineComponent({
 					this.notices[error.creature] = error.error;
 			}
 			else {
-				toast.success("Importing has finished!");
+				toast.success("Importing has finished.");
 			}
 
 			await this.getBestiary();
@@ -339,7 +339,7 @@ export default defineComponent({
 			const loader = $loading.show();
 			const { success, error } = await useFetch(`/api/creature/${creature._id?.toString()}/delete`);
 			if (success) {
-				toast.success("Deleted creature succesfully");
+				toast.success("Deleted creature succesfully.");
 				if (!this.bestiary)
 					return;
 				this.bestiary.creatures = this.bestiary.creatures.filter(c => c !== creature._id);
@@ -367,7 +367,7 @@ export default defineComponent({
 			const loader = $loading.show();
 			const { success, error } = await useFetch(`/api/bestiary/${this.bestiary._id?.toString()}/editors/add/${id}`);
 			if (success)
-				toast.success("Added editor succesfully");
+				toast.success("Added editor succesfully.");
 			else
 				toast.error(error);
 
@@ -380,7 +380,7 @@ export default defineComponent({
 			const loader = $loading.show();
 			const { success, error } = await useFetch(`/api/bestiary/${this.bestiary._id?.toString()}/editors/remove/${id}`);
 			if (success)
-				toast.success("Removed editor succesfully");
+				toast.success("Removed editor succesfully.");
 			else
 				toast.error(error);
 
@@ -461,8 +461,8 @@ export default defineComponent({
 			if (success) {
 				this.bookmarked = data.state;
 				if (this.bookmarked)
-					toast.success("Successfully bookmarked this bestiary!");
-				else toast.success("Successfully unbookmarked this bestiary!");
+					toast.success("Successfully bookmarked this bestiary.");
+				else toast.success("Successfully unbookmarked this bestiary.");
 			}
 			else {
 				this.bookmarked = false;
@@ -676,7 +676,7 @@ export default defineComponent({
 								</div>
 								<div class="right-side">
 									<VDropdown v-if="isOwner || isEditor" :distance="6" :positioning-disabled="store.isMobile">
-										<button v-tooltip="'Delete creature'" :aria-label="`Delete ${creature.stats.description.name}`" @click.stop.prevent="">
+										<button v-tooltip="'Delete creature'" class="delete-button" type="button" :aria-label="`Delete ${creature.stats.description.name}`" @click.stop.prevent="">
 											<font-awesome-icon :icon="['fas', 'trash']" />
 										</button>
 										<template #popper>
@@ -888,7 +888,7 @@ export default defineComponent({
 		border-radius: 2px;
 
 		h3 {
-			font-size: 1.5rem;
+			font-size: 1.2rem;
 		}
 		&.creature-tile {
 			display: flex;
@@ -898,7 +898,7 @@ export default defineComponent({
 
 			.left-side span {
 				font-style: italic;
-				font-size: 0.85rem;
+				font-size: 0.75rem;
 			}
 
 			.right-side {
@@ -915,7 +915,7 @@ export default defineComponent({
 					background: none;
 					border: none;
 					color: orangered;
-					font-size: 1.2rem;
+					font-size: 1.1rem;
 					display: flex;
 					align-items: center;
 					height: 100%;
@@ -928,6 +928,10 @@ export default defineComponent({
 					&.cr {
 						width: 5rem;
 					}
+				}
+
+				.delete-button svg {
+					translate: 0 1px;
 				}
 
 				button {
@@ -963,16 +967,16 @@ export default defineComponent({
 			}
 			&.creature-tile {
 				.left-side span {
-					font-size: 0.6rem;
+					font-size: 0.7rem;
 				}
 
 				.right-side {
 					width: 30%;
-					gap: 0.3rem;
-					justify-content: space-evenly;
+					gap: 0.4rem;
+					justify-content: right;
 
 					span {
-						font-size: 0.9rem;
+						font-size: 0.8rem;
 
 						&.cr {
 							width: 4rem;
@@ -997,6 +1001,7 @@ export default defineComponent({
 		overflow: hidden;
 		color: white;
 		max-width: 90vw;
+		font-size: 1.5rem;
 	}
 
 	.description {
@@ -1005,6 +1010,7 @@ export default defineComponent({
 		color: rgb(205, 205, 205);
 		overflow-y: hidden;
 		overflow-wrap: anywhere;
+		font-size: 0.8rem;
 		&.expanded {
 			max-height: unset;
 		}
@@ -1017,7 +1023,7 @@ export default defineComponent({
 	.footer {
 		display: grid;
 		grid-template-columns: 1fr 1fr 1fr 1fr;
-		font-size: 1rem;
+		font-size: 0.9rem;
 
 		margin-top: 0.5rem;
 

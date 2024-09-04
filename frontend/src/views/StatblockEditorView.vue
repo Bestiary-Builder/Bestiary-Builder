@@ -4,6 +4,7 @@ import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import { toJpeg } from "html-to-image";
 import { usePermission } from "@vueuse/core";
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
+import { toast } from "vue-sonner";
 import FeatureWidget from "@/components/FeatureWidget.vue";
 import Modal from "@/components/Modal.vue";
 import StatblockRenderer from "@/components/StatblockRenderer.vue";
@@ -15,8 +16,8 @@ import { capitalizeFirstLetter, defaultStatblock, getSpellSlots, getXPbyCR, spel
 import { useFetch } from "@/utils/utils";
 import { store } from "@/utils/store";
 import { $loading } from "@/utils/app/loading";
-import { toast } from "@/utils/app/toast";
 import { alignments, classLevels, classes, conditionList, creatureTypes, languages, newFeatureGenerator, resistanceList, sizes, stats } from "@/utils/constants";
+import SectionHeader from "@/components/VisualEditor/Nodes/shared/SectionHeader.vue";
 
 const $route = useRoute();
 const $router = useRouter();
@@ -84,7 +85,7 @@ const saveStatblock = async () => {
 		);
 	}
 	else {
-		toast.error(`Error: ${error}`, { duration: 10000 });
+		toast.error(`Error saving statblock.`, { duration: 10000, description: error });
 	}
 	loader.hide();
 };
@@ -608,11 +609,14 @@ const changeCR = (isIncrease: boolean) => {
 
 				<div class="editor-content">
 					<div id="tabpanel-1" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-1">
-						<div class="editor-field__container two-wide">
+						<div class="editor-field__container three-wide">
 							<LabelledComponent title="Creature name" for="creaturename">
 								<input id="creaturename" v-model="data.description.name" type="text" :maxlength="store.limits?.nameLength">
 							</LabelledComponent>
 
+							<LabelledComponent title="Image URL" for="imageurl">
+								<input id="imageurl" v-model="data.description.image" type="text" :pattern="store.limits?.imageFormats ? `(https:\/\/)(.+)(\\.${store.limits?.imageFormats.join('|\\.')})` : ''">
+							</LabelledComponent>
 							<LabelledComponent title="Proper Noun" for="propernoun">
 								<span>
 									<input id="propernoun" v-model="data.description.isProperNoun" type="checkbox"> <label for="propernoun">Toggles display as "{{ data.description.name }}" instead of "the {{ data.description.name }}"? </label>
@@ -622,13 +626,10 @@ const changeCR = (isIncrease: boolean) => {
 
 						<div class="editor-field__container one-wide">
 							<LabelledComponent title="Description" for="description">
-								<textarea id="description" v-model="data.description.description" rows="20" :maxlength="store.limits?.descriptionLength" />
+								<textarea id="description" v-model="data.description.description" rows="5" :maxlength="store.limits?.descriptionLength" />
 							</LabelledComponent>
 						</div>
-						<div class="editor-field__container two-wide">
-							<LabelledComponent title="Image URL" for="imageurl">
-								<input id="imageurl" v-model="data.description.image" type="text" :pattern="store.limits?.imageFormats ? `(https:\/\/)(.+)(\\.${store.limits?.imageFormats.join('|\\.')})` : ''">
-							</LabelledComponent>
+						<div class="editor-field__container three-wide">
 							<LabelledComponent title="Environment" for="environment">
 								<input id="environment" v-model="data.description.environment" type="text">
 							</LabelledComponent>
@@ -674,9 +675,7 @@ const changeCR = (isIncrease: boolean) => {
 								<v-select v-model="data.core.size" :options="sizes" :taggable="true" :push-tags="true" input-id="size" />
 							</LabelledComponent>
 						</div>
-						<h2 class="group-header">
-							Speed
-						</h2>
+						<SectionHeader title="Speed" />
 						<Draggable :list="data.core.speed" handle=".handle" :item-key="getDraggableKey" class="editor-field__container two-wide" :animation="150">
 							<template #item="{ element, index }">
 								<LabelledComponent :title="element.name">
@@ -705,9 +704,8 @@ const changeCR = (isIncrease: boolean) => {
 								</LabelledComponent>
 							</template>
 						</Draggable>
-						<h2 class="group-header">
-							Senses
-						</h2>
+
+						<SectionHeader title="Senses" />
 						<Draggable :list="data.core.senses" handle=".handle" :item-key="getDraggableKey" class="editor-field__container two-wide" :animation="150">
 							<template #item="{ element, index }">
 								<LabelledComponent :title="element.name">
@@ -737,9 +735,8 @@ const changeCR = (isIncrease: boolean) => {
 								<LabelledNumberInput v-model="data.misc.passivePerceptionOverride" title="Passive perc override" :step="1" :is-clearable="true" label-id="passivePercOverride" />
 							</template>
 						</Draggable>
-						<h2 class="group-header">
-							Misc
-						</h2>
+
+						<SectionHeader title="Miscellaneous" />
 						<div class="editor-field__container two-wide">
 							<LabelledComponent title="Languages" takes-custom-text-input for="languages">
 								<v-select v-model="data.core.languages" placeholder="Select a Language or type one" multiple :deselect-from-dropdown="true" :close-on-select="false" :options="languages" :taggable="true" :push-tags="true" input-id="languages" />
@@ -749,9 +746,7 @@ const changeCR = (isIncrease: boolean) => {
 					</div>
 
 					<div id="tabpanel-3" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-3">
-						<h2 class="group-header">
-							Ability Scores
-						</h2>
+						<SectionHeader title="Ability Scores" />
 						<div class="editor-field__container three-wide">
 							<LabelledNumberInput v-model="data.abilities.stats.str" title="Strength" :step="1" label-id="strStat" />
 							<LabelledNumberInput v-model="data.abilities.stats.dex" title="Dexterity" :step="1" label-id="dexStat" />
@@ -760,9 +755,7 @@ const changeCR = (isIncrease: boolean) => {
 							<LabelledNumberInput v-model="data.abilities.stats.wis" title="Wisdom" :step="1" label-id="wisStat" />
 							<LabelledNumberInput v-model="data.abilities.stats.cha" title="Charisma" :step="1" label-id="chaStat" />
 						</div>
-						<h2 class="group-header">
-							Saving Throws
-						</h2>
+						<SectionHeader title="Saving Throws" />
 						<div class="editor-field__container three-wide">
 							<LabelledNumberInput v-model="data.abilities.saves.str.override" title="Strength" :step="1" :is-clearable="true" label-id="strSave">
 								<p>
@@ -801,10 +794,9 @@ const changeCR = (isIncrease: boolean) => {
 								</p>
 							</LabelledNumberInput>
 						</div>
-						<h2 class="group-header">
-							Skills
-						</h2>
-						<div class="editor-field__container two-wide">
+
+						<SectionHeader title="Skills" />
+						<div class="editor-field__container three-wide">
 							<LabelledComponent v-for="(skill, index) in data.abilities.skills" :key="skill.skillName" :title="skill.skillName">
 								<div class="button-container">
 									<p><input :id="`${skill.skillName}prof`" v-model="skill.isProficient" type="checkbox" @click="disableOtherSkills(index, 'prof', skill.isProficient)"> <label :for="`${skill.skillName}prof`"> Proficient </label></p>
@@ -840,6 +832,8 @@ const changeCR = (isIncrease: boolean) => {
 								<input id="armorclasssource" v-model="data.defenses.ac.acSource" type="text">
 							</LabelledComponent>
 						</div>
+
+						<SectionHeader title="Resistances" />
 						<div class="editor-field__container two-wide">
 							<LabelledComponent title="Vulnerabilities" takes-custom-text-input for="vulnerabilities">
 								<v-select v-model="data.defenses.vulnerabilities" placeholder="Type vulnerabilities..." multiple :deselect-from-dropdown="true" :close-on-select="false" :options="resistanceList" :taggable="true" :push-tags="true" input-id="vulnerabilities" />
@@ -867,10 +861,9 @@ const changeCR = (isIncrease: boolean) => {
 					</div>
 					<div id="tabpanel-5" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-5">
 						<div v-for="(descText, fType) in newFeatureGenerator" :key="fType">
-							<h2 class="group-header">
-								{{ descText.replace("New ", "") }}s
-							</h2>
-							<Draggable :list="data.features[fType]" group="features" :item-key="getDraggableKey" handle=".handle" class="editor-field__container two-wide" :animation="150">
+							<SectionHeader :title="`${descText.replace('New ', '')}s`" />
+
+							<Draggable :list="data.features[fType]" group="features" :item-key="getDraggableKey" handle=".handle" class="editor-field__container three-wide" :animation="150">
 								<template #item="{ element, index }">
 									<LabelledComponent :title="element.name || `Unnamed ${index}`">
 										<div class="feature-button__container">
@@ -897,18 +890,18 @@ const changeCR = (isIncrease: boolean) => {
 						</div>
 					</div>
 					<div id="tabpanel-6" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-6">
-						<h2 class="group-header">
-							Innate Spellcasting
-						</h2>
-						<div class="editor-field__container two-wide">
+						<SectionHeader title="Innate Spellcasting" />
+						<div class="editor-field__container three-wide">
 							<LabelledComponent title="Casting ability" for="castingability">
 								<v-select v-model="data.spellcasting.innateSpells.spellCastingAbility" :options="stats" input-id="castingability" />
 							</LabelledComponent>
 							<LabelledComponent title="Not these components" for="notthesecomponents">
 								<v-select v-model="data.spellcasting.innateSpells.noComponentsOfType" :options="['Material', 'Verbal', 'Somatic']" multiple :deselect-from-dropdown="true" :close-on-select="false" input-id="notthesecomponents" />
 							</LabelledComponent>
-						</div>
-						<div class="editor-field__container two-wide">
+							<LabelledComponent title="Display as action?" for="displayasaction">
+								<span> <input id="displayasaction" v-model="data.spellcasting.innateSpells.displayAsAction" type="checkbox"> <label for="displayasaction">Toggles display as action</label> </span>
+							</LabelledComponent>
+
 							<LabelledNumberInput v-model="data.spellcasting.innateSpells.spellDcOverride" title="DC override" :step="1" :is-clearable="true" label-id="innateSpellDcOverride" />
 							<LabelledNumberInput v-model="data.spellcasting.innateSpells.spellBonusOverride" title="Attack bonus override" :step="1" :is-clearable="true" label-id="innateSpellBonusOverride" />
 							<TransitionGroup name="list">
@@ -929,10 +922,7 @@ const changeCR = (isIncrease: boolean) => {
 							</LabelledComponent>
 
 							<LabelledComponent title="Is psionics?" for="ispsionics">
-								<span> <input id="ispsionics" v-model="data.spellcasting.innateSpells.isPsionics" type="checkbox"> Toggles display as psionics </span>
-							</LabelledComponent>
-							<LabelledComponent title="Display as action?" for="displayasaction">
-								<span> <input id="displayasaction" v-model="data.spellcasting.innateSpells.displayAsAction" type="checkbox"> Toggles display as action </span>
+								<span> <input id="ispsionics" v-model="data.spellcasting.innateSpells.isPsionics" type="checkbox"> <label for="ispsionics">Toggles display as psionics</label>  </span>
 							</LabelledComponent>
 
 							<LabelledComponent title="Edit specific spells" for="editspells">
@@ -944,9 +934,8 @@ const changeCR = (isIncrease: boolean) => {
 								<textarea id="innateDescription" v-model="data.spellcasting.innateSpells.customDescription" rows="20" :maxlength="store.limits?.descriptionLength" />
 							</LabelledComponent>
 						</div>
-						<h2 class="group-header">
-							Class spellcasting
-						</h2>
+
+						<SectionHeader title="Class Spellcasting" />
 						<div class="editor-field__container two-wide">
 							<LabelledComponent title="Class" for="castingClass">
 								<v-select v-model="data.spellcasting.casterSpells.castingClass" :options="classes" input-id="castingClass" />
@@ -1177,11 +1166,6 @@ const changeCR = (isIncrease: boolean) => {
 			&.three-wide {
 				grid-template-columns: 1fr 1fr 1fr;
 			}
-
-			textarea {
-				min-height: 46px;
-				height: 46px;
-			}
 		}
 	}
 }
@@ -1201,7 +1185,7 @@ const changeCR = (isIncrease: boolean) => {
 	justify-content: space-between;
 
 	.delete-button {
-		padding-top: 9px !important;
+		padding-top: 6px !important;
 		.button-icon();
 	}
 }
@@ -1251,7 +1235,7 @@ const changeCR = (isIncrease: boolean) => {
 }
 
 .handle {
-	padding-top: 15px;
+	padding-top: 9px;
 	padding-bottom: 8px;
 	cursor: grab;
 	color: orangered;

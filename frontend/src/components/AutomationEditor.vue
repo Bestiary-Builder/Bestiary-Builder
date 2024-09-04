@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, shallowRef, watch } from "vue";
+import { type Ref, computed, onMounted, onUnmounted, provide, ref, shallowRef, watch, watchEffect } from "vue";
 import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
 import YAML from "yaml";
+import { toast } from "vue-sonner";
 import LabelledComponent from "./LabelledComponent.vue";
 import Markdown from "./Markdown.vue";
+import VisualEditor from "./VisualEditor/VisualEditor.vue";
 import { useFetch } from "@/utils/utils";
-import { toast } from "@/utils/app/toast";
 import { type Automation, type AutomationDocumentation, type FeatureEntity, type Id, parseDescIntoAutomation } from "~/shared";
 import { store } from "@/utils/store";
 
-const props = withDefaults(defineProps<{ data: FeatureEntity | Automation; isStandAlone?: boolean; creatureName?: string }>(), { isStandAlone: false, creatureName: "$NAME$" });
+const { data, isStandAlone = false, creatureName = "$NAME$" } = defineProps<{ data: FeatureEntity | Automation; isStandAlone?: boolean; creatureName?: string }>();
 
 const emit = defineEmits<{
 	(e: "savedStandaloneData"): void;
@@ -20,7 +21,8 @@ const errorMessage = ref<null | string>(null);
 const hasEditedName = ref(false);
 
 // unfinished
-const _isVisualEditor = ref(false);
+const isVisualEditor = ref(false);
+onMounted(() => isVisualEditor.value = true);
 
 // Imported automation helpers
 interface myAutomationSkeleton {
@@ -58,32 +60,32 @@ onMounted(async () => {
 
 type ImportedData = FeatureEntity | Automation;
 const importAutomation = async (apiPath: "automation" | "basic-example" | "srd-feature", name: string, _id: Id | null = null) => {
-	const { success, data, error } = await useFetch(`/api/${apiPath}/${encodeURIComponent(_id?.toString() ?? name)}`);
+	const { success, data: fData, error } = await useFetch(`/api/${apiPath}/${encodeURIComponent(_id?.toString() ?? name)}`);
 	let feature: ImportedData | null = null;
 	if (!success) {
 		toast.error(`Error: ${error}`);
 		return;
 	}
-	feature = data as ImportedData | null;
+	feature = fData as ImportedData | null;
 
 	if (!feature) {
 		toast.error(`Error: Failed to import ${name}`);
 		return;
 	}
 
-	if (props.data.name === "New Feature" || !hasEditedName.value) {
+	if (data.name === "New Feature" || !hasEditedName.value) {
 		if (apiPath === "srd-feature" && feature.name.includes(" - "))
-			props.data.name = feature.name.split("-").slice(1).join("-").trim();
-		else props.data.name = feature.name;
+			data.name = feature.name.split("-").slice(1).join("-").trim();
+		else data.name = feature.name;
 	}
 
 	if (feature.description)
-		props.data.description = feature.description.replaceAll("$NAME$", props.creatureName);
+		data.description = feature.description.replaceAll("$NAME$", creatureName);
 
 	// For basic examples, description is not set on the main object but only as the last text node in the automation.
 	if (!feature.description && apiPath === "basic-example" && feature.automation && !Array.isArray(feature.automation)) {
 		// @ts-expect-error Automation is untyped.
-		props.data.description = feature.automation.automation[feature.automation.automation.length - 1].text;
+		data.description = feature.automation.automation[feature.automation.automation.length - 1].text;
 	}
 
 	if (Array.isArray(feature.automation)) {
@@ -93,62 +95,39 @@ const importAutomation = async (apiPath: "automation" | "basic-example" | "srd-f
 		}
 	}
 
-	automationString.value = YAML.stringify(feature.automation);
+	automation.value = feature.automation;
 	await saveAutomation(false);
 };
 
 // Automation
-const automationString = ref("");
+const automation = ref(data.automation);
+provide("automation", automation);
 onMounted(() => {
-	automationString.value = YAML.stringify(props.data.automation) ?? YAML.stringify(null);
+	automation.value = data.automation || null;
 });
 
-watch(automationString, () => validateYaml());
+// watch(automation, () => validateYaml());
 
 const saveAutomation = async (shouldNotify = false) => {
-	// if standalone: saving commits the change to the database
-	// if not standalone: saving saves automation into the FeatureEntity object so it is preserved between opening/closen and dragging features, but not to the database
-	let parsed: Automation["automation"] = null;
-	try {
-		parsed = YAML.parse(automationString.value);
-	}
-	catch {
-		if (shouldNotify)
-			toast.error("YAML contains Error. Failed to save automation");
+	// validate it as valid avrae automation
+	const { error } = await useFetch("/api/validate/automation", "POST", automation.value);
+
+	if (shouldNotify && error) {
+		toast.error(error, { duration: 0 });
 		return;
 	}
-	// parsed == null
-	if (!parsed) {
-		props.data.automation = null;
-	}
-	else {
-		// validate it as valid avrae automation
-		const { success, error } = await useFetch("/api/validate/automation", "POST", parsed);
-		if (success) {
-			props.data.automation = parsed;
-		}
-		else {
-			if (shouldNotify)
-				toast.error(error);
-			return;
-		}
-	}
 
-	if (props.isStandAlone && "_id" in props.data) {
+	if (isStandAlone && "_id" in data) {
 		// save standalone to database
-		const { success, error } = await useFetch<FeatureEntity>(`/api/automation/${props.data._id?.toString()}/update`, "POST", props.data);
+		const { success, error } = await useFetch<FeatureEntity>(`/api/automation/${data._id?.toString()}/update`, "POST", data);
 		if (success && shouldNotify) {
 			emit("savedStandaloneData");
 		}
 		else if (!success) {
 			if (shouldNotify)
-				toast.error(`${props.data.name || "Unnamed feature"}: ${error}`);
+				toast.error(`${data.name || "Unnamed feature"}: ${error}`);
 			return;
 		}
-	}
-	else {
-		// save not standalone into statblock object, but not commited to db.
-		props.data.automation = parsed;
 	}
 
 	if (shouldNotify)
@@ -156,143 +135,175 @@ const saveAutomation = async (shouldNotify = false) => {
 };
 
 // Documentation context by mouse location
-const currentContext = ref("");
+// const currentContext = ref("");
 
-const editorRef = shallowRef();
-const handleMount = (editor: any) => (editorRef.value = editor);
-const cursorPosition = ref(0);
+// const editorRef = shallowRef();
+// const handleMount = (editor: any) => (editorRef.value = editor);
+// const cursorPosition = ref(0);
 
-const ourInterval = setInterval(() => {
-	cursorPosition.value = editorRef.value?.getModel().getOffsetAt(editorRef.value?.getPosition());
-}, 1000);
+// const ourInterval = setInterval(() => {
+// 	if (!isVisualEditor.value)
+// 		cursorPosition.value = editorRef.value?.getModel().getOffsetAt(editorRef.value?.getPosition());
+// }, 1000);
 
-onUnmounted(() => {
-	clearInterval(ourInterval);
-});
+// onUnmounted(() => {
+// 	clearInterval(ourInterval);
+// });
 
-watch(cursorPosition, () => getContext());
+// watch(cursorPosition, () => getContext());
 
-const getContext = () => {
-	const textToTraverse = automationString.value;
-	let buffer = "";
-	let type = "";
-	let startingPosition = cursorPosition.value;
+// const getContext = () => {
+// 	const textToTraverse = YAML.stringify(automation.value);
+// 	let buffer = "";
+// 	let type = "";
+// 	let startingPosition = cursorPosition.value;
 
-	// if the user has their cursor on the word type, it would begin the buffer in that word and would not be able to detect it.
-	// Therefore before we start we check if the immediate vicinity of our cursor includes type:. if it does, start 6 characters later so we can properly extract the type.
-	// clamp slices to string min and max, to be sure it doesn't go out of range
-	const closeVicinity = textToTraverse.slice(Math.max(startingPosition - 6, 0), Math.min(startingPosition + 6, textToTraverse.length));
-	if (closeVicinity.includes("type:"))
-		startingPosition += 6;
+// 	// if the user has their cursor on the word type, it would begin the buffer in that word and would not be able to detect it.
+// 	// Therefore before we start we check if the immediate vicinity of our cursor includes type:. if it does, start 6 characters later so we can properly extract the type.
+// 	// clamp slices to string min and max, to be sure it doesn't go out of range
+// 	const closeVicinity = textToTraverse.slice(Math.max(startingPosition - 6, 0), Math.min(startingPosition + 6, textToTraverse.length));
+// 	if (closeVicinity.includes("type:"))
+// 		startingPosition += 6;
 
-	// from our position in the string we go backwards until we find the first type: string.
-	// Then we get our first word after that type:
-	// Works both with yaml or json string
-	// Assumes that type: is always at the beginning of a node, and that a user does not have type: in a text field
-	for (let i = startingPosition; i--; i < textToTraverse.length) {
-		const char = textToTraverse.charAt(i);
-		buffer = char + buffer;
-		if (buffer.startsWith("type:")) {
-			type = textToTraverse.slice(i).match(/type['"]?:\s*['"]?(\w+)['"]?/)?.[1] || "";
-			break;
-		}
-	}
+// 	// from our position in the string we go backwards until we find the first type: string.
+// 	// Then we get our first word after that type:
+// 	// Works both with yaml or json string
+// 	// Assumes that type: is always at the beginning of a node, and that a user does not have type: in a text field
+// 	for (let i = startingPosition; i--; i < textToTraverse.length) {
+// 		const char = textToTraverse.charAt(i);
+// 		buffer = char + buffer;
+// 		if (buffer.startsWith("type:")) {
+// 			type = textToTraverse.slice(i).match(/type['"]?:\s*['"]?(\w+)['"]?/)?.[1] || "";
+// 			break;
+// 		}
+// 	}
 
-	currentContext.value = type;
-};
+// 	currentContext.value = type;
+// };
 
 // Documentation helpers
-const docu = ref<AutomationDocumentation>({});
+// const docu = ref<AutomationDocumentation>({});
 
-onMounted(async () => {
-	const { success, data } = await useFetch<AutomationDocumentation>("/api/automationDocumentation");
-	if (success)
-		docu.value = data;
-});
+// onMounted(async () => {
+// 	const { success, data } = await useFetch<AutomationDocumentation>("/api/automationDocumentation");
+// 	if (success)
+// 		docu.value = data;
+// });
 
-const currentDocu = computed(() => {
-	return docu.value[currentContext.value];
-});
+// const currentDocu = computed(() => {
+// 	return docu.value[currentContext.value];
+// });
 
 // Description parity helpers
-const updateFeatureDescFromAutomationDesc = () => {
-	let auto;
-	try {
-		auto = YAML.parse(automationString.value);
-	}
-	catch {
-		return;
-	}
-	if (Array.isArray(auto))
-		return;
-	for (const field of auto?.automation?.reverse() || []) {
-		if (field.type === "text") {
-			props.data.description = field.text;
-			return;
-		}
-	}
-};
+// const updateFeatureDescFromAutomationDesc = () => {
+// 	let auto;
+// 	try {
+// 		auto = YAML.parse(automationString.value);
+// 	}
+// 	catch {
+// 		return;
+// 	}
+// 	if (Array.isArray(auto))
+// 		return;
+// 	for (const field of auto?.automation?.reverse() || []) {
+// 		if (field.type === "text") {
+// 			data.description = field.text;
+// 			return;
+// 		}
+// 	}
+// };
 
-const updateAutomationDescFromFeatureDesc = () => {
-	let auto;
-	try {
-		auto = YAML.parse(automationString.value);
-	}
-	catch {
-		return;
-	}
-	if (Array.isArray(auto))
-		return;
-	for (const field of auto?.automation?.reverse() || []) {
-		if (field.type === "text") {
-			field.text = props.data.description;
-			auto.automation.reverse();
-			automationString.value = YAML.stringify(auto);
-			return;
-		}
-	}
-};
+// const updateAutomationDescFromFeatureDesc = () => {
+// 	let auto;
+// 	try {
+// 		auto = YAML.parse(automationString.value);
+// 	}
+// 	catch {
+// 		return;
+// 	}
+// 	if (Array.isArray(auto))
+// 		return;
+// 	for (const field of auto?.automation?.reverse() || []) {
+// 		if (field.type === "text") {
+// 			field.text = data.description;
+// 			auto.automation.reverse();
+// 			automationString.value = YAML.stringify(auto);
+// 			return;
+// 		}
+// 	}
+// };
 
-const getAutomationDescription = (): string | boolean => {
-	let auto;
-	try {
-		auto = YAML.parse(automationString.value);
-	}
-	catch {
-		return false;
-	}
-	if (Array.isArray(auto))
-		return false;
-	if (!props.data.automation || !auto || auto?.automation?.length === 0)
-		return false;
-	for (const field of auto?.automation?.reverse() || []) {
-		if (field?.type === "text")
-			return field.text;
-	}
-	return "";
-};
+// const getAutomationDescription = (): string | boolean => {
+// 	let auto;
+// 	try {
+// 		auto = YAML.parse(automationString.value);
+// 	}
+// 	catch {
+// 		return false;
+// 	}
+// 	if (Array.isArray(auto))
+// 		return false;
+// 	if (!data.automation || !auto || auto?.automation?.length === 0)
+// 		return false;
+// 	for (const field of auto?.automation?.reverse() || []) {
+// 		if (field?.type === "text")
+// 			return field.text;
+// 	}
+// 	return "";
+// };
 
-const showDescriptionButtons = computed(() => {
-	const desc = props.data.description;
-	const autoDesc = getAutomationDescription();
-	if (Array.isArray(props.data.automation) || !desc || !autoDesc)
-		return false;
-	if (desc !== autoDesc)
-		return true;
-	return false;
-});
+// const showDescriptionButtons = computed(() => {
+// 	const desc = data.description;
+// 	const autoDesc = getAutomationDescription();
+// 	if (Array.isArray(data.automation) || !desc || !autoDesc)
+// 		return false;
+// 	if (desc !== autoDesc)
+// 		return true;
+// 	return false;
+// });
 
+// watch(() => data.description, () => {
+// 	const desc = data.description;
+// 	const autoDesc = getAutomationDescription();
+// 	if (Array.isArray(data.automation) || !desc || !autoDesc)
+// 		return;
+// 	if (desc !== autoDesc) {
+// 		toast.info("Automation description and feature description don't match", { description: "Update from feature description?", duration: Number.POSITIVE_INFINITY, action: {
+// 			label: "Update",
+// 			onClick: () => {
+// 				updateAutomationDescFromFeatureDesc();
+// 				toast.dismiss();
+// 			}
+// 		} });
+// 	}
+// });
+
+// watch(() => getAutomationDescription, () => {
+// 	const desc = data.description;
+// 	const autoDesc = getAutomationDescription();
+// 	if (Array.isArray(data.automation) || !desc || !autoDesc)
+// 		return;
+// 	if (desc !== autoDesc) {
+// 		toast.info("Automation description and feature description don't match", { description: "Update from automation?", duration: Number.POSITIVE_INFINITY, action: {
+// 			label: "Update",
+// 			onClick: () => {
+// 				updateFeatureDescFromAutomationDesc();
+// 				toast.dismiss();
+// 			}
+// 		} });
+// 	}
+// });
 // utils
 const copyAutomation = async () => {
-	await navigator.clipboard.writeText(automationString.value);
+	await navigator.clipboard.writeText(YAML.stringify(automation.value));
 	toast.success("Copied automation to clipboard!");
 };
 
 const generateAutomation = async () => {
-	const result = parseDescIntoAutomation(props.data.description, props.data.name, 0)[0];
+	const result = parseDescIntoAutomation(data.description, data.name, 0)[0];
 	if (result) {
 		try {
-			automationString.value = YAML.stringify(result);
+			automation.value = result;
 			await saveAutomation(false);
 		}
 		catch {
@@ -301,23 +312,23 @@ const generateAutomation = async () => {
 	}
 };
 
-const validateYaml = () => {
-	try {
-		YAML.parse(automationString.value);
-		errorMessage.value = null;
-		return true;
-	}
-	catch (err) {
-		errorMessage.value = err as string;
-		return false;
-	}
-};
+// const validateYaml = () => {
+// 	try {
+// 		YAML.parse(automation.value);
+// 		errorMessage.value = null;
+// 		return true;
+// 	}
+// 	catch (err) {
+// 		errorMessage.value = err as string;
+// 		return false;
+// 	}
+// };
 
 // If a user saves automation from a non-standalone editor into their automations.
 const saveCustomAutomation = async () => {
-	if (props.isStandAlone)
+	if (isStandAlone)
 		return;
-	const { success, error } = await useFetch(`/api/automation/add`, "POST", { name: props.data.name, description: props.data.description, automation: props.data.automation });
+	const { success, error } = await useFetch(`/api/automation/add`, "POST", { name: data.name, description: data.description, automation: data.automation });
 	if (success) {
 		await loadImportedAutomation("my-automations", "myAutomation");
 		toast.success("Successfully added automation!");
@@ -327,17 +338,16 @@ const saveCustomAutomation = async () => {
 </script>
 
 <template>
-	<div class="two-wide uneven">
+	<div v-if="!isVisualEditor" class="two-wide uneven">
 		<div>
 			<div class="editor-field__container two-wide">
 				<LabelledComponent title="Feature name" for="featurename">
 					<input id="featurename" v-model="data.name" type="text" placeholder="Enter name" :minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength" @change="hasEditedName = true">
 				</LabelledComponent>
-				<LabelledComponent title="Documentation">
-					<div>
-						<a href="https://avrae.readthedocs.io/en/stable/automation_ref.html"> Documentation</a> <br>
-						<a v-tooltip="'Edit automation on a character to get access to the full fledged automation builder.'" href="https://avrae.io/dashboard/characters"> Automation Editor</a>
-					</div>
+				<LabelledComponent title="Change Editor" for="changeEditor">
+					<button id="changeEditor" class="btn" @click="isVisualEditor = true">
+						Visual Editor
+					</button>
 				</LabelledComponent>
 			</div>
 
@@ -363,7 +373,7 @@ const saveCustomAutomation = async () => {
 
 			<div v-if="store.isMobile" class="editor-field__container two-wide">
 				<LabelledComponent title="Clear automation" for="clearautomation">
-					<button id="clearautomation" class="btn danger" @click="automationString = 'null'">
+					<button id="clearautomation" class="btn danger" @click="automation = null">
 						Clear
 					</button>
 				</LabelledComponent>
@@ -397,7 +407,7 @@ const saveCustomAutomation = async () => {
 				<hr>
 				<span class="yaml-error" v-html="errorMessage" />
 			</div>
-			<div v-if="showDescriptionButtons && (!errorMessage || errorMessage.length === 0)">
+			<!-- <div v-if="showDescriptionButtons && (!errorMessage || errorMessage.length === 0)">
 				<hr>
 				<p class="warning">
 					Feature description and last automation text node do not match.
@@ -415,57 +425,156 @@ const saveCustomAutomation = async () => {
 						</button>
 					</LabelledComponent>
 				</div>
-			</div>
+			</div> -->
 		</div>
 		<div class="automation-editor">
-			<!-- <LabelledComponent title="Change Editors" @click="isVisualEditor = !isVisualEditor"> -->
-			<VueMonacoEditor v-model:value="automationString" theme="vs-dark" :options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false }" height="750px" language="yaml" @mount="handleMount" />
-			<!-- <TreeRoot v-else :data="automationString" /> -->
-			<!-- </LabelledComponent> -->
-			<span v-if="!isStandAlone && automationString" class="save-custom-automation" @click="saveCustomAutomation()">Click to save as a reusable custom automation!</span>
+			<!-- <VueMonacoEditor v-if="!isVisualEditor" v-model:value="automation" theme="vs-dark" :options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false }" height="750px" language="yaml" @mount="handleMount" /> -->
+			<span v-if="!isStandAlone" class="save-custom-automation" @click="saveCustomAutomation()">Click to save as a reusable custom automation!</span>
+			<!-- <div class="docs-container">
+				<div v-if="currentDocu" class="docs">
+					<hr>
+					<h3>Documentation: {{ currentContext }}</h3>
+					<Markdown class="small" :text="currentDocu.desc" />
+
+					<div>
+						<hr>
+						<h4>Overview</h4>
+						See full documentation <a :href="`https://avrae.readthedocs.io/en/stable/automation_ref.html#${currentDocu.url}`" target="_blank">here</a>.
+						<VueMonacoEditor
+							v-if="currentDocu?.ts"
+							:value="`// Values denoted with an ? are optional.\n${currentDocu.ts}`"
+							theme="vs-dark"
+							:options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, automaticLayout: true, readOnly: true, scrollBeyondLastLine: false }"
+							language="typescript"
+							height="200px"
+						/>
+					</div>
+					<div v-if="currentDocu?.opt">
+						<hr>
+						<h4>Options</h4>
+						<ul>
+							<li v-for="(info, name) in currentDocu.opt" :key="name">
+								<span class="highlight">{{ name }}</span>
+								<Markdown :text="info" />
+							</li>
+						</ul>
+					</div>
+					<div v-if="currentDocu?.variables">
+						<hr>
+						<h4>Exposed Variables</h4>
+						<ul>
+							<li v-for="(info, name) in currentDocu.variables" :key="name">
+								<span class="highlight">{{ name }}</span>
+								[<code>{{ info.type }}</code>]
+								<Markdown :text="info.desc" />
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div> -->
 		</div>
 	</div>
-	<div class="two-wide uneven">
-		<div />
-		<div v-if="currentDocu" class="docs">
-			<hr>
-			<h3>Documentation: {{ currentContext }}</h3>
-			<Markdown class="small" :text="currentDocu.desc" />
+	<div v-else class="vertical-container">
+		<div class="two-wide">
+			<div class="two-wide">
+				<div class="editor-field__container">
+					<LabelledComponent title="Feature name" for="featurename">
+						<input id="featurename" v-model="data.name" type="text" placeholder="Enter name" :minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength" @change="hasEditedName = true">
+					</LabelledComponent>
+					<LabelledComponent title="Save automation" for="saveautomation">
+						<button id="saveautomation" class="btn confirm" @click="saveAutomation(true)">
+							Save
+						</button>
+					</LabelledComponent>
+				</div>
+				<div class="editor-field__container">
+					<LabelledComponent title="Change Editor" for="changeEditor">
+						<button id="changeEditor" class="btn" @click="isVisualEditor = false">
+							Text Editor
+						</button>
+					</LabelledComponent>
+					<LabelledComponent title="Generate" for="generate">
+						<button id="generate" v-tooltip="'Generate automation from description. May be incomplete or inaccurate. Only works for basic, to hit attacks.'" class="btn" @click="generateAutomation">
+							Generate
+							<font-awesome-icon :icon="['fas', 'circle-info']" />
+						</button>
+					</LabelledComponent>
+				</div>
+			</div>
+			<div class="two-wide">
+				<div class="editor-field__container">
+					<div class="editor-field__container">
+						<LabelledComponent title="Import SRD feature" for="importsrdfeature">
+							<v-select :options="loadedAutomation.srdFeatures" input-id="importsrdfeature" @option:selected="(selected : string) => (importAutomation('srd-feature', selected)) " />
+						</LabelledComponent>
+					</div>
 
-			<div>
-				<hr>
-				<h4>Overview</h4>
-				See full documentation <a :href="`https://avrae.readthedocs.io/en/stable/automation_ref.html#${currentDocu.url}`" target="_blank">here</a>.
-				<VueMonacoEditor
-					v-if="currentDocu?.ts"
-					:value="`// Values denoted with an ? are optional.\n${currentDocu.ts}`"
-					theme="vs-dark"
-					:options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, automaticLayout: true, readOnly: true, scrollBeyondLastLine: false }"
-					language="typescript"
-					height="200px"
-				/>
+					<div class="editor-field__container">
+						<LabelledComponent title="Import basic example" for="importbasicexample">
+							<v-select :options="loadedAutomation.basicExamples" input-id="importbasicexample" @option:selected="(selected : string) => (importAutomation('basic-example', selected))" />
+						</LabelledComponent>
+					</div>
+
+					<div v-if="!isStandAlone" class="editor-field__container">
+						<LabelledComponent title="Import custom automation" for="importcustomautomation">
+							<v-select :options="loadedAutomation.myAutomation" input-id="importcustomautomation" label="name" @option:selected="(selected : myAutomationSkeleton) => (importAutomation('automation', selected.name, selected._id))" />
+						</LabelledComponent>
+					</div>
+				</div>
+
+				<div class="editor-field__container">
+					<LabelledComponent title="Feature description" for="featuredescription">
+						<textarea id="featuredescription" v-model="data.description" height="94" placeholder="Enter description" style="height: 135px; max-height: 135px; resize: none;" :maxlength="store.limits?.descriptionLength" />
+					</LabelledComponent>
+				</div>
 			</div>
-			<div v-if="currentDocu?.opt">
-				<hr>
-				<h4>Options</h4>
-				<ul>
-					<li v-for="(info, name) in currentDocu.opt" :key="name">
-						<span class="highlight">{{ name }}</span>
-						<Markdown :text="info" />
-					</li>
-				</ul>
+		</div>
+		<hr>
+		<div>
+			<VisualEditor v-if="automation" v-model="automation" />
+			<!-- <div class="docs-container">
+				<div v-if="currentDocu" class="docs">
+					<hr>
+					<h3>Documentation: {{ currentContext }}</h3>
+					<Markdown class="small" :text="currentDocu.desc" />
+
+					<div>
+						<hr>
+						<h4>Overview</h4>
+						See full documentation <a :href="`https://avrae.readthedocs.io/en/stable/automation_ref.html#${currentDocu.url}`" target="_blank">here</a>.
+						<VueMonacoEditor
+							v-if="currentDocu?.ts"
+							:value="`// Values denoted with an ? are optional.\n${currentDocu.ts}`"
+							theme="vs-dark"
+							:options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, automaticLayout: true, readOnly: true, scrollBeyondLastLine: false }"
+							language="typescript"
+							height="200px"
+						/>
+					</div>
+					<div v-if="currentDocu?.opt">
+						<hr>
+						<h4>Options</h4>
+						<ul>
+							<li v-for="(info, name) in currentDocu.opt" :key="name">
+								<span class="highlight">{{ name }}</span>
+								<Markdown :text="info" />
+							</li>
+						</ul>
+					</div>
+					<div v-if="currentDocu?.variables">
+						<hr>
+						<h4>Exposed Variables</h4>
+						<ul>
+							<li v-for="(info, name) in currentDocu.variables" :key="name">
+								<span class="highlight">{{ name }}</span>
+								[<code>{{ info.type }}</code>]
+								<Markdown :text="info.desc" />
+							</li>
+						</ul>
+					</div>
+				</div>
 			</div>
-			<div v-if="currentDocu?.variables">
-				<hr>
-				<h4>Exposed Variables</h4>
-				<ul>
-					<li v-for="(info, name) in currentDocu.variables" :key="name">
-						<span class="highlight">{{ name }}</span>
-						[<code>{{ info.type }}</code>]
-						<Markdown :text="info.desc" />
-					</li>
-				</ul>
-			</div>
+		</div> -->
 		</div>
 	</div>
 </template>
@@ -561,6 +670,22 @@ a {
 	&:hover {
 		color: orangered;
 	}
+}
+
+.vertical-container {
+	width: 100%;
+
+	.two-wide {
+		margin-bottom: 0.75rem;
+	}
+	.editor-field__container {
+		gap: 1rem;
+		margin-bottom: 0;
+	}
+}
+
+.docs-container {
+	width: 100%;
 }
 </style>
 

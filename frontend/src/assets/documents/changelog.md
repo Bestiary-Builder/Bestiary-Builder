@@ -1,3 +1,10 @@
+## v3.0.0
+_July 14th, 2024_
+
+- Fixed an issue where saving automation would not properly validate it as valid Avrae Automation.
+- Improved the look and feel of toast notifications.
+
+---
 ## v2.3.2
 _June 26th, 2024_
 

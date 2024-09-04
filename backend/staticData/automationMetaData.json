@@ -2,8 +2,7 @@
 	"target": {
 		"target": ["all", "each", "int", "self", "parent", "children"],
 		"effects": "Effects[]",
-		"sortBy?": ["hp_asc", "hp_desc"],
-		"self_target?": "boolean"
+		"sortBy?": ["hp_asc", "hp_desc"]
 	},
 	"attack": {
 		"hit": "Effects[]",

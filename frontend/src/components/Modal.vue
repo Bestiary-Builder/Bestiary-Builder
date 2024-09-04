@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import { getCurrentInstance, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
+import { nextTick, onMounted, onUnmounted, ref, useId, watch } from "vue";
 import { useFocusTrap } from "@vueuse/integrations/useFocusTrap";
 
-const props = withDefaults(defineProps<{ show: boolean; fullScreen?: boolean }>(), { fullScreen: false });
+const { show, fullScreen = false } = defineProps<{ show: boolean; fullScreen?: boolean }>();
+
 const emit = defineEmits<{
 	(e: "close",): void;
 }>();
 
-// TODO: Don't use this.
-const id = getCurrentInstance()?.uid;
+const id = useId();
 
-const target = ref();
+const target = ref(null);
 const { activate, deactivate } = useFocusTrap(target);
 
 watch(
-	() => props.show,
+	() => show,
 	async (newValue, oldValue) => {
 		if (newValue === oldValue)
 			return;
@@ -30,7 +30,7 @@ watch(
 );
 
 const escapeHandler = (e: KeyboardEvent) => {
-	if (e.key === "Escape" && props.show)
+	if (e.key === "Escape" && show)
 		emit("close");
 };
 onMounted(() => {
@@ -133,7 +133,7 @@ onUnmounted(() => {
 
 .modal__header {
 	border-bottom: 1px solid orangered;
-	font-size: 1.5rem;
+	font-size: 1.3rem;
 	margin-bottom: 0.5rem;
 }
 

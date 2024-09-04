@@ -1,5 +1,5 @@
 import { ObjectId as Id } from "bson";
-import type { SpellSlotList, Statblock } from "./build-types";
+import type { AttackModel, SpellSlotList, Statblock } from "./build-types";
 
 export { ObjectId as Id } from "bson";
 
@@ -20,6 +20,9 @@ export class User {
 		public supporter: 0 | 1 | 2,
 		public joinedAt: number,
 		public _id: string,
+		public user_settings: {
+			newStatblock: boolean;
+		},
 		public secret?: string,
 	) {}
 }
@@ -43,7 +46,7 @@ export class Creature {
 }
 
 export class Automation {
-	constructor(public name: string, public description: string, public owner: string, public lastUpdated: number, public automation: null | Record<string, unknown> | Record<string, unknown>[], public _id?: Id) {}
+	constructor(public name: string, public description: string, public owner: string, public lastUpdated: number, public automation: null | AttackModel, public _id?: Id) {}
 }
 
 export class GlobalStats {

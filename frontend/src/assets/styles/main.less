@@ -81,16 +81,19 @@ input[type="checkbox"]:checked {
 
 input[type="checkbox"] + label {
 	cursor: pointer;
+	font-size: .8rem;
 }
 
+
+
 .btn {
-	padding: 6px 12px;
+	padding: 4px 5px;
 	background: var(--color-surface-0);
 	border: 1px solid var(--color-surface-1);
 	border-radius: 6px;
-	font-size: 13px;
+	font-size: .77rem;
 	color: rgb(247, 248, 248);
-	height: 46px;
+	height: 32px;
 	appearance: none;
 	transition: background-color 0.3s ease;
 	cursor: pointer;
@@ -117,13 +120,13 @@ hr {
 
 input[type="text"],
 textarea {
-	padding: 6px 12px;
+	padding: 4px 5px;
 	background: var(--color-surface-0);
 	border: 1px solid var(--color-surface-1);
 	border-radius: 6px;
-	font-size: 13px;
+	font-size: .77rem;
 	color: rgb(247, 248, 248);
-	height: 46px;
+	height: 32px;
 	appearance: none;
 	transition: border 0.15s ease 0s;
 	:focus {
@@ -135,21 +138,24 @@ textarea {
 
 textarea {
 	resize: vertical;
-	min-height: 3rem;
-	height: unset;
+	min-height: 32px;
+	height: 32px;
 }
 
 select {
-	border: 2px solid orangered;
+	border: 1px solid orangered;
 	background: transparent;
 	color: orangered;
-	border-radius: 0.2rem;
+	border-radius: 6px;
 	padding: 0 0.2rem;
 	outline: none;
+	font-size: .77rem;
 
 	& option {
 		background-color: var(--color-surface-0);
 		color: orangered;
+		font-size: .77rem;
+
 	}
 
 	&.ghost {
@@ -209,8 +215,8 @@ select {
 	--vs-search-input-placeholder-color: var(--color-base);
 
 	/* Font */
-	--vs-font-size: 1rem;
-	--vs-line-height: 1.4;
+	--vs-font-size: .77rem;
+	--vs-line-height: 1.25;
 
 	/* Disabled State */
 	--vs-state-disabled-bg: red;
@@ -225,7 +231,7 @@ select {
 	--vs-border-radius: 0;
 
 	/* Actions: house the component controls */
-	--vs-actions-padding: 4px 6px 0 3px;
+	--vs-actions-padding: 2.5px 2px;
 
 	/* Component Controls: Clear, Open Indicator */
 	--vs-controls-color: var(--vs-colors--light);
@@ -250,7 +256,7 @@ select {
 	/* Options */
 	--vs-dropdown-option-bg: #000;
 	--vs-dropdown-option-color: var(--vs-dropdown-color);
-	--vs-dropdown-option-padding: 3px 30px;
+	--vs-dropdown-option-padding: 3px 15px;
 
 	/* Active State */
 	--vs-dropdown-option--active-bg: orangered;
@@ -265,9 +271,22 @@ select {
 	--vs-transition-duration: 150ms;
 
 	.vs__dropdown-toggle {
-		padding: 6px 12px;
+		padding: 4.5px 6px;
+	}
+
+	font-size: .77rem;
+
+	&.vs--single .vs__selected {
+		margin: 0px; 
+
+		text-wrap: nowrap;
+		max-width: 200px;
+		text-overflow: ellipsis;
+		overflow: hidden;
 	}
 }
+
+
 
 b.indent {
 	margin-left: 1.5rem;
