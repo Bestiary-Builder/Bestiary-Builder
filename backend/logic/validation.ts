@@ -17,7 +17,11 @@ app.post("/api/validate/automation", async (req, res) => {
 		},
 		body: JSON.stringify(automation)
 	}).then(response => response.json());
-	return res.json(result);
+
+	if (result.success)
+		return res.json(result);
+	else
+		return res.status(400).json(result);
 });
 const { Statblock: StatblockChecker } = createCheckers(typeInterface);
 

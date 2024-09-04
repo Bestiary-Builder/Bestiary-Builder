@@ -49,7 +49,7 @@ const bestiaryImages = computed(() => {
 					</p>
 				</div>
 				<div class="tile-footer">
-					<span v-if="personal" v-tooltip.left="bestiary.status"><StatusIcon :icon="bestiary.status" /></span>
+					<span v-if="personal" v-tooltip="bestiary.status"><StatusIcon :icon="bestiary.status" /></span>
 					<span v-if="personal && bestiary.owner === store.user?._id" v-tooltip="'Delete bestiary'" role="button" class="edit-button" aria-label="Delete bestiary" @click.stop.prevent="openDeleteModal(bestiary)"><font-awesome-icon :icon="['fas', 'trash']" /></span>
 					<span v-else>
 						<UserBanner :id="bestiary.owner" />
@@ -81,23 +81,29 @@ const bestiaryImages = computed(() => {
 
 .tile-container {
 	display: grid;
-	grid-template-columns: 1fr 1fr 1fr 1fr;
+	grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
 	gap: 1.5em;
 }
 
 @media screen and (max-width: 1600px) {
 	.tile-container {
-		grid-template-columns: 1fr 1fr 1fr;
+		grid-template-columns: 1fr 1fr 1fr 1fr;
 	}
 }
 
 @media screen and (max-width: 1200px) {
 	.tile-container {
-		grid-template-columns: 1fr 1fr;
+		grid-template-columns: 1fr 1fr 1fr;
 	}
 }
 
 @media screen and (max-width: 800px) {
+	.tile-container {
+		grid-template-columns: 1fr 1fr;
+	}
+}
+
+@media screen and (max-width: 400px) {
 	.tile-container {
 		grid-template-columns: 1fr;
 	}
@@ -123,10 +129,12 @@ const bestiaryImages = computed(() => {
 		text-wrap: nowrap;
 		overflow: hidden;
 		color: white;
+		font-size: 0.8rem;
 	}
 
 	.tile-content {
 		overflow-y: auto;
+		font-size: 0.8rem;
 
 		.tags {
 			font-style: italic;
@@ -179,12 +187,13 @@ const bestiaryImages = computed(() => {
 	.tile-footer {
 		display: grid;
 		grid-template-columns: 1fr 1fr 1fr;
-		font-size: 1.1rem;
+		font-size: 0.9rem;
 		width: 100%;
 		margin: auto;
 
 		span:first-of-type {
 			text-align: left;
+			translate: 0 -3px;
 		}
 
 		span:nth-of-type(2) {

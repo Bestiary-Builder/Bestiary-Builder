@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { Bestiary } from "~/shared";
 
-defineProps<{ icon: Bestiary["status"] }>();
+const { icon } = defineProps<{ icon: Bestiary["status"] }>();
 </script>
 
 <template>

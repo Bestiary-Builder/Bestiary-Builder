@@ -3,19 +3,16 @@ import type MarkdownIt from "markdown-it";
 import markdownit from "markdown-it";
 import anchor from "markdown-it-anchor";
 
-const props = withDefaults(
-	defineProps<{
-		text: string;
-		tag?: string | undefined;
-		options?: MarkdownIt.Options | undefined;
-		anchorLinks?: boolean;
-	}>(),
-	{ tag: "div", options: undefined, anchorLinks: false }
-);
+const { tag = "div", options = undefined, anchorLinks = false } = defineProps<{
+	text: string;
+	tag?: string | undefined;
+	options?: MarkdownIt.Options | undefined;
+	anchorLinks?: boolean;
+}>();
 
-const md = markdownit(props.options ?? {});
+const md = markdownit(options ?? {});
 
-if (props.anchorLinks) {
+if (anchorLinks) {
 	md.use(anchor, {
 		permalink: anchor.permalink.linkInsideHeader({
 			placement: "before",

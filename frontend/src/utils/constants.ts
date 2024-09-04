@@ -2,7 +2,9 @@ import type { Stat } from "~/shared";
 
 // Generators which are used to create UI programmatically in the StatblockRender
 
-export const stats: Stat[] = ["str", "dex", "con", "int", "wis", "cha"];
+export const stats: Stat[] = ["str", "dex", "con", "int", "wis", "cha"] as const;
+
+export const fullStatNames = { str: "Strength", dex: "Dexterity", con: "Constitution", int: "Intelligence", wis: "Wisdom", cha: "Charisma" } as const;
 
 export const resistanceGenerator = {
 	vulnerabilities: "Vulnerabilities ",

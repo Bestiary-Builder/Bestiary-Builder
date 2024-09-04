@@ -5,10 +5,10 @@ import type { User } from "~/shared";
 import { useFetch } from "@/utils/utils";
 import "vue-loading-overlay/dist/css/index.css";
 
-const props = defineProps<{ id: string }>();
+const { id } = defineProps<{ id: string }>();
 const user = ref<User | null>(null);
 onMounted(async () => {
-	const { success, data } = await useFetch<User>(`/api/user/${props.id}`);
+	const { success, data } = await useFetch<User>(`/api/user/${id}`);
 	if (success)
 		user.value = data;
 	else user.value = null;

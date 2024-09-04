@@ -1,5 +1,5 @@
 import YAML from "yaml";
-import type { CasterSpells, FeatureEntity, InnateSpells, SenseEntity, SpeedEntity, Stat, Statblock } from "./types";
+import type { AttackModel, CasterSpells, FeatureEntity, InnateSpells, SenseEntity, SpeedEntity, Stat, Statblock } from "./types";
 
 export const SKILLS_BY_STAT = {
 	str: ["athletics", "strength"],
@@ -264,6 +264,7 @@ const JUST_DAMAGE_RE = /[+-]?\d+ \((.+?)\) (\w+) damage/i;
 const ATTACK_PARSER_RE = /\*?(?:\w+ ){1,4}Attack:\*? (?<attackBonus>[+-]?\d+) to hit, .*?\*?Hit:\*? [+-]?(?:\d+ \((?<damageDiceBase>.+?)\)|(?<damageIntBase>\d+)) (?<damageTypeBase>[A-z ]+) damage[., ]??(?: in melee[.,]? or [+-]?(?:\d+ \((?<damageRangedDice>.+?)\)|(?<damageRangedInt>\d+)) (?<damageTypeRanged>[A-z ]+) damage at range[,.]?)?(?:,? or [+-]?(?:\d+ \((?<damageDiceVers>.+?)\)|(?<damageIntVers>\d+)) (?<damageTypeVers>[A-z ]+) damage if used with two hands(?: to make a melee attack)?)?(?:,? (?:plus|and) [+-]?(?:\d+ \((?<damageBonusDice>.+?)\)|(?<damageBonusInt>\d+)) (?<damageTypeBonus>[A-z ]+) damage)?/i;
 
 export function parseDescIntoAutomation(text: string, name = "", activationType: number): [FeatureEntity["automation"], null | string] {
+	// TODO: Make this allow multiple attacks by creating multiple attacks.
 	if (activationType < 1)
 		activationType = 1;
 	// find attack overrides through <avrae hidden> / </hidden> text. Currently no support for simple group (nobody uses it anyway)
@@ -275,10 +276,13 @@ export function parseDescIntoAutomation(text: string, name = "", activationType:
 
 	// go in priority to override -> attack with hit -> just damage
 	if (override_matches.length > 0) {
-		const matched = [];
+		let matched: AttackModel | null = null;
+
+		// eslint-disable-next-line no-unreachable-loop
 		for (const m of override_matches) {
 			try {
-				matched.push(YAML.parse(m ?? ""));
+				matched = YAML.parse(m ?? "");
+				break;
 			}
 			catch {
 				return [null, `${name}: Attempted to parse into Avrae Automation but an error occured.`];
@@ -287,7 +291,7 @@ export function parseDescIntoAutomation(text: string, name = "", activationType:
 		return [matched, null];
 	}
 	else if (attack_match?.groups) {
-		const attacks = [];
+		const attacks: AttackModel[] = [];
 		// again adapted from avrae repo above
 		const groups = attack_match.groups;
 
@@ -402,7 +406,7 @@ export function parseDescIntoAutomation(text: string, name = "", activationType:
 			return [null, `${name}: Attempted to parse into Avrae Automation but an error occured.`];
 		if (attacks.length === 1)
 			return [attacks[0], null];
-		return [attacks, null];
+		return [attacks[0], null];
 	}
 	else if (just_damage_match) {
 		if (text.includes(" DC "))
