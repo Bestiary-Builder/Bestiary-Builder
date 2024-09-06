@@ -2,6 +2,7 @@
 import { type Ref, inject, onBeforeUnmount, watch } from "vue";
 import HigherLevels from "./shared/HigherLevels.vue";
 import IntExpression from "./shared/IntExpression.vue";
+import SectionHeader from "./shared/SectionHeader.vue";
 import LabelledComponent from "@/components/LabelledComponent.vue";
 import type { Variable } from "~/shared";
 
@@ -32,7 +33,7 @@ if (!Object.hasOwn(currentEffect!.value, "higher"))
 
 <template>
 	<template v-if="currentEffect">
-		<h3> Set Variable Node</h3>
+		<SectionHeader title="Set Variable" />
 		<div class="two-wide">
 			<LabelledComponent title="Name*" for="name">
 				<input id="name" v-model="currentEffect.name" type="text" :class="{ required: currentEffect.name.length === 0 }">
@@ -44,8 +45,8 @@ if (!Object.hasOwn(currentEffect!.value, "higher"))
 			</LabelledComponent>
 		</div>
 
-		<hr>
-		<h4> Additional Options</h4>
+		<SectionHeader title="Additional Options" />
+
 		<div class="two-wide">
 			<LabelledComponent title="On Error" for="error">
 				<div class="input-wrapper">

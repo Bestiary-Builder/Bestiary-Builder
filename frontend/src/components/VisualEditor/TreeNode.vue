@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { computed, inject, ref } from "vue";
+import { type Ref, computed, inject, ref } from "vue";
 import TreeRoot from "./TreeRoot.vue";
 import TreeNodeAdder from "./TreeNodeAdder.vue";
+import type { Effect } from "~/shared";
 
-const props = defineProps<{ data: unknown; depth: number; parentType: string; context: string[] }>();
+const props = defineProps<{ data: Effect; depth: number; parentType: string; context: string[] }>();
 
 const metaData = inject<any>("metaData");
 
 const selfType = computed<string>(() => {
-	// @ts-expect-error Automation does not have typing.
 	return props.data.type;
 });
 
@@ -16,7 +16,8 @@ const displayNames = inject<Record<string, string>>("displayNames");
 
 const defaultNodes = inject<Record<string, any>>("defaultNodes");
 
-const currentNode = inject<any | null>("currentNode");
+const currentEffect = inject<Ref<Effect>>("currentEffect");
+const currentContext = inject<Ref<string[]>>("currentContext");
 
 const isCollapsed = ref(false);
 
@@ -32,7 +33,7 @@ const toggleBranch = (nodeType: string) => {
 
 <template>
 	<template v-if="displayNames && defaultNodes">
-		<p :style="`margin-left: ${(depth + 1) * 15}px; color: grey;`" @click="currentNode = { node: data, context: [...context, selfType] }">
+		<p :style="`margin-left: ${(depth + 1) * 15}px; color: grey;`" @click="currentEffect = data; currentContext = [...context, selfType]">
 			{{ displayNames![selfType] }}
 			<font-awesome-icon :icon="['fas', 'pen']" />
 			<span v-if="['attack', 'condition', 'save'].includes(selfType)" class="collapse-button" @click.stop="isCollapsed = !isCollapsed">
@@ -52,13 +53,13 @@ const toggleBranch = (nodeType: string) => {
 						</span>
 					</p>
 					<template v-if="!branchesCollapsed.includes(nodeType)">
-						<TreeNode v-for="(childNode, index) in node" :key="childNode" :data="childNode" :depth="depth + (!['root', 'effects'].includes(nodeType) ? 2 : 1)" :parent-type="nodeType" :context="[...context, selfType, nodeType, index.toString()]" />
+						<TreeNode v-for="(childNode, index) in node" :key="childNode" :data="childNode as any" :depth="depth + (!['root', 'effects'].includes(nodeType) ? 2 : 1)" :parent-type="nodeType" :context="[...context, selfType, nodeType, index.toString()]" />
 						<p :style="`margin-left: ${(depth + (!['root', 'effects'].includes(nodeType) ? 3 : 2)) * 15}px;`">
-							<TreeNodeAdder :context="[...context, selfType]" @add="(n: string) => (node as Array<any>).push(defaultNodes![n] ?? {})" />
+							<TreeNodeAdder :context="[...context, selfType]" @add="(n: string) => (node as any).push(defaultNodes![n] ?? {})" />
 						</p>
 					</template>
 				</template>
-				<template v-if="nodeType === 'buttons' && (node as []).length > 0">
+				<template v-if="(nodeType as any) === 'buttons' && (node as any).length > 0">
 					<template v-for="(button, index) in node" :key="button">
 						<p :style="`margin-left: ${(depth + 1) * 15}px; color: white;`">
 							{{ displayNames![nodeType] ?? nodeType }} ({{ (button as any).label }}):
@@ -66,7 +67,7 @@ const toggleBranch = (nodeType: string) => {
 						<TreeRoot :data="(button as any)" :depth="depth + 1" root-type="button" :context="[...context, selfType, index.toString(), nodeType]" />
 					</template>
 				</template>
-				<template v-if="nodeType === 'attacks' && (node as []).length > 0">
+				<template v-if="(nodeType as any) === 'attacks' && (node as any).length > 0">
 					<template v-for="(attack, index) in node" :key="attack">
 						<p :style="`margin-left: ${(depth + 1) * 15}px; color: white;`">
 							{{ displayNames![nodeType] ?? nodeType }} ({{ (attack as any).name }}):

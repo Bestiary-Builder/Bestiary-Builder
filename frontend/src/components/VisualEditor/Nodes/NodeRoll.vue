@@ -2,6 +2,7 @@
 import { type Ref, inject, onBeforeUnmount, watch } from "vue";
 import HigherLevels from "./shared/HigherLevels.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
+import AnnotatedString from "./shared/AnnotatedString.vue";
 import LabelledComponent from "@/components/LabelledComponent.vue";
 import type { Roll } from "~/shared";
 
@@ -53,7 +54,9 @@ if (!Object.hasOwn(currentEffect!.value, "higher"))
 				<input id="name" v-model="currentEffect.name" type="text">
 			</LabelledComponent>
 			<LabelledComponent title="Dice*" for="dice">
-				<input id="dice" v-model="currentEffect.dice" type="text">
+				<div class="input-wrapper">
+					<input id="dice" v-model="currentEffect.dice" type="text"><AnnotatedString />
+				</div>
 			</LabelledComponent>
 		</div>
 

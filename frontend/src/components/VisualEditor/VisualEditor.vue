@@ -16,7 +16,7 @@ const automation = defineModel<AttackModel>();
 <template>
 	<section class="two-wide uneven">
 		<div class="tree">
-			<h3> Automation Tree</h3>
+			<h3> Effect Tree</h3>
 			<TreeRoot v-if="automation" :data="automation" :depth="-1" />
 		</div>
 		<div class="editor">

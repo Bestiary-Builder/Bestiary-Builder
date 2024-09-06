@@ -2,6 +2,7 @@
 import { type Ref, inject, onBeforeUnmount, watch } from "vue";
 import HigherLevels from "./shared/HigherLevels.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
+import AnnotatedString from "./shared/AnnotatedString.vue";
 import LabelledComponent from "@/components/LabelledComponent.vue";
 import type { TempHP } from "~/shared";
 
@@ -34,7 +35,9 @@ if (!Object.hasOwn(currentEffect!.value, "higher"))
 	<template v-if="currentEffect">
 		<SectionHeader title="Temp HP" />
 		<LabelledComponent title="Amount" for="amount">
-			<input id="amount" v-model="currentEffect.amount" type="text">
+			<div class="input-wrapper">
+				<input id="amount" v-model="currentEffect.amount" type="text"><AnnotatedString />
+			</div>
 		</LabelledComponent>
 		<SectionHeader title="Additional Options" />
 		<div class="two-wide">

@@ -54,10 +54,10 @@ watch(() => currentEffect!.value?.errorBehaviour, () => {
 					</option>
 				</select>
 			</LabelledComponent>
-			<LabelledComponent v-if="counterType === 'cc' " title="Counter Name" for="counterName">
+			<LabelledComponent v-if="counterType === 'cc' " title="Counter Name*" for="counterName">
 				<input id="counterName" v-model="currentEffect.counter" type="text" :class="{ required: (currentEffect.counter as string).length === 0 }">
 			</LabelledComponent>
-			<LabelledComponent v-if="counterType === 'ss' " title="Slot Level" for="slotLevel">
+			<LabelledComponent v-if="counterType === 'ss' " title="Slot Level*" for="slotLevel">
 				<div class="input-wrapper">
 					<input id="slotLevel" v-model="(currentEffect.counter as SpellSlotReference).slot" type="text" :class="{ required: (currentEffect.counter as SpellSlotReference).slot.toString().length === 0 }"> <IntExpression />
 				</div>

@@ -1,11 +1,10 @@
 import { ObjectId as Id } from "bson";
-import type { AttackModel, SpellSlotList, Statblock } from "./build-types";
+import type { SpellSlotList, Statblock } from "./build-types";
 
 export { ObjectId as Id } from "bson";
 
 // Built types
 export * from "./build-types";
-
 // Database types
 export class User {
 	constructor(
@@ -881,6 +880,19 @@ for (const list of Object.values(spellList))
 spellListFlattenedTemp.sort();
 export const spellListFlattened = [...spellListFlattenedTemp];
 
+export interface AttackModel {
+	_v: 2;
+	name: string;
+	automation: Effect[];
+	verb?: string;
+	proper?: boolean;
+	criton?: number;
+	phrase?: string;
+	thumb?: string;
+	extra_crit_damage?: string;
+	activation_type?: number;
+};
+
 export type IntExpression = string;
 export type AnnotatedString = string;
 export type Effect = Target | Attack | Save | Damage | TempHP | IEffect | Remove_IEffect | Roll | Text | Variable | Condition | Counter | Spell | Check;
@@ -944,26 +956,26 @@ export interface IEffect {
 }
 
 export interface PassiveEffects {
-	attack_advantage: IntExpression;
-	to_hit_bonus: AnnotatedString;
-	damage_bonus: AnnotatedString;
-	magical_damage: IntExpression;
-	silvered_damage: IntExpression;
-	resistances: AnnotatedString[];
-	immunities: AnnotatedString[];
-	vulnerabilities: AnnotatedString[];
-	ignored_resistances: AnnotatedString[];
-	ac_value: IntExpression;
-	ac_bonus: IntExpression;
-	max_hp_value: IntExpression;
-	max_hp_bonus: IntExpression;
-	save_bonus: AnnotatedString;
-	save_adv: AnnotatedString[];
-	save_dis: AnnotatedString[];
-	check_bonus: AnnotatedString;
-	check_adv: AnnotatedString[];
-	check_dis: AnnotatedString[];
-	dc_bonus: IntExpression;
+	attack_advantage?: IntExpression;
+	to_hit_bonus?: AnnotatedString;
+	damage_bonus?: AnnotatedString;
+	magical_damage?: IntExpression;
+	silvered_damage?: IntExpression;
+	resistances?: AnnotatedString[];
+	immunities?: AnnotatedString[];
+	vulnerabilities?: AnnotatedString[];
+	ignored_resistances?: AnnotatedString[];
+	ac_value?: IntExpression;
+	ac_bonus?: IntExpression;
+	max_hp_value?: IntExpression;
+	max_hp_bonus?: IntExpression;
+	save_bonus?: AnnotatedString;
+	save_adv?: AnnotatedString[];
+	save_dis?: AnnotatedString[];
+	check_bonus?: AnnotatedString;
+	check_adv?: AnnotatedString[];
+	check_dis?: AnnotatedString[];
+	dc_bonus?: IntExpression;
 }
 
 export interface AttackInteraction {

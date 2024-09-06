@@ -1,18 +1,3 @@
-import type { Effect } from "./types";
-
-export interface AttackModel {
-	_v: 2;
-	name: string;
-	automation: Effect[];
-	verb?: string;
-	proper?: boolean;
-	criton?: number;
-	phrase?: string;
-	thumb?: string;
-	extra_crit_damage?: string;
-	activation_type?: number;
-};
-
 export interface SearchOptions {
 	search: string;
 	page: number;
@@ -158,7 +143,7 @@ export interface Features {
 export interface FeatureEntity {
 	name: string;
 	description: string;
-	automation: null | AttackModel;
+	automation: null | any;
 }
 
 export interface SpellCasting {

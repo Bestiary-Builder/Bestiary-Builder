@@ -2,6 +2,7 @@
 import { type Ref, inject, onBeforeUnmount, watch } from "vue";
 import HigherLevels from "./shared/HigherLevels.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
+import AnnotatedString from "./shared/AnnotatedString.vue";
 import LabelledComponent from "@/components/LabelledComponent.vue";
 import type { Damage } from "~/shared";
 
@@ -43,7 +44,9 @@ if (!Object.hasOwn(currentEffect!.value, "higher"))
 	<template v-if="currentEffect">
 		<SectionHeader title="Damage" />
 		<LabelledComponent title="Damage" for="damage">
-			<input id="damage" v-model="currentEffect.damage" type="text">
+			<div class="input-wrapper">
+				<input id="damage" v-model="currentEffect.damage" type="text"><AnnotatedString />
+			</div>
 		</LabelledComponent>
 		<SectionHeader title="Additional Options" />
 		<div class="two-wide">
