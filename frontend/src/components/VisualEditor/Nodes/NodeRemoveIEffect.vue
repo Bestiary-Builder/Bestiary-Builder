@@ -1,16 +1,14 @@
 <script setup lang="ts">
 import { type Ref, inject, watch } from "vue";
 import SectionHeader from "./shared/SectionHeader.vue";
+import { useDataCleanup } from "./shared/utils";
 import LabelledComponent from "@/components/LabelledComponent.vue";
 import type { Remove_IEffect } from "~/shared";
 
 const currentEffect = inject<Ref<Remove_IEffect>>("currentEffect");
 const _currentContext = inject<Ref<string[]>>("currentContext");
 
-watch(() => currentEffect?.value.removeParent, () => {
-	if (!currentEffect?.value.removeParent)
-		delete currentEffect?.value.removeParent;
-});
+useDataCleanup(currentEffect, ["removeParent"]);
 </script>
 
 <template>

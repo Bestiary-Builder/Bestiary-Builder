@@ -2,7 +2,7 @@
 import { inject, provide, ref, watch } from "vue";
 import YAML from "yaml";
 import TreeRoot from "./TreeRoot.vue";
-import NodeRoot from "./NodeRoot.vue";
+import NodeRoot from "./NodeEditor.vue";
 import type { AttackModel, Effect } from "~/shared";
 
 const currentEffect = ref<Effect | null>(null);
@@ -29,7 +29,7 @@ const automation = defineModel<AttackModel>();
 
 <style scoped lang="less">
 .tree {
-	min-width: 20rem;
+	min-width: 30rem;
 }
 
 .v-enter-active {

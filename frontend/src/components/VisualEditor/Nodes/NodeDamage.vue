@@ -3,25 +3,12 @@ import { type Ref, inject, onBeforeUnmount, watch } from "vue";
 import HigherLevels from "./shared/HigherLevels.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import AnnotatedString from "./shared/AnnotatedString.vue";
+import { useDataCleanup } from "./shared/utils";
 import LabelledComponent from "@/components/LabelledComponent.vue";
 import type { Damage } from "~/shared";
 
 const currentEffect = inject<Ref<Damage>>("currentEffect");
 const _currentContext = inject<Ref<string[]>>("currentContext");
-watch(() => currentEffect?.value.overheal, () => {
-	if (!currentEffect?.value.overheal)
-		delete currentEffect?.value.overheal;
-});
-
-watch(() => currentEffect?.value.cantripScale, async () => {
-	if (!currentEffect?.value.cantripScale)
-		delete currentEffect?.value.cantripScale;
-});
-
-watch(() => currentEffect?.value.fixedValue, async () => {
-	if (!currentEffect?.value.fixedValue)
-		delete currentEffect?.value.fixedValue;
-});
 
 watch(() => currentEffect?.value.higher, () => {
 	for (const index in currentEffect?.value.higher) {
@@ -38,6 +25,8 @@ onBeforeUnmount(() => {
 
 if (!Object.hasOwn(currentEffect!.value, "higher"))
 	currentEffect!.value.higher = {};
+
+useDataCleanup(currentEffect, ["overheal", "cantripScale", "fixedValue"]);
 </script>
 
 <template>
@@ -63,6 +52,7 @@ if (!Object.hasOwn(currentEffect!.value, "higher"))
 				<HigherLevels v-model="(currentEffect!.higher as Record<number, string>)" />
 			</LabelledComponent>
 		</div>
+		{{ currentEffect }}
 	</template>
 </template>
 

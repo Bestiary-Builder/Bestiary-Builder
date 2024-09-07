@@ -11,7 +11,7 @@ import "floating-vue/dist/style.css";
 // Font awesome
 import "@/utils/app/fontawesome";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-
+// import { Icon } from "@iconify/vue";
 // Vue-select
 import vSelect from "vue-select";
 import "vue-select/dist/vue-select.css";
@@ -26,6 +26,7 @@ export const app = createApp(App as Component<any>);
 app.use(router);
 app.use(FloatingVue);
 app.component("font-awesome-icon", FontAwesomeIcon);
+// app.component("Icon", Icon);
 app.component("v-select", vSelect);
 loader.config({
 	paths: {

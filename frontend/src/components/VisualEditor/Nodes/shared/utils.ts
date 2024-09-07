@@ -1,13 +1,12 @@
 import { type Ref, watch } from "vue";
 import type { Effect } from "~/shared";
 
-export const useDataCleanup = (data: Ref<any> | undefined, throwAwayValues: Partial<Effect>) => {
+export const useDataCleanup = <T extends Effect>(data: Ref<T> | undefined, throwAwayValues: Array<keyof T>) => {
 	if (!data)
 		return;
-	for (const property in throwAwayValues) {
+	for (const property of throwAwayValues) {
 		watch(() => data.value[property], () => {
-			// @ts-expect-error ___
-			if (data.value[property] === throwAwayValues[property])
+			if (throwAwayValues.includes(property) && Boolean(data.value[property]) === false)
 				delete data.value[property];
 		});
 	}

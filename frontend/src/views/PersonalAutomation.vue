@@ -109,6 +109,8 @@ onMounted(() => {
 onUnmounted(() => {
 	window.removeEventListener("beforeunload", unloadHandler);
 });
+
+const isVisualEditor = ref(true);
 </script>
 
 <template>
@@ -121,6 +123,9 @@ onUnmounted(() => {
 			}
 		]"
 	>
+		<button v-tooltip="'Change editor'" aria-label="Change editor" @click="isVisualEditor = !isVisualEditor">
+			<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
+		</button>
 		<button v-tooltip="'Import a list of automation'" aria-label="Import a list of automation" @click="showImportModal = true">
 			<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
 		</button>
@@ -157,7 +162,7 @@ onUnmounted(() => {
 			</div>
 			<hr>
 			<div class="automation-editor">
-				<AutomationEditor v-if="selectedAutomation" :key="selectedAutomation?._id!.toString()" :data="selectedAutomation" :is-stand-alone="true" @saved-standalone-data="initialData = JSON.stringify(data)" />
+				<AutomationEditor v-if="selectedAutomation" :key="selectedAutomation?._id!.toString()" :is-visual-editor="isVisualEditor" :data="selectedAutomation" :is-stand-alone="true" @saved-standalone-data="initialData = JSON.stringify(data)" />
 				<div v-else class="no-selected">
 					Select an automation to get started with editing it.
 				</div>

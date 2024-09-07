@@ -10,7 +10,7 @@ import { useFetch } from "@/utils/utils";
 import { type Automation, type AutomationDocumentation, type FeatureEntity, type Id, parseDescIntoAutomation } from "~/shared";
 import { store } from "@/utils/store";
 
-const { data, isStandAlone = false, creatureName = "$NAME$" } = defineProps<{ data: FeatureEntity | Automation; isStandAlone?: boolean; creatureName?: string }>();
+const { data, isStandAlone = false, creatureName = "$NAME$", isVisualEditor = true } = defineProps<{ data: FeatureEntity | Automation; isStandAlone?: boolean; creatureName?: string; isVisualEditor?: boolean }>();
 
 const emit = defineEmits<{
 	(e: "savedStandaloneData"): void;
@@ -21,8 +21,6 @@ const errorMessage = ref<null | string>(null);
 const hasEditedName = ref(false);
 
 // unfinished
-const isVisualEditor = ref(false);
-onMounted(() => isVisualEditor.value = true);
 
 // Imported automation helpers
 interface myAutomationSkeleton {
@@ -83,10 +81,8 @@ const importAutomation = async (apiPath: "automation" | "basic-example" | "srd-f
 		data.description = feature.description.replaceAll("$NAME$", creatureName);
 
 	// For basic examples, description is not set on the main object but only as the last text node in the automation.
-	if (!feature.description && apiPath === "basic-example" && feature.automation && !Array.isArray(feature.automation)) {
-		// @ts-expect-error Automation is untyped.
+	if (!feature.description && apiPath === "basic-example" && feature.automation && !Array.isArray(feature.automation))
 		data.description = feature.automation.automation[feature.automation.automation.length - 1].text;
-	}
 
 	if (Array.isArray(feature.automation)) {
 		for (const feat of feature.automation) {
@@ -488,11 +484,6 @@ const saveCustomAutomation = async () => {
 					</LabelledComponent>
 				</div>
 				<div class="editor-field__container">
-					<LabelledComponent title="Change Editor" for="changeEditor">
-						<button id="changeEditor" class="btn" @click="isVisualEditor = false">
-							Text Editor
-						</button>
-					</LabelledComponent>
 					<LabelledComponent title="Generate" for="generate">
 						<button id="generate" v-tooltip="'Generate automation from description. May be incomplete or inaccurate. Only works for basic, to hit attacks.'" class="btn" @click="generateAutomation">
 							Generate

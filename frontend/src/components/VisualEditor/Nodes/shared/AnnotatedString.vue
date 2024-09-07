@@ -9,7 +9,7 @@
 	display: block;
 	position: absolute;
 	right: 4px;
-	top: 14%;
+	top: 4px;
 	padding: 2px;
 	svg {
 		color: white;

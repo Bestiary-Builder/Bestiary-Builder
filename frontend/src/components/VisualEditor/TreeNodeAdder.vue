@@ -64,10 +64,7 @@ const availableNodes = computed(() => {
 <template>
 	<VDropdown v-if="displayNames" :distance="6" :positioning-disabled="store.isMobile" placement="left">
 		<div role="button" class="container">
-			<span class="icon">
-				➕
-			</span>
-			<span>Add Effect</span>
+			<span class="icon">➕</span><span>Add Effect</span>
 		</div>
 		<template #popper>
 			<div class="v-popper__custom-menu">

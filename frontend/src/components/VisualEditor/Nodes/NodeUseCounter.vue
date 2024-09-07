@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { type Ref, inject, ref, watch } from "vue";
 import IntExpression from "./shared/IntExpression.vue";
+import { useDataCleanup } from "./shared/utils";
 import LabelledComponent from "@/components/LabelledComponent.vue";
 import type { Counter, SpellSlotReference } from "~/shared";
 
@@ -18,16 +19,6 @@ watch(counterType, (newValue: string) => {
 		currentEffect!.value.counter = { id: 0, typeId: 0 };
 }, { immediate: true });
 
-watch(() => currentEffect!.value?.allowOverflow, async () => {
-	if (!currentEffect!.value?.allowOverflow)
-		delete currentEffect!.value.allowOverflow;
-});
-
-watch(() => currentEffect!.value?.fixedValue, async () => {
-	if (!currentEffect!.value?.fixedValue)
-		delete currentEffect!.value.fixedValue;
-});
-
 if (!Object.hasOwn(currentEffect!.value, "errorBehaviour"))
 	currentEffect!.value.errorBehaviour = "warn";
 
@@ -35,6 +26,8 @@ watch(() => currentEffect!.value?.errorBehaviour, () => {
 	if (currentEffect!.value?.errorBehaviour === "warn")
 		delete currentEffect!.value.errorBehaviour;
 });
+
+useDataCleanup(currentEffect, ["allowOverflow", "fixedValue"]);
 </script>
 
 <template>

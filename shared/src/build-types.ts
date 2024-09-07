@@ -144,6 +144,7 @@ export interface FeatureEntity {
 	name: string;
 	description: string;
 	automation: null | any;
+	// AttackModel
 }
 
 export interface SpellCasting {

@@ -3,31 +3,12 @@ import { type Ref, inject, onBeforeUnmount, watch } from "vue";
 import HigherLevels from "./shared/HigherLevels.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import AnnotatedString from "./shared/AnnotatedString.vue";
+import { useDataCleanup } from "./shared/utils";
 import LabelledComponent from "@/components/LabelledComponent.vue";
 import type { Roll } from "~/shared";
 
 const currentEffect = inject<Ref<Roll>>("currentEffect");
 const _currentContext = inject<Ref<string[]>>("currentContext");
-
-watch(() => currentEffect?.value.cantripScale, async () => {
-	if (!currentEffect?.value.cantripScale)
-		delete currentEffect!.value.cantripScale;
-});
-
-watch(() => currentEffect?.value.hidden, async () => {
-	if (!currentEffect?.value.hidden)
-		delete currentEffect!.value.hidden;
-});
-
-watch(() => currentEffect?.value.displayName, async () => {
-	if (currentEffect?.value.displayName === "")
-		delete currentEffect.value.displayName;
-});
-
-watch(() => currentEffect?.value.fixedValue, async () => {
-	if (!currentEffect?.value.fixedValue)
-		delete currentEffect!.value.fixedValue;
-});
 
 watch(() => currentEffect?.value.higher, () => {
 	for (const index in currentEffect!.value.higher) {
@@ -44,6 +25,8 @@ onBeforeUnmount(() => {
 
 if (!Object.hasOwn(currentEffect!.value, "higher"))
 	currentEffect!.value.higher = {};
+
+useDataCleanup(currentEffect, ["cantripScale", "hidden", "displayName", "fixedValue"]);
 </script>
 
 <template>

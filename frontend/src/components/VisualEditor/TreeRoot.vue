@@ -61,6 +61,7 @@ const defaultNodes: Record<string, Effect> = {
 	save: {
 		type: "save",
 		stat: "dex",
+		dc: "10",
 		fail: [],
 		success: []
 	},
@@ -129,10 +130,6 @@ provide("displayNames", displayNames);
 </template>
 
 <style scoped lang="less">
-section {
-	max-height: 55vh;
-	overflow-y: scroll;
-}
 div {
 	background: repeating-linear-gradient(
 		to right,
@@ -151,5 +148,7 @@ div {
 .container:first-of-type {
 	padding: 0.4rem;
 	background-color: var(--color-surface-0);
+	max-height: 55vh;
+	overflow-y: scroll;
 }
 </style>

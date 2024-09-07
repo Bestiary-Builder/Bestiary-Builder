@@ -1,17 +1,13 @@
 <script setup lang="ts">
 import { type Ref, inject, watch } from "vue";
 import SectionHeader from "./shared/SectionHeader.vue";
+import { useDataCleanup } from "./shared/utils";
 import LabelledComponent from "@/components/LabelledComponent.vue";
 import { fullStatNames } from "@/utils/constants";
 import type { Save } from "~/shared";
 
 const currentEffect = inject<Ref<Save>>("currentEffect");
 const _currentContext = inject<Ref<string[]>>("currentContext");
-
-watch(() => currentEffect!.value?.dc, () => {
-	if (currentEffect!.value?.dc === "")
-		delete currentEffect!.value.dc;
-});
 
 if (!Object.hasOwn(currentEffect!.value, "adv"))
 	currentEffect!.value.adv = 0;
@@ -20,6 +16,8 @@ watch(() => currentEffect!.value?.adv, () => {
 	if (currentEffect!.value?.adv === 0)
 		delete currentEffect!.value.adv;
 });
+
+useDataCleanup(currentEffect, ["dc"]);
 </script>
 
 <template>

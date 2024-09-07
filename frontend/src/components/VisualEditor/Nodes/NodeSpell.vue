@@ -2,53 +2,36 @@
 import { type Ref, inject, onMounted, ref, watch } from "vue";
 import IntExpression from "./shared/IntExpression.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
+import { useDataCleanup } from "./shared/utils";
 import LabelledComponent from "@/components/LabelledComponent.vue";
 import { useFetch } from "@/utils/utils";
 import type { Spell } from "~/shared";
 
-const currentNode = inject<Ref<{ node: Spell; context: string[] }>>("currentNode");
-const data = currentNode!.value.node;
+const currentEffect = inject<Ref<Spell>>("currentEffect");
+const _currentContext = inject<Ref<string[]>>("currentContext");
 
 type Spells = Array<{ label: string; id: number }>;
 const spells = ref<Spells>([]);
 onMounted(async () => {
-	const { success, data } = await useFetch<Spells>("/api/gamedata/spells");
+	const { success, data } = await useFetch<Spells>("/api/gamecurrentEffect/spells");
 	if (success)
 		spells.value = data;
 });
 
-watch(() => data?.level, () => {
-	if (data?.level === null)
-		delete data.level;
-});
-
-watch(() => data?.attackBonus, () => {
-	if (data?.attackBonus === "")
-		delete data.attackBonus;
-});
-
-watch(() => data?.castingMod, () => {
-	if (data?.castingMod === "")
-		delete data.castingMod;
-});
-
-watch(() => data?.parent, () => {
-	if (!data?.parent)
-		delete data.parent;
-});
+useDataCleanup(currentEffect, ["level", "attackBonus", "castingMod", "parent"]);
 </script>
 
 <template>
-	<template v-if="data">
+	<template v-if="currentEffect">
 		<SectionHeader title="Cast Spell" />
 		<LabelledComponent title="Spell" for="spell">
-			<v-select v-model="data.id" :options="spells" input-id="spell" label="label" :reduce="(spell : any) => spell.id" :clearable="false" />
+			<v-select v-model="currentEffect.id" :options="spells" input-id="spell" label="label" :reduce="(spell : any) => spell.id" :clearable="false" />
 		</LabelledComponent>
 		<SectionHeader title="Additional Options" />
 
 		<div class="two-wide">
 			<LabelledComponent title="Level" for="level">
-				<select v-model="data.level" class="ghost">
+				<select v-model="currentEffect.level" class="ghost">
 					<option :value="null">
 						-
 					</option>
@@ -59,21 +42,21 @@ watch(() => data?.parent, () => {
 			</LabelledComponent>
 			<LabelledComponent title="DC" for="dc">
 				<div class="input-wrapper">
-					<input id="dc" v-model="data.dc" type="text"><IntExpression />
+					<input id="dc" v-model="currentEffect.dc" type="text"><IntExpression />
 				</div>
 			</LabelledComponent>
 			<LabelledComponent title="Attack Bonus" for="attackBonus">
 				<div class="input-wrapper">
-					<input id="attackBonus" v-model="data.attackBonus" type="text"><IntExpression />
+					<input id="attackBonus" v-model="currentEffect.attackBonus" type="text"><IntExpression />
 				</div>
 			</LabelledComponent>
 			<LabelledComponent title="Casting Modifier" for="castingMod">
 				<div class="input-wrapper">
-					<input id="castingMod" v-model="data.castingMod" type="text"><IntExpression />
+					<input id="castingMod" v-model="currentEffect.castingMod" type="text"><IntExpression />
 				</div>
 			</LabelledComponent>
 			<LabelledComponent title="Parent Effect" for="parent">
-				<input id="parent" v-model="data.parent" type="text">
+				<input id="parent" v-model="currentEffect.parent" type="text">
 			</LabelledComponent>
 		</div>
 	</template>

@@ -3,16 +3,12 @@ import { type Ref, inject, onBeforeUnmount, watch } from "vue";
 import HigherLevels from "./shared/HigherLevels.vue";
 import IntExpression from "./shared/IntExpression.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
+import { useDataCleanup } from "./shared/utils";
 import LabelledComponent from "@/components/LabelledComponent.vue";
 import type { Variable } from "~/shared";
 
 const currentEffect = inject<Ref<Variable>>("currentEffect");
 const _currentContext = inject<Ref<string[]>>("currentContext");
-
-watch(() => currentEffect!.value?.onError, () => {
-	if (currentEffect!.value?.onError === "")
-		delete currentEffect!.value.onError;
-});
 
 watch(() => currentEffect!.value?.higher, () => {
 	for (const index in currentEffect!.value.higher) {
@@ -29,6 +25,8 @@ onBeforeUnmount(() => {
 
 if (!Object.hasOwn(currentEffect!.value, "higher"))
 	currentEffect!.value.higher = {};
+
+useDataCleanup(currentEffect, ["onError"]);
 </script>
 
 <template>

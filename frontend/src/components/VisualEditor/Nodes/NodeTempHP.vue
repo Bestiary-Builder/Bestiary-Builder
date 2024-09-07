@@ -3,16 +3,12 @@ import { type Ref, inject, onBeforeUnmount, watch } from "vue";
 import HigherLevels from "./shared/HigherLevels.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import AnnotatedString from "./shared/AnnotatedString.vue";
+import { useDataCleanup } from "./shared/utils";
 import LabelledComponent from "@/components/LabelledComponent.vue";
 import type { TempHP } from "~/shared";
 
 const currentEffect = inject<Ref<TempHP>>("currentEffect");
 const _currentContext = inject<Ref<string[]>>("currentContext");
-
-watch(() => currentEffect!.value?.cantripScale, async () => {
-	if (!currentEffect!.value?.cantripScale)
-		delete currentEffect!.value.cantripScale;
-});
 
 watch(() => currentEffect!.value?.higher, () => {
 	for (const index in currentEffect!.value.higher) {
@@ -29,6 +25,8 @@ onBeforeUnmount(() => {
 
 if (!Object.hasOwn(currentEffect!.value, "higher"))
 	currentEffect!.value.higher = {};
+
+useDataCleanup(currentEffect, ["cantripScale"]);
 </script>
 
 <template>

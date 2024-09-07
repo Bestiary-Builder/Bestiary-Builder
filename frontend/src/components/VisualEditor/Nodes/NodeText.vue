@@ -2,6 +2,7 @@
 import { type Ref, inject, onMounted, ref, watch } from "vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import AnnotatedString from "./shared/AnnotatedString.vue";
+import { useDataCleanup } from "./shared/utils";
 import type { AbilityReference, Text } from "~/shared";
 import LabelledComponent from "@/components/LabelledComponent.vue";
 import { useFetch } from "@/utils/utils";
@@ -25,6 +26,8 @@ watch(() => descIsText.value, () => {
 		// default to Second Wind ability
 		currentEffect!.value.text = { id: 192, typeId: 12168134 };
 });
+
+useDataCleanup(currentEffect, ["title"]);
 </script>
 
 <template>
@@ -42,7 +45,7 @@ watch(() => descIsText.value, () => {
 			</div>
 			<v-select v-else v-model="currentEffect.text" :options="abilities" label="name" input-id="text" :reduce="(x : any) => ({ id: x.id, typeId: x.typeId })" />
 		</labelledcomponent>
-		<LabelledComponent title="Text Type" for="textType">
+		<LabelledComponent title="Text Type" for="textType" style="margin-top: 1rem">
 			<select id="textType" v-model="descIsText" class="ghost">
 				<option :value="true">
 					Text
@@ -58,6 +61,10 @@ watch(() => descIsText.value, () => {
 <style scoped>
 	@import url("../../../assets/styles/automation-editor.less");
 textarea {
-	min-height: 200px;
+	min-height: 150px;
+}
+
+:deep(.v-select.vs--single .vs__selected) {
+	max-width: none;
 }
 </style>

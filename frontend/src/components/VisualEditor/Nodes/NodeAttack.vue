@@ -2,6 +2,7 @@
 import { type Ref, inject, onUnmounted, ref, watch } from "vue";
 import IntExpression from "./shared/IntExpression.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
+import { useDataCleanup } from "./shared/utils";
 import LabelledComponent from "@/components/LabelledComponent.vue";
 import type { Attack } from "~/shared";
 
@@ -32,6 +33,8 @@ const handleChange = () => {
 		isCustom.value = false;
 	}
 };
+
+useDataCleanup(currentEffect, ["attackBonus"]);
 </script>
 
 <template>
@@ -72,6 +75,7 @@ const handleChange = () => {
 				</div>
 			</LabelledComponent>
 		</div>
+		{{ currentEffect }}
 	</template>
 </template>
 
