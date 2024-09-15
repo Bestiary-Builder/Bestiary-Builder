@@ -23,6 +23,13 @@ watch(() => currentEffect!.value?.target, () => {
 	if (!currentEffect!.value?.target)
 		currentEffect!.value.target = 1;
 });
+
+const hasAllTarget = computed(() => {
+	if (isButton.value && isIAttack.value && (currentContext!.value.indexOf("attacks") > currentContext!.value.indexOf("buttons")))
+		return true;
+
+	return !isButton.value;
+});
 </script>
 
 <template>
@@ -31,7 +38,7 @@ watch(() => currentEffect!.value?.target, () => {
 		<div class="two-wide">
 			<LabelledComponent title="Target" for="target">
 				<select id="target" v-model="currentEffect.target" title="Target" class="ghost">
-					<option v-if="!isButton" value="all">
+					<option v-if="hasAllTarget" value="all">
 						All
 					</option>
 					<option value="self">

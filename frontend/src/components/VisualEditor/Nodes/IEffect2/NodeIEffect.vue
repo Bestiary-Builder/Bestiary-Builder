@@ -26,7 +26,7 @@ const addNewPassiveEffect = (effect: PassiveEffectDef) => {
 
 	else if (effect.type === "intexpression" || effect.type === "annotatedstring")
 		// @ts-expect-error already checked for lists..
-		currentEffect!.value.effects[effect.value] = "";
+		currentEffect!.value.effects[effect.value] = "1";
 };
 
 const getEffectData = (value: string) => {
@@ -48,7 +48,10 @@ const getInputType = (value: string) => {
 		return "intexpression";
 	return "list";
 };
-useDataCleanup(currentEffect, { end: false, tick_on_caster: false, conc: false, desc: "", save_as: "", parent: "", target_self: false, stacking: false });
+if (!currentEffect?.value.effects)
+	currentEffect!.value.effects = {};
+
+useDataCleanup(currentEffect, ["end", "tick_on_caster", "conc", "desc", "save_as", "parent", "target_self", "stacking"], { effects: PASSIVE_EFFECTS.map(x => x.value) });
 </script>
 
 <template>

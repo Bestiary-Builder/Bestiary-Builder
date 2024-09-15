@@ -75,7 +75,6 @@ useDataCleanup(currentEffect, ["attackBonus"]);
 				</div>
 			</LabelledComponent>
 		</div>
-		{{ currentEffect }}
 	</template>
 </template>
 
