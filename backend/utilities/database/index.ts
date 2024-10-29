@@ -29,7 +29,7 @@ export async function startConnection() {
 		// Connect the client to the server
 		await client.connect();
 		// Connect to databse
-		database = client.db("bestiarybuilder");
+		database = client.db(process.env.MongoDB_DBName ?? "bestiarybuilder");
 		// Get collections
 		collections.users = database.collection("Users");
 		collections.bestiaries = database.collection("Bestiaries");

@@ -29,7 +29,8 @@ To start editing the project follow these simple steps:
     - "frontendPath" should stay unchanged. (Unless you moved the folder around)
     - "clientId" should be changed to your Discord OAuth application id.
     - "clientSecret" should be changed to your Discord OAuth application secret.
-    - "MongoDB" should be changed to the connection URI for your MongoDB database.
+    - "MongoDB" should be changed to the connection URI for your MongoDB server.
+    - "MongoDB_DBName" should be changed to the name of the database to connect to, remove to use "bestiarybuilder".
     - "JWTKEY" should be any string and can be left as is for development.
 7. Launch the local site.
     - In VSCode/VSCodium simply press F5 to start the already created launch tasks.

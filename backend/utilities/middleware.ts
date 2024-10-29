@@ -49,6 +49,7 @@ app.use(
 		max: isProduction ? 100 : 1000 // limit each IP to 50/1000 requests per windowMs
 	})
 );
+app.set("trust proxy", "loopback");
 // CORS
 app.use(cors());
 // Compression

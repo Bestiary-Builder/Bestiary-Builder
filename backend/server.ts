@@ -113,7 +113,10 @@ for (const route of routes.routes) {
 	});
 }
 // Static frontend files
-app.use(express.static(process.env.frontendPath as string));
+log.info(`Reading frontend files from: \"${path.resolve(process.env.frontendPath as string)}\"`);
+app.use("/", express.static(path.resolve(process.env.frontendPath as string)));
+
+// Discord bot
 discord.login(process.env.discordBotToken!).catch(() => log.error("Failed to connect to discord bot"));
 
 // Everything else is 404
