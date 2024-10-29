@@ -1,13 +1,16 @@
-name: Build site for production
+name: Build site for staging
 on:
     push:
         branches:
-            - main
+            - stage
 env:
     NODE_ENV: production
 jobs:
     build-and-push:
         runs-on: ubuntu-latest
+        environment:
+            name: Staging
+            url: https://stage.bestiarybuilder.com
         steps:
             - uses: actions/checkout@master
             - uses: oven-sh/setup-bun@v1
@@ -29,10 +32,10 @@ jobs:
             - name: Building the backend
               working-directory: ./backend
               run: bun run build
-            - name: Deploy to branch
+            - name: Deploy to stage output branch
               uses: s0/git-publish-subdir-action@develop
               env:
                   REPO: self
-                  BRANCH: output
+                  BRANCH: stage-output
                   FOLDER: ./build
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

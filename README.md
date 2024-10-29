@@ -29,7 +29,6 @@ To start editing the project follow these simple steps:
     - "frontendPath" should stay unchanged. (Unless you moved the folder around)
     - "clientId" should be changed to your Discord OAuth application id.
     - "clientSecret" should be changed to your Discord OAuth application secret.
-    - "discordRedirectURI" should stay unchanged. (Unless you changed the hostname or port of the local site)
     - "MongoDB" should be changed to the connection URI for your MongoDB database.
     - "JWTKEY" should be any string and can be left as is for development.
 7. Launch the local site.
