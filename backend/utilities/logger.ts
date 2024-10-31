@@ -4,7 +4,7 @@ import { isProduction } from "./constants";
 
 // Format
 const format = winston.format.printf((info) => {
-	return `[${info.timestamp}]-(${info.label}) ${info.level} > ${info.message}${info.stack ? `\n${info.stack}` : ""}`;
+	return `[${info.timestamp}] ${info.level} > ${info.message}${info.stack ? `\n${info.stack}` : ""}`;
 });
 // Levels
 const winstonLevels = {
@@ -35,7 +35,6 @@ export const log = winston.createLogger({
 			format: "YYYY-MM-DD HH:mm:ss"
 		}),
 		winston.format.errors({ stack: true }),
-		winston.format.label({ label: "Bestiary Builder" })
 	),
 	transports: [
 		new winston.transports.Console({
@@ -48,7 +47,6 @@ export const log = winston.createLogger({
 				winston.format.timestamp({
 					format: "DD-MM-YYYY HH:mm:ss"
 				}),
-				winston.format.label({ label: "Bestiary Builder" }),
 				winston.format.colorize({ all: true }),
 				format
 			)

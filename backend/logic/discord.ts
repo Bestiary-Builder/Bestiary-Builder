@@ -39,7 +39,7 @@ if (isProduction) {
 	log.on("data", (info) => {
 		if (info.level === "request")
 			return;
-		let message = `[${info.timestamp}]-(${info.label}) ${info.level.toUpperCase()}`;
+		let message = `[${info.timestamp}] ${info.level.toUpperCase()}`;
 		if (log.levels[info.level] < log.levels.warning) {
 			const attachment = new discord.AttachmentBuilder(Buffer.from(`${info.message}${info.stack ? `\n${info.stack}` : ""}`)).setName("error.txt");
 			if (info.level === "critical")

@@ -1,9 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import http from "node:http";
-import type { Request } from "express";
 import express from "express";
-// Setup environment variables
+import type { Request } from "express";
 import dotenv from "dotenv";
 // Logging
 import discord from "./logic/discord";
@@ -17,21 +16,22 @@ import "@/utilities/middleware";
 // Setup database connection
 import { getBestiary, getUser, startConnection } from "@/utilities/database";
 
-// Setup http server
-
-// Load frontend
+// Import shared stuff
 import { Id, routes, stringToId } from "~/shared";
 
 // Import logic files
 import "./logic";
 
-// Start discord bot
+// Load .env
 dotenv.config();
+// Connect to database
 startConnection();
-const httpServer = http.createServer(app);
-httpServer.listen(Number.parseInt(process.env.port ?? "5000"), () => {
-	log.info(`Server listening to port ${process.env.port ?? "5000"}`);
-});
+
+// Static frontend files
+log.info(`Reading frontend files from: \"${path.resolve(process.env.frontendPath as string)}\"`);
+app.use("/", express.static(path.resolve(process.env.frontendPath as string)));
+
+// Get frontend html
 async function getFrontendHtml(route: routes.Route, req: Request) {
 	// Get information
 	let title = "Bestiary Builder";
@@ -112,12 +112,6 @@ for (const route of routes.routes) {
 		}
 	});
 }
-// Static frontend files
-log.info(`Reading frontend files from: \"${path.resolve(process.env.frontendPath as string)}\"`);
-app.use("/", express.static(path.resolve(process.env.frontendPath as string)));
-
-// Discord bot
-discord.login(process.env.discordBotToken!).catch(() => log.error("Failed to connect to discord bot"));
 
 // Everything else is 404
 app.get("/api/*", (req, res) => res.status(404).json({ error: "Path not found." }));
@@ -131,3 +125,18 @@ app.get("/*", async (req, res) => {
 		return res.status(500).send("Internal Server Error");
 	}
 });
+
+// Start HTTP server
+const httpServer = http.createServer(app);
+httpServer.listen(Number.parseInt(process.env.port ?? "5000"), () => {
+	log.info(`Server listening to port ${process.env.port ?? "5000"}`);
+	try {
+		throw new Error("Test error");
+	}
+	catch (err) {
+		log.error(err);
+	}
+});
+
+// Start discord bot
+discord.login(process.env.discordBotToken!).catch(() => log.error("Failed to connect to discord bot"));

@@ -12,7 +12,7 @@
 	"scripts": {
 		"dev": "npx nodemon",
 		"prebuild": "cd ../shared && npm install && npx ts-interface-builder ./src/build-types.ts",
-		"build": "bun build server.ts --target node --outfile ../build/server.js",
+		"build": "bun build server.ts --target bun --sourcemap --outfile ../build/server.js",
 		"test": "vitest run",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix"
@@ -26,7 +26,7 @@
 		"cpy-cli": "^5.0.0",
 		"discord.js": "^14.16.3",
 		"dotenv": "^16.4.5",
-		"express": "4.18.2",
+		"express": "^4.21.1",
 		"express-rate-limit": "^6.11.2",
 		"helmet": "^7.2.0",
 		"https": "^1.0.0",
