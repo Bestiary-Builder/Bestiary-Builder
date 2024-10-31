@@ -1,3 +1,4 @@
+import { Buffer } from "node:buffer";
 import discord from "discord.js";
 import { isProduction } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
@@ -11,9 +12,8 @@ export default client;
 
 let guild: discord.Guild | null;
 const channels = {} as {
-	combinedLogs?: discord.TextBasedChannel;
-	errorLogs?: discord.TextBasedChannel;
-	publicLogs?: discord.TextBasedChannel;
+	errorLogs?: discord.TextChannel;
+	publicLogs?: discord.TextChannel;
 };
 client.on("ready", async () => {
 	log.info("Discord bot is ready");
@@ -31,22 +31,20 @@ client.on("ready", async () => {
 		checkUserStatuses(guild);
 	}, 60 * 60 * 1000); // Once an hour
 
-	/// channels.combinedLogs = (await guild.channels.fetch("1188124583975460954")) as discord.TextBasedChannel;
-	channels.errorLogs = (await guild.channels.fetch("1188133661208477806")) as discord.TextBasedChannel;
-	channels.publicLogs = (await guild.channels.fetch("1188139329642565722")) as discord.TextBasedChannel;
+	channels.errorLogs = (await guild.channels.fetch("1188133661208477806")) as discord.TextChannel;
+	channels.publicLogs = (await guild.channels.fetch("1188139329642565722")) as discord.TextChannel;
 });
 
 if (isProduction) {
 	log.on("data", (info) => {
 		if (info.level === "request")
 			return;
-		let message = `[${info.timestamp}]-(${info.label}) ${info.level.toUpperCase()} > ${info.message}${info.stack ? `\n${info.stack}` : ""}`;
-		/// channels.combinedLogs?.send(message);
-		/// channels.combinedLogs?.sendTyping();
+		let message = `[${info.timestamp}]-(${info.label}) ${info.level.toUpperCase()}`;
 		if (log.levels[info.level] < log.levels.warning) {
+			const attachment = new discord.AttachmentBuilder(Buffer.from(`${info.message}${info.stack ? `\n${info.stack}` : ""}`)).setName("error.txt");
 			if (info.level === "critical")
 				message += "\n||<@307900989455859723>||";
-			channels.errorLogs?.send(message);
+			channels.errorLogs?.send({ content: message, files: [attachment] });
 			channels.errorLogs?.sendTyping();
 		}
 	});
