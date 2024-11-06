@@ -32,7 +32,7 @@ const bestiaryImages = computed(() => {
 </script>
 
 <template>
-	<div class="tile-container">
+	<div v-if="bestiaries.length > 0" class="tile-container">
 		<TransitionGroup name="popin">
 			<RouterLink v-for="(bestiary, index) in bestiaries" :key="bestiary._id?.toString()" class="content-tile bestiary-tile" :to="`/bestiary-viewer/${bestiary._id}`" :class="{ 'four-tall': bestiary.owner !== store.user?._id }" :aria-label="`Open Bestiary ${bestiary.name}`">
 				<div class="tile-header">
@@ -58,6 +58,9 @@ const bestiaryImages = computed(() => {
 				</div>
 			</RouterLink>
 		</TransitionGroup>
+	</div>
+	<div v-else class="zero-found">
+		You have no bestiaries. Create one in the top right.
 	</div>
 </template>
 
