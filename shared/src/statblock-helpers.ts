@@ -140,7 +140,7 @@ export function spellDc(innate = false, data: Statblock) {
 
 	if (innate)
 		return 8 + statCalc(castingData.spellCastingAbility, data) + data.core.proficiencyBonus;
-	else if ("spellCastingAbilityOverride" in castingData)
+	else if ("spellCastingAbilityOverride" in castingData && castingData.spellCastingAbilityOverride)
 		return 8 + statCalc(castingData.spellCastingAbilityOverride, data) + data.core.proficiencyBonus;
 	else return 8 + statCalc(castingData.spellCastingAbility, data) + data.core.proficiencyBonus;
 }
