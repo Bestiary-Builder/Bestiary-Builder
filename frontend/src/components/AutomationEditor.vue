@@ -522,7 +522,7 @@ const saveCustomAutomation = async () => {
 		</div>
 		<hr>
 		<div>
-			<VisualEditor v-if="automation" v-model="automation" />
+			<VisualEditor v-model="automation" :name="data.name" />
 			<!-- <div class="docs-container">
 				<div v-if="currentDocu" class="docs">
 					<hr>

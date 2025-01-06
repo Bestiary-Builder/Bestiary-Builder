@@ -23,8 +23,7 @@ provide("defaultNodes", defaultNodes);
 
 <template>
 	<section v-if="metaData" :class="{ container: rootType === 'root' }">
-		<span v-if="!data"> No data set </span>
-		<div v-for="(node, index) in data.automation ?? []" v-else :key="node.type">
+		<div v-for="(node, index) in data.automation ?? []" :key="node.type">
 			<TreeNode :data="node" :depth="depth" :parent-type="parentType" :context="[...context, index.toString()]" />
 		</div>
 		<p :style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`">

@@ -2,14 +2,18 @@
 import { inject, provide, ref } from "vue";
 import TreeRoot from "./TreeRoot.vue";
 import NodeRoot from "./NodeHelper.vue";
+import NodeAdder from "./NodeAdder.vue";
+import { defaultNodes } from "./util";
 import type { AttackModel, Effect } from "~/shared";
 
+const props = defineProps<{ name: string }>();
 const currentEffect = ref<Effect | null>(null);
 const currentContext = ref<string[]>([]);
 provide("currentEffect", currentEffect);
 provide("currentContext", currentContext);
 
 const automation = defineModel<AttackModel>();
+console.log(automation.value);
 </script>
 
 <template>
@@ -17,6 +21,10 @@ const automation = defineModel<AttackModel>();
 		<div class="tree">
 			<h3> Effect Tree</h3>
 			<TreeRoot v-if="automation" :data="automation" :depth="-1" />
+			<div v-else>
+				<NodeAdder :context="['root']" @add="(n: string) => automation = { _v: 2, name: props.name, automation: [defaultNodes[n]] }" />
+			</div>
+			{{ automation }}
 		</div>
 		<div class="editor">
 			<Transition>
