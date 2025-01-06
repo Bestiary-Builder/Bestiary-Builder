@@ -24,7 +24,6 @@ console.log(automation.value);
 			<div v-else>
 				<NodeAdder :context="['root']" @add="(n: string) => automation = { _v: 2, name: props.name, automation: [defaultNodes[n]] }" />
 			</div>
-			{{ automation }}
 		</div>
 		<div class="editor">
 			<Transition>
