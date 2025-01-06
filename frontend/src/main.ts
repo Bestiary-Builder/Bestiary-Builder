@@ -11,7 +11,7 @@ import "floating-vue/dist/style.css";
 // Font awesome
 import "@/utils/app/fontawesome";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-// @ts-expect-error Untyped
+// @ts-expect-error Shut the fuck up
 import { Icon } from "@iconify/vue";
 // Vue-select
 import vSelect from "vue-select";
