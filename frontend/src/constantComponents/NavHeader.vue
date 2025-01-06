@@ -50,7 +50,7 @@ watchEffect(() => {
 					</div>
 				</RouterLink>
 				<div v-else class="user login" @click.prevent="sendToLogin($route.path)">
-					Login
+					<b>Login</b>
 				</div>
 			</div>
 			<span class="navbar-toggler" role="button" aria-label="Toggle navbar" @click="isExpanded = !isExpanded"> <font-awesome-icon :icon="['fas', 'bars']" /> </span>
@@ -103,6 +103,7 @@ watchEffect(() => {
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
+	font-size: 1rem;
 }
 
 .navbar-brand {

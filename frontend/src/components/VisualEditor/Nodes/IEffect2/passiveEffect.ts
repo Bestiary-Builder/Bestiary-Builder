@@ -106,7 +106,7 @@ export const PASSIVE_EFFECTS: PassiveEffectDef[] = [
 		label: "Silvered Damage",
 		value: "silvered_damage",
 		type: IntExpression,
-		defaultOptions: [{ label: "True", value: "1" }, { label: "False", value: "0" }]
+		defaultOptions: [{ label: "True", value: "1" }]
 	},
 	{
 		label: "Resistance",

@@ -4,7 +4,7 @@ import AutomationEditor from "./AutomationEditor.vue";
 import Modal from "./Modal.vue";
 import type { FeatureEntity } from "~/shared";
 
-defineProps<{ data: FeatureEntity; type: string; index: number; creatureName: string }>();
+const { data, type, index, creatureName } = defineProps<{ data: FeatureEntity; type: string; index: number; creatureName: string }>();
 const showFeatureModal = ref(false);
 </script>
 

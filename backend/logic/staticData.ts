@@ -1,3 +1,4 @@
+import fetch from "node-fetch";
 import { app } from "@/utilities/constants";
 import basicExamples from "@/staticData/basicExamples.json";
 import srdFeatures from "@/staticData/srdFeatures.json";
@@ -55,6 +56,37 @@ app.get("/api/srd-creature/:name", async (req, res) => {
 		return res.status(404).json({ error: "No srd creature found with that name" });
 });
 
+// Spells
+const getAllEntitlements = async () => await fetch("https://api.avrae.io/gamedata/entitlements?free=aaa", {
+	method: "GET",
+	headers: {
+		"Content-Type": "application/json"
+	},
+}).then(response => response.json());
+
+let spells: Array<{ label: string; id: number }>;
+getAllEntitlements().then((x) => {
+	spells = Object.values(x.data).filter((x: any) => x.entity_type === "spell").map((x: any) => ({ label: x.name, id: x.entity_id }));
+});
+
+app.get("/api/gamedata/spells", async (req, res) => {
+	res.json(spells);
+});
+
+// limiteduse abilities
+let limiteduse: any[] = [];
+const getLimitedUse = async () => await fetch("https://api.avrae.io/gamedata/limiteduse", {
+	method: "GET",
+	headers: {
+		"Content-Type": "application/json"
+	},
+}).then(response => response.json());
+
+getLimitedUse().then(x => limiteduse = x.data);
+
+app.get("/api/gamedata/limiteduse", async (req, res) => {
+	res.json(limiteduse);
+});
 // json files
 app.get("/api/tags", async (req, res) => {
 	res.json(tags);

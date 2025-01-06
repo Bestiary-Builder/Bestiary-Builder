@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type Ref, computed, inject, ref, watch } from "vue";
+import { type Ref, computed, inject, watch } from "vue";
 import { useDataCleanup } from "../shared/utils";
 import SectionHeader from "../shared/SectionHeader.vue";
 import IntExpression from "../shared/IntExpression.vue";
@@ -51,13 +51,7 @@ const getInputType = (value: string) => {
 if (!currentEffect?.value.effects)
 	currentEffect!.value.effects = {};
 
-const addGrantedAction = () => {
-	if (!currentEffect?.value.attacks)
-		currentEffect!.value.attacks = [];
-
-	currentEffect?.value.attacks.push({ attack: { _v: 2, name: "New Action", automation: [] } });
-};
-useDataCleanup(currentEffect, ["end", "tick_on_caster", "conc", "desc", "save_as", "parent", "target_self", "stacking"]);
+useDataCleanup(currentEffect, ["end", "tick_on_caster", "conc", "desc", "save_as", "parent", "target_self", "stacking"], { effects: PASSIVE_EFFECTS.map(x => x.value) });
 </script>
 
 <template>
@@ -88,48 +82,34 @@ useDataCleanup(currentEffect, ["end", "tick_on_caster", "conc", "desc", "save_as
 				<span><input id="conc" v-model="currentEffect.conc" type="checkbox"> <label for="conc">Requires concentration.</label>  </span>
 			</LabelledComponent>
 		</div>
-		<SectionHeader title="Passive Effects" color="orangered" />
-		<div class="two-wide">
-			<LabelledComponent v-for="effect, key in currentEffect.effects" :key="key" :title="getEffectData(key)?.label || ''" :for="key" style="margin-top: 1rem">
-				<div class="input-container">
-					<div v-if="getInputType(key) !== 'list'" class="option input-wrapper">
-						<input :id="key" v-model="(currentEffect as any).effects[key]" type="text" style="width: 100%">
-						<AnnotatedString v-if="getInputType(key) === 'annotatedstring'" />
-						<IntExpression v-else />
-					</div>
-					<div v-else class="option">
-						<v-select
-							v-model="(currentEffect as any).effects[key]"
-							taggable
-							:options="getEffectData(key)?.defaultOptions"
-							:input-id="key"
-							:multiple="getEffectData(key)?.isList"
-							:reduce="(x: any) => x.value"
-							:create-option="(x: string) => ({ label: x, value: x })"
-						/>
-					</div>
-					<font-awesome-icon v-tooltip="'Delete this passive effect'" :icon="['fas', 'trash']" class="button-icon" @click="delete currentEffect.effects![key]" />
-				</div>
-			</LabelledComponent>
-		</div>
-
-		<LabelledComponent title="New Passive Effect" for="newPassiveEffect" style="margin-top: 1rem;" class="standout">
-			<div class="two-wide">
+		<SectionHeader title="Passive Effects" />
+		<LabelledComponent v-for="effect, key in currentEffect.effects" :key="key" :title="getEffectData(key)?.label || ''" :for="key" style="margin-top: 1rem">
+			<div v-if="getInputType(key) !== 'list'" class="input-wrapper">
+				<input :id="key" v-model="(currentEffect as any).effects[key]" type="text">
+				<AnnotatedString v-if="getInputType(key) === 'annotatedstring'" />
+				<IntExpression v-else />
+			</div>
+			<div v-else>
 				<v-select
-					:options="filteredPassiveEffects" placeholder="New..."
-					@option:selected="(e: PassiveEffectDef) => addNewPassiveEffect(e)"
+					v-model="(currentEffect as any).effects[key]"
+					taggable
+					:options="getEffectData(key)?.defaultOptions"
+					:input-id="key"
+					:multiple="getEffectData(key)?.isList"
+					:reduce="(x: any) => x.value"
+					:create-option="(x: string) => ({ label: x, value: x })"
 				/>
 			</div>
 		</LabelledComponent>
-
-		<SectionHeader title="Granted Actions" color="orangered" />
-		<button class="btn" @click="addGrantedAction">
-			Add granted action
-		</button>
+		<LabelledComponent title="New Passive Effect" for="newPassiveEffect" style="margin-top: 1rem;" class="standout">
+			<div class="two-wide">
+				<v-select :options="filteredPassiveEffects" @option:selected="(e: PassiveEffectDef) => addNewPassiveEffect(e)" />
+			</div>
+		</LabelledComponent>
 		<SectionHeader title="Additional Options" />
 		<LabelledComponent title="Description" for="text" style="margin-bottom: 1rem">
 			<div class="input-wrapper">
-				<textarea id="text" v-model="currentEffect.desc" rows="20" placeholder="Description" /><AnnotatedString />
+				<textarea id="text" v-model="currentEffect.desc" rows="40" placeholder="Description" /><AnnotatedString />
 			</div>
 		</labelledcomponent>
 		<div class="two-wide">
@@ -146,39 +126,18 @@ useDataCleanup(currentEffect, ["end", "tick_on_caster", "conc", "desc", "save_as
 				<span><input id="targetSelf" v-model="currentEffect.target_self" type="checkbox"> <label for="end">Target Self</label>  </span>
 			</LabelledComponent>
 		</div>
-		{{ currentEffect }}
 	</template>
 </template>
 
-<style scoped lang="less">
+<style scoped>
 @import url("../../../../assets/styles/automation-editor.less");
-@import url("../../../../assets/styles/mixins.less");
+
 .standout {
 	border-left: 2px dashed orangered;
 	padding-left: 1rem;
 }
 
-.button-icon {
-	cursor: pointer;
-	color: orangered;
-	padding-top: 8px;
-	padding-bottom: 8px;
-	.scale-on-hover(1.2);
-}
-
-.input-container {
-	display: flex;
-	gap: 0.5rem;
-
-	.option {
-		width: 100%;
-	}
-	.delete-button {
-		cursor: pointer;
-		color: orangered;
-		padding-top: 8px;
-		padding-bottom: 8px;
-		.scale-on-hover(1.2);
-	}
+textarea {
+	min-height: 5rem;
 }
 </style>

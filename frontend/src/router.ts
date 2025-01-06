@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 
+import { toast } from "vue-sonner";
 import { store } from "./utils/store";
 import { app } from "./main";
 // @ts-expect-error Comes in from vite-plugin-pages
@@ -51,11 +52,11 @@ router.afterEach((to) => {
 	const keys = Object.keys(to.query);
 	if (keys.includes("loginSuccess") || keys.includes("loginError")) {
 		if (to.query.loginSuccess) {
-			app.config.globalProperties.$toast.success("Succesfully logged in");
+			toast.success("Succesfully logged in");
 			delete to.query.loginSuccess;
 		}
 		if (to.query.loginError) {
-			app.config.globalProperties.$toast.error(`Login failed: ${to.query.loginError.toString()}`, { duration: 0 });
+			toast.error(`Login failed: ${to.query.loginError.toString()}`, { duration: 0 });
 			delete to.query.loginError;
 		}
 		// Remove queries from parameter

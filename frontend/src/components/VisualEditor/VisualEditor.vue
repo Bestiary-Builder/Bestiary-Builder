@@ -1,24 +1,19 @@
 <script setup lang="ts">
-import { computed, provide, ref } from "vue";
-import YAML from "yaml";
+import { inject, provide, ref } from "vue";
 import TreeRoot from "./TreeRoot.vue";
-import NodeRoot from "./NodeEditor.vue";
-import type { AttackInteraction, AttackModel, Effect } from "~/shared";
+import NodeRoot from "./NodeHelper.vue";
+import NodeAdder from "./NodeAdder.vue";
+import { defaultNodes } from "./util";
+import type { AttackModel, Effect } from "~/shared";
 
-const currentEffect = ref<Effect | AttackModel | null>(null);
+const props = defineProps<{ name: string }>();
+const currentEffect = ref<Effect | null>(null);
 const currentContext = ref<string[]>([]);
 provide("currentEffect", currentEffect);
 provide("currentContext", currentContext);
 
 const automation = defineModel<AttackModel>();
-
-const nodeDescriber = computed(() => {
-	if (!currentEffect.value)
-		return "";
-	if ((currentEffect.value as AttackModel)?._v)
-		return "attackRoot";
-	return (currentEffect.value as Effect).type;
-});
+console.log(automation.value);
 </script>
 
 <template>
@@ -26,10 +21,13 @@ const nodeDescriber = computed(() => {
 		<div class="tree">
 			<h3> Effect Tree</h3>
 			<TreeRoot v-if="automation" :data="automation" :depth="-1" />
+			<div v-else>
+				<NodeAdder :context="['root']" @add="(n: string) => automation = { _v: 2, name: props.name, automation: [defaultNodes[n]] }" />
+			</div>
 		</div>
 		<div class="editor">
 			<Transition>
-				<NodeRoot v-if="currentEffect" :key="currentContext.toString()" :node="nodeDescriber" />
+				<NodeRoot v-if="currentEffect" :key="currentContext.toString()" :node="currentEffect.type" />
 			</Transition>
 		</div>
 	</section>

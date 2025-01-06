@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
 import { refDebounced } from "@vueuse/core";
+import { toast } from "vue-sonner";
 import BestiaryList from "@/components/BestiaryList.vue";
 import type { Bestiary } from "~/shared";
 import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
 import { useFetch } from "@/utils/utils";
 import { store } from "@/utils/store";
-import { toast } from "@/utils/app/toast";
 import { $loading } from "@/utils/app/loading";
 
 onMounted(async () => {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { toast } from "vue-sonner";
 import { store } from "@/utils/store";
 import { sendToLogin, useFetch } from "@/utils/utils";
-import { toast } from "@/utils/app/toast";
 import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
 import JoinPatreon from "@/components/JoinPatreon.vue";
 

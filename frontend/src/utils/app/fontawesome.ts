@@ -4,6 +4,8 @@ import {
 	faArrowRightFromBracket,
 	faArrowRightToBracket,
 	faBars,
+	faChevronDown,
+	faChevronRight,
 	faCircleInfo,
 	faEarthEurope,
 	faEye,
@@ -13,6 +15,7 @@ import {
 	faLink,
 	faLock,
 	faMagnifyingGlass,
+	faPen,
 	faPenToSquare,
 	faPlus,
 	faScaleBalanced,
@@ -56,5 +59,8 @@ library.add(
 	faDiscord,
 	faGithub,
 	faPatreon,
-	faImage
+	faImage,
+	faChevronDown,
+	faChevronRight,
+	faPen
 );

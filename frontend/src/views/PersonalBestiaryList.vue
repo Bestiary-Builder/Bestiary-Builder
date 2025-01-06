@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import { onMounted, ref } from "vue";
+import { toast } from "vue-sonner";
 import Modal from "@/components/Modal.vue";
 import BestiaryList from "@/components/BestiaryList.vue";
 import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
 
-import { toast } from "@/utils/app/toast";
 import type { Bestiary } from "~/shared";
 import { useFetch } from "@/utils/utils";
 import { $loading } from "@/utils/app/loading";
@@ -22,9 +22,9 @@ onMounted(async () => {
 const bestiaries = ref<Bestiary[]>([]);
 
 const getBestiaries = async () => {
-	const { success, data, error } = await useFetch(`/api/my-bestiaries`);
+	const { success, data, error } = await useFetch<Bestiary[]>(`/api/my-bestiaries`);
 	if (success) {
-		bestiaries.value = data as Bestiary[];
+		bestiaries.value = data;
 	}
 	else {
 		bestiaries.value = [];
@@ -41,7 +41,7 @@ const createBestiary = async () => {
 		creatures: []
 	});
 	if (success) {
-		toast.success("Created bestiary");
+		toast.success("Successfully created bestiary.");
 		await router.push(`/bestiary-viewer/${data._id?.toString()}`);
 	}
 	else {
@@ -56,7 +56,7 @@ const deleteBestiary = async (bestiary: Bestiary | null) => {
 	const loader = $loading.show();
 	const { success, error } = await useFetch(`/api/bestiary/${bestiary._id?.toString()}/delete`);
 	if (success) {
-		toast.success("Deleted bestiary succesfully");
+		toast.success("Deleted the bestiary succesfully.");
 		showDeleteModal.value = false;
 	}
 	else {

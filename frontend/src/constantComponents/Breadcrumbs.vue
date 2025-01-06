@@ -2,10 +2,9 @@
 import { ref, watchEffect } from "vue";
 import { isClient } from "@vueuse/shared";
 import { useElementSize, useShare } from "@vueuse/core";
-import { toast } from "@/utils/app/toast";
+import { toast } from "vue-sonner";
 
-withDefaults(defineProps<{ routes: links; isLessWide?: boolean }>(), { isLessWide: false });
-
+const { isLessWide = false, routes } = defineProps<{ routes: links; isLessWide?: boolean }>();
 type links = {
 	path: string;
 	text: string;
@@ -86,8 +85,8 @@ watchEffect(() => {
 			background: transparent;
 			border-radius: 50%;
 			padding: 0.3rem;
-			height: 1.8rem;
-			width: 1.8rem;
+			height: 1.5rem;
+			width: 1.5rem;
 			aspect-ratio: 1;
 			color: orangered;
 			transition: all ease 0.3s;
@@ -130,13 +129,14 @@ watchEffect(() => {
 	flex-direction: row;
 	flex-wrap: wrap;
 	gap: 0.7rem;
-	font-size: 1.3rem;
+	font-size: 1.2rem;
 	margin: 0;
 	padding-left: 0;
 	list-style: none;
+
 	.current-page {
 		font-weight: bold;
-		font-size: 1.3rem;
+		font-size: 1.2rem;
 		max-width: 60vw;
 		text-wrap: nowrap;
 		overflow: hidden;

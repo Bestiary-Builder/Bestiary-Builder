@@ -143,7 +143,8 @@ export interface Features {
 export interface FeatureEntity {
 	name: string;
 	description: string;
-	automation: null | { [key: string]: unknown } | { [key: string]: unknown }[];
+	automation: null | any;
+	// AttackModel
 }
 
 export interface SpellCasting {

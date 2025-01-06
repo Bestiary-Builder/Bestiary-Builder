@@ -5,10 +5,10 @@ import type { SkillsEntity, Stat, Statblock } from "~/shared";
 import { SKILLS_BY_STAT, capitalizeFirstLetter, crAsString, displayCasterCasting, displayInnateCasting, displaySpeedOrSenses, hpCalc, ppCalc, signedNumber, statCalc } from "~/shared";
 import { featureGenerator, resistanceGenerator, stats } from "@/utils/constants";
 
-const props = defineProps<{ data: Statblock }>();
+const { data } = defineProps<{ data: Statblock }>();
 
 const showSkills = computed(() => {
-	for (const skill of props.data.abilities.skills) {
+	for (const skill of data.abilities.skills) {
 		if (skill.isProficient || skill.isHalfProficient || skill.isExpertise || skill.override || skill.override === 0)
 			return true;
 	}
@@ -17,20 +17,20 @@ const showSkills = computed(() => {
 });
 
 const showCasterCasting = computed(() => {
-	return !!((props.data.spellcasting.casterSpells.casterLevel) && props.data.spellcasting.casterSpells.castingClass);
+	return !!((data.spellcasting.casterSpells.casterLevel) && data.spellcasting.casterSpells.castingClass);
 });
 
 const showInnateCasting = computed(() => {
-	return (props.data.spellcasting.innateSpells.spellCastingAbility != null) && (
-		props.data.spellcasting.innateSpells.spellList[0].length > 0
-		|| props.data.spellcasting.innateSpells.spellList[1].length > 0
-		|| props.data.spellcasting.innateSpells.spellList[2].length > 0
-		|| props.data.spellcasting.innateSpells.spellList[3].length > 0
+	return (data.spellcasting.innateSpells.spellCastingAbility != null) && (
+		data.spellcasting.innateSpells.spellList[0].length > 0
+		|| data.spellcasting.innateSpells.spellList[1].length > 0
+		|| data.spellcasting.innateSpells.spellList[2].length > 0
+		|| data.spellcasting.innateSpells.spellList[3].length > 0
 	);
 });
 
 const skillOutput = computed(() => {
-	let skills: SkillsEntity[] = Array.from(props.data.abilities.skills);
+	let skills: SkillsEntity[] = Array.from(data.abilities.skills);
 	skills.sort((a: SkillsEntity, b: SkillsEntity) => {
 		return a.skillName.localeCompare(b.skillName);
 	});
@@ -62,13 +62,13 @@ const skillOutput = computed(() => {
 					output.push(`${skill.skillName} ${(over ?? 0) >= 0 ? "+" : ""}${over}`);
 				}
 				else {
-					bonus = statCalc(stat as Stat, props.data);
+					bonus = statCalc(stat as Stat, data);
 					if (skill.isHalfProficient)
-						bonus += Math.floor(props.data.core.proficiencyBonus / 2);
+						bonus += Math.floor(data.core.proficiencyBonus / 2);
 					else if (skill.isProficient)
-						bonus += props.data.core.proficiencyBonus;
+						bonus += data.core.proficiencyBonus;
 					else if (skill.isExpertise)
-						bonus += props.data.core.proficiencyBonus * 2;
+						bonus += data.core.proficiencyBonus * 2;
 
 					output.push(`${skill.skillName} ${bonus >= 0 ? "+" : ""}${bonus}`);
 				}
@@ -81,7 +81,7 @@ const skillOutput = computed(() => {
 });
 
 const hitDieBonus = computed(() => {
-	const hp = props.data.defenses.hp.numOfHitDie * statCalc("con", props.data);
+	const hp = data.defenses.hp.numOfHitDie * statCalc("con", data);
 	if (hp !== 0) {
 		if (hp > 0)
 			return `+${hp.toString()}`;
@@ -246,6 +246,9 @@ const alphaSort = (list: string[]) => {
 	padding: 0.4rem;
 
 	font-family: "Convergence", "Roboto", monospace;
+
+	line-height: 1.4rem;
+	font-size: 0.9rem;
 }
 
 .stat-block__image {
@@ -258,7 +261,7 @@ const alphaSort = (list: string[]) => {
 	width: 100%;
 	margin-bottom: 0.6rem;
 	margin-top: 0.6rem;
-	border-bottom: 2px solid orangered;
+	border-bottom: 1px solid orangered;
 
 	&:first-of-type {
 		margin-top: 0;
@@ -276,8 +279,7 @@ const alphaSort = (list: string[]) => {
 
 .stat-block__name-container {
 	color: orangered;
-	font-family: "Times New Roman", Times, serif;
-	margin-bottom: 0rem;
+	margin-bottom: 0.2rem;
 	text-align: left;
 }
 
@@ -290,7 +292,7 @@ const alphaSort = (list: string[]) => {
 	text-align: center;
 }
 
-.feature__has-automation-icodn {
+.feature__has-automation-icon {
 	font-size: 0.7rem;
 }
 
@@ -301,14 +303,9 @@ const alphaSort = (list: string[]) => {
 .feature-container {
 	&__title {
 		color: orangered;
-		font-family: "Times New Roman", Times, serif;
-		font-weight: bold;
+		// font-weight: bold;
 		border-bottom: 1px solid orangered;
 		margin-top: 0.3rem;
-	}
-
-	p:not(:last-of-type) {
-		margin-bottom: 0.2rem;
 	}
 }
 

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-withDefaults(defineProps<{ title: string; color?: string }>(), { color: "var(--border-color-base)" });
+defineProps<{ title: string }>();
 </script>
 
 <template>
@@ -25,7 +25,6 @@ withDefaults(defineProps<{ title: string; color?: string }>(), { color: "var(--b
 		width: 100%;
 		height: 2px;
 		margin-top: 0.75rem;
-		border-color: v-bind(color);
 	}
 }
 

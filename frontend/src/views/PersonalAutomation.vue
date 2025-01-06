@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from "vue";
 import { onBeforeRouteLeave } from "vue-router";
+import { toast } from "vue-sonner";
 import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
 import { useFetch } from "@/utils/utils";
-import { toast } from "@/utils/app/toast";
 import type { Automation, Id } from "~/shared";
 
 import LabelledComponent from "@/components/LabelledComponent.vue";
@@ -13,12 +13,12 @@ import { store } from "@/utils/store";
 import { $loading } from "@/utils/app/loading";
 
 const data = ref<Automation[]>([]);
-let initialData = "";
+const initialData = ref("");
 // get our data
 onMounted(async () => {
 	const loader = $loading.show();
 	await getMyAutomations();
-	initialData = JSON.stringify(data.value);
+	initialData.value = JSON.stringify(data.value);
 	loader.hide();
 });
 
@@ -60,12 +60,12 @@ const getMyAutomations = async () => {
 	if (success)
 		data.value = rData;
 	else toast.error(error);
-	initialData = JSON.stringify(data.value);
+	initialData.value = JSON.stringify(data.value);
 };
 
 const exportMyAutomations = async () => {
 	await navigator.clipboard.writeText(JSON.stringify(data.value.map(a => a.automation)));
-	toast.success("Copied all automation to clipboard!");
+	toast.success("Copied all automation to clipboard.");
 };
 
 const showImportModal = ref(false);
@@ -82,22 +82,22 @@ const importAutomations = async () => {
 		else name = a.name;
 		await addAutomation(name, a, false);
 	}
-	toast.info("Done importing automation!");
+	toast.info("Importing automation has finished.");
 	showImportModal.value = false;
 };
 
 onBeforeRouteLeave(() => {
 	// when the user leaves this route
-	if (initialData !== JSON.stringify(data.value)) {
-		const answer = window.confirm("Do you really want to leave? you have unsaved changes!");
+	if (initialData.value !== JSON.stringify(data.value)) {
+		const answer = window.confirm("Do you really want to leave? You have unsaved changes.");
 		if (!answer)
 			return false;
 	}
 });
 
 const unloadHandler = (event: Event) => {
-	if (initialData !== JSON.stringify(data.value)) {
-		window.confirm("Do you really want to leave? you have unsaved changes!");
+	if (initialData.value !== JSON.stringify(data.value)) {
+		window.confirm("Do you really want to leave? you have unsaved changes.");
 		event.preventDefault();
 		event.returnValue = true;
 	}
@@ -109,6 +109,8 @@ onMounted(() => {
 onUnmounted(() => {
 	window.removeEventListener("beforeunload", unloadHandler);
 });
+
+const isVisualEditor = ref(true);
 </script>
 
 <template>
@@ -121,6 +123,9 @@ onUnmounted(() => {
 			}
 		]"
 	>
+		<button v-tooltip="'Change editor'" aria-label="Change editor" @click="isVisualEditor = !isVisualEditor">
+			<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
+		</button>
 		<button v-tooltip="'Import a list of automation'" aria-label="Import a list of automation" @click="showImportModal = true">
 			<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
 		</button>
@@ -157,7 +162,7 @@ onUnmounted(() => {
 			</div>
 			<hr>
 			<div class="automation-editor">
-				<AutomationEditor v-if="selectedAutomation" :key="selectedAutomation?._id!.toString()" :data="selectedAutomation" :is-stand-alone="true" @saved-standalone-data="initialData = JSON.stringify(data)" />
+				<AutomationEditor v-if="selectedAutomation" :key="selectedAutomation?._id!.toString()" :is-visual-editor="isVisualEditor" :data="selectedAutomation" :is-stand-alone="true" @saved-standalone-data="initialData = JSON.stringify(data)" />
 				<div v-else class="no-selected">
 					Select an automation to get started with editing it.
 				</div>
@@ -198,6 +203,7 @@ onUnmounted(() => {
 			list-style-type: decimal;
 			color: white;
 			margin: 0rem;
+			font-size: 0.9rem;
 			li {
 				display: list-item;
 				margin: 0.3rem 0;
@@ -240,6 +246,6 @@ onUnmounted(() => {
 .two-wide {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
-	gap: 0rem 1rem;
+	gap: 0 1rem;
 }
 </style>

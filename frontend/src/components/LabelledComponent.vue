@@ -15,9 +15,16 @@ const props = withDefaults(defineProps<{ title: string; takesCustomTextInput?: b
 	flex-direction: column;
 	gap: 0.3rem;
 	label {
+		font-size: 0.9rem;
 		font-weight: bold;
 		text-decoration: underline;
 		text-decoration-color: color-mix(in srgb, currentColor, rgba(0, 0, 0, 0.5));
 	}
+}
+</style>
+
+<style>
+	.editor:has(label) .editor-field__title {
+	font-weight: normal;
 }
 </style>
