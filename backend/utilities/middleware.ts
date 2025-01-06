@@ -31,7 +31,7 @@ app.use(
 				"script-src": ["'self'", "'sha256-reBsRZd5I88opZSwT59Ir+QlBhrEhdRJ1aQUr4GXhyw='", "https://www.googletagmanager.com", "https://cdn.jsdelivr.net"],
 				"style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdn.jsdelivr.net"],
 				"font-src": ["'self'", "data: https://fonts.gstatic.com", "https://cdn.jsdelivr.net"],
-				"connect-src": ["'self'", "https://discord.com", "*.google-analytics.com", "https://cdn.jsdelivr.net"],
+				"connect-src": ["'self'", "https://discord.com", "*.google-analytics.com", "https://cdn.jsdelivr.net", "https://api.iconify.design"],
 				"worker-src": ["'self'", "blob:"]
 			},
 			useDefaults: true
