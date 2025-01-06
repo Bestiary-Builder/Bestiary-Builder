@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { inject, provide, ref, watch } from "vue";
-import YAML from "yaml";
+import { inject, provide, ref } from "vue";
 import TreeRoot from "./TreeRoot.vue";
-import NodeRoot from "./NodeEditor.vue";
+import NodeRoot from "./NodeHelper.vue";
 import type { AttackModel, Effect } from "~/shared";
 
 const currentEffect = ref<Effect | null>(null);

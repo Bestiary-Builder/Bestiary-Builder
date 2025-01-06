@@ -109,7 +109,7 @@ useDataCleanup(currentEffect, ["end", "tick_on_caster", "conc", "desc", "save_as
 		<SectionHeader title="Additional Options" />
 		<LabelledComponent title="Description" for="text" style="margin-bottom: 1rem">
 			<div class="input-wrapper">
-				<textarea id="text" v-model="currentEffect.desc" rows="20" placeholder="Description" /><AnnotatedString />
+				<textarea id="text" v-model="currentEffect.desc" rows="40" placeholder="Description" /><AnnotatedString />
 			</div>
 		</labelledcomponent>
 		<div class="two-wide">
@@ -126,7 +126,6 @@ useDataCleanup(currentEffect, ["end", "tick_on_caster", "conc", "desc", "save_as
 				<span><input id="targetSelf" v-model="currentEffect.target_self" type="checkbox"> <label for="end">Target Self</label>  </span>
 			</LabelledComponent>
 		</div>
-		{{ currentEffect }}
 	</template>
 </template>
 
@@ -136,5 +135,9 @@ useDataCleanup(currentEffect, ["end", "tick_on_caster", "conc", "desc", "save_as
 .standout {
 	border-left: 2px dashed orangered;
 	padding-left: 1rem;
+}
+
+textarea {
+	min-height: 5rem;
 }
 </style>

@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { type Ref, inject, ref, watch } from "vue";
+import { type Ref, inject, onMounted, ref, watch } from "vue";
 import IntExpression from "./shared/IntExpression.vue";
 import { useDataCleanup } from "./shared/utils";
 import LabelledComponent from "@/components/LabelledComponent.vue";
-import type { Counter, SpellSlotReference } from "~/shared";
+import type { AbilityReference, Counter, SpellSlotReference } from "~/shared";
+import { useFetch } from "@/utils/utils";
 
 const currentEffect = inject<Ref<Counter>>("currentEffect");
 const _currentContext = inject<Ref<string[]>>("currentContext");
@@ -25,6 +26,17 @@ if (!Object.hasOwn(currentEffect!.value, "errorBehaviour"))
 watch(() => currentEffect!.value?.errorBehaviour, () => {
 	if (currentEffect!.value?.errorBehaviour === "warn")
 		delete currentEffect!.value.errorBehaviour;
+});
+
+const limitedUse = ref();
+
+type ApiAbility = AbilityReference & { type: string; name: string };
+onMounted(async () => {
+	const { data } = await useFetch<{ success: boolean; data: ApiAbility[] }>("https://api.avrae.io/gamedata/limiteduse");
+	if (!data)
+		return;
+	limitedUse.value = data.data.filter(x => x.type === "Limited Use");
+	console.log(limitedUse.value);
 });
 
 useDataCleanup(currentEffect, ["allowOverflow", "fixedValue"]);

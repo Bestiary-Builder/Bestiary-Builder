@@ -170,7 +170,7 @@ app.post("/api/bestiary/:id/update", requireUser, async (req, res) => {
 			delete update.status;
 		// Public log
 		if (update.status === "public" && bestiary.status !== "public")
-			publicLog("New public bestiary", `Bestiary "${data.name}" changed to public by ${user.username}.`, `https://${req.hostname}/bestiary-viewer/${bestiary._id}`, user, colors.Blurple);
+			publicLog("New public bestiary", `Bestiary "${data.name}" changed to public by ${user.username}.`, `https://bestiarybuilder.com/bestiary-viewer/${bestiary._id}`, user, colors.Blurple);
 
 		// Update:
 		const updatedId = await updateBestiary(update as Bestiary, data._id);
@@ -344,7 +344,7 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 					image = new URL(image).origin + new URL(image).pathname;
 					creature.stats.description.image = image;
 				}
-				catch (err) {
+				catch {
 					log.error(`Image url not recognized. (${image})`);
 					ignoredCreatures.push({ creature: creature.stats.description.name, error: "Image url not recognized." });
 					continue;

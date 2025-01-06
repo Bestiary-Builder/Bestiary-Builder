@@ -36,12 +36,12 @@ useDataCleanup(currentEffect, ["onError"]);
 			<LabelledComponent title="Name*" for="name">
 				<input id="name" v-model="currentEffect.name" type="text" :class="{ required: currentEffect.name.length === 0 }">
 			</LabelledComponent>
-			<LabelledComponent title="Value*" for="value">
-				<div class="input-wrapper">
-					<input id="value" v-model="currentEffect.value" type="text" :class="{ required: currentEffect.value.length === 0 }"> <IntExpression />
-				</div>
-			</LabelledComponent>
 		</div>
+		<LabelledComponent title="Value*" for="value">
+			<div class="input-wrapper">
+				<input id="value" v-model="currentEffect.value" type="text" :class="{ required: currentEffect.value.length === 0 }"> <IntExpression />
+			</div>
+		</LabelledComponent>
 
 		<SectionHeader title="Additional Options" />
 

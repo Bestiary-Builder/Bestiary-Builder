@@ -51,4 +51,4 @@ const component = computed(() => {
 	<div>
 		<component :is="component" />
 	</div>
-</template>./Nodes/NodeCastSpell.vue./Nodes/NodeSpell.vue
+</template>

@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import { computed, inject } from "vue";
 import { store } from "../../utils/store";
+import { displayNames } from "./util";
 
 const props = defineProps<{ context: string[] }>();
 
 defineEmits<{
 	add: [node: string];
 }>();
-
-const displayNames = inject<Record<string, string>>("displayNames");
 
 const computedContext = computed(() => {
 	// a button, attack, or root node defines the current context that the automation runs in.
@@ -71,7 +70,8 @@ const availableNodes = computed(() => {
 				Choose a Node to add:
 				<div v-for="node in availableNodes" :key="node">
 					<button v-close-popper class="btn" @click="$emit('add', node)">
-						{{ displayNames[node] }}
+						<Icon :icon="displayNames![node]?.icon" :inline="true" width="1em" color="rgb(128,128,128)" />
+						{{ displayNames[node]?.label }}
 					</button>
 				</div>
 			</div>

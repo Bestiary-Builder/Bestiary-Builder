@@ -34,7 +34,7 @@ useDataCleanup(currentEffect, ["overheal", "cantripScale", "fixedValue"]);
 		<SectionHeader title="Damage" />
 		<LabelledComponent title="Damage" for="damage">
 			<div class="input-wrapper">
-				<input id="damage" v-model="currentEffect.damage" type="text"><AnnotatedString />
+				<textarea id="damage" v-model="currentEffect.damage" type="text" /><AnnotatedString />
 			</div>
 		</LabelledComponent>
 		<SectionHeader title="Additional Options" />

@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { type Ref, computed, inject, ref } from "vue";
 import TreeRoot from "./TreeRoot.vue";
-import TreeNodeAdder from "./TreeNodeAdder.vue";
+import TreeNodeAdder from "./NodeAdder.vue";
+import { displayNames } from "./util";
 import type { Effect } from "~/shared";
 
 const props = defineProps<{ data: Effect; depth: number; parentType: string; context: string[] }>();
@@ -11,8 +12,6 @@ const metaData = inject<any>("metaData");
 const selfType = computed<string>(() => {
 	return props.data.type;
 });
-
-const displayNames = inject<Record<string, string>>("displayNames");
 
 const defaultNodes = inject<Record<string, any>>("defaultNodes");
 
@@ -34,7 +33,8 @@ const toggleBranch = (nodeType: string) => {
 <template>
 	<template v-if="displayNames && defaultNodes">
 		<p :style="`margin-left: ${(depth + 1) * 15}px; color: grey;`" @click="currentEffect = data; currentContext = [...context, selfType]">
-			{{ displayNames![selfType] }}
+			<Icon :icon="displayNames![selfType]?.icon" :inline="true" width="1em" color="rgb(128,128,128)" />
+			{{ displayNames![selfType]?.label }}
 			<font-awesome-icon :icon="['fas', 'pen']" />
 			<span v-if="['attack', 'condition', 'save'].includes(selfType)" class="collapse-button" @click.stop="isCollapsed = !isCollapsed">
 				<font-awesome-icon v-if="!isCollapsed" :icon="['fas', 'chevron-down']" />
@@ -46,7 +46,8 @@ const toggleBranch = (nodeType: string) => {
 				<template v-if="['Effects[]', 'Effect[]'].includes(metaData[selfType][nodeType])">
 					<!--- E.g. hit, Miss, on False text -->
 					<p v-if="!['root', 'effects'].includes(nodeType)" :key="nodeType" :style="`margin-left: ${(depth + 2) * 15}px; color: white;`">
-						{{ displayNames![nodeType] }}
+						<Icon :icon="displayNames![nodeType]?.icon" :inline="true" width="1em" color="rgb(128,128,128)" />
+						{{ displayNames![nodeType]?.label }}
 						<span v-if="['onTrue', 'onFalse', 'hit', 'miss', 'fail', 'success'].includes(nodeType)" class="collapse-button" @click.stop="toggleBranch(nodeType)">
 							<font-awesome-icon v-if="!branchesCollapsed.includes(nodeType)" :icon="['fas', 'chevron-down']" />
 							<font-awesome-icon v-else :icon="['fas', 'chevron-right']" />
@@ -62,7 +63,7 @@ const toggleBranch = (nodeType: string) => {
 				<template v-if="(nodeType as any) === 'buttons' && (node as any).length > 0">
 					<template v-for="(button, index) in node" :key="button">
 						<p :style="`margin-left: ${(depth + 1) * 15}px; color: white;`">
-							{{ displayNames![nodeType] ?? nodeType }} ({{ (button as any).label }}):
+							{{ displayNames[nodeType].label }} ({{ (button as any).label }}):
 						</p>
 						<TreeRoot :data="(button as any)" :depth="depth + 1" root-type="button" :context="[...context, selfType, index.toString(), nodeType]" />
 					</template>
@@ -70,7 +71,7 @@ const toggleBranch = (nodeType: string) => {
 				<template v-if="(nodeType as any) === 'attacks' && (node as any).length > 0">
 					<template v-for="(attack, index) in node" :key="attack">
 						<p :style="`margin-left: ${(depth + 1) * 15}px; color: white;`">
-							{{ displayNames![nodeType] ?? nodeType }} ({{ (attack as any).name }}):
+							{{ displayNames[nodeType].label }} ({{ (attack as any).name }}):
 						</p>
 						<TreeRoot :data="(attack as any)" :depth="depth + 1" root-type="attack" :context="[...context, selfType, index.toString(), nodeType]" />
 					</template>
@@ -97,5 +98,9 @@ svg {
 .collapse-button {
 	user-select: none;
 	margin-left: 0.3rem;
+}
+
+.iconify {
+	scale: 1.25;
 }
 </style>
