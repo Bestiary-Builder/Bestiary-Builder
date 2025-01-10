@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { type Ref, computed, inject, ref } from "vue";
 import TreeRoot from "./TreeRoot.vue";
-import TreeNodeAdder from "./NodeAdder.vue";
-import { displayNames } from "./util";
-import type { Effect } from "~/shared";
+import TreeNodeAdder from "./EffectAdder.vue";
+import NodeHeader from "./Nodes/shared/NodeHeader.vue";
+import { defaultNodes } from "./util";
+import type { AttackModel, Effect, EffectKey } from "~/shared";
 
 const props = defineProps<{ data: Effect; depth: number; parentType: string; context: string[] }>();
 
@@ -13,8 +14,6 @@ const selfType = computed<string>(() => {
 	return props.data.type;
 });
 
-const defaultNodes = inject<Record<string, any>>("defaultNodes");
-
 const currentEffect = inject<Ref<Effect>>("currentEffect");
 const currentContext = inject<Ref<string[]>>("currentContext");
 
@@ -22,58 +21,55 @@ const isCollapsed = ref(false);
 
 const branchesCollapsed = ref<string[]>([]);
 
-const toggleBranch = (nodeType: string) => {
-	if (branchesCollapsed.value.includes(nodeType))
-		branchesCollapsed.value = branchesCollapsed.value.filter(n => n !== nodeType);
+const toggleBranch = (key: string) => {
+	if (branchesCollapsed.value.includes(key))
+		branchesCollapsed.value = branchesCollapsed.value.filter(n => n !== key);
 	 else
-		branchesCollapsed.value.push(nodeType);
+		branchesCollapsed.value.push(key);
 };
 </script>
 
 <template>
-	<template v-if="displayNames && defaultNodes">
+	<template v-if="defaultNodes">
 		<p :style="`margin-left: ${(depth + 1) * 15}px; color: grey;`" @click="currentEffect = data; currentContext = [...context, selfType]">
-			<Icon :icon="displayNames![selfType]?.icon" :inline="true" width="1em" color="rgb(128,128,128)" />
-			{{ displayNames![selfType]?.label }}
-			<font-awesome-icon :icon="['fas', 'pen']" />
+			<NodeHeader :type="selfType" />
+			<Icon icon="ooui:edit" inline width="1em" style="margin-left: .75em" />
 			<span v-if="['attack', 'condition', 'save'].includes(selfType)" class="collapse-button" @click.stop="isCollapsed = !isCollapsed">
-				<font-awesome-icon v-if="!isCollapsed" :icon="['fas', 'chevron-down']" />
-				<font-awesome-icon v-else :icon="['fas', 'chevron-right']" />
+				<Icon icon="ooui:expand" inline width="1em" :rotate="isCollapsed ? '270deg' : ''" />
 			</span>
 		</p>
 		<div v-show="!isCollapsed">
-			<template v-for="node, nodeType of data" :key="node">
-				<template v-if="['Effects[]', 'Effect[]'].includes(metaData[selfType][nodeType])">
+			<!-- Loop through each key in our data, looking for the keys which continue the structure. -->
+			<template v-for="effect, key of data" :key="effect">
+				<template v-if="['Effects[]', 'Effect[]'].includes(metaData[selfType][key])">
 					<!--- E.g. hit, Miss, on False text -->
-					<p v-if="!['root', 'effects'].includes(nodeType)" :key="nodeType" :style="`margin-left: ${(depth + 2) * 15}px; color: white;`">
-						<Icon :icon="displayNames![nodeType]?.icon" :inline="true" width="1em" color="rgb(128,128,128)" />
-						{{ displayNames![nodeType]?.label }}
-						<span v-if="['onTrue', 'onFalse', 'hit', 'miss', 'fail', 'success'].includes(nodeType)" class="collapse-button" @click.stop="toggleBranch(nodeType)">
-							<font-awesome-icon v-if="!branchesCollapsed.includes(nodeType)" :icon="['fas', 'chevron-down']" />
-							<font-awesome-icon v-else :icon="['fas', 'chevron-right']" />
+					<p v-if="!['root', 'effects'].includes(key)" :key="key" :style="`margin-left: ${(depth + 2) * 15}px; color: white;`">
+						<NodeHeader :type="key" />
+						<span v-if="['onTrue', 'onFalse', 'hit', 'miss', 'fail', 'success'].includes(key)" class="collapse-button" @click.stop="toggleBranch(key)">
+							<Icon icon="ooui:expand" inline width="1em" :rotate="branchesCollapsed.includes(key) ? '270deg' : ''" />
 						</span>
 					</p>
-					<template v-if="!branchesCollapsed.includes(nodeType)">
-						<TreeNode v-for="(childNode, index) in node" :key="childNode" :data="childNode as any" :depth="depth + (!['root', 'effects'].includes(nodeType) ? 2 : 1)" :parent-type="nodeType" :context="[...context, selfType, nodeType, index.toString()]" />
-						<p :style="`margin-left: ${(depth + (!['root', 'effects'].includes(nodeType) ? 3 : 2)) * 15}px;`">
-							<TreeNodeAdder :context="[...context, selfType]" @add="(n: string) => (node as any).push(defaultNodes![n] ?? {})" />
+					<template v-if="!branchesCollapsed.includes(key)">
+						<TreeNode v-for="(childNode, index) in effect" :key="childNode" :data="childNode as any" :depth="depth + (!['root', 'effects'].includes(key) ? 2 : 1)" :parent-type="key" :context="[...context, selfType, key, index.toString()]" />
+						<p :style="`margin-left: ${(depth + (!['root', 'effects'].includes(key) ? 3 : 2)) * 15}px;`">
+							<TreeNodeAdder :context="[...context, selfType]" @add="(n: string) => (effect as any).push(defaultNodes![n] ?? {})" />
 						</p>
 					</template>
 				</template>
-				<template v-if="(nodeType as any) === 'buttons' && (node as any).length > 0">
-					<template v-for="(button, index) in node" :key="button">
+				<template v-if="(key as EffectKey) === 'buttons' && effect.length > 0">
+					<template v-for="(button, index) in effect" :key="button">
 						<p :style="`margin-left: ${(depth + 1) * 15}px; color: white;`">
-							{{ displayNames[nodeType].label }} ({{ (button as any).label }}):
+							<NodeHeader :type="key" />
 						</p>
-						<TreeRoot :data="(button as any)" :depth="depth + 1" root-type="button" :context="[...context, selfType, index.toString(), nodeType]" />
+						<TreeRoot :data="(button as any as AttackModel)" :depth="depth + 1" root-type="button" :context="[...context, selfType, index.toString(), key]" />
 					</template>
 				</template>
-				<template v-if="(nodeType as any) === 'attacks' && (node as any).length > 0">
-					<template v-for="(attack, index) in node" :key="attack">
+				<template v-if="(key as EffectKey) === 'attacks' && effect.length > 0">
+					<template v-for="(attack, index) in effect" :key="attack">
 						<p :style="`margin-left: ${(depth + 1) * 15}px; color: white;`">
-							{{ displayNames[nodeType].label }} ({{ (attack as any).name }}):
+							<NodeHeader :type="key" />
 						</p>
-						<TreeRoot :data="(attack as any)" :depth="depth + 1" root-type="attack" :context="[...context, selfType, index.toString(), nodeType]" />
+						<TreeRoot :data="(attack as any as AttackModel)" :depth="depth + 1" root-type="attack" :context="[...context, selfType, index.toString(), key]" />
 					</template>
 				</template>
 			</template>

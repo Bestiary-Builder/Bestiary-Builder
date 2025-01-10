@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type Ref, computed, onMounted, onUnmounted, provide, ref, shallowRef, watch, watchEffect } from "vue";
+import { defineComponent, h, markRaw, onMounted, provide, ref } from "vue";
 import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
 import YAML from "yaml";
 import { toast } from "vue-sonner";
@@ -7,7 +7,7 @@ import LabelledComponent from "./LabelledComponent.vue";
 import Markdown from "./Markdown.vue";
 import VisualEditor from "./VisualEditor/VisualEditor.vue";
 import { useFetch } from "@/utils/utils";
-import { type Automation, type AutomationDocumentation, type FeatureEntity, type Id, parseDescIntoAutomation } from "~/shared";
+import { type AttackModel, type Automation, type FeatureEntity, type Id, parseDescIntoAutomation } from "~/shared";
 import { store } from "@/utils/store";
 
 const { data, isStandAlone = false, creatureName = "$NAME$", isVisualEditor = true } = defineProps<{ data: FeatureEntity | Automation; isStandAlone?: boolean; creatureName?: string; isVisualEditor?: boolean }>();
@@ -81,8 +81,11 @@ const importAutomation = async (apiPath: "automation" | "basic-example" | "srd-f
 		data.description = feature.description.replaceAll("$NAME$", creatureName);
 
 	// For basic examples, description is not set on the main object but only as the last text node in the automation.
-	if (!feature.description && apiPath === "basic-example" && feature.automation && !Array.isArray(feature.automation))
-		data.description = feature.automation.automation[feature.automation.automation.length - 1].text;
+	if (!feature.description && apiPath === "basic-example" && feature.automation && !Array.isArray(feature.automation)) {
+		const lastNode = feature.automation.automation[feature.automation.automation.length - 1];
+		if (lastNode.type === "text" && typeof (lastNode.text) === "string")
+			data.description = lastNode.text;
+	}
 
 	if (Array.isArray(feature.automation)) {
 		for (const feat of feature.automation) {
@@ -96,7 +99,7 @@ const importAutomation = async (apiPath: "automation" | "basic-example" | "srd-f
 };
 
 // Automation
-const automation = ref(data.automation);
+const automation = ref<null | AttackModel | AttackModel[]>(data.automation);
 provide("automation", automation);
 onMounted(() => {
 	automation.value = data.automation || null;
@@ -109,7 +112,16 @@ const saveAutomation = async (shouldNotify = false) => {
 	const { error } = await useFetch("/api/validate/automation", "POST", automation.value);
 
 	if (shouldNotify && error) {
-		toast.error(error, { duration: 0 });
+		const CustomDiv = defineComponent({
+			setup() {
+				return () =>
+					h("div", {
+						innerHTML: error
+					});
+			}
+		});
+		toast(markRaw(CustomDiv), { duration: 0, });
+		toast.error(error);
 		return;
 	}
 
@@ -339,11 +351,6 @@ const saveCustomAutomation = async () => {
 			<div class="editor-field__container two-wide">
 				<LabelledComponent title="Feature name" for="featurename">
 					<input id="featurename" v-model="data.name" type="text" placeholder="Enter name" :minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength" @change="hasEditedName = true">
-				</LabelledComponent>
-				<LabelledComponent title="Change Editor" for="changeEditor">
-					<button id="changeEditor" class="btn" @click="isVisualEditor = true">
-						Visual Editor
-					</button>
 				</LabelledComponent>
 			</div>
 
@@ -605,13 +612,6 @@ a {
 	.two-wide {
 		gap: 1rem;
 		grid-template-columns: 1fr;
-	}
-}
-
-@media screen and (max-width: 1660px) {
-	.two-wide.uneven {
-		gap: 1rem;
-		grid-template-columns: 1fr 1fr;
 	}
 }
 

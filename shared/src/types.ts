@@ -896,6 +896,7 @@ export interface AttackModel {
 export type IntExpression = string;
 export type AnnotatedString = string;
 export type Effect = Target | Attack | Save | Damage | TempHP | IEffect | Remove_IEffect | Roll | Text | Variable | Condition | Counter | Spell | Check;
+export type EffectKey = keyof Target | keyof Attack | keyof Save | keyof Damage | keyof TempHP | keyof IEffect | keyof Remove_IEffect | keyof Roll | keyof Text | keyof Variable | keyof Condition | keyof Counter | keyof Spell | keyof Check;
 
 export interface Target {
 	type: "target";

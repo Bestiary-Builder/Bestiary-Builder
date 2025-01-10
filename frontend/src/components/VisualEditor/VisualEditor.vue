@@ -2,9 +2,9 @@
 import { inject, provide, ref } from "vue";
 import TreeRoot from "./TreeRoot.vue";
 import NodeRoot from "./NodeHelper.vue";
-import NodeAdder from "./NodeAdder.vue";
+import NodeAdder from "./EffectAdder.vue";
 import { defaultNodes } from "./util";
-import type { AttackModel, Effect } from "~/shared";
+import type { Attack, AttackModel, Effect } from "~/shared";
 
 const props = defineProps<{ name: string }>();
 const currentEffect = ref<Effect | null>(null);
@@ -12,8 +12,7 @@ const currentContext = ref<string[]>([]);
 provide("currentEffect", currentEffect);
 provide("currentContext", currentContext);
 
-const automation = defineModel<AttackModel>();
-console.log(automation.value);
+const automation = defineModel<null | AttackModel | AttackModel[]>();
 </script>
 
 <template>
@@ -35,7 +34,7 @@ console.log(automation.value);
 
 <style scoped lang="less">
 .tree {
-	min-width: 30rem;
+	min-width: 25rem;
 }
 
 .v-enter-active {

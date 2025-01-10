@@ -1,3 +1,5 @@
+import type { AttackModel } from "./types";
+
 export interface SearchOptions {
 	search: string;
 	page: number;
@@ -143,8 +145,7 @@ export interface Features {
 export interface FeatureEntity {
 	name: string;
 	description: string;
-	automation: null | any;
-	// AttackModel
+	automation: null | AttackModel | AttackModel[];
 }
 
 export interface SpellCasting {

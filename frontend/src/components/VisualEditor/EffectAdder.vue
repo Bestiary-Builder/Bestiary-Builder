@@ -67,7 +67,7 @@ const availableNodes = computed(() => {
 		</div>
 		<template #popper>
 			<div class="v-popper__custom-menu">
-				Choose a Node to add:
+				Choose an Effect to add:
 				<div v-for="node in availableNodes" :key="node">
 					<button v-close-popper class="btn" @click="$emit('add', node)">
 						<Icon :icon="displayNames![node]?.icon" :inline="true" width="1em" color="rgb(128,128,128)" />

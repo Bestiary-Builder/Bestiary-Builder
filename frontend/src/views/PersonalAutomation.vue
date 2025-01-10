@@ -156,7 +156,7 @@ const isVisualEditor = ref(true);
 				</LabelledComponent>
 				<LabelledComponent v-if="selectedAutomation" title="Delete automation">
 					<button class="btn danger" @click="deleteAutomation(selectedAutomation._id!)">
-						Delete current automation
+						Delete current
 					</button>
 				</LabelledComponent>
 			</div>

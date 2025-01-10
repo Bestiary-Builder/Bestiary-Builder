@@ -19,7 +19,6 @@ import "vue-select/dist/vue-select.css";
 // monaco editor
 import { loader } from "@guolao/vue-monaco-editor";
 
-import yaml from "yaml";
 import router from "@/router";
 import App from "@/App.vue";
 
