@@ -9,7 +9,6 @@ import LabelledComponent from "@/components/LabelledComponent.vue";
 import type { IEffect } from "~/shared";
 
 const currentEffect = inject<Ref<IEffect>>("currentEffect");
-const _currentContext = inject<Ref<string[]>>("currentContext");
 
 const filteredPassiveEffects = computed(() => {
 	if (!currentEffect?.value?.effects)
@@ -51,6 +50,11 @@ const getInputType = (value: string) => {
 if (!currentEffect?.value.effects)
 	currentEffect!.value.effects = {};
 
+const addButton = () => {
+	if (!currentEffect?.value?.buttons)
+		currentEffect!.value.buttons = [];
+	currentEffect!.value.buttons.push({ automation: [], label: "New Button" });
+};
 useDataCleanup(currentEffect, ["end", "tick_on_caster", "conc", "desc", "save_as", "parent", "target_self", "stacking"], { effects: PASSIVE_EFFECTS.map(x => x.value) });
 </script>
 
@@ -108,8 +112,8 @@ useDataCleanup(currentEffect, ["end", "tick_on_caster", "conc", "desc", "save_as
 		</LabelledComponent>
 		<SectionHeader title="Buttons" />
 		<div class="two-wide">
-			<LabelledComponent title="New Button">
-				<button class="btn">
+			<LabelledComponent title="New Button" for="addButton ">
+				<button id="addButton" class="btn" @click="addButton()">
 					Add a button
 				</button>
 				<small> Manage individual buttons by selecting them in the Effect Tree. </small>

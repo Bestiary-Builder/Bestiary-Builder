@@ -19,7 +19,7 @@ export const displayNames: Record<string, { label: string; icon: string }> = {
 	counter: { label: "Use Counter", icon: "twemoji:input-numbers" },
 	remove_ieffect: { label: "Remove Initiative Effect", icon: "material-symbols:delete-forever" },
 	attacks: { label: "Action", icon: "" },
-	buttons: { label: "Button", icon: "" },
+	buttons: { label: "Button", icon: "material-symbols:joystick" },
 	save: { label: "Saving Throw", icon: "fa6-solid:recycle" },
 	temphp: { label: "Temp HP", icon: "twemoji:shield" },
 	check: { label: "Ability Check", icon: "twemoji:man-cartwheeling" }
