@@ -65,5 +65,6 @@ process.on("unhandledRejection", (err, origin) => {
 	log.log("critical", `Unhandled rejection: ${err}; From: ${origin} `);
 });
 process.on("uncaughtException", (err, origin) => {
+	console.log(err, origin);
 	log.log("critical", `Uncaught exception: ${err}. From: ${origin}`);
 });

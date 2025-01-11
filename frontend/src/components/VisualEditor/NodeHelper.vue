@@ -13,6 +13,7 @@ import NodeRoll from "./Nodes/NodeRoll.vue";
 import NodeUseCounter from "./Nodes/NodeUseCounter.vue";
 import NodeSpell from "./Nodes/NodeSpell.vue";
 import NodeIEffect from "./Nodes/IEffect2/NodeIEffect.vue";
+import NodeRoot from "./Nodes/NodeRoot.vue";
 
 const props = defineProps<{ node: string }>();
 
@@ -43,6 +44,8 @@ const component = computed(() => {
 		return NodeSpell;
 	if (props.node === "ieffect2")
 		return NodeIEffect;
+	if (props.node === "noderoot")
+		return NodeRoot;
 	return "div";
 });
 </script>

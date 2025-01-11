@@ -4,7 +4,7 @@ import TreeNode from "./TreeNode.vue";
 import TreeNodeAdder from "./EffectAdder.vue";
 import { defaultNodes } from "./util";
 import { useFetch } from "@/utils/utils";
-import type { AttackModel } from "~/shared";
+import type { AttackModel, Effect } from "~/shared";
 
 const { data, depth = 0, parentType = "root", rootType = "root", context = ["root"] } = defineProps<{ data: AttackModel | AttackModel[]; depth?: number; parentType?: string; rootType?: "root" | "button" | "attack"; context?: string[] }>();
 
@@ -32,17 +32,20 @@ const addListAttack = () => {
 
 	automation.value.push({ _v: 2, name: "New Attack", automation: [] });
 };
+
+const currentEffect = inject<Ref<Effect | AttackModel >>("currentEffect");
+const currentContext = inject<Ref<string[]>>("currentContext");
 </script>
 
 <template>
 	<section v-if="metaData" :class="{ container: rootType === 'root' }">
 		<template v-if="Array.isArray(data)">
 			<template v-for="auto, index in data" :key="index">
-				<p v-if="rootType === 'root'">
+				<p v-if="rootType === 'root'" @click="currentEffect = data[index]; currentContext = [...context]">
 					-{{ auto.name }}-
 				</p>
-				<div v-for="(node, index) in auto.automation ?? []" :key="node.type">
-					<TreeNode :data="node" :depth="depth" :parent-type="parentType" :context="[...context, index.toString()]" />
+				<div v-for="(node, idx) in auto.automation ?? []" :key="node.type">
+					<TreeNode :data="node" :depth="depth" :parent-type="parentType" :context="[...context, idx.toString()]" />
 				</div>
 				<p :style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`">
 					<TreeNodeAdder :context="context" @add="(nodeType: string) => auto.automation.push(defaultNodes[nodeType] ?? {})" />
@@ -53,7 +56,7 @@ const addListAttack = () => {
 			</p>
 		</template>
 		<template v-else>
-			<p v-if="rootType === 'root'">
+			<p v-if="rootType === 'root'" @click="currentEffect = data; currentContext = [...context]">
 				-Attack Root-
 			</p>
 			<div v-for="(node, index) in data.automation ?? []" :key="node.type">

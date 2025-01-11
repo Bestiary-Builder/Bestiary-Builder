@@ -1072,3 +1072,9 @@ export interface Check {
 	contestTie?: "fail" | "success" | "neither";
 	adv?: -1 | 0 | 1;
 }
+
+export interface FeatureEntity {
+	name: string;
+	description: string;
+	automation: null | AttackModel | AttackModel[];
+}

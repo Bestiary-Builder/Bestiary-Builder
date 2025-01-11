@@ -1,5 +1,3 @@
-import type { AttackModel } from "./types";
-
 export interface SearchOptions {
 	search: string;
 	page: number;
@@ -142,10 +140,10 @@ export interface Features {
 	regional: FeatureEntity[];
 }
 
-export interface FeatureEntity {
+interface FeatureEntity {
 	name: string;
 	description: string;
-	automation: null | AttackModel | AttackModel[];
+	automation: any; // null | AttackModel | AttackModel[];
 }
 
 export interface SpellCasting {

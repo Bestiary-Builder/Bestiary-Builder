@@ -89,8 +89,8 @@ const importAutomation = async (apiPath: "automation" | "basic-example" | "srd-f
 
 	if (Array.isArray(feature.automation)) {
 		for (const feat of feature.automation) {
-			if (apiPath === "srd-feature" && (feat.name as string).includes(" - "))
-				feat.name = (feat.name as string).split("-").slice(1).join("-").trim();
+			if (apiPath === "srd-feature" && feat.name.includes(" - "))
+				feat.name = feat.name.split("-").slice(1).join("-").trim();
 		}
 	}
 

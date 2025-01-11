@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { inject, provide, ref } from "vue";
+import { computed, inject, provide, ref } from "vue";
 import TreeRoot from "./TreeRoot.vue";
 import NodeRoot from "./NodeHelper.vue";
 import NodeAdder from "./EffectAdder.vue";
@@ -7,12 +7,24 @@ import { defaultNodes } from "./util";
 import type { Attack, AttackModel, Effect } from "~/shared";
 
 const props = defineProps<{ name: string }>();
-const currentEffect = ref<Effect | null>(null);
+const currentEffect = ref<Effect | AttackModel | null>(null);
 const currentContext = ref<string[]>([]);
 provide("currentEffect", currentEffect);
 provide("currentContext", currentContext);
 
 const automation = defineModel<null | AttackModel | AttackModel[]>();
+
+const currentNode = computed(() => {
+	if (!currentEffect.value)
+		return null;
+	if (Object.hasOwn(currentEffect.value, "type"))
+		// @ts-expect-error Yes it fucking does
+		return currentEffect.value.type;
+	if (Object.hasOwn(currentEffect.value, "_v"))
+		return "noderoot";
+
+	return "";
+});
 </script>
 
 <template>
@@ -26,7 +38,7 @@ const automation = defineModel<null | AttackModel | AttackModel[]>();
 		</div>
 		<div class="editor">
 			<Transition>
-				<NodeRoot v-if="currentEffect" :key="currentContext.toString()" :node="currentEffect.type" />
+				<NodeRoot v-if="currentEffect" :key="currentContext.toString()" :node="currentNode" />
 			</Transition>
 		</div>
 	</section>

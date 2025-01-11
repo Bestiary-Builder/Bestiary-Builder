@@ -37,7 +37,7 @@ useDataCleanup(currentEffect, ["level", "attackBonus", "castingMod", "parent"]);
 
 		<div class="two-wide">
 			<LabelledComponent title="Level" for="level">
-				<select v-model="currentEffect.level" class="ghost">
+				<select id="level" v-model="currentEffect.level" class="ghost">
 					<option :value="null">
 						(default level)
 					</option>
