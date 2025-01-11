@@ -6,7 +6,6 @@ import type { AttackModel } from "~/shared";
 import LabelledComponent from "@/components/LabelledComponent.vue";
 
 const currentEffect = inject<Ref<AttackModel>>("currentEffect");
-const _currentContext = inject<Ref<string[]>>("currentContext");
 
 useDataCleanup(currentEffect, ["thumb", "verb", "proper", "phrase", "criton", "extra_crit_damage", "activation_type"]);
 </script>

@@ -106,6 +106,15 @@ useDataCleanup(currentEffect, ["end", "tick_on_caster", "conc", "desc", "save_as
 				<v-select :options="filteredPassiveEffects" @option:selected="(e: PassiveEffectDef) => addNewPassiveEffect(e)" />
 			</div>
 		</LabelledComponent>
+		<SectionHeader title="Buttons" />
+		<div class="two-wide">
+			<LabelledComponent title="New Button">
+				<button class="btn">
+					Add a button
+				</button>
+				<small> Manage individual buttons by selecting them in the Effect Tree. </small>
+			</LabelledComponent>
+		</div>
 		<SectionHeader title="Additional Options" />
 		<LabelledComponent title="Description" for="text" style="margin-bottom: 1rem">
 			<div class="input-wrapper">

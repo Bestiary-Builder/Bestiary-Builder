@@ -1,7 +1,7 @@
 import antfu from "@antfu/eslint-config";
 
 export default antfu(
-	// antfu cionfig inbuild settings
+	// antfu config inbuild settings
 	{
 		ignores: ["dist", "dist/**", "node_modules", "node_modules/**", "**/*-ti.ts"],
 		typescript: {

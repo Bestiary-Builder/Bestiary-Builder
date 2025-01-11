@@ -8,7 +8,6 @@ import LabelledComponent from "@/components/LabelledComponent.vue";
 import type { Damage } from "~/shared";
 
 const currentEffect = inject<Ref<Damage>>("currentEffect");
-const _currentContext = inject<Ref<string[]>>("currentContext");
 
 watch(() => currentEffect?.value.higher, () => {
 	for (const index in currentEffect?.value.higher) {

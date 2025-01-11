@@ -4,7 +4,7 @@ import TreeRoot from "./TreeRoot.vue";
 import TreeNodeAdder from "./EffectAdder.vue";
 import NodeHeader from "./Nodes/shared/NodeHeader.vue";
 import { defaultNodes } from "./util";
-import type { AttackModel, Effect, EffectKey } from "~/shared";
+import type { AttackModel, ButtonInteraction, Effect, EffectKey } from "~/shared";
 
 const props = defineProps<{ data: Effect; depth: number; parentType: string; context: string[] }>();
 
@@ -14,7 +14,7 @@ const selfType = computed<string>(() => {
 	return props.data.type;
 });
 
-const currentEffect = inject<Ref<Effect>>("currentEffect");
+const currentEffect = inject<Ref<Effect | ButtonInteraction>>("currentEffect");
 const currentContext = inject<Ref<string[]>>("currentContext");
 
 const isCollapsed = ref(false);
@@ -57,10 +57,10 @@ const toggleBranch = (key: string) => {
 			</template>
 			<template v-if="(key as EffectKey) === 'buttons'">
 				<template v-for="(button, index) in effect" :key="button">
-					<p :style="`margin-left: ${(depth + 1) * 15}px; color: white;`">
-						<NodeHeader :type="key" />
+					<p :style="`margin-left: ${(depth + 1) * 15}px; color: white;`" @click="currentEffect = (button as any as ButtonInteraction); currentContext = [...context, selfType, 'buttons', index.toString()]">
+						<NodeHeader :type="key" :additional-text="(button as any as ButtonInteraction).label" />
 					</p>
-					<TreeRoot :data="(button as any as AttackModel)" :depth="depth + 1" root-type="button" :context="[...context, selfType, index.toString(), key]" />
+					<TreeRoot :data="(button as any as ButtonInteraction)" :depth="depth + 1" root-type="button" :context="[...context, selfType, index.toString(), key]" />
 				</template>
 			</template>
 			<template v-if="(key as EffectKey) === 'attacks'">

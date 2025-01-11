@@ -36,7 +36,6 @@ onMounted(async () => {
 	if (!data)
 		return;
 	limitedUse.value = data.data.filter(x => x.type === "Limited Use");
-	console.log(limitedUse.value);
 });
 
 useDataCleanup(currentEffect, ["allowOverflow", "fixedValue"]);

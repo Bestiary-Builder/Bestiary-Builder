@@ -7,7 +7,6 @@ import { fullStatNames } from "@/utils/constants";
 import type { Save } from "~/shared";
 
 const currentEffect = inject<Ref<Save>>("currentEffect");
-const _currentContext = inject<Ref<string[]>>("currentContext");
 
 if (!Object.hasOwn(currentEffect!.value, "adv"))
 	currentEffect!.value.adv = 0;

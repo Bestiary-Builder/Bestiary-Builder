@@ -8,7 +8,6 @@ import LabelledComponent from "@/components/LabelledComponent.vue";
 import { useFetch } from "@/utils/utils";
 
 const currentEffect = inject<Ref<Text>>("currentEffect");
-const _currentContext = inject<Ref<string[]>>("currentContext");
 
 const abilities = ref<AbilityReference[]>([]);
 onMounted(async () => {

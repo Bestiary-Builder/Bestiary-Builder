@@ -4,9 +4,9 @@ import TreeNode from "./TreeNode.vue";
 import TreeNodeAdder from "./EffectAdder.vue";
 import { defaultNodes } from "./util";
 import { useFetch } from "@/utils/utils";
-import type { AttackModel, Effect } from "~/shared";
+import type { AttackModel, ButtonInteraction, Effect } from "~/shared";
 
-const { data, depth = 0, parentType = "root", rootType = "root", context = ["root"] } = defineProps<{ data: AttackModel | AttackModel[]; depth?: number; parentType?: string; rootType?: "root" | "button" | "attack"; context?: string[] }>();
+const { data, depth = 0, parentType = "root", rootType = "root", context = ["root"] } = defineProps<{ data: AttackModel | AttackModel[] | ButtonInteraction; depth?: number; parentType?: string; rootType?: "root" | "button" | "attack"; context?: string[] }>();
 
 // Documentation helpers
 const metaData = ref<any | null>(null);
@@ -20,10 +20,10 @@ provide("metaData", metaData);
 
 const automation = inject<Ref<null | AttackModel | AttackModel[]>>("automation");
 const makeListAttack = () => {
-	if (Array.isArray(data) || !automation)
+	if (Array.isArray(data) || !automation || rootType !== "root")
 		return;
 	const currentAttack = data;
-	automation.value = [currentAttack, { _v: 2, name: "New Attack", automation: [] }];
+	automation.value = [currentAttack as AttackModel, { _v: 2, name: "New Attack", automation: [] }];
 };
 
 const addListAttack = () => {
@@ -33,7 +33,7 @@ const addListAttack = () => {
 	automation.value.push({ _v: 2, name: "New Attack", automation: [] });
 };
 
-const currentEffect = inject<Ref<Effect | AttackModel >>("currentEffect");
+const currentEffect = inject<Ref<Effect | AttackModel | ButtonInteraction >>("currentEffect");
 const currentContext = inject<Ref<string[]>>("currentContext");
 </script>
 

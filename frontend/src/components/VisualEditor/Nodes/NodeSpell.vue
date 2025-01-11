@@ -8,7 +8,6 @@ import { useFetch } from "@/utils/utils";
 import type { Spell } from "~/shared";
 
 const currentEffect = inject<Ref<Spell>>("currentEffect");
-const _currentContext = inject<Ref<string[]>>("currentContext");
 
 type Spells = { label: string; id: number }[];
 const spells = ref<Spells>([]);

@@ -7,7 +7,6 @@ import LabelledComponent from "@/components/LabelledComponent.vue";
 import type { Condition } from "~/shared";
 
 const currentEffect = inject<Ref<Condition>>("currentEffect");
-const _currentContext = inject<Ref<string[]>>("currentContext");
 
 const isWarning = computed(() => {
 	return (currentEffect?.value.condition.includes(" = ") || (currentEffect?.value.condition.includes("=") && !currentEffect?.value.condition.includes("==") && currentEffect?.value.condition[currentEffect?.value.condition.length - 1] !== "="));
