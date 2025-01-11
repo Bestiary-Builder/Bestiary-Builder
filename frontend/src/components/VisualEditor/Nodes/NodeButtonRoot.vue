@@ -2,6 +2,7 @@
 import { type Ref, inject, ref, watch } from "vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
+import IntExpression from "./shared/IntExpression.vue";
 import type { ButtonInteraction } from "~/shared";
 import LabelledComponent from "@/components/LabelledComponent.vue";
 
@@ -21,7 +22,7 @@ watch(() => currentEffect!.value?.style, () => {
 
 <template>
 	<template v-if="currentEffect">
-		<SectionHeader title="Attack Model" />
+		<SectionHeader title="Button" />
 		<div class="two-wide">
 			<LabelledComponent title="Button Label*" for="label">
 				<input id="label" v-model="currentEffect.label" type="text" :class="{ required: currentEffect.label.length === 0 }">
