@@ -63,7 +63,7 @@ const currentContext = inject<Ref<string[]>>("currentContext");
 				<TreeNode :data="node" :depth="depth" :parent-type="parentType" :context="[...context, index.toString()]" />
 			</div>
 			<p :style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`">
-				<TreeNodeAdder :context="context" @add="(nodeType: string) => data.automation.push(defaultNodes[nodeType] ?? {})" />
+				<TreeNodeAdder :context="context" @add="(nodeType: string) => data!.automation.push(defaultNodes[nodeType] ?? {})" />
 			</p>
 			<p v-if="rootType === 'root'" :style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`" class="add" @click="makeListAttack()">
 				Add Attack to this feature
