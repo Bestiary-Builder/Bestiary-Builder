@@ -14,7 +14,6 @@ const computedContext = computed(() => {
 
 	// work our way back up the tree as we stop when we reach the first context level
 	const ctx = [...props.context].reverse();
-	console.log(ctx);
 	// node determining context
 	let isTargetContext = false;
 
@@ -59,11 +58,13 @@ const availableNodes = computed(() => {
 
 const automation = inject<Ref<null | AttackModel | AttackModel[]>>("automation");
 const currentEffect = inject<Ref<Effect | ButtonInteraction | AttackInteraction>>("currentEffect");
-const addAndSelect = async (node: string) => {
+const addAndSelect = (node: string) => {
+	console.log(true);
+	console.log(node);
 	// traverse through the tree.
 	if (!automation)
 		return;
-	if (!automation.value)
+	if (!automation || !automation.value)
 		automation.value = { _v: 2, name: props.name || "New Attack", automation: [] };
 
 	let tree: any;
@@ -117,6 +118,9 @@ const addAndSelect = async (node: string) => {
 						{{ displayNames[node]?.label }}
 					</button>
 				</div>
+				<button @click="console.log('aaaa')">
+					aaa
+				</button>
 			</div>
 		</template>
 	</VDropdown>

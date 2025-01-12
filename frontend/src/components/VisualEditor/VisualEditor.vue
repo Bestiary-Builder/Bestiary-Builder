@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { computed, inject, provide, ref } from "vue";
+import { computed, provide, ref } from "vue";
 import TreeRoot from "./TreeRoot.vue";
 import NodeRoot from "./NodeHelper.vue";
-import NodeAdder from "./EffectAdder.vue";
-import { defaultNodes } from "./util";
+import EffectAdder from "./EffectAdder.vue";
 import type { AttackModel, ButtonInteraction, Effect } from "~/shared";
 
 const props = defineProps<{ name: string }>();
@@ -37,7 +36,7 @@ const currentNode = computed(() => {
 			<h3> Effect Tree</h3>
 			<TreeRoot v-if="automation" :data="automation" :depth="-1" />
 			<div v-else>
-				<NodeAdder :context="['root']" :name="props.name" />
+				<EffectAdder :context="['root']" :name="props.name" />
 			</div>
 		</div>
 		<div class="editor">
@@ -60,5 +59,9 @@ const currentNode = computed(() => {
 .v-enter-from,
 .v-leave-to {
 	opacity: 0;
+}
+
+h3 {
+	margin-bottom: 0.25rem;
 }
 </style>
