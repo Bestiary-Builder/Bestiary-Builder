@@ -48,7 +48,7 @@ const toggleBranch = (key: string) => {
 					</span>
 				</p>
 				<template v-if="!branchesCollapsed.includes(key)">
-					<TreeNode v-for="(childNode, index) in effect" :key="childNode" :data="childNode as any" :depth="depth + (!['root', 'effects'].includes(key) ? 2 : 1)" :parent-type="key" :context="[...context, key, index.toString()]" />
+					<TreeNode v-for="(childNode, index) in effect" :key="childNode" :data="childNode as any" :depth="depth + (!['root', 'effects'].includes(key) ? 2 : 1)" :parent-type="key" :context="[...context, `$${selfType}`, key, index.toString()]" />
 					<p :style="`margin-left: ${(depth + (!['root', 'effects'].includes(key) ? 3 : 2)) * 15}px;`">
 						<EffectAdder :context="[...context, key]" />
 					</p>

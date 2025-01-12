@@ -14,6 +14,7 @@ const computedContext = computed(() => {
 
 	// work our way back up the tree as we stop when we reach the first context level
 	const ctx = [...props.context].reverse();
+	console.log(ctx);
 	// node determining context
 	let isTargetContext = false;
 
@@ -21,7 +22,7 @@ const computedContext = computed(() => {
 	let contextLevel: "root" | "attacks" | "buttons" = "root";
 
 	for (const node of ctx) {
-		if (node === "target")
+		if (node === "$target")
 			isTargetContext = true;
 
 		if (node === "buttons") {
@@ -41,16 +42,16 @@ const computedContext = computed(() => {
 });
 
 const availableNodes = computed(() => {
-	const ctx = computedContext.value;
+	const { isTargetContext, contextLevel } = computedContext.value;
 
-	if (!ctx.isTargetContext && ctx.contextLevel === "root")
+	if (!isTargetContext && contextLevel === "root")
 		return ["target", "roll", "text", "variable", "condition", "counter", "spell"];
-	if (ctx.isTargetContext && ctx.contextLevel === "root")
+	if (isTargetContext && contextLevel === "root")
 		return ["attack", "save", "damage", "temphp", "ieffect2", "roll", "text", "variable", "condition", "counter", "check"];
 
-	if (!ctx.isTargetContext && (ctx.contextLevel === "attacks" || ctx.contextLevel === "buttons"))
+	if (!isTargetContext && (contextLevel === "attacks" || contextLevel === "buttons"))
 		return ["target", "remove_ieffect", "roll", "text", "variable", "condition", "counter", "spell"];
-	if (ctx.isTargetContext && (ctx.contextLevel === "attacks" || ctx.contextLevel === "buttons"))
+	if (isTargetContext && (contextLevel === "attacks" || contextLevel === "buttons"))
 		return ["attack", "save", "damage", "temphp", "ieffect2", "remove_ieffect", "roll", "text", "variable", "condition", "counter", "check"];
 
 	return [];
@@ -73,6 +74,8 @@ const addAndSelect = async (node: string) => {
 	for (const [idx, key] of props.context.entries()) {
 		const isArrayIndex = /^\d+$/.test(key);
 		if (key === "root")
+			continue;
+		if (key.startsWith("$"))
 			continue;
 		if (isArrayIndex) {
 			if (idx === 0)
