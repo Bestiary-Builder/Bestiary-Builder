@@ -30,6 +30,9 @@ const hasAllTarget = computed(() => {
 
 	return !isButton.value;
 });
+
+if (currentEffect?.value.target === "each")
+	currentEffect.value.target = "all";
 </script>
 
 <template>

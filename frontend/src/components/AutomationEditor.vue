@@ -670,7 +670,7 @@ a {
 		margin-bottom: 0.75rem;
 	}
 	.editor-field__container {
-		gap: 1rem;
+		gap: 0;
 		margin-bottom: 0;
 	}
 }

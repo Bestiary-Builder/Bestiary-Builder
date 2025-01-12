@@ -15,6 +15,7 @@ import NodeSpell from "./Nodes/NodeSpell.vue";
 import NodeIEffect from "./Nodes/IEffect2/NodeIEffect.vue";
 import NodeRoot from "./Nodes/NodeRoot.vue";
 import NodeButtonRoot from "./Nodes/NodeButtonRoot.vue";
+import NodeIAttackRoot from "./Nodes/NodeIAttackRoot.vue";
 
 const props = defineProps<{ node: string }>();
 
@@ -49,6 +50,8 @@ const component = computed(() => {
 		return NodeRoot;
 	if (props.node === "buttonroot")
 		return NodeButtonRoot;
+	if (props.node === "attackroot")
+		return NodeIAttackRoot;
 	return "div";
 });
 </script>

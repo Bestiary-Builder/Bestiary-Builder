@@ -1,4 +1,4 @@
-import type { Effect } from "~/shared";
+import type { AttackModel, Effect } from "~/shared";
 
 export const displayNames: Record<string, { label: string; icon: string }> = {
 	variable: { label: "Set Variable", icon: "fluent:braces-variable-24-filled" },
@@ -93,3 +93,5 @@ export const defaultNodes: Record<string, Effect> = {
 		id: 2102
 	}
 };
+
+export const blankAttack: AttackModel = { name: "New Attack", automation: [], _v: 2 };

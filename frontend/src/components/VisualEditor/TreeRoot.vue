@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { type Ref, inject, onMounted, provide, ref } from "vue";
 import TreeNode from "./TreeNode.vue";
-import TreeNodeAdder from "./EffectAdder.vue";
+import EffectAdder from "./EffectAdder.vue";
 import { defaultNodes } from "./util";
 import { useFetch } from "@/utils/utils";
 import type { AttackModel, ButtonInteraction, Effect } from "~/shared";
@@ -48,7 +48,7 @@ const currentContext = inject<Ref<string[]>>("currentContext");
 					<TreeNode :data="node" :depth="depth" :parent-type="parentType" :context="[...context, idx.toString()]" />
 				</div>
 				<p :style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`">
-					<TreeNodeAdder :context="context" @add="(nodeType: string) => auto.automation.push(defaultNodes[nodeType] ?? {})" />
+					<EffectAdder :context="[index.toString(), ...context]" />
 				</p>
 			</template>
 			<p v-if="rootType === 'root'" :style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`" class="add" @click="addListAttack()">
@@ -63,7 +63,7 @@ const currentContext = inject<Ref<string[]>>("currentContext");
 				<TreeNode :data="node" :depth="depth" :parent-type="parentType" :context="[...context, index.toString()]" />
 			</div>
 			<p :style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`">
-				<TreeNodeAdder :context="context" @add="(nodeType: string) => (data as AttackModel).automation!.push(defaultNodes[nodeType] ?? {})" />
+				<EffectAdder :context="context" />
 			</p>
 			<p v-if="rootType === 'root'" :style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`" class="add" @click="makeListAttack()">
 				Add Attack to this feature
