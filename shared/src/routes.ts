@@ -71,6 +71,13 @@ export const routes: Route[] = [
 		file: "UserSettings.vue",
 		meta: { navbar: false, loggedIn: false, dynamic: false },
 	},
+	// unsubscribe from emails
+	{
+		path: "/unsubscribe",
+		name: "Unsubscribe",
+		file: "Unsubscribe.vue",
+		meta: { navbar: false, loggedIn: true, dynamic: false },
+	},
 
 	// privacy policy
 	{
@@ -79,7 +86,6 @@ export const routes: Route[] = [
 		file: "GenericMarkdownView.vue",
 		meta: { navbar: false, loggedIn: false, dynamic: false },
 		props: { filePath: "privacy-policy" },
-
 	},
 	// terms and conditions
 	{
@@ -106,7 +112,7 @@ export const routes: Route[] = [
 		props: { filePath: "not-found" },
 	},
 ];
-export const siteMapRoutes = routes.map(route => ({
+export const siteMapRoutes = routes.map((route) => ({
 	path: route.path,
 	name: route.name,
 	props: true,

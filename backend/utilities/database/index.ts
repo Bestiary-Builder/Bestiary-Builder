@@ -15,12 +15,11 @@ export async function startConnection() {
 			serverApi: {
 				version: ServerApiVersion.v1,
 				strict: true,
-				deprecationErrors: false
+				deprecationErrors: false,
 			},
-			monitorCommands: true
+			monitorCommands: true,
 		});
-	}
-	catch (err) {
+	} catch (err) {
 		log.log("critical", `Invalid mongodb connection url. ${err}`);
 		return;
 	}
@@ -42,13 +41,10 @@ export async function startConnection() {
 		const runDataBaseChange = true;
 		if (runDataBaseChange) {
 			// Add customDescription to spells
-			const result1 = await collections.creatures.updateMany({ "stats.spellcasting.innateSpells.customDescription": { $exists: false } }, { $set: { "stats.spellcasting.innateSpells.customDescription": "" } });
-			const result2 = await collections.creatures.updateMany({ "stats.spellcasting.casterSpells.customDescription": { $exists: false } }, { $set: { "stats.spellcasting.casterSpells.customDescription": "" } });
-			log.log("database", `Updated ${result1.modifiedCount} creatures to add customDescription to innateSpells.`);
-			log.log("database", `Updated ${result2.modifiedCount} creatures to add customDescription to casterSpells.`);
+			const result1 = await collections.users.updateMany({ emails: { $exists: false } }, { $set: { emails: true } });
+			log.log("database", `Updated ${result1.modifiedCount} users to add emails flag.`);
 		}
-	}
-	catch (err) {
+	} catch (err) {
 		log.log("critical", err);
 		// Ensures that the client will close on error
 		await client.close();
@@ -70,10 +66,9 @@ export async function getGlobalStats(): Promise<GlobalStats | null> {
 		return {
 			creatures: (await collections.creatures?.countDocuments()) ?? 0,
 			bestiaries: (await collections.bestiaries?.countDocuments()) ?? 0,
-			users: (await collections.users?.countDocuments()) ?? 0
+			users: (await collections.users?.countDocuments()) ?? 0,
 		};
-	}
-	catch (err) {
+	} catch (err) {
 		log.log("critical", err);
 		return null;
 	}
