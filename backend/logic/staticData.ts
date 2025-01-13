@@ -7,7 +7,6 @@ import tOF from "@/staticData/textOnlyFeatures.json";
 import tags from "@/staticData/tags.json";
 import limits from "@/staticData/limits.json";
 import data from "@/staticData/automationDocumentation.json";
-import metadata from "@/staticData/automationMetaData.json";
 
 const textOnlyFeatures = tOF as { [key: string]: string };
 const allSrdFeatures = Object.keys(textOnlyFeatures)
@@ -96,7 +95,4 @@ app.get("/api/limits", async (req, res) => {
 });
 app.get("/api/automationDocumentation", async (req, res) => {
 	res.json(data);
-});
-app.get("/api/automationMetaData", async (req, res) => {
-	res.json(metadata);
 });

@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { computed, provide, ref } from "vue";
 import TreeRoot from "./TreeRoot.vue";
-import NodeRoot from "./NodeHelper.vue";
+import NodeHelper from "./NodeHelper.vue";
 import EffectAdder from "./EffectAdder.vue";
+import AutomationDocumentation from "./Nodes/shared/AutomationDocumentation.vue";
+import EffectAsRaw from "./Nodes/shared/EffectAsRaw.vue";
 import type { AttackModel, ButtonInteraction, Effect } from "~/shared";
 
 const props = defineProps<{ name: string }>();
@@ -41,9 +43,17 @@ const currentNode = computed(() => {
 		</div>
 		<div class="editor">
 			<Transition>
-				<NodeRoot v-if="currentEffect" :key="currentContext.toString()" :node="currentNode" />
+				<NodeHelper v-if="currentEffect" :key="currentContext.toString()" :node="currentNode" />
+			</Transition>
+			<hr>
+			<Transition>
+				<AutomationDocumentation :key="currentContext.toString()" :node-type="currentNode" />
+			</Transition>
+			<Transition>
+				<EffectAsRaw :key="currentContext.toString()" />
 			</Transition>
 		</div>
+		<div id="effectAdderContainer" />
 	</section>
 </template>
 

@@ -215,9 +215,6 @@ const generateAutomation = async () => {
 	max-width: 1fr;
 }
 
-a {
-	color: orangered;
-}
 .two-wide {
 	display: grid;
 	gap: 2rem;
@@ -281,12 +278,6 @@ a {
 		min-height: 46px;
 		height: 46px;
 	}
-}
-
-.highlight {
-	color: orangered;
-	border-left: 3px solid orangered;
-	padding: 3px;
 }
 
 .save-custom-automation {

@@ -94,4 +94,4 @@ export const defaultNodes: Record<string, Effect> = {
 	}
 };
 
-export const blankAttack: AttackModel = { name: "New Attack", automation: [], _v: 2 };
+export const deepKeys = ["effects", "hit", "miss", "fail", "success", "onTrue", "onFalse"];

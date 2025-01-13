@@ -2,21 +2,10 @@
 import { type Ref, inject, onMounted, provide, ref } from "vue";
 import TreeNode from "./TreeNode.vue";
 import EffectAdder from "./EffectAdder.vue";
-import { defaultNodes } from "./util";
 import { useFetch } from "@/utils/utils";
 import type { AttackModel, ButtonInteraction, Effect } from "~/shared";
 
 const { data, depth = 0, parentType = "root", rootType = "root", context = ["root"] } = defineProps<{ data: AttackModel | AttackModel[] | ButtonInteraction; depth?: number; parentType?: string; rootType?: "root" | "button" | "attack"; context?: string[] }>();
-
-// Documentation helpers
-const metaData = ref<any | null>(null);
-
-onMounted(async () => {
-	const { success, data } = await useFetch("/api/automationMetaData");
-	if (success)
-		metaData.value = data;
-});
-provide("metaData", metaData);
 
 const automation = inject<Ref<null | AttackModel | AttackModel[]>>("automation");
 const makeListAttack = () => {
@@ -38,7 +27,7 @@ const currentContext = inject<Ref<string[]>>("currentContext");
 </script>
 
 <template>
-	<section v-if="metaData" :class="{ container: rootType === 'root' }">
+	<section :class="{ container: rootType === 'root' }">
 		<template v-if="Array.isArray(data)">
 			<template v-for="auto, index in data" :key="index">
 				<p v-if="rootType === 'root'" @click="currentEffect = data[index]; currentContext = [...context]">

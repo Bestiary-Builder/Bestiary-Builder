@@ -3,11 +3,10 @@ import { type Ref, computed, inject, ref } from "vue";
 import TreeRoot from "./TreeRoot.vue";
 import EffectAdder from "./EffectAdder.vue";
 import NodeHeader from "./Nodes/shared/NodeHeader.vue";
+import { deepKeys } from "./util";
 import type { AttackInteraction, AttackModel, ButtonInteraction, Effect, EffectKey } from "~/shared";
 
 const props = defineProps<{ data: Effect; depth: number; parentType: string; context: string[] }>();
-
-const metaData = inject<any>("metaData");
 
 const selfType = computed<string>(() => {
 	return props.data.type;
@@ -39,7 +38,7 @@ const toggleBranch = (key: string) => {
 	<div v-show="!isCollapsed">
 		<!-- Loop through each key in our data, looking for the keys which continue the structure. -->
 		<template v-for="effect, key of data" :key="effect">
-			<template v-if="['Effects[]', 'Effect[]'].includes(metaData[selfType][key])">
+			<template v-if="deepKeys.includes(key) && selfType !== 'ieffect2'">
 				<!--- E.g. hit, Miss, on False text -->
 				<p v-if="!['root', 'effects'].includes(key)" :key="key" :style="`margin-left: ${(depth + 2) * 15}px; color: white;`">
 					<NodeHeader :type="key" />
@@ -48,14 +47,14 @@ const toggleBranch = (key: string) => {
 					</span>
 				</p>
 				<template v-if="!branchesCollapsed.includes(key)">
-					<TreeNode v-for="(childNode, index) in effect" :key="childNode" :data="childNode as any" :depth="depth + (!['root', 'effects'].includes(key) ? 2 : 1)" :parent-type="key" :context="[...context, `$${selfType}`, key, index.toString()]" />
-					<p :style="`margin-left: ${(depth + (!['root', 'effects'].includes(key) ? 3 : 2)) * 15}px;`">
+					<TreeNode v-for="(childNode, index) in effect" :key="index" :data="childNode as any" :depth="depth + (!['root', 'effects'].includes(key) ? 2 : 1)" :parent-type="key" :context="[...context, `$${selfType}`, key, index.toString()]" />
+					<p :style="`margin-left: ${(depth + (!['root', 'effects'].includes(key) ? 2 : 1)) * 15}px;`">
 						<EffectAdder :context="[...context, key]" />
 					</p>
 				</template>
 			</template>
 			<template v-if="(key as EffectKey) === 'buttons'">
-				<template v-for="(button, index) in effect" :key="button">
+				<template v-for="(button, index) in effect" :key="index">
 					<p :style="`margin-left: ${(depth + 1) * 15}px;`" @click="currentEffect = (button as any as ButtonInteraction); currentContext = [...context, 'buttons', index.toString()]">
 						<NodeHeader :type="key" :additional-text="(button as any as ButtonInteraction).label" />
 					</p>
@@ -63,7 +62,7 @@ const toggleBranch = (key: string) => {
 				</template>
 			</template>
 			<template v-if="(key as EffectKey) === 'attacks'">
-				<template v-for="(attack, index) in effect" :key="attack">
+				<template v-for="(attack, index) in effect" :key="index">
 					<p :style="`margin-left: ${(depth + 1) * 15}px;`" @click="currentEffect = (attack as any as AttackInteraction); currentContext = [...context, 'attacks', index.toString()]">
 						<NodeHeader :type="key" :additional-text="(attack as any as AttackInteraction).attack.name" />
 					</p>

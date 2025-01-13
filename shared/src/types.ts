@@ -22,8 +22,8 @@ export class User {
 		public user_settings: {
 			newStatblock: boolean;
 		},
-		public secret?: string,
 		public emails: boolean,
+		public secret?: string,
 	) {}
 }
 export class Bestiary {

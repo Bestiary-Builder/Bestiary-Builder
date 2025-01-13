@@ -59,8 +59,6 @@ const availableNodes = computed(() => {
 const automation = inject<Ref<null | AttackModel | AttackModel[]>>("automation");
 const currentEffect = inject<Ref<Effect | ButtonInteraction | AttackInteraction>>("currentEffect");
 const addAndSelect = (node: string) => {
-	console.log(true);
-	console.log(node);
 	// traverse through the tree.
 	if (!automation)
 		return;
@@ -105,7 +103,7 @@ const addAndSelect = (node: string) => {
 </script>
 
 <template>
-	<VDropdown v-if="displayNames" :distance="6" :positioning-disabled="store.isMobile" placement="left">
+	<VDropdown v-if="displayNames" :distance="6" :positioning-disabled="store.isMobile" placement="left" container="#effectAdderContainer">
 		<div role="button" class="container">
 			<span class="icon">➕</span><span>Add Effect</span>
 		</div>
