@@ -23,6 +23,10 @@ const sanitizedEffect = computed(() => {
 		input.hit = ["..."];
 	if (Object.hasOwn(input, "miss"))
 		input.miss = ["..."];
+	if (Object.hasOwn(input, "buttons"))
+		input.buttons = ["..."];
+	if (Object.hasOwn(input, "attacks"))
+		input.attacks = ["..."];
 	return input;
 });
 </script>
@@ -41,5 +45,9 @@ div {
 	white-space: pre;
 	max-width: 100%;
 	text-wrap: wrap;
+}
+
+summary {
+	font-size: smaller;
 }
 </style>

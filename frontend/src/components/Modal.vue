@@ -189,7 +189,3 @@ onUnmounted(() => {
 	}
 }
 </style>
-
-<style>
-
-</style>

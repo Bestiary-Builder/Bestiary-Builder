@@ -86,4 +86,7 @@ a {
 .docs-container {
 	width: 100%;
 }
+summary {
+	font-size: smaller;
+}
 </style>
