@@ -1082,11 +1082,11 @@ export interface Spell {
 
 export interface Check {
 	type: "check";
-	ability: string | string[];
+	ability: string[];
 	contestAbility?: string | string[];
 	dc?: IntExpression;
-	success?: Effect[];
-	fail?: Effect[];
+	success: Effect[];
+	fail: Effect[];
 	contestTie?: "fail" | "success" | "neither";
 	adv?: -1 | 0 | 1;
 }

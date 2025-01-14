@@ -16,6 +16,7 @@ import NodeIEffect from "./Nodes/IEffect2/NodeIEffect.vue";
 import NodeRoot from "./Nodes/NodeRoot.vue";
 import NodeButtonRoot from "./Nodes/NodeButtonRoot.vue";
 import NodeIAttackRoot from "./Nodes/NodeIAttackRoot.vue";
+import NodeCheck from "./Nodes/NodeCheck.vue";
 
 const props = defineProps<{ node: string }>();
 
@@ -46,6 +47,8 @@ const component = computed(() => {
 		return NodeSpell;
 	if (props.node === "ieffect2")
 		return NodeIEffect;
+	if (props.node === "check")
+		return NodeCheck;
 	if (props.node === "noderoot")
 		return NodeRoot;
 	if (props.node === "buttonroot")

@@ -2,6 +2,7 @@
 import { type Ref, inject, watch } from "vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
+import IntExpression from "./shared/IntExpression.vue";
 import LabelledComponent from "@/components/LabelledComponent.vue";
 import { fullStatNames } from "@/utils/constants";
 import type { Save } from "~/shared";
@@ -33,7 +34,9 @@ useDataCleanup(currentEffect, ["dc"]);
 		</div>
 		<SectionHeader title="Additional Options" />
 		<LabelledComponent title="DC" for="dc">
-			<input id="dc" v-model="currentEffect.dc" type="text" placeholder="DC (Optional)">
+			<div class="input-wrapper">
+				<input id="dc" v-model="currentEffect.dc" type="text" placeholder="DC (Optional)"><IntExpression />
+			</div>
 		</LabelledComponent>
 		<div class="two-wide">
 			<LabelledComponent title="Advantage" for="advantage">

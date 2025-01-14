@@ -84,6 +84,8 @@ export const defaultNodes: Record<string, Effect> = {
 	check: {
 		type: "check",
 		ability: ["athletics"],
+		fail: [],
+		success: []
 	},
 	remove_ieffect: {
 		type: "remove_ieffect",
