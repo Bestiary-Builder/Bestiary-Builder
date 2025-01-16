@@ -1,12 +1,9 @@
 <script lang="ts" setup>
-import { type Ref, computed, inject, toRaw } from "vue";
-
-const currentEffect = inject<Ref<any>>("currentEffect");
-
-const sanitizedEffect = computed(() => {
-	if (!currentEffect || !currentEffect.value)
+defineProps<{ currentEffect: any }>();
+const sanitizedEffect = (effect: any) => {
+	if (!effect)
 		return {};
-	const input = structuredClone(toRaw(currentEffect.value));
+	const input = JSON.parse(JSON.stringify(effect));
 	if (Object.hasOwn(input, "effects")) {
 		if (Object.hasOwn(input, "type") && input.type !== "ieffect2")
 			input.effects = ["..."];
@@ -28,14 +25,14 @@ const sanitizedEffect = computed(() => {
 	if (Object.hasOwn(input, "attacks"))
 		input.attacks = ["..."];
 	return input;
-});
+};
 </script>
 
 <template>
 	<details v-if="currentEffect">
 		<summary> Show effect as JSON</summary>
 		<div>
-			{{ JSON.stringify(sanitizedEffect, null, 2) }}
+			{{ sanitizedEffect(currentEffect) }}
 		</div>
 	</details>
 </template>
@@ -45,6 +42,7 @@ div {
 	white-space: pre;
 	max-width: 100%;
 	text-wrap: wrap;
+	font-family: monospace;
 }
 
 summary {

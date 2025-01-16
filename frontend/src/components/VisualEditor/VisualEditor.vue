@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, provide, ref } from "vue";
+import { computed, provide, ref, watch } from "vue";
 import TreeRoot from "./TreeRoot.vue";
 import NodeHelper from "./NodeHelper.vue";
 import EffectAdder from "./EffectAdder.vue";
@@ -42,16 +42,22 @@ const currentNode = computed(() => {
 			</div>
 		</div>
 		<div class="editor">
-			<Transition>
-				<NodeHelper v-if="currentEffect" :key="currentContext.toString()" :node="currentNode" />
-			</Transition>
-			<hr>
-			<Transition>
-				<AutomationDocumentation :key="currentContext.toString()" :node-type="currentNode" />
-			</Transition>
-			<Transition>
-				<EffectAsRaw :key="currentContext.toString()" />
-			</Transition>
+			<div v-if="!currentEffect && currentContext.length === 0">
+				<h3>  Nothing selected </h3>
+				Select or create a node in the Effect Tree.
+			</div>
+			<template v-else>
+				<Transition>
+					<NodeHelper v-if="currentEffect" :key="currentContext.toString()" :node="currentNode" />
+				</Transition>
+				<hr>
+				<Transition>
+					<AutomationDocumentation :key="currentContext.toString()" :node-type="currentNode" />
+				</Transition>
+				<Transition>
+					<EffectAsRaw :current-effect />
+				</Transition>
+			</template>
 		</div>
 		<div id="effectAdderContainer" />
 	</section>

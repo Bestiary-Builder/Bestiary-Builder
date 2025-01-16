@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { type Ref, inject } from "vue";
-import HigherLevels from "./shared/HigherLevels.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
-import AnnotatedString from "./shared/AnnotatedString.vue";
 import { useDataCleanup } from "./shared/utils";
 import LabelledComponent from "@/components/LabelledComponent.vue";
 import type { Check, } from "~/shared";
@@ -11,9 +9,8 @@ const currentEffect = inject<Ref<Check>>("currentEffect");
 
 const skills = ["acrobatics", "animalHandling", "arcana", "athletics", "deception", "history", "initiative", "insight", "intimidation", "investigation", "medicine", "nature", "perception", "performance", "persuasion", "religion", "sleightOfHand", "stealth", "survival", "strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"];
 useDataCleanup(currentEffect, ["dc", "contestTie", "contestAbility", "adv"]);
-if (currentEffect?.value.ability.length === 0) {
+if (currentEffect?.value.ability.length === 0)
 	currentEffect.value.ability.push("athletics");
-}
 </script>
 
 <template>

@@ -116,9 +116,6 @@ const addAndSelect = (node: string) => {
 						{{ displayNames[node]?.label }}
 					</button>
 				</div>
-				<button @click="console.log('aaaa')">
-					aaa
-				</button>
 			</div>
 		</template>
 	</VDropdown>

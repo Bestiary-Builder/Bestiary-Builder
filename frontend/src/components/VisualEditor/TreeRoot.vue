@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { type Ref, inject, onMounted, provide, ref } from "vue";
+import { type Ref, inject } from "vue";
 import TreeNode from "./TreeNode.vue";
 import EffectAdder from "./EffectAdder.vue";
-import { useFetch } from "@/utils/utils";
 import type { AttackModel, ButtonInteraction, Effect } from "~/shared";
 
 const { data, depth = 0, parentType = "root", rootType = "root", context = ["root"] } = defineProps<{ data: AttackModel | AttackModel[] | ButtonInteraction; depth?: number; parentType?: string; rootType?: "root" | "button" | "attack"; context?: string[] }>();
@@ -30,7 +29,7 @@ const currentContext = inject<Ref<string[]>>("currentContext");
 	<section :class="{ container: rootType === 'root' }">
 		<template v-if="Array.isArray(data)">
 			<template v-for="auto, index in data" :key="index">
-				<p v-if="rootType === 'root'" @click="currentEffect = data[index]; currentContext = [...context]">
+				<p v-if="rootType === 'root'" class="add" @click="currentEffect = data[index]; currentContext = [...context]">
 					-{{ auto.name }}-
 				</p>
 				<div v-for="(node, idx) in auto.automation ?? []" :key="node.type">
@@ -45,7 +44,7 @@ const currentContext = inject<Ref<string[]>>("currentContext");
 			</p>
 		</template>
 		<template v-else>
-			<p v-if="rootType === 'root'" @click="currentEffect = data; currentContext = [...context]">
+			<p v-if="rootType === 'root'" class="add" @click="currentEffect = data; currentContext = [...context]">
 				-Attack Root-
 			</p>
 			<div v-for="(node, index) in data.automation ?? []" :key="node.type">
