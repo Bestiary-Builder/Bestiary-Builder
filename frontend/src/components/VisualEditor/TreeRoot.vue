@@ -1,22 +1,10 @@
 <script setup lang="ts">
-import { type Ref, inject, onMounted, provide, ref } from "vue";
+import { type Ref, inject } from "vue";
 import TreeNode from "./TreeNode.vue";
-import TreeNodeAdder from "./EffectAdder.vue";
-import { defaultNodes } from "./util";
-import { useFetch } from "@/utils/utils";
+import EffectAdder from "./EffectAdder.vue";
 import type { AttackModel, ButtonInteraction, Effect } from "~/shared";
 
 const { data, depth = 0, parentType = "root", rootType = "root", context = ["root"] } = defineProps<{ data: AttackModel | AttackModel[] | ButtonInteraction; depth?: number; parentType?: string; rootType?: "root" | "button" | "attack"; context?: string[] }>();
-
-// Documentation helpers
-const metaData = ref<any | null>(null);
-
-onMounted(async () => {
-	const { success, data } = await useFetch("/api/automationMetaData");
-	if (success)
-		metaData.value = data;
-});
-provide("metaData", metaData);
 
 const automation = inject<Ref<null | AttackModel | AttackModel[]>>("automation");
 const makeListAttack = () => {
@@ -38,17 +26,17 @@ const currentContext = inject<Ref<string[]>>("currentContext");
 </script>
 
 <template>
-	<section v-if="metaData" :class="{ container: rootType === 'root' }">
+	<section :class="{ container: rootType === 'root' }">
 		<template v-if="Array.isArray(data)">
 			<template v-for="auto, index in data" :key="index">
-				<p v-if="rootType === 'root'" @click="currentEffect = data[index]; currentContext = [...context]">
+				<p v-if="rootType === 'root'" class="add" @click="currentEffect = data[index]; currentContext = [...context]">
 					-{{ auto.name }}-
 				</p>
 				<div v-for="(node, idx) in auto.automation ?? []" :key="node.type">
 					<TreeNode :data="node" :depth="depth" :parent-type="parentType" :context="[...context, idx.toString()]" />
 				</div>
 				<p :style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`">
-					<TreeNodeAdder :context="context" @add="(nodeType: string) => auto.automation.push(defaultNodes[nodeType] ?? {})" />
+					<EffectAdder :context="[index.toString(), ...context]" />
 				</p>
 			</template>
 			<p v-if="rootType === 'root'" :style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`" class="add" @click="addListAttack()">
@@ -56,14 +44,14 @@ const currentContext = inject<Ref<string[]>>("currentContext");
 			</p>
 		</template>
 		<template v-else>
-			<p v-if="rootType === 'root'" @click="currentEffect = data; currentContext = [...context]">
+			<p v-if="rootType === 'root'" class="add" @click="currentEffect = data; currentContext = [...context]">
 				-Attack Root-
 			</p>
 			<div v-for="(node, index) in data.automation ?? []" :key="node.type">
 				<TreeNode :data="node" :depth="depth" :parent-type="parentType" :context="[...context, index.toString()]" />
 			</div>
 			<p :style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`">
-				<TreeNodeAdder :context="context" @add="(nodeType: string) => (data as AttackModel).automation!.push(defaultNodes[nodeType] ?? {})" />
+				<EffectAdder :context="context" />
 			</p>
 			<p v-if="rootType === 'root'" :style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`" class="add" @click="makeListAttack()">
 				Add Attack to this feature

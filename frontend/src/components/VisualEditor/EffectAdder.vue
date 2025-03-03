@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import { computed, inject } from "vue";
+import { type Ref, computed, inject } from "vue";
 import { store } from "../../utils/store";
-import { displayNames } from "./util";
+import { defaultNodes, displayNames } from "./util";
+import type { AttackInteraction, AttackModel, ButtonInteraction, Effect } from "~/shared";
 
-const props = defineProps<{ context: string[] }>();
-
-defineEmits<{
-	add: [node: string];
-}>();
+const props = defineProps<{ context: string[]; name?: string }>();
 
 const computedContext = computed(() => {
 	// a button, attack, or root node defines the current context that the automation runs in.
@@ -24,7 +21,7 @@ const computedContext = computed(() => {
 	let contextLevel: "root" | "attacks" | "buttons" = "root";
 
 	for (const node of ctx) {
-		if (node === "target")
+		if (node === "$target")
 			isTargetContext = true;
 
 		if (node === "buttons") {
@@ -44,24 +41,69 @@ const computedContext = computed(() => {
 });
 
 const availableNodes = computed(() => {
-	const ctx = computedContext.value;
+	const { isTargetContext, contextLevel } = computedContext.value;
 
-	if (!ctx.isTargetContext && ctx.contextLevel === "root")
+	if (!isTargetContext && contextLevel === "root")
 		return ["target", "roll", "text", "variable", "condition", "counter", "spell"];
-	if (ctx.isTargetContext && ctx.contextLevel === "root")
+	if (isTargetContext && contextLevel === "root")
 		return ["attack", "save", "damage", "temphp", "ieffect2", "roll", "text", "variable", "condition", "counter", "check"];
 
-	if (!ctx.isTargetContext && (ctx.contextLevel === "attacks" || ctx.contextLevel === "buttons"))
+	if (!isTargetContext && (contextLevel === "attacks" || contextLevel === "buttons"))
 		return ["target", "remove_ieffect", "roll", "text", "variable", "condition", "counter", "spell"];
-	if (ctx.isTargetContext && (ctx.contextLevel === "attacks" || ctx.contextLevel === "buttons"))
+	if (isTargetContext && (contextLevel === "attacks" || contextLevel === "buttons"))
 		return ["attack", "save", "damage", "temphp", "ieffect2", "remove_ieffect", "roll", "text", "variable", "condition", "counter", "check"];
 
 	return [];
 });
+
+const automation = inject<Ref<null | AttackModel | AttackModel[]>>("automation");
+const currentEffect = inject<Ref<Effect | ButtonInteraction | AttackInteraction>>("currentEffect");
+const addAndSelect = (node: string) => {
+	// traverse through the tree.
+	if (!automation)
+		return;
+	if (!automation || !automation.value)
+		automation.value = { _v: 2, name: props.name || "New Attack", automation: [] };
+
+	let tree: any;
+	if (Array.isArray(automation.value))
+		tree = automation.value[Number.parseInt(props.context[0])].automation;
+	else tree = automation.value.automation;
+
+	for (const [idx, key] of props.context.entries()) {
+		const isArrayIndex = /^\d+$/.test(key);
+		if (key === "root")
+			continue;
+		if (key.startsWith("$"))
+			continue;
+		if (isArrayIndex) {
+			if (idx === 0)
+				continue;
+			const index = Number.parseInt(key, 10);
+			if (Array.isArray(tree) && index < tree.length)
+				tree = tree[index];
+			else
+				return undefined;
+		}
+		else {
+			if (typeof tree === "object" && key in tree)
+				tree = tree[key];
+			else
+				return undefined;
+		}
+	}
+	try {
+		tree.push(JSON.parse(JSON.stringify(defaultNodes[node])));
+		currentEffect!.value = tree[tree.length - 1];
+	}
+	catch (e) {
+		console.error(e);
+	}
+};
 </script>
 
 <template>
-	<VDropdown v-if="displayNames" :distance="6" :positioning-disabled="store.isMobile" placement="left">
+	<VDropdown v-if="displayNames" :distance="6" :positioning-disabled="store.isMobile" placement="left" container="#effectAdderContainer">
 		<div role="button" class="container">
 			<span class="icon">➕</span><span>Add Effect</span>
 		</div>
@@ -69,7 +111,7 @@ const availableNodes = computed(() => {
 			<div class="v-popper__custom-menu">
 				Choose an Effect to add:
 				<div v-for="node in availableNodes" :key="node">
-					<button v-close-popper class="btn" @click="$emit('add', node)">
+					<button v-close-popper class="btn" @click="addAndSelect(node)">
 						<Icon :icon="displayNames![node]?.icon" :inline="true" width="1em" color="rgb(128,128,128)" />
 						{{ displayNames[node]?.label }}
 					</button>

@@ -1,4 +1,4 @@
-import type { Effect } from "~/shared";
+import type { AttackModel, Effect } from "~/shared";
 
 export const displayNames: Record<string, { label: string; icon: string }> = {
 	variable: { label: "Set Variable", icon: "fluent:braces-variable-24-filled" },
@@ -84,6 +84,8 @@ export const defaultNodes: Record<string, Effect> = {
 	check: {
 		type: "check",
 		ability: ["athletics"],
+		fail: [],
+		success: []
 	},
 	remove_ieffect: {
 		type: "remove_ieffect",
@@ -93,3 +95,5 @@ export const defaultNodes: Record<string, Effect> = {
 		id: 2102
 	}
 };
+
+export const deepKeys = ["effects", "hit", "miss", "fail", "success", "onTrue", "onFalse"];

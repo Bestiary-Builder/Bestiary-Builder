@@ -7,7 +7,7 @@ const model = defineModel<Record<number, string>>({ required: true });
 
 <template>
 	<div>
-		For use with the -l argument.
+		<label>For use with the -l argument.</label>
 		<details>
 			<summary> Expand </summary>
 			<ol>

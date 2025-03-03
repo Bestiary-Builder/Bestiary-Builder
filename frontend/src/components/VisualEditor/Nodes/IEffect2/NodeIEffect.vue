@@ -55,6 +55,13 @@ const addButton = () => {
 		currentEffect!.value.buttons = [];
 	currentEffect!.value.buttons.push({ automation: [], label: "New Button" });
 };
+
+const addAttack = () => {
+	if (!currentEffect?.value?.attacks)
+		currentEffect!.value.attacks = [];
+	currentEffect!.value.attacks.push({ attack: { name: "New Attack", automation: [], _v: 2 } });
+};
+
 useDataCleanup(currentEffect, ["end", "tick_on_caster", "conc", "desc", "save_as", "parent", "target_self", "stacking"], { effects: PASSIVE_EFFECTS.map(x => x.value) });
 </script>
 
@@ -110,15 +117,20 @@ useDataCleanup(currentEffect, ["end", "tick_on_caster", "conc", "desc", "save_as
 				<v-select :options="filteredPassiveEffects" @option:selected="(e: PassiveEffectDef) => addNewPassiveEffect(e)" />
 			</div>
 		</LabelledComponent>
-		<SectionHeader title="Buttons" />
+		<SectionHeader title="Buttons & Attacks" />
 		<div class="two-wide">
 			<LabelledComponent title="New Button" for="addButton ">
 				<button id="addButton" class="btn" @click="addButton()">
 					Add a button
 				</button>
-				<small> Manage individual buttons by selecting them in the Effect Tree. </small>
+			</LabelledComponent>
+			<LabelledComponent title="New Attack" for="addAttack ">
+				<button id="addButton" class="btn" @click="addAttack()">
+					Add an attack
+				</button>
 			</LabelledComponent>
 		</div>
+		<small> Manage individual buttons and attacks by selecting them in the Effect Tree. </small>
 		<SectionHeader title="Additional Options" />
 		<LabelledComponent title="Description" for="text" style="margin-bottom: 1rem">
 			<div class="input-wrapper">

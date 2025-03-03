@@ -89,8 +89,10 @@ export interface AutomationDocumentation {
 }
 
 export function stringToId(id: string): Id | null {
-	if (!id) return null;
-	if (id.length !== 24) return null;
+	if (!id)
+		return null;
+	if (id.length !== 24)
+		return null;
 	return new Id(id);
 }
 
@@ -213,18 +215,52 @@ export const defaultStatblock: Statblock = {
 };
 export const XPbyCR = [
 	// skips 1/8 1/4 1/2
-	0, 200, 450, 700, 1100, 1800, 2300, 2900, 3900, 5000, 5900, 7200, 8400, 10000, 11500, 13000, 15000, 18000, 20000, 22000, 25000, 33000, 41000, 50000, 62000, 75000, 90000, 105000, 120000, 135000, 255000,
+	0,
+	200,
+	450,
+	700,
+	1100,
+	1800,
+	2300,
+	2900,
+	3900,
+	5000,
+	5900,
+	7200,
+	8400,
+	10000,
+	11500,
+	13000,
+	15000,
+	18000,
+	20000,
+	22000,
+	25000,
+	33000,
+	41000,
+	50000,
+	62000,
+	75000,
+	90000,
+	105000,
+	120000,
+	135000,
+	255000,
 ];
 
 export function getXPbyCR(cr: number) {
-	if (cr === 0.125) return 25;
-	else if (cr === 0.25) return 50;
-	else if (cr === 0.5) return 100;
+	if (cr === 0.125)
+		return 25;
+	else if (cr === 0.25)
+		return 50;
+	else if (cr === 0.5)
+		return 100;
 	else return XPbyCR[cr] ?? 0;
 }
 
 export function getSpellSlots(sClass: string | null, level: number | null): SpellSlotList | undefined {
-	if (!sClass || !level) return {};
+	if (!sClass || !level)
+		return {};
 	if (sClass === "Warlock") {
 		return {
 			1: { 1: 1 },
@@ -248,8 +284,10 @@ export function getSpellSlots(sClass: string | null, level: number | null): Spel
 			19: { 5: 4 },
 			20: { 5: 4 },
 		}[level];
-	} else if (["Ranger", "Paladin", "Artificer"].includes(sClass)) {
-		if (level === 1 && sClass === "Artificer") return { 1: 2 };
+	}
+	else if (["Ranger", "Paladin", "Artificer"].includes(sClass)) {
+		if (level === 1 && sClass === "Artificer")
+			return { 1: 2 };
 		return {
 			1: {},
 			2: { 1: 2 },
@@ -272,7 +310,8 @@ export function getSpellSlots(sClass: string | null, level: number | null): Spel
 			19: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2 },
 			20: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2 },
 		}[level];
-	} else {
+	}
+	else {
 		return {
 			1: { 1: 2 },
 			2: { 1: 3 },
@@ -1051,11 +1090,11 @@ export interface Spell {
 
 export interface Check {
 	type: "check";
-	ability: string | string[];
+	ability: string[];
 	contestAbility?: string | string[];
 	dc?: IntExpression;
-	success?: Effect[];
-	fail?: Effect[];
+	success: Effect[];
+	fail: Effect[];
 	contestTie?: "fail" | "success" | "neither";
 	adv?: -1 | 0 | 1;
 }

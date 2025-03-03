@@ -13,10 +13,10 @@ import { $loading } from "@/utils/app/loading";
 const router = useRouter();
 
 onMounted(async () => {
-	const loader = $loading.show();
+	// const loader = $loading.show();
 	await getBestiaries();
 
-	loader.hide();
+	// loader.hide();
 });
 
 const bestiaries = ref<Bestiary[]>([]);

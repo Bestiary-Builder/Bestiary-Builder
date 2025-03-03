@@ -51,7 +51,6 @@ useDataCleanup(currentEffect, ["overheal", "cantripScale", "fixedValue"]);
 				<HigherLevels v-model="(currentEffect!.higher as Record<number, string>)" />
 			</LabelledComponent>
 		</div>
-		{{ currentEffect }}
 	</template>
 </template>
 

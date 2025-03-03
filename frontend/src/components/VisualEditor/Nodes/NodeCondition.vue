@@ -9,7 +9,7 @@ import type { Condition } from "~/shared";
 const currentEffect = inject<Ref<Condition>>("currentEffect");
 
 const isWarning = computed(() => {
-	return (currentEffect?.value.condition.includes(" = ") || (currentEffect?.value.condition.includes("=") && !currentEffect?.value.condition.includes("==") && currentEffect?.value.condition[currentEffect?.value.condition.length - 1] !== "="));
+	return (((currentEffect?.value.condition.includes(" = ")) ?? false) || (((currentEffect?.value.condition.includes("=")) ?? false) && !((currentEffect?.value.condition.includes("==")) ?? false) && currentEffect?.value.condition[currentEffect?.value.condition.length - 1] !== "="));
 });
 
 useDataCleanup(currentEffect, ["errorBehaviour"]);

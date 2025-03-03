@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed, inject, provide, ref } from "vue";
+import { computed, provide, ref, watch } from "vue";
 import TreeRoot from "./TreeRoot.vue";
-import NodeRoot from "./NodeHelper.vue";
-import NodeAdder from "./EffectAdder.vue";
-import { defaultNodes } from "./util";
-import type { Attack, AttackModel, ButtonInteraction, Effect } from "~/shared";
+import NodeHelper from "./NodeHelper.vue";
+import EffectAdder from "./EffectAdder.vue";
+import AutomationDocumentation from "./Nodes/shared/AutomationDocumentation.vue";
+import EffectAsRaw from "./Nodes/shared/EffectAsRaw.vue";
+import type { AttackModel, ButtonInteraction, Effect } from "~/shared";
 
 const props = defineProps<{ name: string }>();
 const currentEffect = ref<Effect | AttackModel | ButtonInteraction | null>(null);
@@ -21,6 +22,8 @@ const currentNode = computed(() => {
 		return "noderoot";
 	if (currentContext.value[currentContext.value.length - 2] === "buttons")
 		return "buttonroot";
+	if (currentContext.value[currentContext.value.length - 2] === "attacks")
+		return "attackroot";
 	if (Object.hasOwn(currentEffect.value, "type"))
 		// @ts-expect-error Yes it fucking does
 		return currentEffect.value.type;
@@ -35,14 +38,28 @@ const currentNode = computed(() => {
 			<h3> Effect Tree</h3>
 			<TreeRoot v-if="automation" :data="automation" :depth="-1" />
 			<div v-else>
-				<NodeAdder :context="['root']" @add="(n: string) => automation = { _v: 2, name: props.name, automation: [defaultNodes[n]] }" />
+				<EffectAdder :context="['root']" :name="props.name" />
 			</div>
 		</div>
 		<div class="editor">
-			<Transition>
-				<NodeRoot v-if="currentEffect" :key="currentContext.toString()" :node="currentNode" />
-			</Transition>
+			<div v-if="!currentEffect && currentContext.length === 0">
+				<h3>  Nothing selected </h3>
+				Select or create a node in the Effect Tree.
+			</div>
+			<template v-else>
+				<Transition>
+					<NodeHelper v-if="currentEffect" :key="currentContext.toString()" :node="currentNode" />
+				</Transition>
+				<hr>
+				<Transition>
+					<AutomationDocumentation :key="currentContext.toString()" :node-type="currentNode" />
+				</Transition>
+				<Transition>
+					<EffectAsRaw :current-effect />
+				</Transition>
+			</template>
 		</div>
+		<div id="effectAdderContainer" />
 	</section>
 </template>
 
@@ -58,5 +75,9 @@ const currentNode = computed(() => {
 .v-enter-from,
 .v-leave-to {
 	opacity: 0;
+}
+
+h3 {
+	margin-bottom: 0.25rem;
 }
 </style>
