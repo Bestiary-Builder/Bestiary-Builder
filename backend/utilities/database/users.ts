@@ -1,6 +1,6 @@
 import { collections } from ".";
 import { log } from "@/utilities/logger";
-import type { Id, User } from "~/shared";
+import { defaultUserSettings, type Id, type User } from "~/shared";
 import { generateUserSecret } from "@/utilities/constants";
 
 // User cache
@@ -21,7 +21,7 @@ export async function getUser(id: string) {
 			if (user) userCache[user._id] = user;
 			log.log("database", `Reading user info for ${id}.`);
 		} else {
-			log.info("Got user info from cache" + user.emails);
+			log.info("Got user info from cache");
 		}
 		return user;
 	} catch (err) {
@@ -38,7 +38,7 @@ export async function getUserFromSecret(secret: string) {
 			if (user) userSecretCache[secret] = user;
 			log.log("database", "Reading user from secret.");
 		} else {
-			log.info("Got user info from secret cache" + user.emails);
+			log.info("Got user info from secret cache");
 		}
 		return user;
 	} catch (err) {
@@ -57,7 +57,7 @@ export async function updateUser(data: Partial<User> & { _id: User["_id"] }) {
 			return (await getUser(data._id))?.secret ?? null;
 		} else {
 			log.log("database", `Adding new user to collection with id ${data._id}`);
-			const userData = { ...(data as User), joinedAt: Date.now(), secret: generateUserSecret(), bestiaries: [], bookmarks: [], supporter: 0, emails: true } as User;
+			const userData = { ...(data as User), joinedAt: Date.now(), secret: generateUserSecret(), bestiaries: [], bookmarks: [], supporter: 0, user_settings: defaultUserSettings } as User;
 			await collections.users?.insertOne(userData);
 			return userData.secret;
 		}

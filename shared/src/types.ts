@@ -21,10 +21,18 @@ export class User {
 		public _id: string,
 		public user_settings: {
 			newStatblock: boolean;
+			emails: boolean,
+			preferVisualEditor: boolean,
+			preferLegacyLayout: boolean
 		},
 		public secret?: string,
-		public emails: boolean,
 	) {}
+}
+export const defaultUserSettings : User["user_settings"] = {
+	newStatblock: true,
+	emails: true,
+	preferVisualEditor: true,
+	preferLegacyLayout: false
 }
 export class Bestiary {
 	constructor(

@@ -1,7 +1,7 @@
 import type { Collection, Db } from "mongodb";
 import { MongoClient, ServerApiVersion } from "mongodb";
 import { log } from "@/utilities/logger";
-import type { Automation, Bestiary, Creature, GlobalStats, User } from "~/shared";
+import { defaultUserSettings, type Automation, type Bestiary, type Creature, type GlobalStats, type User } from "~/shared";
 
 // Connect to database
 export const collections: { users?: Collection<User>; bestiaries?: Collection<Bestiary>; creatures?: Collection<Creature>; automations?: Collection<Automation> } = {};
@@ -40,9 +40,13 @@ export async function startConnection() {
 		// Database change
 		const runDataBaseChange = true;
 		if (runDataBaseChange) {
-			// Add customDescription to spells
-			const result1 = await collections.users.updateMany({ emails: { $exists: false } }, { $set: { emails: true } });
-			log.log("database", `Updated ${result1.modifiedCount} users to add emails flag.`);
+			// Add user settings to users
+			const result1 = await collections.users.updateMany({ user_settings: { $exists: false } }, { $set: { user_settings: defaultUserSettings } });
+			const result2 = await collections.users.updateMany({ user_settings: { preferVisualEditor: { $exists: false } } }, { $set: { "user_settings.preferVisualEditor": defaultUserSettings.preferVisualEditor } });
+			const result3 = await collections.users.updateMany({ user_settings: { preferLegacyLayout: { $exists: false } } }, { $set: { "user_settings.preferLegacyLayout": defaultUserSettings.preferLegacyLayout } });
+			const result4 = await collections.users.updateMany({ user_settings: { emails: { $exists: false } } }, { $set: { "user_settings.emails": defaultUserSettings.emails } });
+			const result5 = await collections.users.updateMany({ user_settings: { newStatblock: { $exists: false } } }, { $set: { "user_settings.newStatblock": defaultUserSettings.newStatblock } });
+			log.log("database", `Updated ${result1.modifiedCount + result2.modifiedCount + result3.modifiedCount + result4.modifiedCount + result5.modifiedCount} users to add emails flag.`);
 		}
 	} catch (err) {
 		log.log("critical", err);

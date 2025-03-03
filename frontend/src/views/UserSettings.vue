@@ -12,25 +12,16 @@ const logoutClick = async () => {
   else toast.error(error);
 };
 
-console.log(store.user);
 watch(
-  () => store.user?.emails,
+  () => store.user?.user_settings,
   async () => {
     if (!store.user) return;
-    if (!store.user.emails) {
-      const { success, error } = await useFetch("/api/unsubscribe");
-      if (!success) {
-        toast.error(error);
-        store.user.emails = false;
-      }
-    } else {
-      const { success, error } = await useFetch("/api/subscribe");
-      if (!success) {
-        toast.error(error);
-        store.user.emails = false;
-      }
+    const { success, data, error } = await useFetch("/api/settings", "POST", store.user.user_settings);
+    if (!success) {
+      toast.error(error);
     }
   },
+  { deep: true }
 );
 </script>
 
@@ -93,10 +84,22 @@ watch(
         on the website yet, make sure to join our discord.
       </p>
       <hr />
-      <span class="emails">
+      <span class="settings">
         <label>
-          <input type="checkbox" id="emails" v-model="store.user.emails" />
+          <input type="checkbox" id="emails" v-model="store.user.user_settings.emails" />
           <span>Allow announcement emails</span>
+        </label>
+        <label>
+          <input type="checkbox" id="visual" v-model="store.user.user_settings.preferVisualEditor" />
+          <span>Prefer visual editor</span>
+        </label>
+        <label>
+          <input type="checkbox" id="legacy" v-model="store.user.user_settings.preferLegacyLayout" />
+          <span>Prefer legacy layout</span>
+        </label>
+        <label>
+          <input type="checkbox" id="statblock" v-model="store.user.user_settings.newStatblock" />
+          <span>Use new statblock</span>
         </label>
       </span>
       <hr />
@@ -127,15 +130,16 @@ watch(
     margin: 1rem auto;
   }
 
-  .emails {
-    width: 100%;
+  .settings {
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-direction: row;
+    flex-direction: column;
 
     label {
       font-size: 1rem;
+      width: 75%;
+
       span {
         padding-left: 0.5rem;
       }

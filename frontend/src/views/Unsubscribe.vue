@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { $loading } from "@/utils/app/loading";
 import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
@@ -14,6 +15,7 @@ useFetch("/api/unsubscribe")
     console.log(result);
     if (result.success) {
       status.value = 1;
+      if(store.user) store.user.user_settings.emails = false;
     } else {
       status.value = 2;
       errorMsg.value = result.error;
