@@ -440,6 +440,8 @@ const addNewDaily = () => {
 	newDailyAmount.value = null;
 };
 
+const showSpellSlotModal = ref(false);
+
 // slide managers for accessibility:
 const slideIndex = ref(2);
 const tabs = document.getElementsByClassName("editor-nav__tab") as HTMLCollectionOf<HTMLElement>;
@@ -960,6 +962,12 @@ const changeCR = (isIncrease: boolean) => {
 							<LabelledComponent title="Description override" for="casterDescription">
 								<textarea id="casterDescription" v-model="data.spellcasting.casterSpells.customDescription" rows="20" :maxlength="store.limits?.descriptionLength" />
 							</LabelledComponent>
+
+							<LabelledComponent title="Edit spell slots" for="editspellslots">
+								<button id="editspellslots" class="btn" @click="showSpellSlotModal = true">
+									Edit spell slot amount
+								</button>
+							</LabelledComponent>
 						</div>
 						<div v-if="data.spellcasting.casterSpells.castingClass" class="editor-field__container two-wide">
 							<LabelledComponent v-if="!['Ranger', 'Paladin'].includes(data.spellcasting.casterSpells.castingClass)" title="Cantrips" takes-custom-text-input for="cantrips">
@@ -1044,6 +1052,21 @@ const changeCR = (isIncrease: boolean) => {
 						</template>
 					</template>
 				</div>
+			</template>
+		</Modal>
+
+		<Modal :show="showSpellSlotModal" @close="showSpellSlotModal = false">
+			<template #header>
+				Edit Spell Slot Amount
+			</template>
+			<template #body>
+				<p>You can use this to edit how many spell slots a creature has. <br> Note that changing a creature's spellcasting level or class will reset this. </p>
+				<div v-if="data.spellcasting.casterSpells.spellSlotList" class="two-wide">
+					<template v-for="x in 9" :key="x">
+						<LabelledNumberInput v-model="data.spellcasting.casterSpells.spellSlotList[x]" :title="`Level ${x}`" :min="0" :max="9" :step="1" :label-id="`editSpellSlot${x}`" />
+					</template>
+				</div>
+				{{ data.spellcasting.casterSpells.spellSlotList }}
 			</template>
 		</Modal>
 	</div>
