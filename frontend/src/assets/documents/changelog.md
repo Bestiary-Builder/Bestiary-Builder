@@ -1,4 +1,9 @@
 ## v2.3.2
+_April 17th, 2025_
+
+- Added the ability to customize the amount of spell slots for class based spellcasters.
+
+## v2.3.2
 _June 26th, 2024_
 
 - Fixed an issue where dragging to reorder speed, senses, and features was not working properly.
