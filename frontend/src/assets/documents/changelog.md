@@ -1,4 +1,4 @@
-## v2.3.2
+## v2.3.3
 _April 17th, 2025_
 
 - Added the ability to customize the amount of spell slots for class based spellcasters.
