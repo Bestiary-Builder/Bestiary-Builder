@@ -8,34 +8,39 @@ env:
 jobs:
     build-and-push:
         runs-on: ubuntu-latest
+
+        permissions:
+            contents: read
+            packages: write
+
         environment:
             name: Production
             url: https://bestiarybuilder.com
+
+        env:
+            REGISTRY: ghcr.io
+
         steps:
             - uses: actions/checkout@master
-            - uses: oven-sh/setup-bun@v1
-            - name: Installing shared project dependencies
-              working-directory: ./shared
-              run: bun install
-            - name: Installing frontend dependencies
-              working-directory: ./frontend
-              run: bun install
-            - name: Installing backend dependencies
-              working-directory: ./backend
-              run: bun install
-            - name: Building the frontend
-              working-directory: ./frontend
-              run: bun run build
+            - name: set lower case owner name
+              run: echo "REPOSITORY=${REPOSITORY,,}" >>${GITHUB_ENV}
               env:
-                  VITE_DISCORD_ID: ${{ secrets.VITE_DISCORD_ID }}
-                  VITE_ERROR_WEBHOOK: ${{ secrets.VITE_ERROR_WEBHOOK }}
-            - name: Building the backend
-              working-directory: ./backend
-              run: bun run build
-            - name: Deploy to output branch
-              uses: s0/git-publish-subdir-action@develop
-              env:
-                  REPO: self
-                  BRANCH: output
-                  FOLDER: ./build
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  REPOSITORY: '${{ github.repository }}'
+            - name: Log in to the Container registry
+              uses: docker/login-action@v3
+              with:
+                  registry: ${{ env.REGISTRY }}
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+            - name: Build and push Docker image
+              uses: docker/build-push-action@v6
+              with:
+                  context: .
+                  push: true
+                  tags: ${{env.REGISTRY}}/${{env.REPOSITORY}}:latest
+                  platforms: linux/amd64,linux/arm64
+                  build-args: |
+                    "VITE_DISCORD_ID=${{ secrets.VITE_DISCORD_ID }}"
+                    "VITE_ERROR_WEBHOOK=${{ secrets.VITE_ERROR_WEBHOOK }}"
