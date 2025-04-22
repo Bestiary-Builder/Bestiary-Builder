@@ -1066,7 +1066,6 @@ const changeCR = (isIncrease: boolean) => {
 						<LabelledNumberInput v-model="data.spellcasting.casterSpells.spellSlotList[x]" :title="`Level ${x}`" :min="0" :max="9" :step="1" :label-id="`editSpellSlot${x}`" />
 					</template>
 				</div>
-				{{ data.spellcasting.casterSpells.spellSlotList }}
 			</template>
 		</Modal>
 	</div>
