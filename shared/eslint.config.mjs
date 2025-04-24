@@ -21,7 +21,6 @@ export default antfu(
 		rules: {
 			"antfu/top-level-function": "off",
 			"style/comma-dangle": "off",
-			"style/comma-dangle": "off",
 			"jsonc/comma-dangle": "off",
 			"no-console": "warn",
 			"ts/no-unsafe-assignment": "off",

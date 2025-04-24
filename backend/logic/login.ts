@@ -99,7 +99,7 @@ export const requireUser = async (req: Request, res: Response, next: NextFunctio
 				return res.status(401).send({ error: "User token doesn't correspond to any user." });
 			req.body.user = user;
 		}
-		catch (err) {
+		catch {
 			return res.status(401).send({ error: "Invalid user token." });
 		}
 		return next();
@@ -119,7 +119,7 @@ export const possibleUser = async (req: Request, res: Response, next: NextFuncti
 				const user = await getUserFromSecret(decoded.id);
 				req.body.user = user;
 			}
-			catch (err) {}
+			catch {}
 		}
 		return next();
 	}

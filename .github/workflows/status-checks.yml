@@ -10,7 +10,7 @@ jobs:
         continue-on-error: true
         steps:
             - uses: actions/checkout@v3
-            - uses: oven-sh/setup-bun@v1
+            - uses: oven-sh/setup-bun@v2
             - name: Installing shared dependencies
               working-directory: ./shared
               run: bun install
@@ -33,7 +33,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@master
-            - uses: oven-sh/setup-bun@v1
+            - uses: oven-sh/setup-bun@v2
             - name: Installing shared project dependencies
               working-directory: ./shared
               run: bun install

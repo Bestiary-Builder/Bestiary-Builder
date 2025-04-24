@@ -32,7 +32,7 @@ log.info(`Reading frontend files from: \"${path.resolve(process.env.frontendPath
 app.use("/", express.static(path.resolve(process.env.frontendPath as string)));
 
 // API 404
-app.get("/api/*", (req, res) => res.status(404).json({ error: "Path not found." }));
+app.get(/\/api\/.*/, (req, res) => res.status(404).json({ error: "Path not found." }));
 
 // Get frontend html
 async function getFrontendHtml(route: routes.Route, req: Request) {
@@ -103,6 +103,7 @@ async function getFrontendHtml(route: routes.Route, req: Request) {
 	return html.replace("<!-- meta tags -->", metatags.join("\n		"));
 }
 for (const route of routes.routes) {
+	if(route.path.includes(".*")) continue;
 	app.get(route.path, async (req, res) => {
 		try {
 			const html = await getFrontendHtml(route, req);
@@ -117,7 +118,7 @@ for (const route of routes.routes) {
 }
 
 // Everything else is 404
-app.get("/*", async (req, res) => {
+app.get(/.*/, async (req, res) => {
 	try {
 		const html = await getFrontendHtml(routes.routes.find(r => r.path === "/notfound")!, req);
 		return res.send(html);

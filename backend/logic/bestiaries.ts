@@ -344,7 +344,7 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 					image = new URL(image).origin + new URL(image).pathname;
 					creature.stats.description.image = image;
 				}
-				catch (err) {
+				catch {
 					log.error(`Image url not recognized. (${image})`);
 					ignoredCreatures.push({ creature: creature.stats.description.name, error: "Image url not recognized." });
 					continue;
