@@ -31,6 +31,9 @@ startConnection();
 log.info(`Reading frontend files from: \"${path.resolve(process.env.frontendPath as string)}\"`);
 app.use("/", express.static(path.resolve(process.env.frontendPath as string)));
 
+// API 404
+app.get("/api/*", (req, res) => res.status(404).json({ error: "Path not found." }));
+
 // Get frontend html
 async function getFrontendHtml(route: routes.Route, req: Request) {
 	// Get information
@@ -114,7 +117,6 @@ for (const route of routes.routes) {
 }
 
 // Everything else is 404
-app.get("/api/*", (req, res) => res.status(404).json({ error: "Path not found." }));
 app.get("/*", async (req, res) => {
 	try {
 		const html = await getFrontendHtml(routes.routes.find(r => r.path === "/notfound")!, req);
