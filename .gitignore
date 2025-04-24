@@ -29,7 +29,3 @@ frontend/public/sitemap.xml
 .env
 .jwtkey
 build/
-
-#Package lock
-bun.lockb
-package-lock.json
