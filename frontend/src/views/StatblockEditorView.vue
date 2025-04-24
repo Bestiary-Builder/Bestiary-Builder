@@ -133,9 +133,10 @@ onUnmounted(() => {
 // Pasting BB statblock from clipboard
 const clipboardText = ref("");
 const permissionRead = usePermission("clipboard-read");
-const canPasteBBStatblock = computed(() => {
+const canPasteBBStatblock = computed(async () => {
 	try {
-		const parsed = JSON.parse(clipboardText.value);
+		const value = await navigator.clipboard.readText()
+		const parsed = JSON.parse(value);
 		return !!parsed?.isBB;
 	}
 	catch {
@@ -147,7 +148,8 @@ const importFromPaste = async () => {
 	if (!canPasteBBStatblock.value)
 		return;
 	try {
-		const parsed = JSON.parse(clipboardText.value);
+		const value = await navigator.clipboard.readText()
+		const parsed = JSON.parse(value);
 		delete parsed.isBB;
 		data.value = parsed;
 		toast.success("Successfully pasted creature!");
