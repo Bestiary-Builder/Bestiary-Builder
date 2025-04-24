@@ -132,12 +132,6 @@ app.get("/*", async (req, res) => {
 const httpServer = http.createServer(app);
 httpServer.listen(Number.parseInt(process.env.port ?? "5000"), () => {
 	log.info(`Server listening to port ${process.env.port ?? "5000"}`);
-	try {
-		throw new Error("Test error");
-	}
-	catch (err) {
-		log.error(err);
-	}
 });
 
 // Start discord bot
