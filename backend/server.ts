@@ -103,7 +103,8 @@ async function getFrontendHtml(route: routes.Route, req: Request) {
 	return html.replace("<!-- meta tags -->", metatags.join("\n		"));
 }
 for (const route of routes.routes) {
-	if(route.path.includes(".*")) continue;
+	if (route.path.includes(".*"))
+		continue;
 	app.get(route.path, async (req, res) => {
 		try {
 			const html = await getFrontendHtml(route, req);

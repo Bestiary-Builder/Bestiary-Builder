@@ -15,7 +15,8 @@ app.use(async (req, res, next) => {
 	// Set Permissions Policy
 	res.setHeader("Permissions-Policy", "fullscreen=('self'), accelerometer=(), autoplay=(), camera=(), geolocation=('self'), gyroscope=(), interest-cohort=(), magnetometer=(), microphone=(), payment=(), sync-xhr=()");
 	// Set default body
-	if(!req.body) req.body = {};
+	if (!req.body)
+		req.body = {};
 
 	next();
 });
