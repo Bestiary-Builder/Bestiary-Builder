@@ -233,10 +233,17 @@ export default defineComponent({
 		async importBestiaryFromCritterDB() {
 			let link = this.critterDbId.trim();
 			const isPublic = link.includes("publishedbestiary");
-			if (!link.startsWith("https://critterdb.com") && !link.startsWith("critterdb.com")) {
-				toast.error("Could not recognize link as a link to a CritterDB bestiary");
+			try {
+				const url = new URL(link)
+				if (url.hostname !== 'critterdb.com' && !url.hostname.endsWith('.critterdb.com')){
+					toast.error("Could not recognize link as a link to a CritterDB bestiary");
+					return;
+				}
+			}
+			catch{
 				return;
 			}
+			
 			const linkEls = link.split("/");
 			link = linkEls[linkEls.length - 1];
 
