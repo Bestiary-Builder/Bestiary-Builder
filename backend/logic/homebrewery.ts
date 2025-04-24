@@ -1,16 +1,15 @@
 import { possibleUser } from "./login";
+import { checkBestiaryPermission } from "./bestiaries";
 import { checkCreaturePermission } from "./creatures";
 import { app } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
 import { collections, getBestiary, getCreature, incrementBestiaryViewCount } from "@/utilities/database";
-import { type FeatureEntity, Id, SKILLS_BY_STAT, type SaveEntity, type Saves, SkillsEntity, type Stat, type Statblock, capitalizeFirstLetter, displayCasterCasting, displayInnateCasting, displaySpeedOrSenses, hpCalc, ppCalc, statCalc, stringToId } from "~/shared";
+import { type FeatureEntity, Id, SKILLS_BY_STAT, type SaveEntity, type Stat, type Statblock, capitalizeFirstLetter, displayCasterCasting, displayInnateCasting, displaySpeedOrSenses, hpCalc, ppCalc, statCalc, stringToId } from "~/shared";
 
-
-
-
-app.get("/api/homebrewery/export/bestiary/:id", async (req, res) => {
+app.get("/api/homebrewery/export/bestiary/:id", possibleUser, async (req, res) => {
 	try {
 		const bestiaryId = stringToId(req.params.id);
+		const user = req.body.user;
 
 		if (!bestiaryId)
 			return res.status(400).json({ error: "Bestiary id not valid." });
@@ -20,8 +19,8 @@ app.get("/api/homebrewery/export/bestiary/:id", async (req, res) => {
 		if (!bestiary)
 			return res.status(404).json({ error: "No bestiary with that id found." });
 
-		if (bestiary.status === "private")
-			return res.status(401).json({ error: "This bestiary is private" });
+		if (checkBestiaryPermission(bestiary, user) === "none")
+			return res.status(401).json({ error: "You don't have access to this bestiary." });
 
 		incrementBestiaryViewCount(bestiaryId);
 		const creatures: string[] = [];
@@ -41,8 +40,8 @@ app.get("/api/homebrewery/export/bestiary/:id", async (req, res) => {
 				return res.status(500).json({ error: `Error exporting ${creature.stats.description.name}. Please contact the developers of Bestiary Builder, not Avrae.` });
 			}
 		}
-		
-        return res.json({metadata: creatures.join("\n")})
+
+		return res.json({ metadata: creatures.join("\n") });
 	}
 	catch (err) {
 		log.log("critical", err);
@@ -51,39 +50,37 @@ app.get("/api/homebrewery/export/bestiary/:id", async (req, res) => {
 });
 
 app.get("/api/homebrewery/export/creature/:id", possibleUser, async (req, res) => {
-	try{
-		const creatureID = stringToId(req.params.id)
-		const user = req.body.user
+	try {
+		const creatureID = stringToId(req.params.id);
+		const user = req.body.user;
 
 		if (!creatureID)
 			return res.status(400).json({ error: "Creature id not valid." });
 
-		const creature = await getCreature(creatureID)
+		const creature = await getCreature(creatureID);
 
 		if (!creature)
 			return res.status(404).json({ error: "No creature with that id found." });
 
-		const permissionLevel = await checkCreaturePermission(creature, user)
+		const permissionLevel = await checkCreaturePermission(creature, user);
 
 		if (!permissionLevel)
 			return res.status(401).json({ error: "You don't have permission to view this creature." });
 
 		try {
-			const creature_markdown = getCreatureMarkdown(creature.stats)
-			return res.json({metadata: creature_markdown})
+			const creature_markdown = getCreatureMarkdown(creature.stats);
+			return res.json({ metadata: creature_markdown });
 		}
-		catch (err){
+		catch (err) {
 			log.log("critical", err);
-				return res.status(500).json({ error: `Error exporting ${creature.stats.description.name}. Please contact the developers of Bestiary Builder, not Avrae.` });
+			return res.status(500).json({ error: `Error exporting ${creature.stats.description.name}. Please contact the developers of Bestiary Builder, not Avrae.` });
 		}
 	}
-	catch (err){
+	catch (err) {
 		log.log("critical", err);
 		return res.status(500).json({ error: "Unknown server error occured, please try again." });
 	}
-
-
-})
+});
 
 function getValue<T>(obj: Record<string, any>, key: string, def: T): T {
 	const value = obj[key];
@@ -95,7 +92,7 @@ function getValue<T>(obj: Record<string, any>, key: string, def: T): T {
 }
 
 function getStatString(stat: Stat, creature: Statblock): string {
-	return `${creature.abilities.stats[stat]} (${statCalc(stat, creature) >= 0 ? "+" : ""}${statCalc(stat, creature)})`
+	return `${creature.abilities.stats[stat]} (${statCalc(stat, creature) >= 0 ? "+" : ""}${statCalc(stat, creature)})`;
 }
 
 function formatActions(actions: FeatureEntity[], title: string): string | null {
@@ -107,38 +104,40 @@ function formatActions(actions: FeatureEntity[], title: string): string | null {
 }
 
 function formatSaves(creature: Statblock): string | undefined {
-	const output: string[] = []
+	const output: string[] = [];
 	for (const [saveName, saveInfo] of Object.entries(creature.abilities.saves) as [Stat, SaveEntity][]) {
 		if (!saveInfo.isProficient && saveInfo.override === null)
 			continue;
 
-		const mod = statCalc(saveName, creature) + creature.core.proficiencyBonus
-		const value = saveInfo.override != null ? saveInfo.override : mod
-		output.push(`${capitalizeFirstLetter(saveName.toString())} ${value >= 0 ? '+':'-'}${value}`);
+		const mod = statCalc(saveName, creature) + creature.core.proficiencyBonus;
+		const value = saveInfo.override != null ? saveInfo.override : mod;
+		output.push(`${capitalizeFirstLetter(saveName.toString())} ${value >= 0 ? "+" : "-"}${value}`);
 	}
-	return output.length > 0 ? output.join(", ") : undefined
+	return output.length > 0 ? output.join(", ") : undefined;
 }
 
-function formatSkills(creature: Statblock): string | undefined{
-	const output: string[] = []
+function formatSkills(creature: Statblock): string | undefined {
+	const output: string[] = [];
 
-	for (const [stat, skills] of Object.entries(SKILLS_BY_STAT) as [Stat, string[]][]){
-		skills.forEach(skill => {
-			const rawSkill = creature.abilities.skills.find(a => a.skillName.replace(" ", "").toLowerCase() === skill.toLowerCase())
+	for (const [stat, skills] of Object.entries(SKILLS_BY_STAT) as [Stat, string[]][]) {
+		skills.forEach((skill) => {
+			const rawSkill = creature.abilities.skills.find(a => a.skillName.replace(" ", "").toLowerCase() === skill.toLowerCase());
 
-			if (rawSkill && (rawSkill.isExpertise || rawSkill.isHalfProficient || rawSkill.isProficient || rawSkill.override !== null)){
-				const base = statCalc(stat, creature)
-				const value = rawSkill.override ? rawSkill.override :
-				rawSkill.isHalfProficient ? base + Math.floor(creature.core.proficiencyBonus/2):
-				rawSkill.isProficient ? base + creature.core.proficiencyBonus :
-				rawSkill.isExpertise ? base + creature.core.proficiencyBonus*2 : base
+			if (rawSkill && (rawSkill.isExpertise || rawSkill.isHalfProficient || rawSkill.isProficient || rawSkill.override !== null)) {
+				const base = statCalc(stat, creature);
+				const value = rawSkill.override
+					? rawSkill.override
+					: rawSkill.isHalfProficient
+						? base + Math.floor(creature.core.proficiencyBonus / 2)
+						: rawSkill.isProficient
+							? base + creature.core.proficiencyBonus
+							: rawSkill.isExpertise ? base + creature.core.proficiencyBonus * 2 : base;
 
-				output.push(`${rawSkill.skillName} ${value >= 0 ? '+':'-'}${value}`)
+				output.push(`${rawSkill.skillName} ${value >= 0 ? "+" : "-"}${value}`);
 			}
-			
 		});
 	}
-	return output.length > 0 ? output.join(", ") : undefined
+	return output.length > 0 ? output.join(", ") : undefined;
 }
 
 export function getCreatureMarkdown(creature: Statblock) {
@@ -148,30 +147,30 @@ export function getCreatureMarkdown(creature: Statblock) {
 	const creatureType = getValue(creature.core, "race", "Uknown Type");
 	const alignment = getValue(creature.description, "alignment", "Unknown Alignment");
 	const ac = getValue(creature.defenses.ac, "ac", "Unknown AC");
-	const armorType = getValue(creature.defenses.ac, "acSource", undefined)
+	const armorType = getValue(creature.defenses.ac, "acSource", undefined);
 	const hp = hpCalc(creature);
-	const hpStr = getValue(creature.defenses.hp, "override", undefined) ? '' : ` (${creature.defenses.hp.numOfHitDie}d${creature.defenses.hp.sizeOfHitDie})`
-	const speed = displaySpeedOrSenses(creature.core.speed)
-	const image = getValue(creature.description, "image", undefined)
-	const imageStr = image ? `![${name}](${image}){float:right;width:100px}` : ''
+	const hpStr = getValue(creature.defenses.hp, "override", undefined) ? "" : ` (${creature.defenses.hp.numOfHitDie}d${creature.defenses.hp.sizeOfHitDie})`;
+	const speed = displaySpeedOrSenses(creature.core.speed);
+	const image = getValue(creature.description, "image", undefined);
+	const imageStr = image ? `![${name}](${image}){float:right;width:100px}` : "";
 
 	// Stats
 	const statline = `|  STR  |  DEX  |  CON  |  INT  |  WIS  |  CHA  |
 |:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|
-|${getStatString("str", creature)}|${getStatString("dex", creature)}|${getStatString("con",creature)}|${getStatString("int", creature)}|${getStatString("wis", creature)}|${getStatString("cha", creature)}`;
+|${getStatString("str", creature)}|${getStatString("dex", creature)}|${getStatString("con", creature)}|${getStatString("int", creature)}|${getStatString("wis", creature)}|${getStatString("cha", creature)}`;
 
-	// Additional Attributes - Conditional 
-	const saves = formatSaves(creature)
-	const skills = formatSkills(creature)
-	const immunities = getValue(creature.defenses, "immunities", undefined)
-	const resistances = getValue(creature.defenses, "resistances", undefined)
-	const senses = displaySpeedOrSenses(creature.core.senses)
-	const passivePerception = ppCalc(creature)
-	const sense_string = senses === "" ? `Passive Perception ${passivePerception}` : `${senses}, Passive Perception ${passivePerception}`
-	const languages = getValue(creature.core, "languages", ["None"])
-	const challenge = getValue(creature.description, "cr", "Unknown Challenge")
-	const xp = getValue(creature.description, "xp", 0)
-	const proficiencyBonus = getValue(creature.core, "proficiencyBonus", 0)
+	// Additional Attributes - Conditional
+	const saves = formatSaves(creature);
+	const skills = formatSkills(creature);
+	const immunities = getValue(creature.defenses, "immunities", undefined);
+	const resistances = getValue(creature.defenses, "resistances", undefined);
+	const senses = displaySpeedOrSenses(creature.core.senses);
+	const passivePerception = ppCalc(creature);
+	const sense_string = senses === "" ? `Passive Perception ${passivePerception}` : `${senses}, Passive Perception ${passivePerception}`;
+	const languages = getValue(creature.core, "languages", ["None"]);
+	const challenge = getValue(creature.description, "cr", "Unknown Challenge");
+	const xp = getValue(creature.description, "xp", 0);
+	const proficiencyBonus = getValue(creature.core, "proficiencyBonus", 0);
 
 	const attrString = [
 		saves ? `**Saving Throws** :: ${saves}` : null,
@@ -181,15 +180,15 @@ export function getCreatureMarkdown(creature: Statblock) {
 		sense_string,
 		`**Languages** :: ${languages.join(", ")}`,
 		`**Challenge** :: ${challenge} (${xp} XP) {{bonus **Proficiency Bonus** +${proficiencyBonus}}}`
-	].filter(x => x !== null).join("\n")
+	].filter(x => x !== null).join("\n");
 
 	// Pre-fetching actions
-	const actions = creature.features.actions
+	const actions = creature.features.actions;
 
 	// Traits
-	const traits = creature.features.features
-	const caster = creature.spellcasting.casterSpells
-	const innateCaster = creature.spellcasting.innateSpells
+	const traits = creature.features.features;
+	const caster = creature.spellcasting.casterSpells;
+	const innateCaster = creature.spellcasting.innateSpells;
 
 	if (caster.casterLevel && caster.castingClass && caster.spellList.flat().length > 0 && Object.keys(caster.spellSlotList ?? {}).length > 0) {
 		traits.push({
@@ -206,15 +205,15 @@ export function getCreatureMarkdown(creature: Statblock) {
 			name: featureName,
 			description: displayInnateCasting(creature).replaceAll("\n", "\n\n"),
 			automation: null
-		}
+		};
 
 		if (innateCaster.displayAsAction)
-			actions.push(feat)
+			actions.push(feat);
 		else
-			traits.push(feat)
+			traits.push(feat);
 	}
 
-	const traitStr = traits.map(t => `***${t.name}.*** ${t.description}`).join("\n:\n")
+	const traitStr = traits.map(t => `***${t.name}.*** ${t.description}`).join("\n:\n");
 
 	// Actions
 	const actionString = [
@@ -225,15 +224,14 @@ export function getCreatureMarkdown(creature: Statblock) {
 		formatActions(creature.features.lair, "Lair Actions"),
 		formatActions(creature.features.mythic, "Mythic Actions"),
 		formatActions(creature.features.regional, "Regional Actions")
-	].filter(x => x != null).join("\n")
-
+	].filter(x => x != null).join("\n");
 
 	return `${frame}
 ${imageStr}
 ## ${name}
 *${creature.core.size} ${creatureType}, ${alignment}*
 ___
-**Armor Class** :: ${ac}${armorType ? ` (${armorType})` : ''}
+**Armor Class** :: ${ac}${armorType ? ` (${armorType})` : ""}
 **Hit Points** :: ${hp}${hpStr}
 **Speed** :: ${speed}
 ___
