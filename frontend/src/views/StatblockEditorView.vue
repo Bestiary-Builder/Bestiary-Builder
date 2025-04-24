@@ -34,6 +34,13 @@ onMounted(async () => {
 		rawInfo.value = cData;
 		await loadRawInfo();
 		loader.hide();
+		
+		try {
+			clipboardText.value = await navigator.clipboard.readText()
+		}
+		catch(error){
+			console.error("Unable to read clipboard text:", error)
+		}
 	}
 	else {
 		toast.error(`Error: ${error}`);
@@ -131,12 +138,11 @@ onUnmounted(() => {
 });
 
 // Pasting BB statblock from clipboard
-const clipboardText = ref("");
 const permissionRead = usePermission("clipboard-read");
-const canPasteBBStatblock = computed(async () => {
+const clipboardText = ref("");
+const canPasteBBStatblock = computed(() => {
 	try {
-		const value = await navigator.clipboard.readText()
-		const parsed = JSON.parse(value);
+		const parsed = JSON.parse(clipboardText.value);
 		return !!parsed?.isBB;
 	}
 	catch {
@@ -148,8 +154,7 @@ const importFromPaste = async () => {
 	if (!canPasteBBStatblock.value)
 		return;
 	try {
-		const value = await navigator.clipboard.readText()
-		const parsed = JSON.parse(value);
+		const parsed = JSON.parse(clipboardText.value);
 		delete parsed.isBB;
 		data.value = parsed;
 		toast.success("Successfully pasted creature!");
@@ -163,7 +168,7 @@ const onTabFocus = async () => {
 	if (document.hidden)
 		return;
 	setTimeout(async () => {
-		if (!document.hasFocus()) {
+		if (document.hasFocus()) {
 			try {
 				clipboardText.value = await navigator.clipboard.readText();
 			}
