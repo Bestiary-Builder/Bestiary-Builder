@@ -191,6 +191,30 @@ export default defineComponent({
 
 			return filterChecks.every(_ => _);
 		},
+		async exportHomebrewery(){
+			let loader = $loading.show()
+
+			try {
+				const {success, data: resultData, error} = await useFetch<{metadata: string}>(
+					`/api/homebrewery/export/bestiary/${this.bestiary?._id}`,
+					"GET"
+				)
+
+				if (success){
+					await navigator.clipboard.writeText(resultData.metadata)
+					toast.info("Exported this bestiary markdown to your clipboard")
+				}
+				else {
+					toast.error(error)
+				}
+			} 
+			catch (err){
+				toast.error(err as string)
+			} 
+			finally {
+				loader.hide()
+			}
+		},
 		async exportBestiary(asFile: boolean) {
 			if (asFile) {
 				const file = new File(
@@ -632,14 +656,16 @@ export default defineComponent({
 				<template #popper>
 					<div class="v-popper__custom-menu">
 						<span>
-							Export this Bestiary as JSON<br>
-							to clipboard or to file
+							Export this Bestiary
 						</span>
 						<button v-close-popper class="btn confirm" @click="exportBestiary(false)">
 							Clipboard
 						</button>
 						<button v-close-popper class="btn confirm" @click="exportBestiary(true)">
 							File
+						</button>
+						<button v-close-popper class="btn confirm" @click="exportHomebrewery()">
+							Homebrewery
 						</button>
 					</div>
 				</template>
