@@ -1,8 +1,8 @@
 name: Build site for production
 on:
-    push:
-        branches:
-            - main
+    release:
+        types: [published]
+    workflow_dispatch:
 env:
     NODE_ENV: production
 jobs:
