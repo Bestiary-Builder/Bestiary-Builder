@@ -34,12 +34,12 @@ onMounted(async () => {
 		rawInfo.value = cData;
 		await loadRawInfo();
 		loader.hide();
-		
+
 		try {
-			clipboardText.value = await navigator.clipboard.readText()
+			clipboardText.value = await navigator.clipboard.readText();
 		}
-		catch(error){
-			console.error("Unable to read clipboard text:", error)
+		catch (error) {
+			console.error("Unable to read clipboard text:", error);
 		}
 	}
 	else {
@@ -265,24 +265,24 @@ const exportStatblock = async () => {
 	toast.info("Exported this statblock to your clipboard.");
 };
 
-const exportHomebrery = async() => {
+const exportHomebrery = async () => {
 	try {
-		const {success, data: resultData, error} = await useFetch<{metadata: string}>(
+		const { success, data: resultData, error } = await useFetch<{ metadata: string }>(
 			`/api/homebrewery/export/creature/${$route.params.id.toString()}`,
 			"GET"
-		)
-		if (success){
-			await navigator.clipboard.writeText(resultData.metadata)
-			toast.info("Exported this statblock markdown to your clipboard")
+		);
+		if (success) {
+			await navigator.clipboard.writeText(resultData.metadata);
+			toast.info("Exported this statblock markdown to your clipboard");
 		}
 		else {
-			toast.error(error)
+			toast.error(error);
 		}
-	} 
-	catch (err){
-		toast.error(err as string)
 	}
-}
+	catch (err) {
+		toast.error(err as string);
+	}
+};
 
 const exportToImage = async () => {
 	const filter = (node: HTMLElement) => {
@@ -613,7 +613,7 @@ const changeCR = (isIncrease: boolean) => {
 						<span>
 							Export this creature
 						</span>
-						<button v-close-popper class="btn confirm" v-if="isOwner || isEditor" @click="exportStatblock">
+						<button v-if="isOwner || isEditor" v-close-popper class="btn confirm" @click="exportStatblock">
 							JSON
 						</button>
 						<button v-close-popper class="btn confirm" @click="exportToImage">

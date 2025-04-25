@@ -1,3 +1,11 @@
+## v2.4.0
+_April 25th, 2025_
+
+- Added the ability to export bestiaries and creatures to markdown format for Homebrewery.
+- Fixed an issue where www. subdomain for critterDB bestiaries could not be imported.
+- Fixed an issue where copying a creature would not show the paste button on other pages.
+
+---
 ## v2.3.3
 _April 17th, 2025_
 

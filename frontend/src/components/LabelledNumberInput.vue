@@ -73,8 +73,9 @@ export default defineComponent({
 					!(isNaN(newValue) && typeof oldValue === "undefined")
 					// Avoid infinite loop
 					&& newValue !== this.value
-				)
+				) {
 					this.setValue(newValue);
+				}
 			}
 		}
 	},

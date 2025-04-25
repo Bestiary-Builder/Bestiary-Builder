@@ -191,28 +191,28 @@ export default defineComponent({
 
 			return filterChecks.every(_ => _);
 		},
-		async exportHomebrewery(){
-			let loader = $loading.show()
+		async exportHomebrewery() {
+			const loader = $loading.show();
 
 			try {
-				const {success, data: resultData, error} = await useFetch<{metadata: string}>(
+				const { success, data: resultData, error } = await useFetch<{ metadata: string }>(
 					`/api/homebrewery/export/bestiary/${this.bestiary?._id}`,
 					"GET"
-				)
+				);
 
-				if (success){
-					await navigator.clipboard.writeText(resultData.metadata)
-					toast.info("Exported this bestiary markdown to your clipboard")
+				if (success) {
+					await navigator.clipboard.writeText(resultData.metadata);
+					toast.info("Exported this bestiary markdown to your clipboard");
 				}
 				else {
-					toast.error(error)
+					toast.error(error);
 				}
-			} 
-			catch (err){
-				toast.error(err as string)
-			} 
+			}
+			catch (err) {
+				toast.error(err as string);
+			}
 			finally {
-				loader.hide()
+				loader.hide();
 			}
 		},
 		async exportBestiary(asFile: boolean) {
@@ -258,16 +258,16 @@ export default defineComponent({
 			let link = this.critterDbId.trim();
 			const isPublic = link.includes("publishedbestiary");
 			try {
-				const url = new URL(link)
-				if (url.hostname !== 'critterdb.com' && !url.hostname.endsWith('.critterdb.com')){
+				const url = new URL(link);
+				if (url.hostname !== "critterdb.com" && !url.hostname.endsWith(".critterdb.com")) {
 					toast.error("Could not recognize link as a link to a CritterDB bestiary");
 					return;
 				}
 			}
-			catch{
+			catch {
 				return;
 			}
-			
+
 			const linkEls = link.split("/");
 			link = linkEls[linkEls.length - 1];
 
