@@ -30,7 +30,7 @@ onMounted(async () => {
 	const { success, data: cData, error } = await useFetch<Creature>(`/api/creature/${$route.params.id.toString()}`);
 	if (success) {
 		data.value = (cData).stats;
-		await nextTick(() => { madeChanges.value = false; });
+		await nextTick(() => madeChanges.value = false);
 		rawInfo.value = cData;
 		await loadRawInfo();
 		loader.hide();
