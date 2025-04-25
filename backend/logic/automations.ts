@@ -56,7 +56,7 @@ app.get("/api/my-automations/list", requireUser, async (req, res) => {
 		return res.json(
 			// eslint-disable-next-line array-callback-return
 			allAutomations.map((a) => {
-				// eslint-disable-next-line no-unused-expressions, no-sequences
+				// eslint-disable-next-line ts/no-unused-expressions, no-sequences
 				a.name, a._id;
 			}) ?? []
 		);

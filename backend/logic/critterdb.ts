@@ -3,7 +3,7 @@ import { app } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
 
 // Parsing
-import { type CasterSpells, type InnateSpellsEntity, type SenseEntity, type SkillsEntity, type SpeedEntity, type SpellCasting, type SpellSlotEntity, type Stat, type Statblock, capitalizeFirstLetter, defaultStatblock, spellListFlattened } from "~/shared";
+import { type CasterSpells, type InnateSpellsEntity, type SenseEntity, type SkillsEntity, type SpeedEntity, type SpellCasting, type SpellSlotList, type Stat, type Statblock, capitalizeFirstLetter, defaultStatblock, spellListFlattened } from "~/shared";
 import { abilityParser } from "@/utilities/parsing";
 import { SKILLS_BY_STAT } from "~/shared";
 
@@ -35,7 +35,7 @@ async function fromCritterdb(url: string, published: boolean): Promise<{ data: {
 			data.name = raw.name;
 			data.description = raw.description;
 		}
-		catch (error) {
+		catch {
 			log.error(`CritterDB | Error importing bestiary metadata. Id: "${url}" Published: ${published}`);
 			errored = true;
 		}
@@ -466,7 +466,7 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: string]
 			bonus = null;
 
 		const spellList: CasterSpells["spellList"] = [[], [], [], [], [], [], [], [], [], []];
-		const spellSlotList: SpellSlotEntity = {};
+		const spellSlotList: SpellSlotList = {};
 		const SPELL_INFO_RE = /(?:(?<level>\d)[stndrh]{2}\slevel \((?<slots>\d+) slots?\)|Cantrips? \(at will\)): (?<spells>.+)$/gim;
 		const spellsInfo: any[] = Array.from(sData.matchAll(SPELL_INFO_RE));
 		for (const l of spellsInfo) {

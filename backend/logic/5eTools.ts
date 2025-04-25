@@ -1,4 +1,4 @@
-import { type CasterSpells, type InnateSpellsList, SKILLS_BY_STAT, type SenseEntity, type SkillsEntity, type SpeedEntity, type SpellSlotEntity, type Stat, type Statblock, capitalizeFirstLetter, defaultStatblock, getXPbyCR, spellListFlattened } from "~/shared";
+import { type CasterSpells, type InnateSpellsList, SKILLS_BY_STAT, type SenseEntity, type SkillsEntity, type SpeedEntity, type SpellSlotList, type Stat, type Statblock, capitalizeFirstLetter, defaultStatblock, getXPbyCR, spellListFlattened } from "~/shared";
 import { abilityParser } from "@/utilities/parsing";
 import { app } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
@@ -683,7 +683,7 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 			})(),
 			spellSlotList: (() => {
 				let sData = [];
-				const output = {} as SpellSlotEntity;
+				const output = {} as SpellSlotList;
 				for (const t of data?.spellcasting ?? []) {
 					if (t.name.includes("Spellcasting") && !t.name.includes("Innate"))
 						sData = t;
