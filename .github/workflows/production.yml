@@ -44,5 +44,3 @@ jobs:
                   build-args: |
                     "VITE_DISCORD_ID=${{ secrets.VITE_DISCORD_ID }}"
                     "VITE_ERROR_WEBHOOK=${{ secrets.VITE_ERROR_WEBHOOK }}"
-                  cache-from: type=gha
-                  cache-to: type=gha,mode=max
