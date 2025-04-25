@@ -7,7 +7,7 @@ env:
     NODE_ENV: production
 jobs:
     build-and-push:
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-24.04-arm
 
         permissions:
             contents: read
@@ -40,7 +40,7 @@ jobs:
                   context: .
                   push: true
                   tags: ${{env.REGISTRY}}/${{env.REPOSITORY}}:latest
-                  platforms: linux/amd64,linux/arm64
+                  platforms: linux/arm64
                   build-args: |
                     "VITE_DISCORD_ID=${{ secrets.VITE_DISCORD_ID }}"
                     "VITE_ERROR_WEBHOOK=${{ secrets.VITE_ERROR_WEBHOOK }}"
