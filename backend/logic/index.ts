@@ -5,6 +5,7 @@ import "./bestiaries";
 import "./creatures";
 import "./critterdb";
 import "./discord";
+import "./homebrewery";
 import "./login";
 import "./search";
 import "./staticData";

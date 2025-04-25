@@ -34,6 +34,13 @@ onMounted(async () => {
 		rawInfo.value = cData;
 		await loadRawInfo();
 		loader.hide();
+		
+		try {
+			clipboardText.value = await navigator.clipboard.readText()
+		}
+		catch(error){
+			console.error("Unable to read clipboard text:", error)
+		}
 	}
 	else {
 		toast.error(`Error: ${error}`);
@@ -131,8 +138,8 @@ onUnmounted(() => {
 });
 
 // Pasting BB statblock from clipboard
-const clipboardText = ref("");
 const permissionRead = usePermission("clipboard-read");
+const clipboardText = ref("");
 const canPasteBBStatblock = computed(() => {
 	try {
 		const parsed = JSON.parse(clipboardText.value);
@@ -161,7 +168,7 @@ const onTabFocus = async () => {
 	if (document.hidden)
 		return;
 	setTimeout(async () => {
-		if (!document.hasFocus()) {
+		if (document.hasFocus()) {
 			try {
 				clipboardText.value = await navigator.clipboard.readText();
 			}
@@ -257,6 +264,25 @@ const exportStatblock = async () => {
 	clipboardText.value = text;
 	toast.info("Exported this statblock to your clipboard.");
 };
+
+const exportHomebrery = async() => {
+	try {
+		const {success, data: resultData, error} = await useFetch<{metadata: string}>(
+			`/api/homebrewery/export/creature/${$route.params.id.toString()}`,
+			"GET"
+		)
+		if (success){
+			await navigator.clipboard.writeText(resultData.metadata)
+			toast.info("Exported this statblock markdown to your clipboard")
+		}
+		else {
+			toast.error(error)
+		}
+	} 
+	catch (err){
+		toast.error(err as string)
+	}
+}
 
 const exportToImage = async () => {
 	const filter = (node: HTMLElement) => {
@@ -578,12 +604,27 @@ const changeCR = (isIncrease: boolean) => {
 			<button v-if="isOwner || isEditor" v-tooltip="'Import a creature\'s statblock'" aria-label="Import a creature's statblock" @click="showImportModal = true">
 				<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
 			</button>
-			<button v-if="isOwner || isEditor" v-tooltip="'Export this creature as JSON to your clipboard.'" aria-label="Export a creature's statblock" @click="exportStatblock">
-				<font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" />
-			</button>
-			<button v-tooltip="'Export creature as image'" aria-label="Export creature as image" @click="exportToImage">
-				<font-awesome-icon :icon="['far', 'image']" />
-			</button>
+			<VDropdown :distance="6" :positioning-disabled="store.isMobile">
+				<button v-tooltip="'Export statblock'" aria-label="Export statblock">
+					<font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" />
+				</button>
+				<template #popper>
+					<div class="v-popper__custom-menu">
+						<span>
+							Export this creature
+						</span>
+						<button v-close-popper class="btn confirm" v-if="isOwner || isEditor" @click="exportStatblock">
+							JSON
+						</button>
+						<button v-close-popper class="btn confirm" @click="exportToImage">
+							Image
+						</button>
+						<button v-close-popper class="btn confirm" @click="exportHomebrery">
+							Homebrewery
+						</button>
+					</div>
+				</template>
+			</VDropdown>
 		</Breadcrumbs>
 		<div class="content" :class="{ 'is-statblock-only': !shouldShowEditor }">
 			<div v-show="shouldShowEditor" class="content-container__inner editor">

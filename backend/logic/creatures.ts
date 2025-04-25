@@ -9,7 +9,7 @@ import { defaultStatblock, stringToId } from "~/shared";
 import { checkBadwords } from "@/utilities/badwords";
 
 // Check creature permissions
-async function checkCreaturePermission(creature: Creature, user: User | null) {
+export async function checkCreaturePermission(creature: Creature, user: User | null) {
 	if (!user)
 		return false;
 	const bestiary = await getBestiary(creature.bestiary);
