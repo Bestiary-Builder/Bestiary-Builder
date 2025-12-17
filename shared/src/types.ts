@@ -1,10 +1,10 @@
 import { ObjectId as Id } from "bson";
 import type { SpellSlotList, Statblock } from "./build-types";
 
-export { ObjectId as Id } from "bson";
-
 // Built types
 export * from "./build-types";
+
+export { ObjectId as Id } from "bson";
 
 // Database types
 export class User {

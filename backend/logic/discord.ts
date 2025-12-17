@@ -15,7 +15,7 @@ const channels = {} as {
 	errorLogs?: discord.TextChannel;
 	publicLogs?: discord.TextChannel;
 };
-client.on("ready", async () => {
+client.on("clientReady", async () => {
 	log.info("Discord bot is ready");
 	client.user?.setPresence({
 		status: "invisible"

@@ -196,7 +196,7 @@ export default defineComponent({
 
 			try {
 				const { success, data: resultData, error } = await useFetch<{ metadata: string }>(
-					`/api/homebrewery/export/bestiary/${this.bestiary?._id}`,
+					`/api/homebrewery/export/bestiary/${this.bestiary?._id?.toString()}`,
 					"GET"
 				);
 

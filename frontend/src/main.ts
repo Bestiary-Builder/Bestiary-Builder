@@ -44,11 +44,11 @@ loader.config({
 
 // Google analytics
 if (import.meta.env.MODE === "production")
-	import("./utils/app/gtag.js" as any);
+	import("./utils/app/gtag.js" as any).catch(() => {});
 
 // error handling
 if (import.meta.env.MODE === "production")
-	import("./utils/app/error");
+	import("./utils/app/error").then().catch(() => {});
 
 // Finally, mount our app.
 app.mount("body");
