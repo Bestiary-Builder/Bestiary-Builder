@@ -97,6 +97,14 @@ export const routes: Route[] = [
 		meta: { navbar: true, loggedIn: false, dynamic: false },
 		props: { filePath: "changelog" },
 	},
+	// Server error
+	{
+		path: "/server-error",
+		name: "",
+		file: "GenericMarkdownView.vue",
+		meta: { navbar: false, loggedIn: false, dynamic: false },
+		props: { filePath: "server-error" },
+	},
 	// 404 not found page - must be last.
 	{
 		path: "/:pathMatch(.*)*",

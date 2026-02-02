@@ -27,12 +27,17 @@ const router = createRouter({
 });
 
 // Check logged in
-router.beforeEach(async (to, _from) => {
+router.beforeEach(async (to, from) => {
+	// On server error, refresh page to check for updated info
+	if (from.path === "/server-error") {
+		window.location.href = to.fullPath;
+		return false;
+	}
 	// Requires being logged in?
 	if (to.meta.loggedIn) {
 		if (!store.user) {
 			sendToLogin(to.path);
-			return;
+			return false;
 		}
 	}
 	return true;

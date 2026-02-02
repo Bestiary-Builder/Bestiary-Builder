@@ -60,7 +60,10 @@ export default defineConfig({
 		chunkSizeWarningLimit: 1250,
 		target: "esnext",
 		outDir: "../build/frontend",
-		emptyOutDir: true
+		emptyOutDir: true,
+		rollupOptions: {
+			input: "home.html",
+		},
 	},
 	optimizeDeps: {
 		esbuildOptions: {
