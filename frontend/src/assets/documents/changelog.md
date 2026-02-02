@@ -1,5 +1,5 @@
 ## v2.5.0
-_February 2nd, 2025_
+_February 2nd, 2026_
 
 - After an outage yesterday, now added error handling in case the server cannot be reached, and made the server automatically try to restart in such cases.
 
