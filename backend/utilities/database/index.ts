@@ -31,7 +31,6 @@ export async function startConnection() {
 async function waitForDbConnection(client: MongoClient) {
 	while (true) {
 		try {
-			throw "test";
 			// Connect the client to the server
 			await client.connect();
 			// Connect to databse
