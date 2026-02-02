@@ -114,7 +114,7 @@ export const routes: Route[] = [
 		props: { filePath: "not-found" },
 	},
 ];
-export const siteMapRoutes = routes.map(route => ({
+export const siteMapRoutes = routes.filter(route => route.path != "/server-error").map(route => ({
 	path: route.path,
 	name: route.name,
 	props: true,
