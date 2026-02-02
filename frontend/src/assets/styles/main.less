@@ -389,3 +389,29 @@ html:has(.open-modal) {
 		grid-template-columns: 9fr 1fr;
 	}
 }
+
+
+p:has(img[src="/Beholder.webp"]) {
+	strong {
+		text-align: center;
+		display: block;
+		font-size: 2rem;
+	}
+
+	img {
+			display: block;
+  			margin: auto;
+  			width: 50%;
+	}
+
+	+ p {
+		text-align: center;
+	}
+}
+
+blockquote:has(p img[src="/Beholder.webp"]) ~ p {
+	text-align: center;
+	display: block;
+  	margin: auto;
+  	width: 70%;
+}
