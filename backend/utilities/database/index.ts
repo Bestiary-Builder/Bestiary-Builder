@@ -44,7 +44,7 @@ async function waitForDbConnection(client: MongoClient) {
 			log.log("database", `Established connection to ${database.databaseName} with ${(await database.collections()).length} collections.`);
 
 			// Database change
-			const runDataBaseChange = false;
+			const runDataBaseChange = true;
 			if (runDataBaseChange) {
 				// Add customDescription to spells
 				const result1 = await collections.creatures.updateMany({ "stats.spellcasting.innateSpells.customDescription": { $exists: false } }, { $set: { "stats.spellcasting.innateSpells.customDescription": "" } });
