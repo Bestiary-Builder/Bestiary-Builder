@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum BestiaryStatus {
+  public
+  private
+  unlisted
+}
+
+enum SupporterStatus {
+  none
+  wirmling
+  greatwyrm
+}
+
+model User {
+  id          String   @id
+  username    String
+  avatar      String
+  email       String
+  verified    Boolean
+  bannerColor String   @map("banner_color")
+  globalName  String   @map("global_name")
+  supporter   SupporterStatus @default(none)
+  joinedAt    BigInt
+  secret      String?  @unique
+
+  bestiaries  Bestiary[]          @relation("BestiaryOwner")
+  editedIn    BestiaryEditor[]
+  bookmarks   UserBestiaryBookmark[]
+
+  @@map("Users")
+}
+
+model Bestiary {
+  id          String         @id @default(cuid())
+  name        String
+  ownerId     String         @map("owner")
+  status      BestiaryStatus
+  description String
+  tags        String[]
+  viewCount   Int            @default(0)
+  bookmarks   Int            @default(0)
+  lastUpdated BigInt
+
+  owner       User                   @relation("BestiaryOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  creatures   Creature[]
+  editors     BestiaryEditor[]
+  bookmarkedBy UserBestiaryBookmark[]
+
+  @@index([ownerId])
+  @@index([status])
+  @@map("Bestiaries")
+}
+
+model BestiaryEditor {
+  bestiaryId String
+  userId     String
+
+  bestiary   Bestiary @relation(fields: [bestiaryId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([bestiaryId, userId])
+  @@index([userId])
+  @@map("BestiaryEditors")
+}
+
+model UserBestiaryBookmark {
+  userId     String
+  bestiaryId String
+  createdAt  DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bestiary   Bestiary @relation(fields: [bestiaryId], references: [id], onDelete: Cascade)
+
+  @@id([userId, bestiaryId])
+  @@index([bestiaryId])
+  @@map("UserBestiaryBookmarks")
+}
+
+model Creature {
+  id          String  @id @default(cuid())
+  bestiaryId  String  @map("bestiary")
+  lastUpdated BigInt
+  stats       Json
+
+  bestiary    Bestiary @relation(fields: [bestiaryId], references: [id], onDelete: Cascade)
+
+  @@index([bestiaryId])
+  @@map("Creatures")
+}
+
+model Automation {
+  id          String @id @default(cuid())
+  name        String
+  description String
+  owner       String
+  lastUpdated BigInt
+  automation  Json?
+
+  @@index([owner])
+  @@map("Automations")
+}

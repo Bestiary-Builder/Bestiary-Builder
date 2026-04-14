@@ -16,8 +16,6 @@ To start editing the project follow these simple steps:
 2. Clone your newly created fork. See: [GitHub Docs - Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository)
 3. Install npm dependencies. (Run "npm i" in the backend frontend, and shared folder)
 4. Setup outside resources
-    - MongoDB:
-        - Follow this guide to setup a free MongoDB Atlas cluster: [MongoDB Docs - Deploy free tier cluster](https://www.mongodb.com/docs/atlas/tutorial/deploy-free-tier-cluster/)
     - Discord OAuth application:
         - Go [here](https://discord.com/developers/applications) and create a new application.
         - Save the client id and client secret, for use later.
@@ -25,17 +23,19 @@ To start editing the project follow these simple steps:
         - Change the constant "clientId" in the file "frontend/main.ts", to match the id for the application.
 5. Change the values of ".env" in the frontend folder to your own environment
     - "VITE_DISCORD_ID" should be changed to your Discord OAuth application id.
-6. Rename ".env.template" in the backend folder to ".env", and change it's values to your own environment
+6. Start PostgreSQL database
+	- Run `docker compose up -d` in the project folder
+	- *(or start a PosgreSQL database in any other way)*
+7. Rename ".env.template" in the backend folder to ".env", and change it's values to your own environment
     - "frontendPath" should stay unchanged. (Unless you moved the folder around)
     - "clientId" should be changed to your Discord OAuth application id.
     - "clientSecret" should be changed to your Discord OAuth application secret.
-    - "MongoDB" should be changed to the connection URI for your MongoDB server.
-    - "MongoDB_DBName" should be changed to the name of the database to connect to, remove to use "bestiarybuilder".
+    - "DATABASE_URL" should only be changed if you decided not to use the docker compose file in step 6.
     - "JWTKEY" should be any string and can be left as is for development.
-7. Launch the local site.
+8. Launch the local site.
     - In VSCode/VSCodium simply press F5 to start the already created launch tasks.
     - For other code editors, start the backend by running "npm run start" in the backend folder, and build the frontend by running "npm run build" in the frontend folder.
-8. Check that everything is working as it should.
+9. Check that everything is working as it should.
 
 ## Made by
 

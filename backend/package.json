@@ -19,6 +19,8 @@
 		"lint:fix": "eslint . --fix"
 	},
 	"dependencies": {
+		"@prisma/adapter-pg": "^7.7.0",
+		"@prisma/client": "^7.7.0",
 		"bad-words-next": "^2.3.2",
 		"body-parser": "^2.2.0",
 		"compression": "^1.8.0",
@@ -35,6 +37,7 @@
 		"mongodb": "^6.16.0",
 		"naughty-words": "^1.2.0",
 		"node-fetch": "^2.7.0",
+		"pg": "^8.20.0",
 		"prerender-node": "^3.8.0",
 		"ts-interface-checker": "^1.0.2",
 		"winston": "^3.17.0"
@@ -50,6 +53,7 @@
 		"@types/node-fetch": "^2.6.12",
 		"eslint": "8.57.0",
 		"nodemon": "^3.1.10",
+		"prisma": "^7.7.0",
 		"ts-interface-builder": "^0.3.3",
 		"tsx": "^4.19.3",
 		"typescript": "^5.8.3",
