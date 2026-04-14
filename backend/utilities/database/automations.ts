@@ -1,13 +1,14 @@
-import { collections } from ".";
+import { getPrismaClient } from ".";
 import { log } from "@/utilities/logger";
-import type { Automation, Bestiary } from "~/shared";
+import { JsonObject } from "@prisma/client/runtime/client";
+import type { Automation, AutomationCreateInput } from "~/shared";
 import { Id } from "~/shared";
 
 // Automation functions
 export async function getAutomation(id: Id) {
 	try {
 		log.log("database", `Reading automation with the id ${id}.`);
-		return (await collections.automations?.findOne({ _id: id })) as Bestiary | null;
+        return (await getPrismaClient().automation.findUnique({ where: { id } }));
 	}
 	catch (err) {
 		log.log("critical", err);
@@ -15,48 +16,39 @@ export async function getAutomation(id: Id) {
 	}
 }
 export async function updateAutomation(data: Automation, id?: Id) {
-	try {
-		data.lastUpdated = Date.now();
-		if (id) {
-			if (await getAutomation(id)) {
-				log.log("database", `Updating automation with id ${id}`);
-				await collections.automations?.updateOne({ _id: id }, { $set: data });
-				return id;
-			}
-			else {
-				/// log.error("Trying to update non existant automation
-				return null;
-			}
-		}
-		else {
-			log.log("database", "Adding new automation to collection");
-			const _id = new Id();
-			const newData = {
-				...data,
-				...{
-					_id
-				}
-			};
-			await collections.automations?.insertOne(newData);
-			return _id;
-		}
+    try {
+        const automation: AutomationCreateInput = {...data, automation: data.automation as JsonObject, lastUpdated: new Date(Date.now())}
+        log.log("database", `Upserting automation with id ${id}`);
+		return (await getPrismaClient().automation.upsert({ where: { id }, update: automation, create: automation })).id;
 	}
 	catch (err) {
 		log.log("critical", err);
 		return null;
 	}
 }
-export async function deleteAutomation(_id: Id) {
+export async function deleteAutomation(id: Id) {
 	try {
-		const automation = await getAutomation(_id);
-		if (!automation)
-			return false;
-		log.log("database", `Deleting automation with the id ${_id}.`);
-		await collections.automations?.deleteOne({ _id });
-		return true;
+        log.log("database", `Deleting automation with the id ${id}.`);
+        return await getPrismaClient().$transaction(async () => {
+            const automation = await getAutomation(id);
+            if (!automation)
+                return false;
+            await getPrismaClient().bestiary.delete({ where: { id: id } });
+            return true;
+        });
 	}
 	catch (err) {
 		log.log("critical", err);
 		return false;
+	}
+}
+
+export async function getAutomationsByOwner(ownerId: string) {
+	try {
+		return await getPrismaClient().automation.findMany({ where: { owner: ownerId } });
+	}
+	catch (err) {
+		log.log("critical", err);
+		return [];
 	}
 }

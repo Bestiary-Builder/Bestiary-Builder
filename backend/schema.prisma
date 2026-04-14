@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output = "../shared/prisma"
 }
 
 datasource db {
@@ -27,8 +28,8 @@ model User {
   bannerColor String   @map("banner_color")
   globalName  String   @map("global_name")
   supporter   SupporterStatus @default(none)
-  joinedAt    BigInt
-  secret      String?  @unique
+  joinedAt    DateTime @default(now())
+  secret      String   @unique
 
   bestiaries  Bestiary[]          @relation("BestiaryOwner")
   editedIn    BestiaryEditor[]
@@ -46,7 +47,7 @@ model Bestiary {
   tags        String[]
   viewCount   Int            @default(0)
   bookmarks   Int            @default(0)
-  lastUpdated BigInt
+  lastUpdated DateTime @default(now())
 
   owner       User                   @relation("BestiaryOwner", fields: [ownerId], references: [id], onDelete: Cascade)
   creatures   Creature[]
@@ -86,7 +87,7 @@ model UserBestiaryBookmark {
 model Creature {
   id          String  @id @default(cuid())
   bestiaryId  String  @map("bestiary")
-  lastUpdated BigInt
+  lastUpdated DateTime @default(now())
   stats       Json
 
   bestiary    Bestiary @relation(fields: [bestiaryId], references: [id], onDelete: Cascade)
@@ -100,7 +101,7 @@ model Automation {
   name        String
   description String
   owner       String
-  lastUpdated BigInt
+  lastUpdated DateTime @default(now())
   automation  Json?
 
   @@index([owner])

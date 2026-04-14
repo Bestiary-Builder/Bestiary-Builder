@@ -1,58 +1,25 @@
-import type { Collection, Db } from "mongodb";
-import { MongoClient, ServerApiVersion } from "mongodb";
 import { log } from "@/utilities/logger";
-import type { Automation, Bestiary, Creature, GlobalStats, User } from "~/shared";
+import type { GlobalStats } from "~/shared";
 
 // Connect to database
-export const collections: { users?: Collection<User>; bestiaries?: Collection<Bestiary>; creatures?: Collection<Creature>; automations?: Collection<Automation> } = {};
+import { PrismaClient } from "~/shared";
+import { PrismaPg } from "@prisma/adapter-pg";
 
-let database = null as Db | null;
-export async function startConnection() {
-	let client: MongoClient;
-	try {
-		// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-		client = new MongoClient(process.env.MongoDB ?? "", {
-			serverApi: {
-				version: ServerApiVersion.v1,
-				strict: true,
-				deprecationErrors: false
-			},
-			monitorCommands: true
-		});
-	}
-	catch (err) {
-		log.log("critical", `Invalid mongodb connection url. ${err}`);
-		return;
-	}
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL!,
+});
 
-	return waitForDbConnection(client);
+let prisma: PrismaClient | undefined = undefined;
+export function getPrismaClient() {
+    if(prisma === undefined) throw new Error("Prisma client is not initialized. Please call startConnection() first.");
+    return prisma;
 }
 
-async function waitForDbConnection(client: MongoClient) {
-	while (true) {
+export async function startConnection() {
+    while (true) {
 		try {
-			// Connect the client to the server
-			await client.connect();
-			// Connect to databse
-			database = client.db(process.env.MongoDB_DBName ?? "bestiarybuilder");
-			// Get collections
-			collections.users = database.collection("Users");
-			collections.bestiaries = database.collection("Bestiaries");
-			collections.creatures = database.collection("Creatures");
-			collections.automations = database.collection("Automations");
-			log.info(`Successfully connected to the database.`);
-			log.log("database", `Established connection to ${database.databaseName} with ${(await database.collections()).length} collections.`);
-
-			// Database change
-			const runDataBaseChange = false;
-			if (runDataBaseChange) {
-				// Add customDescription to spells
-				const result1 = await collections.creatures.updateMany({ "stats.spellcasting.innateSpells.customDescription": { $exists: false } }, { $set: { "stats.spellcasting.innateSpells.customDescription": "" } });
-				const result2 = await collections.creatures.updateMany({ "stats.spellcasting.casterSpells.customDescription": { $exists: false } }, { $set: { "stats.spellcasting.casterSpells.customDescription": "" } });
-				log.log("database", `Updated ${result1.modifiedCount} creatures to add customDescription to innateSpells.`);
-				log.log("database", `Updated ${result2.modifiedCount} creatures to add customDescription to casterSpells.`);
-			}
-
+			// Create prisma client and connect
+			prisma = new PrismaClient({ adapter })
 			// Stop waiting loop
 			return;
 		}
@@ -64,27 +31,19 @@ async function waitForDbConnection(client: MongoClient) {
 	}
 }
 
-// Add changes to all in database
-export async function addValue(collection: Collection<any>, key: string, value: any) {
-	collection.updateMany({ [key]: { $exists: false } }, { $set: { [key]: value } });
-	log.log("database", `Added key "${key}" to all documents in collection "${collection.collectionName}" with the value: ${value}`);
-}
-export async function updateValue(collection: Collection<any>, key: string, value: any) {
-	collection.updateMany({}, { $set: { [key]: value } });
-}
-
 // Show error screen when no database connection
 export function isDatabaseConnected(): boolean {
-	return database != null;
+	return prisma !== undefined;
 }
 
 // Global stats
 export async function getGlobalStats(): Promise<GlobalStats | null> {
-	try {
+    try {
+        const prisma = getPrismaClient();
 		return {
-			creatures: (await collections.creatures?.countDocuments()) ?? 0,
-			bestiaries: (await collections.bestiaries?.countDocuments()) ?? 0,
-			users: (await collections.users?.countDocuments()) ?? 0
+			creatures: await prisma.creature.count(),
+			bestiaries: await prisma.bestiary.count(),
+			users: await prisma.user.count()
 		};
 	}
 	catch (err) {

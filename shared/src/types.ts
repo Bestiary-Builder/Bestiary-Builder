@@ -1,50 +1,12 @@
-import { ObjectId as Id } from "bson";
+export type Id = string;
 import type { SpellSlotList, Statblock } from "./build-types";
 
 // Built types
 export * from "./build-types";
 
-export { ObjectId as Id } from "bson";
-
 // Database types
-export class User {
-	constructor(
-		public username: string,
-		public avatar: string,
-		public email: string,
-		public verified: boolean,
-		public banner_color: string,
-		public global_name: string,
-		public bestiaries: Id[] = [],
-		public bookmarks: Id[] = [],
-		public supporter: 0 | 1 | 2,
-		public joinedAt: number,
-		public _id: string,
-		public secret?: string,
-	) {}
-}
-export class Bestiary {
-	constructor(
-		public name: string,
-		public owner: string,
-		public editors: string[],
-		public status: "public" | "private" | "unlisted",
-		public description: string,
-		public creatures: Id[],
-		public tags: string[],
-		public viewCount: number,
-		public bookmarks: number,
-		public lastUpdated: number,
-		public _id?: Id,
-	) {}
-}
-export class Creature {
-	constructor(public lastUpdated: number, public stats: Statblock, public bestiary: Id, public _id?: Id) {}
-}
-
-export class Automation {
-	constructor(public name: string, public description: string, public owner: string, public lastUpdated: number, public automation: null | Record<string, unknown> | Record<string, unknown>[], public _id?: Id) {}
-}
+export * from "../prisma/client"
+export * from "../prisma/models"
 
 export class GlobalStats {
 	constructor(public bestiaries: number, public creatures: number, public users: number) {}
@@ -58,14 +20,6 @@ export interface AutomationDocumentationEntity {
 	ts: string;
 }
 export interface AutomationDocumentation { [key: string]: AutomationDocumentationEntity }
-
-export function stringToId(id: string): Id | null {
-	if (!id)
-		return null;
-	if (id.length !== 24)
-		return null;
-	return new Id(id);
-}
 
 // Frontend types
 export const defaultStatblock: Statblock = {

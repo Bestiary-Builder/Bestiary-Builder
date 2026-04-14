@@ -1,7 +1,8 @@
 import "dotenv/config";
 import { MongoClient, ObjectId } from "mongodb";
-import { PrismaClient, BestiaryStatus, SupporterStatus } from "@prisma/client";
+import { PrismaClient, BestiaryStatus, SupporterStatus } from "~/shared";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { generateUserSecret } from "./utilities/constants";
 
 /**
  * Standalone migration script:
@@ -143,11 +144,11 @@ async function main() {
 				avatar: u.avatar ?? "",
 				email: u.email ?? "",
 				verified: Boolean(u.verified),
-				bannerColor: u.banner_color ?? "",
-				globalName: u.global_name ?? "",
-				supporter: toSupporterStatus(typeof u.supporter === "number" ? u.supporter : 0),
-				joinedAt: BigInt(typeof u.joinedAt === "number" ? u.joinedAt : Date.now()),
-				secret: u.secret ?? null,
+                globalName: u.global_name ?? "",
+                bannerColor: u.banner_color,
+				supporter: toSupporterStatus(u.supporter ?? 0),
+				joinedAt: new Date(u.joinedAt ?? Date.now()),
+				secret: u.secret ?? generateUserSecret(),
 			},
 		});
 	}
@@ -169,9 +170,9 @@ async function main() {
 				status: toStatus(b.status),
 				description: b.description ?? "",
 				tags: Array.isArray(b.tags) ? b.tags : [],
-				viewCount: typeof b.viewCount === "number" ? b.viewCount : 0,
-				bookmarks: typeof b.bookmarks === "number" ? b.bookmarks : 0,
-				lastUpdated: BigInt(typeof b.lastUpdated === "number" ? b.lastUpdated : Date.now()),
+				viewCount: b.viewCount ?? 0,
+				bookmarks: b.bookmarks ?? 0,
+				lastUpdated: new Date(b.lastUpdated ?? Date.now()),
 			},
 		});
 	}
@@ -218,7 +219,7 @@ async function main() {
 			data: {
 				id,
 				bestiaryId,
-				lastUpdated: BigInt(typeof c.lastUpdated === "number" ? c.lastUpdated : Date.now()),
+				lastUpdated: new Date(c.lastUpdated ?? Date.now()),
 				stats: (c.stats ?? {}) as object,
 			},
 		});
@@ -234,7 +235,7 @@ async function main() {
 				name: a.name ?? "",
 				description: a.description ?? "",
 				owner: a.owner ?? "",
-				lastUpdated: BigInt(typeof a.lastUpdated === "number" ? a.lastUpdated : Date.now()),
+				lastUpdated: new Date(a.lastUpdated ?? Date.now()),
 				automation: (a.automation ?? undefined) as object | undefined,
 			},
 		});

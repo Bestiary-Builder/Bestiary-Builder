@@ -2,8 +2,8 @@ import { Buffer } from "node:buffer";
 import discord from "discord.js";
 import { isProduction } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
-import { collections } from "@/utilities/database";
-import type { User } from "~/shared";
+import { getPrismaClient } from "@/utilities/database";
+import { SupporterStatus, type User } from "~/shared";
 
 const client = new discord.Client({
 	intents: [discord.IntentsBitField.Flags.Guilds, discord.IntentsBitField.Flags.GuildMessages, discord.IntentsBitField.Flags.GuildMembers]
@@ -65,9 +65,13 @@ async function checkUserStatuses(guild: discord.Guild) {
 	log.info(`Tier 1: ${tier1Ids}`);
 	log.info(`Tier 2: ${tier2Ids}`);
 	// Update database
-	await collections.users?.updateMany({ $and: [{ _id: { $nin: tier1Ids } }, { _id: { $nin: tier2Ids } }] }, { $set: { supporter: 0 } });
-	await collections.users?.updateMany({ _id: { $in: tier1Ids } }, { $set: { supporter: 1 } });
-	await collections.users?.updateMany({ _id: { $in: tier2Ids } }, { $set: { supporter: 2 } });
+    const prisma = getPrismaClient()
+    await prisma.$transaction([
+        prisma.user.updateMany({ where: { AND: [{ id: { notIn: tier1Ids } }, { id: { notIn: tier2Ids } }] }, data: { supporter: SupporterStatus.none } }),
+        prisma.user.updateMany({ where: { id: { notIn: tier1Ids } }, data: { supporter: SupporterStatus.wirmling } }),
+        prisma.user.updateMany({ where: { id: { notIn: tier2Ids } }, data: { supporter: SupporterStatus.greatwyrm } }),
+
+	])
 }
 
 // Public discord logging
@@ -78,7 +82,7 @@ export async function publicLog(title: string, description: string, link: string
 	const embed = new discord.EmbedBuilder()
 		.setTitle(title)
 		.setDescription(description)
-		.setAuthor({ name: user.username, iconURL: `https://cdn.discordapp.com/avatars/${user._id}/${user.avatar}.png` })
+		.setAuthor({ name: user.username, iconURL: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` })
 		.setColor(color ?? discord.Colors.Green)
 		.setURL(link)
 		.setTimestamp();

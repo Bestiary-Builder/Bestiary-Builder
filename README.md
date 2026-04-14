@@ -26,6 +26,7 @@ To start editing the project follow these simple steps:
 6. Start PostgreSQL database
 	- Run `docker compose up -d` in the project folder
 	- *(or start a PosgreSQL database in any other way)*
+	- In the backend folder run `npx prisma migrate dev` to create all the sql tables.
 7. Rename ".env.template" in the backend folder to ".env", and change it's values to your own environment
     - "frontendPath" should stay unchanged. (Unless you moved the folder around)
     - "clientId" should be changed to your Discord OAuth application id.
@@ -34,7 +35,7 @@ To start editing the project follow these simple steps:
     - "JWTKEY" should be any string and can be left as is for development.
 8. Launch the local site.
     - In VSCode/VSCodium simply press F5 to start the already created launch tasks.
-    - For other code editors, start the backend by running "npm run start" in the backend folder, and build the frontend by running "npm run build" in the frontend folder.
+    - For other code editors, start the backend by running "npm run dev" in the backend folder, and build the frontend by running "npm run build" in the frontend folder. And to start
 9. Check that everything is working as it should.
 
 ## Made by

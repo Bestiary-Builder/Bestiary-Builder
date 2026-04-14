@@ -14,8 +14,8 @@ CREATE TABLE "Users" (
     "banner_color" TEXT NOT NULL,
     "global_name" TEXT NOT NULL,
     "supporter" "SupporterStatus" NOT NULL DEFAULT 'none',
-    "joinedAt" BIGINT NOT NULL,
-    "secret" TEXT,
+    "joinedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "secret" TEXT NOT NULL,
 
     CONSTRAINT "Users_pkey" PRIMARY KEY ("id")
 );
@@ -30,7 +30,7 @@ CREATE TABLE "Bestiaries" (
     "tags" TEXT[],
     "viewCount" INTEGER NOT NULL DEFAULT 0,
     "bookmarks" INTEGER NOT NULL DEFAULT 0,
-    "lastUpdated" BIGINT NOT NULL,
+    "lastUpdated" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Bestiaries_pkey" PRIMARY KEY ("id")
 );
@@ -56,7 +56,7 @@ CREATE TABLE "UserBestiaryBookmarks" (
 CREATE TABLE "Creatures" (
     "id" TEXT NOT NULL,
     "bestiary" TEXT NOT NULL,
-    "lastUpdated" BIGINT NOT NULL,
+    "lastUpdated" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "stats" JSONB NOT NULL,
 
     CONSTRAINT "Creatures_pkey" PRIMARY KEY ("id")
@@ -68,7 +68,7 @@ CREATE TABLE "Automations" (
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "owner" TEXT NOT NULL,
-    "lastUpdated" BIGINT NOT NULL,
+    "lastUpdated" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "automation" JSONB,
 
     CONSTRAINT "Automations_pkey" PRIMARY KEY ("id")

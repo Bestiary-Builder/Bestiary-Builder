@@ -1,25 +1,15 @@
 import { requireUser } from "./login";
 import { app } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
-import { collections, getUser } from "@/utilities/database";
+import { getBookmarkedBestiariesForUser, getUser } from "@/utilities/database";
 import type { User } from "~/shared";
 
 app.get("/api/user/bookmarks", requireUser, async (req, res) => {
 	try {
 		const user = req.body.user;
 		if (user) {
-			const allBestiaries
-				= (await collections.bestiaries
-					?.find({
-						$and: [
-							{ $or: [{ owner: user._id }, { status: { $ne: "private" } }] },
-							{
-								_id: { $in: user.bookmarks ?? [] }
-							}
-						]
-					})
-					.toArray()) ?? [];
-			log.info(`Retrieved all bookmarked bestiaries from the user with the id ${user._id}`);
+			const allBestiaries = await getBookmarkedBestiariesForUser(user.id);
+			log.info(`Retrieved all bookmarked bestiaries from the user with the id ${user.id}`);
 			return res.json(allBestiaries);
 		}
 		else {
@@ -34,10 +24,10 @@ app.get("/api/user/bookmarks", requireUser, async (req, res) => {
 
 app.get("/api/user", requireUser, async (req, res) => {
 	try {
-		const userData = req.body.user as User;
+		const userData = req.body.user as Omit<User, "secret"> & { secret?: string };
 		if (userData) {
 			delete userData.secret;
-			log.info(`Retrieved user with the id ${userData._id}`);
+			log.info(`Retrieved user with the id ${userData.id}`);
 			return res.json(userData);
 		}
 		else { return res.status(404).json({ error: "User not found." }); }
@@ -52,14 +42,14 @@ app.get("/api/user/:id", async (req, res) => {
 		const userData = (await getUser(req.params.id)) as User;
 		if (userData) {
 			const data = {
-				_id: userData._id,
-				global_name: userData.global_name,
+				id: userData.id,
+				globalName: userData.globalName,
 				username: userData.username,
 				avatar: userData.avatar,
-				banner_color: userData.banner_color,
+				bannerColor: userData.bannerColor,
 				supporter: userData.supporter
 			};
-			log.info(`Retrieved user with the id ${data._id}`);
+			log.info(`Retrieved user with the id ${data.id}`);
 			return res.json(data);
 		}
 		else {

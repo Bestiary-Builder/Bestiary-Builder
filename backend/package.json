@@ -11,8 +11,9 @@
 		"node": ">=21.4.0"
 	},
 	"scripts": {
-		"dev": "npx nodemon",
-		"prebuild": "cd ../shared && npm install && npx ts-interface-builder ./src/build-types.ts",
+		"generate": "prisma generate",
+		"dev": "npx prisma generate && npx nodemon",
+		"prebuild": "npx prisma generate && cd ../shared && npm install && npx ts-interface-builder ./src/build-types.ts",
 		"build": "bun build --target=bun --sourcemap --outdir ../build --outfile server.js server.ts",
 		"test": "vitest run",
 		"lint": "eslint .",

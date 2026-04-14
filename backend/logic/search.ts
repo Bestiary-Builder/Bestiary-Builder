@@ -1,7 +1,7 @@
-import type { Filter, Sort } from "mongodb";
+import { Prisma } from "@prisma/client";
 import { createCheckers } from "ts-interface-checker";
 import type { Response } from "express";
-import { collections, getGlobalStats } from "@/utilities/database";
+import { getGlobalStats, getPrismaClient } from "@/utilities/database";
 import type { Bestiary, SearchOptions } from "~/shared";
 import { app } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
@@ -10,6 +10,36 @@ import { log } from "@/utilities/logger";
 import { interfaceValidation, typeInterface } from "~/shared";
 
 const amountPerPage = 12;
+
+function normalizeSearchTerm(term: string | undefined | null): string | null {
+	if (!term)
+		return null;
+	const trimmed = term.trim();
+	if (!trimmed || trimmed === ".")
+		return null;
+	return trimmed;
+}
+
+function buildWhereSql(searchTerm: string | null, tags: string[]) {
+	const conditions: Prisma.Sql[] = [
+		Prisma.sql`"status" = 'public'`
+	];
+
+	if (searchTerm) {
+		const pattern = `%${searchTerm}%`;
+		conditions.push(Prisma.sql`("name" ILIKE ${pattern} OR "description" ILIKE ${pattern})`);
+	}
+
+	if (tags.length > 0) {
+		conditions.push(Prisma.sql`"tags" && ARRAY[${Prisma.join(tags)}]::text[]`);
+	}
+
+	let whereSql = conditions[0];
+	for (let i = 1; i < conditions.length; i++) {
+		whereSql = Prisma.sql`${whereSql} AND ${conditions[i]}`;
+	}
+	return whereSql;
+}
 
 app.post("/api/search", async (req, res) => {
 	try {
@@ -24,69 +54,54 @@ app.post("/api/search", async (req, res) => {
 			},
 			...(input ?? {})
 		};
+
 		if (!validateSearchInput(searchOptions, res))
 			return;
 		if (searchOptions.page < 0)
 			return res.status(400).json({ error: "Page out of bounds" });
-		// Filter
-		const filter = {
-			status: "public",
-			$or: [{ name: { $regex: `(?i)${searchOptions.search}(?-i)` } }, { description: { $regex: `(?i)${searchOptions.search}(?-i)` } }]
-		} as Filter<Bestiary>;
-		if (searchOptions.tags && searchOptions.tags.length > 0)
-			filter.tags = { $elemMatch: { $in: searchOptions.tags } };
-		// Sort
-		let sort: Sort;
-		if (searchOptions.mode === "popular")
-			sort = { popularityScore: -1, lastUpdated: -1, name: 1 };
-		else sort = { lastUpdated: -1, name: 1 };
-		// Aggregate:
-		const finder = await collections.bestiaries
-			?.aggregate([
-				{
-					$match: filter
-				},
-				{
-					$addFields: {
-						popularityScore: {
-							$sum: [
-								{
-									$multiply: ["$bookmarks", 10]
-								},
-								"$viewCount"
-							]
-						}
-					}
-				},
-				{
-					$sort: sort
-				},
-				{
-					$facet: {
-						totalCount: [
-							{
-								$count: "count"
-							}
-						],
-						results: [{ $skip: searchOptions.page * amountPerPage }, { $limit: amountPerPage }]
-					}
-				}
-			])
-			.toArray();
-		// Return the final search results
-		let output;
-		if (!finder) {
-			output = { results: [], pageAmount: 1 };
-		}
-		else {
-			let pageAmount = Math.ceil(finder[0].totalCount[0]?.count / amountPerPage);
-			if (Number.isNaN(pageAmount))
-				pageAmount = 1;
-			output = {
-				results: finder[0].results,
-				pageAmount
-			};
-		}
+
+		const searchTerm = normalizeSearchTerm(searchOptions.search);
+		const tags = searchOptions.tags ?? [];
+		const whereSql = buildWhereSql(searchTerm, tags);
+
+		const prisma = getPrismaClient();
+
+		const totalCountRows = await prisma.$queryRaw<{ count: number }[]>(Prisma.sql`
+			SELECT COUNT(*)::int AS count
+			FROM "Bestiaries"
+			WHERE ${whereSql}
+		`);
+
+		const totalCount = totalCountRows[0]?.count ?? 0;
+		const pageAmount = Math.max(1, Math.ceil(totalCount / amountPerPage));
+
+		const offset = searchOptions.page * amountPerPage;
+		const orderBy = searchOptions.mode === "popular"
+			? Prisma.sql`ORDER BY ("bookmarks" * 10 + "viewCount") DESC, "lastUpdated" DESC, "name" ASC`
+			: Prisma.sql`ORDER BY "lastUpdated" DESC, "name" ASC`;
+
+		const results = await prisma.$queryRaw<Bestiary[]>(Prisma.sql`
+			SELECT
+				"id",
+				"name",
+				"owner" AS "ownerId",
+				"status",
+				"description",
+				"tags",
+				"viewCount",
+				"bookmarks",
+				"lastUpdated"
+			FROM "Bestiaries"
+			WHERE ${whereSql}
+			${orderBy}
+			LIMIT ${amountPerPage} OFFSET ${offset}
+		`);
+
+		const output = {
+			results,
+			pageAmount
+		};
+
 		log.info(`Search completed with ${output.pageAmount} pages`);
 		return res.json(output);
 	}

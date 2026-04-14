@@ -1,7 +1,7 @@
 import { app } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
-import { collections, getBestiary, incrementBestiaryViewCount } from "@/utilities/database";
-import { Id, type InnateSpellsEntity, SKILLS_BY_STAT, type SkillsEntity, type SpellCasting, type Stat, type Statblock, crAsString, displayCasterCasting, displayInnateCasting, displaySpeedOrSenses, hpCalc, ppCalc, spellAttackBonus, spellDc, statCalc, stringToId } from "~/shared";
+import { getBestiary, getCreaturesByBestiary, incrementBestiaryViewCount } from "@/utilities/database";
+import { type InnateSpellsEntity, SKILLS_BY_STAT, type SkillsEntity, type SpellCasting, type Stat, type Statblock, crAsString, displayCasterCasting, displayInnateCasting, displaySpeedOrSenses, hpCalc, ppCalc, spellAttackBonus, spellDc, statCalc } from "~/shared";
 
 // Export data
 app.get("/api/public/bestiary/:id", (req, res) => res.redirect(`/api/export/bestiary/${req.params.id}`));
@@ -10,29 +10,28 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 	/// / STOP. EDITING THIS FUNCTION CAN BREAK AVRAE IMPORTS. TEST BEFORE CHANGING  ////
 	///////////////////////////////////////////////////////////////////////////////////
 	try {
-		const _id = stringToId(req.params.id);
-		if (!_id)
+		const id = req.params.id;
+		if (!id)
 			return res.status(400).json({ error: "Bestiary id not valid." });
-		const bestiary = await getBestiary(_id);
+		const bestiary = await getBestiary(id);
 		if (!bestiary)
 			return res.status(404).json({ error: "No bestiary with that id found." });
 		if (bestiary.status === "private")
 			return res.status(401).json({ error: "This bestiary is private" });
 		// Increment view count
-		incrementBestiaryViewCount(_id);
+		incrementBestiaryViewCount(id);
 		// Get creatures
 		const creatures = [];
-		for (const creatureId of bestiary.creatures) {
-			const creature = await collections.creatures?.findOne({ _id: new Id(creatureId) });
-			if (!creature)
-				continue;
+		const creatureRecords = await getCreaturesByBestiary(id);
+        for (const creature of creatureRecords) {
+            const stats = creature.stats as unknown as Statblock;
 			try {
-				const creatureData = getCreatureData(creature.stats);
+				const creatureData = getCreatureData(stats);
 				creatures.push(creatureData);
 			}
 			catch (err) {
 				log.log("critical", err);
-				return res.status(500).json({ error: `Error exporting ${creature.stats.description.name}. Please contact the developers of Bestiary Builder, not Avrae.` });
+				return res.status(500).json({ error: `Error exporting ${stats.description.name}. Please contact the developers of Bestiary Builder, not Avrae.` });
 			}
 		}
 		// Return bestiary in specific format
@@ -43,7 +42,7 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 			},
 			creatures
 		};
-		log.info(`Export - Retrieved bestiary with the id ${_id}`);
+		log.info(`Export - Retrieved bestiary with the id ${id}`);
 		return res.json(data);
 	}
 	catch (err) {

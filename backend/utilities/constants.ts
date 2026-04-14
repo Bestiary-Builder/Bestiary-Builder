@@ -9,7 +9,7 @@ import "./badwords";
 
 // Limits
 import l from "@/staticData/limits.json";
-import type { Automation, Bestiary, Creature, User } from "~/shared";
+import type { Automation, BestiaryStatus, Id, Statblock, User } from "~/shared";
 
 export const app = express();
 
@@ -20,22 +20,22 @@ export function generateUserSecret(): string {
 	return crypto.randomBytes(64).toString("hex");
 }
 export const limits = l;
-export function checkCreatureAmountLimit(bestiary: Bestiary) {
-	if (bestiary.creatures.length > limits.creatureAmount)
+export async function checkCreatureAmountLimit(count: number) {
+	if (count > limits.creatureAmount)
 		return `Number of creatures exceeds the limit of ${limits.creatureAmount}.`;
 }
-export function checkBestiaryLimits(bestiary: Bestiary) {
+export function checkBestiaryLimits(bestiary: { id?: Id, name: string, description: string, status: BestiaryStatus}) {
 	if (!["private", "public", "unlisted"].includes(bestiary.status))
 		return "Status has an unkown value, must only be 'public', 'unlisted' or 'private'.";
-	return checkLimits(bestiary) ?? checkCreatureAmountLimit(bestiary);
+	return checkLimits(bestiary);
 }
-export function checkCreatureLimits(creature: Creature) {
-	return checkLimits(creature.stats.description);
+export function checkCreatureLimits(stats?: Statblock) {
+	return checkLimits((stats as unknown as Statblock).description);
 }
 export function checkAutomationLimits(automation: Automation) {
 	return checkLimits(automation);
 }
-function checkLimits(data: Bestiary | Automation | Creature["stats"]["description"]) {
+function checkLimits(data: { name: string; description: string }) {
 	if (data.name.length > limits.nameLength)
 		return `Name exceeds the character limit of ${limits.nameLength} characters.`;
 	if (data.name.length < limits.nameMin)

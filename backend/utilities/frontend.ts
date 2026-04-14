@@ -3,7 +3,7 @@ import path from "node:path";
 import express, { type Request } from "express";
 import { log } from "./logger";
 import { app } from "./constants";
-import { Id, routes, stringToId } from "~/shared";
+import { routes } from "~/shared";
 import { getBestiary, getUser, isDatabaseConnected } from "@/utilities/database";
 
 export async function getFrontendHtml(route: routes.Route, req: Request) {
@@ -16,9 +16,9 @@ export async function getFrontendHtml(route: routes.Route, req: Request) {
 		switch (route.path) {
 			case "/bestiary-viewer/:id":
 				// eslint-disable-next-line no-case-declarations
-				const bId = stringToId(req.params.id);
+				const bId = req.params.id;
 				if (bId) {
-					const bestiary = await getBestiary(new Id(bId));
+					const bestiary = await getBestiary(bId, true);
 					if (bestiary) {
 						if (bestiary.status === "private") {
 							title = "Private bestiary | Bestiary Builder";
@@ -27,7 +27,7 @@ export async function getFrontendHtml(route: routes.Route, req: Request) {
 						else {
 							title = `${bestiary.name} | Bestiary Builder`;
 							let desc = bestiary.description ?? "No description set.";
-							const owner = await getUser(bestiary.owner);
+							const owner = await getUser(bestiary.ownerId);
 							desc += `\n${bestiary.creatures.length} creature${bestiary.creatures.length > 1 ? "s" : ""}${owner ? ` created by ${owner.username}` : ""}.`;
 							description = desc;
 						}
@@ -35,7 +35,7 @@ export async function getFrontendHtml(route: routes.Route, req: Request) {
 				}
 				break;
 			// case "/statblock-editor/:id":
-			// 	let sId = stringToId(req.params.id);
+			// 	let sId = req.params.id;
 			// 	if (sId) {
 			// 		let creature = await getCreature(new Id(sId));
 			// 		if (creature) {
