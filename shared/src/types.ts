@@ -16,7 +16,8 @@ export type Creature = Prisma.CreatureModel
 export type Automation = Prisma.AutomationModel
 
 export type CreatureWithStats = Omit<Creature, "stats"> & { stats: Statblock }
-export type BestiaryExtended = Bestiary & { creatures: Id[], editors: Id[] };
+export type BestiaryExtended = Bestiary & { creatures: { id: Id }[], editors: { userId: Id }[] };
+export type BestiaryWithCount = Bestiary & { creatureCount: number };
 
 export class GlobalStats {
 	constructor(public bestiaries: number, public creatures: number, public users: number) {}

@@ -1,146 +1,130 @@
-<script lang="ts">
-import { type PropType, defineComponent } from "vue";
+<script setup lang="ts">
+import { type PropType, computed, ref, useTemplateRef, watch } from "vue";
 import LabelledComponent from "./LabelledComponent.vue";
 
-const isNaN = Number.isNaN;
-export default defineComponent({
-	components: {
-		LabelledComponent
+const props = defineProps({
+	isClearable: {
+		type: Boolean,
+		required: false,
+		default: false
 	},
-	props: {
-		isClearable: {
-			type: Boolean,
-			required: false,
-			default: false
-		},
-		min: {
-			type: Number,
-			default: 0
-		},
-		max: {
-			type: Number,
-			default: Number.POSITIVE_INFINITY
-		},
-		step: {
-			type: Number,
-			required: false,
-			default: 5
-		},
-		title: {
-			type: String,
-			required: true
-		},
-		modelValue: {
-			type: Number as PropType<number | null>,
-			default: Number.NaN
-		},
-		labelId: {
-			type: String,
-			required: false,
-			default: ""
-		}
+	min: {
+		type: Number,
+		default: 0
 	},
-	emits: ["update:modelValue"],
-	data() {
-		return {
-			value: Number.NaN as any,
-		};
+	max: {
+		type: Number,
+		default: Number.POSITIVE_INFINITY
 	},
-	computed: {
-		increasable(): boolean {
-			if (this.value == null)
-				return true;
-			return isNaN(this.value) || this.value < this.max;
-		},
-
-		decreasable(): boolean {
-			if (this.value == null)
-				return true;
-			return isNaN(this.value) || this.value > this.min;
-		},
-		placeholder(): string {
-			if (this.isClearable)
-				return "Override";
-			return "";
-		}
+	step: {
+		type: Number,
+		required: false,
+		default: 5
 	},
-	watch: {
-		modelValue: {
-			immediate: true,
-			handler(newValue, oldValue) {
-				if (
-					// Avoid triggering change event when created
-					!(isNaN(newValue) && typeof oldValue === "undefined")
-					// Avoid infinite loop
-					&& newValue !== this.value
-				)
-					this.setValue(newValue);
-			}
-		}
+	title: {
+		type: String,
+		required: true
 	},
-	methods: {
-		isNaN,
-		change(event: any) {
-			this.setValue(event?.target.value);
-		},
-		decrease() {
-			if (this.decreasable) {
-				let { value } = this;
-				if (value == null) {
-					this.setValue(0);
-					return;
-				}
-
-				if (isNaN(value))
-					value = 0;
-
-				this.setValue(value - this.step);
-			}
-		},
-		increase() {
-			if (this.increasable) {
-				let { value } = this;
-				if (value == null) {
-					this.setValue(0);
-					return;
-				}
-				if (isNaN(value))
-					value = 0;
-
-				this.setValue(value + this.step);
-			}
-		},
-		setValue(value: number | null) {
-			if (value == null) {
-				const oldValue = this.value;
-				const newValue = null;
-				this.value = newValue;
-				this.$emit("update:modelValue", newValue, oldValue);
-				return;
-			}
-
-			const oldValue = this.value;
-			let newValue = typeof value !== "number" ? Number.parseFloat(value) : value;
-
-			if (!isNaN(newValue)) {
-				if (this.min <= this.max)
-					newValue = Math.min(this.max, Math.max(this.min, newValue));
-			}
-
-			this.value = newValue;
-
-			if (newValue === oldValue) {
-				// Force to override the number in the input box (#13).
-				(this.$refs.input as HTMLInputElement).value = String(newValue);
-			}
-
-			this.$emit("update:modelValue", newValue, oldValue);
-		},
-		clear() {
-			this.setValue(null);
-		},
+	modelValue: {
+		type: Number as PropType<number | null>,
+		default: Number.NaN
+	},
+	labelId: {
+		type: String,
+		required: false,
+		default: ""
 	}
 });
+const emit = defineEmits(["update:modelValue"]);
+
+const value = ref(Number.NaN as any);
+
+watch(() => props.modelValue, (newValue, oldValue) => {
+	if (
+		// Avoid triggering change event when created
+		!(Number.isNaN(newValue) && typeof oldValue === "undefined")
+		// Avoid infinite loop
+		&& newValue !== value.value
+	)
+		setValue(newValue);
+})
+
+const increasable = computed(() => {
+	if (value.value == null)
+		return true;
+	return Number.isNaN(value.value) || value.value < props.max;
+});
+
+const decreasable = computed(() => {
+	if (value.value == null)
+		return true;
+	return Number.isNaN(value.value) || value.value > props.min;
+});
+
+const placeholder = computed(() => {
+	if (props.isClearable)
+		return "Override";
+	return "";
+});
+
+function change(event: any) {
+	setValue(event?.target.value);
+};
+function decrease() {
+	if (decreasable.value) {
+		if (value.value == null) {
+			setValue(0);
+			return;
+		}
+
+		if (Number.isNaN(value))
+			value.value = 0;
+
+		setValue(value.value - props.step);
+	}
+};
+function increase() {
+	if (increasable.value) {
+		if (value.value == null) {
+			setValue(0);
+			return;
+		}
+		if (Number.isNaN(value))
+			value.value = 0;
+
+		setValue(value.value + props.step);
+	}
+};
+const inputRef = useTemplateRef("input")
+function setValue(v: number | null) {
+	if (v == null) {
+		const oldValue = value.value;
+		const newValue = null;
+		value.value = newValue;
+		emit("update:modelValue", newValue, oldValue);
+		return;
+	}
+
+	const oldValue = value.value;
+	let newValue = typeof v !== "number" ? Number.parseFloat(v) : v;
+
+	if (!Number.isNaN(newValue)) {
+		if (props.min <= props.max)
+			newValue = Math.min(props.max, Math.max(props.min, newValue));
+	}
+
+	value.value = newValue;
+
+	if (newValue === oldValue) {
+		// Force to override the number in the input box (#13).
+		inputRef.value!.value = String(newValue);
+	}
+
+	emit("update:modelValue", newValue, oldValue);
+};
+function clear() {
+	setValue(null);
+};
 </script>
 
 <template>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import { store } from "@/utils/store";
 import { sendToLogin, useFetch } from "@/utils/utils";
 import { toast } from "@/utils/app/toast";
@@ -14,7 +15,9 @@ const logoutClick = async () => {
 		toast.error(error);
 };
 
-const bestiaryCount = store.user ? await useFetch<Bestiary[]>(`/api/user/${store.user.id}/bestiaries`).then(result => result.data?.length ?? 0) : 0;
+const bestiaryCount = ref(0);
+if (store.user)
+	useFetch<Bestiary[]>(`/api/user/${store.user.id}/bestiaries`).then(result => bestiaryCount.value = result.data?.length ?? 0).catch(() => { });
 </script>
 
 <template>
@@ -41,7 +44,7 @@ const bestiaryCount = store.user ? await useFetch<Bestiary[]>(`/api/user/${store
 			<p> You have been a user of Bestiary Builder since <b>{{ store.user.joinedAt ? new Date(store.user.joinedAt).toDateString() : "Not Found" }}</b>.</p>
 			<p> You have created <b>{{ bestiaryCount }}</b> bestiaries since then.</p>
 			<p> Your user id is <code>{{ store.user.id }}</code>.</p>
-			<p v-if="store.user.supporter === SupporterStatus.none" class="patreon" /><p>
+			<p v-if="store.user.supporter === SupporterStatus.none">
 				If you enjoy using our site, consider supporting us on Patreon!
 				As a Patreon, you will have several benefits and your support will help Bestiary Builder stay online.
 			</p>

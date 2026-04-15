@@ -2,7 +2,7 @@
 import { onMounted, ref, watch } from "vue";
 import { refDebounced } from "@vueuse/core";
 import BestiaryList from "@/components/BestiaryList.vue";
-import type { BestiaryExtended } from "~/shared";
+import type { BestiaryExtended, BestiaryWithCount } from "~/shared";
 import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
 import { useFetch } from "@/utils/utils";
 import { store } from "@/utils/store";
@@ -26,14 +26,14 @@ const totalPages = ref(1);
 
 const searchBestiaries = async () => {
 	// Request bestiary info
-	const { success, data, error } = await useFetch<{ results: BestiaryExtended[]; pageAmount: number }>(`/api/search`, "POST", {
+	const { success, data, error } = await useFetch<{ results: BestiaryWithCount[]; pageAmount: number }>(`/api/search`, "POST", {
 		search: search.value,
 		page: selectedPage.value - 1,
 		tags: selectedTags.value,
 		mode: viewMode.value.toLowerCase()
 	});
 	if (success) {
-		bestiaries.value = data.results;
+		bestiaries.value = data.results.map(bestiary => ({ ...bestiary, creatures: Array(10), editors: [] }));
 		totalPages.value = data.pageAmount;
 	}
 	else {

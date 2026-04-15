@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { MongoClient, ObjectId } from "mongodb";
-import { PrismaClient, BestiaryStatus, SupporterStatus } from "~/shared";
+import { PrismaClient, BestiaryStatus, SupporterStatus } from "~/shared/src/prisma-types";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { generateUserSecret } from "./utilities/constants";
 
@@ -145,7 +145,7 @@ async function main() {
 				email: u.email ?? "",
 				verified: Boolean(u.verified),
                 globalName: u.global_name ?? "",
-                bannerColor: u.banner_color,
+                bannerColor: u.banner_color ?? "",
 				supporter: toSupporterStatus(u.supporter ?? 0),
 				joinedAt: new Date(u.joinedAt ?? Date.now()),
 				secret: u.secret ?? generateUserSecret(),

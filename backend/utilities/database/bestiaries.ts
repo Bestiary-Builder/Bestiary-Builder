@@ -20,7 +20,7 @@ const defaultIncludes = {
 export async function getBestiary(id: Id, includeCreatures = false) {
 	try {
 		log.log("database", `Reading bestiary with the id ${id}.`);
-        return await getPrismaClient().bestiary.findUnique({ where: { id }, include: { ...defaultIncludes, creatures: includeCreatures } });
+        return await getPrismaClient().bestiary.findUnique({ where: { id }, include: includeCreatures ? { ...defaultIncludes, creatures: includeCreatures } : defaultIncludes });
 	}
 	catch (err) {
 		log.log("critical", err);

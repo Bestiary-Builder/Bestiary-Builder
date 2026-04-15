@@ -2,7 +2,7 @@ import { Prisma } from "@prisma/client";
 import { createCheckers } from "ts-interface-checker";
 import type { Response } from "express";
 import { getGlobalStats, getPrismaClient } from "@/utilities/database";
-import type { Bestiary, SearchOptions } from "~/shared";
+import type { BestiaryWithCount, SearchOptions } from "~/shared";
 import { app } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
 
@@ -80,7 +80,7 @@ app.post("/api/search", async (req, res) => {
 			? Prisma.sql`ORDER BY ("bookmarks" * 10 + "viewCount") DESC, "lastUpdated" DESC, "name" ASC`
 			: Prisma.sql`ORDER BY "lastUpdated" DESC, "name" ASC`;
 
-		const results = await prisma.$queryRaw<Bestiary[]>(Prisma.sql`
+		const results = await prisma.$queryRaw<BestiaryWithCount[]>(Prisma.sql`
 			SELECT
 				"id",
 				"name",
@@ -90,7 +90,8 @@ app.post("/api/search", async (req, res) => {
 				"tags",
 				"viewCount",
 				"bookmarks",
-				"lastUpdated"
+				"lastUpdated",
+				(SELECT COUNT(*)::int FROM "Creatures" WHERE "bestiary" = "Bestiaries"."id") AS "creatureCount"
 			FROM "Bestiaries"
 			WHERE ${whereSql}
 			${orderBy}
@@ -103,6 +104,7 @@ app.post("/api/search", async (req, res) => {
 		};
 
 		log.info(`Search completed with ${output.pageAmount} pages`);
+		console.log(output);
 		return res.json(output);
 	}
 	catch (err) {
