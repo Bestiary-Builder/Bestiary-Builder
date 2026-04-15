@@ -1,8 +1,9 @@
 import "dotenv/config";
-import { MongoClient, ObjectId } from "mongodb";
-import { PrismaClient, BestiaryStatus, SupporterStatus } from "~/shared/src/prisma-types";
+import type { ObjectId } from "mongodb";
+import { MongoClient } from "mongodb";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { generateUserSecret } from "./utilities/constants";
+import { BestiaryStatus, PrismaClient, SupporterStatus } from "~/shared/src/prisma-types";
 
 /**
  * Standalone migration script:
@@ -17,7 +18,7 @@ import { generateUserSecret } from "./utilities/constants";
  *   npx tsx migrate_data.ts
  */
 
-type MongoUser = {
+interface MongoUser {
 	_id: string;
 	username: string;
 	avatar: string;
@@ -30,9 +31,9 @@ type MongoUser = {
 	supporter?: 0 | 1 | 2 | number;
 	joinedAt?: number;
 	secret?: string;
-};
+}
 
-type MongoBestiary = {
+interface MongoBestiary {
 	_id: ObjectId;
 	name: string;
 	owner: string;
@@ -44,26 +45,26 @@ type MongoBestiary = {
 	viewCount?: number;
 	bookmarks?: number;
 	lastUpdated?: number;
-};
+}
 
-type MongoCreature = {
+interface MongoCreature {
 	_id: ObjectId;
 	lastUpdated?: number;
 	stats: unknown;
 	bestiary: ObjectId;
-};
+}
 
-type MongoAutomation = {
+interface MongoAutomation {
 	_id: ObjectId;
 	name: string;
 	description: string;
 	owner: string;
 	lastUpdated?: number;
 	automation?: unknown;
-};
+}
 
 const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL!,
+	connectionString: process.env.DATABASE_URL!,
 });
 
 export const prisma = new PrismaClient({ adapter });
@@ -77,19 +78,19 @@ function requireEnv(name: string): string {
 }
 
 function toStatus(status: string): BestiaryStatus {
-    switch (status) {
-        case "public": return BestiaryStatus.public;
-        case "unlisted": return BestiaryStatus.unlisted;
-        default: return BestiaryStatus.private;
-    }
+	switch (status) {
+		case "public": return BestiaryStatus.public;
+		case "unlisted": return BestiaryStatus.unlisted;
+		default: return BestiaryStatus.private;
+	}
 }
 
 function toSupporterStatus(supporter: number | undefined): SupporterStatus {
-    switch (supporter) {
-        case 1: return SupporterStatus.wirmling;
-        case 2: return SupporterStatus.greatwyrm;
-        default: return SupporterStatus.none;
-    }
+	switch (supporter) {
+		case 1: return SupporterStatus.wirmling;
+		case 2: return SupporterStatus.greatwyrm;
+		default: return SupporterStatus.none;
+	}
 }
 
 async function main() {
@@ -144,8 +145,8 @@ async function main() {
 				avatar: u.avatar ?? "",
 				email: u.email ?? "",
 				verified: Boolean(u.verified),
-                globalName: u.global_name ?? "",
-                bannerColor: u.banner_color ?? "",
+				globalName: u.global_name ?? "",
+				bannerColor: u.banner_color ?? "",
 				supporter: toSupporterStatus(u.supporter ?? 0),
 				joinedAt: new Date(u.joinedAt ?? Date.now()),
 				secret: u.secret ?? generateUserSecret(),

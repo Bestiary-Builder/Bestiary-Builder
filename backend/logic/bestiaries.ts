@@ -5,14 +5,14 @@ import { app, checkBestiaryLimits, checkCreatureAmountLimit, checkCreatureLimits
 import { log } from "@/utilities/logger";
 import { addBestiaryEditor, addBookmark, createBestiary, createCreatures, deleteBestiary, getBestiariesByOwner, getBestiariesByUser, getBestiary, getBestiaryCreatureCount, getPublicBestiariesByOwner, getUser, incrementBestiaryViewCount, isBestiaryBookmarked, isBestiaryEditor, removeBestiaryEditor, removeBookmark, updateBestiary } from "@/utilities/database";
 import { type Statblock, defaultStatblock } from "~/shared";
-import type { Bestiary, Creature, User, BestiaryCreateInput } from "~/shared/src/prisma-types"
+import type { Bestiary, BestiaryCreateInput, Creature, User } from "~/shared/src/prisma-types";
 
 import tags from "@/staticData/tags.json";
 
 // Validate inputs
 import { typeInterface } from "~/shared";
 import { checkBadwords } from "@/utilities/badwords";
-import { JsonObject } from "~/shared/prisma/internal/prismaNamespace";
+import type { JsonObject } from "~/shared/prisma/internal/prismaNamespace";
 
 // Permission checks
 export async function checkBestiaryPermission(bestiary: Bestiary, user: User | null): Promise<"none" | "view" | "owner" | "editor"> {
@@ -111,7 +111,7 @@ app.post("/api/bestiary/:id/update", requireUser, async (req, res) => {
 		if (!id)
 			return res.status(400).json({ error: "BestiaryupdateBestiary id not valid." });
 		if (!req.body.data)
-            return res.status(400).json({ error: "Bestiary data not found." });
+			return res.status(400).json({ error: "Bestiary data not found." });
 
 		const data: BestiaryCreateInput = {
 			...{
@@ -121,21 +121,21 @@ app.post("/api/bestiary/:id/update", requireUser, async (req, res) => {
 				viewCount: 0,
 				bookmarks: 0
 			},
-            ...(req.body.data as Partial<Bestiary>),
-            tags: req.body.data.tags.filter((t: string) => tags.includes(t)) ?? [],
-            owner: { connect: { id: user.id } },
-            lastUpdated: new Date(Date.now()),
-            id
+			...(req.body.data as Partial<Bestiary>),
+			tags: req.body.data.tags.filter((t: string) => tags.includes(t)) ?? [],
+			owner: { connect: { id: user.id } },
+			lastUpdated: new Date(Date.now()),
+			id
 		};
 		data.id = id;
 		// Check limits
 		const limitError = checkBestiaryLimits(data);
 		if (limitError)
-            return res.status(400).json({ error: limitError });
-        const count = await getBestiaryCreatureCount(data.id);
-        const amountError = checkCreatureAmountLimit(count);
-        if (amountError)
-                  return res.status(400).json({ error: amountError });
+			return res.status(400).json({ error: limitError });
+		const count = await getBestiaryCreatureCount(data.id);
+		const amountError = checkCreatureAmountLimit(count);
+		if (amountError)
+			return res.status(400).json({ error: amountError });
 		// Remove bad words
 		if (data.status !== "private") {
 			const nameError = checkBadwords(data.name);
@@ -206,10 +206,10 @@ app.post("/api/bestiary/add", requireUser, async (req, res) => {
 				viewCount: 0,
 				bookmarks: 0
 			},
-            ...(req.body.data as Partial<Bestiary>),
-            tags: (req.body.data.tags ?? []).filter((t: string) => tags.includes(t)),
-            owner: { connect: { id: user.id } },
-            lastUpdated: new Date(Date.now())
+			...(req.body.data as Partial<Bestiary>),
+			tags: (req.body.data.tags ?? []).filter((t: string) => tags.includes(t)),
+			owner: { connect: { id: user.id } },
+			lastUpdated: new Date(Date.now())
 		};
 		if (typeof data.id == "string") {
 			const _id = data.id;
@@ -220,7 +220,7 @@ app.post("/api/bestiary/add", requireUser, async (req, res) => {
 		// Check limits
 		const limitError = checkBestiaryLimits(data);
 		if (limitError)
-            return res.status(400).json({ error: limitError });
+			return res.status(400).json({ error: limitError });
 		// Remove bad words
 		if (data.status !== "private") {
 			const nameError = checkBadwords(data.name);
@@ -243,7 +243,7 @@ app.post("/api/bestiary/add", requireUser, async (req, res) => {
 		if (!_id)
 			return res.status(500).json({ error: "Failed to create bestiary." });
 		log.info(`Created new bestiary with the id ${_id}`);
-		return res.status(201).json({...data, id: _id, ownerId: user.id});
+		return res.status(201).json({ ...data, id: _id, ownerId: user.id });
 	}
 	catch (err) {
 		log.log("critical", err);
@@ -320,7 +320,7 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 			if (!creature)
 				continue;
 			const oldStats = creature.stats as unknown as Statblock;
-			let stats = {} as Statblock;
+			const stats = {} as Statblock;
 			for (const key in defaultStatblock) {
 				// @ts-expect-error untyped
 				stats[key] = { ...defaultStatblock[key], ...oldStats[key] };
@@ -381,7 +381,7 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 				}
 			}
 			// Push data
-			fixedData.push({...creature, stats: stats as unknown as JsonObject});
+			fixedData.push({ ...creature, stats: stats as unknown as JsonObject });
 		}
 		let error = "";
 		// Failed creatures:

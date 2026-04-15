@@ -15,7 +15,7 @@ app.get("/api/login", async (req, res) => {
 			return res.redirect(`/user?loginError=${encodeURIComponent("No login code recieved.")}`);
 		let redirectUrl = `${isProduction ? "https" : "http"}://${req.get("host")}/api/login`;
 		if (!isProduction)
-			redirectUrl = redirectUrl//.replace("5000", "5173");
+			redirectUrl = redirectUrl.replace("5000", "5173");
 		const oauthData = (await fetch("https://discord.com/api/oauth2/token", {
 			method: "POST",
 			body: new URLSearchParams({

@@ -7,7 +7,7 @@ import { deleteCreature, getBestiary, getBestiaryCreatureCount, getCreature, get
 import type { Creature, Statblock, User } from "~/shared";
 import { defaultStatblock } from "~/shared";
 import { checkBadwords } from "@/utilities/badwords";
-import { JsonObject } from "~/shared/prisma/internal/prismaNamespace";
+import type { JsonObject } from "~/shared/prisma/internal/prismaNamespace";
 
 // Check creature permissions
 export async function checkCreaturePermission(creature: Creature, user: User | null) {
@@ -100,8 +100,8 @@ app.post("/api/creature/add", requireUser, async (req, res) => {
 			return res.status(404).json({ error: "Couldn't find current user." });
 
 		// Make sure all fields are present
-        const oldStats = data.stats as unknown as Statblock;
-        let stats = {} as Statblock
+		const oldStats = data.stats as unknown as Statblock;
+		const stats = {} as Statblock;
 		for (const key in defaultStatblock) {
 			const k = key as keyof Statblock;
 			stats[k] = { ...defaultStatblock[k], ...(oldStats ? oldStats[k] : {}) } as any;
@@ -139,8 +139,8 @@ app.post("/api/creature/add", requireUser, async (req, res) => {
 				stats.description.image = "";
 				failedToImportImage = true;
 			}
-        }
-        data.stats = stats as unknown as JsonObject;
+		}
+		data.stats = stats as unknown as JsonObject;
 		// Get bestiary
 		const bestiary = await getBestiary(data.bestiaryId);
 		if (!bestiary)
@@ -208,7 +208,7 @@ app.post("/api/creature/:id/update", requireUser, async (req, res) => {
 			return res.status(404).json({ error: "Couldn't find current user." });
 		// Make sure all fields are present
 		const oldStats = data.stats as unknown as Statblock;
-		let stats = {} as Statblock;
+		const stats = {} as Statblock;
 		for (const key in defaultStatblock) {
 			const k = key as keyof Statblock;
 			stats[k] = { ...defaultStatblock[k], ...oldStats[k] } as any;
@@ -246,8 +246,8 @@ app.post("/api/creature/:id/update", requireUser, async (req, res) => {
 				stats.description.image = "";
 				failedToImportImage = true;
 			}
-        }
-        data.stats = stats as unknown as JsonObject;
+		}
+		data.stats = stats as unknown as JsonObject;
 		// Get bestiary
 		const bestiary = await getBestiary(data.bestiaryId);
 		if (!bestiary)

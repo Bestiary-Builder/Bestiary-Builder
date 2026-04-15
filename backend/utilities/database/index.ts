@@ -1,25 +1,26 @@
+import { PrismaPg } from "@prisma/adapter-pg";
 import { log } from "@/utilities/logger";
 import type { GlobalStats } from "~/shared";
 
 // Connect to database
 import { PrismaClient } from "~/shared/src/prisma-types";
-import { PrismaPg } from "@prisma/adapter-pg";
 
 const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL!,
+	connectionString: process.env.DATABASE_URL!,
 });
 
-let prisma: PrismaClient | undefined = undefined;
+let prisma: PrismaClient | undefined;
 export function getPrismaClient() {
-    if(prisma === undefined) throw new Error("Prisma client is not initialized. Please call startConnection() first.");
-    return prisma;
+	if (prisma === undefined)
+		throw new Error("Prisma client is not initialized. Please call startConnection() first.");
+	return prisma;
 }
 
 export async function startConnection() {
-    while (true) {
+	while (true) {
 		try {
 			// Create prisma client and connect
-			prisma = new PrismaClient({ adapter })
+			prisma = new PrismaClient({ adapter });
 			// Stop waiting loop
 			return;
 		}
@@ -38,8 +39,8 @@ export function isDatabaseConnected(): boolean {
 
 // Global stats
 export async function getGlobalStats(): Promise<GlobalStats | null> {
-    try {
-        const prisma = getPrismaClient();
+	try {
+		const prisma = getPrismaClient();
 		return {
 			creatures: await prisma.creature.count(),
 			bestiaries: await prisma.bestiary.count(),

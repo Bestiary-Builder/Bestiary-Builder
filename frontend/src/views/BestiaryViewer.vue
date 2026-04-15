@@ -33,7 +33,6 @@ const debouncedFaction = refDebounced(searchFaction, 500);
 const bestiary = ref<BestiaryExtended | null>(null);
 const savedBestiary = ref<BestiaryExtended | null>(null);
 const creatures = ref<CreatureWithStats[] | null>(null);
-const searchCreatureList = ref<CreatureWithStats[] | null>([]);
 const editors = ref<User[]>([]);
 const lastHoveredCreature = ref<Statblock | null>(null);
 const lastClickedCreature = ref<Statblock | null>(null);
@@ -58,7 +57,6 @@ const sortMode = ref("Alphabetically");
 const isExpanded = ref(false);
 const showEditorModal = ref(false);
 const showImportModal = ref(false);
-const selectedCreature = ref<CreatureWithStats | null>(null);
 const srdCreatures = ref<string[]>([]);
 
 const searchCreatures = computed<CreatureWithStats[] | null>(() => {
@@ -139,8 +137,7 @@ watch(debouncedFaction, () => {
 onMounted(async () => {
 	const loader = $loading.show();
 	await getBestiary().then(() => {
-		console.log(bestiary.value)
-		loader.hide()
+		loader.hide();
 	});
 
 	if (bestiary.value?.name)
@@ -437,7 +434,7 @@ async function getBestiary() {
 	});
 	// Fetch editors
 	editors.value = [] as User[];
-	for (const editorId of bestiary.value?.editors ?? []) {
+	for (const { id: editorId } of bestiary.value?.editors ?? []) {
 		await useFetch(`/api/user/${editorId}`).then((editorResult) => {
 			if (editorResult.success)
 				editors.value.push(editorResult.data as User);
@@ -495,10 +492,6 @@ async function toggleBookmark() {
 		toast.error(error);
 	}
 	loader.hide();
-}
-
-function setSelectedCreature(creature: Statblock) {
-	lastHoveredCreature.value = creature;
 }
 
 function changeCR(isIncrease: boolean, isMinimumOption: boolean): void {

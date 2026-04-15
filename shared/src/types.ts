@@ -1,22 +1,22 @@
-export type Id = string;
+import type * as Prisma from "../prisma/internal/prismaNamespace";
 import type { SpellSlotList, Statblock } from "./build-types";
+
+export type Id = string;
 
 // Built types
 export * from "./build-types";
 
 // Database types
-export { SupporterStatus, BestiaryStatus } from "../prisma/enums"
+export { SupporterStatus, BestiaryStatus } from "../prisma/enums";
+export type User = Prisma.UserModel;
+export type Bestiary = Prisma.BestiaryModel;
+export type BestiaryEditor = Prisma.BestiaryEditorModel;
+export type UserBestiaryBookmark = Prisma.UserBestiaryBookmarkModel;
+export type Creature = Prisma.CreatureModel;
+export type Automation = Prisma.AutomationModel;
 
-import * as Prisma from "../prisma/internal/prismaNamespace"
-export type User = Prisma.UserModel
-export type Bestiary = Prisma.BestiaryModel
-export type BestiaryEditor = Prisma.BestiaryEditorModel
-export type UserBestiaryBookmark = Prisma.UserBestiaryBookmarkModel
-export type Creature = Prisma.CreatureModel
-export type Automation = Prisma.AutomationModel
-
-export type CreatureWithStats = Omit<Creature, "stats"> & { stats: Statblock }
-export type BestiaryExtended = Bestiary & { creatures: { id: Id }[], editors: { userId: Id }[] };
+export type CreatureWithStats = Omit<Creature, "stats"> & { stats: Statblock };
+export type BestiaryExtended = Bestiary & { creatures: { id: Id }[]; editors: { userId: Id }[] };
 export type BestiaryWithCount = Bestiary & { creatureCount: number };
 
 export class GlobalStats {
@@ -32,7 +32,7 @@ export interface AutomationDocumentationEntity {
 }
 export interface AutomationDocumentation { [key: string]: AutomationDocumentationEntity }
 
-export type AutomationWithType = Omit<Automation, "automation"> & { automation: null | Record<string, unknown> }
+export type AutomationWithType = Omit<Automation, "automation"> & { automation: null | Record<string, unknown> };
 
 // Frontend types
 export const defaultStatblock: Statblock = {

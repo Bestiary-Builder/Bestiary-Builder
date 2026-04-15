@@ -47,7 +47,7 @@ watch(() => props.modelValue, (newValue, oldValue) => {
 		&& newValue !== value.value
 	)
 		setValue(newValue);
-})
+});
 
 const increasable = computed(() => {
 	if (value.value == null)
@@ -59,12 +59,6 @@ const decreasable = computed(() => {
 	if (value.value == null)
 		return true;
 	return Number.isNaN(value.value) || value.value > props.min;
-});
-
-const placeholder = computed(() => {
-	if (props.isClearable)
-		return "Override";
-	return "";
 });
 
 function change(event: any) {
@@ -95,7 +89,7 @@ function increase() {
 		setValue(value.value + props.step);
 	}
 };
-const inputRef = useTemplateRef("input")
+const inputRef = useTemplateRef("input");
 function setValue(v: number | null) {
 	if (v == null) {
 		const oldValue = value.value;

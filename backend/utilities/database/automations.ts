@@ -1,14 +1,13 @@
+import type { JsonObject } from "@prisma/client/runtime/client";
 import { getPrismaClient } from ".";
 import { log } from "@/utilities/logger";
-import { JsonObject } from "@prisma/client/runtime/client";
-import type { Automation, AutomationCreateInput } from "~/shared";
-import { Id } from "~/shared";
+import type { Automation, AutomationCreateInput, Id } from "~/shared";
 
 // Automation functions
 export async function getAutomation(id: Id) {
 	try {
 		log.log("database", `Reading automation with the id ${id}.`);
-        return (await getPrismaClient().automation.findUnique({ where: { id } }));
+		return (await getPrismaClient().automation.findUnique({ where: { id } }));
 	}
 	catch (err) {
 		log.log("critical", err);
@@ -16,9 +15,9 @@ export async function getAutomation(id: Id) {
 	}
 }
 export async function updateAutomation(data: Automation, id?: Id) {
-    try {
-        const automation: AutomationCreateInput = {...data, automation: data.automation as JsonObject, lastUpdated: new Date(Date.now())}
-        log.log("database", `Upserting automation with id ${id}`);
+	try {
+		const automation: AutomationCreateInput = { ...data, automation: data.automation as JsonObject, lastUpdated: new Date(Date.now()) };
+		log.log("database", `Upserting automation with id ${id}`);
 		return (await getPrismaClient().automation.upsert({ where: { id }, update: automation, create: automation })).id;
 	}
 	catch (err) {
@@ -28,14 +27,14 @@ export async function updateAutomation(data: Automation, id?: Id) {
 }
 export async function deleteAutomation(id: Id) {
 	try {
-        log.log("database", `Deleting automation with the id ${id}.`);
-        return await getPrismaClient().$transaction(async () => {
-            const automation = await getAutomation(id);
-            if (!automation)
-                return false;
-            await getPrismaClient().bestiary.delete({ where: { id: id } });
-            return true;
-        });
+		log.log("database", `Deleting automation with the id ${id}.`);
+		return await getPrismaClient().$transaction(async () => {
+			const automation = await getAutomation(id);
+			if (!automation)
+				return false;
+			await getPrismaClient().bestiary.delete({ where: { id } });
+			return true;
+		});
 	}
 	catch (err) {
 		log.log("critical", err);

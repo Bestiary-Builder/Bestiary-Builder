@@ -104,7 +104,6 @@ app.post("/api/search", async (req, res) => {
 		};
 
 		log.info(`Search completed with ${output.pageAmount} pages`);
-		console.log(output);
 		return res.json(output);
 	}
 	catch (err) {

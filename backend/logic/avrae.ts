@@ -23,8 +23,8 @@ app.get("/api/export/bestiary/:id", async (req, res) => {
 		// Get creatures
 		const creatures = [];
 		const creatureRecords = await getCreaturesByBestiary(id);
-        for (const creature of creatureRecords) {
-            const stats = creature.stats as unknown as Statblock;
+		for (const creature of creatureRecords) {
+			const stats = creature.stats as unknown as Statblock;
 			try {
 				const creatureData = getCreatureData(stats);
 				creatures.push(creatureData);

@@ -24,7 +24,7 @@ export async function checkCreatureAmountLimit(count: number) {
 	if (count > limits.creatureAmount)
 		return `Number of creatures exceeds the limit of ${limits.creatureAmount}.`;
 }
-export function checkBestiaryLimits(bestiary: { id?: Id, name: string, description: string, status: BestiaryStatus}) {
+export function checkBestiaryLimits(bestiary: { id?: Id; name: string; description: string; status: BestiaryStatus }) {
 	if (!["private", "public", "unlisted"].includes(bestiary.status))
 		return "Status has an unkown value, must only be 'public', 'unlisted' or 'private'.";
 	return checkLimits(bestiary);

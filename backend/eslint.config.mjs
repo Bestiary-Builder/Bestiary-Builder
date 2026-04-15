@@ -3,7 +3,7 @@ import antfu from "@antfu/eslint-config";
 export default antfu(
 	// antfu cionfig inbuild settings
 	{
-		ignores: ["dist", "dist/**", "node_modules", "node_modules/**", "staticData/**/*.json"],
+		ignores: ["dist", "dist/**", "node_modules", "node_modules/**", "staticData/**/*.json", "migrate_data.ts"],
 		typescript: {
 			tsconfigPath: ["tsconfig.json"],
 			filesTypeAware: ["**\/*.{ts}"],
