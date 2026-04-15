@@ -5,8 +5,18 @@ import type { SpellSlotList, Statblock } from "./build-types";
 export * from "./build-types";
 
 // Database types
-export * from "../prisma/client"
-export * from "../prisma/models"
+export { SupporterStatus, BestiaryStatus } from "../prisma/enums"
+
+import * as Prisma from "../prisma/internal/prismaNamespace"
+export type User = Prisma.UserModel
+export type Bestiary = Prisma.BestiaryModel
+export type BestiaryEditor = Prisma.BestiaryEditorModel
+export type UserBestiaryBookmark = Prisma.UserBestiaryBookmarkModel
+export type Creature = Prisma.CreatureModel
+export type Automation = Prisma.AutomationModel
+
+export type CreatureWithStats = Omit<Creature, "stats"> & { stats: Statblock }
+export type BestiaryExtended = Bestiary & { creatures: Id[], editors: Id[] };
 
 export class GlobalStats {
 	constructor(public bestiaries: number, public creatures: number, public users: number) {}
@@ -20,6 +30,8 @@ export interface AutomationDocumentationEntity {
 	ts: string;
 }
 export interface AutomationDocumentation { [key: string]: AutomationDocumentationEntity }
+
+export type AutomationWithType = Omit<Automation, "automation"> & { automation: null | Record<string, unknown> }
 
 // Frontend types
 export const defaultStatblock: Statblock = {

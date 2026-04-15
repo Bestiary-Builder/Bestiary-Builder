@@ -2,7 +2,7 @@
 import { onMounted, ref, watch } from "vue";
 import { refDebounced } from "@vueuse/core";
 import BestiaryList from "@/components/BestiaryList.vue";
-import type { Bestiary } from "~/shared";
+import type { BestiaryExtended } from "~/shared";
 import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
 import { useFetch } from "@/utils/utils";
 import { store } from "@/utils/store";
@@ -15,7 +15,7 @@ onMounted(async () => {
 	loader.hide();
 });
 
-const bestiaries = ref<Bestiary[]>([]);
+const bestiaries = ref<BestiaryExtended[]>([]);
 
 const selectedPage = ref(1);
 const selectedTags = ref<string[]>([]);
@@ -26,7 +26,7 @@ const totalPages = ref(1);
 
 const searchBestiaries = async () => {
 	// Request bestiary info
-	const { success, data, error } = await useFetch<{ results: Bestiary[]; pageAmount: number }>(`/api/search`, "POST", {
+	const { success, data, error } = await useFetch<{ results: BestiaryExtended[]; pageAmount: number }>(`/api/search`, "POST", {
 		search: search.value,
 		page: selectedPage.value - 1,
 		tags: selectedTags.value,
@@ -45,7 +45,7 @@ const searchBestiaries = async () => {
 
 const getBookmarkedBestiaries = async () => {
 	// Request bestiary info
-	const { success, data, error } = await useFetch<Bestiary[]>(`/api/user/bookmarks`);
+	const { success, data, error } = await useFetch<BestiaryExtended[]>(`/api/user/bookmarks`);
 	if (success) {
 		bestiaries.value = data;
 	}

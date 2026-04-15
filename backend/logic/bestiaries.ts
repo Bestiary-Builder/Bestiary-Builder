@@ -4,7 +4,8 @@ import { colors, publicLog } from "./discord";
 import { app, checkBestiaryLimits, checkCreatureAmountLimit, checkCreatureLimits, limits } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
 import { addBestiaryEditor, addBookmark, createBestiary, createCreatures, deleteBestiary, getBestiariesByOwner, getBestiariesByUser, getBestiary, getBestiaryCreatureCount, getPublicBestiariesByOwner, getUser, incrementBestiaryViewCount, isBestiaryBookmarked, isBestiaryEditor, removeBestiaryEditor, removeBookmark, updateBestiary } from "@/utilities/database";
-import { type Bestiary, type Creature, type Statblock, type User, type BestiaryCreateInput, defaultStatblock } from "~/shared";
+import { type Statblock, defaultStatblock } from "~/shared";
+import type { Bestiary, Creature, User, BestiaryCreateInput } from "~/shared/src/prisma-types"
 
 import tags from "@/staticData/tags.json";
 
@@ -206,7 +207,7 @@ app.post("/api/bestiary/add", requireUser, async (req, res) => {
 				bookmarks: 0
 			},
             ...(req.body.data as Partial<Bestiary>),
-            tags: req.body.data.tags.filter((t: string) => tags.includes(t)) ?? [],
+            tags: (req.body.data.tags ?? []).filter((t: string) => tags.includes(t)),
             owner: { connect: { id: user.id } },
             lastUpdated: new Date(Date.now())
 		};

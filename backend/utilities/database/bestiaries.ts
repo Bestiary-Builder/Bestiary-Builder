@@ -1,13 +1,26 @@
 import { getPrismaClient } from ".";
 import { log } from "@/utilities/logger";
-import type { Bestiary, BestiaryCreateInput, BestiaryUpdateInput, Creature } from "~/shared";
+import type { BestiaryCreateInput, BestiaryUpdateInput, Creature } from "~/shared/src/prisma-types";
 import { Id } from "~/shared";
+
+const defaultIncludes = {
+	creatures: {
+		select: {
+			id: true
+		}
+	},
+	editors: {
+		select: {
+			userId: true
+		}
+	}
+}
 
 // Bestiary functions
 export async function getBestiary(id: Id, includeCreatures = false) {
 	try {
 		log.log("database", `Reading bestiary with the id ${id}.`);
-        return await getPrismaClient().bestiary.findUnique({ where: { id }, include: { creatures: includeCreatures } });
+        return await getPrismaClient().bestiary.findUnique({ where: { id }, include: { ...defaultIncludes, creatures: includeCreatures } });
 	}
 	catch (err) {
 		log.log("critical", err);
@@ -65,7 +78,8 @@ export async function getBestiariesByUser(userId: string) {
 					{ ownerId: userId },
 					{ editors: { some: { userId } } }
 				]
-			}
+            },
+            include: defaultIncludes
 		});
 	}
 	catch (err) {
@@ -77,7 +91,8 @@ export async function getBestiariesByUser(userId: string) {
 export async function getBestiariesByOwner(userId: string) {
 	try {
 		return await getPrismaClient().bestiary.findMany({
-			where: { ownerId: userId }
+			where: { ownerId: userId },
+            include: defaultIncludes
 		});
 	}
 	catch (err) {
@@ -89,7 +104,8 @@ export async function getBestiariesByOwner(userId: string) {
 export async function getPublicBestiariesByOwner(userId: string) {
 	try {
 		return await getPrismaClient().bestiary.findMany({
-			where: { ownerId: userId, status: "public" }
+			where: { ownerId: userId, status: "public" },
+            include: defaultIncludes
 		});
 	}
 	catch (err) {
@@ -110,7 +126,8 @@ export async function getBookmarkedBestiariesForUser(userId: string) {
 					{ ownerId: userId },
 					{ status: { not: "private" } }
 				]
-			}
+			},
+            include: defaultIncludes
 		});
 	}
 	catch (err) {

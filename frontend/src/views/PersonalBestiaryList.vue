@@ -6,7 +6,7 @@ import BestiaryList from "@/components/BestiaryList.vue";
 import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
 
 import { toast } from "@/utils/app/toast";
-import type { Bestiary } from "~/shared";
+import type { BestiaryExtended } from "~/shared";
 import { useFetch } from "@/utils/utils";
 import { $loading } from "@/utils/app/loading";
 
@@ -19,12 +19,12 @@ onMounted(async () => {
 	loader.hide();
 });
 
-const bestiaries = ref<Bestiary[]>([]);
+const bestiaries = ref<BestiaryExtended[]>([]);
 
 const getBestiaries = async () => {
 	const { success, data, error } = await useFetch(`/api/my-bestiaries`);
 	if (success) {
-		bestiaries.value = data as Bestiary[];
+		bestiaries.value = data as BestiaryExtended[];
 	}
 	else {
 		bestiaries.value = [];
@@ -34,15 +34,14 @@ const getBestiaries = async () => {
 
 const createBestiary = async () => {
 	// Send data to server
-	const { success, data, error } = await useFetch<Bestiary>("/api/bestiary/add", "POST", {
+	const { success, data, error } = await useFetch<BestiaryExtended>("/api/bestiary/add", "POST", {
 		name: "New bestiary",
 		description: "",
-		status: "private",
-		creatures: []
+		status: "private"
 	});
 	if (success) {
 		toast.success("Created bestiary");
-		await router.push(`/bestiary-viewer/${data._id?.toString()}`);
+		await router.push(`/bestiary-viewer/${data.id.toString()}`);
 	}
 	else {
 		toast.error(error);
@@ -50,11 +49,11 @@ const createBestiary = async () => {
 	await getBestiaries();
 };
 
-const deleteBestiary = async (bestiary: Bestiary | null) => {
+const deleteBestiary = async (bestiary: BestiaryExtended | null) => {
 	if (!bestiary)
 		return;
 	const loader = $loading.show();
-	const { success, error } = await useFetch(`/api/bestiary/${bestiary._id?.toString()}/delete`);
+	const { success, error } = await useFetch(`/api/bestiary/${bestiary.id.toString()}/delete`);
 	if (success) {
 		toast.success("Deleted bestiary succesfully");
 		showDeleteModal.value = false;
@@ -67,8 +66,8 @@ const deleteBestiary = async (bestiary: Bestiary | null) => {
 };
 
 const showDeleteModal = ref(false);
-const selectedBestiary = ref<Bestiary | null>(null);
-const openDeleteModal = (bestiary: Bestiary) => {
+const selectedBestiary = ref<BestiaryExtended | null>(null);
+const openDeleteModal = (bestiary: BestiaryExtended) => {
 	selectedBestiary.value = bestiary;
 	showDeleteModal.value = true;
 };

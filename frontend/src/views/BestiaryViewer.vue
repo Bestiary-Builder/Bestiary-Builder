@@ -9,7 +9,7 @@ import Modal from "@/components/Modal.vue";
 import StatblockRenderer from "@/components/StatblockRenderer.vue";
 
 import { crAsString, defaultStatblock } from "~/shared";
-import type { Bestiary, Creature, Statblock, User } from "~/shared";
+import type { Bestiary, BestiaryExtended, CreatureWithStats, Statblock, User } from "~/shared";
 import { useFetch } from "@/utils/utils";
 import { toast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
@@ -48,10 +48,10 @@ export default defineComponent({
 	},
 	data() {
 		return {
-			bestiary: null as Bestiary | null,
-			savedBestiary: null as Bestiary | null,
-			creatures: null as Creature[] | null,
-			searchCreatureList: [] as Creature[] | null,
+			bestiary: null as BestiaryExtended | null,
+			savedBestiary: null as BestiaryExtended | null,
+			creatures: null as CreatureWithStats[] | null,
+			searchCreatureList: [] as CreatureWithStats[] | null,
 			editors: [] as User[],
 			lastHoveredCreature: null as null | Statblock,
 			lastClickedCreature: null as null | Statblock,
@@ -76,7 +76,7 @@ export default defineComponent({
 			isExpanded: false,
 			showEditorModal: false,
 			showImportModal: false,
-			selectedCreature: null as Creature | null,
+			selectedCreature: null as CreatureWithStats | null,
 			srdCreatures: [] as string[],
 			store,
 			creatureTypes,
@@ -84,12 +84,12 @@ export default defineComponent({
 		};
 	},
 	computed: {
-		searchCreatures(): Creature[] | null {
+		searchCreatures(): CreatureWithStats[] | null {
 			if (this.creatures == null)
 				return null;
 			const loader = $loading.show();
 
-			const response = this.creatures?.filter((creature: Creature) => this.filterCreature(creature)) || null;
+			const response = this.creatures?.filter((creature: CreatureWithStats) => this.filterCreature(creature)) || null;
 
 			if (this.sortMode === "Alphabetically") {
 				response.sort((a, b) => {
@@ -158,10 +158,10 @@ export default defineComponent({
 	},
 	async mounted() {
 		const loader = $loading.show();
-		void this.getBestiary();
+		await this.getBestiary();
 		loader.hide();
 
-		if (this?.bestiary?.name)
+		if (this.bestiary?.name)
 			document.title = `${this?.bestiary?.name.substring(0, 16)} | Bestiary Builder`;
 
 		const { success, data, error } = await useFetch<string[]>(`/api/srd-creatures/list`);
@@ -172,7 +172,7 @@ export default defineComponent({
 			toast.error(error);
 	},
 	methods: {
-		filterCreature(data: Creature) {
+		filterCreature(data: CreatureWithStats) {
 			const filterChecks: boolean[] = [];
 			if (this.searchOptions.text !== "")
 				filterChecks.push(data.stats.description.name.toLowerCase().includes(this.searchOptions.text.toLowerCase().trim()));
@@ -196,7 +196,7 @@ export default defineComponent({
 
 			try {
 				const { success, data: resultData, error } = await useFetch<{ metadata: string }>(
-					`/api/homebrewery/export/bestiary/${this.bestiary?._id?.toString()}`,
+					`/api/homebrewery/export/bestiary/${this.bestiary?.id.toString()}`,
 					"GET"
 				);
 
@@ -293,7 +293,7 @@ export default defineComponent({
 				return;
 			}
 			toast.info("Saving creatures has started. This may take a while.");
-			const { success: cSuccess, data: creatureData, error: cError } = await useFetch<{ error?: string; ignoredCreatures: { creature: string; error: string }[] }>(`/api/bestiary/${this.bestiary?._id?.toString()}/addcreatures`, "POST", data.data.creatures);
+			const { success: cSuccess, data: creatureData, error: cError } = await useFetch<{ error?: string; ignoredCreatures: { creature: string; error: string }[] }>(`/api/bestiary/${this.bestiary?.id.toString()}/addcreatures`, "POST", data.data.creatures);
 			if (!cSuccess) {
 				this.notices = {};
 				toast.error(cError);
@@ -323,7 +323,7 @@ export default defineComponent({
 				return;
 			}
 			toast.info("Importing creatures has started. This may take a while.");
-			const { success, data, error } = await useFetch<{ error?: string; ignoredCreatures: { creature: string; error: string }[] }>(`/api/bestiary/${this.bestiary?._id?.toString()}/addcreatures`, "POST", creatures);
+			const { success, data, error } = await useFetch<{ error?: string; ignoredCreatures: { creature: string; error: string }[] }>(`/api/bestiary/${this.bestiary?.id.toString()}/addcreatures`, "POST", creatures);
 			if (!success) {
 				this.notices = {};
 				toast.error(error);
@@ -351,13 +351,13 @@ export default defineComponent({
 			// Replace for actual creation data:
 			const data = {
 				stats,
-				bestiary: this.bestiary?._id
-			} as Creature;
+				bestiaryId: this.bestiary?.id
+			} as CreatureWithStats;
 			// Send data to server
-			const { success, data: resultData, error } = await useFetch<Creature>("/api/creature/add", "POST", data);
+			const { success, data: resultData, error } = await useFetch<CreatureWithStats>("/api/creature/add", "POST", data);
 			if (success) {
 				const data = resultData;
-				await this.$router.push(`../statblock-editor/${data._id?.toString()}`);
+				await this.$router.push(`../statblock-editor/${data.id.toString()}`);
 			}
 			else {
 				toast.error(error);
@@ -366,15 +366,15 @@ export default defineComponent({
 			if (shouldHaveLoader && loader)
 				loader.hide();
 		},
-		async deleteCreature(creature: Creature) {
+		async deleteCreature(creature: CreatureWithStats) {
 			const loader = $loading.show();
-			const { success, error } = await useFetch(`/api/creature/${creature._id?.toString()}/delete`);
+			const { success, error } = await useFetch(`/api/creature/${creature.id.toString()}/delete`);
 			if (success) {
 				toast.success("Deleted creature succesfully");
 				if (!this.bestiary)
 					return;
-				this.bestiary.creatures = this.bestiary.creatures.filter(c => c !== creature._id);
-				this.creatures = this.creatures?.filter(c => c._id !== creature._id) ?? [];
+				this.bestiary.creatures = this.bestiary.creatures.filter(c => c !== creature.id);
+				this.creatures = this.creatures?.filter(c => c.id !== creature.id) ?? [];
 			}
 			else {
 				toast.error(error);
@@ -396,7 +396,7 @@ export default defineComponent({
 				return;
 			const id = this.editorToAdd;
 			const loader = $loading.show();
-			const { success, error } = await useFetch(`/api/bestiary/${this.bestiary._id?.toString()}/editors/add/${id}`);
+			const { success, error } = await useFetch(`/api/bestiary/${this.bestiary.id.toString()}/editors/add/${id}`);
 			if (success)
 				toast.success("Added editor succesfully");
 			else
@@ -409,7 +409,7 @@ export default defineComponent({
 			if (!this.bestiary)
 				return;
 			const loader = $loading.show();
-			const { success, error } = await useFetch(`/api/bestiary/${this.bestiary._id?.toString()}/editors/remove/${id}`);
+			const { success, error } = await useFetch(`/api/bestiary/${this.bestiary.id.toString()}/editors/remove/${id}`);
 			if (success)
 				toast.success("Removed editor succesfully");
 			else
@@ -422,7 +422,7 @@ export default defineComponent({
 			// Get id
 			const id = this.$route.params.id;
 			// Request bestiary info
-			const { success, data, error } = await useFetch<Bestiary>(`/api/bestiary/${id.toString()}`);
+			const { success, data, error } = await useFetch<BestiaryExtended>(`/api/bestiary/${id.toString()}`);
 			if (!success) {
 				this.bestiary = null;
 				toast.error(error);
@@ -430,10 +430,10 @@ export default defineComponent({
 			}
 			this.bestiary = data;
 			this.savedBestiary = this.bestiary;
-			this.isOwner = store.user?._id === this.bestiary.owner;
-			this.isEditor = (this.bestiary?.editors ?? []).includes(store.user?._id ?? "");
+			this.isOwner = store.user?.id === this.bestiary.ownerId;
+			this.isEditor = (this.bestiary?.editors ?? []).includes(store.user?.id ?? "");
 			// Fetch creatures
-			await useFetch<Creature[]>(`/api/bestiary/${this.bestiary._id?.toString()}/creatures`).then(async (creatureResult) => {
+			await useFetch<CreatureWithStats[]>(`/api/bestiary/${this.bestiary.id.toString()}/creatures`).then(async (creatureResult) => {
 				if (creatureResult.success) {
 					this.creatures = creatureResult.data;
 				}
@@ -454,7 +454,7 @@ export default defineComponent({
 			}
 			// Bookmark state
 			if (store.user) {
-				await useFetch<{ state: boolean }>(`/api/bestiary/${this.bestiary._id?.toString()}/bookmark/get`).then(async (bookmarkResult) => {
+				await useFetch<{ state: boolean }>(`/api/bestiary/${this.bestiary.id.toString()}/bookmark/get`).then(async (bookmarkResult) => {
 					if (bookmarkResult.success) {
 						this.bookmarked = (bookmarkResult.data as { state: boolean }).state;
 					}
@@ -473,7 +473,7 @@ export default defineComponent({
 				return;
 			const loader = $loading.show();
 			// Send to backend
-			const { success, error } = await useFetch<Bestiary>(`/api/bestiary/${this.bestiary._id?.toString()}/update`, "POST", this.bestiary);
+			const { success, error } = await useFetch<Bestiary>(`/api/bestiary/${this.bestiary.id.toString()}/update`, "POST", this.bestiary);
 			if (success) {
 				toast.success("Saved bestiary");
 				this.savedBestiary = this.bestiary;
@@ -488,7 +488,7 @@ export default defineComponent({
 			if (!this.bestiary)
 				return;
 			const loader = $loading.show();
-			const { success, data, error } = await useFetch<{ state: boolean }>(`/api/bestiary/${this.bestiary._id?.toString()}/bookmark/toggle`);
+			const { success, data, error } = await useFetch<{ state: boolean }>(`/api/bestiary/${this.bestiary.id.toString()}/bookmark/toggle`);
 			if (success) {
 				this.bookmarked = data.state;
 				if (this.bookmarked)
@@ -689,7 +689,7 @@ export default defineComponent({
 						</button>
 						<hr>
 						<div class="footer" :class="{ 'three-wide': isOwner }">
-							<UserBanner :id="bestiary.owner" />
+							<UserBanner :id="bestiary.ownerId" />
 							<div v-tooltip.left="bestiary.status">
 								<StatusIcon :icon="bestiary.status" />
 							</div>
@@ -702,7 +702,7 @@ export default defineComponent({
 					</div>
 					<div class="tile-container list-tiles">
 						<TransitionGroup name="slide-fade">
-							<div v-for="creature in searchCreatures" :key="creature._id?.toString()" class="content-tile creature-tile" @mouseover="lastHoveredCreature = creature.stats" @click="lastClickedCreature = creature.stats">
+							<div v-for="creature in searchCreatures" :key="creature.id.toString()" class="content-tile creature-tile" @mouseover="lastHoveredCreature = creature.stats" @click="lastClickedCreature = creature.stats">
 								<div class="left-side">
 									<h3>{{ creature.stats?.description?.name }}</h3>
 									<span>{{ creature.stats?.core?.size }} {{ creature.stats?.core?.race }}{{ creature.stats?.description?.alignment ? `, ${creature.stats?.description?.alignment}` : "" }}</span>
@@ -722,7 +722,7 @@ export default defineComponent({
 										</template>
 									</VDropdown>
 									<button v-tooltip="`${isOwner || isEditor ? 'Edit' : 'View'} creature`" :aria-label="`${isOwner || isEditor ? 'Edit' : 'View'} ${creature.stats.description.name}`" class="edit-creature" @click.stop="() => {}">
-										<RouterLink class="creature" :to="`/statblock-editor/${creature._id}`" :aria-label="`${isOwner || isEditor ? 'Edit' : 'View'} creature`">
+										<RouterLink class="creature" :to="`/statblock-editor/${creature.id}`" :aria-label="`${isOwner || isEditor ? 'Edit' : 'View'} creature`">
 											<font-awesome-icon v-if="isOwner || isEditor" :icon="['fas', 'pen-to-square']" />
 											<font-awesome-icon v-else :icon="['fas', 'eye']" />
 										</RouterLink>
@@ -837,10 +837,10 @@ export default defineComponent({
 						Editors can add, edit, and remove creatures. They can edit the name of the bestiary and its description. Editors cannot change the status of the bestiary or delete the bestiary. Editors cannot add other editors. The owner can remove editors at any time.
 					</p>
 					<div class="editor-container">
-						<div v-for="editor in editors" :key="editor._id" class="editor-list">
+						<div v-for="editor in editors" :key="editor.id" class="editor-list">
 							<p>
-								<UserBanner :id="editor._id" />
-								<span v-if="isOwner" role="button" class="delete-creature" @click="removeEditor(editor._id)"> <span>🗑️</span> </span>
+								<UserBanner :id="editor.id" />
+								<span v-if="isOwner" role="button" class="delete-creature" @click="removeEditor(editor.id)"> <span>🗑️</span> </span>
 							</p>
 						</div>
 					</div>
