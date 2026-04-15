@@ -3,7 +3,7 @@ import { checkBestiaryPermission } from "./bestiaries";
 import { validateCreatureInput } from "./validation";
 import { app, checkCreatureAmountLimit, checkCreatureLimits, limits } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
-import { deleteCreature, getBestiary, getBestiaryCreatureCount, getCreature, getCreaturesByBestiary, updateCreature } from "@/utilities/database";
+import { createCreature, deleteCreature, getBestiary, getBestiaryCreatureCount, getCreature, getCreaturesByBestiary, updateCreature } from "@/utilities/database";
 import type { Creature, Statblock, User } from "~/shared";
 import { defaultStatblock } from "~/shared";
 import { checkBadwords } from "@/utilities/badwords";
@@ -83,18 +83,6 @@ app.post("/api/creature/add", requireUser, async (req, res) => {
 			return res.status(400).json({ error: "Creature data not found." });
 		if (!validateCreatureInput(data.stats as unknown as Statblock, res))
 			return;
-		if (typeof data.bestiaryId == "string") {
-			const _id = data.bestiaryId;
-			if (!_id)
-				return res.status(400).json({ error: "Invalid creature id in body." });
-			data.bestiaryId = _id;
-		}
-		if (typeof data.id == "string") {
-			const _id = data.id;
-			if (!_id)
-				return res.status(400).json({ error: "Invalid bestiary id." });
-			data.id = _id;
-		}
 		const user = req.body.user;
 		if (!user)
 			return res.status(404).json({ error: "Couldn't find current user." });
@@ -159,11 +147,12 @@ app.post("/api/creature/add", requireUser, async (req, res) => {
 			return res.status(401).json({ error: "You don't have permission to add creature to this bestiary." });
 		// Check amount of creatures:
 		const count = await getBestiaryCreatureCount(bestiary.id);
-		const amountError = checkCreatureAmountLimit(count);
+        const amountError = checkCreatureAmountLimit(count);
+		console.log(count, amountError)
 		if (amountError)
 			return res.status(400).json({ error: amountError });
 		// Add creature
-		const _id = await updateCreature(data);
+		const _id = await createCreature(data);
 		if (!_id)
 			return res.status(500).json({ error: "Failed to create creature." });
 		data.id = _id;

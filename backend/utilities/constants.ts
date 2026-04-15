@@ -20,7 +20,7 @@ export function generateUserSecret(): string {
 	return crypto.randomBytes(64).toString("hex");
 }
 export const limits = l;
-export async function checkCreatureAmountLimit(count: number) {
+export function checkCreatureAmountLimit(count: number) {
 	if (count > limits.creatureAmount)
 		return `Number of creatures exceeds the limit of ${limits.creatureAmount}.`;
 }

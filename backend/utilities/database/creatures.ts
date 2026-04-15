@@ -1,7 +1,8 @@
 import type { JsonObject } from "@prisma/client/runtime/client";
 import { getPrismaClient } from ".";
 import { log } from "@/utilities/logger";
-import type { Creature, CreatureCreateInput, CreatureCreateManyInput, Id } from "~/shared";
+import type { Id } from "~/shared";
+import type { Creature, CreatureCreateInput, CreatureCreateManyInput } from "~/shared/src/prisma-types";
 
 // Creature functions
 export async function getCreature(id: Id) {
@@ -14,12 +15,22 @@ export async function getCreature(id: Id) {
 		return null;
 	}
 }
-export async function updateCreature(data: Creature, id?: Id) {
+export async function createCreature(data: Creature) {
 	try {
-		const creature: CreatureCreateInput = { ...data, stats: data.stats as JsonObject, bestiary: { connect: { id: data.bestiaryId } } };
-		data.lastUpdated = new Date(Date.now());
-		log.log("database", `Upserting creature with the id ${id}.`);
-		return (await getPrismaClient().creature.upsert({ where: { id }, update: creature, create: creature })).id;
+		const creature: CreatureCreateInput = { stats: data.stats as JsonObject, lastUpdated: new Date(Date.now()), bestiary: { connect: { id: data.bestiaryId } } };
+		log.log("database", `Creating creature.`);
+		return (await getPrismaClient().creature.create({ data: creature })).id;
+	}
+	catch (err) {
+		log.log("critical", err);
+		return null;
+	}
+}
+export async function updateCreature(data: Creature, id: Id) {
+	try {
+		const creature: CreatureCreateInput = { stats: data.stats as JsonObject, lastUpdated: new Date(Date.now()), bestiary: { connect: { id: data.bestiaryId } } };
+		log.log("database", `Updating creature with the id ${id}.`);
+		return (await getPrismaClient().creature.update({ where: { id }, data: creature })).id;
 	}
 	catch (err) {
 		log.log("critical", err);

@@ -434,7 +434,7 @@ async function getBestiary() {
 	});
 	// Fetch editors
 	editors.value = [] as User[];
-	for (const { id: editorId } of bestiary.value?.editors ?? []) {
+	for (const { userId: editorId } of bestiary.value?.editors ?? []) {
 		await useFetch(`/api/user/${editorId}`).then((editorResult) => {
 			if (editorResult.success)
 				editors.value.push(editorResult.data as User);
