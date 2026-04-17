@@ -1,7 +1,7 @@
-import { Prisma } from "@prisma/client";
 import { createCheckers } from "ts-interface-checker";
 import type { Response } from "express";
 import { getGlobalStats, getPrismaClient } from "@/utilities/database";
+import { Prisma } from "~/shared/prisma/client";
 import type { BestiaryWithCount, SearchOptions } from "~/shared";
 import { app } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
