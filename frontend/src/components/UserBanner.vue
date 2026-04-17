@@ -23,7 +23,7 @@ const isLoading = computed(() => {
 	<div class="container">
 		<div v-if="user" class="user">
 			<img class="img" alt="" :src="user.avatar ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` : 'https://cdn.discordapp.com/embed/avatars/0.png'">
-			<span v-if="!user.supporter">{{ user.username }}</span>
+			<span v-if="user.supporter === SupporterStatus.none">{{ user.username }}</span>
 			<span v-if="user.supporter === SupporterStatus.wirmling" v-tooltip="'This user is a Wyrmling Patreon Supporter!'" class="supporter-tier-1"> {{ user.username }} </span>
 			<span v-if="user.supporter === SupporterStatus.greatwyrm" v-tooltip="'This user is a Greatwyrm Patreon Supporter!'" class="supporter-tier-2"> {{ user.username }} </span>
 		</div>
