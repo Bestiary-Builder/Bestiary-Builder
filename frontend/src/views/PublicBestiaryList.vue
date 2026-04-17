@@ -33,7 +33,7 @@ const searchBestiaries = async () => {
 		mode: viewMode.value.toLowerCase()
 	});
 	if (success) {
-		bestiaries.value = data.results.map(bestiary => ({ ...bestiary, creatures: Array(10), editors: [] }));
+		bestiaries.value = data.results.map(bestiary => ({ ...bestiary, creatures: Array(bestiary.creatureCount), editors: [] }));
 		totalPages.value = data.pageAmount;
 	}
 	else {
