@@ -1,7 +1,8 @@
+import type { InputJsonValue } from "@prisma/client/runtime/client";
 import { requireUser } from "./login";
 import { app, checkAutomationLimits } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
-import { deleteAutomation, getAutomation, getAutomationsByOwner, updateAutomation } from "@/utilities/database";
+import { createAutomation, deleteAutomation, getAutomation, getAutomationsByOwner, updateAutomation } from "@/utilities/database";
 import type { Automation } from "~/shared";
 import { checkBadwords } from "@/utilities/badwords";
 
@@ -109,12 +110,12 @@ app.post("/api/automation/:id/update", requireUser, async (req, res) => {
 			// Limit properties that are editable:
 			const update = {
 				name: data.name,
-				automation: data.automation,
+				automation: data.automation as InputJsonValue,
 				description: data.description
 			};
 
 			// Update:
-			const updatedId = await updateAutomation(update as Automation, data.id);
+			const updatedId = await updateAutomation(update, data.id);
 			if (updatedId) {
 				log.info(`Updated automation with the id ${data.id}`);
 				return res.status(200).json(data);
@@ -159,7 +160,7 @@ app.post("/api/automation/add", requireUser, async (req, res) => {
 		if (descError)
 			return res.status(400).json({ error: `Automation description ${descError}` });
 		// Create new automation
-		const _id = await updateAutomation(data);
+		const _id = await createAutomation({ ...data, automation: data.automation as InputJsonValue });
 		if (!_id)
 			return res.status(500).json({ error: "Failed to create automation." });
 		data.id = _id;

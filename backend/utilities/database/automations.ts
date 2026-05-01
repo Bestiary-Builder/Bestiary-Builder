@@ -1,7 +1,7 @@
-import type { JsonObject } from "@prisma/client/runtime/client";
 import { getPrismaClient } from ".";
 import { log } from "@/utilities/logger";
-import type { Automation, AutomationCreateInput, Id } from "~/shared";
+import type { Id } from "~/shared";
+import type { AutomationCreateInput, AutomationUpdateInput } from "~/shared/src/prisma-types";
 
 // Automation functions
 export async function getAutomation(id: Id) {
@@ -14,11 +14,22 @@ export async function getAutomation(id: Id) {
 		return null;
 	}
 }
-export async function updateAutomation(data: Automation, id?: Id) {
+export async function createAutomation(data: AutomationCreateInput) {
 	try {
-		const automation: AutomationCreateInput = { ...data, automation: data.automation as JsonObject, lastUpdated: new Date(Date.now()) };
-		log.log("database", `Upserting automation with id ${id}`);
-		return (await getPrismaClient().automation.upsert({ where: { id }, update: automation, create: automation })).id;
+		data.lastUpdated = new Date(Date.now());
+		log.log("database", `Creating new automation`);
+		return (await getPrismaClient().automation.create({ data })).id;
+	}
+	catch (err) {
+		log.log("critical", err);
+		return null;
+	}
+}
+export async function updateAutomation(data: AutomationUpdateInput, id: Id) {
+	try {
+		data.lastUpdated = new Date(Date.now());
+		log.log("database", `Updating automation with id ${id}`);
+		return (await getPrismaClient().automation.update({ where: { id }, data })).id;
 	}
 	catch (err) {
 		log.log("critical", err);
