@@ -10,7 +10,7 @@ import StatblockRenderer from "@/components/StatblockRenderer.vue";
 import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
 import LabelledNumberInput from "@/components/LabelledNumberInput.vue";
 import LabelledComponent from "@/components/LabelledComponent.vue";
-import type { Bestiary, Creature, Features, Statblock } from "~/shared";
+import type { BestiaryExtended, CreatureWithStats, Features, Statblock } from "~/shared";
 import { capitalizeFirstLetter, defaultStatblock, getSpellSlots, getXPbyCR, spellList, spellListFlattened } from "~/shared";
 import { useFetch } from "@/utils/utils";
 import { store } from "@/utils/store";
@@ -22,12 +22,12 @@ const $route = useRoute();
 const $router = useRouter();
 
 const data = ref<Statblock>(defaultStatblock);
-const rawInfo = ref<Creature | null>(null);
+const rawInfo = ref<CreatureWithStats | null>(null);
 
 // load creature data
 onMounted(async () => {
 	const loader = $loading.show();
-	const { success, data: cData, error } = await useFetch<Creature>(`/api/creature/${$route.params.id.toString()}`);
+	const { success, data: cData, error } = await useFetch<CreatureWithStats>(`/api/creature/${$route.params.id.toString()}`);
 	if (success) {
 		data.value = (cData).stats;
 		await nextTick(() => madeChanges.value = false);
@@ -51,16 +51,16 @@ onMounted(async () => {
 });
 
 // ownership
-const bestiary = ref<Bestiary | null>(null);
+const bestiary = ref<BestiaryExtended | null>(null);
 const isOwner = ref(false);
 const isEditor = ref(false);
 const shouldShowEditor = ref(false);
 const loadRawInfo = async () => {
-	const { success, data, error } = await useFetch<Bestiary>(`/api/bestiary/${rawInfo.value?.bestiary.toString()}`);
+	const { success, data, error } = await useFetch<BestiaryExtended>(`/api/bestiary/${rawInfo.value?.bestiaryId}`);
 	if (success) {
 		bestiary.value = data;
-		isOwner.value = store.user?._id === bestiary.value.owner;
-		isEditor.value = (bestiary.value?.editors ?? []).includes(store.user?._id ?? "");
+		isOwner.value = store.user?.id === bestiary.value.ownerId;
+		isEditor.value = (bestiary.value?.editors ?? []).map(e => e.userId).includes(store.user?.id ?? "");
 		if (isOwner.value || isEditor.value)
 			shouldShowEditor.value = true;
 	}
@@ -76,7 +76,7 @@ const saveStatblock = async () => {
 	rawInfo.value.stats = data.value;
 	const loader = $loading.show();
 	// Send to backend
-	const { success, error } = await useFetch<Creature>(`/api/creature/${rawInfo.value._id?.toString()}/update`, "POST", rawInfo.value);
+	const { success, error } = await useFetch<CreatureWithStats>(`/api/creature/${rawInfo.value.id.toString()}/update`, "POST", rawInfo.value);
 	if (success) {
 		toast.success("Saved stat block");
 		madeChanges.value = false;
@@ -582,7 +582,7 @@ const changeCR = (isIncrease: boolean) => {
 					isCurrent: false
 				},
 				{
-					path: `../bestiary-viewer/${bestiary?._id}`,
+					path: `../bestiary-viewer/${bestiary?.id}`,
 					text: bestiary?.name,
 					isCurrent: false
 				},

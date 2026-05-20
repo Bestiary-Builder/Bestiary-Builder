@@ -1,50 +1,23 @@
-import { ObjectId as Id } from "bson";
+import type * as Prisma from "../prisma/internal/prismaNamespace";
 import type { SpellSlotList, Statblock } from "./build-types";
+
+export type Id = string;
 
 // Built types
 export * from "./build-types";
 
-export { ObjectId as Id } from "bson";
-
 // Database types
-export class User {
-	constructor(
-		public username: string,
-		public avatar: string,
-		public email: string,
-		public verified: boolean,
-		public banner_color: string,
-		public global_name: string,
-		public bestiaries: Id[] = [],
-		public bookmarks: Id[] = [],
-		public supporter: 0 | 1 | 2,
-		public joinedAt: number,
-		public _id: string,
-		public secret?: string,
-	) {}
-}
-export class Bestiary {
-	constructor(
-		public name: string,
-		public owner: string,
-		public editors: string[],
-		public status: "public" | "private" | "unlisted",
-		public description: string,
-		public creatures: Id[],
-		public tags: string[],
-		public viewCount: number,
-		public bookmarks: number,
-		public lastUpdated: number,
-		public _id?: Id,
-	) {}
-}
-export class Creature {
-	constructor(public lastUpdated: number, public stats: Statblock, public bestiary: Id, public _id?: Id) {}
-}
+export { SupporterStatus, BestiaryStatus } from "../prisma/enums";
+export type User = Prisma.UserModel;
+export type Bestiary = Prisma.BestiaryModel;
+export type BestiaryEditor = Prisma.BestiaryEditorModel;
+export type UserBestiaryBookmark = Prisma.UserBestiaryBookmarkModel;
+export type Creature = Prisma.CreatureModel;
+export type Automation = Prisma.AutomationModel;
 
-export class Automation {
-	constructor(public name: string, public description: string, public owner: string, public lastUpdated: number, public automation: null | Record<string, unknown> | Record<string, unknown>[], public _id?: Id) {}
-}
+export type CreatureWithStats = Omit<Creature, "stats"> & { stats: Statblock };
+export type BestiaryExtended = Bestiary & { creatures: { id: Id }[]; editors: { userId: Id }[] };
+export type BestiaryWithCount = Bestiary & { creatureCount: number };
 
 export class GlobalStats {
 	constructor(public bestiaries: number, public creatures: number, public users: number) {}
@@ -59,13 +32,7 @@ export interface AutomationDocumentationEntity {
 }
 export interface AutomationDocumentation { [key: string]: AutomationDocumentationEntity }
 
-export function stringToId(id: string): Id | null {
-	if (!id)
-		return null;
-	if (id.length !== 24)
-		return null;
-	return new Id(id);
-}
+export type AutomationWithType = Omit<Automation, "automation"> & { automation: null | Record<string, unknown> };
 
 // Frontend types
 export const defaultStatblock: Statblock = {

@@ -56,13 +56,13 @@ app.get("/api/login", async (req, res) => {
 		if (userResult) {
 			// Update user
 			const secret = await updateUser({
-				_id: userResult.id,
+				id: userResult.id,
 				username: userResult.username,
 				avatar: userResult.avatar,
 				email: userResult.email,
 				verified: userResult.verified,
-				banner_color: userResult.banner_color,
-				global_name: userResult.global_name
+				bannerColor: userResult.banner_color,
+				globalName: userResult.global_name
 			});
 			// Create JWT token
 			const token = jwt.sign({ id: secret }, process.env.JWTKEY ?? "key", {

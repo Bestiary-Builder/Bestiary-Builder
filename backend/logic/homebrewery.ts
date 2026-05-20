@@ -3,12 +3,12 @@ import { checkBestiaryPermission } from "./bestiaries";
 import { checkCreaturePermission } from "./creatures";
 import { app } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
-import { collections, getBestiary, getCreature, incrementBestiaryViewCount } from "@/utilities/database";
-import { type FeatureEntity, Id, SKILLS_BY_STAT, type SaveEntity, type Stat, type Statblock, capitalizeFirstLetter, displayCasterCasting, displayInnateCasting, displaySpeedOrSenses, hpCalc, ppCalc, statCalc, stringToId } from "~/shared";
+import { getBestiary, getCreature, getCreaturesByBestiary, incrementBestiaryViewCount } from "@/utilities/database";
+import { type FeatureEntity, SKILLS_BY_STAT, type SaveEntity, type Stat, type Statblock, capitalizeFirstLetter, displayCasterCasting, displayInnateCasting, displaySpeedOrSenses, hpCalc, ppCalc, statCalc } from "~/shared";
 
 app.get("/api/homebrewery/export/bestiary/:id", possibleUser, async (req, res) => {
 	try {
-		const bestiaryId = stringToId(req.params.id);
+		const bestiaryId = req.params.id;
 		const user = req.body.user;
 
 		if (!bestiaryId)
@@ -19,25 +19,26 @@ app.get("/api/homebrewery/export/bestiary/:id", possibleUser, async (req, res) =
 		if (!bestiary)
 			return res.status(404).json({ error: "No bestiary with that id found." });
 
-		if (checkBestiaryPermission(bestiary, user) === "none")
+		if (await checkBestiaryPermission(bestiary, user) === "none")
 			return res.status(401).json({ error: "You don't have access to this bestiary." });
 
 		incrementBestiaryViewCount(bestiaryId);
 		const creatures: string[] = [];
+		const creatureRecords = await getCreaturesByBestiary(bestiaryId);
 
-		for (const creatureID of bestiary.creatures) {
-			const creature = await collections.creatures?.findOne({ _id: new Id(creatureID) });
-
-			if (!creature)
+		for (const creature of creatureRecords) {
+			if (!creature.stats)
 				continue;
 
+			const stats = creature.stats as unknown as Statblock;
+
 			try {
-				const creature_markdown = getCreatureMarkdown(creature.stats);
+				const creature_markdown = getCreatureMarkdown(stats);
 				creatures.push(creature_markdown);
 			}
 			catch (err) {
 				log.log("critical", err);
-				return res.status(500).json({ error: `Error exporting ${creature.stats.description.name}. Please contact the developers of Bestiary Builder, not Avrae.` });
+				return res.status(500).json({ error: `Error exporting ${stats.description.name}. Please contact the developers of Bestiary Builder, not Avrae.` });
 			}
 		}
 
@@ -51,7 +52,7 @@ app.get("/api/homebrewery/export/bestiary/:id", possibleUser, async (req, res) =
 
 app.get("/api/homebrewery/export/creature/:id", possibleUser, async (req, res) => {
 	try {
-		const creatureID = stringToId(req.params.id);
+		const creatureID = req.params.id;
 		const user = req.body.user;
 
 		if (!creatureID)
@@ -67,13 +68,18 @@ app.get("/api/homebrewery/export/creature/:id", possibleUser, async (req, res) =
 		if (!permissionLevel)
 			return res.status(401).json({ error: "You don't have permission to view this creature." });
 
+		if (!creature.stats)
+			return res.status(500).json({ error: "Creature stats not found." });
+
+		const stats = creature.stats as unknown as Statblock;
+
 		try {
-			const creature_markdown = getCreatureMarkdown(creature.stats);
+			const creature_markdown = getCreatureMarkdown(stats);
 			return res.json({ metadata: creature_markdown });
 		}
 		catch (err) {
 			log.log("critical", err);
-			return res.status(500).json({ error: `Error exporting ${creature.stats.description.name}. Please contact the developers of Bestiary Builder, not Avrae.` });
+			return res.status(500).json({ error: `Error exporting ${stats.description.name}. Please contact the developers of Bestiary Builder, not Avrae.` });
 		}
 	}
 	catch (err) {
@@ -162,12 +168,12 @@ export function getCreatureMarkdown(creature: Statblock) {
 	// Additional Attributes - Conditional
 	const saves = formatSaves(creature);
 	const skills = formatSkills(creature);
-	const immunities = getValue(creature.defenses, "immunities", undefined);
-	const resistances = getValue(creature.defenses, "resistances", undefined);
+	const immunities = getValue<string[]>(creature.defenses, "immunities", []);
+	const resistances = getValue<string[]>(creature.defenses, "resistances", []);
 	const senses = displaySpeedOrSenses(creature.core.senses);
 	const passivePerception = ppCalc(creature);
 	const sense_string = senses === "" ? `Passive Perception ${passivePerception}` : `${senses}, Passive Perception ${passivePerception}`;
-	const languages = getValue(creature.core, "languages", ["None"]);
+	const languages = getValue<string[]>(creature.core, "languages", ["None"]);
 	const challenge = getValue(creature.description, "cr", "Unknown Challenge");
 	const xp = getValue(creature.description, "xp", 0);
 	const proficiencyBonus = getValue(creature.core, "proficiencyBonus", 0);

@@ -3,16 +3,16 @@ import { RouterLink } from "vue-router";
 import { computed } from "vue";
 import UserBanner from "@/components/UserBanner.vue";
 import StatusIcon from "@/components/StatusIcon.vue";
-import type { Bestiary } from "~/shared";
+import type { BestiaryExtended } from "~/shared";
 import { store } from "@/utils/store";
 
-const props = defineProps<{ personal: boolean; bestiaries: Bestiary[] }>();
+const props = defineProps<{ personal: boolean; bestiaries: BestiaryExtended[] }>();
 
 const emit = defineEmits<{
-	(e: "deleteBestiary", bestiary: Bestiary): void;
+	(e: "deleteBestiary", bestiary: BestiaryExtended): void;
 }>();
 
-const openDeleteModal = (bestiary: Bestiary) => {
+const openDeleteModal = (bestiary: BestiaryExtended) => {
 	if (!bestiary)
 		return;
 	emit("deleteBestiary", bestiary);
@@ -34,11 +34,11 @@ const bestiaryImages = computed(() => {
 <template>
 	<div class="tile-container">
 		<TransitionGroup name="popin">
-			<RouterLink v-for="(bestiary, index) in bestiaries" :key="bestiary._id?.toString()" class="content-tile bestiary-tile" :to="`/bestiary-viewer/${bestiary._id}`" :class="{ 'four-tall': bestiary.owner !== store.user?._id }" :aria-label="`Open Bestiary ${bestiary.name}`">
+			<RouterLink v-for="(bestiary, index) in bestiaries" :key="bestiary.id.toString()" class="content-tile bestiary-tile" :to="`/bestiary-viewer/${bestiary.id}`" :class="{ 'four-tall': bestiary.ownerId !== store.user?.id }" :aria-label="`Open Bestiary ${bestiary.name}`">
 				<div class="tile-header">
 					<h2>{{ bestiary.name }}</h2>
 				</div>
-				<span v-if="bestiary.owner !== store.user?._id && personal" class="shared-notice">(shared)</span>
+				<span v-if="bestiary.ownerId !== store.user?.id && personal" class="shared-notice">(shared)</span>
 				<div class="tile-content" :class="{ 'tile-has-image': bestiaryImages[index] }">
 					<img v-if="bestiaryImages[index]" class="tile-image" :src="bestiaryImages[index]">
 					<div class="tags">
@@ -50,9 +50,9 @@ const bestiaryImages = computed(() => {
 				</div>
 				<div class="tile-footer">
 					<span v-if="personal" v-tooltip.left="bestiary.status"><StatusIcon :icon="bestiary.status" /></span>
-					<span v-if="personal && bestiary.owner === store.user?._id" v-tooltip="'Delete bestiary'" role="button" class="edit-button" aria-label="Delete bestiary" @click.stop.prevent="openDeleteModal(bestiary)"><font-awesome-icon :icon="['fas', 'trash']" /></span>
+					<span v-if="personal && bestiary.ownerId === store.user?.id" v-tooltip="'Delete bestiary'" role="button" class="edit-button" aria-label="Delete bestiary" @click.stop.prevent="openDeleteModal(bestiary)"><font-awesome-icon :icon="['fas', 'trash']" /></span>
 					<span v-else>
-						<UserBanner :id="bestiary.owner" />
+						<UserBanner :id="bestiary.ownerId" />
 					</span>
 					<span>{{ bestiary.creatures.length }}<font-awesome-icon :icon="['fas', 'skull']" /></span>
 				</div>

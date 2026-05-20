@@ -1,5 +1,6 @@
-<script lang="ts">
-import { defineComponent, ref } from "vue";
+<script setup lang="ts">
+import { computed, onMounted, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { refDebounced } from "@vueuse/core";
 import UserBanner from "@/components/UserBanner.vue";
 import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
@@ -7,548 +8,535 @@ import StatusIcon from "@/components/StatusIcon.vue";
 import LabelledComponent from "@/components/LabelledComponent.vue";
 import Modal from "@/components/Modal.vue";
 import StatblockRenderer from "@/components/StatblockRenderer.vue";
+import Markdown from "@/components/Markdown.vue";
 
 import { crAsString, defaultStatblock } from "~/shared";
-import type { Bestiary, Creature, Statblock, User } from "~/shared";
+import type { Bestiary, BestiaryExtended, CreatureWithStats, Statblock, User } from "~/shared";
 import { useFetch } from "@/utils/utils";
 import { toast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
-import Markdown from "@/components/Markdown.vue";
 import { creatureTypes } from "@/utils/constants";
 import { $loading } from "@/utils/app/loading";
 
-export default defineComponent({
-	components: {
-		UserBanner,
-		StatblockRenderer,
-		Breadcrumbs,
-		StatusIcon,
-		LabelledComponent,
-		Modal,
-		Markdown
-	},
-	setup() {
-		const searchText = ref("");
-		const debouncedSearch = refDebounced(searchText, 500);
+const route = useRoute();
+const router = useRouter();
 
-		const searchEnv = ref("");
-		const debouncedEnv = refDebounced(searchEnv, 500);
+const searchText = ref("");
+const debouncedSearch = refDebounced(searchText, 500);
 
-		const searchFaction = ref("");
-		const debouncedFaction = refDebounced(searchFaction, 500);
+const searchEnv = ref("");
+const debouncedEnv = refDebounced(searchEnv, 500);
 
-		return {
-			searchText,
-			debouncedSearch,
-			searchEnv,
-			debouncedEnv,
-			searchFaction,
-			debouncedFaction
-		};
-	},
-	data() {
-		return {
-			bestiary: null as Bestiary | null,
-			savedBestiary: null as Bestiary | null,
-			creatures: null as Creature[] | null,
-			searchCreatureList: [] as Creature[] | null,
-			editors: [] as User[],
-			lastHoveredCreature: null as null | Statblock,
-			lastClickedCreature: null as null | Statblock,
-			hasPinnedBefore: false as boolean,
-			bookmarked: false as boolean,
-			isOwner: false,
-			isEditor: false,
-			editorToAdd: "" as string,
-			showWarning: false as boolean,
-			critterDbId: "" as string,
-			bestiaryBuilderJson: "" as string,
-			notices: {} as { [key: string]: string },
-			searchOptions: {
-				text: "",
-				tags: [] as string[],
-				minCr: 0,
-				maxCr: 30,
-				env: "",
-				faction: ""
-			},
-			sortMode: "Alphabetically",
-			isExpanded: false,
-			showEditorModal: false,
-			showImportModal: false,
-			selectedCreature: null as Creature | null,
-			srdCreatures: [] as string[],
-			store,
-			creatureTypes,
-			defaultStatblock
-		};
-	},
-	computed: {
-		searchCreatures(): Creature[] | null {
-			if (this.creatures == null)
-				return null;
-			const loader = $loading.show();
+const searchFaction = ref("");
+const debouncedFaction = refDebounced(searchFaction, 500);
 
-			const response = this.creatures?.filter((creature: Creature) => this.filterCreature(creature)) || null;
+const bestiary = ref<BestiaryExtended | null>(null);
+const savedBestiary = ref<BestiaryExtended | null>(null);
+const creatures = ref<CreatureWithStats[] | null>(null);
+const editors = ref<User[]>([]);
+const lastHoveredCreature = ref<Statblock | null>(null);
+const lastClickedCreature = ref<Statblock | null>(null);
+const hasPinnedBefore = ref(false);
+const bookmarked = ref(false);
+const isOwner = ref(false);
+const isEditor = ref(false);
+const editorToAdd = ref("");
+const showWarning = ref(false);
+const critterDbId = ref("");
+const bestiaryBuilderJson = ref("");
+const notices = ref<Record<string, string>>({});
+const searchOptions = ref({
+	text: "",
+	tags: [] as string[],
+	minCr: 0,
+	maxCr: 30,
+	env: "",
+	faction: ""
+});
+const sortMode = ref("Alphabetically");
+const isExpanded = ref(false);
+const showEditorModal = ref(false);
+const showImportModal = ref(false);
+const srdCreatures = ref<string[]>([]);
 
-			if (this.sortMode === "Alphabetically") {
-				response.sort((a, b) => {
-					const nameA = a.stats.description.name.toLowerCase();
-					const nameB = b.stats.description.name.toLowerCase();
-					if (nameA < nameB)
-						return -1;
-					if (nameA > nameB)
-						return 1;
-					return 0;
-				});
-			}
-			else if (this.sortMode === "Creature Type") {
-				response.sort((a, b) => {
-					const nameA = a.stats.core.race.toLowerCase();
-					const nameB = b.stats.core.race.toLowerCase();
-					if (nameA < nameB)
-						return -1;
-					if (nameA > nameB)
-						return 1;
-					return 0;
-				});
-			}
-			else if (this.sortMode === "CR Descending") {
-				response.sort((a, b) => {
-					return b.stats.description.cr - a.stats.description.cr;
-				});
-			}
-			else if (this.sortMode === "CR Ascending") {
-				response.sort((a, b) => {
-					return a.stats.description.cr - b.stats.description.cr;
-				});
-			}
-			loader.hide();
+const searchCreatures = computed<CreatureWithStats[] | null>(() => {
+	if (creatures.value == null)
+		return null;
+	const loader = $loading.show();
 
-			return response;
-		}
-	},
-	watch: {
-		lastClickedCreature(): void {
-			if (this.hasPinnedBefore)
-				return;
-			if (!this.hasPinnedBefore)
-				this.hasPinnedBefore = true;
+	const response = creatures.value?.filter((creature: CreatureWithStats) => filterCreature(creature)) || null;
 
-			toast.info("Pinned creature to the view. Click unpin there to go back to hover behaviour.");
-		},
-		"bestiary.status": function (newValue, _oldValue): void {
-			if (newValue === "private")
-				this.showWarning = false;
-			if (newValue === "public")
-				this.showWarning = true;
-		},
-		"bestiary.name": function (): void {
-			document.title = `${this?.bestiary?.name.substring(0, 16)} | Bestiary Builder`;
-		},
-		debouncedSearch() {
-			this.searchOptions.text = this.searchText;
-		},
-		debouncedEnv() {
-			this.searchOptions.env = this.searchEnv;
-		},
-		debouncedFaction() {
-			this.searchOptions.faction = this.searchFaction;
-		}
-	},
-	async mounted() {
-		const loader = $loading.show();
-		void this.getBestiary();
+	if (sortMode.value === "Alphabetically") {
+		response.sort((a, b) => {
+			const nameA = a.stats.description.name.toLowerCase();
+			const nameB = b.stats.description.name.toLowerCase();
+			if (nameA < nameB)
+				return -1;
+			if (nameA > nameB)
+				return 1;
+			return 0;
+		});
+	}
+	else if (sortMode.value === "Creature Type") {
+		response.sort((a, b) => {
+			const nameA = a.stats.core.race.toLowerCase();
+			const nameB = b.stats.core.race.toLowerCase();
+			if (nameA < nameB)
+				return -1;
+			if (nameA > nameB)
+				return 1;
+			return 0;
+		});
+	}
+	else if (sortMode.value === "CR Descending") {
+		response.sort((a, b) => {
+			return b.stats.description.cr - a.stats.description.cr;
+		});
+	}
+	else if (sortMode.value === "CR Ascending") {
+		response.sort((a, b) => {
+			return a.stats.description.cr - b.stats.description.cr;
+		});
+	}
+	loader.hide();
+
+	return response;
+});
+
+watch(lastClickedCreature, (): void => {
+	if (hasPinnedBefore.value)
+		return;
+	if (!hasPinnedBefore.value)
+		hasPinnedBefore.value = true;
+
+	toast.info("Pinned creature to the view. Click unpin there to go back to hover behaviour.");
+});
+
+watch(() => bestiary.value?.status, (newValue): void => {
+	if (newValue === "private")
+		showWarning.value = false;
+	if (newValue === "public")
+		showWarning.value = true;
+});
+
+watch(() => bestiary.value?.name, (): void => {
+	if (bestiary.value?.name)
+		document.title = `${bestiary.value?.name.substring(0, 16)} | Bestiary Builder`;
+});
+
+watch(debouncedSearch, () => {
+	searchOptions.value.text = searchText.value;
+});
+watch(debouncedEnv, () => {
+	searchOptions.value.env = searchEnv.value;
+});
+watch(debouncedFaction, () => {
+	searchOptions.value.faction = searchFaction.value;
+});
+
+onMounted(async () => {
+	const loader = $loading.show();
+	await getBestiary().then(() => {
 		loader.hide();
+	});
 
-		if (this?.bestiary?.name)
-			document.title = `${this?.bestiary?.name.substring(0, 16)} | Bestiary Builder`;
+	if (bestiary.value?.name)
+		document.title = `${bestiary.value?.name.substring(0, 16)} | Bestiary Builder`;
 
-		const { success, data, error } = await useFetch<string[]>(`/api/srd-creatures/list`);
+	await useFetch<string[]>(`/api/srd-creatures/list`).then(({ success, data, error }) => {
 		if (success)
-			this.srdCreatures = data;
+			srdCreatures.value = data;
 
 		if (error)
 			toast.error(error);
-	},
-	methods: {
-		filterCreature(data: Creature) {
-			const filterChecks: boolean[] = [];
-			if (this.searchOptions.text !== "")
-				filterChecks.push(data.stats.description.name.toLowerCase().includes(this.searchOptions.text.toLowerCase().trim()));
-
-			if (this.searchOptions.env !== "")
-				filterChecks.push(data.stats.description.environment.toLowerCase().includes(this.searchOptions.env.toLowerCase().trim()));
-
-			if (this.searchOptions.faction !== "")
-				filterChecks.push(data.stats.description.faction.toLowerCase().includes(this.searchOptions.faction.toLowerCase().trim()));
-
-			if (this.searchOptions.tags.length > 0)
-				filterChecks.push(this.searchOptions.tags.some(item => data.stats.core.race.toLowerCase().includes(item.toLowerCase())));
-
-			if (this.searchOptions.minCr !== 0 || this.searchOptions.maxCr !== 30)
-				filterChecks.push(this.searchOptions.minCr <= data.stats.description.cr && data.stats.description.cr <= this.searchOptions.maxCr);
-
-			return filterChecks.every(_ => _);
-		},
-		async exportHomebrewery() {
-			const loader = $loading.show();
-
-			try {
-				const { success, data: resultData, error } = await useFetch<{ metadata: string }>(
-					`/api/homebrewery/export/bestiary/${this.bestiary?._id?.toString()}`,
-					"GET"
-				);
-
-				if (success) {
-					await navigator.clipboard.writeText(resultData.metadata);
-					toast.info("Exported this bestiary markdown to your clipboard");
-				}
-				else {
-					toast.error(error);
-				}
-			}
-			catch (err) {
-				toast.error(err as string);
-			}
-			finally {
-				loader.hide();
-			}
-		},
-		async exportBestiary(asFile: boolean) {
-			if (asFile) {
-				const file = new File(
-					[
-						JSON.stringify(
-							this.creatures?.map(obj => obj.stats),
-							null,
-							2
-						)
-					],
-					"Creatures.txt",
-					{
-						type: "text/plain"
-					}
-				);
-
-				// https://javascript.plainenglish.io/javascript-create-file-c36f8bccb3be
-				const link = document.createElement("a");
-				const url = URL.createObjectURL(file);
-
-				link.href = url;
-				link.download = file.name;
-				document.body.appendChild(link);
-				link.click();
-
-				document.body.removeChild(link);
-				window.URL.revokeObjectURL(url);
-			}
-			else {
-				await navigator.clipboard.writeText(
-					JSON.stringify(
-						this.creatures?.map(obj => obj.stats),
-						null,
-						2
-					)
-				);
-				toast.info("Exported this bestiary to your clipboard.");
-			}
-		},
-		async importBestiaryFromCritterDB() {
-			let link = this.critterDbId.trim();
-			const isPublic = link.includes("publishedbestiary");
-			try {
-				const url = new URL(link);
-				if (url.hostname !== "critterdb.com" && !url.hostname.endsWith(".critterdb.com")) {
-					toast.error("Could not recognize link as a link to a CritterDB bestiary");
-					return;
-				}
-			}
-			catch {
-				return;
-			}
-
-			const linkEls = link.split("/");
-			link = linkEls[linkEls.length - 1];
-
-			toast.info("Fetching bestiary data has started. This may take a while.");
-			const loader = $loading.show();
-			const { success, data, error } = await useFetch<{
-				data: {
-					creatures: Statblock[];
-					name: string;
-					description: string;
-				};
-				failedCreatures: string[];
-			}>(`/api/critterdb/${link}/${isPublic}`);
-			if (success) {
-				if (data.failedCreatures.length > 0)
-					toast.error(`Failed to parse ${data.failedCreatures.length} creatures, due to invalid data recieved.`);
-				for (const creature of data.failedCreatures)
-					this.notices[creature] = "Failed to parse, due to unrecognized data.";
-			}
-			else {
-				toast.error(error);
-				loader.hide();
-				return;
-			}
-			toast.info("Saving creatures has started. This may take a while.");
-			const { success: cSuccess, data: creatureData, error: cError } = await useFetch<{ error?: string; ignoredCreatures: { creature: string; error: string }[] }>(`/api/bestiary/${this.bestiary?._id?.toString()}/addcreatures`, "POST", data.data.creatures);
-			if (!cSuccess) {
-				this.notices = {};
-				toast.error(cError);
-			}
-			else if (creatureData.error) {
-				toast.error("The import was completed with errors.");
-				this.notices.Errors = creatureData.error;
-				for (const error of creatureData.ignoredCreatures)
-					this.notices[error.creature] = error.error;
-			}
-			await this.getBestiary();
-			loader.hide();
-			toast.success("Importing has finished!");
-			if (cSuccess && !creatureData.error)
-				this.showImportModal = false;
-		},
-		async importCreaturesFromBestiaryBuilder() {
-			let creatures;
-			const loader = $loading.show();
-			try {
-				creatures = JSON.parse(this.bestiaryBuilderJson);
-			}
-			catch (e) {
-				console.error(e);
-				toast.error("Something is wrong with the format of your JSON");
-				loader.hide();
-				return;
-			}
-			toast.info("Importing creatures has started. This may take a while.");
-			const { success, data, error } = await useFetch<{ error?: string; ignoredCreatures: { creature: string; error: string }[] }>(`/api/bestiary/${this.bestiary?._id?.toString()}/addcreatures`, "POST", creatures);
-			if (!success) {
-				this.notices = {};
-				toast.error(error);
-			}
-			else if (data.error) {
-				toast.error("The import was completed with errors.");
-				this.notices.Errors = data.error;
-				for (const error of data.ignoredCreatures)
-					this.notices[error.creature] = error.error;
-			}
-			else {
-				toast.success("Importing has finished!");
-			}
-
-			await this.getBestiary();
-			loader.hide();
-			if (success && !data.error)
-				this.showImportModal = false;
-		},
-		async createCreature(stats = defaultStatblock, shouldHaveLoader = true) {
-			let loader;
-			if (shouldHaveLoader)
-				loader = $loading.show();
-
-			// Replace for actual creation data:
-			const data = {
-				stats,
-				bestiary: this.bestiary?._id
-			} as Creature;
-			// Send data to server
-			const { success, data: resultData, error } = await useFetch<Creature>("/api/creature/add", "POST", data);
-			if (success) {
-				const data = resultData;
-				await this.$router.push(`../statblock-editor/${data._id?.toString()}`);
-			}
-			else {
-				toast.error(error);
-			}
-
-			if (shouldHaveLoader && loader)
-				loader.hide();
-		},
-		async deleteCreature(creature: Creature) {
-			const loader = $loading.show();
-			const { success, error } = await useFetch(`/api/creature/${creature._id?.toString()}/delete`);
-			if (success) {
-				toast.success("Deleted creature succesfully");
-				if (!this.bestiary)
-					return;
-				this.bestiary.creatures = this.bestiary.creatures.filter(c => c !== creature._id);
-				this.creatures = this.creatures?.filter(c => c._id !== creature._id) ?? [];
-			}
-			else {
-				toast.error(error);
-			}
-			loader.hide();
-		},
-		async importSrdCreature(creature: string) {
-			const { success, data, error } = await useFetch<Statblock>(`/api/srd-creature/${encodeURIComponent(creature)}`);
-			if (success) {
-				await this.createCreature(data);
-				return data;
-			}
-			else {
-				toast.error(error);
-			}
-		},
-		async addEditor() {
-			if (!this.bestiary)
-				return;
-			const id = this.editorToAdd;
-			const loader = $loading.show();
-			const { success, error } = await useFetch(`/api/bestiary/${this.bestiary._id?.toString()}/editors/add/${id}`);
-			if (success)
-				toast.success("Added editor succesfully");
-			else
-				toast.error(error);
-
-			await this.getBestiary();
-			loader.hide();
-		},
-		async removeEditor(id: string) {
-			if (!this.bestiary)
-				return;
-			const loader = $loading.show();
-			const { success, error } = await useFetch(`/api/bestiary/${this.bestiary._id?.toString()}/editors/remove/${id}`);
-			if (success)
-				toast.success("Removed editor succesfully");
-			else
-				toast.error(error);
-
-			await this.getBestiary();
-			loader.hide();
-		},
-		async getBestiary() {
-			// Get id
-			const id = this.$route.params.id;
-			// Request bestiary info
-			const { success, data, error } = await useFetch<Bestiary>(`/api/bestiary/${id.toString()}`);
-			if (!success) {
-				this.bestiary = null;
-				toast.error(error);
-				return;
-			}
-			this.bestiary = data;
-			this.savedBestiary = this.bestiary;
-			this.isOwner = store.user?._id === this.bestiary.owner;
-			this.isEditor = (this.bestiary?.editors ?? []).includes(store.user?._id ?? "");
-			// Fetch creatures
-			await useFetch<Creature[]>(`/api/bestiary/${this.bestiary._id?.toString()}/creatures`).then(async (creatureResult) => {
-				if (creatureResult.success) {
-					this.creatures = creatureResult.data;
-				}
-				else {
-					this.creatures = null;
-					toast.error(creatureResult.error);
-				}
-			});
-			// Fetch editors
-			this.editors = [] as User[];
-			for (const editorId of this.bestiary?.editors ?? []) {
-				await useFetch(`/api/user/${editorId}`).then((editorResult) => {
-					if (editorResult.success)
-						this.editors.push(editorResult.data as User);
-					else
-						toast.error(editorResult.error);
-				});
-			}
-			// Bookmark state
-			if (store.user) {
-				await useFetch<{ state: boolean }>(`/api/bestiary/${this.bestiary._id?.toString()}/bookmark/get`).then(async (bookmarkResult) => {
-					if (bookmarkResult.success) {
-						this.bookmarked = (bookmarkResult.data as { state: boolean }).state;
-					}
-					else {
-						this.bookmarked = false;
-						toast.error(bookmarkResult.error);
-					}
-				});
-			}
-			else {
-				this.bookmarked = false;
-			}
-		},
-		async updateBestiary() {
-			if (!this.bestiary)
-				return;
-			const loader = $loading.show();
-			// Send to backend
-			const { success, error } = await useFetch<Bestiary>(`/api/bestiary/${this.bestiary._id?.toString()}/update`, "POST", this.bestiary);
-			if (success) {
-				toast.success("Saved bestiary");
-				this.savedBestiary = this.bestiary;
-				this.showEditorModal = false;
-			}
-			else {
-				toast.error(error);
-			}
-			loader.hide();
-		},
-		async toggleBookmark() {
-			if (!this.bestiary)
-				return;
-			const loader = $loading.show();
-			const { success, data, error } = await useFetch<{ state: boolean }>(`/api/bestiary/${this.bestiary._id?.toString()}/bookmark/toggle`);
-			if (success) {
-				this.bookmarked = data.state;
-				if (this.bookmarked)
-					toast.success("Successfully bookmarked this bestiary!");
-				else toast.success("Successfully unbookmarked this bestiary!");
-			}
-			else {
-				this.bookmarked = false;
-				toast.error(error);
-			}
-			loader.hide();
-		},
-		setSelectedCreature(creature: Statblock) {
-			this.lastHoveredCreature = creature;
-		},
-		changeCR(isIncrease: boolean, isMinimumOption: boolean): void {
-			let cr;
-			if (isMinimumOption)
-				cr = this.searchOptions.minCr;
-			else cr = this.searchOptions.maxCr;
-			if (cr === 0 && isIncrease) {
-				cr = 0.125;
-			}
-			else if (cr === 0.125 && isIncrease) {
-				cr = 0.25;
-			}
-			else if (cr === 0.25 && isIncrease) {
-				cr = 0.5;
-			}
-			else if (cr === 0.5 && isIncrease) {
-				cr = 1;
-			}
-			else if (cr === 0.125 && !isIncrease) {
-				cr = 0;
-			}
-			else if (cr === 0.25 && !isIncrease) {
-				cr = 0.125;
-			}
-			else if (cr === 0.5 && !isIncrease) {
-				cr = 0.25;
-			}
-			else if (cr === 1 && !isIncrease) {
-				cr = 0.5;
-			}
-			else {
-				if (isIncrease)
-					cr = Math.min(30, cr + 1);
-				else
-					cr = Math.max(0, cr - 1);
-			}
-			if (isMinimumOption)
-				this.searchOptions.minCr = cr;
-			else this.searchOptions.maxCr = cr;
-		},
-		crAsString
-	}
+	});
 });
+
+function filterCreature(data: CreatureWithStats) {
+	const filterChecks: boolean[] = [];
+	if (searchOptions.value.text !== "")
+		filterChecks.push(data.stats.description.name.toLowerCase().includes(searchOptions.value.text.toLowerCase().trim()));
+
+	if (searchOptions.value.env !== "")
+		filterChecks.push(data.stats.description.environment.toLowerCase().includes(searchOptions.value.env.toLowerCase().trim()));
+
+	if (searchOptions.value.faction !== "")
+		filterChecks.push(data.stats.description.faction.toLowerCase().includes(searchOptions.value.faction.toLowerCase().trim()));
+
+	if (searchOptions.value.tags.length > 0)
+		filterChecks.push(searchOptions.value.tags.some(item => data.stats.core.race.toLowerCase().includes(item.toLowerCase())));
+
+	if (searchOptions.value.minCr !== 0 || searchOptions.value.maxCr !== 30)
+		filterChecks.push(searchOptions.value.minCr <= data.stats.description.cr && data.stats.description.cr <= searchOptions.value.maxCr);
+
+	return filterChecks.every(_ => _);
+}
+
+async function exportHomebrewery() {
+	const loader = $loading.show();
+
+	try {
+		const { success, data: resultData, error } = await useFetch<{ metadata: string }>(
+			`/api/homebrewery/export/bestiary/${bestiary.value?.id.toString()}`,
+			"GET"
+		);
+
+		if (success) {
+			await navigator.clipboard.writeText(resultData.metadata);
+			toast.info("Exported this bestiary markdown to your clipboard");
+		}
+		else {
+			toast.error(error);
+		}
+	}
+	catch (err) {
+		toast.error(err as string);
+	}
+	finally {
+		loader.hide();
+	}
+}
+
+async function exportBestiary(asFile: boolean) {
+	if (asFile) {
+		const file = new File(
+			[
+				JSON.stringify(
+					creatures.value?.map(obj => obj.stats),
+					null,
+					2
+				)
+			],
+			"Creatures.txt",
+			{
+				type: "text/plain"
+			}
+		);
+
+		// https://javascript.plainenglish.io/javascript-create-file-c36f8bccb3be
+		const link = document.createElement("a");
+		const url = URL.createObjectURL(file);
+
+		link.href = url;
+		link.download = file.name;
+		document.body.appendChild(link);
+		link.click();
+
+		document.body.removeChild(link);
+		window.URL.revokeObjectURL(url);
+	}
+	else {
+		await navigator.clipboard.writeText(
+			JSON.stringify(
+				creatures.value?.map(obj => obj.stats),
+				null,
+				2
+			)
+		);
+		toast.info("Exported this bestiary to your clipboard.");
+	}
+}
+
+async function importBestiaryFromCritterDB() {
+	let link = critterDbId.value.trim();
+	const isPublic = link.includes("publishedbestiary");
+	try {
+		const url = new URL(link);
+		if (url.hostname !== "critterdb.com" && !url.hostname.endsWith(".critterdb.com")) {
+			toast.error("Could not recognize link as a link to a CritterDB bestiary");
+			return;
+		}
+	}
+	catch {
+		return;
+	}
+
+	const linkEls = link.split("/");
+	link = linkEls[linkEls.length - 1];
+
+	toast.info("Fetching bestiary data has started. This may take a while.");
+	const loader = $loading.show();
+	const { success, data, error } = await useFetch<{
+		data: {
+			creatures: Statblock[];
+			name: string;
+			description: string;
+		};
+		failedCreatures: string[];
+	}>(`/api/critterdb/${link}/${isPublic}`);
+	if (success) {
+		if (data.failedCreatures.length > 0)
+			toast.error(`Failed to parse ${data.failedCreatures.length} creatures, due to invalid data recieved.`);
+		for (const creature of data.failedCreatures)
+			notices.value[creature] = "Failed to parse, due to unrecognized data.";
+	}
+	else {
+		toast.error(error);
+		loader.hide();
+		return;
+	}
+	toast.info("Saving creatures has started. This may take a while.");
+	const { success: cSuccess, data: creatureData, error: cError } = await useFetch<{ error?: string; ignoredCreatures: { creature: string; error: string }[] }>(`/api/bestiary/${bestiary.value?.id.toString()}/addcreatures`, "POST", data.data.creatures);
+	if (!cSuccess) {
+		notices.value = {};
+		toast.error(cError);
+	}
+	else if (creatureData.error) {
+		toast.error("The import was completed with errors.");
+		notices.value.Errors = creatureData.error;
+		for (const error of creatureData.ignoredCreatures)
+			notices.value[error.creature] = error.error;
+	}
+	await getBestiary();
+	loader.hide();
+	toast.success("Importing has finished!");
+	if (cSuccess && !creatureData.error)
+		showImportModal.value = false;
+}
+
+async function importCreaturesFromBestiaryBuilder() {
+	let creaturesToImport;
+	const loader = $loading.show();
+	try {
+		creaturesToImport = JSON.parse(bestiaryBuilderJson.value);
+	}
+	catch (e) {
+		console.error(e);
+		toast.error("Something is wrong with the format of your JSON");
+		loader.hide();
+		return;
+	}
+	toast.info("Importing creatures has started. This may take a while.");
+	const { success, data, error } = await useFetch<{ error?: string; ignoredCreatures: { creature: string; error: string }[] }>(`/api/bestiary/${bestiary.value?.id.toString()}/addcreatures`, "POST", creaturesToImport);
+	if (!success) {
+		notices.value = {};
+		toast.error(error);
+	}
+	else if (data.error) {
+		toast.error("The import was completed with errors.");
+		notices.value.Errors = data.error;
+		for (const error of data.ignoredCreatures)
+			notices.value[error.creature] = error.error;
+	}
+	else {
+		toast.success("Importing has finished!");
+	}
+
+	await getBestiary();
+	loader.hide();
+	if (success && !data.error)
+		showImportModal.value = false;
+}
+
+async function createCreature(stats = defaultStatblock, shouldHaveLoader = true) {
+	let loader;
+	if (shouldHaveLoader)
+		loader = $loading.show();
+
+	// Replace for actual creation data:
+	const data = {
+		stats,
+		bestiaryId: bestiary.value?.id
+	} as CreatureWithStats;
+	// Send data to server
+	const { success, data: resultData, error } = await useFetch<CreatureWithStats>("/api/creature/add", "POST", data);
+	if (success) {
+		const data = resultData;
+		await router.push(`../statblock-editor/${data.id.toString()}`);
+	}
+	else {
+		toast.error(error);
+	}
+
+	if (shouldHaveLoader && loader)
+		loader.hide();
+}
+
+async function deleteCreature(creature: CreatureWithStats) {
+	const loader = $loading.show();
+	const { success, error } = await useFetch(`/api/creature/${creature.id.toString()}/delete`);
+	if (success) {
+		toast.success("Deleted creature succesfully");
+		if (!bestiary.value)
+			return;
+		bestiary.value.creatures = bestiary.value.creatures.filter(c => c.id !== creature.id);
+		creatures.value = creatures.value?.filter(c => c.id !== creature.id) ?? [];
+	}
+	else {
+		toast.error(error);
+	}
+	loader.hide();
+}
+
+async function importSrdCreature(creature: string) {
+	const { success, data, error } = await useFetch<Statblock>(`/api/srd-creature/${encodeURIComponent(creature)}`);
+	if (success) {
+		await createCreature(data);
+		return data;
+	}
+	else {
+		toast.error(error);
+	}
+}
+
+async function addEditor() {
+	if (!bestiary.value)
+		return;
+	const id = editorToAdd.value;
+	const loader = $loading.show();
+	const { success, error } = await useFetch(`/api/bestiary/${bestiary.value.id.toString()}/editors/add/${id}`);
+	if (success)
+		toast.success("Added editor succesfully");
+	else
+		toast.error(error);
+
+	await getBestiary();
+	loader.hide();
+}
+
+async function removeEditor(id: string) {
+	if (!bestiary.value)
+		return;
+	const loader = $loading.show();
+	const { success, error } = await useFetch(`/api/bestiary/${bestiary.value.id.toString()}/editors/remove/${id}`);
+	if (success)
+		toast.success("Removed editor succesfully");
+	else
+		toast.error(error);
+
+	await getBestiary();
+	loader.hide();
+}
+
+async function getBestiary() {
+	// Get id
+	const id = route.params.id;
+	// Request bestiary info
+	const { success, data, error } = await useFetch<BestiaryExtended>(`/api/bestiary/${id.toString()}`);
+	if (!success) {
+		bestiary.value = null;
+		toast.error(error);
+		return;
+	}
+	bestiary.value = data;
+	savedBestiary.value = bestiary.value;
+	isOwner.value = store.user?.id === bestiary.value.ownerId;
+	isEditor.value = (bestiary.value?.editors ?? []).map(e => e.userId).includes(store.user?.id ?? "");
+	// Fetch creatures
+	await useFetch<CreatureWithStats[]>(`/api/bestiary/${bestiary.value.id.toString()}/creatures`).then(async (creatureResult) => {
+		if (creatureResult.success) {
+			creatures.value = creatureResult.data;
+		}
+		else {
+			creatures.value = null;
+			toast.error(creatureResult.error);
+		}
+	});
+	// Fetch editors
+	editors.value = [] as User[];
+	for (const { userId: editorId } of bestiary.value?.editors ?? []) {
+		await useFetch(`/api/user/${editorId}`).then((editorResult) => {
+			if (editorResult.success)
+				editors.value.push(editorResult.data as User);
+			else
+				toast.error(editorResult.error);
+		});
+	}
+	// Bookmark state
+	if (store.user) {
+		await useFetch<{ state: boolean }>(`/api/bestiary/${bestiary.value.id.toString()}/bookmark/get`).then(async (bookmarkResult) => {
+			if (bookmarkResult.success) {
+				bookmarked.value = (bookmarkResult.data as { state: boolean }).state;
+			}
+			else {
+				bookmarked.value = false;
+				toast.error(bookmarkResult.error);
+			}
+		});
+	}
+	else {
+		bookmarked.value = false;
+	}
+}
+
+async function updateBestiary() {
+	if (!bestiary.value)
+		return;
+	const loader = $loading.show();
+	// Send to backend
+	const { success, error } = await useFetch<Bestiary>(`/api/bestiary/${bestiary.value.id.toString()}/update`, "POST", bestiary.value);
+	if (success) {
+		toast.success("Saved bestiary");
+		savedBestiary.value = bestiary.value;
+		showEditorModal.value = false;
+	}
+	else {
+		toast.error(error);
+	}
+	loader.hide();
+}
+
+async function toggleBookmark() {
+	if (!bestiary.value)
+		return;
+	const loader = $loading.show();
+	const { success, data, error } = await useFetch<{ state: boolean }>(`/api/bestiary/${bestiary.value.id.toString()}/bookmark/toggle`);
+	if (success) {
+		bookmarked.value = data.state;
+		if (bookmarked.value)
+			toast.success("Successfully bookmarked this bestiary!");
+		else toast.success("Successfully unbookmarked this bestiary!");
+	}
+	else {
+		bookmarked.value = false;
+		toast.error(error);
+	}
+	loader.hide();
+}
+
+function changeCR(isIncrease: boolean, isMinimumOption: boolean): void {
+	let cr;
+	if (isMinimumOption)
+		cr = searchOptions.value.minCr;
+	else cr = searchOptions.value.maxCr;
+	if (cr === 0 && isIncrease) {
+		cr = 0.125;
+	}
+	else if (cr === 0.125 && isIncrease) {
+		cr = 0.25;
+	}
+	else if (cr === 0.25 && isIncrease) {
+		cr = 0.5;
+	}
+	else if (cr === 0.5 && isIncrease) {
+		cr = 1;
+	}
+	else if (cr === 0.125 && !isIncrease) {
+		cr = 0;
+	}
+	else if (cr === 0.25 && !isIncrease) {
+		cr = 0.125;
+	}
+	else if (cr === 0.5 && !isIncrease) {
+		cr = 0.25;
+	}
+	else if (cr === 1 && !isIncrease) {
+		cr = 0.5;
+	}
+	else {
+		if (isIncrease)
+			cr = Math.min(30, cr + 1);
+		else
+			cr = Math.max(0, cr - 1);
+	}
+	if (isMinimumOption)
+		searchOptions.value.minCr = cr;
+	else searchOptions.value.maxCr = cr;
+}
 </script>
 
 <template>
+	<p>Test</p>
 	<div>
 		<Breadcrumbs
 			v-if="bestiary"
@@ -689,7 +677,7 @@ export default defineComponent({
 						</button>
 						<hr>
 						<div class="footer" :class="{ 'three-wide': isOwner }">
-							<UserBanner :id="bestiary.owner" />
+							<UserBanner :id="bestiary.ownerId" />
 							<div v-tooltip.left="bestiary.status">
 								<StatusIcon :icon="bestiary.status" />
 							</div>
@@ -702,7 +690,7 @@ export default defineComponent({
 					</div>
 					<div class="tile-container list-tiles">
 						<TransitionGroup name="slide-fade">
-							<div v-for="creature in searchCreatures" :key="creature._id?.toString()" class="content-tile creature-tile" @mouseover="lastHoveredCreature = creature.stats" @click="lastClickedCreature = creature.stats">
+							<div v-for="creature in searchCreatures" :key="creature.id.toString()" class="content-tile creature-tile" @mouseover="lastHoveredCreature = creature.stats" @click="lastClickedCreature = creature.stats">
 								<div class="left-side">
 									<h3>{{ creature.stats?.description?.name }}</h3>
 									<span>{{ creature.stats?.core?.size }} {{ creature.stats?.core?.race }}{{ creature.stats?.description?.alignment ? `, ${creature.stats?.description?.alignment}` : "" }}</span>
@@ -722,7 +710,7 @@ export default defineComponent({
 										</template>
 									</VDropdown>
 									<button v-tooltip="`${isOwner || isEditor ? 'Edit' : 'View'} creature`" :aria-label="`${isOwner || isEditor ? 'Edit' : 'View'} ${creature.stats.description.name}`" class="edit-creature" @click.stop="() => {}">
-										<RouterLink class="creature" :to="`/statblock-editor/${creature._id}`" :aria-label="`${isOwner || isEditor ? 'Edit' : 'View'} creature`">
+										<RouterLink class="creature" :to="`/statblock-editor/${creature.id}`" :aria-label="`${isOwner || isEditor ? 'Edit' : 'View'} creature`">
 											<font-awesome-icon v-if="isOwner || isEditor" :icon="['fas', 'pen-to-square']" />
 											<font-awesome-icon v-else :icon="['fas', 'eye']" />
 										</RouterLink>
@@ -837,10 +825,10 @@ export default defineComponent({
 						Editors can add, edit, and remove creatures. They can edit the name of the bestiary and its description. Editors cannot change the status of the bestiary or delete the bestiary. Editors cannot add other editors. The owner can remove editors at any time.
 					</p>
 					<div class="editor-container">
-						<div v-for="editor in editors" :key="editor._id" class="editor-list">
+						<div v-for="editor in editors" :key="editor.id" class="editor-list">
 							<p>
-								<UserBanner :id="editor._id" />
-								<span v-if="isOwner" role="button" class="delete-creature" @click="removeEditor(editor._id)"> <span>🗑️</span> </span>
+								<UserBanner :id="editor.id" />
+								<span v-if="isOwner" role="button" class="delete-creature" @click="removeEditor(editor.id)"> <span>🗑️</span> </span>
 							</p>
 						</div>
 					</div>

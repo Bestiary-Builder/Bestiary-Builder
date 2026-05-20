@@ -4,7 +4,7 @@ import { onBeforeRouteLeave } from "vue-router";
 import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
 import { useFetch } from "@/utils/utils";
 import { toast } from "@/utils/app/toast";
-import type { Automation, Id } from "~/shared";
+import type { AutomationWithType, Id } from "~/shared";
 
 import LabelledComponent from "@/components/LabelledComponent.vue";
 import AutomationEditor from "@/components/AutomationEditor.vue";
@@ -12,7 +12,7 @@ import Modal from "@/components/Modal.vue";
 import { store } from "@/utils/store";
 import { $loading } from "@/utils/app/loading";
 
-const data = ref<Automation[]>([]);
+const data = ref<AutomationWithType[]>([]);
 let initialData = "";
 // get our data
 onMounted(async () => {
@@ -22,7 +22,7 @@ onMounted(async () => {
 	loader.hide();
 });
 
-const selectedAutomation = ref<Automation | null>(null);
+const selectedAutomation = ref<AutomationWithType | null>(null);
 
 const newAutomationName = ref<string>("New Automation");
 const addAutomation = async (name: string, automation = null, shouldNotify = true) => {
@@ -31,7 +31,7 @@ const addAutomation = async (name: string, automation = null, shouldNotify = tru
 		return;
 	}
 	const loader = $loading.show();
-	const { success, error } = await useFetch<Automation>(`/api/automation/add`, "POST", { name, automation });
+	const { success, error } = await useFetch<AutomationWithType>(`/api/automation/add`, "POST", { name, automation });
 	if (success) {
 		await getMyAutomations();
 		newAutomationName.value = "New Automation";
@@ -56,7 +56,7 @@ const deleteAutomation = async (_id: Id) => {
 };
 
 const getMyAutomations = async () => {
-	const { success, data: rData, error } = await useFetch<Automation[]>(`/api/my-automations`);
+	const { success, data: rData, error } = await useFetch<AutomationWithType[]>(`/api/my-automations`);
 	if (success)
 		data.value = rData;
 	else toast.error(error);
@@ -133,7 +133,7 @@ onUnmounted(() => {
 			<div class="left">
 				<LabelledComponent title="List">
 					<ol v-if="data && data.length > 0">
-						<li v-for="(d, key) in data" :key="key" class="feature-button__container" :class="{ selected: d._id === selectedAutomation?._id }" @click="selectedAutomation = d">
+						<li v-for="(d, key) in data" :key="key" class="feature-button__container" :class="{ selected: d.id === selectedAutomation?.id }" @click="selectedAutomation = d">
 							<p role="button" :aria-label="`Select automation: ${d.name} (${key})`">
 								{{ d.name || "Unnamed feature" }}
 							</p>
@@ -150,14 +150,14 @@ onUnmounted(() => {
 					</button>
 				</LabelledComponent>
 				<LabelledComponent v-if="selectedAutomation" title="Delete automation">
-					<button class="btn danger" @click="deleteAutomation(selectedAutomation._id!)">
+					<button class="btn danger" @click="deleteAutomation(selectedAutomation.id!)">
 						Delete current automation
 					</button>
 				</LabelledComponent>
 			</div>
 			<hr>
 			<div class="automation-editor">
-				<AutomationEditor v-if="selectedAutomation" :key="selectedAutomation?._id!.toString()" :data="selectedAutomation" :is-stand-alone="true" @saved-standalone-data="initialData = JSON.stringify(data)" />
+				<AutomationEditor v-if="selectedAutomation" :key="selectedAutomation?.id!.toString()" :data="selectedAutomation" :is-stand-alone="true" @saved-standalone-data="initialData = JSON.stringify(data)" />
 				<div v-else class="no-selected">
 					Select an automation to get started with editing it.
 				</div>

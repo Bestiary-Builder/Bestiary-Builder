@@ -6,10 +6,10 @@ import LabelledComponent from "./LabelledComponent.vue";
 import Markdown from "./Markdown.vue";
 import { useFetch } from "@/utils/utils";
 import { toast } from "@/utils/app/toast";
-import { type Automation, type AutomationDocumentation, type FeatureEntity, type Id, parseDescIntoAutomation } from "~/shared";
+import { type AutomationDocumentation, type AutomationWithType, type FeatureEntity, type Id, parseDescIntoAutomation } from "~/shared";
 import { store } from "@/utils/store";
 
-const props = withDefaults(defineProps<{ data: FeatureEntity | Automation; isStandAlone?: boolean; creatureName?: string }>(), { isStandAlone: false, creatureName: "$NAME$" });
+const props = withDefaults(defineProps<{ data: FeatureEntity | AutomationWithType; isStandAlone?: boolean; creatureName?: string }>(), { isStandAlone: false, creatureName: "$NAME$" });
 
 const emit = defineEmits<{
 	(e: "savedStandaloneData"): void;
@@ -25,7 +25,7 @@ const _isVisualEditor = ref(false);
 // Imported automation helpers
 interface myAutomationSkeleton {
 	name: string;
-	_id: Id;
+	id: Id;
 }
 interface LoadedAutomation {
 	basicExamples: string[];
@@ -56,7 +56,7 @@ onMounted(async () => {
 	await loadImportedAutomation("my-automations", "myAutomation");
 });
 
-type ImportedData = FeatureEntity | Automation;
+type ImportedData = FeatureEntity | AutomationWithType;
 const importAutomation = async (apiPath: "automation" | "basic-example" | "srd-feature", name: string, _id: Id | null = null) => {
 	const { success, data, error } = await useFetch(`/api/${apiPath}/${encodeURIComponent(_id?.toString() ?? name)}`);
 	let feature: ImportedData | null = null;
@@ -108,7 +108,7 @@ watch(automationString, () => validateYaml());
 const saveAutomation = async (shouldNotify = false) => {
 	// if standalone: saving commits the change to the database
 	// if not standalone: saving saves automation into the FeatureEntity object so it is preserved between opening/closen and dragging features, but not to the database
-	let parsed: Automation["automation"] = null;
+	let parsed: AutomationWithType["automation"] = null;
 	try {
 		parsed = YAML.parse(automationString.value);
 	}
@@ -134,9 +134,9 @@ const saveAutomation = async (shouldNotify = false) => {
 		}
 	}
 
-	if (props.isStandAlone && "_id" in props.data) {
+	if (props.isStandAlone && "id" in props.data) {
 		// save standalone to database
-		const { success, error } = await useFetch<FeatureEntity>(`/api/automation/${props.data._id?.toString()}/update`, "POST", props.data);
+		const { success, error } = await useFetch<FeatureEntity>(`/api/automation/${props.data.id.toString()}/update`, "POST", props.data);
 		if (success && shouldNotify) {
 			emit("savedStandaloneData");
 		}
@@ -389,7 +389,7 @@ const saveCustomAutomation = async () => {
 
 			<div v-if="!isStandAlone" class="editor-field__container">
 				<LabelledComponent title="Import custom automation" for="importcustomautomation">
-					<v-select :options="loadedAutomation.myAutomation" input-id="importcustomautomation" label="name" @option:selected="(selected : myAutomationSkeleton) => (importAutomation('automation', selected.name, selected._id))" />
+					<v-select :options="loadedAutomation.myAutomation" input-id="importcustomautomation" label="name" @option:selected="(selected : myAutomationSkeleton) => (importAutomation('automation', selected.name, selected.id))" />
 				</LabelledComponent>
 			</div>
 

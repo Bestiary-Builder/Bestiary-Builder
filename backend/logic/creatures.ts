@@ -3,19 +3,20 @@ import { checkBestiaryPermission } from "./bestiaries";
 import { validateCreatureInput } from "./validation";
 import { app, checkCreatureAmountLimit, checkCreatureLimits, limits } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
-import { addCreatureToBestiary, collections, deleteCreature, getBestiary, getCreature, updateCreature } from "@/utilities/database";
+import { createCreature, deleteCreature, getBestiary, getBestiaryCreatureCount, getCreature, getCreaturesByBestiary, updateCreature } from "@/utilities/database";
 import type { Creature, Statblock, User } from "~/shared";
-import { defaultStatblock, stringToId } from "~/shared";
+import { defaultStatblock } from "~/shared";
 import { checkBadwords } from "@/utilities/badwords";
+import type { JsonObject } from "~/shared/prisma/internal/prismaNamespace";
 
 // Check creature permissions
 export async function checkCreaturePermission(creature: Creature, user: User | null) {
 	if (!user)
 		return false;
-	const bestiary = await getBestiary(creature.bestiary);
+	const bestiary = await getBestiary(creature.bestiaryId);
 	if (!bestiary)
 		return false;
-	const bestiaryPermissionLevel = checkBestiaryPermission(bestiary, user);
+	const bestiaryPermissionLevel = await checkBestiaryPermission(bestiary, user);
 	if (bestiaryPermissionLevel === "none")
 		return false;
 	else return true;
@@ -25,7 +26,7 @@ export async function checkCreaturePermission(creature: Creature, user: User | n
 app.get("/api/creature/:id", possibleUser, async (req, res) => {
 	try {
 		const user = req.body.user;
-		const _id = stringToId(req.params.id);
+		const _id = req.params.id;
 		if (!_id)
 			return res.status(400).json({ error: "Creature id not valid." });
 		const creature = await getCreature(_id);
@@ -51,11 +52,11 @@ app.get("/api/creature/:id", possibleUser, async (req, res) => {
 app.get("/api/bestiary/:id/creatures", possibleUser, async (req, res) => {
 	try {
 		const user = req.body.user;
-		const bestiaryId = stringToId(req.params.id);
+		const bestiaryId = req.params.id;
 		const bestiary = bestiaryId ? await getBestiary(bestiaryId) : null;
 		if (bestiary) {
-			if (checkBestiaryPermission(bestiary, user) !== "none") {
-				const creatures = (await collections.creatures?.find({ _id: { $in: bestiary.creatures } }).toArray()) ?? [];
+			if (await checkBestiaryPermission(bestiary, user) !== "none") {
+				const creatures = await getCreaturesByBestiary(bestiaryId);
 				log.info(`Retrieved creatures from bestiary with the id ${bestiaryId}`);
 				return res.json(creatures);
 			}
@@ -80,42 +81,30 @@ app.post("/api/creature/add", requireUser, async (req, res) => {
 		const data = req.body.data as Creature;
 		if (!data)
 			return res.status(400).json({ error: "Creature data not found." });
-		if (!validateCreatureInput(data.stats, res))
+		if (!validateCreatureInput(data.stats as unknown as Statblock, res))
 			return;
-		if (typeof data.bestiary == "string") {
-			const _id = stringToId(data.bestiary);
-			if (!_id)
-				return res.status(400).json({ error: "Invalid creature id in body." });
-			data.bestiary = _id;
-		}
-		if (typeof data._id == "string") {
-			const _id = stringToId(data._id);
-			if (!_id)
-				return res.status(400).json({ error: "Invalid bestiary id." });
-			data._id = _id;
-		}
 		const user = req.body.user;
 		if (!user)
 			return res.status(404).json({ error: "Couldn't find current user." });
 
 		// Make sure all fields are present
-		const oldStats = data.stats;
-		data.stats = {} as Statblock;
+		const oldStats = data.stats as unknown as Statblock;
+		const stats = {} as Statblock;
 		for (const key in defaultStatblock) {
 			const k = key as keyof Statblock;
-			data.stats[k] = { ...defaultStatblock[k], ...oldStats[k] } as any;
+			stats[k] = { ...defaultStatblock[k], ...(oldStats ? oldStats[k] : {}) } as any;
 		}
 		// Check limits
-		const limitError = checkCreatureLimits(data);
+		const limitError = checkCreatureLimits(stats);
 		if (limitError)
 			return res.status(400).json({ error: limitError });
 		// Check image link
-		let image = data.stats.description.image as string;
+		let image = stats.description.image as string;
 		// remove any url parameters from the string
 		if (image) {
 			try {
 				image = new URL(image).origin + new URL(image).pathname;
-				data.stats.description.image = image;
+				stats.description.image = image;
 			}
 			catch {
 				return res.status(400).json({ error: `Invalid image url.` });
@@ -124,7 +113,7 @@ app.post("/api/creature/add", requireUser, async (req, res) => {
 		let failedToImportImage = false;
 		if (image && image !== "") {
 			if (!image.startsWith("https")) {
-				data.stats.description.image = "";
+				stats.description.image = "";
 				failedToImportImage = true;
 			}
 			let isApproved = false;
@@ -135,36 +124,37 @@ app.post("/api/creature/add", requireUser, async (req, res) => {
 				}
 			}
 			if (!isApproved) {
-				data.stats.description.image = "";
+				stats.description.image = "";
 				failedToImportImage = true;
 			}
 		}
+		data.stats = stats as unknown as JsonObject;
 		// Get bestiary
-		const bestiary = await getBestiary(data.bestiary);
+		const bestiary = await getBestiary(data.bestiaryId);
 		if (!bestiary)
 			return res.status(404).json({ error: "Bestiary not found" });
 		// Remove bad words
 		if (bestiary.status !== "private") {
-			const nameError = checkBadwords(data.stats.description.name);
+			const nameError = checkBadwords(stats.description.name);
 			if (nameError)
 				return res.status(400).json({ error: `Creature name ${nameError}` });
-			const descError = checkBadwords(data.stats.description.description);
+			const descError = checkBadwords(stats.description.description);
 			if (descError)
 				return res.status(400).json({ error: `Creature description ${descError}` });
 		}
 		// Check permissions
-		if (["none", "view"].includes(checkBestiaryPermission(bestiary, user)))
+		if (["none", "view"].includes(await checkBestiaryPermission(bestiary, user)))
 			return res.status(401).json({ error: "You don't have permission to add creature to this bestiary." });
 		// Check amount of creatures:
-		const amountError = checkCreatureAmountLimit(bestiary);
+		const count = await getBestiaryCreatureCount(bestiary.id);
+		const amountError = checkCreatureAmountLimit(count);
 		if (amountError)
 			return res.status(400).json({ error: amountError });
 		// Add creature
-		const _id = await updateCreature(data);
+		const _id = await createCreature(data);
 		if (!_id)
 			return res.status(500).json({ error: "Failed to create creature." });
-		await addCreatureToBestiary(_id, data.bestiary);
-		data._id = _id;
+		data.id = _id;
 		log.info(`New creature created with the id: ${_id}`);
 		if (failedToImportImage)
 			return res.status(400).json({ error: "Image link not recognized as an allowed image format. Make sure it is from a secure https location and ends in an image file format extension (e.g. .png)" });
@@ -178,7 +168,7 @@ app.post("/api/creature/add", requireUser, async (req, res) => {
 app.post("/api/creature/:id/update", requireUser, async (req, res) => {
 	try {
 		// Get input
-		const _id = stringToId(req.params.id);
+		const _id = req.params.id;
 		if (!_id)
 			return res.status(400).json({ error: "Creature id not valid." });
 		const creature = await getCreature(_id);
@@ -187,41 +177,41 @@ app.post("/api/creature/:id/update", requireUser, async (req, res) => {
 		const data = req.body.data as Creature;
 		if (!data)
 			return res.status(400).json({ error: "Creature data not found." });
-		if (!validateCreatureInput(data.stats, res))
+		if (!validateCreatureInput(data.stats as unknown as Statblock, res))
 			return;
-		if (typeof data.bestiary == "string") {
-			const _id = stringToId(data.bestiary);
+		if (typeof data.bestiaryId == "string") {
+			const _id = data.bestiaryId;
 			if (!_id)
 				return res.status(400).json({ error: "Invalid creature id in body." });
-			data.bestiary = _id;
+			data.bestiaryId = _id;
 		}
-		if (typeof data._id == "string") {
-			const _id = stringToId(data._id);
+		if (typeof data.id == "string") {
+			const _id = data.id;
 			if (!_id)
 				return res.status(400).json({ error: "Invalid bestiary id." });
-			data._id = _id;
+			data.id = _id;
 		}
 		const user = req.body.user;
 		if (!user)
 			return res.status(404).json({ error: "Couldn't find current user." });
 		// Make sure all fields are present
-		const oldStats = data.stats;
-		data.stats = {} as Statblock;
+		const oldStats = data.stats as unknown as Statblock;
+		const stats = {} as Statblock;
 		for (const key in defaultStatblock) {
 			const k = key as keyof Statblock;
-			data.stats[k] = { ...defaultStatblock[k], ...oldStats[k] } as any;
+			stats[k] = { ...defaultStatblock[k], ...oldStats[k] } as any;
 		}
 		// Check limits
-		const limitError = checkCreatureLimits(data);
+		const limitError = checkCreatureLimits(stats);
 		if (limitError)
 			return res.status(400).json({ error: limitError });
 		// Check image link
-		let image = data.stats.description.image as string;
+		let image = stats.description.image as string;
 		// remove any url parameters from the string
 		if (image) {
 			try {
 				image = new URL(image).origin + new URL(image).pathname;
-				data.stats.description.image = image;
+				stats.description.image = image;
 			}
 			catch {
 				return res.status(400).json({ error: `Invalid image url.` });
@@ -230,7 +220,7 @@ app.post("/api/creature/:id/update", requireUser, async (req, res) => {
 		let failedToImportImage = false;
 		if (image && image !== "") {
 			if (!image.startsWith("https")) {
-				data.stats.description.image = "";
+				stats.description.image = "";
 				failedToImportImage = true;
 			}
 			let isApproved = false;
@@ -241,25 +231,26 @@ app.post("/api/creature/:id/update", requireUser, async (req, res) => {
 				}
 			}
 			if (!isApproved) {
-				data.stats.description.image = "";
+				stats.description.image = "";
 				failedToImportImage = true;
 			}
 		}
+		data.stats = stats as unknown as JsonObject;
 		// Get bestiary
-		const bestiary = await getBestiary(data.bestiary);
+		const bestiary = await getBestiary(data.bestiaryId);
 		if (!bestiary)
 			return res.status(404).json({ error: "Bestiary not found" });
 		// Remove bad words
 		if (bestiary.status !== "private") {
-			const nameError = checkBadwords(data.stats.description.name);
+			const nameError = checkBadwords(stats.description.name);
 			if (nameError)
 				return res.status(400).json({ error: `Creature name ${nameError}` });
-			const descError = checkBadwords(data.stats.description.description);
+			const descError = checkBadwords(stats.description.description);
 			if (descError)
 				return res.status(400).json({ error: `Creature description ${descError}` });
 		}
 		// Check permissions
-		if (["none", "view"].includes(checkBestiaryPermission(bestiary, user)))
+		if (["none", "view"].includes(await checkBestiaryPermission(bestiary, user)))
 			return res.status(401).json({ error: "You don't have permission to update this creature." });
 		// Update creature
 		const updatedId = await updateCreature(data, _id);
@@ -281,7 +272,7 @@ app.post("/api/creature/:id/update", requireUser, async (req, res) => {
 app.get("/api/creature/:id/delete", requireUser, async (req, res) => {
 	try {
 		// Get input
-		const _id = stringToId(req.params.id);
+		const _id = req.params.id;
 		if (!_id)
 			return res.status(400).json({ error: "Creature id not valid." });
 		const user = req.body.user;
