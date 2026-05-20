@@ -154,7 +154,7 @@ app.post("/api/bestiary/:id/update", requireUser, async (req, res) => {
 				return res.status(400).json({ error: "A bestiary must have a non default name." });
 		}
 		// Update bestiary
-		const bestiary = await getBestiary(data.id);
+		const bestiary = await getBestiary(id);
 		if (!bestiary)
 			return res.status(404).json({ error: "No bestiary with that id found." });
 		const permissionLevel = await checkBestiaryPermission(bestiary, user);

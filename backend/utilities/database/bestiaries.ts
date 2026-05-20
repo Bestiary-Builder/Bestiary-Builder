@@ -18,6 +18,8 @@ const defaultIncludes = {
 
 // Bestiary functions
 export async function getBestiary(id: Id, includeCreatures = false) {
+	if (!id)
+		return null;
 	try {
 		log.log("database", `Reading bestiary with the id ${id}.`);
 		return await getPrismaClient().bestiary.findUnique({ where: { id }, include: includeCreatures ? { ...defaultIncludes, creatures: includeCreatures } : defaultIncludes });
