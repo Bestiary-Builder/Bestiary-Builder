@@ -17,11 +17,14 @@ COPY . .
 
 # Build app
 
+## Generate prisma types
+RUN cd backend && bun install --production && bun run generate
+
 ## Build shared type interface
 RUN cd shared && bun install --production && bunx ts-interface-builder ./src/build-types.ts
 
 ## Build backend
-RUN cd backend && bun install --production && bun build server.ts --compile --sourcemap --outfile ../build/server
+RUN cd backend && bun build server.ts --compile --sourcemap --outfile ../build/server
 
 ## Build frontend
 
