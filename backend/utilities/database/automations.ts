@@ -43,7 +43,7 @@ export async function deleteAutomation(id: Id) {
 			const automation = await getAutomation(id);
 			if (!automation)
 				return false;
-			await getPrismaClient().bestiary.delete({ where: { id } });
+			await getPrismaClient().automation.delete({ where: { id } });
 			return true;
 		});
 	}
