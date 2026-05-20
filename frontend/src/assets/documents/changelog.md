@@ -1,3 +1,8 @@
+## v2.6.0
+_May 20th, 2026_
+
+- Switched the database from using MongoDB to using PostgreSQL.
+
 ## v2.5.0
 _February 2nd, 2026_
 
