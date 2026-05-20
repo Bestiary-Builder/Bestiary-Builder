@@ -185,25 +185,6 @@ async function main() {
         })) ?? [])
     });
 
-    console.log("Migrating creatures...");
-    const pageSize = 10000;
-    let page = 1;
-    while (creatures.length > (page - 1) * pageSize) {
-        await prisma.creature.createMany({
-            data: creatures.slice((page - 1) * pageSize, page * pageSize).filter(c => bestiaryIds.has(c.bestiary.toHexString())).map(c =>
-                ({
-                    id: c._id.toHexString(),
-                    bestiaryId: c.bestiary?.toHexString?.() ?? "",
-                    lastUpdated: new Date(c.lastUpdated ?? Date.now()),
-                    stats: JSON.parse(JSON.stringify(c.stats ?? {}).replaceAll("\\u0000", "")),
-                })
-            )
-        });
-        console.log(`\t${page * pageSize}/${creatures.length} migrated...`);
-        page++;
-    }
-
-
     console.log("Migrating automations...");
     await prisma.automation.createMany({
         data: automations.filter(a => userIds.has(a._id.toHexString())).map(a => ({
@@ -221,12 +202,34 @@ async function main() {
 	// We normalize into UserBestiaryBookmark join rows.
     await prisma.userBestiaryBookmark.createMany({
         data: users.filter(u => Array.isArray(u.bookmarks)).flatMap(
-            u => u.bookmarks?.filter(bId => bestiaryIds.has(bId.toHexString())).map(bId => ({
-                userId: String(u._id),
-				bestiaryId: bId.toHexString()
-            })) ?? []
+            u => {
+                const bookmarks = u.bookmarks?.map(bId => bId.toHexString()) ?? [];
+
+                return bookmarks.filter((bId, pos) => bookmarks.indexOf(bId) === pos).filter(bId => bestiaryIds.has(bId)).map(bId => ({
+                    userId: String(u._id),
+                    bestiaryId: bId
+                }));
+            }
         )
     })
+
+    console.log("Migrating creatures...");
+    const pageSize = 10000;
+    let page = 1;
+    while (creatures.length > (page - 1) * pageSize) {
+        await prisma.creature.createMany({
+            data: creatures.slice((page - 1) * pageSize, page * pageSize).filter(c => bestiaryIds.has(c.bestiary.toHexString())).map(c =>
+                ({
+                    id: c._id.toHexString(),
+                    bestiaryId: c.bestiary?.toHexString?.() ?? "",
+                    lastUpdated: new Date(c.lastUpdated ?? Date.now()),
+                    stats: JSON.parse(JSON.stringify(c.stats ?? {}).replaceAll("\\u0000", "")),
+                })
+            )
+        });
+        console.log(`\t${page * pageSize}/${creatures.length} migrated...`);
+        page++;
+    }
 
 	console.log("Migration complete ✅");
 
