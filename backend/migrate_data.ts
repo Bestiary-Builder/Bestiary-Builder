@@ -94,6 +94,9 @@ function toSupporterStatus(supporter: number | undefined): SupporterStatus {
 }
 
 async function main() {
+    console.log("Migration is disabled...");
+    return;
+
 	const mongoUri = requireEnv("MongoDB");
 	const mongoDbName = process.env.MongoDB_DBName || "bestiarybuilder";
 	requireEnv("DATABASE_URL");
@@ -187,7 +190,7 @@ async function main() {
 
     console.log("Migrating automations...");
     await prisma.automation.createMany({
-        data: automations.filter(a => userIds.has(a._id.toHexString())).map(a => ({
+        data: automations.filter(a => userIds.has(a.owner)).map(a => ({
             id: a._id.toHexString(),
             name: a.name ?? "",
             description: a.description ?? "",
