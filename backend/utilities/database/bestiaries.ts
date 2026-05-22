@@ -1,3 +1,4 @@
+import { v4 as uuid } from "uuid";
 import { getPrismaClient } from ".";
 import { log } from "@/utilities/logger";
 import type { BestiaryCreateInput, BestiaryUpdateInput } from "~/shared/src/prisma-types";
@@ -40,11 +41,12 @@ export async function updateBestiary(data: BestiaryUpdateInput, id: Id) {
 		return null;
 	}
 }
-export async function createBestiary(data: BestiaryCreateInput) {
+export async function createBestiary(data: Omit<BestiaryCreateInput, "id">) {
 	try {
 		data.lastUpdated = new Date(Date.now());
+		const id = uuid().replaceAll("-", "");
 		log.log("database", `Creating bestiary`);
-		return (await getPrismaClient().bestiary.create({ data })).id;
+		return (await getPrismaClient().bestiary.create({ data: { ...data, id } })).id;
 	}
 	catch (err) {
 		log.log("critical", err);

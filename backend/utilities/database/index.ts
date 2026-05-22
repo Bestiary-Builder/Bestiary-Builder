@@ -1,4 +1,5 @@
 import { PrismaPg } from "@prisma/adapter-pg";
+import { v4 as uuid } from "uuid";
 import { log } from "@/utilities/logger";
 import type { GlobalStats } from "~/shared";
 
@@ -21,6 +22,17 @@ export async function startConnection() {
 		try {
 			// Create prisma client and connect
 			prisma = new PrismaClient({ adapter });
+			// Fix old wrong bestiary ids
+			await prisma.bestiary.updateMany({
+				where: {
+					id: {
+						startsWith: "cmp"
+					}
+				},
+				data: {
+					id: uuid().replaceAll("-", "")
+				}
+			});
 			// Stop waiting loop
 			return;
 		}

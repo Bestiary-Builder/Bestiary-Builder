@@ -39,7 +39,7 @@ model User {
 }
 
 model Bestiary {
-  id          String         @id @default(cuid())
+  id          String         @id
   name        String
   ownerId     String         @map("owner")
   status      BestiaryStatus

@@ -198,7 +198,7 @@ app.post("/api/bestiary/add", requireUser, async (req, res) => {
 			return res.status(404).json({ error: "Couldn't find current user." });
 		if (!req.body.data)
 			return res.status(400).json({ error: "Bestiary data not found." });
-		const data: BestiaryCreateInput = {
+		const data: Omit<BestiaryCreateInput, "id"> = {
 			...{
 				name: "",
 				status: "private",
@@ -211,12 +211,6 @@ app.post("/api/bestiary/add", requireUser, async (req, res) => {
 			owner: { connect: { id: user.id } },
 			lastUpdated: new Date(Date.now())
 		};
-		if (typeof data.id == "string") {
-			const _id = data.id;
-			if (!_id)
-				return res.status(400).json({ error: "Invalid bestiary id in body." });
-			data.id = _id;
-		}
 		// Check limits
 		const limitError = checkBestiaryLimits(data);
 		if (limitError)
