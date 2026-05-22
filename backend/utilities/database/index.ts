@@ -23,16 +23,20 @@ export async function startConnection() {
 			// Create prisma client and connect
 			prisma = new PrismaClient({ adapter });
 			// Fix old wrong bestiary ids
-			await prisma.bestiary.updateMany({
+			const bestiariesToUpdate = await prisma.bestiary.findMany({
 				where: {
 					id: {
 						startsWith: "cmp"
 					}
-				},
-				data: {
-					id: uuid().replaceAll("-", "")
 				}
 			});
+			for (const bestiary of bestiariesToUpdate) {
+				log.info(`Updating bestiary with id ${bestiary.id} to new format.`);
+				await prisma.bestiary.update({
+					where: { id: bestiary.id },
+					data: { id: uuid().replaceAll("-", "") }
+				});
+			}
 			// Stop waiting loop
 			return;
 		}
