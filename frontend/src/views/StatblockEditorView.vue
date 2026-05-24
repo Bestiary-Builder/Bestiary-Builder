@@ -424,6 +424,7 @@ const clearCasting = () => {
 };
 
 watch(() => data.value.spellcasting.casterSpells.casterLevel, (newValue) => {
+	if (rawInfo.value == null) return;
 	if (newValue == null || newValue === undefined) {
 		clearCasting();
 		return;
@@ -433,6 +434,7 @@ watch(() => data.value.spellcasting.casterSpells.casterLevel, (newValue) => {
 });
 
 watch(() => data.value.spellcasting.casterSpells.castingClass, (newValue) => {
+	if (rawInfo.value == null) return;
 	if (newValue == null || newValue === undefined) {
 		clearCasting();
 		return;
