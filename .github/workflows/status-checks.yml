@@ -48,6 +48,9 @@ jobs:
               working-directory: ./frontend
               run: bun install
             # Setup prisma types and database for testing
+            - name: Create .env
+              working-directory: ./backend
+              run: cp .env.template .env
             - name: Generate prisma types
               working-directory: ./backend
               run: bun run generate
