@@ -34,6 +34,18 @@ jobs:
               run: bun run lint
     build-and-test:
         runs-on: ubuntu-latest
+
+        # PostgreSQL container to run with build-and-test job
+        services:
+          database:
+            image: postgres:16-alpine
+            env:
+              POSTGRES_DB: bestiarybuilder
+              POSTGRES_USER: postgres
+              POSTGRES_PASSWORD: password
+            ports:
+              - 5432:5432
+
         steps:
             - uses: actions/checkout@master
             - uses: oven-sh/setup-bun@v2
@@ -54,10 +66,6 @@ jobs:
             - name: Generate prisma types
               working-directory: ./backend
               run: bun run generate
-            - name: Start test database
-              uses: hoverkraft-tech/compose-action@d2bee4f07e8ca410d6b196d00f90c12e7d48c33a # v2.6.0
-              with:
-                compose-file: "./docker-compose.yml"
             - name: Run prisma migrations
               working-directory: ./backend
               run: bunx prisma migrate dev
