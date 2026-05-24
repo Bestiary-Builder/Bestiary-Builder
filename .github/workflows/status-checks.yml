@@ -14,18 +14,21 @@ jobs:
             - name: Installing shared dependencies
               working-directory: ./shared
               run: bun install
-            - name: Run shared ESLint
-              working-directory: ./shared
-              run: bun run lint
-            - name: Installing frontend dependencies
-              working-directory: ./frontend
-              run: bun install
-            - name: Run frontend ESLint
-              working-directory: ./frontend
-              run: bun run lint
             - name: Installing backend dependencies
               working-directory: ./backend
               run: bun install
+            - name: Generate prisma types
+              working-directory: ./backend
+              run: bun run generate
+            - name: Installing frontend dependencies
+              working-directory: ./frontend
+              run: bun install
+            - name: Run shared ESLint
+              working-directory: ./shared
+              run: bun run lint
+            - name: Run frontend ESLint
+              working-directory: ./frontend
+              run: bun run lint
             - name: Run backend ESLint
               working-directory: ./backend
               run: bun run lint
@@ -37,6 +40,12 @@ jobs:
             - name: Installing shared project dependencies
               working-directory: ./shared
               run: bun install
+            - name: Installing backend dependencies
+              working-directory: ./backend
+              run: bun install
+            - name: Generate prisma types
+              working-directory: ./backend
+              run: bun run generate
             - name: Installing frontend dependencies
               working-directory: ./frontend
               run: bun install
@@ -46,9 +55,6 @@ jobs:
               env:
                   VITE_DISCORD_ID: ${{ secrets.VITE_DISCORD_ID }}
                   VITE_ERROR_WEBHOOK: ${{ secrets.VITE_ERROR_WEBHOOK }}
-            - name: Installing backend dependencies
-              working-directory: ./backend
-              run: bun install
             - name: Building the backend
               working-directory: ./backend
               run: bun run build
