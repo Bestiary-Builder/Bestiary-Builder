@@ -3,6 +3,7 @@ _May 24th, 2026_
 
 - Fixed issue with manually set proficiency bonus beyond 10 resetting back to 10 upon loading. Same fix to experience points.
 - Fixed issue with empty values, such as proficiency bonus or scores, not loading upon creation.
+- Fixed Full Spellcaster classes not having correct amount of 5th level spell slots on levels 18, 19, 20.
 
 ## v2.6.2
 _May 22th, 2026_
