@@ -865,7 +865,7 @@ const changeCR = (isIncrease: boolean) => {
 							<LabelledComponent title="Add new skill" for="addnewskill">
 								<v-select
 									placeholder="Select skill"
-									:options="['Acrobatics', 'Animal Handling', 'Arcana', 'Athletics', 'Deception', 'History', 'Initiative', 'Insight', 'Intimidation', 'Investigation', 'Medicine', 'Nature', 'Perception', 'Performance', 'Persuasion', 'Religion', 'Sleight of Hand', 'Stealth', 'Survival']"
+									:options="['Acrobatics', 'Animal Handling', 'Arcana', 'Athletics', 'Charisma', 'Constitution', 'Deception', 'Dexterity', 'History', 'Initiative', 'Insight', 'Intelligence', 'Intimidation', 'Investigation', 'Medicine', 'Nature', 'Perception', 'Performance', 'Persuasion', 'Religion', 'Sleight of Hand', 'Stealth', 'Strength', 'Survival', 'Wisdom']"
 									input-id="addnewskill"
 									@option:selected="(selected : string) => (addNewSkill(selected))"
 								/>
