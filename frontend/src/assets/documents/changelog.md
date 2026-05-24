@@ -1,3 +1,19 @@
+## v2.6.3
+_May 24th, 2026_
+
+- Fixed issue with manually set proficiency bonus beyond 10 resetting back to 10 upon loading. Same fix to experience points.
+- Fixed issue with empty values, such as proficiency bonus or scores, not loading upon creation.
+
+## v2.6.2
+_May 22th, 2026_
+
+- Fixed issue with new bestiaries not being able to be imported by Avrae
+
+## v2.6.1
+_May 20th, 2026_
+
+- Fixes some deployment issues
+
 ## v2.6.0
 _May 20th, 2026_
 
