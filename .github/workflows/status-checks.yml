@@ -37,18 +37,28 @@ jobs:
         steps:
             - uses: actions/checkout@master
             - uses: oven-sh/setup-bun@v2
+            # Install dependencies
             - name: Installing shared project dependencies
               working-directory: ./shared
               run: bun install
             - name: Installing backend dependencies
               working-directory: ./backend
               run: bun install
-            - name: Generate prisma types
-              working-directory: ./backend
-              run: bun run generate
             - name: Installing frontend dependencies
               working-directory: ./frontend
               run: bun install
+            # Setup prisma types and database for testing
+            - name: Generate prisma types
+              working-directory: ./backend
+              run: bun run generate
+            - name: Start test database
+              uses: hoverkraft-tech/compose-action@d2bee4f07e8ca410d6b196d00f90c12e7d48c33a # v2.6.0
+              with:
+                compose-file: "./docker-compose.yml"
+            - name: Run prisma migrations
+              working-directory: ./backend
+              run: bunx prisma migrate dev
+            # Build frontend and backend
             - name: Building the frontend
               working-directory: ./frontend
               run: bun run build
@@ -58,6 +68,7 @@ jobs:
             - name: Building the backend
               working-directory: ./backend
               run: bun run build
+            # Run tests
             - name: Running backend tests
               working-directory: ./backend
               run: bun run test
