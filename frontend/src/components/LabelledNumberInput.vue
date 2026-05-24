@@ -47,7 +47,7 @@ watch(() => props.modelValue, (newValue, oldValue) => {
 		&& newValue !== value.value
 	)
 		setValue(newValue);
-});
+}, { immediate: true });
 
 const increasable = computed(() => {
 	if (value.value == null)
