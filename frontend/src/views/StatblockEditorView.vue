@@ -99,7 +99,6 @@ const saveStatblock = async () => {
 watch(() => data.value.description.cr, () => {
 	if (rawInfo.value == null)
 		return;
-	
 	data.value.core.proficiencyBonus = Math.max(2, Math.min(9, Math.floor((data.value.description.cr + 3) / 4)) + 1);
 	data.value.description.xp = getXPbyCR(data.value.description.cr);
 });
@@ -428,7 +427,6 @@ const clearCasting = () => {
 watch(() => data.value.spellcasting.casterSpells.casterLevel, (newValue) => {
 	if (rawInfo.value == null)
 		return;
-	
 	if (newValue == null || newValue === undefined) {
 		clearCasting();
 		return;
@@ -440,7 +438,6 @@ watch(() => data.value.spellcasting.casterSpells.casterLevel, (newValue) => {
 watch(() => data.value.spellcasting.casterSpells.castingClass, (newValue) => {
 	if (rawInfo.value == null) 
 		return;
-	
 	if (newValue == null || newValue === undefined) {
 		clearCasting();
 		return;
