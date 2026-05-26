@@ -97,6 +97,8 @@ const saveStatblock = async () => {
 };
 // update xp and prof bonus whenever a user changes cr.
 watch(() => data.value.description.cr, () => {
+	if (rawInfo.value == null)
+		return;
 	data.value.core.proficiencyBonus = Math.max(2, Math.min(9, Math.floor((data.value.description.cr + 3) / 4)) + 1);
 	data.value.description.xp = getXPbyCR(data.value.description.cr);
 });
@@ -423,6 +425,8 @@ const clearCasting = () => {
 };
 
 watch(() => data.value.spellcasting.casterSpells.casterLevel, (newValue) => {
+	if (rawInfo.value == null)
+		return;
 	if (newValue == null || newValue === undefined) {
 		clearCasting();
 		return;
@@ -432,6 +436,8 @@ watch(() => data.value.spellcasting.casterSpells.casterLevel, (newValue) => {
 });
 
 watch(() => data.value.spellcasting.casterSpells.castingClass, (newValue) => {
+	if (rawInfo.value == null) 
+		return;
 	if (newValue == null || newValue === undefined) {
 		clearCasting();
 		return;
@@ -864,7 +870,7 @@ const changeCR = (isIncrease: boolean) => {
 							<LabelledComponent title="Add new skill" for="addnewskill">
 								<v-select
 									placeholder="Select skill"
-									:options="['Acrobatics', 'Animal Handling', 'Arcana', 'Athletics', 'Deception', 'History', 'Initiative', 'Insight', 'Intimidation', 'Investigation', 'Medicine', 'Nature', 'Perception', 'Performance', 'Persuasion', 'Religion', 'Sleight of Hand', 'Stealth', 'Survival']"
+									:options="['Acrobatics', 'Animal Handling', 'Arcana', 'Athletics', 'Charisma', 'Constitution', 'Deception', 'Dexterity', 'History', 'Initiative', 'Insight', 'Intelligence', 'Intimidation', 'Investigation', 'Medicine', 'Nature', 'Perception', 'Performance', 'Persuasion', 'Religion', 'Sleight of Hand', 'Stealth', 'Strength', 'Survival', 'Wisdom']"
 									input-id="addnewskill"
 									@option:selected="(selected : string) => (addNewSkill(selected))"
 								/>
