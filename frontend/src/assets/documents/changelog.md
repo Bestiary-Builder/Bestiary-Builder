@@ -1,3 +1,8 @@
+## v2.6.4
+_May 28th, 2026_
+
+- Fixes issue where capitalized speeds from CritterDB would fail to import.
+
 ## v2.6.3
 _May 24th, 2026_
 
