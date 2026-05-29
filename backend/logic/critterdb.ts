@@ -156,12 +156,12 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: string]
 		})(),
 		speed: (() => {
 			const output: SpeedEntity[] = [];
-			const fly = Number.parseInt((data?.stats.speed.match(/fly\s*(\d+)\s*ft\.?/) || [])[1]) || 0;
+			const fly = Number.parseInt((data?.stats.speed.match(/fly\s*(\d+)\s*ft\.?/i) || [])[1]) || 0;
 			const isHover = data?.stats?.speed.toLowerCase().includes("hover");
-			const swim = Number.parseInt((data?.stats.speed.match(/swim\s*(\d+)\s*ft\.?/) || [])[1]) || 0;
-			const burrow = Number.parseInt((data?.stats.speed.match(/burrow\s*(\d+)\s*ft\.?/) || [])[1]) || 0;
-			const climb = Number.parseInt((data?.stats.speed.match(/climb\s*(\d+)\s*ft\.?/) || [])[1]) || 0;
-			const walk = Number.parseInt((data?.stats.speed.match(/^(\d+)\s*ft\.?/) || [])[1]) || 0;
+			const swim = Number.parseInt((data?.stats.speed.match(/swim\s*(\d+)\s*ft\.?/i) || [])[1]) || 0;
+			const burrow = Number.parseInt((data?.stats.speed.match(/burrow\s*(\d+)\s*ft\.?/i) || [])[1]) || 0;
+			const climb = Number.parseInt((data?.stats.speed.match(/climb\s*(\d+)\s*ft\.?/i) || [])[1]) || 0;
+			const walk = Number.parseInt((data?.stats.speed.match(/^(\d+)\s*ft\.?/i) || [])[1]) || 0;
 
 			if (walk) {
 				output.push({
@@ -409,7 +409,7 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: string]
 
 		sData = sData.replaceAll("<i>", "").replaceAll("</i>", "").replaceAll("<b>", "").replaceAll("</b>", "");
 
-		const typeMatch = sData.match(/spellcasting ability is (\w+) \(spell save DC (\d+), [+\-](\d+) to hit/);
+		const typeMatch = sData.match(/spellcasting ability is (\w+) \(spell save DC (\d+), [+\-](\d+) to hit/i);
 		if (!typeMatch)
 			return defaultStatblock.spellcasting.casterSpells;
 
@@ -417,7 +417,7 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: string]
 		let bonus = typeMatch ? Number.parseInt(typeMatch[3]) : null;
 		const ability: Stat = typeMatch ? typeMatch[1].toLowerCase().slice(0, 3) : null;
 
-		let casterLevel = sData.match(/(\d+)[stndrh]{2}-level/);
+		let casterLevel = sData.match(/(\d+)[stndrh]{2}-level/i);
 		if (!casterLevel)
 			return defaultStatblock.spellcasting.casterSpells;
 		casterLevel = Number.parseInt(casterLevel[1]);
