@@ -66,9 +66,9 @@ export async function getFrontendHtml(route: routes.Route, req: Request) {
 			return `<meta ${tagDef.type}="${tagDef.name}" content="${tagDef.content}">`;
 		})
 	];
-	// Get home.html
+	// Get index.html
 	let html = null;
-	const filePath = path.join(process.env.frontendPath as string, "home.html");
+	const filePath = path.join(process.env.frontendPath as string, "index.html");
 	html = fs.readFileSync(filePath, { encoding: "utf-8" });
 	// Return html with tags
 	return html.replace("<!-- meta tags -->", metatags.join("\n		"));

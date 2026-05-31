@@ -61,7 +61,7 @@ export default defineConfig({
 		outDir: "../build/frontend",
 		emptyOutDir: true,
 		rollupOptions: {
-			input: "home.html",
+			input: "index.html",
 		},
 	},
 	optimizeDeps: {
