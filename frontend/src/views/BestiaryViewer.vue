@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, useTemplateRef, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { refDebounced } from "@vueuse/core";
+import { createPopper } from "@popperjs/core";
 import UserBanner from "@/components/UserBanner.vue";
 import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
 import StatusIcon from "@/components/StatusIcon.vue";
@@ -379,6 +380,53 @@ async function importSrdCreature(creature: string) {
 	}
 }
 
+function withPopper(dropdownList: any, component: any, { width }: { width: any }) {
+	/**
+	 * We need to explicitly define the dropdown width since
+	 * it is usually inherited from the parent with CSS.
+	 */
+	dropdownList.style.width = width;
+
+	/**
+	 * Here we position the dropdownList relative to the $refs.toggle Element.
+	 *
+	 * The 'offset' modifier aligns the dropdown so that the $refs.toggle and
+	 * the dropdownList overlap by 1 pixel.
+	 *
+	 * The 'toggleClass' modifier adds a 'drop-up' class to the Vue Select
+	 * wrapper so that we can set some styles for when the dropdown is placed
+	 * above.
+	 */
+	const popper = createPopper(component.$refs.toggle, dropdownList, {
+		placement: "top",
+		modifiers: [
+			{
+				name: "offset",
+				options: {
+					offset: [0, -1],
+				},
+			},
+			{
+				name: "toggleClass",
+				enabled: true,
+				phase: "write",
+				fn({ state }) {
+					component.$el.classList.toggle(
+						"drop-up",
+						state.placement === "top"
+					);
+				},
+			},
+		],
+	});
+
+	/**
+	 * To prevent memory leaks Popper needs to be destroyed.
+	 * If you return function, it will be called just before dropdown is removed from DOM.
+	 */
+	return () => popper.destroy();
+}
+
 async function addEditor() {
 	if (!bestiary.value)
 		return;
@@ -565,7 +613,7 @@ function changeCR(isIncrease: boolean, isMinimumOption: boolean): void {
 							</button>
 						</LabelledComponent>
 						<LabelledComponent title="From SRD Creature" for="fromSrd">
-							<v-select :options="srdCreatures" input-id="fromSrd" placeholder="Select SRD creature" style="min-width: 300px" @option:selected="(selected : string) => (importSrdCreature(selected))" />
+							<v-select ref="toggle" :options="srdCreatures" input-id="fromSrd" placeholder="Select SRD creature" style="min-width: 300px" append-to-body :calculate-position="withPopper" @option:selected="(selected : string) => (importSrdCreature(selected))" />
 						</LabelledComponent>
 					</div>
 				</template>
@@ -730,7 +778,7 @@ function changeCR(isIncrease: boolean, isMinimumOption: boolean): void {
 											</button>
 										</LabelledComponent>
 										<LabelledComponent title="From SRD Creature" for="fromSrd">
-											<v-select :options="srdCreatures" input-id="fromSrd" placeholder="Select SRD creature" style="min-width: 300px" @option:selected="(selected : string) => (importSrdCreature(selected))" />
+											<v-select :options="srdCreatures" input-id="fromSrd" placeholder="Select SRD creature" style="min-width: 300px" append-to-body :calculate-position="withPopper" @option:selected="(selected : string) => (importSrdCreature(selected))" />
 										</LabelledComponent>
 									</div>
 								</template>
@@ -1203,5 +1251,11 @@ function changeCR(isIncrease: boolean, isMinimumOption: boolean): void {
 .editor-container {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
+}
+
+.v-select.drop-up.vs--open {
+	border-radius: 0 0 4px 4px;
+	border-top-color: transparent;
+	border-bottom: 1px solid var(--vs-border-color);
 }
 </style>

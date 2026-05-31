@@ -107,6 +107,8 @@ watch(() => data.value.description.cr, () => {
 const madeChanges = ref(false);
 
 const unwatch = watch(() => data.value,	() => {
+	if (rawInfo.value == null)
+		return;
 	madeChanges.value = true;
 	unwatch();
 },	{ deep: true });
@@ -436,7 +438,7 @@ watch(() => data.value.spellcasting.casterSpells.casterLevel, (newValue) => {
 });
 
 watch(() => data.value.spellcasting.casterSpells.castingClass, (newValue) => {
-	if (rawInfo.value == null) 
+	if (rawInfo.value == null)
 		return;
 	if (newValue == null || newValue === undefined) {
 		clearCasting();
@@ -599,11 +601,14 @@ const changeCR = (isIncrease: boolean) => {
 				}
 			]"
 		>
+			<button v-if="madeChanges && (isOwner || isEditor)" v-tooltip="'Save creature!'" class="inverted" aria-label="Save creature" @click="saveStatblock">
+				<font-awesome-icon :icon="['fas', 'save']" />
+			</button>
 			<button v-if="!isOwner && !isEditor" v-tooltip="'Toggle Editor for debugging purposes'" aria-label="Toggle Editor for debugging purposes" @click="shouldShowEditor = !shouldShowEditor">
 				<font-awesome-icon v-if="!shouldShowEditor" :icon="['fas', 'eye']" />
 				<font-awesome-icon v-else :icon="['fas', 'eye-slash']" />
 			</button>
-			<button v-if="canPasteBBStatblock" v-tooltip="'Paste copied creature'" aria-label="Paste copied creature" style="position: relative" @click="importFromPaste">
+			<button v-if="canPasteBBStatblock && (isOwner || isEditor)" v-tooltip="'Paste copied creature'" aria-label="Paste copied creature" style="position: relative" @click="importFromPaste">
 				<font-awesome-icon :icon="['far', 'clipboard']" />
 				<div class="notice-dot" />
 			</button>
@@ -1026,9 +1031,7 @@ const changeCR = (isIncrease: boolean) => {
 						</div>
 					</div>
 				</div>
-
 				<hr>
-
 				<div class="buttons">
 					<button class="btn" :class="{ confirm: madeChanges }" @click="saveStatblock">
 						Save statblock

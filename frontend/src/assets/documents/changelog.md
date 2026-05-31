@@ -1,3 +1,9 @@
+## v2.6.5
+_May 31, 2026_
+
+- Fixes issue where on mobile, the list of SRD creatures to select a creature from would be below the viewport.
+- Fixes issue where the save statblock button would not turn green after making changes.
+
 ## v2.6.4
 _May 28th, 2026_
 

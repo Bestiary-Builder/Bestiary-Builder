@@ -197,7 +197,7 @@ select {
 	}
 }
 
-.v-select {
+.v-select, .vs__dropdown-menu {
 	--vs-colors--lightest: red;
 	--vs-colors--light: orangered;
 	--vs-colors--dark: red;
@@ -267,6 +267,11 @@ select {
 	.vs__dropdown-toggle {
 		padding: 6px 12px;
 	}
+}
+
+.vs__dropdown-menu[role="listbox"] {
+	--vs-dropdown-min-width: 0%;
+	z-index: 9999999;
 }
 
 b.indent {

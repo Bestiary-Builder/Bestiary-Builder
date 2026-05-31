@@ -15,6 +15,7 @@ import {
 	faMagnifyingGlass,
 	faPenToSquare,
 	faPlus,
+	faSave,
 	faScaleBalanced,
 	faShareNodes,
 	faSkull,
@@ -56,5 +57,6 @@ library.add(
 	faDiscord,
 	faGithub,
 	faPatreon,
-	faImage
+	faImage,
+	faSave
 );
