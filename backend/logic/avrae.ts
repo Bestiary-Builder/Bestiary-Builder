@@ -71,7 +71,7 @@ function knownSpells(data: SpellCasting) {
 
 function calcSkills(data: Statblock) {
 	const skillData = data.abilities.skills as SkillsEntity[];
-	const output = {} as { [key: string]: { value: number; prof?: number; bonus: number; adv: number | null } };
+	const output = {} as { [key: string]: { value: number; prof?: number; bonus: number; adv: boolean | null } };
 	for (const stat in SKILLS_BY_STAT) {
 		for (const skill of SKILLS_BY_STAT[stat as Stat]) {
 			const raw = skillData.find(a => a.skillName.replaceAll(" ", "").toLowerCase() === skill.toLowerCase());
@@ -90,7 +90,7 @@ function calcSkills(data: Statblock) {
 						// set prof to 1, as skills do not display in avrae without prof = 1|2
 						prof: 1,
 						bonus: 0,
-						adv: null
+						adv: raw.adv
 					};
 				}
 				else {
@@ -100,7 +100,7 @@ function calcSkills(data: Statblock) {
 							value: base + Math.floor(data.core.proficiencyBonus / 2),
 							prof: 0.5,
 							bonus: 0,
-							adv: null
+							adv: raw.adv
 						};
 					}
 					else if (raw.isProficient) {
@@ -108,7 +108,7 @@ function calcSkills(data: Statblock) {
 							value: base + data.core.proficiencyBonus,
 							prof: 1,
 							bonus: 0,
-							adv: null
+							adv: raw.adv
 						};
 					}
 					else if (raw.isExpertise) {
@@ -116,7 +116,7 @@ function calcSkills(data: Statblock) {
 							value: base + data.core.proficiencyBonus * 2,
 							prof: 2,
 							bonus: 0,
-							adv: null
+							adv: raw.adv
 						};
 					}
 					else {
@@ -124,7 +124,7 @@ function calcSkills(data: Statblock) {
 							value: base,
 							prof: 0,
 							bonus: 0,
-							adv: null
+							adv: raw.adv
 						};
 					}
 				}
@@ -184,7 +184,7 @@ export function getCreatureData(creature: Statblock) {
 		saves[newKey] = {
 			value,
 			prof,
-			adv: null,
+			adv: saveData.adv,
 			bonus: 0
 		};
 	}
