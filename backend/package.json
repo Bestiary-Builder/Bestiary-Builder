@@ -56,9 +56,10 @@
 		"@types/node-fetch": "^2.6.12",
 		"eslint": "8.57.0",
 		"nodemon": "^3.1.10",
+		"prisma-json-types-generator": "^5.1.0",
 		"ts-interface-builder": "^0.3.3",
 		"tsx": "^4.19.3",
-		"typescript": "^5.8.3",
+		"typescript": "^6.0.3",
 		"vitest": "^3.1.2"
 	}
 }
