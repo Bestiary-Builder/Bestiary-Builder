@@ -22,31 +22,6 @@ export async function startConnection() {
 		try {
 			// Create prisma client and connect
 			prisma = new PrismaClient({ adapter });
-			// Add new data to creature statblocks
-			const creaturesToUpdate = await prisma.creature.findMany({});
-			const result = await prisma.$transaction(creaturesToUpdate.map((creature) => {
-				const stats = creature.stats as unknown as Statblock;
-				return prisma!.creature.update({
-					where: { id: creature.id },
-					data: {
-						stats: {
-							...stats,
-							abilities: {
-								...stats.abilities,
-								saves: {
-									str: { ...stats.abilities.saves.str, adv: stats.abilities.saves.str.adv ?? null },
-									dex: { ...stats.abilities.saves.dex, adv: stats.abilities.saves.dex.adv ?? null },
-									con: { ...stats.abilities.saves.con, adv: stats.abilities.saves.con.adv ?? null },
-									wis: { ...stats.abilities.saves.wis, adv: stats.abilities.saves.wis.adv ?? null },
-									int: { ...stats.abilities.saves.int, adv: stats.abilities.saves.int.adv ?? null },
-									cha: { ...stats.abilities.saves.cha, adv: stats.abilities.saves.cha.adv ?? null },
-								}
-							}
-						} as Statblock as unknown as JsonObject
-					}
-				});
-			}));
-			log.info(`Updated ${result.length} creature statblocks`);
 			// Stop waiting loop
 			return;
 		}
