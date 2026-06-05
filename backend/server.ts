@@ -6,12 +6,12 @@ import { log } from "@/utilities/logger";
 // App
 import { app } from "@/utilities/constants";
 
+// Import middleware
+import "@/utilities/middleware";
+
 // Import frontend stuff
 import { routes } from "~/shared";
 import { getFrontendHtml } from "@/utilities/frontend";
-
-// Import middleware
-import "@/utilities/middleware";
 
 // Import logic files
 import "./logic";

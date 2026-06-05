@@ -1,10 +1,10 @@
 import { PrismaPg } from "@prisma/adapter-pg";
-import { v4 as uuid } from "uuid";
 import { log } from "@/utilities/logger";
-import type { GlobalStats } from "~/shared";
+import type { GlobalStats, Statblock } from "~/shared";
 
 // Connect to database
 import { PrismaClient } from "~/shared/src/prisma-types";
+import type { JsonObject } from "~/shared/prisma/internal/prismaNamespace";
 
 const adapter = new PrismaPg({
 	connectionString: process.env.DATABASE_URL!,
@@ -22,21 +22,31 @@ export async function startConnection() {
 		try {
 			// Create prisma client and connect
 			prisma = new PrismaClient({ adapter });
-			// Fix old wrong bestiary ids
-			const bestiariesToUpdate = await prisma.bestiary.findMany({
-				where: {
-					id: {
-						startsWith: "cmp"
+			// Add new data to creature statblocks
+			const creaturesToUpdate = await prisma.creature.findMany({});
+			const result = await prisma.$transaction(creaturesToUpdate.map((creature) => {
+				const stats = creature.stats as unknown as Statblock;
+				return prisma!.creature.update({
+					where: { id: creature.id },
+					data: {
+						stats: {
+							...stats,
+							abilities: {
+								...stats.abilities,
+								saves: {
+									str: { ...stats.abilities.saves.str, adv: stats.abilities.saves.str.adv ?? null },
+									dex: { ...stats.abilities.saves.dex, adv: stats.abilities.saves.dex.adv ?? null },
+									con: { ...stats.abilities.saves.con, adv: stats.abilities.saves.con.adv ?? null },
+									wis: { ...stats.abilities.saves.wis, adv: stats.abilities.saves.wis.adv ?? null },
+									int: { ...stats.abilities.saves.int, adv: stats.abilities.saves.int.adv ?? null },
+									cha: { ...stats.abilities.saves.cha, adv: stats.abilities.saves.cha.adv ?? null },
+								}
+							}
+						} as Statblock as unknown as JsonObject
 					}
-				}
-			});
-			for (const bestiary of bestiariesToUpdate) {
-				log.info(`Updating bestiary with id ${bestiary.id} to new format.`);
-				await prisma.bestiary.update({
-					where: { id: bestiary.id },
-					data: { id: uuid().replaceAll("-", "") }
 				});
-			}
+			}));
+			log.info(`Updated ${result.length} creature statblocks`);
 			// Stop waiting loop
 			return;
 		}

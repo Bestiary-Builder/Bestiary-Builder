@@ -364,6 +364,7 @@ const addNewSkill = (newSkillName: string) => {
 		isHalfProficient: false,
 		isProficient: true,
 		isExpertise: false,
+		adv: null,
 		override: null
 	});
 };
@@ -822,36 +823,90 @@ const changeCR = (isIncrease: boolean) => {
 								<p>
 									<input id="strsaveprof" v-model="data.abilities.saves.str.isProficient" type="checkbox" :is-clearable="true">
 									<label for="strsaveprof" aria-label="strength save proficiency"> Proficient </label>
+									<select v-model="data.abilities.saves.str.adv" class="ghost" title="Select advantage or disadvantage for this save">
+										<option :value="null">
+											None
+										</option> <option :value="true">
+											Advantage
+										</option> <option :value="false">
+											Disadvantage
+										</option>
+									</select>
 								</p>
 							</LabelledNumberInput>
 							<LabelledNumberInput v-model="data.abilities.saves.dex.override" title="Dexterity" :step="1" :is-clearable="true" label-id="dexSave">
 								<p>
 									<input id="dexsaveprof" v-model="data.abilities.saves.dex.isProficient" type="checkbox">
 									<label for="dexsaveprof" aria-label="dexterity save proficiency"> Proficient </label>
+									<select v-model="data.abilities.saves.dex.adv" class="ghost" title="Select advantage or disadvantage for this save">
+										<option :value="null">
+											None
+										</option> <option :value="true">
+											Advantage
+										</option> <option :value="false">
+											Disadvantage
+										</option>
+									</select>
 								</p>
 							</LabelledNumberInput>
 							<LabelledNumberInput v-model="data.abilities.saves.con.override" title="Constitution" :step="1" :is-clearable="true" label-id="conSave">
 								<p>
 									<input id="consaveprof" v-model="data.abilities.saves.con.isProficient" type="checkbox">
 									<label for="consaveprof" aria-label="constitution save proficiency"> Proficient </label>
+									<select v-model="data.abilities.saves.con.adv" class="ghost" title="Select advantage or disadvantage for this save">
+										<option :value="null">
+											None
+										</option> <option :value="true">
+											Advantage
+										</option> <option :value="false">
+											Disadvantage
+										</option>
+									</select>
 								</p>
 							</LabelledNumberInput>
 							<LabelledNumberInput v-model="data.abilities.saves.int.override" title="Intelligence" :step="1" :is-clearable="true" label-id="intSave">
 								<p>
 									<input id="intsaveprof" v-model="data.abilities.saves.int.isProficient" type="checkbox">
 									<label for="intsaveprof" aria-label="intelligence save proficiency"> Proficient </label>
+									<select v-model="data.abilities.saves.int.adv" class="ghost" title="Select advantage or disadvantage for this save">
+										<option :value="null">
+											None
+										</option> <option :value="true">
+											Advantage
+										</option> <option :value="false">
+											Disadvantage
+										</option>
+									</select>
 								</p>
 							</LabelledNumberInput>
 							<LabelledNumberInput v-model="data.abilities.saves.wis.override" title="Wisdom" :step="1" :is-clearable="true" label-id="wisSave">
 								<p>
 									<input id="wissaveprof" v-model="data.abilities.saves.wis.isProficient" type="checkbox">
 									<label for="wissaveprof" aria-label="wisdom save proficiency"> Proficient </label>
+									<select v-model="data.abilities.saves.wis.adv" class="ghost" title="Select advantage or disadvantage for this save">
+										<option :value="null">
+											None
+										</option> <option :value="true">
+											Advantage
+										</option> <option :value="false">
+											Disadvantage
+										</option>
+									</select>
 								</p>
 							</LabelledNumberInput>
 							<LabelledNumberInput v-model="data.abilities.saves.cha.override" title="Charisma" :step="1" :is-clearable="true" label-id="chaSave">
 								<p>
 									<input id="chasaveprof" v-model="data.abilities.saves.cha.isProficient" type="checkbox">
 									<label for="chasaveprof" aria-label="charisma save proficiency"> Proficient </label>
+									<select v-model="data.abilities.saves.cha.adv" class="ghost" title="Select advantage or disadvantage for this save">
+										<option :value="null">
+											None
+										</option> <option :value="true">
+											Advantage
+										</option> <option :value="false">
+											Disadvantage
+										</option>
+									</select>
 								</p>
 							</LabelledNumberInput>
 						</div>
@@ -864,6 +919,17 @@ const changeCR = (isIncrease: boolean) => {
 									<p><input :id="`${skill.skillName}prof`" v-model="skill.isProficient" type="checkbox" @click="disableOtherSkills(index, 'prof', skill.isProficient)"> <label :for="`${skill.skillName}prof`"> Proficient </label></p>
 									<p><input :id="`${skill.skillName}exp`" v-model="skill.isExpertise" type="checkbox" @click="disableOtherSkills(index, 'exp', skill.isExpertise)"><label :for="`${skill.skillName}exp`"> Expertise </label></p>
 									<p><input :id="`${skill.skillName}halfprof`" v-model="skill.isHalfProficient" type="checkbox" @click="disableOtherSkills(index, 'halfprof', skill.isHalfProficient)"><label :for="`${skill.skillName}halfprof`"> Half prof </label></p>
+									<p>
+										<select v-model="skill.adv" :for="`${skill.skillName}adv`" class="ghost unit-selector" title="Select advantage or disadvantage for this skill">
+											<option :value="null">
+												None
+											</option> <option :value="true">
+												Advantage
+											</option> <option :value="false">
+												Disadvantage
+											</option>
+										</select>
+									</p>
 								</div>
 								<div>
 									<LabelledNumberInput v-model="skill.override" title="" :step="1" :is-clearable="true" />
