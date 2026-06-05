@@ -1,10 +1,10 @@
 import { PrismaPg } from "@prisma/adapter-pg";
+import { v4 as uuid } from "uuid";
 import { log } from "@/utilities/logger";
-import type { GlobalStats, Statblock } from "~/shared";
+import type { GlobalStats } from "~/shared";
 
 // Connect to database
 import { PrismaClient } from "~/shared/src/prisma-types";
-import type { JsonObject } from "~/shared/prisma/internal/prismaNamespace";
 
 const adapter = new PrismaPg({
 	connectionString: process.env.DATABASE_URL!,
