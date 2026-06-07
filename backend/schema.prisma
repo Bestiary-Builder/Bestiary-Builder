@@ -95,7 +95,7 @@ model Creature {
   bestiaryId  String  @map("bestiary")
   lastUpdated DateTime @default(now())
 
-   /// [DbStatblock]
+  /// [DbStatblock]
   stats       Json
 
   bestiary    Bestiary @relation(fields: [bestiaryId], references: [id], onDelete: Cascade)

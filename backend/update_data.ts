@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "~/shared/src/prisma-types";
+import { Prisma, PrismaClient } from "~/shared/src/prisma-types";
 import type { Creature } from "~/shared";
 
 const adapter = new PrismaPg({
@@ -22,13 +22,26 @@ async function main() {
 	// Start time
 	const startTime = Date.now();
 
-	const totalCount = await prisma.creature.count({});
+	const totalCount = await prisma.creature.count({
+		where: {
+			stats: {
+				path: ["abilities", "saves", "str", "adv"],
+				equals: Prisma.DbNull
+			}
+		}
+	});
 	console.log(`Found ${totalCount} creatures to update`);
 	for (let i = 0; i < totalCount;) {
 		// Add new data to creature statblocks
 		const creaturesToUpdate = await prisma.creature.findMany({
 			take: 1000,
-			skip: i
+			skip: i,
+			where: {
+				stats: {
+					path: ["abilities", "saves", "str", "adv"],
+					equals: Prisma.DbNull
+				}
+			}
 		});
 		const result = await prisma.$transaction(creaturesToUpdate.map(creature => createOperation(creature)));
 		i += result.length;
