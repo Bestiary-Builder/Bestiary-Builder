@@ -1,13 +1,13 @@
 name: Build site for production
 on:
-    push:
-        branches:
-            - main
+    release:
+        types: [published]
+    workflow_dispatch:
 env:
     NODE_ENV: production
 jobs:
     build-and-push:
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-24.04-arm
 
         permissions:
             contents: read
@@ -30,7 +30,7 @@ jobs:
               uses: docker/login-action@v3
               with:
                   registry: ${{ env.REGISTRY }}
-                  username: ${{ github.actor }}
+                  username: ${{ github.repository_owner }}
                   password: ${{ secrets.GITHUB_TOKEN }}
             - name: Set up Docker Buildx
               uses: docker/setup-buildx-action@v3
@@ -40,7 +40,7 @@ jobs:
                   context: .
                   push: true
                   tags: ${{env.REGISTRY}}/${{env.REPOSITORY}}:latest
-                  platforms: linux/amd64,linux/arm64
+                  platforms: linux/arm64
                   build-args: |
                     "VITE_DISCORD_ID=${{ secrets.VITE_DISCORD_ID }}"
                     "VITE_ERROR_WEBHOOK=${{ secrets.VITE_ERROR_WEBHOOK }}"

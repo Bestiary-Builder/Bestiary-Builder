@@ -1,62 +1,64 @@
-import { collections } from ".";
+import { getPrismaClient } from ".";
 import { log } from "@/utilities/logger";
-import type { Automation, Bestiary } from "~/shared";
-import { Id } from "~/shared";
+import type { Id } from "~/shared";
+import type { AutomationCreateInput, AutomationUpdateInput } from "~/shared/src/prisma-types";
 
 // Automation functions
 export async function getAutomation(id: Id) {
 	try {
 		log.log("database", `Reading automation with the id ${id}.`);
-		return (await collections.automations?.findOne({ _id: id })) as Bestiary | null;
+		return (await getPrismaClient().automation.findUnique({ where: { id } }));
 	}
 	catch (err) {
 		log.log("critical", err);
 		return null;
 	}
 }
-export async function updateAutomation(data: Automation, id?: Id) {
+export async function createAutomation(data: AutomationCreateInput) {
 	try {
-		data.lastUpdated = Date.now();
-		if (id) {
-			if (await getAutomation(id)) {
-				log.log("database", `Updating automation with id ${id}`);
-				await collections.automations?.updateOne({ _id: id }, { $set: data });
-				return id;
-			}
-			else {
-				/// log.error("Trying to update non existant automation
-				return null;
-			}
-		}
-		else {
-			log.log("database", "Adding new automation to collection");
-			const _id = new Id();
-			const newData = {
-				...data,
-				...{
-					_id
-				}
-			};
-			await collections.automations?.insertOne(newData);
-			return _id;
-		}
+		data.lastUpdated = new Date(Date.now());
+		log.log("database", `Creating new automation`);
+		return (await getPrismaClient().automation.create({ data })).id;
 	}
 	catch (err) {
 		log.log("critical", err);
 		return null;
 	}
 }
-export async function deleteAutomation(_id: Id) {
+export async function updateAutomation(data: AutomationUpdateInput, id: Id) {
 	try {
-		const automation = await getAutomation(_id);
-		if (!automation)
-			return false;
-		log.log("database", `Deleting automation with the id ${_id}.`);
-		await collections.automations?.deleteOne({ _id });
-		return true;
+		data.lastUpdated = new Date(Date.now());
+		log.log("database", `Updating automation with id ${id}`);
+		return (await getPrismaClient().automation.update({ where: { id }, data })).id;
+	}
+	catch (err) {
+		log.log("critical", err);
+		return null;
+	}
+}
+export async function deleteAutomation(id: Id) {
+	try {
+		log.log("database", `Deleting automation with the id ${id}.`);
+		return await getPrismaClient().$transaction(async () => {
+			const automation = await getAutomation(id);
+			if (!automation)
+				return false;
+			await getPrismaClient().automation.delete({ where: { id } });
+			return true;
+		});
 	}
 	catch (err) {
 		log.log("critical", err);
 		return false;
+	}
+}
+
+export async function getAutomationsByOwner(ownerId: string) {
+	try {
+		return await getPrismaClient().automation.findMany({ where: { owner: ownerId } });
+	}
+	catch (err) {
+		log.log("critical", err);
+		return [];
 	}
 }

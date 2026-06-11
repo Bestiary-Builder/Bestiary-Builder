@@ -10,48 +10,76 @@ jobs:
         continue-on-error: true
         steps:
             - uses: actions/checkout@v3
-            - uses: oven-sh/setup-bun@v1
+            - uses: oven-sh/setup-bun@v2
             - name: Installing shared dependencies
               working-directory: ./shared
+              run: bun install
+            - name: Installing backend dependencies
+              working-directory: ./backend
+              run: bun install
+            - name: Generate prisma types
+              working-directory: ./backend
+              run: bun run generate
+            - name: Installing frontend dependencies
+              working-directory: ./frontend
               run: bun install
             - name: Run shared ESLint
               working-directory: ./shared
               run: bun run lint
-            - name: Installing frontend dependencies
-              working-directory: ./frontend
-              run: bun install
             - name: Run frontend ESLint
               working-directory: ./frontend
               run: bun run lint
-            - name: Installing backend dependencies
-              working-directory: ./backend
-              run: bun install
             - name: Run backend ESLint
               working-directory: ./backend
               run: bun run lint
     build-and-test:
         runs-on: ubuntu-latest
+
+        # PostgreSQL container to run with build-and-test job
+        services:
+          database:
+            image: postgres:16-alpine
+            env:
+              POSTGRES_DB: bestiarybuilder
+              POSTGRES_USER: postgres
+              POSTGRES_PASSWORD: password
+            ports:
+              - 5432:5432
+
         steps:
             - uses: actions/checkout@master
-            - uses: oven-sh/setup-bun@v1
+            - uses: oven-sh/setup-bun@v2
+            # Install dependencies
             - name: Installing shared project dependencies
               working-directory: ./shared
+              run: bun install
+            - name: Installing backend dependencies
+              working-directory: ./backend
               run: bun install
             - name: Installing frontend dependencies
               working-directory: ./frontend
               run: bun install
+            # Setup prisma types and database for testing
+            - name: Create .env
+              working-directory: ./backend
+              run: cp .env.template .env
+            - name: Generate prisma types
+              working-directory: ./backend
+              run: bun run generate
+            - name: Run prisma migrations
+              working-directory: ./backend
+              run: bunx prisma migrate dev
+            # Build frontend and backend
             - name: Building the frontend
               working-directory: ./frontend
               run: bun run build
               env:
                   VITE_DISCORD_ID: ${{ secrets.VITE_DISCORD_ID }}
                   VITE_ERROR_WEBHOOK: ${{ secrets.VITE_ERROR_WEBHOOK }}
-            - name: Installing backend dependencies
-              working-directory: ./backend
-              run: bun install
             - name: Building the backend
               working-directory: ./backend
               run: bun run build
+            # Run tests
             - name: Running backend tests
               working-directory: ./backend
               run: bun run test

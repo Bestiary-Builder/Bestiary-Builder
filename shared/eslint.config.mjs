@@ -3,7 +3,7 @@ import antfu from "@antfu/eslint-config";
 export default antfu(
 	// antfu config inbuild settings
 	{
-		ignores: ["dist", "dist/**", "node_modules", "node_modules/**", "**/*-ti.ts"],
+		ignores: ["dist", "dist/**", "node_modules", "node_modules/**", "**/*-ti.ts", "prisma"],
 		typescript: {
 			tsconfigPath: ["tsconfig.json"],
 			filesTypeAware: ["**\/*.{ts}"],
@@ -20,7 +20,6 @@ export default antfu(
 	{
 		rules: {
 			"antfu/top-level-function": "off",
-			"style/comma-dangle": "off",
 			"style/comma-dangle": "off",
 			"jsonc/comma-dangle": "off",
 			"no-console": "warn",

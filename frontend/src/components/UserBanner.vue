@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import Loading from "vue-loading-overlay";
-import type { User } from "~/shared";
+import { SupporterStatus, type User } from "~/shared";
 import { useFetch } from "@/utils/utils";
 import "vue-loading-overlay/dist/css/index.css";
 
@@ -22,10 +22,10 @@ const isLoading = computed(() => {
 <template>
 	<div class="container">
 		<div v-if="user" class="user">
-			<img class="img" alt="" :src="user.avatar ? `https://cdn.discordapp.com/avatars/${user._id}/${user.avatar}.png` : 'https://cdn.discordapp.com/embed/avatars/0.png'">
-			<span v-if="!user.supporter">{{ user.username }}</span>
-			<span v-if="user.supporter === 1" v-tooltip="'This user is a Wyrmling Patreon Supporter!'" class="supporter-tier-1"> {{ user.username }} </span>
-			<span v-if="user.supporter === 2" v-tooltip="'This user is a Greatwyrm Patreon Supporter!'" class="supporter-tier-2"> {{ user.username }} </span>
+			<img class="img" alt="" :src="user.avatar ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` : 'https://cdn.discordapp.com/embed/avatars/0.png'">
+			<span v-if="user.supporter === SupporterStatus.none">{{ user.username }}</span>
+			<span v-if="user.supporter === SupporterStatus.wirmling" v-tooltip="'This user is a Wyrmling Patreon Supporter!'" class="supporter-tier-1"> {{ user.username }} </span>
+			<span v-if="user.supporter === SupporterStatus.greatwyrm" v-tooltip="'This user is a Greatwyrm Patreon Supporter!'" class="supporter-tier-2"> {{ user.username }} </span>
 		</div>
 		<div v-else class="user">
 			<Loading v-model:active="isLoading" :is-full-page="false" color="orangered" :opacity="0" />

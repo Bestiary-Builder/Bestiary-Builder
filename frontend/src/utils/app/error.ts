@@ -2,6 +2,7 @@ import { app } from "@/main";
 
 // Send errors to discord
 app.config.errorHandler = (err: any, _instance, _info) => {
+	console.error(err);
 	fetch(import.meta.env.VITE_ERROR_WEBHOOK, {
 		method: "POST",
 		headers: {

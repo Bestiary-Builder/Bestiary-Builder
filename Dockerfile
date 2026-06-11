@@ -4,9 +4,9 @@ FROM oven/bun:latest AS base
 # Set environment variables
 ENV NODE_ENV=production
 ARG VITE_DISCORD_ID
-ENV VITE_DISCORD_ID ${VITE_DISCORD_ID}
+ENV VITE_DISCORD_ID=${VITE_DISCORD_ID}
 ARG VITE_ERROR_WEBHOOK
-ENV VITE_ERROR_WEBHOOK ${VITE_ERROR_WEBHOOK}
+ENV VITE_ERROR_WEBHOOK=${VITE_ERROR_WEBHOOK}
 
 # Set the working directory in the containter
 WORKDIR /app
@@ -17,11 +17,14 @@ COPY . .
 
 # Build app
 
+## Generate prisma types
+RUN cd backend && bun install --production && bun run generate
+
 ## Build shared type interface
 RUN cd shared && bun install --production && bunx ts-interface-builder ./src/build-types.ts
 
 ## Build backend
-RUN cd backend && bun install --production && bun build server.ts --compile --sourcemap --outfile ../build/server
+RUN cd backend && bun build server.ts --compile --sourcemap --outfile ../build/server
 
 ## Build frontend
 

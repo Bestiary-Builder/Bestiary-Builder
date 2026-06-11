@@ -11,7 +11,7 @@ import StatblockRenderer from "@/components/StatblockRenderer.vue";
 import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
 import LabelledNumberInput from "@/components/LabelledNumberInput.vue";
 import LabelledComponent from "@/components/LabelledComponent.vue";
-import type { Bestiary, Creature, Features, Statblock } from "~/shared";
+import type { BestiaryExtended, CreatureWithStats, Features, Statblock } from "~/shared";
 import { capitalizeFirstLetter, defaultStatblock, getSpellSlots, getXPbyCR, spellList, spellListFlattened } from "~/shared";
 import { useFetch } from "@/utils/utils";
 import { store } from "@/utils/store";
@@ -23,18 +23,25 @@ const $route = useRoute();
 const $router = useRouter();
 
 const data = ref<Statblock>(defaultStatblock);
-const rawInfo = ref<Creature | null>(null);
+const rawInfo = ref<CreatureWithStats | null>(null);
 
 // load creature data
 onMounted(async () => {
 	const loader = $loading.show();
-	const { success, data: cData, error } = await useFetch<Creature>(`/api/creature/${$route.params.id.toString()}`);
+	const { success, data: cData, error } = await useFetch<CreatureWithStats>(`/api/creature/${$route.params.id.toString()}`);
 	if (success) {
 		data.value = (cData).stats;
-		await nextTick(() => { madeChanges.value = false; });
+		await nextTick(() => madeChanges.value = false);
 		rawInfo.value = cData;
 		await loadRawInfo();
 		loader.hide();
+
+		try {
+			clipboardText.value = await navigator.clipboard.readText();
+		}
+		catch (error) {
+			console.error("Unable to read clipboard text:", error);
+		}
 	}
 	else {
 		toast.error(`Error: ${error}`);
@@ -45,16 +52,16 @@ onMounted(async () => {
 });
 
 // ownership
-const bestiary = ref<Bestiary | null>(null);
+const bestiary = ref<BestiaryExtended | null>(null);
 const isOwner = ref(false);
 const isEditor = ref(false);
 const shouldShowEditor = ref(false);
 const loadRawInfo = async () => {
-	const { success, data, error } = await useFetch<Bestiary>(`/api/bestiary/${rawInfo.value?.bestiary.toString()}`);
+	const { success, data, error } = await useFetch<BestiaryExtended>(`/api/bestiary/${rawInfo.value?.bestiaryId}`);
 	if (success) {
 		bestiary.value = data;
-		isOwner.value = store.user?._id === bestiary.value.owner;
-		isEditor.value = (bestiary.value?.editors ?? []).includes(store.user?._id ?? "");
+		isOwner.value = store.user?.id === bestiary.value.ownerId;
+		isEditor.value = (bestiary.value?.editors ?? []).map(e => e.userId).includes(store.user?.id ?? "");
 		if (isOwner.value || isEditor.value)
 			shouldShowEditor.value = true;
 	}
@@ -70,7 +77,7 @@ const saveStatblock = async () => {
 	rawInfo.value.stats = data.value;
 	const loader = $loading.show();
 	// Send to backend
-	const { success, error } = await useFetch<Creature>(`/api/creature/${rawInfo.value._id?.toString()}/update`, "POST", rawInfo.value);
+	const { success, error } = await useFetch<CreatureWithStats>(`/api/creature/${rawInfo.value.id.toString()}/update`, "POST", rawInfo.value);
 	if (success) {
 		toast.success("Saved stat block");
 		madeChanges.value = false;
@@ -91,6 +98,8 @@ const saveStatblock = async () => {
 };
 // update xp and prof bonus whenever a user changes cr.
 watch(() => data.value.description.cr, () => {
+	if (rawInfo.value == null)
+		return;
 	data.value.core.proficiencyBonus = Math.max(2, Math.min(9, Math.floor((data.value.description.cr + 3) / 4)) + 1);
 	data.value.description.xp = getXPbyCR(data.value.description.cr);
 });
@@ -99,6 +108,8 @@ watch(() => data.value.description.cr, () => {
 const madeChanges = ref(false);
 
 const unwatch = watch(() => data.value,	() => {
+	if (rawInfo.value == null)
+		return;
 	madeChanges.value = true;
 	unwatch();
 },	{ deep: true });
@@ -132,8 +143,8 @@ onUnmounted(() => {
 });
 
 // Pasting BB statblock from clipboard
-const clipboardText = ref("");
 const permissionRead = usePermission("clipboard-read");
+const clipboardText = ref("");
 const canPasteBBStatblock = computed(() => {
 	try {
 		const parsed = JSON.parse(clipboardText.value);
@@ -162,7 +173,7 @@ const onTabFocus = async () => {
 	if (document.hidden)
 		return;
 	setTimeout(async () => {
-		if (!document.hasFocus()) {
+		if (document.hasFocus()) {
 			try {
 				clipboardText.value = await navigator.clipboard.readText();
 			}
@@ -257,6 +268,25 @@ const exportStatblock = async () => {
 	await navigator.clipboard.writeText(text);
 	clipboardText.value = text;
 	toast.info("Exported this statblock to your clipboard.");
+};
+
+const exportHomebrery = async () => {
+	try {
+		const { success, data: resultData, error } = await useFetch<{ metadata: string }>(
+			`/api/homebrewery/export/creature/${$route.params.id.toString()}`,
+			"GET"
+		);
+		if (success) {
+			await navigator.clipboard.writeText(resultData.metadata);
+			toast.info("Exported this statblock markdown to your clipboard");
+		}
+		else {
+			toast.error(error);
+		}
+	}
+	catch (err) {
+		toast.error(err as string);
+	}
 };
 
 const exportToImage = async () => {
@@ -398,6 +428,8 @@ const clearCasting = () => {
 };
 
 watch(() => data.value.spellcasting.casterSpells.casterLevel, (newValue) => {
+	if (rawInfo.value == null)
+		return;
 	if (newValue == null || newValue === undefined) {
 		clearCasting();
 		return;
@@ -407,6 +439,8 @@ watch(() => data.value.spellcasting.casterSpells.casterLevel, (newValue) => {
 });
 
 watch(() => data.value.spellcasting.casterSpells.castingClass, (newValue) => {
+	if (rawInfo.value == null)
+		return;
 	if (newValue == null || newValue === undefined) {
 		clearCasting();
 		return;
@@ -440,6 +474,8 @@ const addNewDaily = () => {
 		data.value.spellcasting.innateSpells.spellList[newDailyAmount.value] = [];
 	newDailyAmount.value = null;
 };
+
+const showSpellSlotModal = ref(false);
 
 // slide managers for accessibility:
 const slideIndex = ref(2);
@@ -555,7 +591,7 @@ const changeCR = (isIncrease: boolean) => {
 					isCurrent: false
 				},
 				{
-					path: `../bestiary-viewer/${bestiary?._id}`,
+					path: `../bestiary-viewer/${bestiary?.id}`,
 					text: bestiary?.name,
 					isCurrent: false
 				},
@@ -566,23 +602,41 @@ const changeCR = (isIncrease: boolean) => {
 				}
 			]"
 		>
+			<button v-if="madeChanges && (isOwner || isEditor)" v-tooltip="'Save creature!'" class="inverted" aria-label="Save creature" @click="saveStatblock">
+				<font-awesome-icon :icon="['fas', 'save']" />
+			</button>
 			<button v-if="!isOwner && !isEditor" v-tooltip="'Toggle Editor for debugging purposes'" aria-label="Toggle Editor for debugging purposes" @click="shouldShowEditor = !shouldShowEditor">
 				<font-awesome-icon v-if="!shouldShowEditor" :icon="['fas', 'eye']" />
 				<font-awesome-icon v-else :icon="['fas', 'eye-slash']" />
 			</button>
-			<button v-if="canPasteBBStatblock" v-tooltip="'Paste copied creature'" aria-label="Paste copied creature" style="position: relative" @click="importFromPaste">
+			<button v-if="canPasteBBStatblock && (isOwner || isEditor)" v-tooltip="'Paste copied creature'" aria-label="Paste copied creature" style="position: relative" @click="importFromPaste">
 				<font-awesome-icon :icon="['far', 'clipboard']" />
 				<div class="notice-dot" />
 			</button>
 			<button v-if="isOwner || isEditor" v-tooltip="'Import a creature\'s statblock'" aria-label="Import a creature's statblock" @click="showImportModal = true">
 				<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
 			</button>
-			<button v-if="isOwner || isEditor" v-tooltip="'Export this creature as JSON to your clipboard.'" aria-label="Export a creature's statblock" @click="exportStatblock">
-				<font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" />
-			</button>
-			<button v-tooltip="'Export creature as image'" aria-label="Export creature as image" @click="exportToImage">
-				<font-awesome-icon :icon="['far', 'image']" />
-			</button>
+			<VDropdown :distance="6" :positioning-disabled="store.isMobile">
+				<button v-tooltip="'Export statblock'" aria-label="Export statblock">
+					<font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" />
+				</button>
+				<template #popper>
+					<div class="v-popper__custom-menu">
+						<span>
+							Export this creature
+						</span>
+						<button v-if="isOwner || isEditor" v-close-popper class="btn confirm" @click="exportStatblock">
+							JSON
+						</button>
+						<button v-close-popper class="btn confirm" @click="exportToImage">
+							Image
+						</button>
+						<button v-close-popper class="btn confirm" @click="exportHomebrery">
+							Homebrewery
+						</button>
+					</div>
+				</template>
+			</VDropdown>
 		</Breadcrumbs>
 		<div class="content" :class="{ 'is-statblock-only': !shouldShowEditor }">
 			<div v-show="shouldShowEditor" class="content-container__inner editor">
@@ -813,7 +867,7 @@ const changeCR = (isIncrease: boolean) => {
 							<LabelledComponent title="Add new skill" for="addnewskill">
 								<v-select
 									placeholder="Select skill"
-									:options="['Acrobatics', 'Animal Handling', 'Arcana', 'Athletics', 'Deception', 'History', 'Initiative', 'Insight', 'Intimidation', 'Investigation', 'Medicine', 'Nature', 'Perception', 'Performance', 'Persuasion', 'Religion', 'Sleight of Hand', 'Stealth', 'Survival']"
+									:options="['Acrobatics', 'Animal Handling', 'Arcana', 'Athletics', 'Charisma', 'Constitution', 'Deception', 'Dexterity', 'History', 'Initiative', 'Insight', 'Intelligence', 'Intimidation', 'Investigation', 'Medicine', 'Nature', 'Perception', 'Performance', 'Persuasion', 'Religion', 'Sleight of Hand', 'Stealth', 'Strength', 'Survival', 'Wisdom']"
 									input-id="addnewskill"
 									@option:selected="(selected : string) => (addNewSkill(selected))"
 								/>
@@ -949,6 +1003,12 @@ const changeCR = (isIncrease: boolean) => {
 							<LabelledComponent title="Description override" for="casterDescription">
 								<textarea id="casterDescription" v-model="data.spellcasting.casterSpells.customDescription" rows="20" :maxlength="store.limits?.descriptionLength" />
 							</LabelledComponent>
+
+							<LabelledComponent title="Edit spell slots" for="editspellslots">
+								<button id="editspellslots" class="btn" @click="showSpellSlotModal = true">
+									Edit spell slot amount
+								</button>
+							</LabelledComponent>
 						</div>
 						<div v-if="data.spellcasting.casterSpells.castingClass" class="editor-field__container two-wide">
 							<LabelledComponent v-if="!['Ranger', 'Paladin'].includes(data.spellcasting.casterSpells.castingClass)" title="Cantrips" takes-custom-text-input for="cantrips">
@@ -960,9 +1020,7 @@ const changeCR = (isIncrease: boolean) => {
 						</div>
 					</div>
 				</div>
-
 				<hr>
-
 				<div class="buttons">
 					<button class="btn" :class="{ confirm: madeChanges }" @click="saveStatblock">
 						Save statblock
@@ -1031,6 +1089,20 @@ const changeCR = (isIncrease: boolean) => {
 								<input :id="`editSpell${spell.spell}`" v-model="spell.comment" type="text" placeholder="comment">
 							</LabelledComponent>
 						</template>
+					</template>
+				</div>
+			</template>
+		</Modal>
+
+		<Modal :show="showSpellSlotModal" @close="showSpellSlotModal = false">
+			<template #header>
+				Edit Spell Slot Amount
+			</template>
+			<template #body>
+				<p>You can use this to edit how many spell slots a creature has. <br> Note that changing a creature's spellcasting level or class will reset this. </p>
+				<div v-if="data.spellcasting.casterSpells.spellSlotList" class="two-wide">
+					<template v-for="x in 9" :key="x">
+						<LabelledNumberInput v-model="data.spellcasting.casterSpells.spellSlotList[x]" :title="`Level ${x}`" :min="0" :max="9" :step="1" :label-id="`editSpellSlot${x}`" />
 					</template>
 				</div>
 			</template>

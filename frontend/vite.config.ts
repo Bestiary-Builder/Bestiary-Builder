@@ -18,7 +18,6 @@ export default defineConfig({
 		Pages({
 			dirs: "src/views",
 			onRoutesGenerated: (_fileroutes) => {
-				// @ts-expect-error untyped
 				generateSitemap({
 					routes: routes.siteMapRoutes,
 					readable: true,
@@ -53,14 +52,17 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			"@": fileURLToPath(new URL("./src", import.meta.url)),
-			"~": fileURLToPath(new URL("../", import.meta.url))
+			"~": fileURLToPath(new URL("../", import.meta.url)),
 		}
 	},
 	build: {
 		chunkSizeWarningLimit: 1250,
 		target: "esnext",
 		outDir: "../build/frontend",
-		emptyOutDir: true
+		emptyOutDir: true,
+		rollupOptions: {
+			input: "index.html",
+		},
 	},
 	optimizeDeps: {
 		esbuildOptions: {

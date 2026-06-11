@@ -1,8 +1,55 @@
-## v3.0.0
-_July 14th, 2024_
+## v2.6.5
+_May 31, 2026_
 
-- Fixed an issue where saving automation would not properly validate it as valid Avrae Automation.
-- Improved the look and feel of toast notifications.
+- Fixes issue where on mobile, the list of SRD creatures to select a creature from would be below the viewport.
+- Fixes issue where the save statblock button would not turn green after making changes.
+
+## v2.6.4
+_May 28th, 2026_
+
+- Fixes issue where capitalized speeds from CritterDB would fail to import.
+
+## v2.6.3
+_May 24th, 2026_
+
+- Fixed issue with manually set proficiency bonus beyond 10 resetting back to 10 upon loading. Same fix to experience points.
+- Fixed issue with empty values, such as proficiency bonus or scores, not loading upon creation.
+- Fixed Full Spellcaster classes not having correct amount of 5th level spell slots on levels 18, 19, 20.
+- Added the Raw Skills (Strength, Dexterity, Constitution, Intelligence, Wisdom, Charisma) as valid Skills to modify manually in the skills category.
+- Fixed custom spell slots not saving upon reload of monster.
+
+## v2.6.2
+_May 22th, 2026_
+
+- Fixed issue with new bestiaries not being able to be imported by Avrae
+
+## v2.6.1
+_May 20th, 2026_
+
+- Fixes some deployment issues
+
+## v2.6.0
+_May 20th, 2026_
+
+- Switched the database from using MongoDB to using PostgreSQL.
+
+## v2.5.0
+_February 2nd, 2026_
+
+- After an outage yesterday, now added error handling in case the server cannot be reached, and made the server automatically try to restart in such cases.
+
+## v2.4.0
+_April 25th, 2025_
+
+- Added the ability to export bestiaries and creatures to markdown format for Homebrewery.
+- Fixed an issue where www. subdomain for critterDB bestiaries could not be imported.
+- Fixed an issue where copying a creature would not show the paste button on other pages.
+
+---
+## v2.3.3
+_April 17th, 2025_
+
+- Added the ability to customize the amount of spell slots for class based spellcasters.
 
 ---
 ## v2.3.2

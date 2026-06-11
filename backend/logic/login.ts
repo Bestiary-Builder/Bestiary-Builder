@@ -47,22 +47,22 @@ app.get("/api/login", async (req, res) => {
 		}).then(res => res.json())) as {
 			id: string;
 			username: string;
-			avatar: string;
+			avatar?: string;
 			email: string;
-			verified: boolean;
-			banner_color: string;
-			global_name: string;
+			verified?: boolean;
+			banner_color?: string;
+			global_name?: string;
 		};
 		if (userResult) {
 			// Update user
 			const secret = await updateUser({
-				_id: userResult.id,
+				id: userResult.id,
 				username: userResult.username,
-				avatar: userResult.avatar,
+				avatar: userResult.avatar ?? "",
 				email: userResult.email,
-				verified: userResult.verified,
-				banner_color: userResult.banner_color,
-				global_name: userResult.global_name
+				verified: userResult.verified ?? false,
+				bannerColor: userResult.banner_color ?? "",
+				globalName: userResult.global_name ?? userResult.username
 			});
 			// Create JWT token
 			const token = jwt.sign({ id: secret }, process.env.JWTKEY ?? "key", {

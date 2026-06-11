@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from "vue";
 import { onBeforeRouteLeave } from "vue-router";
-import { toast } from "vue-sonner";
 import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
 import { useFetch } from "@/utils/utils";
-import type { Automation, Id } from "~/shared";
+import { toast } from "@/utils/app/toast";
+import type { AutomationWithType, Id } from "~/shared";
 
 import LabelledComponent from "@/components/LabelledComponent.vue";
 import AutomationEditor from "@/components/AutomationEditor.vue";
@@ -12,17 +12,17 @@ import Modal from "@/components/Modal.vue";
 import { store } from "@/utils/store";
 import { $loading } from "@/utils/app/loading";
 
-const data = ref<Automation[]>([]);
-const initialData = ref("");
+const data = ref<AutomationWithType[]>([]);
+let initialData = "";
 // get our data
 onMounted(async () => {
 	const loader = $loading.show();
 	await getMyAutomations();
-	initialData.value = JSON.stringify(data.value);
+	initialData = JSON.stringify(data.value);
 	loader.hide();
 });
 
-const selectedAutomation = ref<Automation | null>(null);
+const selectedAutomation = ref<AutomationWithType | null>(null);
 
 const newAutomationName = ref<string>("New Automation");
 const addAutomation = async (name: string, automation = null, shouldNotify = true) => {
@@ -31,7 +31,7 @@ const addAutomation = async (name: string, automation = null, shouldNotify = tru
 		return;
 	}
 	const loader = $loading.show();
-	const { success, error } = await useFetch<Automation>(`/api/automation/add`, "POST", { name, automation });
+	const { success, error } = await useFetch<AutomationWithType>(`/api/automation/add`, "POST", { name, automation });
 	if (success) {
 		await getMyAutomations();
 		newAutomationName.value = "New Automation";
@@ -56,16 +56,16 @@ const deleteAutomation = async (_id: Id) => {
 };
 
 const getMyAutomations = async () => {
-	const { success, data: rData, error } = await useFetch<Automation[]>(`/api/my-automations`);
+	const { success, data: rData, error } = await useFetch<AutomationWithType[]>(`/api/my-automations`);
 	if (success)
 		data.value = rData;
 	else toast.error(error);
-	initialData.value = JSON.stringify(data.value);
+	initialData = JSON.stringify(data.value);
 };
 
 const exportMyAutomations = async () => {
 	await navigator.clipboard.writeText(JSON.stringify(data.value.map(a => a.automation)));
-	toast.success("Copied all automation to clipboard.");
+	toast.success("Copied all automation to clipboard!");
 };
 
 const showImportModal = ref(false);
@@ -82,22 +82,22 @@ const importAutomations = async () => {
 		else name = a.name;
 		await addAutomation(name, a, false);
 	}
-	toast.info("Importing automation has finished.");
+	toast.info("Done importing automation!");
 	showImportModal.value = false;
 };
 
 onBeforeRouteLeave(() => {
 	// when the user leaves this route
-	if (initialData.value !== JSON.stringify(data.value)) {
-		const answer = window.confirm("Do you really want to leave? You have unsaved changes.");
+	if (initialData !== JSON.stringify(data.value)) {
+		const answer = window.confirm("Do you really want to leave? you have unsaved changes!");
 		if (!answer)
 			return false;
 	}
 });
 
 const unloadHandler = (event: Event) => {
-	if (initialData.value !== JSON.stringify(data.value)) {
-		window.confirm("Do you really want to leave? you have unsaved changes.");
+	if (initialData !== JSON.stringify(data.value)) {
+		window.confirm("Do you really want to leave? you have unsaved changes!");
 		event.preventDefault();
 		event.returnValue = true;
 	}
@@ -109,8 +109,6 @@ onMounted(() => {
 onUnmounted(() => {
 	window.removeEventListener("beforeunload", unloadHandler);
 });
-
-const isVisualEditor = ref(true);
 </script>
 
 <template>
@@ -123,9 +121,6 @@ const isVisualEditor = ref(true);
 			}
 		]"
 	>
-		<button v-tooltip="'Change editor'" aria-label="Change editor" @click="isVisualEditor = !isVisualEditor">
-			<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
-		</button>
 		<button v-tooltip="'Import a list of automation'" aria-label="Import a list of automation" @click="showImportModal = true">
 			<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
 		</button>
@@ -138,7 +133,7 @@ const isVisualEditor = ref(true);
 			<div class="left">
 				<LabelledComponent title="List">
 					<ol v-if="data && data.length > 0">
-						<li v-for="(d, key) in data" :key="key" class="feature-button__container" :class="{ selected: d._id === selectedAutomation?._id }" @click="selectedAutomation = d">
+						<li v-for="(d, key) in data" :key="key" class="feature-button__container" :class="{ selected: d.id === selectedAutomation?.id }" @click="selectedAutomation = d">
 							<p role="button" :aria-label="`Select automation: ${d.name} (${key})`">
 								{{ d.name || "Unnamed feature" }}
 							</p>
@@ -155,14 +150,14 @@ const isVisualEditor = ref(true);
 					</button>
 				</LabelledComponent>
 				<LabelledComponent v-if="selectedAutomation" title="Delete automation">
-					<button class="btn danger" @click="deleteAutomation(selectedAutomation._id!)">
-						Delete current
+					<button class="btn danger" @click="deleteAutomation(selectedAutomation.id!)">
+						Delete current automation
 					</button>
 				</LabelledComponent>
 			</div>
 			<hr>
 			<div class="automation-editor">
-				<AutomationEditor v-if="selectedAutomation" :key="selectedAutomation?._id!.toString()" :is-visual-editor="isVisualEditor" :data="selectedAutomation" :is-stand-alone="true" @saved-standalone-data="initialData = JSON.stringify(data)" />
+				<AutomationEditor v-if="selectedAutomation" :key="selectedAutomation?.id!.toString()" :data="selectedAutomation" :is-stand-alone="true" @saved-standalone-data="initialData = JSON.stringify(data)" />
 				<div v-else class="no-selected">
 					Select an automation to get started with editing it.
 				</div>
@@ -203,7 +198,6 @@ const isVisualEditor = ref(true);
 			list-style-type: decimal;
 			color: white;
 			margin: 0rem;
-			font-size: 0.9rem;
 			li {
 				display: list-item;
 				margin: 0.3rem 0;
@@ -246,6 +240,6 @@ const isVisualEditor = ref(true);
 .two-wide {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
-	gap: 0 1rem;
+	gap: 0rem 1rem;
 }
 </style>

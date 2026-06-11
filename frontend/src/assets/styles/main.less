@@ -81,19 +81,16 @@ input[type="checkbox"]:checked {
 
 input[type="checkbox"] + label {
 	cursor: pointer;
-	font-size: .8rem;
 }
 
-
-
 .btn {
-	padding: 4px 5px;
+	padding: 6px 12px;
 	background: var(--color-surface-0);
 	border: 1px solid var(--color-surface-1);
 	border-radius: 6px;
-	font-size: .77rem;
+	font-size: 13px;
 	color: rgb(247, 248, 248);
-	height: 32px;
+	height: 46px;
 	appearance: none;
 	transition: background-color 0.3s ease;
 	cursor: pointer;
@@ -120,13 +117,13 @@ hr {
 
 input[type="text"],
 textarea {
-	padding: 4px 5px;
+	padding: 6px 12px;
 	background: var(--color-surface-0);
 	border: 1px solid var(--color-surface-1);
 	border-radius: 6px;
-	font-size: .77rem;
+	font-size: 13px;
 	color: rgb(247, 248, 248);
-	height: 32px;
+	height: 46px;
 	appearance: none;
 	transition: border 0.15s ease 0s;
 	:focus {
@@ -138,24 +135,21 @@ textarea {
 
 textarea {
 	resize: vertical;
-	min-height: 32px;
-	height: 32px;
+	min-height: 3rem;
+	height: unset;
 }
 
 select {
-	border: 1px solid orangered;
+	border: 2px solid orangered;
 	background: transparent;
 	color: orangered;
-	border-radius: 6px;
+	border-radius: 0.2rem;
 	padding: 0 0.2rem;
 	outline: none;
-	font-size: .77rem;
 
 	& option {
 		background-color: var(--color-surface-0);
 		color: orangered;
-		font-size: .77rem;
-
 	}
 
 	&.ghost {
@@ -203,7 +197,7 @@ select {
 	}
 }
 
-.v-select {
+.v-select, .vs__dropdown-menu {
 	--vs-colors--lightest: red;
 	--vs-colors--light: orangered;
 	--vs-colors--dark: red;
@@ -215,8 +209,8 @@ select {
 	--vs-search-input-placeholder-color: var(--color-base);
 
 	/* Font */
-	--vs-font-size: .77rem;
-	--vs-line-height: 1.25;
+	--vs-font-size: 1rem;
+	--vs-line-height: 1.4;
 
 	/* Disabled State */
 	--vs-state-disabled-bg: red;
@@ -231,7 +225,7 @@ select {
 	--vs-border-radius: 0;
 
 	/* Actions: house the component controls */
-	--vs-actions-padding: 2.5px 2px;
+	--vs-actions-padding: 4px 6px 0 3px;
 
 	/* Component Controls: Clear, Open Indicator */
 	--vs-controls-color: var(--vs-colors--light);
@@ -256,7 +250,7 @@ select {
 	/* Options */
 	--vs-dropdown-option-bg: #000;
 	--vs-dropdown-option-color: var(--vs-dropdown-color);
-	--vs-dropdown-option-padding: 3px 15px;
+	--vs-dropdown-option-padding: 3px 30px;
 
 	/* Active State */
 	--vs-dropdown-option--active-bg: orangered;
@@ -271,22 +265,14 @@ select {
 	--vs-transition-duration: 150ms;
 
 	.vs__dropdown-toggle {
-		padding: 4.5px 6px;
-	}
-
-	font-size: .77rem;
-
-	&.vs--single .vs__selected {
-		margin: 0px; 
-
-		text-wrap: nowrap;
-		max-width: 200px;
-		text-overflow: ellipsis;
-		overflow: hidden;
+		padding: 6px 12px;
 	}
 }
 
-
+.vs__dropdown-menu[role="listbox"] {
+	--vs-dropdown-min-width: 0%;
+	z-index: 9999999;
+}
 
 b.indent {
 	margin-left: 1.5rem;
@@ -351,7 +337,7 @@ body
 	padding: 1rem;
 	display: flex;
 	flex-direction: column;
-	gap: .5rem;
+	gap: 1rem;
 	select {
 		border-width: 1px;
 	}
@@ -407,4 +393,29 @@ html:has(.open-modal) {
 	&.nine-one {
 		grid-template-columns: 9fr 1fr;
 	}
+}
+
+p:has(img[src="/Beholder.webp"]) {
+	strong {
+		text-align: center;
+		display: block;
+		font-size: 2rem;
+	}
+
+	img {
+		display: block;
+		margin: auto;
+		width: 50%;
+	}
+
+	+ p {
+		text-align: center;
+	}
+}
+
+blockquote:has(p img[src="/Beholder.webp"]) ~ p {
+	text-align: center;
+	display: block;
+	margin: auto;
+	width: 70%;
 }

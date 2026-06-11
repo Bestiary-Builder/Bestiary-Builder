@@ -1,69 +1,86 @@
-import { getBestiary, updateBestiary } from "./bestiaries";
-import { collections } from ".";
+import type { JsonObject } from "@prisma/client/runtime/client";
+import { getPrismaClient } from ".";
 import { log } from "@/utilities/logger";
-import type { Bestiary, Creature } from "~/shared";
-import { Id } from "~/shared";
+import type { Id } from "~/shared";
+import type { Creature, CreatureCreateInput, CreatureCreateManyInput } from "~/shared/src/prisma-types";
 
 // Creature functions
 export async function getCreature(id: Id) {
 	try {
 		log.log("database", `Getting creature with the id ${id}.`);
-		return (await collections.creatures?.findOne({ _id: id })) as Creature | null;
+		return await getPrismaClient().creature.findUnique({ where: { id } });
 	}
 	catch (err) {
 		log.log("critical", err);
 		return null;
 	}
 }
-export async function updateCreature(data: Creature, id?: Id) {
+export async function createCreature(data: Creature) {
 	try {
-		data.lastUpdated = Date.now();
-		if (id) {
-			if (await getBestiary(data.bestiary)) {
-				log.log("database", `Updating creature with the id ${id}.`);
-				await collections.creatures?.updateOne({ _id: id }, { $set: data });
-				// Update bestiary last updated
-				await updateBestiary({} as Bestiary, data.bestiary);
-				return id;
-			}
-			else {
-				log.log("database", `ERROR - Tried to update non existant creature`);
-				return null;
-			}
-		}
-		else {
-			log.log("database", "Adding new creature to collection");
-			const _id = new Id();
-			data._id = _id;
-			await collections.creatures?.insertOne(data);
-			return _id;
-		}
+		const creature: CreatureCreateInput = { stats: data.stats as JsonObject, lastUpdated: new Date(Date.now()), bestiary: { connect: { id: data.bestiaryId } } };
+		log.log("database", `Creating creature.`);
+		return (await getPrismaClient().creature.create({ data: creature })).id;
 	}
 	catch (err) {
 		log.log("critical", err);
 		return null;
 	}
 }
-export async function addCreatureToBestiary(creatureId: Id, bestiaryId: Id) {
+export async function updateCreature(data: Creature, id: Id) {
 	try {
-		log.log("database", `Adding creature with the id ${creatureId} to bestiary with the id ${bestiaryId}.`);
-		await collections.bestiaries?.updateOne({ _id: bestiaryId }, { $push: { creatures: creatureId } });
-		return true;
+		const creature: CreatureCreateInput = { stats: data.stats as JsonObject, lastUpdated: new Date(Date.now()), bestiary: { connect: { id: data.bestiaryId } } };
+		log.log("database", `Updating creature with the id ${id}.`);
+		return (await getPrismaClient().creature.update({ where: { id }, data: creature })).id;
 	}
 	catch (err) {
 		log.log("critical", err);
-		return false;
+		return null;
 	}
 }
+export async function createCreatures(data: CreatureCreateManyInput[]) {
+	try {
+		const now = new Date(Date.now());
+		log.log("database", `Creating ${data.length} creatures.`);
+		return await getPrismaClient().creature.createMany({ data: data.map(creature => ({ ...creature, lastUpdated: now })) });
+	}
+	catch (err) {
+		log.log("critical", err);
+		return null;
+	}
+}
+
+export async function getCreaturesByBestiary(bestiaryId: Id) {
+	try {
+		return await getPrismaClient().creature.findMany({ where: { bestiaryId } });
+	}
+	catch (err) {
+		log.log("critical", err);
+		return [];
+	}
+}
+
+export async function getCreaturesByIds(ids: Id[]) {
+	try {
+		if (!ids.length)
+			return [];
+		return await getPrismaClient().creature.findMany({ where: { id: { in: ids } } });
+	}
+	catch (err) {
+		log.log("critical", err);
+		return [];
+	}
+}
+
 export async function deleteCreature(creatureId: Id) {
 	try {
-		const creature = await getCreature(creatureId);
-		if (!creature)
-			return false;
 		log.log("database", `Deleting creature with the id ${creatureId}.`);
-		await collections.bestiaries?.updateOne({ _id: creature.bestiary }, { $pull: { creatures: creatureId } });
-		await collections.creatures?.deleteOne({ _id: creature._id });
-		return true;
+		return await getPrismaClient().$transaction(async () => {
+			const creature = await getCreature(creatureId);
+			if (!creature)
+				return false;
+			await getPrismaClient().creature.delete({ where: { id: creatureId } });
+			return true;
+		});
 	}
 	catch (err) {
 		log.log("critical", err);

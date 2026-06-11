@@ -71,13 +71,6 @@ export const routes: Route[] = [
 		file: "UserSettings.vue",
 		meta: { navbar: false, loggedIn: false, dynamic: false },
 	},
-	// unsubscribe from emails
-	{
-		path: "/unsubscribe",
-		name: "Unsubscribe",
-		file: "Unsubscribe.vue",
-		meta: { navbar: false, loggedIn: true, dynamic: false },
-	},
 
 	// privacy policy
 	{
@@ -86,6 +79,7 @@ export const routes: Route[] = [
 		file: "GenericMarkdownView.vue",
 		meta: { navbar: false, loggedIn: false, dynamic: false },
 		props: { filePath: "privacy-policy" },
+
 	},
 	// terms and conditions
 	{
@@ -103,6 +97,14 @@ export const routes: Route[] = [
 		meta: { navbar: true, loggedIn: false, dynamic: false },
 		props: { filePath: "changelog" },
 	},
+	// Server error
+	{
+		path: "/server-error",
+		name: "",
+		file: "GenericMarkdownView.vue",
+		meta: { navbar: false, loggedIn: false, dynamic: false },
+		props: { filePath: "server-error" },
+	},
 	// 404 not found page - must be last.
 	{
 		path: "/:pathMatch(.*)*",
@@ -112,7 +114,7 @@ export const routes: Route[] = [
 		props: { filePath: "not-found" },
 	},
 ];
-export const siteMapRoutes = routes.map((route) => ({
+export const siteMapRoutes = routes.filter(route => route.path !== "/server-error").map(route => ({
 	path: route.path,
 	name: route.name,
 	props: true,

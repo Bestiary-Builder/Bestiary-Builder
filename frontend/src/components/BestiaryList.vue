@@ -3,16 +3,16 @@ import { RouterLink } from "vue-router";
 import { computed } from "vue";
 import UserBanner from "@/components/UserBanner.vue";
 import StatusIcon from "@/components/StatusIcon.vue";
-import type { Bestiary } from "~/shared";
+import type { BestiaryExtended } from "~/shared";
 import { store } from "@/utils/store";
 
-const props = defineProps<{ personal: boolean; bestiaries: Bestiary[] }>();
+const props = defineProps<{ personal: boolean; bestiaries: BestiaryExtended[] }>();
 
 const emit = defineEmits<{
-	(e: "deleteBestiary", bestiary: Bestiary): void;
+	(e: "deleteBestiary", bestiary: BestiaryExtended): void;
 }>();
 
-const openDeleteModal = (bestiary: Bestiary) => {
+const openDeleteModal = (bestiary: BestiaryExtended) => {
 	if (!bestiary)
 		return;
 	emit("deleteBestiary", bestiary);
@@ -32,13 +32,13 @@ const bestiaryImages = computed(() => {
 </script>
 
 <template>
-	<div v-if="bestiaries.length > 0" class="tile-container">
+	<div class="tile-container">
 		<TransitionGroup name="popin">
-			<RouterLink v-for="(bestiary, index) in bestiaries" :key="bestiary._id?.toString()" class="content-tile bestiary-tile" :to="`/bestiary-viewer/${bestiary._id}`" :class="{ 'four-tall': bestiary.owner !== store.user?._id }" :aria-label="`Open Bestiary ${bestiary.name}`">
+			<RouterLink v-for="(bestiary, index) in bestiaries" :key="bestiary.id.toString()" class="content-tile bestiary-tile" :to="`/bestiary-viewer/${bestiary.id}`" :class="{ 'four-tall': bestiary.ownerId !== store.user?.id }" :aria-label="`Open Bestiary ${bestiary.name}`">
 				<div class="tile-header">
 					<h2>{{ bestiary.name }}</h2>
 				</div>
-				<span v-if="bestiary.owner !== store.user?._id && personal" class="shared-notice">(shared)</span>
+				<span v-if="bestiary.ownerId !== store.user?.id && personal" class="shared-notice">(shared)</span>
 				<div class="tile-content" :class="{ 'tile-has-image': bestiaryImages[index] }">
 					<img v-if="bestiaryImages[index]" class="tile-image" :src="bestiaryImages[index]">
 					<div class="tags">
@@ -49,18 +49,15 @@ const bestiaryImages = computed(() => {
 					</p>
 				</div>
 				<div class="tile-footer">
-					<span v-if="personal" v-tooltip="bestiary.status"><StatusIcon :icon="bestiary.status" /></span>
-					<span v-if="personal && bestiary.owner === store.user?._id" v-tooltip="'Delete bestiary'" role="button" class="edit-button" aria-label="Delete bestiary" @click.stop.prevent="openDeleteModal(bestiary)"><font-awesome-icon :icon="['fas', 'trash']" /></span>
+					<span v-if="personal" v-tooltip.left="bestiary.status"><StatusIcon :icon="bestiary.status" /></span>
+					<span v-if="personal && bestiary.ownerId === store.user?.id" v-tooltip="'Delete bestiary'" role="button" class="edit-button" aria-label="Delete bestiary" @click.stop.prevent="openDeleteModal(bestiary)"><font-awesome-icon :icon="['fas', 'trash']" /></span>
 					<span v-else>
-						<UserBanner :id="bestiary.owner" />
+						<UserBanner :id="bestiary.ownerId" />
 					</span>
 					<span>{{ bestiary.creatures.length }}<font-awesome-icon :icon="['fas', 'skull']" /></span>
 				</div>
 			</RouterLink>
 		</TransitionGroup>
-	</div>
-	<div v-else class="zero-found">
-		You have no bestiaries. Create one in the top right.
 	</div>
 </template>
 
@@ -84,29 +81,23 @@ const bestiaryImages = computed(() => {
 
 .tile-container {
 	display: grid;
-	grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+	grid-template-columns: 1fr 1fr 1fr 1fr;
 	gap: 1.5em;
 }
 
 @media screen and (max-width: 1600px) {
 	.tile-container {
-		grid-template-columns: 1fr 1fr 1fr 1fr;
+		grid-template-columns: 1fr 1fr 1fr;
 	}
 }
 
 @media screen and (max-width: 1200px) {
 	.tile-container {
-		grid-template-columns: 1fr 1fr 1fr;
-	}
-}
-
-@media screen and (max-width: 800px) {
-	.tile-container {
 		grid-template-columns: 1fr 1fr;
 	}
 }
 
-@media screen and (max-width: 400px) {
+@media screen and (max-width: 800px) {
 	.tile-container {
 		grid-template-columns: 1fr;
 	}
@@ -132,12 +123,10 @@ const bestiaryImages = computed(() => {
 		text-wrap: nowrap;
 		overflow: hidden;
 		color: white;
-		font-size: 0.8rem;
 	}
 
 	.tile-content {
 		overflow-y: auto;
-		font-size: 0.8rem;
 
 		.tags {
 			font-style: italic;
@@ -190,13 +179,12 @@ const bestiaryImages = computed(() => {
 	.tile-footer {
 		display: grid;
 		grid-template-columns: 1fr 1fr 1fr;
-		font-size: 0.9rem;
+		font-size: 1.1rem;
 		width: 100%;
 		margin: auto;
 
 		span:first-of-type {
 			text-align: left;
-			translate: 0 -3px;
 		}
 
 		span:nth-of-type(2) {
