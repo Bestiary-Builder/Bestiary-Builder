@@ -4,7 +4,7 @@ import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import { toJpeg } from "html-to-image";
 import { usePermission } from "@vueuse/core";
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
-import { toast } from "vue-sonner";
+import { toast } from "@/utils/app/toast";
 import Modal from "@/components/Modal.vue";
 import StatblockRenderer from "@/components/StatblockRenderer.vue";
 import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
@@ -91,7 +91,7 @@ const saveStatblock = async () => {
 		);
 	}
 	else {
-		toast.error(`Error saving statblock.`, { duration: 10000, description: error });
+		toast.error(`Error saving statblock. ${error}`, { duration: 10000 });
 	}
 	loader.hide();
 };
@@ -290,6 +290,7 @@ const exportHomebrery = async () => {
 
 const exportToImage = async () => {
 	const filter = (node: HTMLElement) => {
+		return true;
 		return (node.tagName !== "IMG");
 	};
 
