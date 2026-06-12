@@ -81,8 +81,8 @@ app.post("/api/creature/add", requireUser, async (req, res) => {
 		const data = req.body.data as Creature;
 		if (!data)
 			return res.status(400).json({ error: "Creature data not found." });
-		// if (!validateCreatureInput(data.stats as unknown as Statblock, res))
-		// 	return;
+		if (!validateCreatureInput(data.stats as unknown as Statblock, res))
+			return;
 		const user = req.body.user;
 		if (!user)
 			return res.status(404).json({ error: "Couldn't find current user." });
@@ -177,8 +177,8 @@ app.post("/api/creature/:id/update", requireUser, async (req, res) => {
 		const data = req.body.data as Creature;
 		if (!data)
 			return res.status(400).json({ error: "Creature data not found." });
-		// if (!validateCreatureInput(data.stats as unknown as Statblock, res))
-		// 	return;
+		if (!validateCreatureInput(data.stats as unknown as Statblock, res))
+			return;
 		if (typeof data.bestiaryId == "string") {
 			const _id = data.bestiaryId;
 			if (!_id)
