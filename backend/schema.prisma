@@ -3,6 +3,12 @@ generator client {
   output = "../shared/prisma"
 }
 
+generator json {
+  provider  = "prisma-json-types-generator"
+  namespace = "PrismaJson"
+  allowAny  = false
+}
+
 datasource db {
   provider = "postgresql"
 }
@@ -88,6 +94,8 @@ model Creature {
   id          String  @id @default(cuid())
   bestiaryId  String  @map("bestiary")
   lastUpdated DateTime @default(now())
+
+  /// [DbStatblock]
   stats       Json
 
   bestiary    Bestiary @relation(fields: [bestiaryId], references: [id], onDelete: Cascade)
@@ -102,6 +110,8 @@ model Automation {
   description String
   owner       String
   lastUpdated DateTime @default(now())
+
+  /// [DbAutomation]
   automation  Json?
 
   @@index([owner])

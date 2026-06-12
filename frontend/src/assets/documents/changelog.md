@@ -1,3 +1,8 @@
+## v2.6.6
+_June 12, 2026_
+
+- Added the ability to set native advantage or disadvantage on checks and saves.
+
 ## v2.6.5
 _May 31, 2026_
 

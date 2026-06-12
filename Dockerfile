@@ -18,7 +18,7 @@ COPY . .
 # Build app
 
 ## Generate prisma types
-RUN cd backend && bun install --production && bun run generate
+RUN cd backend && bun install && bun run generate
 
 ## Build shared type interface
 RUN cd shared && bun install --production && bunx ts-interface-builder ./src/build-types.ts
