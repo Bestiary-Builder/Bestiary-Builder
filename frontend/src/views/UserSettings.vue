@@ -5,6 +5,7 @@ import { sendToLogin, useFetch } from "@/utils/utils";
 import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
 import JoinPatreon from "@/components/JoinPatreon.vue";
 import { type Bestiary, SupporterStatus } from "~/shared";
+import { toast } from "@/utils/app/toast";
 
 const logoutClick = async () => {
 	const { success, error } = await useFetch("/api/logout");
@@ -41,7 +42,6 @@ if (store.user)
 			<p> You are logged in to Bestiary Builder with Discord as <b> {{ store.user.username }} </b>.</p>
 			<p> You have been a user of Bestiary Builder since <b>{{ store.user.joinedAt ? new Date(store.user.joinedAt).toDateString() : "Not Found" }}</b>.</p>
 			<p> You have created <b>{{ bestiaryCount }}</b> bestiaries since then.</p>
-			<p> Your user id is <code>{{ store.user.id }}</code>.</p>
 			<p v-if="store.user.supporter === SupporterStatus.none">
 				If you enjoy using our site, consider supporting us on Patreon!
 				As a Patreon, you will have several benefits and your support will help Bestiary Builder stay online.

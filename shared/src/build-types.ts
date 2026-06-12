@@ -142,7 +142,7 @@ export interface Features {
 	regional: FeatureEntity[];
 }
 
-interface FeatureEntity {
+export interface FeatureEntity {
 	name: string;
 	description: string;
 	automation: any; // null | AttackModel | AttackModel[];

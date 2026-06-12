@@ -5,7 +5,6 @@ import { toJpeg } from "html-to-image";
 import { usePermission } from "@vueuse/core";
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
 import { toast } from "vue-sonner";
-import FeatureWidget from "@/components/FeatureWidget.vue";
 import Modal from "@/components/Modal.vue";
 import StatblockRenderer from "@/components/StatblockRenderer.vue";
 import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
@@ -987,17 +986,19 @@ const changeCR = (isIncrease: boolean) => {
 								<template #item="{ element, index }">
 									<LabelledComponent :title="element.name || `Unnamed ${index}`">
 										<div class="feature-button__container">
-											<FeatureWidget :index="index" :type="fType" :data="data.features[fType][index]" :creature-name="data.description.name" />
+											<RouterLink :to="`${rawInfo?.id}/${fType}/${index}`" class="button-icon">
+												<font-awesome-icon :icon="['fas', 'edit']" />
+											</RouterLink>
 											<span class="delete-button" aria-label="Delete feature" @click="deleteFeature(fType, index)"><font-awesome-icon :icon="['fas', 'trash']" /></span>
-											<font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle" />
+											<span><font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle" /> </span>
 										</div>
-									</LabelledComponent>
+									</labelledcomponent>
 								</template>
 								<template #footer>
 									<LabelledComponent :title="descText" :for="descText">
-										<button :id="descText" class="btn" @click="createNewFeature(fType)">
-											Create
-										</button>
+										<span :id="descText" class="button-icon" @click="createNewFeature(fType)">
+											<font-awesome-icon :icon="['fas', 'plus']" />
+										</span>
 									</LabelledComponent>
 
 									<LabelledComponent :title="`${capitalizeFirstLetter(fType)} Header`" :for="fType">
@@ -1311,20 +1312,21 @@ const changeCR = (isIncrease: boolean) => {
 .button-icon {
 	cursor: pointer;
 	color: orangered;
-	padding-top: 15px;
-	padding-bottom: 8px;
 	.scale-on-hover(1.2);
-	margin: auto;
 }
 
 .feature-button__container {
 	display: flex;
 	gap: 0.5rem;
-	justify-content: space-between;
+	justify-content: start;
 
 	.delete-button {
-		padding-top: 6px !important;
 		.button-icon();
+	}
+
+	.handle {
+		.button-icon();
+		translate: 0 2px;
 	}
 }
 
@@ -1373,7 +1375,7 @@ const changeCR = (isIncrease: boolean) => {
 }
 
 .handle {
-	padding-top: 9px;
+	padding-top: 0px;
 	padding-bottom: 8px;
 	cursor: grab;
 	color: orangered;

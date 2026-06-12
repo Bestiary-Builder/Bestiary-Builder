@@ -8,10 +8,13 @@ import { type Component, createApp, } from "vue";
 import FloatingVue from "floating-vue";
 import "floating-vue/dist/style.css";
 
+// Toast notifications
+import ToastPlugin from "vue-toast-notification";
+import "vue-toast-notification/dist/theme-default.css";
+
 // Font awesome
 import "@/utils/app/fontawesome";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { Icon } from "@iconify/vue";
 // Vue-select
 import vSelect from "vue-select";
 import "vue-select/dist/vue-select.css";
@@ -25,8 +28,12 @@ import App from "@/App.vue";
 export const app = createApp(App as Component<any>);
 app.use(router);
 app.use(FloatingVue);
+app.use(ToastPlugin, {
+	position: "top-left",
+	duration: 4000,
+	dismissible: true
+});
 app.component("font-awesome-icon", FontAwesomeIcon);
-app.component("Icon", Icon);
 app.component("v-select", vSelect);
 loader.config({
 	paths: {

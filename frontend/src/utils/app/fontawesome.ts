@@ -5,6 +5,8 @@ import {
 	faArrowRightToBracket,
 	faBars,
 	faCircleInfo,
+	faCode,
+	faCopy,
 	faEarthEurope,
 	faEye,
 	faEyeSlash,
@@ -19,11 +21,13 @@ import {
 	faScaleBalanced,
 	faShareNodes,
 	faSkull,
+	faSpinner,
 	faStar,
 	faTag,
 	faThumbTack,
 	faTrash,
 	faUserLock,
+	faWandSparkles,
 	faXmark
 } from "@fortawesome/free-solid-svg-icons";
 import { faDiscord, faGithub, faPatreon } from "@fortawesome/free-brands-svg-icons";
@@ -58,5 +62,9 @@ library.add(
 	faGithub,
 	faPatreon,
 	faImage,
-	faSave
+	faSave,
+	faWandSparkles,
+	faCopy,
+	faCode,
+	faSpinner
 );

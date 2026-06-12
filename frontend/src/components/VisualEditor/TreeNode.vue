@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { type Ref, computed, inject, ref } from "vue";
+import { Icon } from "@iconify/vue";
 import TreeRoot from "./TreeRoot.vue";
 import EffectAdder from "./EffectAdder.vue";
 import NodeHeader from "./Nodes/shared/NodeHeader.vue";
-import { deepKeys } from "./util";
+import { deepKeys, displayNames } from "./util";
 import type { AttackInteraction, AttackModel, ButtonInteraction, Effect, EffectKey } from "~/shared";
 
 const props = defineProps<{ data: Effect; depth: number; parentType: string; context: string[] }>();
@@ -22,7 +23,7 @@ const branchesCollapsed = ref<string[]>([]);
 const toggleBranch = (key: string) => {
 	if (branchesCollapsed.value.includes(key))
 		branchesCollapsed.value = branchesCollapsed.value.filter(n => n !== key);
-	 else
+	else
 		branchesCollapsed.value.push(key);
 };
 </script>
@@ -30,9 +31,9 @@ const toggleBranch = (key: string) => {
 <template>
 	<p :style="`margin-left: ${(depth + 1) * 15}px; color: grey;`" @click="currentEffect = data; currentContext = context">
 		<NodeHeader :type="selfType" />
-		<Icon icon="ooui:edit" inline width="1em" style="margin-left: .75em" />
+		<!-- <Icon icon="material-symbols:ink-pen" inline width="1em" style="margin-left: .5em" /> -->
 		<span v-if="['attack', 'condition', 'save'].includes(selfType)" class="collapse-button" @click.stop="isCollapsed = !isCollapsed">
-			<Icon icon="ooui:expand" inline width="1em" :rotate="isCollapsed ? '270deg' : ''" />
+			<Icon icon="ooui:expand" inline width="1em" :rotate="isCollapsed ? 270 : 0" />
 		</span>
 	</p>
 	<div v-show="!isCollapsed">
@@ -43,7 +44,7 @@ const toggleBranch = (key: string) => {
 				<p v-if="!['root', 'effects'].includes(key)" :key="key" :style="`margin-left: ${(depth + 2) * 15}px; color: white;`">
 					<NodeHeader :type="key" />
 					<span v-if="['onTrue', 'onFalse', 'hit', 'miss', 'fail', 'success'].includes(key)" class="collapse-button" @click.stop="toggleBranch(key)">
-						<Icon icon="ooui:expand" inline width="1em" :rotate="branchesCollapsed.includes(key) ? '270deg' : ''" />
+						<Icon icon="ooui:expand" inline width="1em" :rotate="branchesCollapsed.includes(key) ? 270 : 0" />
 					</span>
 				</p>
 				<template v-if="!branchesCollapsed.includes(key)">

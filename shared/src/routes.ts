@@ -64,6 +64,12 @@ export const routes: Route[] = [
 		file: "StatblockEditorView.vue",
 		meta: { navbar: false, loggedIn: true, dynamic: true },
 	},
+	{
+		path: "/statblock-editor/:id/:type/:aid",
+		name: "Feature Editor",
+		file: "FeatureEditorView.vue",
+		meta: { navbar: false, loggedIn: true, dynamic: true },
+	},
 	// user settings
 	{
 		path: "/user",

@@ -14,7 +14,8 @@ provide("currentEffect", currentEffect);
 provide("currentContext", currentContext);
 
 const automation = defineModel<null | AttackModel | AttackModel[]>();
-
+console.log(automation.value);
+provide("automation", ref(automation.value));
 const currentNode = computed(() => {
 	if (!currentEffect.value)
 		return null;
@@ -33,6 +34,7 @@ const currentNode = computed(() => {
 </script>
 
 <template>
+	{{ currentContext }} {{ currentEffect }}
 	<section class="two-wide uneven">
 		<div class="tree">
 			<h3> Effect Tree</h3>

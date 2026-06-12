@@ -28,7 +28,7 @@ useDataCleanup(currentEffect, ["thumb", "verb", "proper", "phrase", "criton", "e
 			</LabelledComponent>
 		</div>
 		<LabelledComponent title="Flavor Text" for="text" style="margin-top: 1rem">
-			<textarea id="text" v-model="currentEffect.phrase" rows="20" placeholder="Flavor text" />
+			<textarea id="text" v-model="currentEffect.phrase" rows="5" placeholder="Flavor text" />
 		</labelledcomponent>
 
 		<div class="two-wide">
