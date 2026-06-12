@@ -103,6 +103,7 @@ export interface Saves {
 export interface SaveEntity {
 	isProficient: boolean;
 	override: number | null;
+	adv?: boolean | null;
 }
 
 export interface SkillsEntity {
@@ -111,6 +112,7 @@ export interface SkillsEntity {
 	isProficient: boolean;
 	isExpertise: boolean;
 	override: number | null;
+	adv?: boolean | null;
 }
 export interface Defenses {
 	hp: Hp;

@@ -364,7 +364,8 @@ const addNewSkill = (newSkillName: string) => {
 		isHalfProficient: false,
 		isProficient: true,
 		isExpertise: false,
-		override: null
+		override: null,
+		adv: null
 	});
 };
 
