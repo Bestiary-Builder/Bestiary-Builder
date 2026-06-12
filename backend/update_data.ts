@@ -22,6 +22,18 @@ async function main() {
 	// Start time
 	const startTime = Date.now();
 
+	await updateSavesData();
+	const midTime = Date.now();
+	console.log(`Saves time: ${midTime - startTime}ms`);
+
+	await updateSkillsData();
+	const endTime = Date.now();
+	console.log(`Skills time: ${endTime - midTime}ms`);
+
+	console.log(`Total time: ${endTime - startTime}ms`);
+}
+
+async function updateSavesData() {
 	const totalCount = await prisma.creature.count({
 		where: {
 			stats: {
@@ -30,12 +42,11 @@ async function main() {
 			}
 		}
 	});
-	console.log(`Found ${totalCount} creatures to update`);
+	console.log(`Found ${totalCount} creatures to update saves`);
 	for (let i = 0; i < totalCount;) {
 		// Add new data to creature statblocks
 		const creaturesToUpdate = await prisma.creature.findMany({
 			take: 1000,
-			skip: i,
 			where: {
 				stats: {
 					path: ["abilities", "saves", "str", "adv"],
@@ -43,17 +54,53 @@ async function main() {
 				}
 			}
 		});
-		const result = await prisma.$transaction(creaturesToUpdate.map(creature => createOperation(creature)));
+		const result = await prisma.$transaction(creaturesToUpdate.map(creature => createSavesOperation(creature)), {
+			timeout: 60000,
+			maxWait: 60000
+		});
+		i += result.length;
+		console.log(`Updated ${creaturesToUpdate.length} (${i}) creature statblocks`);
+	}
+}
+
+async function updateSkillsData() {
+	const whereClause = {
+		AND: [
+			{
+				stats: {
+					path: ["abilities", "skills", "0"],
+					not: Prisma.DbNull
+				},
+			},
+			{
+				stats: {
+					path: ["abilities", "skills", "0", "adv"],
+					equals: Prisma.DbNull
+				},
+			}
+		]
+	};
+
+	const totalCount = await prisma.creature.count({
+		where: whereClause
+	});
+	console.log(`Found ${totalCount} creatures to update skills`);
+	for (let i = 0; i < totalCount;) {
+		// Add new data to creature statblocks
+		const creaturesToUpdate = await prisma.creature.findMany({
+			take: 1000,
+			where: whereClause
+		});
+		const result = await prisma.$transaction(creaturesToUpdate.map(creature => createSkillsOperation(creature)), {
+			timeout: 60000,
+			maxWait: 60000
+		});
 		i += result.length;
 		console.log(`Updated ${result.length} (${i}) creature statblocks`);
 	}
-
-	const endTime = Date.now();
-
-	console.log(`Total time: ${endTime - startTime}ms`);
 }
 
-function createOperation(creature: Creature) {
+function createSavesOperation(creature: Creature) {
 	const stats = creature.stats;
 	stats.abilities.saves.str.adv = null;
 	stats.abilities.saves.dex.adv = null;
@@ -61,6 +108,17 @@ function createOperation(creature: Creature) {
 	stats.abilities.saves.wis.adv = null;
 	stats.abilities.saves.int.adv = null;
 	stats.abilities.saves.cha.adv = null;
+	return prisma!.creature.update({
+		where: { id: creature.id },
+		data: { stats }
+	});
+}
+
+function createSkillsOperation(creature: Creature) {
+	const stats = creature.stats;
+	stats.abilities.skills.forEach((skill) => {
+		skill.adv = null;
+	});
 	return prisma!.creature.update({
 		where: { id: creature.id },
 		data: { stats }
