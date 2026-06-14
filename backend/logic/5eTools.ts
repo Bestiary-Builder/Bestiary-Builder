@@ -191,80 +191,80 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 				const mod = data?.save?.str ?? null;
 
 				if (!mod)
-					return { isProficient: false, override: null };
+					return { isProficient: false, override: null, adv: null };
 
 				const saveBonus = outputData.core.proficiencyBonus + (Math.floor(data.str / 2) - 5);
 				if (mod === saveBonus)
-					return { isProficient: true, override: null };
+					return { isProficient: true, override: null , adv: null};
 				if (mod !== saveBonus)
-					return { isProficient: false, override: Number.parseInt(mod.toString()) };
+					return { isProficient: false, override: Number.parseInt(mod.toString()), adv: null };
 
-				return { isProficient: false, override: null };
+				return { isProficient: false, override: null, adv: null };
 			})(),
 			dex: (() => {
 				const mod = Number.parseInt(data?.save?.dex) ?? null;
 				if (!mod)
-					return { isProficient: false, override: null };
+					return { isProficient: false, override: null, adv: null };
 
 				const saveBonus = outputData.core.proficiencyBonus + (Math.floor(data.dex / 2) - 5);
 				if (mod === saveBonus)
-					return { isProficient: true, override: null };
+					return { isProficient: true, override: null , adv: null};
 				if (mod !== saveBonus)
-					return { isProficient: false, override: Number.parseInt(mod.toString()) };
+					return { isProficient: false, override: Number.parseInt(mod.toString()), adv: null };
 
-				return { isProficient: false, override: null };
+				return { isProficient: false, override: null, adv: null };
 			})(),
 			con: (() => {
 				const mod = Number.parseInt(data?.save?.con) ?? null;
 				if (!mod)
-					return { isProficient: false, override: null };
+					return { isProficient: false, override: null, adv: null };
 
 				const saveBonus = outputData.core.proficiencyBonus + (Math.floor(data.con / 2) - 5);
 				if (mod === saveBonus)
-					return { isProficient: true, override: null };
+					return { isProficient: true, override: null , adv: null};
 				if (mod !== saveBonus)
-					return { isProficient: false, override: Number.parseInt(mod.toString()) };
+					return { isProficient: false, override: Number.parseInt(mod.toString()) , adv: null};
 
-				return { isProficient: false, override: null };
+				return { isProficient: false, override: null, adv: null };
 			})(),
 			int: (() => {
 				const mod = Number.parseInt(data?.save?.int) ?? null;
 				if (!mod)
-					return { isProficient: false, override: null };
+					return { isProficient: false, override: null, adv: null };
 
 				const saveBonus = outputData.core.proficiencyBonus + (Math.floor(data.int / 2) - 5);
 				if (mod === saveBonus)
-					return { isProficient: true, override: null };
+					return { isProficient: true, override: null, adv: null };
 				if (mod !== saveBonus)
-					return { isProficient: false, override: Number.parseInt(mod.toString()) };
+					return { isProficient: false, override: Number.parseInt(mod.toString()), adv: null };
 
-				return { isProficient: false, override: null };
+				return { isProficient: false, override: null, adv: null };
 			})(),
 			wis: (() => {
 				const mod = Number.parseInt(data?.save?.wis) ?? null;
 				if (!mod)
-					return { isProficient: false, override: null };
+					return { isProficient: false, override: null, adv: null };
 
 				const saveBonus = outputData.core.proficiencyBonus + (Math.floor(data.wis / 2) - 5);
 				if (mod === saveBonus)
-					return { isProficient: true, override: null };
+					return { isProficient: true, override: null, adv: null };
 				if (mod !== saveBonus)
-					return { isProficient: false, override: Number.parseInt(mod.toString()) };
+					return { isProficient: false, override: Number.parseInt(mod.toString()), adv: null };
 
-				return { isProficient: false, override: null };
+				return { isProficient: false, override: null, adv: null };
 			})(),
 			cha: (() => {
 				const mod = Number.parseInt(data?.save?.cha) ?? null;
 				if (!mod)
-					return { isProficient: false, override: null };
+					return { isProficient: false, override: null, adv: null };
 
 				const saveBonus = outputData.core.proficiencyBonus + (Math.floor(data.cha / 2) - 5);
 				if (mod === saveBonus)
-					return { isProficient: true, override: null };
+					return { isProficient: true, override: null, adv: null };
 				if (mod !== saveBonus)
-					return { isProficient: false, override: Number.parseInt(mod.toString()) };
+					return { isProficient: false, override: Number.parseInt(mod.toString()), adv: null };
 
-				return { isProficient: false, override: null };
+				return { isProficient: false, override: null, adv: null };
 			})()
 		},
 		skills: (() => {
@@ -300,7 +300,8 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 					isProficient: isProf,
 					isExpertise,
 					isHalfProficient,
-					override
+					override,
+					adv: null
 				});
 			}
 			return output;
