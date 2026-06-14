@@ -67,7 +67,7 @@ async function checkUserStatuses(guild: discord.Guild) {
 	// Update database
 	const prisma = getPrismaClient();
 	await prisma.$transaction([
-		prisma.user.updateMany({ where: { AND: [{ id: { notIn: tier1Ids } }, { id: { notIn: tier2Ids } }] }, data: { supporter: SupporterStatus.none } }),
+		prisma.user.updateMany({ data: { supporter: SupporterStatus.none } }),
 		prisma.user.updateMany({ where: { id: { in: tier1Ids } }, data: { supporter: SupporterStatus.wirmling } }),
 		prisma.user.updateMany({ where: { id: { in: tier2Ids } }, data: { supporter: SupporterStatus.greatwyrm } }),
 	]);
