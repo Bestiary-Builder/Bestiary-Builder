@@ -156,48 +156,51 @@ const calculatedInitiativeNumber = () => {
 			<!-- <img v-if="data.description.image" class="stat-block__image" :src="data.description.image"> -->
 		</div>
 
-		<div v-if="v2024" class="stat-container">
-			<table class="stat-table">
-				<thead>
-					<tr>
-						<th />
-						<th />
-						<th> MOD </th>
-						<th> SAVE</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr v-for="stat in stats.slice(0, 3)" :key="stat">
-						<th scope="row">
-							{{ stat }}
-						</th>
-						<td> {{ data.abilities.stats[stat] }}</td>
-						<td> {{ signedNumber(statCalc(stat, data)) }} </td>
-						<td> {{ signedNumber(calculatedSaveNumber(data.abilities.saves[stat], stat)) }}</td>
-					</tr>
-				</tbody>
-			</table>
-			<table class="stat-table">
-				<thead>
-					<tr>
-						<th />
-						<th />
-						<th> MOD </th>
-						<th> SAVE</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr v-for="stat in stats.slice(3, 6)" :key="stat">
-						<th scope="row">
-							{{ stat }}
-						</th>
-						<td> {{ data.abilities.stats[stat] }}</td>
-						<td> {{ signedNumber(statCalc(stat, data)) }} </td>
-						<td> {{ signedNumber(calculatedSaveNumber(data.abilities.saves[stat], stat)) }}</td>
-					</tr>
-				</tbody>
-			</table>
+		<div class="stat-container-wrapper">
+			<div v-if="v2024" class="stat-container">
+				<table class="stat-table">
+					<thead>
+						<tr>
+							<th />
+							<th />
+							<th> MOD </th>
+							<th> SAVE</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="stat in stats.slice(0, 3)" :key="stat">
+							<th scope="row">
+								{{ stat }}
+							</th>
+							<td> {{ data.abilities.stats[stat] }}</td>
+							<td> {{ signedNumber(statCalc(stat, data)) }} </td>
+							<td> {{ signedNumber(calculatedSaveNumber(data.abilities.saves[stat], stat)) }}</td>
+						</tr>
+					</tbody>
+				</table>
+				<table class="stat-table">
+					<thead>
+						<tr>
+							<th />
+							<th />
+							<th> MOD </th>
+							<th> SAVE</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="stat in stats.slice(3, 6)" :key="stat">
+							<th scope="row">
+								{{ stat }}
+							</th>
+							<td> {{ data.abilities.stats[stat] }}</td>
+							<td> {{ signedNumber(statCalc(stat, data)) }} </td>
+							<td> {{ signedNumber(calculatedSaveNumber(data.abilities.saves[stat], stat)) }}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
 		</div>
+
 		<div v-if="!v2024" class="stat-block__row stat-block__abilities">
 			<div v-for="stat in stats" :key="stat">
 				<div> <b> {{ stat.toUpperCase() }} </b></div>
@@ -318,6 +321,6 @@ const calculatedInitiativeNumber = () => {
 
 <style scoped lang="less">
 @import "@/assets/styles/statblock/default.less";
-@import "@/assets/styles/statblock/odyssey/odyssey.less";
+// @import "@/assets/styles/statblock/odyssey/odyssey.less";
 // @import "@/assets/styles/statblock/beyond/beyond.less";
 </style>
