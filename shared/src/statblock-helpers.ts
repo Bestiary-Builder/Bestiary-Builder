@@ -126,7 +126,7 @@ export function displaySpeedOrSenses(data: SenseEntity[] | SpeedEntity[], hasEnd
 		}
 		output += item.value;
 		if (item.unit !== "none")
-			output += `${item.unit}.`;
+			output += ` ${item.unit}.`;
 		if (item.comment)
 			output += ` (${item.comment})`;
 		if (hasEndingComma || (filteredLength !== 1 && index !== filteredLength - 1))

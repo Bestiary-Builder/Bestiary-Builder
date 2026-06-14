@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Draggable from "vuedraggable";
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
-import { toJpeg } from "html-to-image";
+import { toJpeg, toSvg } from "html-to-image";
 import { usePermission } from "@vueuse/core";
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
 import { toast } from "@/utils/app/toast";
@@ -261,6 +261,35 @@ const importBestiaryBuilder = async () => {
 	}
 };
 
+const critterLink = ref("");
+const importCritterDB = async () => {
+	let link = critterLink.value.trim();
+	try {
+		const url = new URL(link);
+		if (url.hostname !== "critterdb.com" && !url.hostname.endsWith(".critterdb.com")) {
+			toast.error("Could not recognize link as a link to a CritterDB bestiary");
+			return;
+		}
+	}
+	catch {
+		toast.error("Could not recognize link as a link to a CritterDB bestiary");
+		return;
+	}
+
+	const linkEls = link.split("/");
+	link = linkEls[linkEls.length - 1];
+
+	const { success, data: cData, error } = await useFetch(`/api/critterdbcreature/${link}`);
+	if (!success) {
+		toast.error(error);
+		return;
+	}
+
+	data.value = cData as Statblock;
+	showImportModal.value = false;
+	toast.success(`Successfully imported ${data.value.description.name}`);
+	console.log(success, data, error);
+};
 // export
 const exportStatblock = async () => {
 	const text = JSON.stringify({ ...data.value, isBB: true }, null, 2);
@@ -1132,6 +1161,16 @@ const changeCR = (isIncrease: boolean) => {
 					<div class="two-wide">
 						<input id="toolsjson" v-model="toolsjson" type="text">
 						<button class="btn confirm" @click.prevent="import5etools">
+							Import
+						</button>
+					</div>
+				</LabelledComponent>
+				<hr>
+				<LabelledComponent title="CritterDB JSON" for="critterjson">
+					<p>Insert a CritterDB link to a single creature here.</p>
+					<div class="two-wide">
+						<input id="critterjson" v-model="critterLink" type="text">
+						<button class="btn confirm" @click.prevent="importCritterDB">
 							Import
 						</button>
 					</div>

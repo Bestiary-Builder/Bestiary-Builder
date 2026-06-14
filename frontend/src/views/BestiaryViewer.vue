@@ -307,11 +307,13 @@ async function importCreaturesFromBestiaryBuilder() {
 		loader.hide();
 		return;
 	}
-	toast.info("Importing creatures has started. This may take a while.");
+
 	if (!Array.isArray(creaturesToImport))
 		creaturesToImport = [creaturesToImport];
 
+	toast.info("Importing creatures has started. This may take a while.");
 	const { success, data, error } = await useFetch<{ error?: string; ignoredCreatures: { creature: string; error: string }[] }>(`/api/bestiary/${bestiary.value?.id.toString()}/addcreatures`, "POST", creaturesToImport);
+
 	if (!success) {
 		notices.value = {};
 		toast.error(error);

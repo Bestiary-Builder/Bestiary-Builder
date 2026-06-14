@@ -23,6 +23,32 @@ app.get("/api/critterdb/:id/:published", async (req, res) => {
 	}
 });
 
+app.get("/api/critterdbcreature/:id", async (req, res) => {
+	try {
+		const id = req.params.id;
+
+		await fetch(`https://critterdb.com/api/creatures/${id}`).then(async (resp) => {
+			try {
+				const raw = (await resp.json()) as any;
+				console.log(raw);
+				const result = parseFromCritterDB(raw);
+				if (!result)
+					return res.status(500).json({ error: "Failed to fetch info from critterdb.com. Are you sure the link is right?" });
+				else
+					return res.json(result[0]);
+			}
+			catch {
+				log.error(`CritterDB | Error importing creature from critterDB. Id: "${id}"`);
+				return res.status(500).json({ error: "Failed to fetch info from critterdb.com. Are you sure the link is right?" });
+			}
+		});
+	}
+	catch (err) {
+		log.log("critical", err);
+		return res.status(500).json({ error: "Unknown server error occured, please try again." });
+	}
+});
+
 async function fromCritterdb(url: string, published: boolean): Promise<{ data: { creatures: Statblock[]; name: string; description: string }; failedCreatures: string[] } | null> {
 	const data = { creatures: [] as Statblock[], name: "", description: "" };
 	log.info(`CritterDB | Getting bestiary ID ${url}...`);
@@ -91,7 +117,7 @@ async function getLinkSharedBestiaryCreatures(id: string, apiBase: string) {
 			return null;
 		}
 		else if (!(resp.status >= 200 && resp.status < 300)) {
-			log.error(`CritterDB | Unkown error importing link shared bestiary creatures. Id: "${id}".`);
+			log.error(`CritterDB | Unknown error importing link shared bestiary creatures. Id: "${id}".`);
 			return null;
 		}
 		return (await resp.json()) as any[];
@@ -252,7 +278,7 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: string]
 			return {
 				isProficient: false,
 				override: null,
-						adv: null
+				adv: null
 			};
 		})(),
 		con: (() => {
@@ -268,7 +294,7 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: string]
 			return {
 				isProficient: false,
 				override: null,
-						adv: null
+				adv: null
 			};
 		})(),
 		int: (() => {
@@ -284,7 +310,7 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: string]
 			return {
 				isProficient: false,
 				override: null,
-						adv: null
+				adv: null
 			};
 		})(),
 		wis: (() => {
@@ -300,7 +326,7 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: string]
 			return {
 				isProficient: false,
 				override: null,
-						adv: null
+				adv: null
 			};
 		})(),
 		cha: (() => {
@@ -316,7 +342,7 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: string]
 			return {
 				isProficient: false,
 				override: null,
-						adv: null
+				adv: null
 			};
 		})()
 	};
