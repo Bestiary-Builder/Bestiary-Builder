@@ -110,14 +110,20 @@ export function signedNumber(number: number) {
 	return `${number}`;
 }
 
-export function displaySpeedOrSenses(data: SenseEntity[] | SpeedEntity[], hasEndingComma = false) {
+export function displaySpeedOrSenses(data: SenseEntity[] | SpeedEntity[], hasEndingComma = false, version2024 = true) {
 	let output = "";
 	const filteredLength = data.filter(item => item.name !== "New speed" && item.name !== "New sense").length;
 	for (const [index, item] of data.entries()) {
 		if (item.name === "New speed" || item.name === "New sense")
 			continue;
-		if (item.name !== "Walk")
-			output += `${item.name.toLowerCase()} `;
+		if (item.name !== "Walk") {
+			if (version2024) {
+				output += `${capitalizeFirstLetter(item.name.toLowerCase())} `;
+			}
+			else {
+				output += `${item.name.toLowerCase()} `;
+			}
+		}
 		output += item.value;
 		if (item.unit !== "none")
 			output += `${item.unit}.`;

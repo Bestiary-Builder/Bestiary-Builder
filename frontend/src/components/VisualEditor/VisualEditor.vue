@@ -82,4 +82,12 @@ const currentNode = computed(() => {
 h3 {
 	margin-bottom: 0.25rem;
 }
+
+.two-wide.uneven {
+	width: 100%;
+	display: grid;
+	gap: 0rem 1rem;
+	margin-bottom: 1rem;
+	grid-template-columns: 1fr 3fr;
+}
 </style>

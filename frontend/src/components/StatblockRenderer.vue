@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import Markdown from "./Markdown.vue";
-import type { SkillsEntity, Stat, Statblock } from "~/shared";
+import type { SaveEntity, SkillsEntity, Stat, Statblock } from "~/shared";
 import { SKILLS_BY_STAT, capitalizeFirstLetter, crAsString, displayCasterCasting, displayInnateCasting, displaySpeedOrSenses, hpCalc, ppCalc, signedNumber, statCalc } from "~/shared";
 import { featureGenerator, resistanceGenerator, stats } from "@/utils/constants";
 
@@ -53,12 +53,12 @@ const skillOutput = computed(() => {
 	for (const skill of skills) {
 		if (!skill.isExpertise && !skill.isHalfProficient && !skill.isProficient && !skill.override)
 			continue;
-
 		let bonus = 0;
 		for (const stat in SKILLS_BY_STAT) {
 			if (SKILLS_BY_STAT[stat as Stat].includes(skill.skillName.replaceAll(" ", "").toLowerCase().replace("animalh", "animalH").replace("sleightofh", "sleightOfH"))) {
 				if (skill.override && skill.override !== null) {
 					const over = skill.override;
+
 					output.push(`${skill.skillName} ${(over ?? 0) >= 0 ? "+" : ""}${over}`);
 				}
 				else {
@@ -77,6 +77,7 @@ const skillOutput = computed(() => {
 			else { continue; }
 		}
 	}
+
 	return output.join(", ");
 });
 
@@ -98,50 +99,125 @@ const alphaSort = (list: string[]) => {
 	};
 	return list.sort(sortByLastWord).map(v => v.toLowerCase());
 };
+
+const v2024 = true;
+
+const calculatedSaveNumber = (save: SaveEntity, stat: Stat) => {
+	if (save.override)
+		return save.override || 0;
+	else if (save.isProficient)
+		return data.core.proficiencyBonus + statCalc(stat, data);
+	else return statCalc(stat, data);
+};
+
+const calculatedInitiativeNumber = () => {
+	const skill = data.abilities.skills.find(skill => skill.skillName === "Initiative");
+
+	if (!skill)
+		return statCalc("dex", data);
+
+	if (skill.override)
+		return skill.override;
+	if (skill.isHalfProficient)
+		return Math.floor(data.core.proficiencyBonus / 2) + statCalc("dex", data);
+	else if (skill.isProficient)
+		return data.core.proficiencyBonus + statCalc("dex", data);
+	else if (skill.isExpertise)
+		return data.core.proficiencyBonus * 2 + statCalc("dex", data);
+	return 0;
+};
 </script>
 
 <template>
-	<div class="stat-block">
+	<div class="stat-block" :class="{ v2024 }">
 		<div class="stat-block__row">
 			<h1 class="stat-block__name-container">
 				{{ data.description.name }}
 			</h1>
-			<span class="stat-block__core"> {{ data.core.size }} {{ data.core.race }}{{ data.description.alignment ? ',' : '' }} {{ data.description.alignment }}</span>
-			<img v-if="data.description.image" class="stat-block__image" :src="data.description.image">
 		</div>
-		<div class="stat-block__row">
+		<span class="stat-block__core"> {{ data.core.size }} {{ data.core.race }}{{ data.description.alignment ? ',' : '' }} {{ data.description.alignment }}</span>
+
+		<div class="stat-block__row two-wide picture-container">
 			<div>
-				<b> Armor Class </b> {{ data.defenses.ac.ac }} <span v-if="data.defenses.ac.acSource"> ({{ data.defenses.ac.acSource }}) </span>
+				<div>
+					<b> {{ v2024 ? 'AC ' : 'Armor Class ' }} </b><span>{{ data.defenses.ac.ac }}</span><span v-if="data.defenses.ac.acSource"> ({{ data.defenses.ac.acSource }}) </span>
+					<b v-if="v2024" style="padding-left: .45rem"> Initiative </b> <span v-if="v2024"> {{ signedNumber(calculatedInitiativeNumber()) }}</span>
+				</div>
+				<div>
+					<b> {{ v2024 ? 'HP ' : 'Hit Points ' }} </b>
+					<span v-if="data.defenses.hp.override"> {{ data.defenses.hp.override }}</span>
+					<span v-else> {{ hpCalc(data) }} ({{ data.defenses.hp.numOfHitDie }}d{{ data.defenses.hp.sizeOfHitDie }}{{ hitDieBonus }})</span>
+				</div>
+				<div class="stat-block__speed-container">
+					<b> Speed </b>
+					{{ displaySpeedOrSenses(data.core.speed, false, v2024) }}
+				</div>
 			</div>
-			<div>
-				<b> Hit Points </b>
-				<span v-if="data.defenses.hp.override"> {{ data.defenses.hp.override }}</span>
-				<span v-else> {{ hpCalc(data) }} ({{ data.defenses.hp.numOfHitDie }}d{{ data.defenses.hp.sizeOfHitDie }}{{ hitDieBonus }})</span>
-			</div>
-			<div class="stat-block__speed-container">
-				<b> Speed </b>
-				{{ displaySpeedOrSenses(data.core.speed) }}
-			</div>
+			<!-- <img v-if="data.description.image" class="stat-block__image" :src="data.description.image"> -->
 		</div>
-		<div class="stat-block__row stat-block__abilities">
+
+		<div v-if="v2024" class="stat-container">
+			<table class="stat-table">
+				<thead>
+					<tr>
+						<th />
+						<th />
+						<th> MOD </th>
+						<th> SAVE</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="stat in stats.slice(0, 3)" :key="stat">
+						<th scope="row">
+							{{ stat }}
+						</th>
+						<td> {{ data.abilities.stats[stat] }}</td>
+						<td> {{ signedNumber(statCalc(stat, data)) }} </td>
+						<td> {{ signedNumber(calculatedSaveNumber(data.abilities.saves[stat], stat)) }}</td>
+					</tr>
+				</tbody>
+			</table>
+			<table class="stat-table">
+				<thead>
+					<tr>
+						<th />
+						<th />
+						<th> MOD </th>
+						<th> SAVE</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="stat in stats.slice(3, 6)" :key="stat">
+						<th scope="row">
+							{{ stat }}
+						</th>
+						<td> {{ data.abilities.stats[stat] }}</td>
+						<td> {{ signedNumber(statCalc(stat, data)) }} </td>
+						<td> {{ signedNumber(calculatedSaveNumber(data.abilities.saves[stat], stat)) }}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div v-if="!v2024" class="stat-block__row stat-block__abilities">
 			<div v-for="stat in stats" :key="stat">
 				<div> <b> {{ stat.toUpperCase() }} </b></div>
 				<span> {{ data.abilities.stats[stat] }} ({{ signedNumber(statCalc(stat, data)) }})</span>
 			</div>
 		</div>
-		<div class="stat-block__row">
-			<div v-if="Object.values(data.abilities.saves).some((val) => (val.isProficient === true || val.override !== null))" class="stat-block__save-container">
-				<b> Saving Throws </b>
-				<template v-for="stat in stats" :key="stat">
-					<span v-if="data.abilities.saves[stat].override !== null"> {{ capitalizeFirstLetter(stat) }} {{ signedNumber(data.abilities.saves[stat].override || 0) }} </span>
-					<span v-else-if="data.abilities.saves[stat].isProficient"> {{ capitalizeFirstLetter(stat) }} {{ signedNumber(data.core.proficiencyBonus + statCalc(stat, data)) }} </span>
-					<span v-if="data.abilities.saves[stat].override !== null || data.abilities.saves[stat].isProficient" class="ending-comma">, </span>
-				</template>
-			</div>
-			<div v-if="showSkills" class="stat-block__skills-container">
-				<b> Skills </b>
-				{{ skillOutput }}
-			</div>
+		<div class="stat-block__row v2024-no-bottom-border">
+			<template v-if="!v2024">
+				<div v-if="Object.values(data.abilities.saves).some((val) => (val.isProficient === true || val.override !== null))" class="stat-block__save-container">
+					<b> Saving Throws </b>
+					<template v-for="stat in stats" :key="stat">
+						<span v-if="data.abilities.saves[stat].override !== null || data.abilities.saves[stat].isProficient"> {{ capitalizeFirstLetter(stat) }} {{ signedNumber(calculatedSaveNumber(data.abilities.saves[stat], stat)) }} </span>
+						<span v-if="data.abilities.saves[stat].override !== null || data.abilities.saves[stat].isProficient" class="ending-comma">, </span>
+					</template>
+				</div>
+				<div v-if="showSkills" class="stat-block__skills-container">
+					<b> Skills </b>
+					{{ skillOutput }}
+				</div>
+			</template>
 			<template v-for="title, resType of resistanceGenerator">
 				<div v-if="data.defenses[resType].length > 0" :key="resType" class="stat-block__res-container">
 					<b> {{ title }}  </b>
@@ -150,8 +226,8 @@ const alphaSort = (list: string[]) => {
 			</template>
 			<div ckass="stat-block__senses-container">
 				<b> Senses </b>
-				{{ displaySpeedOrSenses(data.core.senses, true) }}
-				<span> passive Perception {{ ppCalc(data) }}</span>
+				{{ displaySpeedOrSenses(data.core.senses, true, v2024) }}
+				<span> {{ v2024 ? 'P' : 'p' }}assive Perception {{ ppCalc(data) }}</span>
 			</div>
 			<div class="stat-block__language-container">
 				<b> Languages </b>
@@ -159,14 +235,21 @@ const alphaSort = (list: string[]) => {
 				<span v-else> {{ data.core.languages?.sort().join(", ") }} </span>
 				<span v-if="data.misc.telepathy"> telepathy {{ data.misc.telepathy }}ft.</span>
 			</div>
-			<div class="challenge-prof">
-				<span> <b> Challenge </b> {{ crAsString(data.description.cr) }} ({{ data.description.xp }} xp) </span>
+			<div v-if="v2024" class="challenge-prof">
+				<span> <b> CR</b> {{ crAsString(data.description.cr) }} (XP {{ data.description.xp }})
+				</span>
+			</div>
+			<div v-else class="challenge-prof">
+				<span> <b> Challenge </b> {{ crAsString(data.description.cr) }} ({{ data.description.xp }}) </span>
 				<span> <b> Proficiency Bonus </b> +{{ data.core.proficiencyBonus }}</span>
 			</div>
 		</div>
 
 		<div v-if="data.features.features.length > 0 || showCasterCasting || (showInnateCasting && !data.spellcasting.innateSpells.displayAsAction)" id="yes" class="stat-block__row">
 			<div class="feature-container">
+				<h3 v-if="v2024" class="feature-container__title">
+					Traits
+				</h3>
 				<p v-if="data.misc.featureHeaderTexts.features">
 					{{ data.misc.featureHeaderTexts.features }}
 				</p>
@@ -211,20 +294,20 @@ const alphaSort = (list: string[]) => {
 				<h3 class="feature-container__title">
 					{{ title }}
 				</h3>
-				<p v-if="fType === 'legendary' && data.misc.featureHeaderTexts[fType]">
+				<p v-if="fType === 'legendary' && data.misc.featureHeaderTexts[fType]" class="feature-header">
 					{{ data.misc.featureHeaderTexts[fType].replace("$NUM$", data.misc.legActionsPerRound.toString()) }}
 				</p>
-				<p v-else-if="data.misc.featureHeaderTexts[fType]">
+				<p v-else-if="data.misc.featureHeaderTexts[fType]" class="feature-header">
 					{{ data.misc.featureHeaderTexts[fType] }}
 				</p>
-				<p v-for="(feature, index) in data.features[fType]" :key="index">
+				<p v-for="(feature, index) in data.features[fType]" :key="index" class="feature-description">
 					<b> <i> {{ feature.name }}.</i></b>
 					<sup v-if="feature.automation" v-tooltip="'Has Automation'" class="feature-container__automation-icon">†</sup>
 					<Markdown class="feature-container__desc" :text="feature.description" tag="span" />
 				</p>
 			</div>
 		</template>
-		<div v-if="data.description.description" class="description">
+		<div v-if="data.description.description" class="feature-container">
 			<h2 class="feature-container__title">
 				Description
 			</h2>
@@ -236,4 +319,5 @@ const alphaSort = (list: string[]) => {
 <style scoped lang="less">
 @import "@/assets/styles/statblock/default.less";
 @import "@/assets/styles/statblock/odyssey/odyssey.less";
+// @import "@/assets/styles/statblock/beyond/beyond.less";
 </style>

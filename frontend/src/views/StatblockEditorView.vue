@@ -639,7 +639,7 @@ const changeCR = (isIncrease: boolean) => {
 				</template>
 			</VDropdown>
 		</Breadcrumbs>
-		<div class="content" :class="{ 'is-statblock-only': !shouldShowEditor }">
+		<div class="content more-wide" :class="{ 'is-statblock-only': !shouldShowEditor }">
 			<div v-show="shouldShowEditor" class="content-container__inner editor">
 				<div class="editor-nav" role="tablist" aria-label="Statblock editor tabs">
 					<button id="tab-1" :class="{ 'active-slide': slideIndex === 1 }" class="editor-nav__tab" role="tab" aria-controls="tabpanel-1" @click="showSlides(1)" @keydown="moveSlide">
@@ -670,7 +670,19 @@ const changeCR = (isIncrease: boolean) => {
 							</LabelledComponent>
 
 							<LabelledComponent title="Image URL" for="imageurl">
-								<input id="imageurl" v-model="data.description.image" type="text" :pattern="store.limits?.imageFormats ? `(https:\/\/)(.+)(\\.${store.limits?.imageFormats.join('|\\.')})` : ''">
+								<div style="display: flex; gap: .3rem;">
+									<input id="imageurl" v-model="data.description.image" type="text" :pattern="store.limits?.imageFormats ? `(https:\/\/)(.+)(\\.${store.limits?.imageFormats.join('|\\.')})` : ''">
+									<VDropdown>
+										<button v-tooltip="'Preview image'" aria-label="Preview image" class="preview-icon">
+											<font-awesome-icon :icon="['fas', 'eye']" />
+										</button>
+										<template #popper>
+											<div class="v-popper__custom-menu">
+												<img :src="data.description.image" style="width: 200px; height: auto">
+											</div>
+										</template>
+									</VDropdown>
+								</div>
 							</LabelledComponent>
 							<LabelledComponent title="Proper Noun" for="propernoun">
 								<span>
@@ -1089,11 +1101,11 @@ const changeCR = (isIncrease: boolean) => {
 					</div>
 				</div>
 				<hr>
-				<div class="buttons">
+				<!-- <div class="buttons">
 					<button class="btn" :class="{ confirm: madeChanges }" @click="saveStatblock">
 						Save statblock
 					</button>
-				</div>
+				</div> -->
 			</div>
 			<div class="content-container__inner">
 				<StatblockRenderer id="statblock" :data="data" />
@@ -1426,5 +1438,29 @@ const changeCR = (isIncrease: boolean) => {
 .list-leave-to {
 	opacity: 0;
 	translate: 0 -10px;
+}
+
+.preview-icon {
+	padding: 0;
+	border: unset;
+	background: unset;
+	position: relative;
+	cursor: pointer;
+	background: transparent;
+	border-radius: 50%;
+	padding: 0.3rem;
+	height: 1.5rem;
+	width: 1.5rem;
+	aspect-ratio: 1;
+	color: grey;
+	transition: all ease 0.3s;
+
+	svg {
+		scale: 1.1;
+		translate: 0 -2px;
+	}
+	&:hover {
+		color: var(--color-surface-0);
+	}
 }
 </style>

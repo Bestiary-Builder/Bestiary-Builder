@@ -6,24 +6,45 @@
 .stat-block {
     color: #095471;
     background-color: #ffffff;
-    background-image: url('bg.jpg');
+    // background-image: url('bg.jpg');
     background-size:  100% 100%;
     background-repeat: no-repeat;
 
-    padding: 10px;
-    margin: -10px;
+    border: 1px solid #cfac8d;
+
+    box-shadow: 0 0 3px #f3f5f9;
+    border: 1px solid #cfac8d;
+    padding: 15px;
+    outline: 1px solid #cfac8d;
+    outline-offset: -0.25rem;
+    border-radius: .5rem;
 
     h1 {
         font-family: 'Odyssey';
         color: #095471;
-         border-bottom: 0px solid white;
+        border-bottom: 0px solid #095471;
         background-image: url('hr.svg');
-        background-size: contain;
+        background-size: 47%;
         background-repeat: no-repeat;
         background-position-y: bottom;
+        background-position: right bottom;
         padding-bottom: .8rem;
-        margin-bottom: .2rem
+        margin-bottom: .2rem;
+        margin-right: 8.5px;
+        position: relative;
+
+        &::after {
+            position: absolute;
+            background-color: #095471;
+            left: 0;
+            bottom: 2px;
+            width: 70%;
+            height: 1px;
+            display: block;
+            content: '';
+        }
     }
+
 
     .stat-block__row {
         border-bottom: 0px solid white;
@@ -32,7 +53,7 @@
     .feature-container {
 		color: black;
 		border-bottom: 0px solid white;
-		margin-top: 0.3rem;
+		// margin-top: 0.3rem;
 	}
 
     .feature-container__title {
@@ -52,5 +73,45 @@
         color: grey
     }
 
+
+    .stat-table:first-of-type {
+        tbody > th {
+            font-weight: bold
+        };
+        tbody > tr > td {
+            background-color: #c3c6b4;;
+        }
+
+        tbody > tr > th,
+        tbody > tr > td:first-of-type {
+            background-color: #e0e2d9;
+        }
+    }
+
+    .stat-table:nth-of-type(2) {
+        tbody > tr > td {
+            background-color: #d8ccd1;
+        }
+
+        tbody > tr > th,
+        tbody > tr > td:first-of-type {
+            background-color: #ebe5e8;
+        }
+    }
+
 }
 
+@media screen and (max-width: 1400px) {
+
+    .stat-block {
+	h1 {
+        background-size: 100%;
+
+
+        &::after {
+            display: none;
+        }
+    }
+    }
+
+}
