@@ -228,13 +228,15 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: string]
 				if (s.ability === "strength") {
 					return {
 						isProficient: s.proficient,
-						override: s?.value || null
+						override: s?.value || null,
+						adv: null
 					};
 				}
 			}
 			return {
 				isProficient: false,
-				override: null
+				override: null,
+				adv: null
 			};
 		})(),
 		dex: (() => {
@@ -242,13 +244,15 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: string]
 				if (s.ability === "dexterity") {
 					return {
 						isProficient: s.proficient,
-						override: s?.value || null
+						override: s?.value || null,
+						adv: null
 					};
 				}
 			}
 			return {
 				isProficient: false,
-				override: null
+				override: null,
+						adv: null
 			};
 		})(),
 		con: (() => {
@@ -256,13 +260,15 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: string]
 				if (s.ability === "constitution") {
 					return {
 						isProficient: s.proficient,
-						override: s?.value || null
+						override: s?.value || null,
+						adv: null
 					};
 				}
 			}
 			return {
 				isProficient: false,
-				override: null
+				override: null,
+						adv: null
 			};
 		})(),
 		int: (() => {
@@ -270,13 +276,15 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: string]
 				if (s.ability === "intelligence") {
 					return {
 						isProficient: s.proficient,
-						override: s?.value || null
+						override: s?.value || null,
+						adv: null
 					};
 				}
 			}
 			return {
 				isProficient: false,
-				override: null
+				override: null,
+						adv: null
 			};
 		})(),
 		wis: (() => {
@@ -284,13 +292,15 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: string]
 				if (s.ability === "wisdom") {
 					return {
 						isProficient: s.proficient,
-						override: s?.value || null
+						override: s?.value || null,
+						adv: null
 					};
 				}
 			}
 			return {
 				isProficient: false,
-				override: null
+				override: null,
+						adv: null
 			};
 		})(),
 		cha: (() => {
@@ -298,13 +308,15 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: string]
 				if (s.ability === "charisma") {
 					return {
 						isProficient: s.proficient,
-						override: s?.value || null
+						override: s?.value || null,
+						adv: null
 					};
 				}
 			}
 			return {
 				isProficient: false,
-				override: null
+				override: null,
+						adv: null
 			};
 		})()
 	};
@@ -336,7 +348,8 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: string]
 				isProficient: isProf,
 				isExpertise,
 				isHalfProficient,
-				override: !isProf && !isExpertise && !isHalfProficient ? sk.value || null : null
+				override: !isProf && !isExpertise && !isHalfProficient ? sk.value || null : null,
+				adv: null
 			});
 		}
 		return output;
