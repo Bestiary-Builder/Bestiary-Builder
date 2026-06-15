@@ -17,6 +17,7 @@ import { store } from "@/utils/store";
 import { $loading } from "@/utils/app/loading";
 import { alignments, classLevels, classes, conditionList, creatureTypes, languages, newFeatureGenerator, resistanceList, sizes, stats } from "@/utils/constants";
 import SectionHeader from "@/components/VisualEditor/Nodes/shared/SectionHeader.vue";
+import CopyManager from "@/components/CopyManager.vue";
 
 const $route = useRoute();
 const $router = useRouter();
@@ -34,13 +35,6 @@ onMounted(async () => {
 		rawInfo.value = cData;
 		await loadRawInfo();
 		loader.hide();
-
-		try {
-			clipboardText.value = await navigator.clipboard.readText();
-		}
-		catch (error) {
-			console.error("Unable to read clipboard text:", error);
-		}
 	}
 	else {
 		toast.error(`Error: ${error}`);
@@ -70,7 +64,7 @@ const loadRawInfo = async () => {
 };
 
 // saving
-const saveStatblock = async () => {
+const saveStatblock = async (shouldNotify = true) => {
 	if (!rawInfo.value)
 		return;
 	rawInfo.value.stats = data.value;
@@ -78,7 +72,8 @@ const saveStatblock = async () => {
 	// Send to backend
 	const { success, error } = await useFetch<CreatureWithStats>(`/api/creature/${rawInfo.value.id.toString()}/update`, "POST", rawInfo.value);
 	if (success) {
-		toast.success("Saved stat block");
+		if (shouldNotify)
+			toast.success("Saved stat block");
 		madeChanges.value = false;
 		// watch data only once, as traversing the object deeply is expensive.
 		const unwatch = watch(
@@ -140,59 +135,6 @@ window.addEventListener("beforeunload", beforeUnLoad);
 onUnmounted(() => {
 	window.removeEventListener("beforeunload", beforeUnLoad);
 });
-
-// Pasting BB statblock from clipboard
-const permissionRead = usePermission("clipboard-read");
-const clipboardText = ref("");
-const canPasteBBStatblock = computed(() => {
-	try {
-		const parsed = JSON.parse(clipboardText.value);
-		return !!parsed?.isBB;
-	}
-	catch {
-		return false;
-	}
-});
-
-const importFromPaste = async () => {
-	if (!canPasteBBStatblock.value)
-		return;
-	try {
-		const parsed = JSON.parse(clipboardText.value);
-		delete parsed.isBB;
-		data.value = parsed;
-		toast.success("Successfully pasted creature!");
-	}
-	catch {}
-};
-
-const onTabFocus = async () => {
-	if (!permissionRead.value)
-		return;
-	if (document.hidden)
-		return;
-	setTimeout(async () => {
-		if (document.hasFocus()) {
-			try {
-				clipboardText.value = await navigator.clipboard.readText();
-			}
-			catch {}
-		}
-	}, 200);
-};
-onMounted(() => document.addEventListener("visibilitychange", onTabFocus));
-onUnmounted(() => document.removeEventListener("visibilitychange", onTabFocus));
-
-const onCopy = async () => {
-	if (!permissionRead.value)
-		return;
-	try {
-		clipboardText.value = await navigator.clipboard.readText();
-	}
-	catch {}
-};
-onMounted(() => document.addEventListener("copy", onCopy));
-onUnmounted(() => document.removeEventListener("copy", onCopy));
 
 // document title handling
 const setDocumentTitle = () => {
@@ -288,13 +230,18 @@ const importCritterDB = async () => {
 	data.value = cData as Statblock;
 	showImportModal.value = false;
 	toast.success(`Successfully imported ${data.value.description.name}`);
-	console.log(success, data, error);
 };
+
+const importCreature = async (creature: Statblock) => {
+	data.value = creature;
+	await saveStatblock(false);
+	toast.success(`Successfully imported ${data.value.description.name}`);
+};
+
 // export
 const exportStatblock = async () => {
-	const text = JSON.stringify({ ...data.value, isBB: true }, null, 2);
+	const text = JSON.stringify(data.value, null, 2);
 	await navigator.clipboard.writeText(text);
-	clipboardText.value = text;
 	toast.info("Exported this statblock to your clipboard.");
 };
 
@@ -632,17 +579,15 @@ const changeCR = (isIncrease: boolean) => {
 				}
 			]"
 		>
-			<button v-if="madeChanges && (isOwner || isEditor)" v-tooltip="'Save creature!'" class="inverted" aria-label="Save creature" @click="saveStatblock">
+			<button v-if="madeChanges && (isOwner || isEditor)" v-tooltip="'Save creature!'" class="inverted" aria-label="Save creature" @click="saveStatblock()">
 				<font-awesome-icon :icon="['fas', 'save']" />
 			</button>
 			<button v-if="!isOwner && !isEditor" v-tooltip="'Toggle Editor for debugging purposes'" aria-label="Toggle Editor for debugging purposes" @click="shouldShowEditor = !shouldShowEditor">
 				<font-awesome-icon v-if="!shouldShowEditor" :icon="['fas', 'eye']" />
 				<font-awesome-icon v-else :icon="['fas', 'eye-slash']" />
 			</button>
-			<button v-if="canPasteBBStatblock && (isOwner || isEditor)" v-tooltip="'Paste copied creature'" aria-label="Paste copied creature" style="position: relative" @click="importFromPaste">
-				<font-awesome-icon :icon="['far', 'clipboard']" />
-				<div class="notice-dot" />
-			</button>
+			<CopyManager v-if="rawInfo" no-import-all :may-import="isOwner || isEditor" :current-creature="{ ...rawInfo, bestiaryName: bestiary.name }" @import-creature="(creature) => importCreature(creature)" />
+
 			<button v-if="isOwner || isEditor" v-tooltip="'Import a creature\'s statblock'" aria-label="Import a creature's statblock" @click="showImportModal = true">
 				<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
 			</button>
@@ -655,7 +600,7 @@ const changeCR = (isIncrease: boolean) => {
 						<span>
 							Export this creature
 						</span>
-						<button v-if="isOwner || isEditor" v-close-popper class="btn confirm" @click="exportStatblock">
+						<button v-close-popper class="btn confirm" @click="exportStatblock">
 							JSON
 						</button>
 						<button v-close-popper class="btn confirm" @click="exportToImage">

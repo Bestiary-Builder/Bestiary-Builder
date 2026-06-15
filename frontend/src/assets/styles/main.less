@@ -109,6 +109,11 @@ input[type="checkbox"] + label {
 		color: black;
 		font-weight: 600;
 	}
+	&.danger-hover:hover {
+		background-color: var(--color-destructive);
+		color: black;
+		font-weight: 600;
+	}
 }
 
 hr {
@@ -355,7 +360,8 @@ html:has(.open-modal) {
 	overflow: hidden;
 }
 
-.v-popper__popper--no-positioning {
+
+.v-popper__popper--no-positioning:not(.right-pane) {
 	position: fixed;
 	z-index: 9999;
 	top: 0;
@@ -366,18 +372,18 @@ html:has(.open-modal) {
 	align-items: flex-end;
 }
 
-.v-popper__popper--no-positioning .v-popper__backdrop {
+.v-popper__popper--no-positioning:not(.right-pane) .v-popper__backdrop {
 	display: block;
 	background: rgba(0 0 0 / 90%);
 }
 
-.v-popper__popper--no-positioning .v-popper__wrapper {
+.v-popper__popper--no-positioning:not(.right-pane) .v-popper__wrapper {
 	width: 100%;
 	pointer-events: auto;
 	transition: transform 0.15s ease-out;
 }
 
-.v-popper__popper--no-positioning.v-popper__popper--hidden .v-popper__wrapper {
+.v-popper__popper--no-positioning:not(.right-pane).v-popper__popper--hidden .v-popper__wrapper {
 	transform: translateY(100%);
 }
 

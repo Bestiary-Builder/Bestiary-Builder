@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { refDebounced } from "@vueuse/core";
+import { refDebounced, useLocalStorage } from "@vueuse/core";
 import { createPopper } from "@popperjs/core";
 import UserBanner from "@/components/UserBanner.vue";
 import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
@@ -18,6 +18,7 @@ import { toast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { creatureTypes } from "@/utils/constants";
 import { $loading } from "@/utils/app/loading";
+import CopyManager from "@/components/CopyManager.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -334,7 +335,7 @@ async function importCreaturesFromBestiaryBuilder() {
 		showImportModal.value = false;
 }
 
-async function createCreature(stats = defaultStatblock, shouldHaveLoader = true) {
+async function createCreature(stats = defaultStatblock, shouldHaveLoader = true, openPage = true) {
 	let loader;
 	if (shouldHaveLoader)
 		loader = $loading.show();
@@ -348,7 +349,10 @@ async function createCreature(stats = defaultStatblock, shouldHaveLoader = true)
 	const { success, data: resultData, error } = await useFetch<CreatureWithStats>("/api/creature/add", "POST", data);
 	if (success) {
 		const data = resultData;
-		await router.push(`../statblock-editor/${data.id.toString()}`);
+		if (openPage)
+			await router.push(`../statblock-editor/${data.id.toString()}`);
+		else
+			await getBestiary();
 	}
 	else {
 		toast.error(error);
@@ -356,6 +360,34 @@ async function createCreature(stats = defaultStatblock, shouldHaveLoader = true)
 
 	if (shouldHaveLoader && loader)
 		loader.hide();
+}
+
+async function creatureManyCreatures() {
+	const creatures = [];
+	for (const creature of copiedCreatures.value)
+		creatures.push(creature.stats);
+
+	const loader = $loading.show();
+
+	toast.info("Importing creatures has started. This may take a while.");
+	const { success, data, error } = await useFetch<{ error?: string; ignoredCreatures: { creature: string; error: string }[] }>(`/api/bestiary/${bestiary.value?.id.toString()}/addcreatures`, "POST", creatures);
+
+	if (!success) {
+		notices.value = {};
+		toast.error(error);
+	}
+	else if (data.error) {
+		toast.error("The import was completed with errors.");
+		notices.value.Errors = data.error;
+		for (const error of data.ignoredCreatures)
+			notices.value[error.creature] = error.error;
+	}
+	else {
+		toast.success("Importing has finished!");
+	}
+
+	await getBestiary();
+	loader.hide();
 }
 
 async function deleteCreature(creature: CreatureWithStats) {
@@ -586,6 +618,20 @@ function changeCR(isIncrease: boolean, isMinimumOption: boolean): void {
 		searchOptions.value.minCr = cr;
 	else searchOptions.value.maxCr = cr;
 }
+
+type CopiedCreature = CreatureWithStats & { bestiaryName: string };
+const copiedCreatures = useLocalStorage<CopiedCreature[]>("copiedCreatures", []);
+
+const copyCurrentBestiary = () => {
+	if (!creatures.value || !bestiary.value)
+		return;
+	const toAdd: CopiedCreature[] = [];
+	for (const creature of creatures.value)
+		toAdd.push({ ...creature, bestiaryName: bestiary.value.name });
+
+	copiedCreatures.value = copiedCreatures.value.concat(toAdd);
+	toast.success("Successfully copied current Bestiary");
+};
 </script>
 
 <template>
@@ -623,6 +669,8 @@ function changeCR(isIncrease: boolean, isMinimumOption: boolean): void {
 					</div>
 				</template>
 			</VDropdown>
+
+			<CopyManager :may-import="isOwner || isEditor" :current-creatures="creatures || []" can-copy-current-bestiary @import-creature="(creature) => createCreature(creature, true, false)" @import-all-creatures="creatureManyCreatures" @copy-current-bestiary="copyCurrentBestiary" />
 
 			<button v-if="lastClickedCreature" v-tooltip="'Unpin currently pinned creature!'" style="rotate: 45deg" aria-label="Unpin currently pinned creature" @click="lastClickedCreature = null">
 				<font-awesome-icon :icon="['fas', 'thumbtack']" />
@@ -749,6 +797,9 @@ function changeCR(isIncrease: boolean, isMinimumOption: boolean): void {
 									<span>{{ creature.stats?.core?.size }} {{ creature.stats?.core?.race }}{{ creature.stats?.description?.alignment ? `, ${creature.stats?.description?.alignment}` : "" }}</span>
 								</div>
 								<div class="right-side">
+									<button v-tooltip="'Copy creature'" :aria-label="`Copy ${creature.stats.description.name}`" @click="copiedCreatures.push({ ...creature, bestiaryName: bestiary.name })">
+										<font-awesome-icon :icon="['fas', 'copy']" />
+									</button>
 									<VDropdown v-if="isOwner || isEditor" :distance="6" :positioning-disabled="store.isMobile">
 										<button v-tooltip="'Delete creature'" :aria-label="`Delete ${creature.stats.description.name}`" @click.stop.prevent="">
 											<font-awesome-icon :icon="['fas', 'trash']" />
