@@ -25,7 +25,6 @@ const clearCreatures = () => {
 
 const deleteCreature = (idx: number) => {
 	copiedCreatures.value.splice(idx, 1);
-	toast.success("Successfully deleted item from the list");
 };
 
 type CopiedCreature = CreatureWithStats & { bestiaryName: string };
@@ -40,8 +39,11 @@ const importManyCreatures = () => {
 
 <template>
 	<VDropdown :distance="6" placement="bottom" :positioning-disabled="store.isMobile">
-		<button v-tooltip="'Copy creatures'" aria-label="Copy creatures">
+		<button v-tooltip="'Copy creatures'" aria-label="Copy creatures" @click.stop.prevent>
 			<font-awesome-icon :icon="['fa', 'copy']" />
+			<div class="notice-dot">
+				{{ copiedCreatures.length }}
+			</div>
 		</button>
 		<template #popper>
 			<div class="v-popper__custom-menu with-table">
@@ -58,8 +60,8 @@ const importManyCreatures = () => {
 					<tbody>
 						<tr v-for="creature, idx in copiedCreatures" :key="idx">
 							<th scope="row">
-								{{ creature.stats.description.name }} (CR {{ creature.stats.description.cr }})
-								<p> {{ creature.bestiaryName }}</p>
+								{{ creature.stats.description.name }}
+								<p> {{ creature.bestiaryName }} (CR {{ creature.stats.description.cr }})</p>
 							</th>
 							<td v-if="mayImport">
 								<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" @click="importCreature(creature)" />
@@ -102,6 +104,18 @@ const importManyCreatures = () => {
 </template>
 
 <style lang="less">
+.notice-dot {
+	position: absolute;
+	width: 12px;
+	height: 12px;
+	bottom: -20%;
+	background: none;
+	right: -20%;
+	font-weight: bold;
+	font-size: 0.7em;
+	color: orangered !important;
+}
+
 .v-popper__custom-menu.with-table {
 	gap: 0;
 }

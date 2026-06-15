@@ -23,9 +23,10 @@ const isLoading = computed(() => {
 	<div class="container">
 		<div v-if="user" class="user">
 			<img class="img" alt="" :src="user.avatar ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` : 'https://cdn.discordapp.com/embed/avatars/0.png'">
-			<span v-if="user.supporter === SupporterStatus.none">{{ user.username }}</span>
-			<span v-if="user.supporter === SupporterStatus.wirmling" v-tooltip="'This user is a Wyrmling Patreon Supporter!'" class="supporter-tier-1"> {{ user.username }} </span>
-			<span v-if="user.supporter === SupporterStatus.greatwyrm" v-tooltip="'This user is a Greatwyrm Patreon Supporter!'" class="supporter-tier-2"> {{ user.username }} </span>
+			<span v-if="user.id === '303857638171607040' || user.id === '307900989455859723'" v-tooltip="'This user is a developer of Bestiary Builder'" class="developer"> {{ user.username }} </span>
+			<span v-else-if="user.supporter === SupporterStatus.none">{{ user.username }}</span>
+			<span v-else-if="user.supporter === SupporterStatus.wirmling" v-tooltip="'This user is a Wyrmling Patreon Supporter!'" class="supporter-tier-1"> {{ user.username }} </span>
+			<span v-else-if="user.supporter === SupporterStatus.greatwyrm" v-tooltip="'This user is a Greatwyrm Patreon Supporter!'" class="supporter-tier-2"> {{ user.username }} </span>
 		</div>
 		<div v-else class="user">
 			<Loading v-model:active="isLoading" :is-full-page="false" color="orangered" :opacity="0" />
@@ -56,6 +57,11 @@ const isLoading = computed(() => {
 
 .supporter-tier-2 {
 	color: #ca2020;
+	text-shadow: var(--color-surface-0) 2px 2px;
+}
+
+.developer {
+	color: orangered;
 	text-shadow: var(--color-surface-0) 2px 2px;
 }
 

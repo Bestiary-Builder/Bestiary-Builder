@@ -25,6 +25,7 @@ import {
 	faStar,
 	faTag,
 	faThumbTack,
+	faThumbtack,
 	faTrash,
 	faUserLock,
 	faWandSparkles,
@@ -66,5 +67,6 @@ library.add(
 	faWandSparkles,
 	faCopy,
 	faCode,
-	faSpinner
+	faSpinner,
+	faThumbTack
 );

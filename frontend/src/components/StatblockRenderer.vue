@@ -97,6 +97,8 @@ const alphaSort = (list: string[]) => {
 		const lastWordB = b.split(" ").pop();
 		return lastWordA!.localeCompare(lastWordB!);
 	};
+	if (v2024)
+		return list.sort(sortByLastWord);
 	return list.sort(sortByLastWord).map(v => v.toLowerCase());
 };
 
@@ -221,12 +223,31 @@ const calculatedInitiativeNumber = () => {
 					{{ skillOutput }}
 				</div>
 			</template>
-			<template v-for="title, resType of resistanceGenerator">
-				<div v-if="data.defenses[resType].length > 0" :key="resType" class="stat-block__res-container">
-					<b> {{ title }}  </b>
-					<span> {{ alphaSort(data.defenses[resType]).join(", ") }} </span>
+			<template v-if="!v2024">
+				<template v-for="title, resType of resistanceGenerator">
+					<div v-if="data.defenses[resType].length > 0" :key="resType" class="stat-block__res-container">
+						<b> {{ title }}  </b>
+						<span> {{ alphaSort(data.defenses[resType]).join(", ") }} </span>
+					</div>
+				</template>
+			</template>
+			<template v-else>
+				<div v-if="data.defenses.vulnerabilities.length > 0" class="stat-block__res-container">
+					<b> Vulnerabilities  </b>
+					<span> {{ alphaSort(data.defenses.vulnerabilities).join(", ") }} </span>
+				</div>
+				<div v-if="data.defenses.resistances.length > 0" class="stat-block__res-container">
+					<b> Resistances  </b>
+					<span> {{ alphaSort(data.defenses.resistances).join(", ") }} </span>
+				</div>
+				<div v-if="data.defenses.immunities.length > 0 || data.defenses.conditionImmunities.length > 0" class="stat-block__res-container">
+					<b> Immunities  </b>
+					<span> {{ alphaSort(data.defenses.immunities).join(", ") }} </span>
+					<span v-if="data.defenses.immunities.length > 0 && data.defenses.conditionImmunities.length > 0">, </span>
+					<span> {{ alphaSort(data.defenses.conditionImmunities).join(", ") }} </span>
 				</div>
 			</template>
+
 			<div ckass="stat-block__senses-container">
 				<b> Senses </b>
 				{{ displaySpeedOrSenses(data.core.senses, true, v2024) }}
@@ -322,5 +343,5 @@ const calculatedInitiativeNumber = () => {
 <style scoped lang="less">
 @import "@/assets/styles/statblock/default.less";
 // @import "@/assets/styles/statblock/odyssey/odyssey.less";
-// @import "@/assets/styles/statblock/beyond/beyond.less";
+@import "@/assets/styles/statblock/beyond/beyond.less";
 </style>

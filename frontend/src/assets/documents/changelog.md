@@ -1,3 +1,13 @@
+## v3.0.0
+_???, 2026_
+
+- Improved styling of the statblock
+- Added 2024 statblock formatting and a toggle in user settings.
+- Added Beyond and Odyssey styling for statblocks, and a toggle in user settings.
+- Added an improved creature copy and pasting system.
+- Added the ability to import a single creature from CritterDB.
+- Added the ability to import a single creature from BB on the Bestiary page.
+
 ## v2.6.6
 _June 12, 2026_
 

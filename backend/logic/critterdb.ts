@@ -535,8 +535,10 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: string]
 		let isPsionics = false;
 		let sData = null;
 
+		log.log("info", true);
+
 		for (const a of data.stats.actions) {
-			if (a.name.toLowerCase().includes("innate spellcasting") || (a.name.toLowerCase().includes("spellcasting") && !a.description.match(/(\d+)[stndrh]{2}-level/))) {
+			if (a.name.toLowerCase().includes("innate spellcasting") || (a.name.toLowerCase().includes("spellcasting") && !a.description.match(/(\d+)[stndrh]{2}-level/)) || (a.name.toLowerCase().includes("spellcasting") && a.description.toLowerCase().includes("casts one of the following spells"))) {
 				sData = a.description;
 				isPsionics = a.name.toLowerCase().includes("psionics");
 				displayAsAction = true;
@@ -545,18 +547,24 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: string]
 
 		if (!sData) {
 			for (const a of data.stats.additionalAbilities) {
-				if (a.name.toLowerCase().includes("innate spellcasting")) {
+				if (a.name.toLowerCase().includes("innate spellcasting") || (a.name.toLowerCase().includes("spellcasting") && !a.description.match(/(\d+)[stndrh]{2}-level/)) || (a.name.toLowerCase().includes("spellcasting") && a.description.toLowerCase().includes("casts one of the following spells"))) {
 					sData = a.description;
 					isPsionics = a.name.toLowerCase().includes("psionics");
+					if ((a.name.toLowerCase().includes("spellcasting") && a.description.toLowerCase().includes("casts one of the following spells"))) {
+						displayAsAction = true;
+					}
 				}
 			}
 		}
+
 		if (!sData)
 			return defaultStatblock.spellcasting.innateSpells;
 
 		sData = sData.replaceAll("<i>", "").replaceAll("</i>", "").replaceAll("<b>", "").replaceAll("</b>", "");
 
-		const typeMatch = sData.match(/spellcasting ability is (\w+) \(spell save DC (\d+), [+\-](\d+) to hit/i);
+		let typeMatch = sData.match(/spellcasting ability is (\w+) \(spell save DC (\d+), [+\-](\d+) to hit/i);
+		if (!typeMatch)
+			typeMatch = sData.match(/and using (\w+) as the spellcasting ability \(spell save DC (\d+), [+\-](\d+) to hit/i);
 		if (!typeMatch)
 			return defaultStatblock.spellcasting.innateSpells;
 		// figure out dc/bonus/abilities

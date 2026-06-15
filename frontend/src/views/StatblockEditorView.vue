@@ -1039,7 +1039,7 @@ const changeCR = (isIncrease: boolean) => {
 								</button>
 							</LabelledComponent>
 							<LabelledComponent title="Description override" for="innateDescription">
-								<textarea id="innateDescription" v-model="data.spellcasting.innateSpells.customDescription" rows="20" :maxlength="store.limits?.descriptionLength" />
+								<textarea id="innateDescription" v-model="data.spellcasting.innateSpells.customDescription" rows="2" :maxlength="store.limits?.descriptionLength" />
 							</LabelledComponent>
 						</div>
 
@@ -1055,7 +1055,7 @@ const changeCR = (isIncrease: boolean) => {
 							<LabelledNumberInput v-model="data.spellcasting.casterSpells.spellDcOverride" title="DC override" :step="1" :is-clearable="true" label-id="spellDcOverride" />
 							<LabelledNumberInput v-model="data.spellcasting.casterSpells.spellBonusOverride" title="Attack bonus override" :step="1" label-id="spellBonusOverride" />
 							<LabelledComponent title="Description override" for="casterDescription">
-								<textarea id="casterDescription" v-model="data.spellcasting.casterSpells.customDescription" rows="20" :maxlength="store.limits?.descriptionLength" />
+								<textarea id="casterDescription" v-model="data.spellcasting.casterSpells.customDescription" rows="2" :maxlength="store.limits?.descriptionLength" />
 							</LabelledComponent>
 
 							<LabelledComponent title="Edit spell slots" for="editspellslots">

@@ -791,7 +791,7 @@ const copyCurrentBestiary = () => {
 					</div>
 					<div class="tile-container list-tiles">
 						<TransitionGroup name="slide-fade">
-							<div v-for="creature in searchCreatures" :key="creature.id.toString()" class="content-tile creature-tile" @mouseover="lastHoveredCreature = creature.stats" @click="lastClickedCreature = creature.stats">
+							<div v-for="creature in searchCreatures" :key="creature.id.toString()" class="content-tile creature-tile" @mouseover="lastHoveredCreature = creature.stats">
 								<div class="left-side">
 									<h3>{{ creature.stats?.description?.name }}</h3>
 									<span>{{ creature.stats?.core?.size }} {{ creature.stats?.core?.race }}{{ creature.stats?.description?.alignment ? `, ${creature.stats?.description?.alignment}` : "" }}</span>
@@ -799,6 +799,9 @@ const copyCurrentBestiary = () => {
 								<div class="right-side">
 									<button v-tooltip="'Copy creature'" :aria-label="`Copy ${creature.stats.description.name}`" @click="copiedCreatures.push({ ...creature, bestiaryName: bestiary.name })">
 										<font-awesome-icon :icon="['fas', 'copy']" />
+									</button>
+									<button v-tooltip="'Pin creature'" @click="lastClickedCreature = creature.stats">
+										<font-awesome-icon :icon="['fas', 'thumbtack']" />
 									</button>
 									<VDropdown v-if="isOwner || isEditor" :distance="6" :positioning-disabled="store.isMobile">
 										<button v-tooltip="'Delete creature'" :aria-label="`Delete ${creature.stats.description.name}`" @click.stop.prevent="">
