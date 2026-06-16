@@ -1006,10 +1006,10 @@ const changeCR = (isIncrease: boolean) => {
 											<th>
 												Edit feature header description
 											</th>
-											<td>
+											<td class="edit-buttons">
 												<VDropdown :distance="6" :positioning-disabled="store.isMobile">
-													<button v-tooltip="'Export statblock'" aria-label="Export statblock" class="btn-icon" style="color: orangered">
-														<font-awesome-icon :icon="['fas', 'section']" />
+													<button v-tooltip="'Export statblock'" aria-label="Export statblock" class="btn-icon" style="color: orangered; margin: 0px; font-size: smaller; padding: 0">
+														<font-awesome-icon :icon="['fas', 'edit']" />
 													</button>
 													<template #popper>
 														<div class="v-popper__custom-menu">
@@ -1020,37 +1020,27 @@ const changeCR = (isIncrease: boolean) => {
 												</VDropdown>
 											</td>
 										</tr>
+										<tr v-if="fType === 'legendary' && data.features[fType].length > 0" class="table-footer">
+											<td />
+											<th>
+												Legendary actions per round
+											</th>
+											<td>
+												<VDropdown :distance="6" :positioning-disabled="store.isMobile">
+													<button v-tooltip="'Export statblock'" aria-label="Export statblock" class="btn-icon" style="color: orangered; margin: 0px; font-size: smaller; padding: 0">
+														<font-awesome-icon :icon="['fas', 'edit']" />
+													</button>
+													<template #popper>
+														<div class="v-popper__custom-menu">
+															<LabelledNumberInput v-model="data.misc.legActionsPerRound" title="Legendary actions per round" :step="1" :min="0" />
+														</div>
+													</template>
+												</VDropdown>
+											</td>
+										</tr>
 									</template>
 								</Draggable>
 							</table>
-							<!-- <textarea :id="fType" v-model="data.misc.featureHeaderTexts[fType]" style="width: 100%;" rows="1" placeholder="Add action description" class="bottom" /> -->
-
-							<!-- <Draggable :list="data.features[fType]" group="features" :item-key="getDraggableKey" handle=".handle" class="editor-field__container three-wide" :animation="150">
-								<template #item="{ element, index }">
-									<LabelledComponent :title="element.name || `Unnamed ${index}`">
-										<div class="feature-button__container">
-											<RouterLink :to="`${rawInfo?.id}/${fType}/${index}`" class="button-icon">
-												<font-awesome-icon :icon="['fas', 'edit']" />
-											</RouterLink>
-											<span class="delete-button" aria-label="Delete feature" @click="deleteFeature(fType, index)"><font-awesome-icon :icon="['fas', 'trash']" /></span>
-											<span><font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle" /> </span>
-										</div>
-									</labelledcomponent>
-								</template>
-								<template #footer>
-									<LabelledComponent :title="descText" :for="descText">
-										<span :id="descText" class="button-icon" @click="createNewFeature(fType)">
-											<font-awesome-icon :icon="['fas', 'plus']" />
-										</span>
-									</LabelledComponent>
-
-									<LabelledComponent :title="`${capitalizeFirstLetter(fType)} Header`" :for="fType">
-										<textarea :id="fType" v-model="data.misc.featureHeaderTexts[fType]" />
-									</LabelledComponent>
-
-									<LabelledNumberInput v-if="fType === 'legendary' && data.features[fType].length > 0" v-model="data.misc.legActionsPerRound" title="Legendary Actions per round" :min="0" :step="1" for="legActionsPerRound" />
-								</template>
-							</Draggable> -->
 						</div>
 					</div>
 					<div id="tabpanel-6" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-6">
