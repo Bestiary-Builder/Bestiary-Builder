@@ -1,7 +1,7 @@
 import { requireUser } from "./login";
-import { app, generateUserSecret } from "@/utilities/constants";
+import { app } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
-import { getBookmarkedBestiariesForUser, getPrismaClient, getUser, resetUserCache, updateUser } from "@/utilities/database";
+import { getBookmarkedBestiariesForUser, getPrismaClient, getUser, resetUserCache } from "@/utilities/database";
 import type { User } from "~/shared";
 
 app.get("/api/user/bookmarks", requireUser, async (req, res) => {
@@ -73,10 +73,10 @@ app.post("/api/user/updatePreferences", requireUser, async (req, res) => {
 			if (!newSettings)
 				return res.status(404);
 
-			const updatedUser = await getPrismaClient().user.upsert({
+			const updatedUser = await getPrismaClient().user.update({
 				where: { id: data.id },
-				update: data,
-				create: { ...data, secret: generateUserSecret() }
+				data,
+				omit: { secret: true }
 			});
 			resetUserCache(updatedUser.id);
 			return res.json({ data: updatedUser, success: true, error: null });

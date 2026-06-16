@@ -8,7 +8,7 @@ export * from "./build-types";
 
 // Database types
 export { SupporterStatus, BestiaryStatus } from "../prisma/enums";
-export type User = Prisma.UserModel;
+export type User = Omit<Prisma.UserModel, "secret">;
 export type Bestiary = Prisma.BestiaryModel;
 export type BestiaryEditor = Prisma.BestiaryEditorModel;
 export type UserBestiaryBookmark = Prisma.UserBestiaryBookmarkModel;

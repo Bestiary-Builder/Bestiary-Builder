@@ -14,12 +14,9 @@ export async function getUser(id: string) {
 	try {
 		if (id in userCache)
 			return userCache[id];
-		const user = await getPrismaClient().user.findUnique({ where: { id } });
-		if (user) {
+		const user = await getPrismaClient().user.findUnique({ where: { id }, omit: { secret: true } });
+		if (user)
 			userCache[user.id] = user;
-			if (user.secret)
-				userSecretCache[user.secret] = user;
-		}
 		log.log("database", `Reading user info for ${id}.`);
 		return user;
 	}
