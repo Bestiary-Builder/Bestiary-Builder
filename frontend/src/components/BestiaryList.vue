@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterLink } from "vue-router";
-import { computed, watch } from "vue";
+import { computed } from "vue";
 import Draggable from "vuedraggable";
 import UserBanner from "@/components/UserBanner.vue";
 import StatusIcon from "@/components/StatusIcon.vue";
@@ -47,9 +47,9 @@ const saveOrder = async () => {
 <template>
 	<div>
 		<TransitionGroup name="popin">
-			<Draggable :key="Math.random()" :list="bestiaries" group="bestiaries" :animation="150" :item-key="getDraggableKey" class="tile-container" :handle=" store.isMobile ? '.handle' : ''" @change="saveOrder">
+			<Draggable :key="Math.random()" :list="bestiaries" group="bestiaries" :animation="150" :item-key="getDraggableKey" class="tile-container" :handle=" store.isMobile ? '.handle' : ''" :disabled="!personal" @change="saveOrder">
 				<template #item="{ element, index }">
-					<RouterLink class="content-tile bestiary-tile" :to="`/bestiary-viewer/${element.id}`" :class="{ 'four-tall': element.ownerId !== store.user?.id, 'draggable': !store.isMobile }" :aria-label="`Open Bestiary ${element.name}`">
+					<RouterLink class="content-tile bestiary-tile" :to="`/bestiary-viewer/${element.id}`" :class="{ 'four-tall': element.ownerId !== store.user?.id, 'draggable': !store.isMobile && personal }" :aria-label="`Open Bestiary ${element.name}`">
 						<div class="tile-header">
 							<h2>{{ element.name }}</h2>
 						</div>
