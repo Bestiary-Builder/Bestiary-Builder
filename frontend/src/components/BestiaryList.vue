@@ -36,20 +36,18 @@ const getDraggableKey = (item: any) => {
 	return item;
 };
 
-watch(props.bestiaries, async () => {
-	console.log("yes!");
+const saveOrder = async () => {
 	const orderIds = props.bestiaries.map(bestiary => bestiary.id);
-	console.log(orderIds);
 
 	const { success, data, error } = await useFetch("/api/my-bestiaries/order", "POST", orderIds);
 	console.log(success, data, error);
-});
+};
 </script>
 
 <template>
 	<div>
 		<TransitionGroup name="popin">
-			<Draggable :key="Math.random()" handle=".handle" :list="bestiaries" group="bestiaries" :animation="150" :item-key="getDraggableKey" class="tile-container">
+			<Draggable :key="Math.random()" :list="bestiaries" group="bestiaries" :animation="150" :item-key="getDraggableKey" class="tile-container" :handle=" store.isMobile ? '.handle' : ''" @change="saveOrder">
 				<template #item="{ element, index }">
 					<RouterLink class="content-tile bestiary-tile" :to="`/bestiary-viewer/${element.id}`" :class="{ 'four-tall': element.ownerId !== store.user?.id }" :aria-label="`Open Bestiary ${element.name}`">
 						<div class="tile-header">
@@ -71,7 +69,7 @@ watch(props.bestiaries, async () => {
 							<span v-else>
 								<UserBanner :id="element.ownerId" />
 							</span>
-							<span v-if="personal"><font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle button-icon" /> </span>
+							<span v-if="store.isMobile"><font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle button-icon" /></span>
 							<span>{{ element.creatures.length }}<font-awesome-icon :icon="['fas', 'skull']" /></span>
 						</div>
 					</RouterLink>
@@ -202,18 +200,6 @@ watch(props.bestiaries, async () => {
 		font-size: 1.1rem;
 		width: 100%;
 		margin: auto;
-
-		// span:first-of-type {
-		// 	text-align: left;
-		// }
-
-		// span:nth-of-type(2) {
-		// 	text-align: center;
-		// }
-
-		// span:last-of-type {
-		// 	text-align: right;
-		// }
 	}
 }
 
