@@ -49,7 +49,7 @@ const saveOrder = async () => {
 		<TransitionGroup name="popin">
 			<Draggable :key="Math.random()" :list="bestiaries" group="bestiaries" :animation="150" :item-key="getDraggableKey" class="tile-container" :handle=" store.isMobile ? '.handle' : ''" @change="saveOrder">
 				<template #item="{ element, index }">
-					<RouterLink class="content-tile bestiary-tile" :to="`/bestiary-viewer/${element.id}`" :class="{ 'four-tall': element.ownerId !== store.user?.id }" :aria-label="`Open Bestiary ${element.name}`">
+					<RouterLink class="content-tile bestiary-tile" :to="`/bestiary-viewer/${element.id}`" :class="{ 'four-tall': element.ownerId !== store.user?.id, 'draggable': !store.isMobile }" :aria-label="`Open Bestiary ${element.name}`">
 						<div class="tile-header">
 							<h2>{{ element.name }}</h2>
 						</div>
@@ -192,6 +192,10 @@ const saveOrder = async () => {
 		.tile-image {
 			filter: brightness(25%);
 		}
+	}
+
+	&.draggable {
+		cursor: grab;
 	}
 	.tile-footer {
 		display: flex;
