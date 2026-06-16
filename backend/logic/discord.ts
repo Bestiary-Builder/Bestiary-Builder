@@ -65,12 +65,11 @@ async function checkUserStatuses(guild: discord.Guild) {
 	log.info(`Tier 1: ${tier1Ids}`);
 	log.info(`Tier 2: ${tier2Ids}`);
 	// Update database
-	const prisma = getPrismaClient();
-	await prisma.$transaction([
-		prisma.user.updateMany({ data: { supporter: SupporterStatus.none } }),
-		prisma.user.updateMany({ where: { id: { in: tier1Ids } }, data: { supporter: SupporterStatus.wirmling } }),
-		prisma.user.updateMany({ where: { id: { in: tier2Ids } }, data: { supporter: SupporterStatus.greatwyrm } }),
-	]);
+	await getPrismaClient().$transaction(async (tx) => {
+		await tx.user.updateMany({ data: { supporter: SupporterStatus.none } });
+		await tx.user.updateMany({ where: { id: { in: tier1Ids } }, data: { supporter: SupporterStatus.wirmling } });
+		await tx.user.updateMany({ where: { id: { in: tier2Ids } }, data: { supporter: SupporterStatus.greatwyrm } });
+	});
 }
 
 // Public discord logging
