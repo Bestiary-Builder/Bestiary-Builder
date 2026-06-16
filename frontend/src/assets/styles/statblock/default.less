@@ -25,8 +25,8 @@
     padding: 15px;
 
 	position: block;
-	column-count: 2;
 }
+
 
 .picture-container {
 	position: relative;
@@ -198,6 +198,8 @@
 
 
 .stat-block.v2024 {
+	column-count: 2;
+
 	.v2024-no-bottom-border {
 		border-bottom: 0px solid
 	}
@@ -205,19 +207,19 @@
 
 
 @media screen and (max-width: 1400px) {
-	.stat-block {
+	.stat-block.v2024 {
 		column-count: 1;
 	}
 }
 
 @media screen and (max-width: 1200px) {
-	.stat-block {
+	.stat-block.v2024 {
 		column-count: 2;
 	}
 }
 
 @media screen and (max-width: 700px) {
-	.stat-block {
+	.stat-block.v2024 {
 		column-count: 1;
 	}
 }

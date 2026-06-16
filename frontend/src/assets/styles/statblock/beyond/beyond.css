@@ -1,4 +1,5 @@
-.stat-block {
+body .content .stat-block,
+body .v-popper__custom-menu .stat-block.Beyond {
     background: #f5f3ee !important;
     box-shadow: 0 0 5px #f3f5f9;
     border: 1px solid #d4d0ce;
@@ -8,14 +9,14 @@
     border-radius: .5rem;
     color: #5b160c;
     
-    &__name-container {
+    .stat-block__name-container {
         color: #5b160c;
         border-color: #5b160c;
     }
 
     .feature-container {
         color: black;
-        &__title {
+        .feature-container__title {
             color: #5b160c;
             border-color: #5b160c;
         }

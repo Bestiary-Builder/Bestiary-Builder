@@ -351,13 +351,21 @@ body
 
 .v-popper__custom-menu {
 	background-color: var(--color-surface-0);
-	color: orangered;
 	padding: 1rem;
 	display: flex;
 	flex-direction: column;
 	gap: 1rem;
+
 	select {
 		border-width: 1px;
+	}
+
+	&:not(:has(.stat-block)) {
+		color: orangered;
+	}
+	
+	.stat-block {
+		color: var(--color-base);
 	}
 }
 
@@ -438,4 +446,29 @@ blockquote:has(p img[src="/Beholder.webp"]) ~ p {
 	display: block;
 	margin: auto;
 	width: 70%;
+}
+
+
+.btn-icon {
+	padding: 0;
+	border: unset;
+	background: unset;
+	position: relative;
+	cursor: pointer;
+	background: transparent;
+	border-radius: 50%;
+	padding: 0.3rem;
+	height: 1.5rem;
+	width: 1.5rem;
+	aspect-ratio: 1;
+	color: grey;
+	transition: all ease 0.3s;
+
+	svg {
+		scale: 1.1;
+		translate: 0 -2px;
+	}
+	&:hover {
+		color: var(--color-surface-0);
+	}
 }

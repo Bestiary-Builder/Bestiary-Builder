@@ -3,10 +3,10 @@
     src: url('TrajanOdyssey-Regular.otf') format("opentype");
 }
 
-.stat-block {
+body .content .stat-block,
+body .v-popper__custom-menu .stat-block.Odyssey {
     color: #095471;
     background-color: #ffffff;
-    // background-image: url('bg.jpg');
     background-size:  100% 100%;
     background-repeat: no-repeat;
 
@@ -53,7 +53,6 @@
     .feature-container {
 		color: black;
 		border-bottom: 0px solid white;
-		// margin-top: 0.3rem;
 	}
 
     .feature-container__title {
@@ -69,7 +68,7 @@
 
     }
 
-    &__core {
+    .stat-block__core {
         color: grey
     }
 

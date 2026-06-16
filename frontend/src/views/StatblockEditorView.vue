@@ -630,7 +630,7 @@ const changeCR = (isIncrease: boolean) => {
 							<LabelledComponent title="Image URL" for="imageurl">
 								<div style="display: flex; gap: .3rem;">
 									<input id="imageurl" v-model="data.description.image" type="text" :pattern="store.limits?.imageFormats ? `(https:\/\/)(.+)(\\.${store.limits?.imageFormats.join('|\\.')})` : ''">
-									<VDropdown>
+									<VDropdown :distance="6" :positioning-disabled="store.isMobile">
 										<button v-tooltip="'Preview image'" aria-label="Preview image" class="preview-icon">
 											<font-awesome-icon :icon="['fas', 'eye']" />
 										</button>

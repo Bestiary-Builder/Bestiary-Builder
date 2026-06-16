@@ -1,11 +1,20 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onMounted } from "vue";
 import Markdown from "./Markdown.vue";
 import type { SaveEntity, SkillsEntity, Stat, Statblock } from "~/shared";
 import { SKILLS_BY_STAT, capitalizeFirstLetter, crAsString, displayCasterCasting, displayInnateCasting, displaySpeedOrSenses, hpCalc, ppCalc, signedNumber, statCalc } from "~/shared";
 import { featureGenerator, resistanceGenerator, stats } from "@/utils/constants";
+import { store } from "@/utils/store.js";
+import type { StatblockDesign, StatblockLayout } from "~/shared/prisma/enums.js";
 
-const { data } = defineProps<{ data: Statblock }>();
+const { data, statblockDesign = "BestiaryBuilder", is2024 = null } = defineProps<{ data: Statblock; statblockDesign?: StatblockDesign; is2024?: boolean }>();
+
+const design = statblockDesign || store.user?.statblockDesign;
+let v2024;
+if (is2024 === null)
+	v2024 = store.user?.statblockLayout === "SL_2024";
+else
+	v2024 = is2024;
 
 const showSkills = computed(() => {
 	for (const skill of data.abilities.skills) {
@@ -102,8 +111,6 @@ const alphaSort = (list: string[]) => {
 	return list.sort(sortByLastWord).map(v => v.toLowerCase());
 };
 
-const v2024 = true;
-
 const calculatedSaveNumber = (save: SaveEntity, stat: Stat) => {
 	if (save.override)
 		return save.override || 0;
@@ -142,10 +149,18 @@ const calculatePassiveInitiative = () => {
 
 	return value + calculatedInitiativeNumber();
 };
+
+onMounted(async () => {
+	if (design === "Odyssey")
+		await import("../assets/styles/statblock/odyssey/odyssey.css");
+
+	if (design === "Beyond")
+		await import("../assets/styles/statblock/beyond/beyond.css");
+});
 </script>
 
 <template>
-	<div class="stat-block" :class="{ v2024 }">
+	<div class="stat-block" :class="[v2024 ? 'v2024' : '', design]">
 		<div class="stat-block__row">
 			<h1 class="stat-block__name-container">
 				{{ data.description.name }}
@@ -360,6 +375,4 @@ const calculatePassiveInitiative = () => {
 
 <style scoped lang="less">
 @import "@/assets/styles/statblock/default.less";
-@import "@/assets/styles/statblock/odyssey/odyssey.less";
-// @import "@/assets/styles/statblock/beyond/beyond.less";
 </style>
