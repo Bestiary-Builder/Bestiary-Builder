@@ -128,7 +128,7 @@ app.post("/api/creature/add", requireUser, async (req, res) => {
 				failedToImportImage = true;
 			}
 		}
-		data.stats = stats as unknown as JsonObject;
+		data.stats = stats;
 		// Get bestiary
 		const bestiary = await getBestiary(data.bestiaryId);
 		if (!bestiary)
@@ -235,7 +235,7 @@ app.post("/api/creature/:id/update", requireUser, async (req, res) => {
 				failedToImportImage = true;
 			}
 		}
-		data.stats = stats as unknown as JsonObject;
+		data.stats = stats;
 		// Get bestiary
 		const bestiary = await getBestiary(data.bestiaryId);
 		if (!bestiary)

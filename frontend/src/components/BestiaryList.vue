@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { RouterLink } from "vue-router";
-import { computed } from "vue";
+import { computed, watch } from "vue";
+import Draggable from "vuedraggable";
 import UserBanner from "@/components/UserBanner.vue";
 import StatusIcon from "@/components/StatusIcon.vue";
 import type { BestiaryExtended } from "~/shared";
 import { store } from "@/utils/store";
+import { useFetch } from "@/utils/utils";
 
 const props = defineProps<{ personal: boolean; bestiaries: BestiaryExtended[] }>();
 
@@ -29,34 +31,52 @@ const bestiaryImages = computed(() => {
 	}
 	return bestiaryImages;
 });
+
+const getDraggableKey = (item: any) => {
+	return item;
+};
+
+watch(props.bestiaries, async () => {
+	console.log("yes!");
+	const orderIds = props.bestiaries.map(bestiary => bestiary.id);
+	console.log(orderIds);
+
+	const { success, data, error } = await useFetch("/api/my-bestiaries/order", "POST", orderIds);
+	console.log(success, data, error);
+});
 </script>
 
 <template>
-	<div class="tile-container">
+	<div>
 		<TransitionGroup name="popin">
-			<RouterLink v-for="(bestiary, index) in bestiaries" :key="bestiary.id.toString()" class="content-tile bestiary-tile" :to="`/bestiary-viewer/${bestiary.id}`" :class="{ 'four-tall': bestiary.ownerId !== store.user?.id }" :aria-label="`Open Bestiary ${bestiary.name}`">
-				<div class="tile-header">
-					<h2>{{ bestiary.name }}</h2>
-				</div>
-				<span v-if="bestiary.ownerId !== store.user?.id && personal" class="shared-notice">(shared)</span>
-				<div class="tile-content" :class="{ 'tile-has-image': bestiaryImages[index] }">
-					<img v-if="bestiaryImages[index]" class="tile-image" :src="bestiaryImages[index]">
-					<div class="tags">
-						{{ bestiary.tags.join(", ") }}
-					</div>
-					<p class="description">
-						{{ bestiary.description }}
-					</p>
-				</div>
-				<div class="tile-footer">
-					<span v-if="personal" v-tooltip.left="bestiary.status"><StatusIcon :icon="bestiary.status" /></span>
-					<span v-if="personal && bestiary.ownerId === store.user?.id" v-tooltip="'Delete bestiary'" role="button" class="edit-button" aria-label="Delete bestiary" @click.stop.prevent="openDeleteModal(bestiary)"><font-awesome-icon :icon="['fas', 'trash']" /></span>
-					<span v-else>
-						<UserBanner :id="bestiary.ownerId" />
-					</span>
-					<span>{{ bestiary.creatures.length }}<font-awesome-icon :icon="['fas', 'skull']" /></span>
-				</div>
-			</RouterLink>
+			<Draggable :key="Math.random()" handle=".handle" :list="bestiaries" group="bestiaries" :animation="150" :item-key="getDraggableKey" class="tile-container">
+				<template #item="{ element, index }">
+					<RouterLink class="content-tile bestiary-tile" :to="`/bestiary-viewer/${element.id}`" :class="{ 'four-tall': element.ownerId !== store.user?.id }" :aria-label="`Open Bestiary ${element.name}`">
+						<div class="tile-header">
+							<h2>{{ element.name }}</h2>
+						</div>
+						<span v-if="element.ownerId !== store.user?.id && personal" class="shared-notice">(shared)</span>
+						<div class="tile-content" :class="{ 'tile-has-image': bestiaryImages[index] }">
+							<img v-if="bestiaryImages[index]" class="tile-image" :src="bestiaryImages[index]">
+							<div class="tags">
+								{{ element.tags.join(", ") }}
+							</div>
+							<p class="description">
+								{{ element.description }}
+							</p>
+						</div>
+						<div class="tile-footer">
+							<span v-if="personal" v-tooltip.left="element.status"><StatusIcon :icon="element.status" /></span>
+							<span v-if="personal && element.ownerId === store.user?.id" v-tooltip="'Delete bestiary'" role="button" class="edit-button" aria-label="Delete bestiary" @click.stop.prevent="openDeleteModal(element)"><font-awesome-icon :icon="['fas', 'trash']" /></span>
+							<span v-else>
+								<UserBanner :id="element.ownerId" />
+							</span>
+							<span v-if="personal"><font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle button-icon" /> </span>
+							<span>{{ element.creatures.length }}<font-awesome-icon :icon="['fas', 'skull']" /></span>
+						</div>
+					</RouterLink>
+				</template>
+			</Draggable>
 		</TransitionGroup>
 	</div>
 </template>
@@ -64,7 +84,6 @@ const bestiaryImages = computed(() => {
 <style scoped lang="less">
 @import "@/assets/styles/mixins.less";
 .edit-button {
-	margin: auto;
 	color: orangered;
 	.scale-on-hover(1.2);
 }
@@ -177,23 +196,24 @@ const bestiaryImages = computed(() => {
 		}
 	}
 	.tile-footer {
-		display: grid;
-		grid-template-columns: 1fr 1fr 1fr;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
 		font-size: 1.1rem;
 		width: 100%;
 		margin: auto;
 
-		span:first-of-type {
-			text-align: left;
-		}
+		// span:first-of-type {
+		// 	text-align: left;
+		// }
 
-		span:nth-of-type(2) {
-			text-align: center;
-		}
+		// span:nth-of-type(2) {
+		// 	text-align: center;
+		// }
 
-		span:last-of-type {
-			text-align: right;
-		}
+		// span:last-of-type {
+		// 	text-align: right;
+		// }
 	}
 }
 
@@ -248,5 +268,15 @@ a.content-tile,
 	align-items: center;
 	flex-direction: column;
 	gap: 1rem;
+}
+
+.handle {
+	padding-top: 0px;
+	cursor: grab;
+	color: orangered;
+
+	&:active {
+		cursor: grabbing;
+	}
 }
 </style>

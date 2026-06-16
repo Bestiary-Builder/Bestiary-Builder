@@ -30,7 +30,7 @@ const editor = ref();
 editor.value = store.user?.preferredEditor;
 
 const saveSettings = async () => {
-	const { success, data, error } = await useFetch("/api/user/updatePreferences", "POST", { statblockDesign: design.value, statblockLayout: layout.value, preferredEditor: editor.value });
+	const { success, data } = await useFetch("/api/user/updatePreferences", "POST", { statblockDesign: design.value, statblockLayout: layout.value, preferredEditor: editor.value });
 	if (success)
 		store.user = (data as any).data;
 };
