@@ -22,7 +22,7 @@ const computedContext = computed(() => {
 	let contextLevel: "root" | "attacks" | "buttons" = "root";
 
 	for (const node of ctx) {
-		if (node === "$target")
+		if (node === "$target" || node === "target")
 			isTargetContext = true;
 
 		if (node === "buttons") {
@@ -61,16 +61,22 @@ const automation = inject<Ref<null | AttackModel | AttackModel[]>>("automation")
 const currentEffect = inject<Ref<Effect | ButtonInteraction | AttackInteraction>>("currentEffect");
 const addAndSelect = (node: string) => {
 	// traverse through the tree.
-	console.log(automation.value);
-
+	console.log(computedContext.value);
 	if (!automation)
 		return;
 	if (!automation.value)
 		automation.value = { _v: 2, name: props.name || "New Attack", automation: [] };
 	let tree: any;
-	if (Array.isArray(automation.value))
-		tree = automation.value[Number.parseInt(props.context[0])].automation;
-	else tree = automation.value.automation;
+	if (Array.isArray(automation.value)) {
+		console.log(automation.value, props.context);
+		if (props.context[0] === "root")
+			tree = automation.value[Number.parseInt(props.context[1])].automation;
+		else
+			tree = automation.value[Number.parseInt(props.context[0])].automation;
+	}
+	else {
+		tree = automation.value.automation;
+	}
 
 	for (const [idx, key] of props.context.entries()) {
 		const isArrayIndex = /^\d+$/.test(key);

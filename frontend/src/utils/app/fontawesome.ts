@@ -8,6 +8,7 @@ import {
 	faCode,
 	faCopy,
 	faEarthEurope,
+	faEraser,
 	faEye,
 	faEyeSlash,
 	faGripVertical,
@@ -15,6 +16,7 @@ import {
 	faLink,
 	faLock,
 	faMagnifyingGlass,
+	faMinus,
 	faPenToSquare,
 	faPlus,
 	faSave,
@@ -25,7 +27,6 @@ import {
 	faStar,
 	faTag,
 	faThumbTack,
-	faThumbtack,
 	faTrash,
 	faUserLock,
 	faWandSparkles,
@@ -68,5 +69,7 @@ library.add(
 	faCopy,
 	faCode,
 	faSpinner,
-	faThumbTack
+	faThumbTack,
+	faMinus,
+	faEraser
 );

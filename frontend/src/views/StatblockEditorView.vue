@@ -11,13 +11,14 @@ import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
 import LabelledNumberInput from "@/components/LabelledNumberInput.vue";
 import LabelledComponent from "@/components/LabelledComponent.vue";
 import type { BestiaryExtended, CreatureWithStats, Features, Statblock } from "~/shared";
-import { capitalizeFirstLetter, defaultStatblock, getSpellSlots, getXPbyCR, spellList, spellListFlattened } from "~/shared";
+import { capitalizeFirstLetter, defaultStatblock, getSpellSlots, getXPbyCR, spellList, spellListFlattened, statFullName } from "~/shared";
 import { useFetch } from "@/utils/utils";
 import { store } from "@/utils/store";
 import { $loading } from "@/utils/app/loading";
 import { alignments, classLevels, classes, conditionList, creatureTypes, languages, newFeatureGenerator, resistanceList, sizes, stats } from "@/utils/constants";
 import SectionHeader from "@/components/VisualEditor/Nodes/shared/SectionHeader.vue";
 import CopyManager from "@/components/CopyManager.vue";
+import SimpleNumberInput from "@/components/SimpleNumberInput.vue";
 
 const $route = useRoute();
 const $router = useRouter();
@@ -344,23 +345,6 @@ const addNewSkill = (newSkillName: string) => {
 		override: null,
 		adv: null
 	});
-};
-
-const disableOtherSkills = (index: number, type: "prof" | "exp" | "halfprof", value: boolean) => {
-	if (!value && data.value.abilities.skills) {
-		if (type === "prof") {
-			data.value.abilities.skills[index].isExpertise = false;
-			data.value.abilities.skills[index].isHalfProficient = false;
-		}
-		if (type === "exp") {
-			data.value.abilities.skills[index].isProficient = false;
-			data.value.abilities.skills[index].isHalfProficient = false;
-		}
-		if (type === "halfprof") {
-			data.value.abilities.skills[index].isExpertise = false;
-			data.value.abilities.skills[index].isProficient = false;
-		}
-	}
 };
 
 // helpers for features
@@ -787,111 +771,118 @@ const changeCR = (isIncrease: boolean) => {
 					</div>
 
 					<div id="tabpanel-3" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-3">
-						<SectionHeader title="Ability Scores" />
-						<div class="editor-field__container three-wide">
+						<SectionHeader title="Ability Scores & Saving Throws" />
+						<!-- <div class="editor-field__container three-wide">
 							<LabelledNumberInput v-model="data.abilities.stats.str" title="Strength" :step="1" label-id="strStat" />
 							<LabelledNumberInput v-model="data.abilities.stats.dex" title="Dexterity" :step="1" label-id="dexStat" />
 							<LabelledNumberInput v-model="data.abilities.stats.con" title="Constitution" :step="1" label-id="conStat" />
 							<LabelledNumberInput v-model="data.abilities.stats.int" title="Intelligence" :step="1" label-id="intStat" />
 							<LabelledNumberInput v-model="data.abilities.stats.wis" title="Wisdom" :step="1" label-id="wisStat" />
 							<LabelledNumberInput v-model="data.abilities.stats.cha" title="Charisma" :step="1" label-id="chaStat" />
-						</div>
-						<SectionHeader title="Saving Throws" />
-						<div class="editor-field__container three-wide">
-							<LabelledNumberInput v-model="data.abilities.saves.str.override" title="Strength" :step="1" :is-clearable="true" label-id="strSave">
-								<p>
-									<input id="strsaveprof" v-model="data.abilities.saves.str.isProficient" type="checkbox" :is-clearable="true">
-									<label for="strsaveprof" aria-label="strength save proficiency"> Proficient </label>
-									<select v-model="data.abilities.saves.str.adv" class="ghost" title="Select advantage or disadvantage for this save">
-										<option :value="null">
-											None
-										</option> <option :value="true">
-											Advantage
-										</option> <option :value="false">
-											Disadvantage
-										</option>
-									</select>
-								</p>
-							</LabelledNumberInput>
-							<LabelledNumberInput v-model="data.abilities.saves.dex.override" title="Dexterity" :step="1" :is-clearable="true" label-id="dexSave">
-								<p>
-									<input id="dexsaveprof" v-model="data.abilities.saves.dex.isProficient" type="checkbox">
-									<label for="dexsaveprof" aria-label="dexterity save proficiency"> Proficient </label>
-									<select v-model="data.abilities.saves.dex.adv" class="ghost" title="Select advantage or disadvantage for this save">
-										<option :value="null">
-											None
-										</option> <option :value="true">
-											Advantage
-										</option> <option :value="false">
-											Disadvantage
-										</option>
-									</select>
-								</p>
-							</LabelledNumberInput>
-							<LabelledNumberInput v-model="data.abilities.saves.con.override" title="Constitution" :step="1" :is-clearable="true" label-id="conSave">
-								<p>
-									<input id="consaveprof" v-model="data.abilities.saves.con.isProficient" type="checkbox">
-									<label for="consaveprof" aria-label="constitution save proficiency"> Proficient </label>
-									<select v-model="data.abilities.saves.con.adv" class="ghost" title="Select advantage or disadvantage for this save">
-										<option :value="null">
-											None
-										</option> <option :value="true">
-											Advantage
-										</option> <option :value="false">
-											Disadvantage
-										</option>
-									</select>
-								</p>
-							</LabelledNumberInput>
-							<LabelledNumberInput v-model="data.abilities.saves.int.override" title="Intelligence" :step="1" :is-clearable="true" label-id="intSave">
-								<p>
-									<input id="intsaveprof" v-model="data.abilities.saves.int.isProficient" type="checkbox">
-									<label for="intsaveprof" aria-label="intelligence save proficiency"> Proficient </label>
-									<select v-model="data.abilities.saves.int.adv" class="ghost" title="Select advantage or disadvantage for this save">
-										<option :value="null">
-											None
-										</option> <option :value="true">
-											Advantage
-										</option> <option :value="false">
-											Disadvantage
-										</option>
-									</select>
-								</p>
-							</LabelledNumberInput>
-							<LabelledNumberInput v-model="data.abilities.saves.wis.override" title="Wisdom" :step="1" :is-clearable="true" label-id="wisSave">
-								<p>
-									<input id="wissaveprof" v-model="data.abilities.saves.wis.isProficient" type="checkbox">
-									<label for="wissaveprof" aria-label="wisdom save proficiency"> Proficient </label>
-									<select v-model="data.abilities.saves.wis.adv" class="ghost" title="Select advantage or disadvantage for this save">
-										<option :value="null">
-											None
-										</option> <option :value="true">
-											Advantage
-										</option> <option :value="false">
-											Disadvantage
-										</option>
-									</select>
-								</p>
-							</LabelledNumberInput>
-							<LabelledNumberInput v-model="data.abilities.saves.cha.override" title="Charisma" :step="1" :is-clearable="true" label-id="chaSave">
-								<p>
-									<input id="chasaveprof" v-model="data.abilities.saves.cha.isProficient" type="checkbox">
-									<label for="chasaveprof" aria-label="charisma save proficiency"> Proficient </label>
-									<select v-model="data.abilities.saves.cha.adv" class="ghost" title="Select advantage or disadvantage for this save">
-										<option :value="null">
-											None
-										</option> <option :value="true">
-											Advantage
-										</option> <option :value="false">
-											Disadvantage
-										</option>
-									</select>
-								</p>
-							</LabelledNumberInput>
+						</div> -->
+						<div>
+							<table class="list-table">
+								<thead>
+									<tr>
+										<th> Ability </th>
+										<td> Value </td>
+										<td> Save Prof</td>
+										<td> Save Adv </td>
+										<td> Save Override</td>
+									</tr>
+								</thead>
+								<tbody>
+									<tr v-for="name, stat of statFullName" :key="stat">
+										<th scope="row">
+											{{ store.isMobile ? stat : name }}
+										</th>
+										<td>
+											<SimpleNumberInput v-model="data.abilities.stats[stat]" :min="0" :label="name" :label-id="stat" />
+										</td>
+										<td>
+											<input v-model="data.abilities.saves[stat].isProficient" type="checkbox" :is-clearable="true">
+										</td>
+										<td>
+											<select v-model="data.abilities.saves[stat].adv" class="ghost" title="Select advantage or disadvantage for this save">
+												<option :value="null">
+													None
+												</option> <option :value="true">
+													Adv
+												</option> <option :value="false">
+													Dis
+												</option>
+											</select>
+										</td>
+										<td v-if="data.abilities.saves[stat].override === null" style="cursor: pointer;" @click="data.abilities.saves[stat].override = 1">
+											-
+										</td>
+										<td v-else>
+											<SimpleNumberInput v-model="data.abilities.saves[stat].override" :label="`${name} save override`" :label-id="`${stat}Override`" is-clearable />
+										</td>
+									</tr>
+								</tbody>
+							</table>
 						</div>
 
 						<SectionHeader title="Skills" />
-						<div class="editor-field__container three-wide">
+						<div>
+							<table class="list-table" style="margin-bottom: 1rem;">
+								<thead>
+									<tr>
+										<th> Ability </th>
+										<td> Prof / Exp / <span style="font-size: 8px">1/2</span>Prof </td>
+										<td> Adv </td>
+										<td> Override</td>
+										<td> Delete </td>
+									</tr>
+								</thead>
+								<tbody>
+									<tr v-for="skill, idx of data.abilities.skills" :key="skill.skillName">
+										<th scope="row">
+											{{ skill.skillName }}
+										</th>
+										<td>
+											<div style="display: flex; gap: .5rem; justify-content: center; align-items: center;">
+												<input v-model="skill.isProficient" type="checkbox" :is-clearable="true" class="round" @click="skill.isExpertise = false; skill.isHalfProficient = false">
+												<input v-model="skill.isExpertise" type="checkbox" :is-clearable="true" class="round" @click="skill.isProficient = false; skill.isHalfProficient = false">
+												<input v-model="skill.isHalfProficient" type="checkbox" :is-clearable="true" class="round" @click="skill.isExpertise = false; skill.isProficient = false">
+											</div>
+										</td>
+										<td>
+											<select v-model="skill.adv" class="ghost" title="Select advantage or disadvantage for this save">
+												<option :value="null">
+													None
+												</option> <option :value="true">
+													Adv
+												</option> <option :value="false">
+													Dis
+												</option>
+											</select>
+										</td>
+										<td v-if="skill.override === null" style="cursor: pointer;" @click="skill.override = 1">
+											-
+										</td>
+										<td v-else>
+											<SimpleNumberInput v-model="skill.override" :label="`${skill.skillName} save override`" :label-id="`${skill.skillName}Override`" is-clearable />
+										</td>
+										<td>
+											<div>
+												<font-awesome-icon :icon="['fas', 'eraser']" @click="deleteSkill(idx)" />
+											</div>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<LabelledComponent title="Add new skill" for="addnewskill">
+								<v-select
+									placeholder="Select skill"
+									:options="['Acrobatics', 'Animal Handling', 'Arcana', 'Athletics', 'Charisma', 'Constitution', 'Deception', 'Dexterity', 'History', 'Initiative', 'Insight', 'Intelligence', 'Intimidation', 'Investigation', 'Medicine', 'Nature', 'Perception', 'Performance', 'Persuasion', 'Religion', 'Sleight of Hand', 'Stealth', 'Strength', 'Survival', 'Wisdom']"
+									input-id="addnewskill"
+									@option:selected="(selected : string) => (addNewSkill(selected))"
+								/>
+							</LabelledComponent>
+						</div>
+						<!-- <div class="editor-field__container three-wide">
 							<LabelledComponent v-for="(skill, index) in data.abilities.skills" :key="skill.skillName" :title="skill.skillName">
 								<div class="button-container">
 									<p><input :id="`${skill.skillName}prof`" v-model="skill.isProficient" type="checkbox" @click="disableOtherSkills(index, 'prof', skill.isProficient)"> <label :for="`${skill.skillName}prof`"> Proficient </label></p>
@@ -924,7 +915,7 @@ const changeCR = (isIncrease: boolean) => {
 									@option:selected="(selected : string) => (addNewSkill(selected))"
 								/>
 							</LabelledComponent>
-						</div>
+						</div> -->
 					</div>
 					<div id="tabpanel-4" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-4">
 						<div class="editor-field__container three-wide">
@@ -1445,6 +1436,42 @@ const changeCR = (isIncrease: boolean) => {
 	}
 	&:hover {
 		color: var(--color-surface-0);
+	}
+}
+
+.list-table {
+	width: 100%;
+	table-layout: fixed;
+	overflow-wrap: break-word;
+	display: table;
+
+	select {
+		font-size: small;
+		max-width: 80%;
+	}
+
+	tbody th {
+		color: orangered;
+		overflow-wrap: normal;
+	}
+
+	th,
+	td {
+		padding: 2px 4px;
+	}
+}
+
+@media screen and (max-width: 450px) {
+	.list-table {
+		font-size: small;
+
+		thead {
+			font-size: 0.5rem;
+		}
+
+		select {
+			appearance: none;
+		}
 	}
 }
 </style>

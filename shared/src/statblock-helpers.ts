@@ -1,5 +1,5 @@
 import YAML from "yaml";
-import type { AttackModel, CasterSpells, FeatureEntity, InnateSpells, SenseEntity, SpeedEntity, Stat, Statblock } from "./types";
+import type { AttackModel, CasterSpells, FeatureEntity, InnateSpells, SenseEntity, SkillsEntity, SpeedEntity, Stat, Statblock } from "./types";
 
 export const SKILLS_BY_STAT = {
 	str: ["athletics", "strength"],
@@ -9,6 +9,15 @@ export const SKILLS_BY_STAT = {
 	wis: ["animalHandling", "insight", "medicine", "perception", "survival", "wisdom"],
 	cha: ["deception", "intimidation", "performance", "persuasion", "charisma"],
 } as { [key in Stat]: string[] };
+
+export const statFullName = {
+	str: "Strength",
+	dex: "Dexterity",
+	con: "Constitution",
+	int: "Intelligence",
+	wis: "Wisdom",
+	cha: "Charisma"
+};
 
 export function nthSuffix(number: number) {
 	switch (number) {
@@ -132,7 +141,7 @@ export function displaySpeedOrSenses(data: SenseEntity[] | SpeedEntity[], hasEnd
 		if (hasEndingComma || (filteredLength !== 1 && index !== filteredLength - 1))
 			output += ", ";
 	}
-	return output;
+	return output.trim();
 }
 
 export function spellDc(innate = false, data: Statblock) {
@@ -227,7 +236,7 @@ export function displayCasterCasting(data: Statblock): string {
 
 	const isKnownCaster = ["Sorcerer", "Bard", "Ranger", "Warlock"].includes(sClass);
 
-	desc += `${!isProperNoun ? "The " : ""}${name} is a ${nthSuffix(level)}-level spellcaster. ${isProperNoun ? "Their" : "Its"} spellcasting ability is ${abi} (spell save DC ${spellDc(false, data)}, ${spellAttackBonus(false, data)} to hit with spell attacks).`;
+	desc += `${!isProperNoun ? "The " : ""}${name} is a ${nthSuffix(level)}-level spellcaster. ${isProperNoun ? "Their" : "Its"} spellcasting ability is ${abi} (spell save DC ${spellDc(false, data)}, ${signedNumber(spellAttackBonus(false, data))} to hit with spell attacks).`;
 	if (isKnownCaster)
 		desc += ` ${isProperNoun ? name : "It"} knows the following ${sClass.toLowerCase()} spells:`;
 	else desc += ` ${isProperNoun ? name : "It"} has the following ${sClass.toLowerCase()} spells prepared:`;

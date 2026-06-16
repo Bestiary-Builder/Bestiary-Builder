@@ -128,6 +128,20 @@ const calculatedInitiativeNumber = () => {
 		return data.core.proficiencyBonus * 2 + statCalc("dex", data);
 	return 0;
 };
+
+const calculatePassiveInitiative = () => {
+	const skill = data.abilities.skills.find(skill => skill.skillName === "Initiative");
+	if (!skill)
+		return 10 + statCalc("dex", data);
+
+	let value = 10;
+	if (skill.adv === true)
+		value += 5;
+	if (skill.adv === false)
+		value -= 5;
+
+	return value + calculatedInitiativeNumber();
+};
 </script>
 
 <template>
@@ -143,7 +157,7 @@ const calculatedInitiativeNumber = () => {
 			<div>
 				<div>
 					<b> {{ v2024 ? 'AC ' : 'Armor Class ' }} </b><span>{{ data.defenses.ac.ac }}</span><span v-if="data.defenses.ac.acSource"> ({{ data.defenses.ac.acSource }}) </span>
-					<b v-if="v2024" style="padding-left: .45rem"> Initiative </b> <span v-if="v2024"> {{ signedNumber(calculatedInitiativeNumber()) }}</span>
+					<b v-if="v2024" style="padding-left: .45rem"> Initiative </b> <span v-if="v2024"> {{ signedNumber(calculatedInitiativeNumber()) }} ({{ calculatePassiveInitiative() }})</span>
 				</div>
 				<div>
 					<b> {{ v2024 ? 'HP ' : 'Hit Points ' }} </b>
@@ -232,6 +246,10 @@ const calculatedInitiativeNumber = () => {
 				</template>
 			</template>
 			<template v-else>
+				<div v-if="showSkills" class="stat-block__skills-container">
+					<b> Skills </b>
+					{{ skillOutput }}
+				</div>
 				<div v-if="data.defenses.vulnerabilities.length > 0" class="stat-block__res-container">
 					<b> Vulnerabilities  </b>
 					<span> {{ alphaSort(data.defenses.vulnerabilities).join(", ") }} </span>
@@ -250,8 +268,8 @@ const calculatedInitiativeNumber = () => {
 
 			<div ckass="stat-block__senses-container">
 				<b> Senses </b>
-				{{ displaySpeedOrSenses(data.core.senses, true, v2024) }}
-				<span> {{ v2024 ? 'P' : 'p' }}assive Perception {{ ppCalc(data) }}</span>
+				{{ displaySpeedOrSenses(data.core.senses, false, v2024) }}{{ data.core.senses.length > 0 ? ';' : '' }}
+				{{ v2024 ? 'P' : 'p' }}assive Perception {{ ppCalc(data) }}
 			</div>
 			<div class="stat-block__language-container">
 				<b> Languages </b>
@@ -342,6 +360,6 @@ const calculatedInitiativeNumber = () => {
 
 <style scoped lang="less">
 @import "@/assets/styles/statblock/default.less";
-// @import "@/assets/styles/statblock/odyssey/odyssey.less";
-@import "@/assets/styles/statblock/beyond/beyond.less";
+@import "@/assets/styles/statblock/odyssey/odyssey.less";
+// @import "@/assets/styles/statblock/beyond/beyond.less";
 </style>

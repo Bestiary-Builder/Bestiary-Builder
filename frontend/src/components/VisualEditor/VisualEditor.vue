@@ -5,6 +5,7 @@ import NodeHelper from "./NodeHelper.vue";
 import EffectAdder from "./EffectAdder.vue";
 import AutomationDocumentation from "./Nodes/shared/AutomationDocumentation.vue";
 import EffectAsRaw from "./Nodes/shared/EffectAsRaw.vue";
+import SectionHeader from "./Nodes/shared/SectionHeader.vue";
 import type { AttackModel, ButtonInteraction, Effect } from "~/shared";
 
 const props = defineProps<{ name: string }>();
@@ -15,7 +16,9 @@ provide("currentContext", currentContext);
 
 const automation = defineModel<null | AttackModel | AttackModel[]>();
 console.log(automation.value);
-provide("automation", ref(automation.value));
+if (automation.value == null)
+	automation.value = { _v: 2, name: "Action", automation: [] };
+provide("automation", ref(automation));
 const currentNode = computed(() => {
 	if (!currentEffect.value)
 		return null;
@@ -34,10 +37,9 @@ const currentNode = computed(() => {
 </script>
 
 <template>
-	{{ currentContext }} {{ currentEffect }}
 	<section class="two-wide uneven">
 		<div class="tree">
-			<h3> Effect Tree</h3>
+			<SectionHeader title="Effect Tree" />
 			<TreeRoot v-if="automation" :data="automation" :depth="-1" />
 			<div v-else>
 				<EffectAdder :context="['root']" :name="props.name" />
@@ -45,7 +47,7 @@ const currentNode = computed(() => {
 		</div>
 		<div class="editor">
 			<div v-if="!currentEffect && currentContext.length === 0">
-				<h3>  Nothing selected </h3>
+				<SectionHeader title="Active Node: None" />
 				Select or create a node in the Effect Tree.
 			</div>
 			<template v-else>
@@ -89,5 +91,13 @@ h3 {
 	gap: 0rem 1rem;
 	margin-bottom: 1rem;
 	grid-template-columns: 1fr 3fr;
+}
+
+section {
+	background-color: var(--color-surface-1);
+	min-height: 800px;
+	padding: 1rem;
+	border-radius: 6px;
+	box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 </style>

@@ -78,9 +78,11 @@ const importManyCreatures = () => {
 						Copied creatures list empty
 					</caption>
 					<tbody>
-						<td style="color: grey; border: 0px">
-							Start copying creatures to manage them here!
-						</td>
+						<tr>
+							<td style="color: grey; border: 0px">
+								Start copying creatures to manage them here!
+							</td>
+						</tr>
 					</tbody>
 				</table>
 

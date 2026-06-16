@@ -49,7 +49,7 @@ input[type="checkbox"] {
 	height: 1rem;
 	border: 0.1rem solid color-mix(in srgb, currentColor, rgba(0, 0, 0, 0.1));
 	border-radius: 0.15rem;
-	translate: 0 3px;
+	translate: 0 0px;
 	transition: border-color linear 100ms;
 	position: relative;
 
@@ -68,6 +68,16 @@ input[type="checkbox"] {
 		position: absolute;
 		left: 16%;
 		top: 15%;
+	}
+
+
+	&.round {
+		border-radius: 100%;
+		&::before {
+			border-radius: 100%;
+			left: 14%;
+			top: 15%;
+		}
 	}
 }
 
