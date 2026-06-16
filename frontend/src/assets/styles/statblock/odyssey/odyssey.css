@@ -3,7 +3,7 @@
     src: url('TrajanOdyssey-Regular.otf') format("opentype");
 }
 
-body .content .stat-block,
+body .content .stat-block.Odyssey,
 body .v-popper__custom-menu .stat-block.Odyssey {
     color: #095471;
     background-color: #ffffff;

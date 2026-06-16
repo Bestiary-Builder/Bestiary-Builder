@@ -958,9 +958,74 @@ const changeCR = (isIncrease: boolean) => {
 					</div>
 					<div id="tabpanel-5" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-5">
 						<div v-for="(descText, fType) in newFeatureGenerator" :key="fType">
-							<SectionHeader :title="`${descText.replace('New ', '')}s`" />
+							<SectionHeader :title="`${descText.replace('New ', '').replace('Feature', 'Trait')}s`" />
 
-							<Draggable :list="data.features[fType]" group="features" :item-key="getDraggableKey" handle=".handle" class="editor-field__container three-wide" :animation="150">
+							<table class="list-table features">
+								<thead>
+									<tr>
+										<td> Order </td>
+										<th>
+											Action
+										</th>
+										<td>
+											Options
+										</td>
+									</tr>
+								</thead>
+								<Draggable :list="data.features[fType]" group="features" :item-key="getDraggableKey" :animation="150" tag="tbody" class=".handle">
+									<template #item="{ element, index }">
+										<tr>
+											<td>
+												<span><font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle" /> </span>
+											</td>
+											<th> {{ element.name }}</th>
+											<td class="edit-buttons">
+												<div>
+													<RouterLink :to="`${rawInfo?.id}/${fType}/${index}`" class="button-icon">
+														<font-awesome-icon :icon="['fas', 'edit']" />
+													</RouterLink>
+													<span class="delete-button" aria-label="Delete feature" @click="deleteFeature(fType, index)"><font-awesome-icon :icon="['fas', 'trash']" /></span>
+												</div>
+											</td>
+										</tr>
+									</template>
+									<template #footer>
+										<tr class="table-footer">
+											<td />
+											<th @click="createNewFeature(fType)">
+												Add new action
+											</th>
+											<td>
+												<span :id="descText" class="button-icon" @click="createNewFeature(fType)">
+													<font-awesome-icon :icon="['fas', 'plus']" />
+												</span>
+											</td>
+										</tr>
+										<tr class="table-footer">
+											<td />
+											<th>
+												Edit feature header description
+											</th>
+											<td>
+												<VDropdown :distance="6" :positioning-disabled="store.isMobile">
+													<button v-tooltip="'Export statblock'" aria-label="Export statblock" class="btn-icon" style="color: orangered">
+														<font-awesome-icon :icon="['fas', 'section']" />
+													</button>
+													<template #popper>
+														<div class="v-popper__custom-menu">
+															<span style="color: lightgray"> You can set text to show at<br> the top of each section here.</span>
+															<textarea :id="fType" v-model="data.misc.featureHeaderTexts[fType]" style="min-width: 300px" />
+														</div>
+													</template>
+												</VDropdown>
+											</td>
+										</tr>
+									</template>
+								</Draggable>
+							</table>
+							<!-- <textarea :id="fType" v-model="data.misc.featureHeaderTexts[fType]" style="width: 100%;" rows="1" placeholder="Add action description" class="bottom" /> -->
+
+							<!-- <Draggable :list="data.features[fType]" group="features" :item-key="getDraggableKey" handle=".handle" class="editor-field__container three-wide" :animation="150">
 								<template #item="{ element, index }">
 									<LabelledComponent :title="element.name || `Unnamed ${index}`">
 										<div class="feature-button__container">
@@ -985,7 +1050,7 @@ const changeCR = (isIncrease: boolean) => {
 
 									<LabelledNumberInput v-if="fType === 'legendary' && data.features[fType].length > 0" v-model="data.misc.legActionsPerRound" title="Legendary Actions per round" :min="0" :step="1" for="legActionsPerRound" />
 								</template>
-							</Draggable>
+							</Draggable> -->
 						</div>
 					</div>
 					<div id="tabpanel-6" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-6">
@@ -1364,7 +1429,7 @@ const changeCR = (isIncrease: boolean) => {
 
 .handle {
 	padding-top: 0px;
-	padding-bottom: 8px;
+	padding-bottom: 0px;
 	cursor: grab;
 	color: orangered;
 
@@ -1458,6 +1523,34 @@ const changeCR = (isIncrease: boolean) => {
 	th,
 	td {
 		padding: 2px 4px;
+	}
+
+	.edit-buttons div {
+		display: inline-flex;
+		flex-direction: row;
+		gap: 1em;
+		justify-content: center;
+		color: orangered;
+	}
+}
+
+.list-table.features {
+	table-layout: auto;
+	margin-bottom: 2rem;
+	color: var(--color-base) !important;
+	th,
+	td {
+		color: var(--color-base);
+	}
+
+	tbody th {
+		padding-left: 12px;
+	}
+
+	.table-footer {
+		th {
+			color: gray;
+		}
 	}
 }
 

@@ -21,6 +21,7 @@ import {
 	faPlus,
 	faSave,
 	faScaleBalanced,
+	faSection,
 	faShareNodes,
 	faSkull,
 	faSpinner,
@@ -71,5 +72,6 @@ library.add(
 	faSpinner,
 	faThumbTack,
 	faMinus,
-	faEraser
+	faEraser,
+	faSection
 );

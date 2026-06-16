@@ -335,12 +335,12 @@ const creatureData = {
 							</select>
 						</LabelledComponent>
 						<VDropdown :positioning-disabled="store.isMobile">
-							<button v-tooltip="'Preview image'" aria-label="Preview image" class="btn-icon" style="color: orangered">
+							<button v-tooltip="'Preview statblock'" aria-label="Preview statblock" class="btn-icon" style="color: orangered">
 								<font-awesome-icon :icon="['fas', 'eye']" />
 							</button>
 							<template #popper>
 								<div class="v-popper__custom-menu">
-									<StatblockRenderer :data="creatureData" :statblock-design="design" :is2024="layout === 'SL_2024' " style="max-width: 800px" />
+									<StatblockRenderer :data="creatureData" :statblock-design="design" :is2024="layout === 'SL_2024' " style="max-width: 650px" />
 								</div>
 							</template>
 						</VDropdown>
@@ -361,12 +361,12 @@ const creatureData = {
 							</select>
 						</LabelledComponent>
 						<VDropdown :positioning-disabled="store.isMobile">
-							<button v-tooltip="'Preview image'" aria-label="Preview image" class="btn-icon" style="color: orangered">
+							<button v-tooltip="'Preview statblock'" aria-label="Preview statblock" class="btn-icon" style="color: orangered">
 								<font-awesome-icon :icon="['fas', 'eye']" />
 							</button>
 							<template #popper>
 								<div class="v-popper__custom-menu">
-									<StatblockRenderer :data="creatureData" :statblock-design="design" :is2024="layout === 'SL_2024' " style="max-width: 800px" />
+									<StatblockRenderer :data="creatureData" :statblock-design="design" :is2024="layout === 'SL_2024' " style="max-width: 650px" />
 								</div>
 							</template>
 						</VDropdown>
