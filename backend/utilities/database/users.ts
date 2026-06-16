@@ -5,7 +5,7 @@ import { generateUserSecret } from "@/utilities/constants";
 
 // User cache
 const userCache = {} as { [key: string]: User };
-function resetUserCache(id: string) {
+export function resetUserCache(id: string) {
 	delete userCache[id];
 }
 const userSecretCache = {} as { [key: string]: User };
