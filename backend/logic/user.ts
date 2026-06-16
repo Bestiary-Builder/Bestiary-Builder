@@ -75,7 +75,7 @@ app.post("/api/user/updatePreferences", requireUser, async (req, res) => {
 
 			const updatedUser = await getPrismaClient().user.update({
 				where: { id: data.id },
-				data,
+				data: newSettings,
 				omit: { secret: true }
 			});
 			resetUserCache(updatedUser.id);

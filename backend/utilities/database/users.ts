@@ -5,10 +5,12 @@ import { generateUserSecret } from "@/utilities/constants";
 
 // User cache
 const userCache = {} as { [key: string]: User };
+const userSecretCache = {} as { [key: string]: User };
+const userSecrets = {} as { [key: string]: string };
 export function resetUserCache(id: string) {
 	delete userCache[id];
+	delete userSecretCache[userSecrets[id]]
 }
-const userSecretCache = {} as { [key: string]: User };
 // User functions
 export async function getUser(id: string) {
 	try {
@@ -35,8 +37,10 @@ export async function getUserFromSecret(secret: string) {
 		const user = await getPrismaClient().user.findUnique({ where: { secret } });
 		if (user) {
 			userCache[user.id] = user;
-			if (user.secret)
+			if (user.secret) {
 				userSecretCache[user.secret] = user;
+				userSecrets[user.id] = user.secret;
+			}
 		}
 		log.log("database", "Reading user from secret.");
 		return user;
