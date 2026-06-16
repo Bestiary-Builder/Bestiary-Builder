@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client"
-  output = "../shared/prisma"
+  output   = "../shared/prisma"
 }
 
 generator json {
@@ -11,6 +11,106 @@ generator json {
 
 datasource db {
   provider = "postgresql"
+}
+
+model User {
+  id          String          @id
+  username    String
+  avatar      String
+  email       String
+  verified    Boolean
+  bannerColor String          @map("banner_color")
+  globalName  String          @map("global_name")
+  supporter   SupporterStatus @default(none)
+  joinedAt    DateTime        @default(now())
+  secret      String          @unique
+
+  // User preferences
+  statblockLayout        StatblockLayout @default(SL_2024)
+  statblockDesign        StatblockDesign @default(BestiaryBuilder)
+  preferredEditor        Editor          @default(Visual)
+  unsubscribedFromEmails Boolean         @default(false)
+
+  // Lists
+  bestiaries Bestiary[]             @relation("BestiaryOwner")
+  editedIn   BestiaryEditor[]
+  bookmarks  UserBestiaryBookmark[]
+
+  @@map("Users")
+}
+
+model Bestiary {
+  id          String         @id
+  name        String
+  ownerId     String         @map("owner")
+  status      BestiaryStatus
+  description String
+  tags        String[]
+  viewCount   Int            @default(0)
+  bookmarks   Int            @default(0)
+  lastUpdated DateTime       @default(now())
+
+  owner        User                   @relation("BestiaryOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  creatures    Creature[]
+  editors      BestiaryEditor[]
+  bookmarkedBy UserBestiaryBookmark[]
+
+  @@index([ownerId])
+  @@index([status])
+  @@map("Bestiaries")
+}
+
+model Creature {
+  id          String   @id @default(cuid())
+  bestiaryId  String   @map("bestiary")
+  lastUpdated DateTime @default(now())
+
+  /// [DbStatblock]
+  stats Json
+
+  bestiary Bestiary @relation(fields: [bestiaryId], references: [id], onDelete: Cascade)
+
+  @@index([bestiaryId])
+  @@map("Creatures")
+}
+
+model Automation {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  owner       String
+  lastUpdated DateTime @default(now())
+
+  /// [DbAutomation]
+  automation Json?
+
+  @@index([owner])
+  @@map("Automations")
+}
+
+model BestiaryEditor {
+  bestiaryId String
+  userId     String
+
+  bestiary Bestiary @relation(fields: [bestiaryId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([bestiaryId, userId])
+  @@index([userId])
+  @@map("BestiaryEditors")
+}
+
+model UserBestiaryBookmark {
+  userId     String
+  bestiaryId String
+  createdAt  DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bestiary Bestiary @relation(fields: [bestiaryId], references: [id], onDelete: Cascade)
+
+  @@id([userId, bestiaryId])
+  @@index([bestiaryId])
+  @@map("UserBestiaryBookmarks")
 }
 
 enum BestiaryStatus {
@@ -25,95 +125,18 @@ enum SupporterStatus {
   greatwyrm
 }
 
-model User {
-  id          String   @id
-  username    String
-  avatar      String
-  email       String
-  verified    Boolean
-  bannerColor String   @map("banner_color")
-  globalName  String   @map("global_name")
-  supporter   SupporterStatus @default(none)
-  joinedAt    DateTime @default(now())
-  secret      String   @unique
-
-  bestiaries  Bestiary[]          @relation("BestiaryOwner")
-  editedIn    BestiaryEditor[]
-  bookmarks   UserBestiaryBookmark[]
-
-  @@map("Users")
+enum StatblockLayout {
+  SL_2014
+  SL_2024
 }
 
-model Bestiary {
-  id          String         @id
-  name        String
-  ownerId     String         @map("owner")
-  status      BestiaryStatus
-  description String
-  tags        String[]
-  viewCount   Int            @default(0)
-  bookmarks   Int            @default(0)
-  lastUpdated DateTime @default(now())
-
-  owner       User                   @relation("BestiaryOwner", fields: [ownerId], references: [id], onDelete: Cascade)
-  creatures   Creature[]
-  editors     BestiaryEditor[]
-  bookmarkedBy UserBestiaryBookmark[]
-
-  @@index([ownerId])
-  @@index([status])
-  @@map("Bestiaries")
+enum StatblockDesign {
+  BestiaryBuilder
+  Beyond
+  Odyssey
 }
 
-model BestiaryEditor {
-  bestiaryId String
-  userId     String
-
-  bestiary   Bestiary @relation(fields: [bestiaryId], references: [id], onDelete: Cascade)
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@id([bestiaryId, userId])
-  @@index([userId])
-  @@map("BestiaryEditors")
-}
-
-model UserBestiaryBookmark {
-  userId     String
-  bestiaryId String
-  createdAt  DateTime @default(now())
-
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  bestiary   Bestiary @relation(fields: [bestiaryId], references: [id], onDelete: Cascade)
-
-  @@id([userId, bestiaryId])
-  @@index([bestiaryId])
-  @@map("UserBestiaryBookmarks")
-}
-
-model Creature {
-  id          String  @id @default(cuid())
-  bestiaryId  String  @map("bestiary")
-  lastUpdated DateTime @default(now())
-
-  /// [DbStatblock]
-  stats       Json
-
-  bestiary    Bestiary @relation(fields: [bestiaryId], references: [id], onDelete: Cascade)
-
-  @@index([bestiaryId])
-  @@map("Creatures")
-}
-
-model Automation {
-  id          String @id @default(cuid())
-  name        String
-  description String
-  owner       String
-  lastUpdated DateTime @default(now())
-
-  /// [DbAutomation]
-  automation  Json?
-
-  @@index([owner])
-  @@map("Automations")
+enum Editor {
+  Code
+  Visual
 }
