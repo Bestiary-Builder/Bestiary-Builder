@@ -3,16 +3,15 @@ import { possibleUser, requireUser } from "./login";
 import { colors, publicLog } from "./discord";
 import { app, checkBestiaryLimits, checkCreatureAmountLimit, checkCreatureLimits, limits } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
-import { addBestiaryEditor, addBookmark, createBestiary, createCreatures, deleteBestiary, getBestiariesByOwner, getBestiariesByUser, getBestiary, getBestiaryCreatureCount, getPublicBestiariesByOwner, getUser, incrementBestiaryViewCount, isBestiaryBookmarked, isBestiaryEditor, removeBestiaryEditor, removeBookmark, updateBestiary } from "@/utilities/database";
+import { addBestiaryEditor, addBookmark, createBestiary, createCreatures, deleteBestiary, getBestiariesByOwner, getBestiariesByUser, getBestiary, getBestiaryCreatureCount, getPrismaClient, getPublicBestiariesByOwner, getUser, incrementBestiaryViewCount, isBestiaryBookmarked, isBestiaryEditor, removeBestiaryEditor, removeBookmark, updateBestiary } from "@/utilities/database";
 import { type Statblock, defaultStatblock } from "~/shared";
-import type { Bestiary, BestiaryCreateInput, Creature, User } from "~/shared/src/prisma-types";
+import type { Bestiary, BestiaryCreateInput, BestiaryStatus, Creature, User } from "~/shared/src/prisma-types";
 
 import tags from "@/staticData/tags.json";
 
 // Validate inputs
 import { typeInterface } from "~/shared";
 import { checkBadwords } from "@/utilities/badwords";
-import type { JsonObject } from "~/shared/prisma/internal/prismaNamespace";
 
 // Permission checks
 export async function checkBestiaryPermission(bestiary: Bestiary, user: User | null): Promise<"none" | "view" | "owner" | "editor"> {
@@ -72,7 +71,11 @@ app.get("/api/my-bestiaries", requireUser, async (req, res) => {
 			return res.status(404).json({ error: "Couldn't find user" });
 		const allBestiaries = await getBestiariesByUser(user.id);
 		log.info(`Retrieved all bestiaries from the current user with the id ${user.id}`);
-		return res.json(allBestiaries);
+		return res.json(allBestiaries.sort((a, b) => (a.orderedBy[0]?.index ?? allBestiaries.length) - (b.orderedBy[0]?.index ?? allBestiaries.length)).map((bestiary) => {
+			const b = bestiary as Omit<typeof bestiary, "orderedBy"> & { orderedBy?: unknown };
+			delete b.orderedBy;
+			return b;
+		}));
 	}
 	catch (err) {
 		log.log("critical", err);
@@ -113,21 +116,23 @@ app.post("/api/bestiary/:id/update", requireUser, async (req, res) => {
 		if (!req.body.data)
 			return res.status(400).json({ error: "Bestiary data not found." });
 
-		const data: BestiaryCreateInput = {
+		interface UpdateData {
+			name: string;
+			description: string;
+			status: "public" | "private" | "unlisted";
+			tags: string[];
+		};
+
+		const data: UpdateData & { id: Bestiary["id"] } = {
 			...{
 				name: "",
 				status: "private",
 				description: "",
-				viewCount: 0,
-				bookmarks: 0
 			},
 			...(req.body.data as Partial<Bestiary>),
 			tags: req.body.data.tags.filter((t: string) => tags.includes(t)) ?? [],
-			owner: { connect: { id: user.id } },
-			lastUpdated: new Date(Date.now()),
 			id
 		};
-		data.id = id;
 		// Check limits
 		const limitError = checkBestiaryLimits(data);
 		if (limitError)
@@ -161,16 +166,11 @@ app.post("/api/bestiary/:id/update", requireUser, async (req, res) => {
 		if (permissionLevel === "none" || permissionLevel === "view")
 			return res.status(401).json({ error: "You don't have permission to update this bestiary." });
 		// Limit to properties that are editable:
-		const update = {
+		const update: Omit<UpdateData, "status"> & { status?: BestiaryStatus } = {
 			name: data.name,
 			description: data.description,
 			status: data.status,
 			tags: data.tags
-		} as {
-			name: string;
-			description: string;
-			status?: "public" | "private" | "unlisted";
-			tags: string[];
 		};
 		if (permissionLevel === "editor")
 			delete update.status;
@@ -198,18 +198,16 @@ app.post("/api/bestiary/add", requireUser, async (req, res) => {
 			return res.status(404).json({ error: "Couldn't find current user." });
 		if (!req.body.data)
 			return res.status(400).json({ error: "Bestiary data not found." });
-		const data: Omit<BestiaryCreateInput, "id"> = {
+		const data: Omit<BestiaryCreateInput, "id" | "owner"> = {
 			...{
 				name: "",
 				status: "private",
 				description: "",
 				viewCount: 0,
-				bookmarks: 0
+				bookmarks: 0,
 			},
 			...(req.body.data as Partial<Bestiary>),
-			tags: (req.body.data.tags ?? []).filter((t: string) => tags.includes(t)),
-			owner: { connect: { id: user.id } },
-			lastUpdated: new Date(Date.now())
+			tags: (req.body.data.tags ?? []).filter((t: string) => tags.includes(t))
 		};
 		// Check limits
 		const limitError = checkBestiaryLimits(data);
@@ -233,7 +231,7 @@ app.post("/api/bestiary/add", requireUser, async (req, res) => {
 				return res.status(400).json({ error: "A bestiary must have a non default name." });
 		}
 		// Create new bestiary
-		const _id = await createBestiary(data);
+		const _id = await createBestiary({ ...data }, user);
 		if (!_id)
 			return res.status(500).json({ error: "Failed to create bestiary." });
 		log.info(`Created new bestiary with the id ${_id}`);
@@ -275,6 +273,48 @@ app.get("/api/bestiary/:id/delete", requireUser, async (req, res) => {
 	}
 });
 
+// Change bestiary order
+app.post("/api/my-bestiaries/order", requireUser, async (req, res) => {
+	try {
+		const user = req.body.user;
+		if (!user)
+			return res.status(404).json({ error: "Couldn't find current user." });
+		const bestiaryIds = req.body.data;
+		if (!bestiaryIds || !Array.isArray(bestiaryIds))
+			return res.status(400).json({ error: "Invalid bestiary id array." });
+
+		const prisma = getPrismaClient();
+
+		// Get user owned bestiaries
+		const userBestiaries = await prisma.bestiary.findMany({ where: { ownerId: user.id } });
+
+		// Check that user owns all bestiarie
+		if (bestiaryIds.some(id => !userBestiaries.some(i => i.id === id)))
+			return res.status(403).json({ error: "You do not own all specified bestiaries." });
+
+		// Set sortedIndex for each bestiary, and any unspecified gets set last
+		const result = await prisma.$transaction([...userBestiaries.map((bestiary) => {
+			let index = bestiaryIds.indexOf(bestiary.id);
+			if (index < 0)
+				index = bestiaryIds.length + 1;
+			return prisma.userBestiaryOrder.upsert({
+				where: { userId_bestiaryId: { userId: user.id, bestiaryId: bestiary.id } },
+				update: { index: bestiaryIds.indexOf(bestiary.id) ?? (bestiaryIds.length + 1) },
+				create: { index: bestiaryIds.indexOf(bestiary.id) ?? (bestiaryIds.length + 1), user: { connect: { id: user.id } }, bestiary: { connect: { id: bestiary.id } } }
+			});
+		}), prisma.userBestiaryOrder.deleteMany({ where: { userId: user.id, bestiaryId: { notIn: bestiaryIds } } })]);
+
+		if (result.length - 1 === userBestiaries.length)
+			return res.status(200).json({});
+		else
+			return res.status(500).json({ error: "Unknown server error occured, please try again." });
+	}
+	catch (err) {
+		log.log("critical", err);
+		return res.status(500).json({ error: "Unknown server error occured, please try again." });
+	}
+});
+
 // Add many creatures
 app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 	try {
@@ -299,7 +339,7 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 			const inputData = req.body.data as Statblock[];
 			if (!validateStatblockInput(inputData))
 				data = null;
-			data = inputData.map(a => ({ stats: a as unknown as JsonObject } as Omit<Creature, "id">));
+			data = inputData.map(a => ({ stats: a } as Omit<Creature, "id">));
 		}
 		catch {
 			data = null;
@@ -375,7 +415,7 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 				}
 			}
 			// Push data
-			fixedData.push({ ...creature, stats: stats as unknown as JsonObject });
+			fixedData.push({ ...creature, stats });
 		}
 		let error = "";
 		// Failed creatures:

@@ -30,7 +30,6 @@ app.get("/api/critterdbcreature/:id", async (req, res) => {
 		await fetch(`https://critterdb.com/api/creatures/${id}`).then(async (resp) => {
 			try {
 				const raw = (await resp.json()) as any;
-				console.log(raw);
 				const result = parseFromCritterDB(raw);
 				if (!result)
 					return res.status(500).json({ error: "Failed to fetch info from critterdb.com. Are you sure the link is right?" });

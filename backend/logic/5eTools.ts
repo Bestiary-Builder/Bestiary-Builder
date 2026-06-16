@@ -195,7 +195,7 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 
 				const saveBonus = outputData.core.proficiencyBonus + (Math.floor(data.str / 2) - 5);
 				if (mod === saveBonus)
-					return { isProficient: true, override: null , adv: null};
+					return { isProficient: true, override: null, adv: null };
 				if (mod !== saveBonus)
 					return { isProficient: false, override: Number.parseInt(mod.toString()), adv: null };
 
@@ -208,7 +208,7 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 
 				const saveBonus = outputData.core.proficiencyBonus + (Math.floor(data.dex / 2) - 5);
 				if (mod === saveBonus)
-					return { isProficient: true, override: null , adv: null};
+					return { isProficient: true, override: null, adv: null };
 				if (mod !== saveBonus)
 					return { isProficient: false, override: Number.parseInt(mod.toString()), adv: null };
 
@@ -221,9 +221,9 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 
 				const saveBonus = outputData.core.proficiencyBonus + (Math.floor(data.con / 2) - 5);
 				if (mod === saveBonus)
-					return { isProficient: true, override: null , adv: null};
+					return { isProficient: true, override: null, adv: null };
 				if (mod !== saveBonus)
-					return { isProficient: false, override: Number.parseInt(mod.toString()) , adv: null};
+					return { isProficient: false, override: Number.parseInt(mod.toString()), adv: null };
 
 				return { isProficient: false, override: null, adv: null };
 			})(),

@@ -2,7 +2,7 @@ import { v4 as uuid } from "uuid";
 import { getPrismaClient } from ".";
 import { log } from "@/utilities/logger";
 import type { BestiaryCreateInput, BestiaryUpdateInput } from "~/shared/src/prisma-types";
-import type { Id } from "~/shared";
+import type { Id, User } from "~/shared";
 
 const defaultIncludes = {
 	creatures: {
@@ -41,12 +41,15 @@ export async function updateBestiary(data: BestiaryUpdateInput, id: Id) {
 		return null;
 	}
 }
-export async function createBestiary(data: Omit<BestiaryCreateInput, "id">) {
+export async function createBestiary(data: Omit<BestiaryCreateInput, "id" | "owner">, owner: User) {
 	try {
 		data.lastUpdated = new Date(Date.now());
 		const id = uuid().replaceAll("-", "");
 		log.log("database", `Creating bestiary`);
-		return (await getPrismaClient().bestiary.create({ data: { ...data, id } })).id;
+		const prisma = getPrismaClient();
+		// Get next sorted index
+		const sortedIndex = ((await prisma.user.findUnique({ where: { id: owner.id }, select: { ordered: { orderBy: { index: "desc" }, take: 1 } } }))?.ordered[0]?.index ?? -1) + 1;
+		return (await prisma.bestiary.create({ data: { ...data, id, owner: { connect: { id: owner.id } }, orderedBy: { create: { user: { connect: { id: owner.id } }, index: sortedIndex } } } })).id;
 	}
 	catch (err) {
 		log.log("critical", err);
@@ -83,7 +86,7 @@ export async function getBestiariesByUser(userId: string) {
 					{ editors: { some: { userId } } }
 				]
 			},
-			include: defaultIncludes
+			include: { ...defaultIncludes, orderedBy: { where: { userId } } },
 		});
 	}
 	catch (err) {

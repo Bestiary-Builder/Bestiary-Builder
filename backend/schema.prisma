@@ -35,6 +35,7 @@ model User {
   bestiaries Bestiary[]             @relation("BestiaryOwner")
   editedIn   BestiaryEditor[]
   bookmarks  UserBestiaryBookmark[]
+  ordered    UserBestiaryOrder[]
 
   @@map("Users")
 }
@@ -48,12 +49,13 @@ model Bestiary {
   tags        String[]
   viewCount   Int            @default(0)
   bookmarks   Int            @default(0)
-  lastUpdated DateTime       @default(now())
+  lastUpdated DateTime       @updatedAt
 
   owner        User                   @relation("BestiaryOwner", fields: [ownerId], references: [id], onDelete: Cascade)
   creatures    Creature[]
   editors      BestiaryEditor[]
   bookmarkedBy UserBestiaryBookmark[]
+  orderedBy    UserBestiaryOrder[]
 
   @@index([ownerId])
   @@index([status])
@@ -63,7 +65,7 @@ model Bestiary {
 model Creature {
   id          String   @id @default(cuid())
   bestiaryId  String   @map("bestiary")
-  lastUpdated DateTime @default(now())
+  lastUpdated DateTime @updatedAt
 
   /// [DbStatblock]
   stats Json
@@ -109,8 +111,23 @@ model UserBestiaryBookmark {
   bestiary Bestiary @relation(fields: [bestiaryId], references: [id], onDelete: Cascade)
 
   @@id([userId, bestiaryId])
+  @@index([userId])
   @@index([bestiaryId])
   @@map("UserBestiaryBookmarks")
+}
+
+model UserBestiaryOrder {
+  userId     String
+  bestiaryId String
+
+  index 	Int
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bestiary Bestiary @relation(fields: [bestiaryId], references: [id], onDelete: Cascade)
+
+  @@id([userId, bestiaryId])
+  @@index([userId])
+  @@map("UserBestiaryOrders")
 }
 
 enum BestiaryStatus {
