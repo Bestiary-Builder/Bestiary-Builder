@@ -992,8 +992,8 @@ const changeCR = (isIncrease: boolean) => {
 									<template #footer>
 										<tr class="table-footer">
 											<td />
-											<th @click="createNewFeature(fType)">
-												Add new action
+											<th style="cursor: pointer;" @click="createNewFeature(fType)">
+												Add {{ descText }}
 											</th>
 											<td>
 												<span :id="descText" class="button-icon" @click="createNewFeature(fType)">
