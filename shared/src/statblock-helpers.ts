@@ -125,7 +125,8 @@ export function displaySpeedOrSenses(data: SenseEntity[] | SpeedEntity[], hasEnd
 	for (const [index, item] of data.entries()) {
 		if (item.name === "New speed" || item.name === "New sense")
 			continue;
-		if (item.name !== "Walk") {
+
+		if (item.name !== "Walk" || item.name === "Walk" && index !== 0) {
 			if (version2024) {
 				output += `${capitalizeFirstLetter(item.name.toLowerCase())} `;
 			}
@@ -133,6 +134,7 @@ export function displaySpeedOrSenses(data: SenseEntity[] | SpeedEntity[], hasEnd
 				output += `${item.name.toLowerCase()} `;
 			}
 		}
+
 		output += item.value;
 		if (item.unit !== "none")
 			output += ` ${item.unit}.`;

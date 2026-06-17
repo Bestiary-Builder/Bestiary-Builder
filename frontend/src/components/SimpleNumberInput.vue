@@ -24,6 +24,10 @@ const props = defineProps({
 		type: Number as PropType<number | null>,
 		default: Number.NaN
 	},
+	step: {
+		type: Number,
+		default: 1
+	},
 	labelId: {
 		type: String,
 		required: false,
@@ -69,7 +73,7 @@ function decrease() {
 		if (Number.isNaN(value))
 			value.value = 0;
 
-		setValue(value.value - 1);
+		setValue(value.value - props.step);
 	}
 };
 function increase() {
@@ -81,7 +85,7 @@ function increase() {
 		if (Number.isNaN(value))
 			value.value = 0;
 
-		setValue(value.value + 1);
+		setValue(value.value + props.step);
 	}
 };
 const inputRef = useTemplateRef("input");

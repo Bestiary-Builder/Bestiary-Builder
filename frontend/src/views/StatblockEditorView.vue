@@ -655,11 +655,11 @@ const changeCR = (isIncrease: boolean) => {
 							</LabelledComponent>
 						</div>
 						<div class="editor-field__container three-wide">
-							<LabelledComponent title="Environment" for="environment">
-								<input id="environment" v-model="data.description.environment" type="text">
+							<LabelledComponent title="Size" takes-custom-text-input for="size">
+								<v-select v-model="data.core.size" :options="sizes" :taggable="true" :push-tags="true" input-id="size" />
 							</LabelledComponent>
-							<LabelledComponent title="Faction" for="faction">
-								<input id="faction" v-model="data.description.faction" type="text">
+							<LabelledComponent title="Race" takes-custom-text-input for="race">
+								<v-select v-model="data.core.race" :options="creatureTypes" :taggable="true" :push-tags="true" input-id="race" />
 							</LabelledComponent>
 							<LabelledComponent title="Alignment" takes-custom-text-input for="alignment">
 								<v-select
@@ -690,6 +690,14 @@ const changeCR = (isIncrease: boolean) => {
 							<LabelledNumberInput v-model="data.core.proficiencyBonus" :min="0" title="Proficiency Bonus" :step="1" label-id="proficiencyBonus" />
 							<LabelledNumberInput v-model="data.description.xp" :min="0" :step="1" title="Experience Points" label-id="experience" />
 						</div>
+						<div class="editor-field__container three-wide">
+							<LabelledComponent title="Environment" for="environment">
+								<input id="environment" v-model="data.description.environment" type="text">
+							</LabelledComponent>
+							<LabelledComponent title="Faction" for="faction">
+								<input id="faction" v-model="data.description.faction" type="text">
+							</LabelledComponent>
+						</div>
 					</div>
 					<div id="tabpanel-2" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-2">
 						<div class="editor-field__container two-wide">
@@ -701,65 +709,124 @@ const changeCR = (isIncrease: boolean) => {
 							</LabelledComponent>
 						</div>
 						<SectionHeader title="Speed" />
-						<Draggable :list="data.core.speed" handle=".handle" :item-key="getDraggableKey" class="editor-field__container two-wide" :animation="150">
-							<template #item="{ element, index }">
-								<LabelledComponent :title="element.name">
-									<div class="grid eight-two">
-										<LabelledNumberInput v-model="data.core.speed[index].value" title="" :label-id="element.name" />
-										<select v-model="data.core.speed[index].unit" class="ghost unit-selector" title="Select speed unit">
-											<option>ft</option>
-											<option>m</option>
-											<option>km</option>
-											<option>mi</option>
-											<option>none</option>
-										</select>
-									</div>
-									<div class="grid eight-two">
-										<input v-model="data.core.speed[index].comment" type="text" placeholder="Comment...">
-										<span class="grid five-five">
-											<font-awesome-icon v-tooltip="'Delete this speed'" :icon="['fas', 'trash']" class="button-icon" @click="data.core.speed.splice(index, 1)" />
-											<font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle button-icon" />
-										</span>
-									</div>
-								</LabelledComponent>
-							</template>
-							<template #footer>
-								<LabelledComponent title="Add speed" takes-custom-text-input for="addspeed">
-									<v-select :options="['Walk', 'Swim', 'Fly', 'Climb', 'Burrow']" :taggable="true" :push-tags="true" input-id="addspeed" placeholder="Select speed" @option:selected="(selected : string) => (addNewSpeed(selected))" />
-								</LabelledComponent>
-							</template>
-						</Draggable>
+						<table class="list-table speed-senses">
+							<thead>
+								<tr>
+									<td> Order </td>
+									<th>
+										Speed
+									</th>
+									<td>
+										Value
+									</td>
+									<td>
+										Unit
+									</td>
+									<td>
+										Comment
+									</td>
+									<td>
+										Delete
+									</td>
+								</tr>
+							</thead>
+							<Draggable :list="data.core.speed" group="speed" :item-key="getDraggableKey" :animation="150" tag="tbody" class=".handle">
+								<template #item="{ element, idx }">
+									<tr>
+										<td>
+											<span><font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle" /> </span>
+										</td>
+										<th> {{ element.name }}</th>
+										<td>
+											<SimpleNumberInput v-model="element.value" :min="0" :step="5" :label="element.name" />
+										</td>
+										<td>
+											<select v-model="element.unit" class="ghost" title="Select speed unit">
+												<option>ft</option>
+												<option>m</option>
+												<option>km</option>
+												<option>mi</option>
+												<option>none</option>
+											</select>
+										</td>
+										<td>
+											<input v-model="element.comment" type="text" placeholder="comment" style="width: 100%; padding: 6px; height: unset">
+										</td>
+										<td class="edit-buttons">
+											<div>
+												<font-awesome-icon :icon="['fas', 'eraser']" @click="data.core.speed.splice(idx, 1)" />
+											</div>
+										</td>
+									</tr>
+								</template>
+							</Draggable>
+						</table>
+						<div class="two-wide">
+							<LabelledComponent title="Add speed" takes-custom-text-input for="addspeed">
+								<v-select :options="['Walk', 'Swim', 'Fly', 'Climb', 'Burrow']" :taggable="true" :push-tags="true" input-id="addspeed" placeholder="Select speed" @option:selected="(selected : string) => (addNewSpeed(selected))" />
+							</LabelledComponent>
+							<div />
+						</div>
 
 						<SectionHeader title="Senses" />
-						<Draggable :list="data.core.senses" handle=".handle" :item-key="getDraggableKey" class="editor-field__container two-wide" :animation="150">
-							<template #item="{ element, index }">
-								<LabelledComponent :title="element.name">
-									<div class="grid eight-two">
-										<LabelledNumberInput v-model="element.value" title="" :label-id="element.name" />
-										<select v-model="element.unit" class="ghost unit-selector" title="Select sense unit">
-											<option>ft</option>
-											<option>m</option>
-											<option>km</option>
-											<option>mi</option>
-											<option>none</option>
-										</select>
-									</div>
-									<div class="grid eight-two">
-										<input v-model="element.comment" type="text" placeholder="Comment...">
-										<span class="grid five-five">
-											<font-awesome-icon v-tooltip="'Delete this sense'" :icon="['fas', 'trash']" class="button-icon" @click="data.core.senses.splice(index, 1)" />
-											<font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle button-icon" />
-										</span>
-									</div>
-								</LabelledComponent>
-							</template>
-							<template #footer>
-								<LabelledComponent title="Add sense" takes-custom-text-input for="addsense">
-									<v-select :options="['Darkvision', 'Blindsight', 'Truesight', 'Tremorsense']" :taggable="true" :push-tags="true" input-id="addsense" placeholder="Select sense" @option:selected="(selected : string) => (addNewSense(selected))" />
-								</LabelledComponent>
-								<LabelledNumberInput v-model="data.misc.passivePerceptionOverride" title="Passive perc override" :step="1" :is-clearable="true" label-id="passivePercOverride" />
-							</template>
-						</Draggable>
+						<table class="list-table speed-senses">
+							<thead>
+								<tr>
+									<td> Order </td>
+									<th>
+										Sense
+									</th>
+									<td>
+										Value
+									</td>
+									<td>
+										Unit
+									</td>
+									<td>
+										Comment
+									</td>
+									<td>
+										Delete
+									</td>
+								</tr>
+							</thead>
+							<Draggable :list="data.core.senses" group="senses" :item-key="getDraggableKey" :animation="150" tag="tbody" class=".handle">
+								<template #item="{ element, idx }">
+									<tr>
+										<td>
+											<span><font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle" /> </span>
+										</td>
+										<th> {{ element.name }}</th>
+										<td>
+											<SimpleNumberInput v-model="element.value" :min="0" :step="5" :label="element.name" />
+										</td>
+										<td>
+											<select v-model="element.unit" class="ghost" title="Select speed unit">
+												<option>ft</option>
+												<option>m</option>
+												<option>km</option>
+												<option>mi</option>
+												<option>none</option>
+											</select>
+										</td>
+										<td>
+											<input v-model="element.comment" type="text" placeholder="comment" style="width: 100%; padding: 6px; height: unset">
+										</td>
+										<td class="edit-buttons">
+											<div>
+												<font-awesome-icon :icon="['fas', 'eraser']" @click="data.core.speed.splice(idx, 1)" />
+											</div>
+										</td>
+									</tr>
+								</template>
+							</Draggable>
+						</table>
+						<div class="two-wide" style="margin-bottom: 2rem;">
+							<LabelledComponent title="Add sense" takes-custom-text-input for="addsense">
+								<v-select :options="['Darkvision', 'Blindsight', 'Truesight', 'Tremorsense']" :taggable="true" :push-tags="true" input-id="addsense" placeholder="Select sense" @option:selected="(selected : string) => (addNewSense(selected))" />
+							</LabelledComponent>
+							<LabelledNumberInput v-model="data.misc.passivePerceptionOverride" title="Passive perception override" :step="1" :is-clearable="true" label-id="passivePercOverride" />
+						</div>
 
 						<SectionHeader title="Miscellaneous" />
 						<div class="editor-field__container two-wide">
@@ -772,14 +839,6 @@ const changeCR = (isIncrease: boolean) => {
 
 					<div id="tabpanel-3" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-3">
 						<SectionHeader title="Ability Scores & Saving Throws" />
-						<!-- <div class="editor-field__container three-wide">
-							<LabelledNumberInput v-model="data.abilities.stats.str" title="Strength" :step="1" label-id="strStat" />
-							<LabelledNumberInput v-model="data.abilities.stats.dex" title="Dexterity" :step="1" label-id="dexStat" />
-							<LabelledNumberInput v-model="data.abilities.stats.con" title="Constitution" :step="1" label-id="conStat" />
-							<LabelledNumberInput v-model="data.abilities.stats.int" title="Intelligence" :step="1" label-id="intStat" />
-							<LabelledNumberInput v-model="data.abilities.stats.wis" title="Wisdom" :step="1" label-id="wisStat" />
-							<LabelledNumberInput v-model="data.abilities.stats.cha" title="Charisma" :step="1" label-id="chaStat" />
-						</div> -->
 						<div>
 							<table class="list-table">
 								<thead>
@@ -873,49 +932,17 @@ const changeCR = (isIncrease: boolean) => {
 									</tr>
 								</tbody>
 							</table>
-							<LabelledComponent title="Add new skill" for="addnewskill">
-								<v-select
-									placeholder="Select skill"
-									:options="['Acrobatics', 'Animal Handling', 'Arcana', 'Athletics', 'Charisma', 'Constitution', 'Deception', 'Dexterity', 'History', 'Initiative', 'Insight', 'Intelligence', 'Intimidation', 'Investigation', 'Medicine', 'Nature', 'Perception', 'Performance', 'Persuasion', 'Religion', 'Sleight of Hand', 'Stealth', 'Strength', 'Survival', 'Wisdom']"
-									input-id="addnewskill"
-									@option:selected="(selected : string) => (addNewSkill(selected))"
-								/>
-							</LabelledComponent>
+							<div class="two-wide">
+								<LabelledComponent title="Add new skill" for="addnewskill">
+									<v-select
+										placeholder="Select skill"
+										:options="['Acrobatics', 'Animal Handling', 'Arcana', 'Athletics', 'Charisma', 'Constitution', 'Deception', 'Dexterity', 'History', 'Initiative', 'Insight', 'Intelligence', 'Intimidation', 'Investigation', 'Medicine', 'Nature', 'Perception', 'Performance', 'Persuasion', 'Religion', 'Sleight of Hand', 'Stealth', 'Strength', 'Survival', 'Wisdom']"
+										input-id="addnewskill"
+										@option:selected="(selected : string) => (addNewSkill(selected))"
+									/>
+								</LabelledComponent>
+							</div>
 						</div>
-						<!-- <div class="editor-field__container three-wide">
-							<LabelledComponent v-for="(skill, index) in data.abilities.skills" :key="skill.skillName" :title="skill.skillName">
-								<div class="button-container">
-									<p><input :id="`${skill.skillName}prof`" v-model="skill.isProficient" type="checkbox" @click="disableOtherSkills(index, 'prof', skill.isProficient)"> <label :for="`${skill.skillName}prof`"> Proficient </label></p>
-									<p><input :id="`${skill.skillName}exp`" v-model="skill.isExpertise" type="checkbox" @click="disableOtherSkills(index, 'exp', skill.isExpertise)"><label :for="`${skill.skillName}exp`"> Expertise </label></p>
-									<p><input :id="`${skill.skillName}halfprof`" v-model="skill.isHalfProficient" type="checkbox" @click="disableOtherSkills(index, 'halfprof', skill.isHalfProficient)"><label :for="`${skill.skillName}halfprof`"> Half prof </label></p>
-									<p>
-										<select v-model="skill.adv" :for="`${skill.skillName}adv`" class="ghost unit-selector" title="Select advantage or disadvantage for this skill">
-											<option :value="null">
-												None
-											</option> <option :value="true">
-												Advantage
-											</option> <option :value="false">
-												Disadvantage
-											</option>
-										</select>
-									</p>
-								</div>
-								<div>
-									<LabelledNumberInput v-model="skill.override" title="" :step="1" :is-clearable="true" />
-								</div>
-								<button class="btn" @click="deleteSkill(index)">
-									Delete
-								</button>
-							</LabelledComponent>
-							<LabelledComponent title="Add new skill" for="addnewskill">
-								<v-select
-									placeholder="Select skill"
-									:options="['Acrobatics', 'Animal Handling', 'Arcana', 'Athletics', 'Charisma', 'Constitution', 'Deception', 'Dexterity', 'History', 'Initiative', 'Insight', 'Intelligence', 'Intimidation', 'Investigation', 'Medicine', 'Nature', 'Perception', 'Performance', 'Persuasion', 'Religion', 'Sleight of Hand', 'Stealth', 'Strength', 'Survival', 'Wisdom']"
-									input-id="addnewskill"
-									@option:selected="(selected : string) => (addNewSkill(selected))"
-								/>
-							</LabelledComponent>
-						</div> -->
 					</div>
 					<div id="tabpanel-4" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-4">
 						<div class="editor-field__container three-wide">
@@ -1499,7 +1526,7 @@ const changeCR = (isIncrease: boolean) => {
 	table-layout: fixed;
 	overflow-wrap: break-word;
 	display: table;
-
+	margin-bottom: 1rem;
 	select {
 		font-size: small;
 		max-width: 80%;
@@ -1524,10 +1551,14 @@ const changeCR = (isIncrease: boolean) => {
 	}
 }
 
+.list-table ~ .two-wide {
+	margin-bottom: 2rem;
+}
+
 .list-table.features {
 	table-layout: auto;
-	margin-bottom: 2rem;
 	color: var(--color-base) !important;
+	margin-bottom: 2rem;
 	th,
 	td {
 		color: var(--color-base);
@@ -1544,6 +1575,26 @@ const changeCR = (isIncrease: boolean) => {
 	}
 }
 
+.list-table.speed-senses {
+	color: var(--color-base) !important;
+	th,
+	td {
+		color: var(--color-base);
+	}
+
+	tbody th {
+		padding-left: 12px;
+	}
+
+	.table-footer {
+		th {
+			color: gray;
+		}
+	}
+	.edit-buttons div {
+		color: lightgray;
+	}
+}
 @media screen and (max-width: 450px) {
 	.list-table {
 		font-size: small;
