@@ -15,7 +15,7 @@ const selfType = computed<string>(() => {
 
 const currentEffect = inject<Ref<Effect | ButtonInteraction | AttackInteraction>>("currentEffect");
 const currentContext = inject<Ref<string[]>>("currentContext");
-
+const automation = inject<Ref<null | AttackModel | AttackModel[]>>("automation");
 const isCollapsed = ref(false);
 
 const branchesCollapsed = ref<string[]>([]);
@@ -26,11 +26,90 @@ const toggleBranch = (key: string) => {
 	else
 		branchesCollapsed.value.push(key);
 };
+
+const moveUp = () => {
+	if (nodeListEffectIsPartOf.value && nodeListEffectIsPartOf.value.length > 0) {
+		const tree = nodeListEffectIsPartOf.value;
+		const indexToMove = Number.parseInt(props.context[props.context.length - 1] || "0");
+		if (indexToMove === 0)
+			return;
+
+		const toReplace = tree[indexToMove - 1];
+		tree[indexToMove - 1] = props.data;
+		tree[indexToMove] = toReplace;
+	}
+};
+
+const moveDown = () => {
+	if (nodeListEffectIsPartOf.value && nodeListEffectIsPartOf.value.length > 1) {
+		const tree = nodeListEffectIsPartOf.value;
+		const indexToMove = Number.parseInt(props.context[props.context.length - 1] || "0");
+		if (indexToMove === tree.length - 1)
+			return;
+
+		const toReplace = tree[indexToMove + 1];
+		tree[indexToMove + 1] = props.data;
+		tree[indexToMove] = toReplace;
+	}
+};
+
+const deleteNode = () => {
+	// if (nodeListEffectIsPartOf.value && nodeListEffectIsPartOf.value.length > 1) {
+	// 	let tree = nodeListEffectIsPartOf.value;
+	// 	const indexToRemove = Number.parseInt(props.context[props.context.length - 1] || "0");
+
+	// 	// tree = tree.splice(indexToRemove, 1);
+	// }
+};
+
+const nodeListEffectIsPartOf = computed(() => {
+	let tree: any = [];
+
+	if (!automation || !automation.value)
+		return;
+	if (Array.isArray(automation.value))
+		tree = automation.value[Number.parseInt(props.context[0])].automation;
+
+	else
+		tree = automation.value.automation;
+
+	for (const [idx, key] of props.context.entries()) {
+		const isArrayIndex = /^\d+$/.test(key);
+		if (idx === props.context.length - 1)
+			break;
+
+		if (key === "root")
+			continue;
+		if (key.startsWith("$"))
+			continue;
+		if (isArrayIndex) {
+			if (idx === 0)
+				continue;
+			const index = Number.parseInt(key, 10);
+			if (Array.isArray(tree) && index < tree.length)
+				tree = tree[index];
+			else
+				return undefined;
+		}
+		else {
+			if (typeof tree === "object" && key in tree)
+				tree = tree[key];
+			else
+				return undefined;
+		}
+	}
+
+	return tree;
+});
 </script>
 
 <template>
 	<p :style="`margin-left: ${(depth + 1) * 15}px; color: grey;`" @click="currentEffect = data; currentContext = context">
 		<NodeHeader :type="selfType" />
+		<Icon v-if="nodeListEffectIsPartOf.length" icon="ooui:arrow-up" inline width=".75em" @click.prevent="moveUp" />
+		<Icon icon="ooui:arrow-down" inline width=".75em" @click.prevent="moveDown" />
+		<!-- <Icon icon="fa7-solid:eraser" inline width=".75em" @click.prevent="deleteNode" /> -->
+
 		<!-- <Icon icon="material-symbols:ink-pen" inline width="1em" style="margin-left: .5em" /> -->
 		<span v-if="['attack', 'condition', 'save'].includes(selfType)" class="collapse-button" @click.stop="isCollapsed = !isCollapsed">
 			<Icon icon="ooui:expand" inline width="1em" :rotate="isCollapsed ? 270 : 0" />
@@ -50,7 +129,7 @@ const toggleBranch = (key: string) => {
 				<template v-if="!branchesCollapsed.includes(key)">
 					<TreeNode v-for="(childNode, index) in effect" :key="index" :data="childNode as any" :depth="depth + (!['root', 'effects'].includes(key) ? 2 : 1)" :parent-type="key" :context="[...context, `$${selfType}`, key, index.toString()]" />
 					<p :style="`margin-left: ${(depth + (!['root', 'effects'].includes(key) ? 3 : 2)) * 15}px;`">
-						<EffectAdder :context="[...context, key]" />
+						<EffectAdder :context="[...context, `$${selfType}`, key]" />
 					</p>
 				</template>
 			</template>

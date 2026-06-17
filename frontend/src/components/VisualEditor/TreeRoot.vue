@@ -33,7 +33,7 @@ const currentContext = inject<Ref<string[]>>("currentContext");
 					-{{ auto.name }}-
 				</p>
 				<div v-for="(node, idx) in auto.automation ?? []" :key="node.type">
-					<TreeNode :data="node" :depth="depth" :parent-type="parentType" :context="[...context, idx.toString()]" />
+					<TreeNode :data="node" :depth="depth" :parent-type="parentType" :context="[index.toString(), ...context, idx.toString()]" />
 				</div>
 				<p :style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`">
 					<EffectAdder :context="[index.toString(), ...context]" />

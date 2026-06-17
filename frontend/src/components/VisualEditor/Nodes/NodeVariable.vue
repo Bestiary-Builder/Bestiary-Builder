@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type Ref, inject, onBeforeUnmount, watch } from "vue";
+import { type Ref, inject, onBeforeUnmount, onMounted, watch } from "vue";
 import HigherLevels from "./shared/HigherLevels.vue";
 import IntExpression from "./shared/IntExpression.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
@@ -23,16 +23,18 @@ onBeforeUnmount(() => {
 		delete currentEffect!.value.higher;
 });
 
-if (!Object.hasOwn(currentEffect!.value, "higher"))
-	currentEffect!.value.higher = {};
-
+onMounted(() => {
+	console.log(currentEffect);
+	if (!Object.hasOwn(currentEffect!.value, "higher"))
+		currentEffect!.value.higher = {};
+});
 useDataCleanup(currentEffect, ["onError"]);
 </script>
 
 <template>
 	<template v-if="currentEffect">
 		<SectionHeader title="Set Variable" />
-		<div class="two-wide">
+		<div class="two-wide" style="margin-bottom: 1rem;">
 			<LabelledComponent title="Name*" for="name">
 				<input id="name" v-model="currentEffect.name" type="text" :class="{ required: currentEffect.name.length === 0 }">
 			</LabelledComponent>
@@ -51,7 +53,7 @@ useDataCleanup(currentEffect, ["onError"]);
 					<input id="error" v-model="currentEffect.onError" type="text"> <IntExpression />
 				</div>
 			</LabelledComponent>
-			<LabelledComponent title="At higher levels" for="higherLevels">
+			<LabelledComponent v-if="currentEffect.higher" title="At higher levels" for="higherLevels">
 				<HigherLevels v-model="(currentEffect.higher as Record<number, string>)" is-int-expression />
 			</LabelledComponent>
 		</div>

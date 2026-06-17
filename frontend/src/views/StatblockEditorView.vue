@@ -65,9 +65,9 @@ const loadRawInfo = async () => {
 };
 
 // saving
-const saveStatblock = async (shouldNotify = true) => {
+const saveStatblock = async (shouldNotify = true): Promise<boolean> => {
 	if (!rawInfo.value)
-		return;
+		return false;
 	rawInfo.value.stats = data.value;
 	const loader = $loading.show();
 	// Send to backend
@@ -90,6 +90,9 @@ const saveStatblock = async (shouldNotify = true) => {
 		toast.error(`Error saving statblock. ${error}`, { duration: 10000 });
 	}
 	loader.hide();
+	if (success)
+		return true;
+	return false;
 };
 // update xp and prof bonus whenever a user changes cr.
 watch(() => data.value.description.cr, () => {
@@ -551,6 +554,14 @@ watch(selectedSpell, () => {
 	for (const x in selectedSpell.value)
 		selectedSpell.value[x] = null;
 }, { deep: true });
+
+const openFeature = async (path: string) => {
+	const didSave = await saveStatblock(false);
+	if (didSave)
+		await $router.push(path);
+	else
+		toast.error("Cannot open action while creature cannot save.");
+};
 </script>
 
 <template>
@@ -1020,9 +1031,9 @@ watch(selectedSpell, () => {
 											<th> {{ element.name }}</th>
 											<td class="edit-buttons">
 												<div>
-													<RouterLink :to="`${rawInfo?.id}/${fType}/${index}`" class="button-icon">
+													<a :to="`${rawInfo?.id}/${fType}/${index}`" @click="openFeature(`${rawInfo?.id}/${fType}/${index}`)">
 														<font-awesome-icon :icon="['fas', 'edit']" />
-													</RouterLink>
+													</a>
 													<span class="delete-button" aria-label="Delete feature" @click="deleteFeature(fType, index)"><font-awesome-icon :icon="['fas', 'trash']" /></span>
 												</div>
 											</td>
@@ -1604,6 +1615,9 @@ watch(selectedSpell, () => {
 		gap: 1em;
 		justify-content: center;
 		color: orangered;
+		a {
+			color: orangered;
+		}
 	}
 }
 

@@ -20,9 +20,10 @@ const computedContext = computed(() => {
 
 	// context levels
 	let contextLevel: "root" | "attacks" | "buttons" = "root";
+	console.log(ctx);
 
 	for (const node of ctx) {
-		if (node === "$target" || node === "target")
+		if (node === "$target")
 			isTargetContext = true;
 
 		if (node === "buttons") {
@@ -69,10 +70,7 @@ const addAndSelect = (node: string) => {
 	let tree: any;
 	if (Array.isArray(automation.value)) {
 		console.log(automation.value, props.context);
-		if (props.context[0] === "root")
-			tree = automation.value[Number.parseInt(props.context[1])].automation;
-		else
-			tree = automation.value[Number.parseInt(props.context[0])].automation;
+		tree = automation.value[Number.parseInt(props.context[0])].automation;
 	}
 	else {
 		tree = automation.value.automation;

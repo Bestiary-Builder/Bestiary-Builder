@@ -410,7 +410,7 @@ const prefersVisualEditor = ref(true);
 			</button>
 			<template #popper>
 				<div class="v-popper__custom-menu">
-					<div class="editor-field__container">
+					<div class="editor-field__container" style="min-width: 400px">
 						<LabelledComponent title="Import SRD feature" for="importsrdfeature">
 							<v-select :options="loadedAutomation.srdFeatures" input-id="importsrdfeature" @option:selected="(selected : string) => (importAutomation('srd-feature', selected)) " />
 						</LabelledComponent>
