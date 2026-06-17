@@ -539,6 +539,18 @@ const changeCR = (isIncrease: boolean) => {
 
 	data.value.description.cr = cr;
 };
+
+const selectedSpell = ref({
+	0: null,
+	1: null,
+	2: null,
+	3: null
+} as any);
+
+watch(selectedSpell, () => {
+	for (const x in selectedSpell.value)
+		selectedSpell.value[x] = null;
+}, { deep: true });
 </script>
 
 <template>
@@ -1082,19 +1094,60 @@ const changeCR = (isIncrease: boolean) => {
 							<LabelledComponent title="Display as action?" for="displayasaction">
 								<span> <input id="displayasaction" v-model="data.spellcasting.innateSpells.displayAsAction" type="checkbox"> <label for="displayasaction">Toggles display as action</label> </span>
 							</LabelledComponent>
-
-							<LabelledNumberInput v-model="data.spellcasting.innateSpells.spellDcOverride" title="DC override" :step="1" :is-clearable="true" label-id="innateSpellDcOverride" />
-							<LabelledNumberInput v-model="data.spellcasting.innateSpells.spellBonusOverride" title="Attack bonus override" :step="1" :is-clearable="true" label-id="innateSpellBonusOverride" />
-							<TransitionGroup name="list">
+						</div>
+						<!-- <TransitionGroup name="list">
+							<template v-for="_, times in data.spellcasting.innateSpells.spellList" :key="times">
+								<LabelledComponent :title="times === '0' ? 'At will' : `${times}/day`" takes-custom-text-input :for="`innateSpellTimes${times}`">
+									<div :class="{ 'select-with-delete': parseInt(times.toString()) > 3 }">
+										<v-select v-model="data.spellcasting.innateSpells.spellList[times]" :reduce="(sp : any) => ({ spell: sp.spell ?? sp, comment: sp.comment ?? '' })" width="100%" label="spell" :options="spellListFlattened" multiple :deselect-from-dropdown="true" :close-on-select="false" :input-id="`innateSpellTimes${times}`" :taggable="true" :push-tags="true" />
+										<font-awesome-icon v-if="parseInt(times.toString()) > 3" v-tooltip="'Delete this daily amount'" :icon="['fas', 'trash']" class="delete-button button-icon" @click="delete data.spellcasting.innateSpells.spellList[times]" />
+									</div>
+								</LabelledComponent>
+							</template>
+						</TransitionGroup> -->
+						<table class="list-table">
+							<thead>
+								<tr>
+									<th> T/Day</th>
+									<td> Spell </td>
+									<td> Comment </td>
+								</tr>
+							</thead>
+							<tbody>
 								<template v-for="_, times in data.spellcasting.innateSpells.spellList" :key="times">
-									<LabelledComponent :title="times === '0' ? 'At will' : `${times}/day`" takes-custom-text-input :for="`innateSpellTimes${times}`">
-										<div :class="{ 'select-with-delete': parseInt(times.toString()) > 3 }">
-											<v-select v-model="data.spellcasting.innateSpells.spellList[times]" :reduce="(sp : any) => ({ spell: sp.spell ?? sp, comment: sp.comment ?? '' })" width="100%" label="spell" :options="spellListFlattened" multiple :deselect-from-dropdown="true" :close-on-select="false" :input-id="`innateSpellTimes${times}`" :taggable="true" :push-tags="true" />
-											<font-awesome-icon v-if="parseInt(times.toString()) > 3" v-tooltip="'Delete this daily amount'" :icon="['fas', 'trash']" class="delete-button button-icon" @click="delete data.spellcasting.innateSpells.spellList[times]" />
-										</div>
-									</LabelledComponent>
+									<tr v-for="spell, idx in data.spellcasting.innateSpells.spellList[times]" :key="idx">
+										<th v-if="idx === 0" :rowspan="data.spellcasting.innateSpells.spellList[times].length + 1" style="color: lightgray; text-align: center;">
+											{{ times === '0' ? 'At Will' : `${times}/Day` }}
+										</th>
+										<td style="text-align: left">
+											{{ spell.spell }}
+										</td>
+										<td>
+											<input :id="`editSpell${spell.spell}`" v-model="spell.comment" type="text" placeholder="comment">
+										</td>
+									</tr>
+									<tr class="table-footer">
+										<th v-if="data.spellcasting.innateSpells.spellList[times].length === 0">
+											Add spell for {{ times === '0' ? 'At Will' : `${times}/Day` }}
+										</th>
+										<td>
+											<!-- <v-select v-model="data.spellcasting.innateSpells.spellList[times]" :reduce="(sp : any) => ({ spell: sp.spell ?? sp, comment: sp.comment ?? '' })" width="100%" label="spell" :options="spellListFlattened" multiple :close-on-select="false" :input-id="`innateSpellTimes${times}`" :taggable="true" :push-tags="true" /> -->
+											<v-select
+												v-model="selectedSpell[times as any]"
+												:options="spellListFlattened"
+												input-id="addnewspell"
+												taggable
+												:clear-search-on-select="false"
+												placeholder="Add spell..."
+												@option:selected="(sp : any) => (data.spellcasting.innateSpells.spellList[times].push({ spell: sp, comment: '' }))"
+											/>
+										</td>
+										<td />
+									</tr>
 								</template>
-							</TransitionGroup>
+							</tbody>
+						</table>
+						<div class="editor-field__container three-wide">
 							<LabelledComponent title="Add daily amount" for="innateSpellDailyAmount">
 								<LabelledNumberInput v-model="newDailyAmount" title="" :min="4" :step="1" :is-clearable="true" label-id="innateSpellDailyAmount" />
 								<button class="btn" @click="addNewDaily()">
@@ -1114,6 +1167,9 @@ const changeCR = (isIncrease: boolean) => {
 							<LabelledComponent title="Description override" for="innateDescription">
 								<textarea id="innateDescription" v-model="data.spellcasting.innateSpells.customDescription" rows="2" :maxlength="store.limits?.descriptionLength" />
 							</LabelledComponent>
+
+							<LabelledNumberInput v-model="data.spellcasting.innateSpells.spellDcOverride" title="DC override" :step="1" :is-clearable="true" label-id="innateSpellDcOverride" />
+							<LabelledNumberInput v-model="data.spellcasting.innateSpells.spellBonusOverride" title="Attack bonus override" :step="1" :is-clearable="true" label-id="innateSpellBonusOverride" />
 						</div>
 
 						<SectionHeader title="Class Spellcasting" />
@@ -1567,14 +1623,13 @@ const changeCR = (isIncrease: boolean) => {
 	tbody th {
 		padding-left: 12px;
 	}
-
-	.table-footer {
-		th {
-			color: gray;
-		}
-	}
 }
 
+tr.table-footer {
+	th {
+		color: gray !important;
+	}
+}
 .list-table.speed-senses {
 	color: var(--color-base) !important;
 	th,
@@ -1606,6 +1661,15 @@ const changeCR = (isIncrease: boolean) => {
 		select {
 			appearance: none;
 		}
+	}
+}
+</style>
+
+<style>
+.table-footer {
+	.v-select .vs__dropdown-toggle {
+		border-width: 0;
+		color: darkgrey;
 	}
 }
 </style>

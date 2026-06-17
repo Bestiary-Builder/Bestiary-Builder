@@ -2,6 +2,7 @@
 import { type Ref, inject, onMounted, ref, watch } from "vue";
 import IntExpression from "./shared/IntExpression.vue";
 import { useDataCleanup } from "./shared/utils";
+import SectionHeader from "./shared/SectionHeader.vue";
 import LabelledComponent from "@/components/LabelledComponent.vue";
 import type { AbilityReference, Counter, SpellSlotReference } from "~/shared";
 import { useFetch } from "@/utils/utils";
@@ -14,7 +15,7 @@ const counterType = ref("cc");
 watch(counterType, (newValue: string) => {
 	if (newValue === "cc")
 		currentEffect!.value.counter = "";
-	  else if (newValue === "ss")
+	else if (newValue === "ss")
 		currentEffect!.value.counter = { slot: 1 };
 	else if (newValue === "abi")
 		currentEffect!.value.counter = { id: 0, typeId: 0 };
@@ -43,7 +44,7 @@ useDataCleanup(currentEffect, ["allowOverflow", "fixedValue"]);
 
 <template>
 	<template v-if="currentEffect">
-		<h3> Use Counter Node</h3>
+		<SectionHeader title="Use Counter" />
 		<div class="two-wide">
 			<LabelledComponent title="Counter Type" for="counterType">
 				<select id="counterType" v-model="counterType" title="Error Behaviour" class="ghost">
@@ -77,13 +78,13 @@ useDataCleanup(currentEffect, ["allowOverflow", "fixedValue"]);
 		</div>
 
 		<hr>
-		<h4> Additional Options</h4>
+		<SectionHeader title="Additional Options" />
 		<div class="two-wide">
 			<LabelledComponent title="Allow Overflow" for="allowOverflow">
 				<span><input id="allowOverflow" v-model="currentEffect.allowOverflow" type="checkbox"> <label for="allowOverflow"> If False, attempting to overflow/underflow a counter (i.e. use more charges than available or add charges exceeding max) will error instead of clipping to bounds. </label> </span>
 			</LabelledComponent>
 			<LabelledComponent title="Fixed value" for="fixedValue">
-				<span> <input id="fixedValue" v-model="currentEffect.fixedValue" type="checkbox"> <label for="fixedValue"> Whether this roll should ignore the <span style="display: inline-block">-d</span> argument and damage bonus effects.</label> </span>
+				<span> <input id="fixedValue" v-model="currentEffect.fixedValue" type="checkbox"> <label for="fixedValue"> Whether this counter should ignore the <span style="display: inline-block">-amt</span> argument.</label> </span>
 			</LabelledComponent>
 			<LabelledComponent title="Error Behaviour" for="error">
 				<select id="error" v-model="currentEffect.errorBehaviour" title="Error Behaviour" class="ghost">

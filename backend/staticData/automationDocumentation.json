@@ -298,7 +298,7 @@
 			}
 		},
 		"url": "use-counter",
-		"ts": "{\n    type: \"counter\";\n    counter: string | SpellSlotReference | AbilityReference;\n    amount: IntExpression;\n    allowOverflow?: boolean;\n    errorBehaviour?: null | \"warn\" | \"raise\";\n    fixedValue?: boolean;\n}}"
+		"ts": "{\n    type: \"counter\";\n    counter: string | SpellSlotReference | AbilityReference;\n    amount: IntExpression;\n    allowOverflow?: boolean;\n    errorBehaviour?: null | \"warn\" | \"raise\";\n    fixedValue?: boolean;\n}"
 	},
 	"SpellSlotReference": {
 		"desc": "Used to reference a spell slot in a Use Counter effect.",

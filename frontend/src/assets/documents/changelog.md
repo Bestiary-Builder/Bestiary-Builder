@@ -8,7 +8,7 @@ _???, 2026_
 - Added an improved creature copy and pasting system.
 - Added the ability to import a single creature from CritterDB.
 - Added the ability to import a single creature from BB on the Bestiary page.
-- Improved the statblock editor by modernizing some interfaces.
+- Improved the statblock editor by modernizing most interfaces.
 
 ### Fixes
 - Fixed class based spellcasting to hit not having a + on positive values.
