@@ -43,8 +43,6 @@ provide("copiedEffect", copiedEffect);
 <template>
 	<section class="two-wide uneven">
 		<div class="tree">
-			{{ currentContext }}
-
 			<SectionHeader title="Effect Tree" />
 			<TreeRoot v-if="automation" :data="automation" :depth="-1" />
 			<p v-else class="container" style="padding: 6px">
