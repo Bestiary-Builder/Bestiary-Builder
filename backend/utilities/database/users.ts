@@ -1,6 +1,6 @@
 import { getPrismaClient } from ".";
 import { log } from "@/utilities/logger";
-import type { Id, User } from "~/shared";
+import { type Id, SupporterStatus, type User } from "~/shared";
 import { generateUserSecret } from "@/utilities/constants";
 
 // User cache
@@ -58,7 +58,7 @@ export async function updateUser(data: { id: string; username: string; avatar: s
 		const user = await getPrismaClient().user.upsert({
 			where: { id: data.id },
 			update: data,
-			create: { ...data, secret: generateUserSecret() }
+			create: { ...data, supporter: SupporterStatus.none, secret: generateUserSecret() }
 		});
 		resetUserCache(data.id);
 		return user.secret;
