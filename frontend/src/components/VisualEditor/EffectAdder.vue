@@ -3,7 +3,9 @@ import { type Ref, computed, inject } from "vue";
 import { Icon } from "@iconify/vue";
 import { store } from "../../utils/store";
 import { defaultNodes, displayNames } from "./util";
-import type { AttackInteraction, AttackModel, ButtonInteraction, Effect } from "~/shared";
+import type { AttackInteraction, AttackModel, ButtonInteraction, EffectWithTarget } from "~/shared";
+import { useFetch } from "@/utils/utils";
+import { toast } from "@/utils/app/toast";
 
 const props = defineProps<{ context: string[]; name?: string }>();
 
@@ -20,7 +22,6 @@ const computedContext = computed(() => {
 
 	// context levels
 	let contextLevel: "root" | "attacks" | "buttons" = "root";
-	console.log(ctx);
 
 	for (const node of ctx) {
 		if (node === "$target")
@@ -59,8 +60,8 @@ const availableNodes = computed(() => {
 });
 
 const automation = inject<Ref<null | AttackModel | AttackModel[]>>("automation");
-const currentEffect = inject<Ref<Effect | ButtonInteraction | AttackInteraction>>("currentEffect");
-const addAndSelect = (node: string) => {
+const currentEffect = inject<Ref<EffectWithTarget | ButtonInteraction | AttackInteraction>>("currentEffect");
+const addAndSelect = async (node: string, pasteCopied = false) => {
 	// traverse through the tree.
 	if (!automation)
 		return;
@@ -96,13 +97,26 @@ const addAndSelect = (node: string) => {
 		}
 	}
 	try {
-		tree.push(JSON.parse(JSON.stringify(defaultNodes[node])));
+		if (pasteCopied) {
+			if (copiedEffect) {
+				const { isTargetContext } = computedContext.value;
+				if (!isTargetContext && ["error", "attack", "save", "damage", "temphp", "check"].includes(copiedEffect.value?.type || "error")) {
+					toast.error("Stop in the name of the law!");
+					return;
+				}
+
+				tree.push(JSON.parse(JSON.stringify(copiedEffect.value)));
+			}
+		}
+		else { tree.push(JSON.parse(JSON.stringify(defaultNodes[node]))); }
 		currentEffect!.value = tree[tree.length - 1];
 	}
 	catch (e) {
 		console.error(e);
 	}
 };
+
+const copiedEffect = inject<Ref<EffectWithTarget | null>>("copiedEffect");
 </script>
 
 <template>
@@ -112,11 +126,15 @@ const addAndSelect = (node: string) => {
 		</div>
 		<template #popper>
 			<div class="v-popper__custom-menu">
-				Choose an Effect to add:
-				<div v-for="node in availableNodes" :key="node">
-					<button v-close-popper class="btn" @click="addAndSelect(node)">
-						<Icon :icon="displayNames![node]?.icon" :inline="true" width="1em" color="rgb(128,128,128)" />
+				<span style="color: lightgrey"> Choose an Effect to add:</span>
+				<div class="two-wide">
+					<button v-for="node in availableNodes" :key="node" v-close-popper class="btn" @click="addAndSelect(node)">
+						<Icon :icon="displayNames![node]?.icon" :inline="true" width="1em" />
 						{{ displayNames[node]?.label }}
+					</button>
+					<button v-if="copiedEffect" class="btn" @click="addAndSelect('', true)">
+						<Icon icon="ooui:copy-ltr" width="1em" />
+						Paste Cut/Copied Effect
 					</button>
 				</div>
 			</div>
@@ -138,5 +156,12 @@ const addAndSelect = (node: string) => {
 
 button {
 	width: 100%;
+	color: orangered;
+}
+
+.two-wide {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 0.5rem;
 }
 </style>

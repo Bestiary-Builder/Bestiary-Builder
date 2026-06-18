@@ -2,7 +2,7 @@
 import { type Ref, inject } from "vue";
 import TreeNode from "./TreeNode.vue";
 import EffectAdder from "./EffectAdder.vue";
-import type { AttackModel, ButtonInteraction, Effect } from "~/shared";
+import type { AttackModel, ButtonInteraction, EffectWithTarget } from "~/shared";
 
 const { data, depth = 0, parentType = "root", rootType = "root", context = ["root"] } = defineProps<{ data: AttackModel | AttackModel[] | ButtonInteraction; depth?: number; parentType?: string; rootType?: "root" | "button" | "attack"; context?: string[] }>();
 
@@ -21,7 +21,7 @@ const addListAttack = () => {
 	automation.value.push({ _v: 2, name: "New Attack", automation: [] });
 };
 
-const currentEffect = inject<Ref<Effect | AttackModel | ButtonInteraction >>("currentEffect");
+const currentEffect = inject<Ref<EffectWithTarget | AttackModel | ButtonInteraction >>("currentEffect");
 const currentContext = inject<Ref<string[]>>("currentContext");
 </script>
 
@@ -32,9 +32,11 @@ const currentContext = inject<Ref<string[]>>("currentContext");
 				<p v-if="rootType === 'root'" class="add" @click="currentEffect = data[index]; currentContext = [...context]">
 					-{{ auto.name }}-
 				</p>
-				<div v-for="(node, idx) in auto.automation ?? []" :key="node.type">
-					<TreeNode :data="node" :depth="depth" :parent-type="parentType" :context="[index.toString(), ...context, idx.toString()]" />
-				</div>
+				<TransitionGroup name="fade">
+					<div v-for="(node, idx) in auto.automation ?? []" :key="idx">
+						<TreeNode :data="node" :depth="depth" :parent-type="parentType" :context="[index.toString(), ...context, idx.toString()]" />
+					</div>
+				</TransitionGroup>
 				<p :style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`">
 					<EffectAdder :context="[index.toString(), ...context]" />
 				</p>
@@ -47,9 +49,11 @@ const currentContext = inject<Ref<string[]>>("currentContext");
 			<p v-if="rootType === 'root'" class="add" @click="currentEffect = data; currentContext = [...context]">
 				-Attack Root-
 			</p>
-			<div v-for="(node, index) in data.automation ?? []" :key="node.type">
-				<TreeNode :data="node" :depth="depth" :parent-type="parentType" :context="[...context, index.toString()]" />
-			</div>
+			<TransitionGroup name="fade">
+				<div v-for="(node, idx) in data.automation ?? []" :key="idx">
+					<TreeNode :data="node" :depth="depth" :parent-type="parentType" :context="[...context, idx.toString()]" />
+				</div>
+			</TransitionGroup>
 			<p :style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`">
 				<EffectAdder :context="context" />
 			</p>
@@ -89,5 +93,24 @@ div {
 	&:hover {
 		color: color-mix(in srgb, currentColor, white) !important;
 	}
+}
+
+.fade-move,
+.fade-enter-active,
+.fade-leave-active {
+	transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
+}
+
+/* 2. declare enter from and leave to state */
+.fade-enter-from,
+.fade-leave-to {
+	opacity: 0;
+	transform: scaleY(0.01) translate(30px, 0);
+}
+
+/* 3. ensure leaving items are taken out of layout flow so that moving
+      animations can be calculated correctly. */
+.fade-leave-active {
+	position: absolute;
 }
 </style>

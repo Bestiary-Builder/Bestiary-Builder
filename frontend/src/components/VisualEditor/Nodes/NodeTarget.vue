@@ -14,7 +14,7 @@ if (!Object.hasOwn(currentEffect!.value, "sortBy"))
 watch(() => currentEffect!.value?.sortBy, () => {
 	if (currentEffect!.value?.sortBy === "user_input")
 		delete currentEffect!.value.sortBy;
-});
+},);
 
 const isButton = computed(() => currentContext!.value.includes("buttons"));
 const isIAttack = computed(() => currentContext!.value.includes("attacks"));

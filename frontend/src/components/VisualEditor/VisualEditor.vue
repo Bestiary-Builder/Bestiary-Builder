@@ -6,16 +6,15 @@ import EffectAdder from "./EffectAdder.vue";
 import AutomationDocumentation from "./Nodes/shared/AutomationDocumentation.vue";
 import EffectAsRaw from "./Nodes/shared/EffectAsRaw.vue";
 import SectionHeader from "./Nodes/shared/SectionHeader.vue";
-import type { AttackModel, ButtonInteraction, Effect } from "~/shared";
+import type { AttackModel, ButtonInteraction, Effect, EffectWithTarget } from "~/shared";
 
 const props = defineProps<{ name: string }>();
-const currentEffect = ref<Effect | AttackModel | ButtonInteraction | null>(null);
+const currentEffect = ref<EffectWithTarget | AttackModel | ButtonInteraction | null>(null);
 const currentContext = ref<string[]>([]);
 provide("currentEffect", currentEffect);
 provide("currentContext", currentContext);
 
 const automation = defineModel<null | AttackModel | AttackModel[]>();
-console.log(automation.value);
 if (automation.value == null)
 	automation.value = { _v: 2, name: "Action", automation: [] };
 provide("automation", ref(automation));
@@ -34,6 +33,9 @@ const currentNode = computed(() => {
 
 	return "";
 });
+
+const copiedEffect = ref<EffectWithTarget | null>(null);
+provide("copiedEffect", copiedEffect);
 </script>
 
 <template>

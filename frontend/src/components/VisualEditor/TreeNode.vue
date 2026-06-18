@@ -5,15 +5,15 @@ import TreeRoot from "./TreeRoot.vue";
 import EffectAdder from "./EffectAdder.vue";
 import NodeHeader from "./Nodes/shared/NodeHeader.vue";
 import { deepKeys, displayNames } from "./util";
-import type { AttackInteraction, AttackModel, ButtonInteraction, Effect, EffectKey } from "~/shared";
+import type { AttackInteraction, AttackModel, ButtonInteraction, EffectKey, EffectWithTarget } from "~/shared";
 
-const props = defineProps<{ data: Effect; depth: number; parentType: string; context: string[] }>();
+const props = defineProps<{ data: EffectWithTarget; depth: number; parentType: string; context: string[] }>();
 
 const selfType = computed<string>(() => {
 	return props.data.type;
 });
 
-const currentEffect = inject<Ref<Effect | ButtonInteraction | AttackInteraction>>("currentEffect");
+const currentEffect = inject<Ref<EffectWithTarget | ButtonInteraction | AttackInteraction>>("currentEffect");
 const currentContext = inject<Ref<string[]>>("currentContext");
 const automation = inject<Ref<null | AttackModel | AttackModel[]>>("automation");
 const isCollapsed = ref(false);
@@ -54,7 +54,7 @@ const moveDown = () => {
 };
 
 const deleteNode = () => {
-	if (nodeListEffectIsPartOf.value && nodeListEffectIsPartOf.value.length > 1) {
+	if (nodeListEffectIsPartOf.value && nodeListEffectIsPartOf.value.length > 0) {
 		const tree = nodeListEffectIsPartOf.value;
 		const indexToRemove = Number.parseInt(props.context[props.context.length - 1] || "0");
 
@@ -105,15 +105,35 @@ const nodeListEffectIsPartOf = computed(() => {
 const indexInRespectToParent = computed(() => {
 	return Number.parseInt(props.context[props.context.length - 1]);
 });
+
+const copiedEffect = inject<Ref<EffectWithTarget | null>>("copiedEffect");
+const copyNode = () => {
+	if (!copiedEffect)
+		return;
+	copiedEffect.value = props.data;
+};
+
+const cutNode = () => {
+	if (!copiedEffect)
+		return;
+	copiedEffect.value = props.data;
+	deleteNode();
+};
 </script>
 
 <template>
 	<p :style="`margin-left: ${(depth + 1) * 15}px; color: grey;`" @click="currentEffect = data; currentContext = context">
 		<NodeHeader :type="selfType" />
-		<Icon v-if="nodeListEffectIsPartOf.length > 0 && indexInRespectToParent !== 0" icon="ooui:arrow-up" inline width=".75em" @click.prevent="moveUp" />
-		<Icon v-if="nodeListEffectIsPartOf.length > 0 && indexInRespectToParent !== nodeListEffectIsPartOf.length - 1 " icon="ooui:arrow-down" inline width=".75em" @click.prevent="moveDown" />
-		<Icon icon="fa7-solid:eraser" inline width=".75em" @click="deleteNode" />
-		<Icon icon="ooui:copy-ltr" inline width=".75em" @click="deleteNode" />
+		<span class="tree-buttons">
+			<Icon v-if="nodeListEffectIsPartOf.length > 0 && indexInRespectToParent !== 0" icon="ooui:arrow-up" inline width=".75em" @click.prevent="moveUp" />
+			<Icon v-else icon="ooui:arrow-up" inline width=".75em" color="#3f3f3f" />
+			<Icon v-if="nodeListEffectIsPartOf.length > 0 && indexInRespectToParent !== nodeListEffectIsPartOf.length - 1 " icon="ooui:arrow-down" inline width=".75em" @click.prevent="moveDown" />
+			<Icon v-else icon="ooui:arrow-down" inline width=".75em" color="#3f3f3f" />
+
+			<Icon icon="fa7-solid:eraser" inline width=".75em" @click="deleteNode" />
+			<Icon icon="ooui:copy-ltr" inline width=".75em" @click="copyNode" />
+			<Icon icon="ooui:cut-ltr" inline width=".75em" @click="cutNode" />
+		</span>
 
 		<!-- <Icon icon="material-symbols:ink-pen" inline width="1em" style="margin-left: .5em" /> -->
 		<span v-if="['attack', 'condition', 'save'].includes(selfType)" class="collapse-button" @click.stop="isCollapsed = !isCollapsed">
@@ -179,5 +199,14 @@ svg {
 
 .iconify {
 	scale: 1.25;
+}
+
+.tree-buttons {
+	display: inline-flex;
+	flex-direction: row;
+	gap: 0.5em;
+	margin-left: 0.5em;
+	justify-content: flex-end;
+	float: right;
 }
 </style>

@@ -1,4 +1,4 @@
-import type { AttackModel, Effect } from "~/shared";
+import type { AttackModel, EffectWithTarget } from "~/shared";
 
 export const displayNames: Record<string, { label: string; icon: string }> = {
 	variable: { label: "Set Variable", icon: "proicons:braces-variable" },
@@ -25,7 +25,7 @@ export const displayNames: Record<string, { label: string; icon: string }> = {
 	check: { label: "Ability Check", icon: "twemoji:man-cartwheeling" }
 } as const;
 
-export const defaultNodes: Record<string, Effect> = {
+export const defaultNodes: Record<string, EffectWithTarget> = {
 	target: {
 		type: "target",
 		target: "each",

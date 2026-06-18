@@ -860,20 +860,21 @@ export interface AttackModel {
 
 export type IntExpression = string;
 export type AnnotatedString = string;
-export type Effect = Target | Attack | Save | Damage | TempHP | IEffect | Remove_IEffect | Roll | Text | Variable | Condition | Counter | Spell | Check;
+export type Effect = Target | Remove_IEffect | Roll | Text | Variable | Condition | Counter | Spell;
+export type EffectWithTarget = Target | Remove_IEffect | Roll | Text | Variable | Condition | Counter | Spell | Check | Attack | Save | Damage | TempHP | IEffect;
 export type EffectKey = keyof Target | keyof Attack | keyof Save | keyof Damage | keyof TempHP | keyof IEffect | keyof Remove_IEffect | keyof Roll | keyof Text | keyof Variable | keyof Condition | keyof Counter | keyof Spell | keyof Check;
 
 export interface Target {
 	type: "target";
 	target: "all" | "each" | number | "self" | "parent" | "children";
-	effects: Effect[];
+	effects: EffectWithTarget[];
 	sortBy?: "hp_asc" | "hp_desc" | "user_input";
 	self_target?: boolean;
 }
 export interface Attack {
 	type: "attack";
-	hit: Effect[];
-	miss: Effect[];
+	hit: EffectWithTarget[];
+	miss: EffectWithTarget[];
 	attackBonus?: IntExpression;
 	adv?: IntExpression;
 }
@@ -881,8 +882,8 @@ export interface Attack {
 export interface Save {
 	type: "save";
 	stat: "str" | "dex" | "con" | "int" | "wis" | "cha";
-	fail: Effect[];
-	success: Effect[];
+	fail: EffectWithTarget[];
+	success: EffectWithTarget[];
 	dc?: IntExpression;
 	adv?: -1 | 0 | 1;
 }

@@ -24,7 +24,6 @@ onBeforeUnmount(() => {
 });
 
 onMounted(() => {
-	console.log(currentEffect);
 	if (!Object.hasOwn(currentEffect!.value, "higher"))
 		currentEffect!.value.higher = {};
 });
