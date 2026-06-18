@@ -49,7 +49,7 @@ app.disable("x-powered-by");
 // Rate limiting
 app.use(
 	rateLimit({
-		windowMs: 1000, // 1 second
+		windowMs: 500, // 1 second
 		max: isProduction ? 100 : 1000 // limit each IP to 50/1000 requests per windowMs
 	})
 );
