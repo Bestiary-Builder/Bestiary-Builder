@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted } from "vue";
+import SimpleMarkdown from "@khanacademy/simple-markdown";
 import Markdown from "./Markdown.vue";
 import type { SaveEntity, SkillsEntity, Stat, Statblock } from "~/shared";
 import { SKILLS_BY_STAT, capitalizeFirstLetter, crAsString, displayCasterCasting, displayInnateCasting, displaySpeedOrSenses, hpCalc, ppCalc, signedNumber, statCalc } from "~/shared";
@@ -157,6 +158,32 @@ onMounted(async () => {
 	if (design === "Beyond")
 		await import("../assets/styles/statblock/beyond/beyond.css");
 });
+
+const blockRegex = function (regex: RegExp) {
+	const match = function (source: any, state: any) {
+		if (state.inline)
+			return null;
+		else
+			return regex.exec(source);
+	};
+	match.regex = regex;
+	return match;
+};
+
+const rules = SimpleMarkdown.defaultRules;
+// @ts-expect-error Can modify, is fine
+rules.paragraph.match = blockRegex(/^((?:[^\n]|)+)/);
+// @ts-expect-error Can modify, is fine
+rules.paragraph.html = (node: any, output: any, state: any) => {
+	return `<p> ${output(node.content, state)} </p>`;
+};
+const makeMarkdown = (text: string) => {
+	const parser = SimpleMarkdown.parserFor(rules as any);
+	const htmlOutput = SimpleMarkdown.outputFor(rules, "html");
+
+	const syntaxTree = parser(text);
+	return htmlOutput(syntaxTree);
+};
 </script>
 
 <template>
@@ -312,17 +339,17 @@ onMounted(async () => {
 				</p>
 				<p v-for="(feature, index) in data.features.features" :key="index">
 					<b> <i>{{ feature.name }}.</i><sup v-if="feature.automation" v-tooltip="'Has Automation'" class="feature-container__automation-icon">†</sup> </b>
-					<Markdown class="feature-container__desc" :text="feature.description" tag="span" />
+					<span class="feature-container__desc" v-html="makeMarkdown(feature.description)" />
 				</p>
 
 				<p v-if="showInnateCasting && !data.spellcasting.innateSpells.displayAsAction">
 					<b><i>Innate Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics"> (Psionics)</span>.</i></b>
-					<Markdown class="feature-container__desc" :text="displayInnateCasting(data)" tag="span" />
+					<span class="feature-container__desc" v-html="makeMarkdown(displayInnateCasting(data))" />
 				</p>
 
 				<p v-if="showCasterCasting && data.spellcasting.casterSpells.castingClass && data.spellcasting.casterSpells.casterLevel && data.spellcasting.casterSpells.spellSlotList">
 					<b><i>Spellcasting</i></b>
-					<Markdown class="feature-container__desc" :text="displayCasterCasting(data)" tag="span" />
+					<span class="feature-container__desc" v-html="makeMarkdown(displayCasterCasting(data))" />
 				</p>
 			</div>
 		</div>
@@ -336,12 +363,12 @@ onMounted(async () => {
 			</p>
 			<p v-for="(feature, index) in data.features.actions" :key="index">
 				<b> <i>{{ feature.name }}.</i><sup v-if="feature.automation" v-tooltip="'Has Automation'" class="feature-container__automation-icon">†</sup></b>
-				<Markdown class="feature-container__desc" :text="feature.description" tag="span" />
+				<span class="feature-container__desc" v-html="makeMarkdown(feature.description)" />
 			</p>
 
 			<p v-if="showInnateCasting && data.spellcasting.innateSpells.displayAsAction">
 				<b><i>Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics"> (Psionics)</span>.</i></b>
-				<Markdown class="feature-container__desc" :text="displayInnateCasting(data)" tag="span" />
+				<span class="feature-container__desc" v-html="makeMarkdown(displayInnateCasting(data))" />
 			</p>
 		</div>
 
@@ -360,7 +387,7 @@ onMounted(async () => {
 				<p v-for="(feature, index) in data.features[fType]" :key="index" class="feature-description">
 					<b> <i> {{ feature.name }}.</i></b>
 					<sup v-if="feature.automation" v-tooltip="'Has Automation'" class="feature-container__automation-icon">†</sup>
-					<Markdown class="feature-container__desc" :text="feature.description" tag="span" />
+					<span class="feature-container__desc" v-html="makeMarkdown(feature.description)" />
 				</p>
 			</div>
 		</template>
@@ -368,7 +395,7 @@ onMounted(async () => {
 			<h2 class="feature-container__title">
 				Description
 			</h2>
-			<Markdown :text="data.description.description" />
+			<div class="markdown" v-html="makeMarkdown(data.description.description)" />
 		</div>
 	</div>
 </template>

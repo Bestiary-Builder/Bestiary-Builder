@@ -179,7 +179,7 @@ select {
 	background-image: url("/bg_black.png");
 	min-height: 100vh;
 	margin-top: calc(var(--breadcrumbs-height) + var(--navbar-height) + 1.5rem);
-	&.markdown {
+	& .markdown {
 		h2 {
 			text-align: left;
 			margin-bottom: 1rem;
@@ -198,6 +198,10 @@ select {
 			&:hover {
 				text-decoration-color: rgba(255, 69, 0, 1);
 			}
+		}
+
+		ul {
+			margin: 0;
 		}
 	}
 }

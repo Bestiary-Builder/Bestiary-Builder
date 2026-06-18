@@ -2,6 +2,7 @@
 _???, 2026_
 
 ### Features
+- Added a proper automation editor for edting actions.
 - Improved styling of the statblock
 - Added 2024 statblock formatting and a toggle in user settings.
 - Added Beyond and Odyssey styling for statblocks, and a toggle in user settings.
@@ -12,6 +13,7 @@ _???, 2026_
 
 ### Fixes
 - Fixed class based spellcasting to hit not having a + on positive values.
+- Fixed newlines in fields displaying as a single line as markdown, such as description, requiring many newlines to force newlines. Behaviour is now the same as Discord.
 
 ## v2.6.6
 _June 12, 2026_

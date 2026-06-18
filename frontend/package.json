@@ -21,6 +21,7 @@
 		"@fortawesome/free-solid-svg-icons": "^6.5.1",
 		"@fortawesome/vue-fontawesome": "^3.0.5",
 		"@guolao/vue-monaco-editor": "^1.5.1",
+		"@khanacademy/simple-markdown": "^2.2.3",
 		"@popperjs/core": "^2.11.8",
 		"@vueuse/core": "^10.7.1",
 		"@vueuse/integrations": "^10.7.1",
