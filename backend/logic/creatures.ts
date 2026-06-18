@@ -150,7 +150,7 @@ app.post("/api/creature/add", requireUser, async (req, res) => {
 		if (amountError)
 			return res.status(400).json({ error: amountError });
 		// Set creature index
-		data.index = (await getPrismaClient().creature.findFirst({ where: { bestiaryId: bestiary.id }, orderBy: { index: "desc" } }))?.index ?? count;
+		data.index = (await getPrismaClient().creature.findFirst({ where: { bestiaryId: bestiary.id }, orderBy: { index: "desc" } }))?.index ?? count ?? 0;
 		// Add creature
 		const _id = await createCreature(data);
 		if (!_id)

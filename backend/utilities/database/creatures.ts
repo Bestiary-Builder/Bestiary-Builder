@@ -17,7 +17,7 @@ export async function getCreature(id: Id) {
 }
 export async function createCreature(data: Creature) {
 	try {
-		const creature: CreatureCreateInput = { stats: data.stats as JsonObject, lastUpdated: new Date(Date.now()), bestiary: { connect: { id: data.bestiaryId } } };
+		const creature: CreatureCreateInput = { stats: data.stats, lastUpdated: new Date(Date.now()), index: data.index, bestiary: { connect: { id: data.bestiaryId } } };
 		log.log("database", `Creating creature.`);
 		return (await getPrismaClient().creature.create({ data: creature })).id;
 	}
@@ -28,7 +28,7 @@ export async function createCreature(data: Creature) {
 }
 export async function updateCreature(data: Creature, id: Id) {
 	try {
-		const creature: CreatureCreateInput = { stats: data.stats as JsonObject, lastUpdated: new Date(Date.now()), bestiary: { connect: { id: data.bestiaryId } } };
+		const creature: Omit<CreatureCreateInput, "index"> = { stats: data.stats, lastUpdated: new Date(Date.now()), bestiary: { connect: { id: data.bestiaryId } } };
 		log.log("database", `Updating creature with the id ${id}.`);
 		return (await getPrismaClient().creature.update({ where: { id }, data: creature })).id;
 	}
