@@ -5,4 +5,4 @@
 
 */
 -- AlterTable
-ALTER TABLE "Creatures" ADD COLUMN     "index" INTEGER NOT NULL;
+ALTER TABLE "Creatures" ADD COLUMN     "index" INTEGER NOT NULL DEFAULT 0;
