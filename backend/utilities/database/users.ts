@@ -4,9 +4,12 @@ import type { Id, User } from "~/shared";
 import { generateUserSecret } from "@/utilities/constants";
 
 // User cache
-const userCache = {} as { [key: string]: User };
-function resetUserCache(id: string) {
+let userCache = {} as { [key: string]: User };
+export function resetUserCache(id: string) {
 	delete userCache[id];
+}
+export function clearUserCache() {
+	userCache = {};
 }
 const userSecretCache = {} as { [key: string]: User };
 // User functions

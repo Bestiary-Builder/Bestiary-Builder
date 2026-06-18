@@ -2,7 +2,7 @@ import { Buffer } from "node:buffer";
 import discord from "discord.js";
 import { isProduction } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
-import { getPrismaClient } from "@/utilities/database";
+import { clearUserCache, getPrismaClient, resetUserCache } from "@/utilities/database";
 import { SupporterStatus, type User } from "~/shared";
 
 const client = new discord.Client({
@@ -67,9 +67,12 @@ async function checkUserStatuses(guild: discord.Guild) {
 	// Update database
 	await getPrismaClient().$transaction(async (tx) => {
 		await tx.user.updateMany({ data: { supporter: SupporterStatus.none } });
-		await tx.user.updateMany({ where: { id: { in: tier1Ids } }, data: { supporter: SupporterStatus.wirmling } });
-		await tx.user.updateMany({ where: { id: { in: tier2Ids } }, data: { supporter: SupporterStatus.greatwyrm } });
+		for (const id in tier1Ids)
+			await tx.user.update({ where: { id }, data: { supporter: SupporterStatus.wirmling } });
+		for (const id in tier2Ids)
+			await tx.user.update({ where: { id }, data: { supporter: SupporterStatus.greatwyrm } });
 	});
+	clearUserCache();
 }
 
 // Public discord logging
