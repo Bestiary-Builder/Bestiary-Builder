@@ -101,7 +101,7 @@ const addAndSelect = async (node: string, pasteCopied = false) => {
 			if (copiedEffect) {
 				const { isTargetContext } = computedContext.value;
 				if (!isTargetContext && ["error", "attack", "save", "damage", "temphp", "check"].includes(copiedEffect.value?.type || "error")) {
-					toast.error("Stop in the name of the law!");
+					toast.error(`Effect of type \`${copiedEffect.value?.type}\` cannot be placed outside a Target Effect.`);
 					return;
 				}
 

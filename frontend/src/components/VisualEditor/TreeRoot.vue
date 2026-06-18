@@ -33,7 +33,7 @@ const currentContext = inject<Ref<string[]>>("currentContext");
 					-{{ auto.name }}-
 				</p>
 				<TransitionGroup name="fade">
-					<div v-for="(node, idx) in auto.automation ?? []" :key="idx">
+					<div v-for="(node, idx) in auto.automation ?? []" :key="(node as any)">
 						<TreeNode :data="node" :depth="depth" :parent-type="parentType" :context="[index.toString(), ...context, idx.toString()]" />
 					</div>
 				</TransitionGroup>
@@ -50,7 +50,7 @@ const currentContext = inject<Ref<string[]>>("currentContext");
 				-Attack Root-
 			</p>
 			<TransitionGroup name="fade">
-				<div v-for="(node, idx) in data.automation ?? []" :key="idx">
+				<div v-for="(node, idx) in data.automation ?? []" :key="(node as any)">
 					<TreeNode :data="node" :depth="depth" :parent-type="parentType" :context="[...context, idx.toString()]" />
 				</div>
 			</TransitionGroup>
@@ -90,6 +90,7 @@ div {
 .add {
 	cursor: pointer;
 	transition: color 150ms ease-out;
+
 	&:hover {
 		color: color-mix(in srgb, currentColor, white) !important;
 	}
@@ -105,7 +106,7 @@ div {
 .fade-enter-from,
 .fade-leave-to {
 	opacity: 0;
-	transform: scaleY(0.01) translate(30px, 0);
+	transform: translate(30px, 0);
 }
 
 /* 3. ensure leaving items are taken out of layout flow so that moving

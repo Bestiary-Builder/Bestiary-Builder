@@ -14,6 +14,8 @@ const currentContext = ref<string[]>([]);
 provide("currentEffect", currentEffect);
 provide("currentContext", currentContext);
 
+defineExpose<{ currentEffect: any; currentContext: any }>({ currentEffect, currentContext });
+
 const automation = defineModel<null | AttackModel | AttackModel[]>();
 if (automation.value == null)
 	automation.value = { _v: 2, name: "Action", automation: [] };
@@ -43,14 +45,15 @@ provide("copiedEffect", copiedEffect);
 		<div class="tree">
 			<SectionHeader title="Effect Tree" />
 			<TreeRoot v-if="automation" :data="automation" :depth="-1" />
-			<div v-else>
+			<p v-else class="container">
 				<EffectAdder :context="['root']" :name="props.name" />
-			</div>
+			</p>
 		</div>
 		<div class="editor">
 			<div v-if="!currentEffect && currentContext.length === 0">
-				<SectionHeader title="Active Node: None" />
+				<SectionHeader title="No Effect Selected" />
 				Select or create a node in the Effect Tree.
+				<img src="../../../public/Flumph.png" style="max-width: 100px;">
 			</div>
 			<template v-else>
 				<Transition>
@@ -101,5 +104,12 @@ section {
 	padding: 1rem;
 	border-radius: 6px;
 	box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.container {
+	min-height: 800px;
+	border-radius: 6px;
+	box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+	background-color: var(--color-surface-0);
 }
 </style>

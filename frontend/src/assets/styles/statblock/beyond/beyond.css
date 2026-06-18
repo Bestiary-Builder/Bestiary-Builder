@@ -22,6 +22,21 @@ body .v-popper__custom-menu .stat-block.Beyond {
         }
     }
 
+    h1, h2, h3, h4, h5 {
+        font-family: "Scala Sans Offc", Roboto, Helvetica, sans-serif;
+        color: #5b160c;
+        line-height: 1.1;
+        font-variant: small-caps;
+        letter-spacing: 0.07rem;
+    }
+
+    hr {
+        border-color: #5b160c;
+    }
+
+    a {
+        color: #5b160c
+    }
 
     .stat-table:first-of-type {
         tbody > tr > td {

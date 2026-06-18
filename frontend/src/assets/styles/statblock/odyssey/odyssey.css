@@ -19,7 +19,7 @@ body .v-popper__custom-menu .stat-block.Odyssey {
     outline-offset: -0.25rem;
     border-radius: .5rem;
 
-    h1 {
+    .stat-block__name-container {
         font-family: 'Odyssey';
         color: #095471;
         border-bottom: 0px solid #095471;
@@ -45,6 +45,18 @@ body .v-popper__custom-menu .stat-block.Odyssey {
         }
     }
 
+    h1, h2, h3, h4, h5 {
+        font-family: 'Odyssey';
+        color: #095471;
+    }
+
+    hr {
+        border-color: #095471;
+    }
+
+    a {
+        color: #095471
+    }
 
     .stat-block__row {
         border-bottom: 0px solid white;

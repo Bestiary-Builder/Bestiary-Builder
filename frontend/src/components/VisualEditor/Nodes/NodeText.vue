@@ -41,7 +41,7 @@ useDataCleanup(currentEffect, ["title"]);
 
 		<LabelledComponent title="Description" for="text" style="margin-top: 1rem">
 			<div v-if="descIsText" class="input-wrapper">
-				<textarea id="text" v-model="(currentEffect.text as string)" rows="20" placeholder="Description" /><AnnotatedString />
+				<textarea id="text" v-model="(currentEffect.text as string)" rows="5" placeholder="Description" /><AnnotatedString />
 			</div>
 			<v-select v-else v-model="currentEffect.text" :options="abilities" label="name" input-id="text" :reduce="(x : any) => ({ id: x.id, typeId: x.typeId })" />
 		</labelledcomponent>

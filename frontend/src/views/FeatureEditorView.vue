@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
-import { computed, nextTick, onMounted, onUnmounted, provide, ref, shallowRef, watch } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, provide, ref, shallowRef, useTemplateRef, watch } from "vue";
 import YAML from "yaml";
 import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
 import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
-import { type AutomationDocumentation, type AutomationWithType, type Bestiary, type BestiaryExtended, type CreatureWithStats, type FeatureEntity, type Features, type Id, type Statblock, type Text, type User, defaultStatblock, parseDescIntoAutomation } from "~/shared";
+import { type AutomationDocumentation, type BestiaryExtended, type CreatureWithStats, type FeatureEntity, type Features, type Id, type Statblock, parseDescIntoAutomation } from "~/shared";
 import { $loading } from "@/utils/app/loading";
 import { useFetch } from "@/utils/utils";
 import { toast } from "@/utils/app/toast";
@@ -20,6 +20,7 @@ const aid = $route.params.aid as any;
 const data = ref<Statblock>();
 const rawInfo = ref<CreatureWithStats | null>(null);
 
+const visualEditorRef = useTemplateRef("VisualEditorRef");
 // load creature data
 onMounted(async () => {
 	const loader = $loading.show();
@@ -31,6 +32,7 @@ onMounted(async () => {
 		await loadRawInfo();
 		await getBestiary();
 		automationString.value = YAML.stringify(data.value.features[type][aid].automation) ?? YAML.stringify(null);
+
 		loader.hide();
 	}
 	else {
@@ -201,17 +203,22 @@ const importAutomation = async (apiPath: "automation" | "basic-example" | "srd-f
 		const lastNode = feature.automation.automation[feature.automation.automation.length - 1];
 		if (lastNode.type === "text") {
 			if (typeof (lastNode.text) === "string")
-				data.value.features[type][aid].description = lastNode.text;
+				feature.description = lastNode.text;
 			else
-				data.value.features[type][aid].description = "";
+				feature.description = "";
 		}
 		else {
-			data.value.features[type][aid].description = "";
+			feature.description = "";
 		}
 
 		automationString.value = YAML.stringify(feature.automation);
-		await saveStatblock(false);
+		data.value.features[type][aid] = feature;
 	}
+	if (visualEditorRef.value) {
+		visualEditorRef.value.currentEffect = null;
+		visualEditorRef.value.currentContext = [];
+	}
+	await saveStatblock(false);
 };
 
 const generateAutomation = async () => {
@@ -235,10 +242,14 @@ const copyAutomation = async () => {
 };
 
 const automationString = ref("");
-const editorRef = shallowRef();
-const handleMount = (editor: any) => (editorRef.value = editor);
-
 const automationStringValidated = ref(true);
+
+watch(automationString, async () => {
+	automationStringValidated.value = false;
+	isSaved.value = false;
+	await validateYaml();
+});
+
 const validateYaml = async () => {
 	if (!data.value)
 		return;
@@ -253,13 +264,11 @@ const validateYaml = async () => {
 	}
 };
 
+// monaco editor
+const editorRef = shallowRef();
+const handleMount = (editor: any) => (editorRef.value = editor);
 // Documentation context by mouse location
 const currentContext = ref("");
-watch(automationString, async () => {
-	automationStringValidated.value = false;
-	isSaved.value = false;
-	await validateYaml();
-});
 const cursorPosition = ref(0);
 
 const ourInterval = setInterval(() => {
@@ -384,7 +393,7 @@ const showDescriptionButtons = computed(() => {
 	return false;
 });
 
-const prefersVisualEditor = ref(true);
+const prefersVisualEditor = store.user?.preferredEditor === "Visual";
 </script>
 
 <template>
@@ -480,9 +489,8 @@ const prefersVisualEditor = ref(true);
 		<div v-if="!prefersVisualEditor" class="editor">
 			<VueMonacoEditor v-model:value="automationString" theme="vs-dark" :options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false }" height="500px" language="yaml" @mount="handleMount" />
 		</div>
-		<div v-else>
-			<hr>
-			<VisualEditor v-model="data.features[type][aid].automation" :name="data.features[type][aid].name" />
+		<div v-else style="margin-top: 2rem">
+			<VisualEditor ref="VisualEditorRef" v-model="data.features[type][aid].automation" :name="data.features[type][aid].name" />
 		</div>
 		<div v-if="!prefersVisualEditor">
 			<div v-if="currentDocu" class="docs">

@@ -4,7 +4,7 @@ import { Icon } from "@iconify/vue";
 import TreeRoot from "./TreeRoot.vue";
 import EffectAdder from "./EffectAdder.vue";
 import NodeHeader from "./Nodes/shared/NodeHeader.vue";
-import { deepKeys, displayNames } from "./util";
+import { deepKeys } from "./util";
 import type { AttackInteraction, AttackModel, ButtonInteraction, EffectKey, EffectWithTarget } from "~/shared";
 
 const props = defineProps<{ data: EffectWithTarget; depth: number; parentType: string; context: string[] }>();
@@ -125,9 +125,9 @@ const cutNode = () => {
 	<p :style="`margin-left: ${(depth + 1) * 15}px; color: grey;`" @click="currentEffect = data; currentContext = context">
 		<NodeHeader :type="selfType" />
 		<span class="tree-buttons">
-			<Icon v-if="nodeListEffectIsPartOf.length > 0 && indexInRespectToParent !== 0" icon="ooui:arrow-up" inline width=".75em" @click.prevent="moveUp" />
+			<Icon v-if="(nodeListEffectIsPartOf || []).length > 0 && indexInRespectToParent !== 0" icon="ooui:arrow-up" inline width=".75em" @click.prevent="moveUp" />
 			<Icon v-else icon="ooui:arrow-up" inline width=".75em" color="#3f3f3f" />
-			<Icon v-if="nodeListEffectIsPartOf.length > 0 && indexInRespectToParent !== nodeListEffectIsPartOf.length - 1 " icon="ooui:arrow-down" inline width=".75em" @click.prevent="moveDown" />
+			<Icon v-if="(nodeListEffectIsPartOf || []).length > 0 && indexInRespectToParent !== (nodeListEffectIsPartOf || []).length - 1 " icon="ooui:arrow-down" inline width=".75em" @click.prevent="moveDown" />
 			<Icon v-else icon="ooui:arrow-down" inline width=".75em" color="#3f3f3f" />
 
 			<Icon icon="fa7-solid:eraser" inline width=".75em" @click="deleteNode" />
@@ -152,7 +152,7 @@ const cutNode = () => {
 					</span>
 				</p>
 				<template v-if="!branchesCollapsed.includes(key)">
-					<TreeNode v-for="(childNode, index) in effect" :key="index" :data="childNode as any" :depth="depth + (!['root', 'effects'].includes(key) ? 2 : 1)" :parent-type="key" :context="[...context, `$${selfType}`, key, index.toString()]" />
+					<TreeNode v-for="(childNode, index) in effect" :key="childNode as any" :data="childNode as any" :depth="depth + (!['root', 'effects'].includes(key) ? 2 : 1)" :parent-type="key" :context="[...context, `$${selfType}`, key, index.toString()]" />
 					<p :style="`margin-left: ${(depth + (!['root', 'effects'].includes(key) ? 3 : 2)) * 15}px;`">
 						<EffectAdder :context="[...context, `$${selfType}`, key]" />
 					</p>
