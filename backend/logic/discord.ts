@@ -2,7 +2,7 @@ import { Buffer } from "node:buffer";
 import discord from "discord.js";
 import { isProduction } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
-import { clearUserCache, getPrismaClient, resetUserCache } from "@/utilities/database";
+import { clearUserCache, getPrismaClient } from "@/utilities/database";
 import { SupporterStatus, type User } from "~/shared";
 
 const client = new discord.Client({
