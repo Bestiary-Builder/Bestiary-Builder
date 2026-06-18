@@ -55,7 +55,7 @@ const searchOptions = ref({
 	env: "",
 	faction: ""
 });
-const sortMode = ref("Alphabetically");
+const sortMode = ref("Custom");
 const isExpanded = ref(false);
 const showEditorModal = ref(false);
 const showImportModal = ref(false);
@@ -68,7 +68,10 @@ const searchCreatures = computed<CreatureWithStats[] | null>(() => {
 
 	const response = creatures.value?.filter((creature: CreatureWithStats) => filterCreature(creature)) || null;
 
-	if (sortMode.value === "Alphabetically") {
+	if (sortMode.value === "Custom") {
+		// Do nothing, order as recieved
+	}
+	else if (sortMode.value === "Alphabetically") {
 		response.sort((a, b) => {
 			const nameA = a.stats.description.name.toLowerCase();
 			const nameB = b.stats.description.name.toLowerCase();
@@ -686,6 +689,7 @@ const copyCurrentBestiary = () => {
 					<div class="v-popper__custom-menu">
 						<LabelledComponent title="Sort creatures" for="sortcreatures">
 							<select id="sortcreatures" v-model="sortMode" name="Sort bestiary by attribute">
+								<option>Custom</option>
 								<option>Alphabetically</option>
 								<option>CR Ascending</option>
 								<option>CR Descending</option>

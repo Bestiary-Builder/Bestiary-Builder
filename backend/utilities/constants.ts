@@ -30,7 +30,9 @@ export function checkBestiaryLimits(bestiary: { id?: Id; name: string; descripti
 	return checkLimits(bestiary);
 }
 export function checkCreatureLimits(stats?: Statblock) {
-	return checkLimits((stats as unknown as Statblock).description);
+	if (!stats)
+		return "No statblock provided.";
+	return checkLimits(stats.description);
 }
 export function checkAutomationLimits(automation: Automation) {
 	return checkLimits(automation);

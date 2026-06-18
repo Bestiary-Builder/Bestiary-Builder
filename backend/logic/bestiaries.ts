@@ -290,7 +290,7 @@ app.post("/api/my-bestiaries/order", requireUser, async (req, res) => {
 
 		// Check that user owns all bestiarie
 		if (bestiaryIds.some(id => !userBestiaries.some(i => i.id === id)))
-			return res.status(403).json({ error: "You do not own all specified bestiaries." });
+			return res.status(403).json({ error: "You do not have access to the specified bestiaries." });
 
 		// Set sortedIndex for each bestiary, and any unspecified gets set last
 		const result = await prisma.$transaction([...userBestiaries.map((bestiary) => {
@@ -350,10 +350,11 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 		// Make sure all fields are present in all creatures
 		const ignoredCreatures = [] as { creature: string; error: string }[];
 		const fixedData = [];
+		let creatureIndex = (await getPrismaClient().creature.findFirst({ where: { bestiaryId: bestiary.id }, orderBy: { index: "desc" } }))?.index ?? (await getBestiaryCreatureCount(bestiary.id));
 		for (const creature of data) {
 			if (!creature)
 				continue;
-			const oldStats = creature.stats as unknown as Statblock;
+			const oldStats = creature.stats;
 			const stats = {} as Statblock;
 			for (const key in defaultStatblock) {
 				// @ts-expect-error untyped
@@ -363,6 +364,8 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 			creature.bestiaryId = _id;
 			// Set last updated
 			creature.lastUpdated = now;
+			// Set index
+			creature.index = creatureIndex++;
 			// Check limits
 			const creatureLimits = checkCreatureLimits(stats);
 			if (creatureLimits) {

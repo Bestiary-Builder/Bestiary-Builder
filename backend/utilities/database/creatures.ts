@@ -51,7 +51,7 @@ export async function createCreatures(data: CreatureCreateManyInput[]) {
 
 export async function getCreaturesByBestiary(bestiaryId: Id) {
 	try {
-		return await getPrismaClient().creature.findMany({ where: { bestiaryId } });
+		return await getPrismaClient().creature.findMany({ where: { bestiaryId }, orderBy: { index: "asc" } });
 	}
 	catch (err) {
 		log.log("critical", err);

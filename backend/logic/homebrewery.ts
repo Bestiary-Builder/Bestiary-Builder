@@ -30,7 +30,7 @@ app.get("/api/homebrewery/export/bestiary/:id", possibleUser, async (req, res) =
 			if (!creature.stats)
 				continue;
 
-			const stats = creature.stats as unknown as Statblock;
+			const stats = creature.stats;
 
 			try {
 				const creature_markdown = getCreatureMarkdown(stats);
@@ -71,7 +71,7 @@ app.get("/api/homebrewery/export/creature/:id", possibleUser, async (req, res) =
 		if (!creature.stats)
 			return res.status(500).json({ error: "Creature stats not found." });
 
-		const stats = creature.stats as unknown as Statblock;
+		const stats = creature.stats;
 
 		try {
 			const creature_markdown = getCreatureMarkdown(stats);

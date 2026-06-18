@@ -3,11 +3,10 @@ import { checkBestiaryPermission } from "./bestiaries";
 import { validateCreatureInput } from "./validation";
 import { app, checkCreatureAmountLimit, checkCreatureLimits, limits } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
-import { createCreature, deleteCreature, getBestiary, getBestiaryCreatureCount, getCreature, getCreaturesByBestiary, updateCreature } from "@/utilities/database";
+import { createCreature, deleteCreature, getBestiary, getBestiaryCreatureCount, getCreature, getCreaturesByBestiary, getPrismaClient, updateCreature } from "@/utilities/database";
 import type { Creature, Statblock, User } from "~/shared";
 import { defaultStatblock } from "~/shared";
 import { checkBadwords } from "@/utilities/badwords";
-import type { JsonObject } from "~/shared/prisma/internal/prismaNamespace";
 
 // Check creature permissions
 export async function checkCreaturePermission(creature: Creature, user: User | null) {
@@ -81,14 +80,14 @@ app.post("/api/creature/add", requireUser, async (req, res) => {
 		const data = req.body.data as Creature;
 		if (!data)
 			return res.status(400).json({ error: "Creature data not found." });
-		if (!validateCreatureInput(data.stats as unknown as Statblock, res))
+		if (!validateCreatureInput(data.stats, res))
 			return;
 		const user = req.body.user;
 		if (!user)
 			return res.status(404).json({ error: "Couldn't find current user." });
 
 		// Make sure all fields are present
-		const oldStats = data.stats as unknown as Statblock;
+		const oldStats = data.stats;
 		const stats = {} as Statblock;
 		for (const key in defaultStatblock) {
 			const k = key as keyof Statblock;
@@ -150,6 +149,8 @@ app.post("/api/creature/add", requireUser, async (req, res) => {
 		const amountError = checkCreatureAmountLimit(count);
 		if (amountError)
 			return res.status(400).json({ error: amountError });
+		// Set creature index
+		data.index = (await getPrismaClient().creature.findFirst({ where: { bestiaryId: bestiary.id }, orderBy: { index: "desc" } }))?.index ?? count;
 		// Add creature
 		const _id = await createCreature(data);
 		if (!_id)
@@ -177,7 +178,7 @@ app.post("/api/creature/:id/update", requireUser, async (req, res) => {
 		const data = req.body.data as Creature;
 		if (!data)
 			return res.status(400).json({ error: "Creature data not found." });
-		if (!validateCreatureInput(data.stats as unknown as Statblock, res))
+		if (!validateCreatureInput(data.stats, res))
 			return;
 		if (typeof data.bestiaryId == "string") {
 			const _id = data.bestiaryId;
@@ -195,7 +196,7 @@ app.post("/api/creature/:id/update", requireUser, async (req, res) => {
 		if (!user)
 			return res.status(404).json({ error: "Couldn't find current user." });
 		// Make sure all fields are present
-		const oldStats = data.stats as unknown as Statblock;
+		const oldStats = data.stats;
 		const stats = {} as Statblock;
 		for (const key in defaultStatblock) {
 			const k = key as keyof Statblock;
@@ -293,6 +294,49 @@ app.get("/api/creature/:id/delete", requireUser, async (req, res) => {
 		else {
 			res.status(500).json({ error: "Failed to delete creature." });
 		}
+	}
+	catch (err) {
+		log.log("critical", err);
+		return res.status(500).json({ error: "Unknown server error occured, please try again." });
+	}
+});
+
+// Update creature order
+app.post("/api/bestiary/:id/creatures/order", requireUser, async (req, res) => {
+	try {
+		const user = req.body.user;
+		if (!user)
+			return res.status(404).json({ error: "Couldn't find current user." });
+		const bestiaryId = req.params.id;
+		const bestiary = bestiaryId ? await getBestiary(bestiaryId) : null;
+		if (!bestiary)
+			return res.status(404).json({ error: "No bestiary with that id found." });
+
+		const prisma = getPrismaClient();
+
+		const creatureIds = req.body.data;
+		if (!creatureIds || !Array.isArray(creatureIds))
+			return res.status(400).json({ error: "Invalid creature id array." });
+
+		// Get creatures from bestiary
+		const bestiaryCreatures = (await prisma.creature.findMany({ where: { bestiaryId: bestiary.id }, select: { id: true } })).map(c => c.id);
+
+		// Check that user owns all bestiarie
+		if (creatureIds.some(id => !bestiaryCreatures.includes(id)))
+			return res.status(403).json({ error: "Specified creatures are not part of this bestiary." });
+
+		// Set index for each bestiary, and any unspecified gets set last
+		const result = await prisma.$transaction(bestiaryCreatures.map((creatureId) => {
+			let index = creatureIds.indexOf(creatureId);
+			if (index < 0)
+				index = creatureIds.length + 1;
+			return prisma.creature.update(({ where: { id: creatureId }, data: { index } }))
+		}));
+
+		if (result.length === bestiaryCreatures.length)
+			return res.status(200).json({});
+		else
+			return res.status(500).json({ error: "Unknown server error occured, please try again." });
 	}
 	catch (err) {
 		log.log("critical", err);

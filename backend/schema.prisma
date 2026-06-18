@@ -70,6 +70,8 @@ model Creature {
   /// [DbStatblock]
   stats Json
 
+  index Int
+
   bestiary Bestiary @relation(fields: [bestiaryId], references: [id], onDelete: Cascade)
 
   @@index([bestiaryId])
@@ -120,7 +122,7 @@ model UserBestiaryOrder {
   userId     String
   bestiaryId String
 
-  index 	Int
+  index Int
 
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   bestiary Bestiary @relation(fields: [bestiaryId], references: [id], onDelete: Cascade)
