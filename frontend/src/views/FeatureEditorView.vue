@@ -194,14 +194,24 @@ const importAutomation = async (apiPath: "automation" | "basic-example" | "srd-f
 		return;
 	}
 
-	feature.description.replace("$NAME$", data.value.description.name);
+	feature.description.replaceAll("$NAME$", data.value.description.name);
 	data.value.features[type][aid] = feature;
 
-	if (apiPath === "basic-example" && feature.automation && !Array.isArray(feature.automation))
-		data.value.features[type][aid].description = (feature.automation.automation[feature.automation.automation.length - 1] as Text).text || "";
+	if (apiPath === "basic-example" && feature.automation && !Array.isArray(feature.automation)) {
+		const lastNode = feature.automation.automation[feature.automation.automation.length - 1];
+		if (lastNode.type === "text") {
+			if (typeof (lastNode.text) === "string")
+				data.value.features[type][aid].description = lastNode.text;
+			else
+				data.value.features[type][aid].description = "";
+		}
+		else {
+			data.value.features[type][aid].description = "";
+		}
 
-	automationString.value = YAML.stringify(feature.automation);
-	await saveStatblock(false);
+		automationString.value = YAML.stringify(feature.automation);
+		await saveStatblock(false);
+	}
 };
 
 const generateAutomation = async () => {

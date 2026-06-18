@@ -62,19 +62,16 @@ const automation = inject<Ref<null | AttackModel | AttackModel[]>>("automation")
 const currentEffect = inject<Ref<Effect | ButtonInteraction | AttackInteraction>>("currentEffect");
 const addAndSelect = (node: string) => {
 	// traverse through the tree.
-	console.log(computedContext.value);
 	if (!automation)
 		return;
 	if (!automation.value)
 		automation.value = { _v: 2, name: props.name || "New Attack", automation: [] };
 	let tree: any;
-	if (Array.isArray(automation.value)) {
-		console.log(automation.value, props.context);
+	if (Array.isArray(automation.value))
 		tree = automation.value[Number.parseInt(props.context[0])].automation;
-	}
-	else {
+
+	else
 		tree = automation.value.automation;
-	}
 
 	for (const [idx, key] of props.context.entries()) {
 		const isArrayIndex = /^\d+$/.test(key);
@@ -99,7 +96,6 @@ const addAndSelect = (node: string) => {
 		}
 	}
 	try {
-		console.log("got here?");
 		tree.push(JSON.parse(JSON.stringify(defaultNodes[node])));
 		currentEffect!.value = tree[tree.length - 1];
 	}
@@ -112,7 +108,7 @@ const addAndSelect = (node: string) => {
 <template>
 	<VDropdown v-if="displayNames" :distance="6" :positioning-disabled="store.isMobile" placement="left" container="#effectAdderContainer">
 		<div role="button" class="container">
-			<span class="icon"><Icon icon="material-symbols:add-circle" width=".75em" color="orangered" /></span><span>Add Effect</span>
+			<span class="icon"><Icon icon="material-symbols:add-circle" width="1em" color="orangered" /></span><span>Add Effect</span>
 		</div>
 		<template #popper>
 			<div class="v-popper__custom-menu">

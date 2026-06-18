@@ -54,12 +54,12 @@ const moveDown = () => {
 };
 
 const deleteNode = () => {
-	// if (nodeListEffectIsPartOf.value && nodeListEffectIsPartOf.value.length > 1) {
-	// 	let tree = nodeListEffectIsPartOf.value;
-	// 	const indexToRemove = Number.parseInt(props.context[props.context.length - 1] || "0");
+	if (nodeListEffectIsPartOf.value && nodeListEffectIsPartOf.value.length > 1) {
+		const tree = nodeListEffectIsPartOf.value;
+		const indexToRemove = Number.parseInt(props.context[props.context.length - 1] || "0");
 
-	// 	// tree = tree.splice(indexToRemove, 1);
-	// }
+		tree.splice(indexToRemove, 1);
+	}
 };
 
 const nodeListEffectIsPartOf = computed(() => {
@@ -101,14 +101,19 @@ const nodeListEffectIsPartOf = computed(() => {
 
 	return tree;
 });
+
+const indexInRespectToParent = computed(() => {
+	return Number.parseInt(props.context[props.context.length - 1]);
+});
 </script>
 
 <template>
 	<p :style="`margin-left: ${(depth + 1) * 15}px; color: grey;`" @click="currentEffect = data; currentContext = context">
 		<NodeHeader :type="selfType" />
-		<Icon v-if="nodeListEffectIsPartOf.length" icon="ooui:arrow-up" inline width=".75em" @click.prevent="moveUp" />
-		<Icon icon="ooui:arrow-down" inline width=".75em" @click.prevent="moveDown" />
-		<!-- <Icon icon="fa7-solid:eraser" inline width=".75em" @click.prevent="deleteNode" /> -->
+		<Icon v-if="nodeListEffectIsPartOf.length > 0 && indexInRespectToParent !== 0" icon="ooui:arrow-up" inline width=".75em" @click.prevent="moveUp" />
+		<Icon v-if="nodeListEffectIsPartOf.length > 0 && indexInRespectToParent !== nodeListEffectIsPartOf.length - 1 " icon="ooui:arrow-down" inline width=".75em" @click.prevent="moveDown" />
+		<Icon icon="fa7-solid:eraser" inline width=".75em" @click="deleteNode" />
+		<Icon icon="ooui:copy-ltr" inline width=".75em" @click="deleteNode" />
 
 		<!-- <Icon icon="material-symbols:ink-pen" inline width="1em" style="margin-left: .5em" /> -->
 		<span v-if="['attack', 'condition', 'save'].includes(selfType)" class="collapse-button" @click.stop="isCollapsed = !isCollapsed">
@@ -117,7 +122,7 @@ const nodeListEffectIsPartOf = computed(() => {
 	</p>
 	<div v-show="!isCollapsed">
 		<!-- Loop through each key in our data, looking for the keys which continue the structure. -->
-		<template v-for="effect, key of data" :key="effect">
+		<template v-for="effect, key of data" :key="key">
 			<template v-if="deepKeys.includes(key) && selfType !== 'ieffect2'">
 				<!--- E.g. hit, Miss, on False text -->
 				<p v-if="!['root', 'effects'].includes(key)" :key="key" :style="`margin-left: ${(depth + 2) * 15}px; color: white;`">
