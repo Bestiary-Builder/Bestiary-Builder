@@ -3,6 +3,7 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { refDebounced, useLocalStorage } from "@vueuse/core";
 import { createPopper } from "@popperjs/core";
+import Draggable from "vuedraggable";
 import UserBanner from "@/components/UserBanner.vue";
 import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
 import StatusIcon from "@/components/StatusIcon.vue";
@@ -55,24 +56,22 @@ const searchOptions = ref({
 	env: "",
 	faction: ""
 });
-const sortMode = ref("Custom");
+
+const sortMode = useLocalStorage("sortModeForBestiaries", "Alphabetically");
 const isExpanded = ref(false);
 const showEditorModal = ref(false);
 const showImportModal = ref(false);
 const srdCreatures = ref<string[]>([]);
 
-const searchCreatures = computed<CreatureWithStats[] | null>(() => {
-	if (creatures.value == null)
-		return null;
-	const loader = $loading.show();
-
-	const response = creatures.value?.filter((creature: CreatureWithStats) => filterCreature(creature)) || null;
-
+const sortCreatures = () => {
+	if (!creatures.value)
+		return;
 	if (sortMode.value === "Custom") {
 		// Do nothing, order as recieved
+		return creatures.value;
 	}
-	else if (sortMode.value === "Alphabetically") {
-		response.sort((a, b) => {
+	if (sortMode.value === "Alphabetically") {
+		creatures.value.sort((a, b) => {
 			const nameA = a.stats.description.name.toLowerCase();
 			const nameB = b.stats.description.name.toLowerCase();
 			if (nameA < nameB)
@@ -83,7 +82,7 @@ const searchCreatures = computed<CreatureWithStats[] | null>(() => {
 		});
 	}
 	else if (sortMode.value === "Creature Type") {
-		response.sort((a, b) => {
+		creatures.value.sort((a, b) => {
 			const nameA = a.stats.core.race.toLowerCase();
 			const nameB = b.stats.core.race.toLowerCase();
 			if (nameA < nameB)
@@ -94,19 +93,26 @@ const searchCreatures = computed<CreatureWithStats[] | null>(() => {
 		});
 	}
 	else if (sortMode.value === "CR Descending") {
-		response.sort((a, b) => {
+		creatures.value.sort((a, b) => {
 			return b.stats.description.cr - a.stats.description.cr;
 		});
 	}
 	else if (sortMode.value === "CR Ascending") {
-		response.sort((a, b) => {
+		creatures.value.sort((a, b) => {
 			return a.stats.description.cr - b.stats.description.cr;
 		});
 	}
-	loader.hide();
 
-	return response;
-});
+	return creatures.value;
+};
+
+const saveOrder = async () => {
+	if (creatures.value && bestiary.value) {
+		const orderIds = creatures.value.map(creature => creature.id);
+
+		await useFetch(`/api/bestiary/${bestiary.value.id}/creatures/order`, "POST", orderIds);
+	}
+};
 
 watch(lastClickedCreature, (): void => {
 	if (hasPinnedBefore.value)
@@ -635,6 +641,11 @@ const copyCurrentBestiary = () => {
 	copiedCreatures.value = copiedCreatures.value.concat(toAdd);
 	toast.success("Successfully copied current Bestiary");
 };
+
+// draggable stuff
+const getDraggableKey = (item: any) => {
+	return item;
+};
 </script>
 
 <template>
@@ -793,60 +804,60 @@ const copyCurrentBestiary = () => {
 							</div>
 						</div>
 					</div>
-					<div class="tile-container list-tiles">
-						<TransitionGroup name="slide-fade">
-							<div v-for="creature in searchCreatures" :key="creature.id.toString()" class="content-tile creature-tile" @mouseover="lastHoveredCreature = creature.stats">
+					<Draggable :list="sortCreatures()" :animation="500" class="tile-container list-tiles" :item-key="getDraggableKey" :disabled="sortMode !== 'Custom'" @change="saveOrder">
+						<template #item="{ element }">
+							<div v-if="filterCreature(element)" class="content-tile creature-tile" @mouseover="lastHoveredCreature = element.stats">
 								<div class="left-side">
-									<h3>{{ creature.stats?.description?.name }}</h3>
-									<span>{{ creature.stats?.core?.size }} {{ creature.stats?.core?.race }}{{ creature.stats?.description?.alignment ? `, ${creature.stats?.description?.alignment}` : "" }}</span>
+									<h3>{{ element.stats?.description?.name }}</h3>
+									<span>{{ element.stats?.core?.size }} {{ element.stats?.core?.race }}{{ element.stats?.description?.alignment ? `, ${element.stats?.description?.alignment}` : "" }}</span>
 								</div>
 								<div class="right-side">
-									<button v-tooltip="'Copy creature'" :aria-label="`Copy ${creature.stats.description.name}`" @click="copiedCreatures.push({ ...creature, bestiaryName: bestiary.name })">
+									<button v-tooltip="'Copy creature'" :aria-label="`Copy ${element.stats.description.name}`" @click="copiedCreatures.push({ ...element, bestiaryName: bestiary.name })">
 										<font-awesome-icon :icon="['fas', 'copy']" />
 									</button>
-									<button v-tooltip="'Pin creature'" @click="lastClickedCreature = creature.stats">
+									<button v-tooltip="'Pin creature'" @click="lastClickedCreature = element.stats">
 										<font-awesome-icon :icon="['fas', 'thumbtack']" />
 									</button>
 									<VDropdown v-if="isOwner || isEditor" :distance="6" :positioning-disabled="store.isMobile">
-										<button v-tooltip="'Delete creature'" :aria-label="`Delete ${creature.stats.description.name}`" @click.stop.prevent="">
+										<button v-tooltip="'Delete creature'" :aria-label="`Delete ${element.stats.description.name}`" @click.stop.prevent="">
 											<font-awesome-icon :icon="['fas', 'trash']" />
 										</button>
 										<template #popper>
 											<div class="v-popper__custom-menu">
 												<span> Are you sure you want to delete this creature? </span>
-												<button v-close-popper class="btn danger" @click.stop="deleteCreature(creature)">
+												<button v-close-popper class="btn danger" @click.stop="deleteCreature(element)">
 													Confirm
 												</button>
 											</div>
 										</template>
 									</VDropdown>
-									<button v-tooltip="`${isOwner || isEditor ? 'Edit' : 'View'} creature`" :aria-label="`${isOwner || isEditor ? 'Edit' : 'View'} ${creature.stats.description.name}`" class="edit-creature" @click.stop="() => {}">
-										<RouterLink class="creature" :to="`/statblock-editor/${creature.id}`" :aria-label="`${isOwner || isEditor ? 'Edit' : 'View'} creature`">
+									<button v-tooltip="`${isOwner || isEditor ? 'Edit' : 'View'} creature`" :aria-label="`${isOwner || isEditor ? 'Edit' : 'View'} ${element.stats.description.name}`" class="edit-creature" @click.stop="() => {}">
+										<RouterLink class="creature" :to="`/statblock-editor/${element.id}`" :aria-label="`${isOwner || isEditor ? 'Edit' : 'View'} creature`">
 											<font-awesome-icon v-if="isOwner || isEditor" :icon="['fas', 'pen-to-square']" />
 											<font-awesome-icon v-else :icon="['fas', 'eye']" />
 										</RouterLink>
 									</button>
-									<span class="cr"> CR {{ crAsString(creature.stats.description.cr) }}</span>
+									<span class="cr"> CR {{ crAsString(element.stats.description.cr) }}</span>
 								</div>
 							</div>
-						</TransitionGroup>
-						<div v-if="isOwner || isEditor" class="create-tile">
-							<VDropdown v-if="isOwner || isEditor" :distance="6" placement="top" :positioning-disabled="store.isMobile">
-								<span role="button" class="create-text">Add Creature</span>
-								<template #popper>
-									<div class="v-popper__custom-menu">
-										<LabelledComponent title="From Scratch" for="fromScratch">
-											<button id="fromScratch" v-close-popper class="btn" @click.stop="createCreature()">
-												From scratch
-											</button>
-										</LabelledComponent>
-										<LabelledComponent title="From SRD Creature" for="fromSrd">
-											<v-select :options="srdCreatures" input-id="fromSrd" placeholder="Select SRD creature" style="min-width: 300px" append-to-body :calculate-position="withPopper" @option:selected="(selected : string) => (importSrdCreature(selected))" />
-										</LabelledComponent>
-									</div>
-								</template>
-							</VDropdown>
-						</div>
+						</template>
+					</Draggable>
+					<div v-if="isOwner || isEditor" class="create-tile">
+						<VDropdown v-if="isOwner || isEditor" :distance="6" placement="top" :positioning-disabled="store.isMobile">
+							<span role="button" class="create-text">Add Creature</span>
+							<template #popper>
+								<div class="v-popper__custom-menu">
+									<LabelledComponent title="From Scratch" for="fromScratch">
+										<button id="fromScratch" v-close-popper class="btn" @click.stop="createCreature()">
+											From scratch
+										</button>
+									</LabelledComponent>
+									<LabelledComponent title="From SRD Creature" for="fromSrd">
+										<v-select :options="srdCreatures" input-id="fromSrd" placeholder="Select SRD creature" style="min-width: 300px" append-to-body :calculate-position="withPopper" @option:selected="(selected : string) => (importSrdCreature(selected))" />
+									</LabelledComponent>
+								</div>
+							</template>
+						</VDropdown>
 					</div>
 				</div>
 				<div v-if="creatures && lastHoveredCreature" class="statblock-container">
@@ -1075,13 +1086,14 @@ const copyCurrentBestiary = () => {
 			}
 		}
 	}
+}
 
-	.create-tile {
-		text-align: center;
-		text-decoration: underline;
-		span {
-			cursor: pointer;
-		}
+.create-tile {
+	padding-top: 1rem;
+	text-align: center;
+	text-decoration: underline;
+	span {
+		cursor: pointer;
 	}
 }
 

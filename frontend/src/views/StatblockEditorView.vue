@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import Draggable from "vuedraggable";
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
-import { toJpeg, toSvg } from "html-to-image";
-import { usePermission } from "@vueuse/core";
+import { nextTick, onMounted, onUnmounted, ref, watch } from "vue";
+import { toJpeg } from "html-to-image";
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
 import { toast } from "@/utils/app/toast";
 import Modal from "@/components/Modal.vue";
@@ -11,7 +10,7 @@ import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
 import LabelledNumberInput from "@/components/LabelledNumberInput.vue";
 import LabelledComponent from "@/components/LabelledComponent.vue";
 import type { BestiaryExtended, CreatureWithStats, Features, Statblock } from "~/shared";
-import { capitalizeFirstLetter, defaultStatblock, getSpellSlots, getXPbyCR, spellList, spellListFlattened, statFullName } from "~/shared";
+import { defaultStatblock, getSpellSlots, getXPbyCR, spellList, spellListFlattened, statFullName } from "~/shared";
 import { useFetch } from "@/utils/utils";
 import { store } from "@/utils/store";
 import { $loading } from "@/utils/app/loading";
