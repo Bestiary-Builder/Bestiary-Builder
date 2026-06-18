@@ -26,13 +26,13 @@ import router from "@/router";
 import App from "@/App.vue";
 
 export const app = createApp(App as Component<any>);
-app.use(router);
-app.use(FloatingVue);
 app.use(ToastPlugin, {
 	position: "top-left",
 	duration: 4000,
 	dismissible: true
 });
+app.use(router);
+app.use(FloatingVue);
 app.component("font-awesome-icon", FontAwesomeIcon);
 app.component("v-select", vSelect);
 loader.config({

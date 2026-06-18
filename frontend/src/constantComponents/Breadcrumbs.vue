@@ -2,7 +2,7 @@
 import { ref, watchEffect } from "vue";
 import { isClient } from "@vueuse/shared";
 import { useElementSize, useShare } from "@vueuse/core";
-import { toast } from "vue-sonner";
+import { toast } from "../utils/app/toast";
 
 const { isLessWide = false, routes } = defineProps<{ routes: links; isLessWide?: boolean }>();
 type links = {
