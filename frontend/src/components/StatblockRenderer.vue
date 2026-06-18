@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted } from "vue";
 import SimpleMarkdown from "@khanacademy/simple-markdown";
+import MarkdownIt from "markdown-it";
 import Markdown from "./Markdown.vue";
 import type { SaveEntity, SkillsEntity, Stat, Statblock } from "~/shared";
 import { SKILLS_BY_STAT, capitalizeFirstLetter, crAsString, displayCasterCasting, displayInnateCasting, displaySpeedOrSenses, hpCalc, ppCalc, signedNumber, statCalc } from "~/shared";
@@ -180,9 +181,25 @@ rules.paragraph.html = (node: any, output: any, state: any) => {
 const makeMarkdown = (text: string) => {
 	const parser = SimpleMarkdown.parserFor(rules as any);
 	const htmlOutput = SimpleMarkdown.outputFor(rules, "html");
-
 	const syntaxTree = parser(text);
 	return htmlOutput(syntaxTree);
+};
+
+const md = new MarkdownIt();
+const defaultParagraphRenderer = md.renderer.rules.paragraph_open || ((tokens, idx, options, env, self) => self.renderToken(tokens, idx, options));
+md.renderer.rules.paragraph_open = function (tokens, idx, options, env, self) {
+	console.log(data.description.description);
+	let result = "";
+	if (idx > 1) {
+		const inline = tokens[idx - 2];
+		const paragraph = tokens[idx];
+		if (inline.type === "inline" && inline.map && inline.map[1] && paragraph.map && paragraph.map[0]) {
+			const diff = paragraph.map[0] - inline.map[1];
+			if (diff > 0)
+				result = "<br>".repeat(diff);
+		}
+	}
+	return result + defaultParagraphRenderer(tokens, idx, options, env, self);
 };
 </script>
 
@@ -395,7 +412,7 @@ const makeMarkdown = (text: string) => {
 			<h2 class="feature-container__title">
 				Description
 			</h2>
-			<div class="markdown" v-html="makeMarkdown(data.description.description)" />
+			<div class="markdown" v-html="md.render(data.description.description.replace('\n', '$ReplaceWithNewLineCharacter')).replaceAll('$ReplaceWithNewLineCharacter', '<br>')" />
 		</div>
 	</div>
 </template>
