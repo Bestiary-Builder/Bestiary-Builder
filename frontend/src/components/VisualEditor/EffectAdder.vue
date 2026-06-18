@@ -65,12 +65,14 @@ const addAndSelect = async (node: string, pasteCopied = false) => {
 	// traverse through the tree.
 	if (!automation)
 		return;
-	if (!automation.value)
-		automation.value = { _v: 2, name: props.name || "New Attack", automation: [] };
+	if (!automation.value) {
+		automation.value = { _v: 2, name: props.name || "New Attack", automation: [JSON.parse(JSON.stringify(defaultNodes[node]))] };
+		return;
+	}
+
 	let tree: any;
 	if (Array.isArray(automation.value))
 		tree = automation.value[Number.parseInt(props.context[0])].automation;
-
 	else
 		tree = automation.value.automation;
 

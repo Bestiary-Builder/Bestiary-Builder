@@ -19,6 +19,7 @@ import {
 	faMinus,
 	faPenToSquare,
 	faPlus,
+	faRotate,
 	faSave,
 	faScaleBalanced,
 	faSection,
@@ -73,5 +74,6 @@ library.add(
 	faThumbTack,
 	faMinus,
 	faEraser,
-	faSection
+	faSection,
+	faRotate
 );

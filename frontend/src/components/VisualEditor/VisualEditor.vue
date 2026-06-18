@@ -43,17 +43,20 @@ provide("copiedEffect", copiedEffect);
 <template>
 	<section class="two-wide uneven">
 		<div class="tree">
+			{{ currentContext }}
+
 			<SectionHeader title="Effect Tree" />
 			<TreeRoot v-if="automation" :data="automation" :depth="-1" />
-			<p v-else class="container">
+			<p v-else class="container" style="padding: 6px">
 				<EffectAdder :context="['root']" :name="props.name" />
 			</p>
 		</div>
 		<div class="editor">
 			<div v-if="!currentEffect && currentContext.length === 0">
 				<SectionHeader title="No Effect Selected" />
-				Select or create a node in the Effect Tree.
-				<img src="../../../public/Flumph.png" style="max-width: 100px;">
+				Select or create a node in the Effect Tree to get started.
+				<img src="../../../public/Devourer.png" style="max-width: 200px;     transform: scale(-1, 1); margin-top: 1rem">
+				<sub> Nom nom nom</sub>
 			</div>
 			<template v-else>
 				<Transition>

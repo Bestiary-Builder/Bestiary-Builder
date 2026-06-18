@@ -272,7 +272,8 @@ const currentContext = ref("");
 const cursorPosition = ref(0);
 
 const ourInterval = setInterval(() => {
-	cursorPosition.value = editorRef.value?.getModel().getOffsetAt(editorRef.value?.getPosition());
+	if (!prefersVisualEditor.value)
+		cursorPosition.value = editorRef.value?.getModel().getOffsetAt(editorRef.value?.getPosition());
 }, 1000);
 
 onUnmounted(() => {
@@ -393,7 +394,17 @@ const showDescriptionButtons = computed(() => {
 	return false;
 });
 
-const prefersVisualEditor = store.user?.preferredEditor === "Visual";
+const prefersVisualEditor = ref(store.user?.preferredEditor === "Visual");
+
+const changeEditor = () => {
+	if (data.value) {
+		if (prefersVisualEditor.value)
+			automationString.value = YAML.stringify(data.value.features[type][aid].automation);
+		else
+			data.value.features[type][aid].automation = YAML.parse(automationString.value);
+	}
+	prefersVisualEditor.value = !prefersVisualEditor.value;
+};
 </script>
 
 <template>
@@ -406,7 +417,7 @@ const prefersVisualEditor = store.user?.preferredEditor === "Visual";
 			},
 			{
 				path: `/statblock-editor/${$route.params.id}`,
-				text: data?.description.name || 'Unnamed Creature',
+				text: data?.description.name.substring(0, 30) || 'Unnamed Creature',
 				isCurrent: false
 			},
 			{
@@ -423,6 +434,9 @@ const prefersVisualEditor = store.user?.preferredEditor === "Visual";
 			<font-awesome-icon :icon="['fas', 'wand-sparkles']" />
 		</button>
 
+		<button v-tooltip="'Swap editors'" aria-label="Generate automation" @click="changeEditor">
+			<font-awesome-icon :icon="['fas', 'rotate']" />
+		</button>
 		<VDropdown :distance="6" :positioning-disabled="store.isMobile">
 			<button v-tooltip="'Import actions'" aria-label="Import actions">
 				<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
