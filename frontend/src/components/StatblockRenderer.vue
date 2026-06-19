@@ -412,7 +412,7 @@ md.renderer.rules.paragraph_open = function (tokens, idx, options, env, self) {
 			<h2 class="feature-container__title">
 				Description
 			</h2>
-			<div class="markdown" v-html="md.render(data.description.description.replace('\n', '$ReplaceWithNewLineCharacter')).replaceAll('$ReplaceWithNewLineCharacter', '<br>')" />
+			<div class="markdown" v-html="md.render(data.description.description.replaceAll('\n', '$ReplaceWithNewLineCharacter')).replaceAll('$ReplaceWithNewLineCharacter', '<br>')" />
 		</div>
 	</div>
 </template>
