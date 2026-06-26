@@ -67,6 +67,8 @@ const skillOutput = computed(() => {
 		let bonus = 0;
 		for (const stat in SKILLS_BY_STAT) {
 			if (SKILLS_BY_STAT[stat as Stat].includes(skill.skillName.replaceAll(" ", "").toLowerCase().replace("animalh", "animalH").replace("sleightofh", "sleightOfH"))) {
+				if (v2024 && skill.skillName === "Initiative")
+					continue;
 				if (skill.override && skill.override !== null) {
 					const over = skill.override;
 
