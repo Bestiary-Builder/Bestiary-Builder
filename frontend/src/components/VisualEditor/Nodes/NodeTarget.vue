@@ -45,7 +45,7 @@ if (currentEffect?.value.target === "each")
 						All
 					</option>
 					<option value="self">
-						Caster
+						Self/Caster
 					</option>
 					<option v-if="!isButton" :value="Number(currentEffect.target) ? currentEffect.target : 1">
 						Position

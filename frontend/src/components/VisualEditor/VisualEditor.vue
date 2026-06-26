@@ -17,8 +17,8 @@ provide("currentContext", currentContext);
 defineExpose<{ currentEffect: any; currentContext: any }>({ currentEffect, currentContext });
 
 const automation = defineModel<null | AttackModel | AttackModel[]>();
-if (automation.value == null)
-	automation.value = { _v: 2, name: "Action", automation: [] };
+// if (automation.value == null)
+// 	automation.value = { _v: 2, name: "Action", automation: [] };
 provide("automation", ref(automation));
 const currentNode = computed(() => {
 	if (!currentEffect.value)

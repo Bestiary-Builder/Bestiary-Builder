@@ -5,7 +5,7 @@ import TreeRoot from "./TreeRoot.vue";
 import EffectAdder from "./EffectAdder.vue";
 import NodeHeader from "./Nodes/shared/NodeHeader.vue";
 import { deepKeys } from "./util";
-import type { AttackInteraction, AttackModel, ButtonInteraction, EffectKey, EffectWithTarget } from "~/shared";
+import type { AttackInteraction, AttackModel, ButtonInteraction, EffectKey, EffectWithTarget, Target } from "~/shared";
 
 const props = defineProps<{ data: EffectWithTarget; depth: number; parentType: string; context: string[] }>();
 
@@ -119,11 +119,22 @@ const cutNode = () => {
 	copiedEffect.value = props.data;
 	deleteNode();
 };
+
+const additionalText = computed(() => {
+	if (selfType.value === "target") {
+		const target = (props.data as Target).target || "";
+		if (!target)
+			return "";
+
+		return target.toString().substring(0, 1).toUpperCase();
+	}
+	return "";
+});
 </script>
 
 <template>
 	<p :style="`margin-left: ${(depth + 1) * 15}px; color: grey;`" @click="currentEffect = data; currentContext = context">
-		<NodeHeader :type="selfType" />
+		<NodeHeader :type="selfType" :additional-text="additionalText" />
 		<span class="tree-buttons">
 			<Icon v-if="(nodeListEffectIsPartOf || []).length > 0 && indexInRespectToParent !== 0" icon="ooui:arrow-up" inline width=".75em" @click.prevent="moveUp" />
 			<Icon v-else icon="ooui:arrow-up" inline width=".75em" color="#3f3f3f" />

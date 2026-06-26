@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Draggable from "vuedraggable";
-import { nextTick, onMounted, onUnmounted, ref, watch } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import { toJpeg } from "html-to-image";
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
 import { toast } from "@/utils/app/toast";
@@ -70,6 +70,7 @@ const saveStatblock = async (shouldNotify = true): Promise<boolean> => {
 	rawInfo.value.stats = data.value;
 	const loader = $loading.show();
 	// Send to backend
+	console.log(data.value);
 	const { success, error } = await useFetch<CreatureWithStats>(`/api/creature/${rawInfo.value.id.toString()}/update`, "POST", rawInfo.value);
 	if (success) {
 		if (shouldNotify)
@@ -268,6 +269,7 @@ const exportHomebrery = async () => {
 };
 
 const exportToImage = async () => {
+	const loader = $loading.show();
 	const filter = (node: HTMLElement) => {
 		return true;
 		return (node.tagName !== "IMG");
@@ -276,13 +278,14 @@ const exportToImage = async () => {
 	const doc = document.getElementById("statblock");
 	if (!doc)
 		return;
+	doc.style = "width: 800px; column-count: 2";
 
 	// The image converter breaks when it encounters css styles imported by monaco. Remove that from the dom, run the function, then add it again.
 	const monacoCss = document.head.querySelector(`[data-name="vs/editor/editor.main"]`);
 	monacoCss?.remove();
 
 	// convert it to an image
-	await toJpeg(doc, { filter })
+	await toJpeg(doc, { filter, pixelRatio: 2 })
 		.then((dataUrl) => {
 			const link = document.createElement("a");
 			link.download = `${data.value.description.name} from BestiaryBuilder.jpg`;
@@ -298,6 +301,8 @@ const exportToImage = async () => {
 
 	if (monacoCss)
 		document.head.appendChild(monacoCss);
+	doc.style = "";
+	loader.hide();
 };
 
 // helpers for adding speed or senses
@@ -365,7 +370,7 @@ const createNewFeature = (type: keyof Features) => {
 // helpers for spells
 const showSpellModal = ref(false);
 
-const spellLevelList = (): number[] => {
+const spellLevelList = computed((): number[] => {
 	const sClass = data.value.spellcasting.casterSpells.castingClass;
 	const slots = data.value.spellcasting.casterSpells.spellSlotList;
 
@@ -376,7 +381,7 @@ const spellLevelList = (): number[] => {
 	if (slots)
 		return Object.keys(slots).map(str => Number.parseInt(str));
 	return [];
-};
+});
 
 const getSpellsByLevel = (level: number): string[] => {
 	// this function is needed for typescript.
@@ -404,10 +409,8 @@ watch(() => data.value.spellcasting.casterSpells.casterLevel, (newValue) => {
 watch(() => data.value.spellcasting.casterSpells.castingClass, (newValue) => {
 	if (rawInfo.value == null)
 		return;
-	if (newValue == null || newValue === undefined) {
-		clearCasting();
-		return;
-	}
+	data.value.spellcasting.casterSpells.castingClass = newValue;
+
 	const sClass = data.value.spellcasting.casterSpells.castingClass;
 	switch (sClass) {
 		case "Artificer":
@@ -423,7 +426,9 @@ watch(() => data.value.spellcasting.casterSpells.castingClass, (newValue) => {
 			data.value.spellcasting.casterSpells.spellCastingAbility = "cha";
 	}
 	// set spell slots in case they changed full caster/half caster/arti half/warlock
+	console.log(sClass, data.value.spellcasting.casterSpells.spellSlotList);
 	data.value.spellcasting.casterSpells.spellSlotList = getSpellSlots(sClass, data.value.spellcasting.casterSpells.casterLevel);
+	console.log(sClass, data.value.spellcasting.casterSpells.spellSlotList);
 });
 
 const newDailyAmount = ref<number | null>(null);
@@ -445,7 +450,14 @@ const slideIndex = ref(2);
 const tabs = document.getElementsByClassName("editor-nav__tab") as HTMLCollectionOf<HTMLElement>;
 const tabsContent = document.getElementsByClassName("editor-content__tab-inner") as HTMLCollectionOf<HTMLElement>;
 
-onMounted(() => showSlides(1));
+onMounted(async () => {
+	if (typeof ($route.query.pane) == "string") {
+		showSlides(Math.max(0, Math.min(6, Math.abs(Number.parseInt($route.query.pane)))));
+		await $router.replace({ query: undefined });
+	}
+	else { showSlides(1); }
+});
+
 const showSlides = (n: number) => {
 	if (slideIndex.value === n)
 		return;
@@ -1207,7 +1219,7 @@ const openFeature = async (path: string) => {
 							<LabelledComponent v-if="!['Ranger', 'Paladin'].includes(data.spellcasting.casterSpells.castingClass)" title="Cantrips" takes-custom-text-input for="cantrips">
 								<v-select v-model="data.spellcasting.casterSpells.spellList[0]" :options="spellList[0]" multiple :deselect-from-dropdown="true" :close-on-select="false" :taggable="true" :push-tags="true" input-id="cantrips" />
 							</LabelledComponent>
-							<LabelledComponent v-for="level in spellLevelList()" :key="level" :title="`Level ${level}`" takes-custom-text-input :for="`spellLevel${level}`">
+							<LabelledComponent v-for="level in spellLevelList" :key="level" :title="`Level ${level}`" takes-custom-text-input :for="`spellLevel${level}`">
 								<v-select v-model="data.spellcasting.casterSpells.spellList[level]" :options="getSpellsByLevel(level)" multiple :deselect-from-dropdown="true" :close-on-select="false" :taggable="true" :push-tags="true" :title="`Level ${level}`" :input-id="`spellLevel${level}`" />
 							</LabelledComponent>
 						</div>

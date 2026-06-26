@@ -180,7 +180,7 @@ export function spellAttackBonus(innate = false, data: Statblock) {
 	return bonus;
 }
 
-export function displayInnateCasting(data: Statblock): string {
+export function displayInnateCasting(data: Statblock, v2024 = false): string {
 	if (data.spellcasting.innateSpells.customDescription.length > 0)
 		return data.spellcasting.innateSpells.customDescription;
 
@@ -220,7 +220,7 @@ export function displayInnateCasting(data: Statblock): string {
 	return output;
 }
 
-export function displayCasterCasting(data: Statblock): string {
+export function displayCasterCasting(data: Statblock, v2024 = false): string {
 	if (data.spellcasting.casterSpells.customDescription.length > 0)
 		return data.spellcasting.casterSpells.customDescription;
 	let desc = "";
@@ -246,15 +246,21 @@ export function displayCasterCasting(data: Statblock): string {
 	if (sClass === "Warlock") {
 		// cantrips
 		if (spells[0].length > 0)
-			spellStr += `Cantrips (at will): *${spells[0].sort().join(", ").toLowerCase()}*`;
+			spellStr += `\nCantrips (at will): *${spells[0].sort().join(", ").toLowerCase()}*`;
 
 		if (level < 3) {
-			spellStr += `\n1st level (${slots["1"]} slots): *${spells.slice(1).flat().sort().join(",").toLowerCase()}*`;
+			if (v2024)
+				spellStr += `\n1st level (${slots["1"]} slots): *${spells.slice(1).flat().sort().join(",")}*`;
+			else
+				spellStr += `\n1st level (${slots["1"]} slots): *${spells.slice(1).flat().sort().join(",").toLowerCase()}*`;
 		}
 		else {
 			const highestSlot = Number.parseInt(Object.keys(slots ?? { 1: 1 })[0]);
 
-			spellStr += `\n1st-${nthSuffix(highestSlot)} level (${nthSuffix(slots[highestSlot])}-level slots): *${spells.slice(1).flat().sort().join(", ").toLowerCase()}*`;
+			if (v2024)
+				spellStr += `\n1st-${nthSuffix(highestSlot)} level (${nthSuffix(slots[highestSlot])}-level slots): *${spells.slice(1).flat().sort().join(", ")}*`;
+			else
+				spellStr += `\n1st-${nthSuffix(highestSlot)} level (${nthSuffix(slots[highestSlot])}-level slots): *${spells.slice(1).flat().sort().join(", ").toLowerCase()}*`;
 		}
 	}
 	else {
@@ -265,11 +271,17 @@ export function displayCasterCasting(data: Statblock): string {
 				if (noCantrips && level === "0")
 					break;
 				if (level === "0") {
-					spellStr += `\nCantrips (at will): *${lSpells.sort().join(", ").toLowerCase()}*`;
+					if (v2024)
+						spellStr += `\nCantrips (at will): *${lSpells.sort().join(", ")}*`;
+					else
+						spellStr += `\nCantrips (at will): *${lSpells.sort().join(", ").toLowerCase()}*`;
 				}
 				else {
 					const s = slots[level] > 1 ? "s" : "";
-					spellStr += `\n${nthSuffix(Number.parseInt(level))} level (${slots[level]} slot${s}): *${lSpells.sort().join(", ").toLowerCase()}*`;
+					if (v2024)
+						spellStr += `\n${nthSuffix(Number.parseInt(level))} level (${slots[level]} slot${s}): *${lSpells.sort().join(", ")}*`;
+					else
+						spellStr += `\n${nthSuffix(Number.parseInt(level))} level (${slots[level]} slot${s}): *${lSpells.sort().join(", ").toLowerCase()}*`;
 				}
 			}
 		}

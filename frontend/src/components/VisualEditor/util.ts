@@ -1,4 +1,4 @@
-import type { AttackModel, EffectWithTarget } from "~/shared";
+import type { EffectWithTarget, Features } from "~/shared";
 
 export const displayNames: Record<string, { label: string; icon: string }> = {
 	variable: { label: "Set Variable", icon: "proicons:braces-variable" },
@@ -28,7 +28,7 @@ export const displayNames: Record<string, { label: string; icon: string }> = {
 export const defaultNodes: Record<string, EffectWithTarget> = {
 	target: {
 		type: "target",
-		target: "each",
+		target: "all",
 		effects: []
 	},
 	attack: {
@@ -97,3 +97,17 @@ export const defaultNodes: Record<string, EffectWithTarget> = {
 };
 
 export const deepKeys = ["effects", "hit", "miss", "fail", "success", "onTrue", "onFalse"];
+
+type activation_types = {
+	[id in keyof Features]: number;
+};;
+export const activation_type: activation_types = {
+	features: 2,
+	actions: 1,
+	bonus: 3,
+	reactions: 4,
+	legendary: 9,
+	mythic: 10,
+	lair: 11,
+	regional: 8
+};

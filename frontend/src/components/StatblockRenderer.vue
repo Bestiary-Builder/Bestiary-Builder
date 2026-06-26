@@ -162,35 +162,9 @@ onMounted(async () => {
 		await import("../assets/styles/statblock/beyond/beyond.css");
 });
 
-const blockRegex = function (regex: RegExp) {
-	const match = function (source: any, state: any) {
-		if (state.inline)
-			return null;
-		else
-			return regex.exec(source);
-	};
-	match.regex = regex;
-	return match;
-};
-
-const rules = SimpleMarkdown.defaultRules;
-// @ts-expect-error Can modify, is fine
-rules.paragraph.match = blockRegex(/^((?:[^\n]|)+)/);
-// @ts-expect-error Can modify, is fine
-rules.paragraph.html = (node: any, output: any, state: any) => {
-	return `<p> ${output(node.content, state)} </p>`;
-};
-const makeMarkdown = (text: string) => {
-	const parser = SimpleMarkdown.parserFor(rules as any);
-	const htmlOutput = SimpleMarkdown.outputFor(rules, "html");
-	const syntaxTree = parser(text);
-	return htmlOutput(syntaxTree);
-};
-
 const md = new MarkdownIt();
 const defaultParagraphRenderer = md.renderer.rules.paragraph_open || ((tokens, idx, options, env, self) => self.renderToken(tokens, idx, options));
 md.renderer.rules.paragraph_open = function (tokens, idx, options, env, self) {
-	console.log(data.description.description);
 	let result = "";
 	if (idx > 1) {
 		const inline = tokens[idx - 2];
@@ -358,17 +332,17 @@ md.renderer.rules.paragraph_open = function (tokens, idx, options, env, self) {
 				</p>
 				<p v-for="(feature, index) in data.features.features" :key="index">
 					<b> <i>{{ feature.name }}.</i><sup v-if="feature.automation" v-tooltip="'Has Automation'" class="feature-container__automation-icon">†</sup> </b>
-					<span class="feature-container__desc" v-html="makeMarkdown(feature.description)" />
+					<span class="feature-container__desc" v-html="md.render(feature.description.replaceAll('\n', '$ReplaceWithNewLineCharacter')).replaceAll('$ReplaceWithNewLineCharacter', '<br>')" />
 				</p>
 
 				<p v-if="showInnateCasting && !data.spellcasting.innateSpells.displayAsAction">
 					<b><i>Innate Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics"> (Psionics)</span>.</i></b>
-					<span class="feature-container__desc" v-html="makeMarkdown(displayInnateCasting(data))" />
+					<span class="feature-container__desc" v-html="md.render(displayInnateCasting(data, v2024).replaceAll('\n', '$ReplaceWithNewLineCharacter')).replaceAll('$ReplaceWithNewLineCharacter', '<br>')" />
 				</p>
 
 				<p v-if="showCasterCasting && data.spellcasting.casterSpells.castingClass && data.spellcasting.casterSpells.casterLevel && data.spellcasting.casterSpells.spellSlotList">
 					<b><i>Spellcasting</i></b>
-					<span class="feature-container__desc" v-html="makeMarkdown(displayCasterCasting(data))" />
+					<span class="feature-container__desc" v-html="md.render(displayCasterCasting(data, v2024).replaceAll('\n', '$ReplaceWithNewLineCharacter')).replaceAll('$ReplaceWithNewLineCharacter', '<br>')" />
 				</p>
 			</div>
 		</div>
@@ -382,12 +356,12 @@ md.renderer.rules.paragraph_open = function (tokens, idx, options, env, self) {
 			</p>
 			<p v-for="(feature, index) in data.features.actions" :key="index">
 				<b> <i>{{ feature.name }}.</i><sup v-if="feature.automation" v-tooltip="'Has Automation'" class="feature-container__automation-icon">†</sup></b>
-				<span class="feature-container__desc" v-html="makeMarkdown(feature.description)" />
+				<span class="feature-container__desc" v-html="md.render(feature.description.replaceAll('\n', '$ReplaceWithNewLineCharacter')).replaceAll('$ReplaceWithNewLineCharacter', '<br>')" />
 			</p>
 
 			<p v-if="showInnateCasting && data.spellcasting.innateSpells.displayAsAction">
 				<b><i>Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics"> (Psionics)</span>.</i></b>
-				<span class="feature-container__desc" v-html="makeMarkdown(displayInnateCasting(data))" />
+				<span class="feature-container__desc" v-html="md.render(displayInnateCasting(data, v2024).replaceAll('\n', '$ReplaceWithNewLineCharacter')).replaceAll('$ReplaceWithNewLineCharacter', '<br>')" />
 			</p>
 		</div>
 
@@ -406,7 +380,7 @@ md.renderer.rules.paragraph_open = function (tokens, idx, options, env, self) {
 				<p v-for="(feature, index) in data.features[fType]" :key="index" class="feature-description">
 					<b> <i> {{ feature.name }}.</i></b>
 					<sup v-if="feature.automation" v-tooltip="'Has Automation'" class="feature-container__automation-icon">†</sup>
-					<span class="feature-container__desc" v-html="makeMarkdown(feature.description)" />
+					<span class="feature-container__desc" v-html="md.render(feature.description.replaceAll('\n', '$ReplaceWithNewLineCharacter')).replaceAll('$ReplaceWithNewLineCharacter', '<br>')" />
 				</p>
 			</div>
 		</template>

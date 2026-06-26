@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { type Ref, computed, inject } from "vue";
 import { Icon } from "@iconify/vue";
+import { useRoute } from "vue-router";
 import { store } from "../../utils/store";
-import { defaultNodes, displayNames } from "./util";
-import type { AttackInteraction, AttackModel, ButtonInteraction, EffectWithTarget } from "~/shared";
-import { useFetch } from "@/utils/utils";
+import { activation_type, defaultNodes, displayNames } from "./util";
+import type { AttackInteraction, AttackModel, ButtonInteraction, EffectWithTarget, Features } from "~/shared";
 import { toast } from "@/utils/app/toast";
 
 const props = defineProps<{ context: string[]; name?: string }>();
-
+const $route = useRoute();
+const type = $route.params.type as keyof Features;
 const computedContext = computed(() => {
 	// a button, attack, or root node defines the current context that the automation runs in.
 	// Thus, we consider the relevant context up to when we reach one of these three.
@@ -66,7 +67,7 @@ const addAndSelect = async (node: string, pasteCopied = false) => {
 	if (!automation)
 		return;
 	if (!automation.value) {
-		automation.value = { _v: 2, name: props.name || "New Attack", automation: [JSON.parse(JSON.stringify(defaultNodes[node]))] };
+		automation.value = { _v: 2, name: props.name || "New Attack", automation: [JSON.parse(JSON.stringify(defaultNodes[node]))], activation_type: activation_type[type] };
 		return;
 	}
 

@@ -405,6 +405,13 @@ const changeEditor = () => {
 	}
 	prefersVisualEditor.value = !prefersVisualEditor.value;
 };
+
+const toNavigateTo = ref([-1, -1]);
+
+watch(toNavigateTo, async () => {
+	await $router.push(`/statblock-editor/${rawInfo.value?.id}/${toNavigateTo.value[0]}/${toNavigateTo.value[1]}`);
+	$router.go(0);
+});
 </script>
 
 <template>
@@ -416,7 +423,7 @@ const changeEditor = () => {
 				isCurrent: false
 			},
 			{
-				path: `/statblock-editor/${$route.params.id}`,
+				path: `/statblock-editor/${$route.params.id}?pane=5`,
 				text: data?.description.name.substring(0, 30) || 'Unnamed Creature',
 				isCurrent: false
 			},
@@ -477,12 +484,26 @@ const changeEditor = () => {
 				<LabelledComponent title="Feature name" for="featurename">
 					<input id="featurename" v-model="data.features[type][aid].name" type="text" placeholder="Enter name" :minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength">
 				</LabelledComponent>
-				<div style="margin-top: .5rem">
+				<div v-if="!prefersVisualEditor" style="margin-top: .5rem">
 					<b> Status: </b>
 					<span v-if="!automationStringValidated" style="color: var(--color-destructive)"> Automation invalid. </span>
 					<span v-else-if="isSaved"> Saved <font-awesome-icon style="color: var(--color-success)" :icon="['fas', 'save']" />
 					</span>
 					<span v-else> Saving...</span>
+				</div>
+				<div style="margin-top: 1rem;">
+					<select v-model="toNavigateTo" class="ghost" placeholder="Open other attack">
+						<option :value="[-1, -1]" disabled selected>
+							Open another action
+						</option>
+						<template v-for="aType, name in data.features" :key="name">
+							<optgroup v-if="aType.length > 0" :label="name">
+								<option v-for="action, index in aType" :key="index" :value="[name, index]">
+									{{ action.name }}
+								</option>
+							</optgroup>
+						</template>
+					</select>
 				</div>
 				<div v-if="showDescriptionButtons">
 					<b> Descriptions: </b>
@@ -500,6 +521,7 @@ const changeEditor = () => {
 				<textarea id="featuredescription" v-model="data.features[type][aid].description" height="94" placeholder="Enter description" style="height: 93px" :maxlength="store.limits?.descriptionLength" />
 			</LabelledComponent>
 		</div>
+
 		<div v-if="!prefersVisualEditor" class="editor">
 			<VueMonacoEditor v-model:value="automationString" theme="vs-dark" :options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false }" height="500px" language="yaml" @mount="handleMount" />
 		</div>
