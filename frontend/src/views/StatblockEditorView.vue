@@ -278,7 +278,7 @@ const exportToImage = async () => {
 	const doc = document.getElementById("statblock");
 	if (!doc)
 		return;
-	doc.style = "width: 800px; column-count: 2";
+	doc.style = "width: 800px; column-count: 2;";
 
 	// The image converter breaks when it encounters css styles imported by monaco. Remove that from the dom, run the function, then add it again.
 	const monacoCss = document.head.querySelector(`[data-name="vs/editor/editor.main"]`);

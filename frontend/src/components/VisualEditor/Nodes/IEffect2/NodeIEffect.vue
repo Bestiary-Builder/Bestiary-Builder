@@ -134,7 +134,7 @@ useDataCleanup(currentEffect, ["end", "tick_on_caster", "conc", "desc", "save_as
 		<SectionHeader title="Additional Options" />
 		<LabelledComponent title="Description" for="text" style="margin-bottom: 1rem">
 			<div class="input-wrapper">
-				<textarea id="text" v-model="currentEffect.desc" rows="40" placeholder="Description" /><AnnotatedString />
+				<textarea id="text" v-model="currentEffect.desc" rows="5" placeholder="Description" /><AnnotatedString />
 			</div>
 		</labelledcomponent>
 		<div class="two-wide">

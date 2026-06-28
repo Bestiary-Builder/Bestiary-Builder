@@ -2,7 +2,7 @@
 _???, 2026_
 
 ### Features
-- Added a proper automation editor for edting actions.
+- Added a proper automation editor for editing actions.
 - Improved styling of the statblock
 - Added 2024 statblock formatting and a toggle in user settings.
 - Added Beyond and Odyssey styling for statblocks, and a toggle in user settings.
