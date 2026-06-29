@@ -3,6 +3,7 @@ import Draggable from "vuedraggable";
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import { toJpeg } from "html-to-image";
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
+import html2canvas from "html2canvas";
 import { toast } from "@/utils/app/toast";
 import Modal from "@/components/Modal.vue";
 import StatblockRenderer from "@/components/StatblockRenderer.vue";
@@ -302,6 +303,27 @@ const exportToImage = async () => {
 	if (monacoCss)
 		document.head.appendChild(monacoCss);
 	doc.style = "";
+	loader.hide();
+};
+
+const exportToImageNew = async (type: "1x1" | "2x1" | "2x1 wide") => {
+	const loader = $loading.show();
+	const el = document.getElementById("statblock");
+	if (!el)
+		return;
+
+	el.style = `width: ${type === "2x1 wide" ? "1200" : "800"}px; column-count: ${type === "1x1" ? "1" : "2"};`;
+	el.classList.add("toPrint");
+
+	const canvas = await html2canvas(el, { scale: 2 });
+	const image = canvas.toDataURL("image/jpeg");
+	const link = document.createElement("a");
+
+	link.download = `${data.value.description.name} from BestiaryBuilder.jpg`;
+	link.href = image;
+	link.click();
+	el.classList.remove("toPrint");
+	el.style = "";
 	loader.hide();
 };
 
@@ -621,8 +643,14 @@ const openFeature = async (path: string) => {
 						<button v-close-popper class="btn confirm" @click="exportStatblock">
 							JSON
 						</button>
-						<button v-close-popper class="btn confirm" @click="exportToImage">
-							Image
+						<button v-close-popper class="btn confirm" @click="exportToImageNew('1x1')">
+							1x1
+						</button>
+						<button v-close-popper class="btn confirm" @click="exportToImageNew('2x1')">
+							2x1
+						</button>
+						<button v-close-popper class="btn confirm" @click="exportToImageNew('2x1 wide')">
+							2x1 wide
 						</button>
 						<button v-close-popper class="btn confirm" @click="exportHomebrery">
 							Homebrewery

@@ -28,6 +28,7 @@
 		"floating-vue": "^2.0.0-beta.24",
 		"focus-trap": "^7.5.4",
 		"html-to-image": "^1.11.11",
+		"html2canvas": "^1.4.1",
 		"less": "^4.2.0",
 		"markdown-it": "^14.0.0",
 		"markdown-it-anchor": "^8.6.7",
