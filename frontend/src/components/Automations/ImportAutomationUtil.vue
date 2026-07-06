@@ -66,11 +66,10 @@ const selectAndLoad = async (apiPath: AutomationTypes, name: string, _id: Id | n
 <template>
 	<VDropdown :distance="6" :positioning-disabled="store.isMobile">
 		<button v-tooltip="'Import actions'" aria-label="Import actions">
-			<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
+			<font-awesome-icon :icon="['fas', 'database']" />
 		</button>
 		<template #popper>
 			<div class="v-popper__custom-menu">
-				asdfasfd
 				<div class="editor-field__container" style="min-width: 400px">
 					<LabelledComponent title="Import SRD feature" for="importsrdfeature">
 						<v-select :options="loadedAutomation.srdFeatures" input-id="importsrdfeature" @option:selected="(selected : string) => (selectAndLoad('srd-feature', selected)) " />

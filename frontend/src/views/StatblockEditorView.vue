@@ -283,7 +283,7 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 	const image = canvas.toDataURL("image/jpeg");
 	const link = document.createElement("a");
 
-	link.download = `${data.value.description.name} from BestiaryBuilder.jpg`;
+	link.download = `${data.value.description.name} from BestiaryBuilder (${type}).jpg`;
 	link.href = image;
 	link.click();
 	el.classList.remove("toPrint");
@@ -607,18 +607,22 @@ const openFeature = async (path: string) => {
 						<button v-close-popper class="btn confirm" @click="exportStatblock">
 							JSON
 						</button>
-						<button v-close-popper class="btn confirm" @click="exportToImage('1x1')">
-							1x1
-						</button>
-						<button v-close-popper class="btn confirm" @click="exportToImage('2x1')">
-							2x1
-						</button>
-						<button v-close-popper class="btn confirm" @click="exportToImage('2x1 wide')">
-							2x1 wide
-						</button>
 						<button v-close-popper class="btn confirm" @click="exportHomebrery">
 							Homebrewery
 						</button>
+						<LabelledComponent title="Image export options">
+							<div style="display: flex;flex-direction: column;gap: 1rem;">
+								<button v-close-popper class="btn confirm" @click="exportToImage('2x1')">
+									2x1 (Recommended)
+								</button>
+								<button v-close-popper class="btn confirm" @click="exportToImage('1x1')">
+									1x1
+								</button>
+								<button v-close-popper class="btn confirm" @click="exportToImage('2x1 wide')">
+									2x1 wide
+								</button>
+							</div>
+						</LabelledComponent>
 					</div>
 				</template>
 			</VDropdown>

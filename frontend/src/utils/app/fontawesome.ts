@@ -7,6 +7,7 @@ import {
 	faCircleInfo,
 	faCode,
 	faCopy,
+	faDatabase,
 	faEarthEurope,
 	faEraser,
 	faEye,
@@ -75,5 +76,6 @@ library.add(
 	faMinus,
 	faEraser,
 	faSection,
-	faRotate
+	faRotate,
+	faDatabase
 );

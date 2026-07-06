@@ -4,9 +4,8 @@ import { nextTick, onMounted, ref, watch } from "vue";
 
 import markdownit from "markdown-it";
 import anchor from "markdown-it-anchor";
-// @ts-expect-error untyped
 import markdownItAttrs from "markdown-it-attrs";
-import Breadcrumbs from "@/Page/Breadcrumbs.vue";
+import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 
 import { prefersReducedMotion } from "@/utils/utils";
 
