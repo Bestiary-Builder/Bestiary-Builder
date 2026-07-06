@@ -210,108 +210,110 @@ const validateYaml = () => {
 </script>
 
 <template>
-	<div class="">
-		<div>
-			<div class="editor-field__container two-wide">
-				<LabelledComponent title="Feature name" for="featurename">
-					<input id="featurename" v-model="data.name" type="text" placeholder="Enter name" :minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength" @change="hasEditedName = true">
-				</LabelledComponent>
-				<LabelledComponent title="Save automation" for="saveAutomation">
-					<button class="btn confirm" for="saveAutotomation" @click="saveAutomation()">
-						Save Automation
-					</button>
-				</LabelledComponent>
-			</div>
-
-			<div class="editor-field__container">
-				<LabelledComponent title="Feature description" for="featuredescription">
-					<textarea id="featuredescription" v-model="data.description" height="94" placeholder="Enter description" style="height: 93px" :maxlength="store.limits?.descriptionLength" />
-				</LabelledComponent>
-			</div>
-
-			<div v-if="store.isMobile" class="editor-field__container two-wide">
-				<LabelledComponent title="Clear automation" for="clearautomation">
-					<button id="clearautomation" class="btn danger" @click="automationString = 'null'">
-						Clear
-					</button>
-				</LabelledComponent>
-				<LabelledComponent title="Copy Automation" for="copyautomation">
-					<button id="copyautomation" class="btn" @click="copyAutomation()">
-						Copy
-					</button>
-				</LabelledComponent>
-			</div>
-
-			<hr>
-
-			<div v-if="errorMessage">
-				<hr>
-				<span class="yaml-error" v-html="errorMessage" />
-			</div>
-			<div v-if="showDescriptionButtons && (!errorMessage || errorMessage.length === 0)">
-				<hr>
-				<p class="warning">
-					Feature description and last automation text node do not match.
-				</p>
-				<p>You can update the other with the buttons here.</p>
-				<div class="two-wide editor-field__container">
-					<LabelledComponent title="Update from automation">
-						<button class="btn" @click="updateFeatureDescFromAutomationDesc">
-							Update
-						</button>
+	<div>
+		<div class="">
+			<div>
+				<div class="editor-field__container two-wide">
+					<LabelledComponent title="Feature name" for="featurename">
+						<input id="featurename" v-model="data.name" type="text" placeholder="Enter name" :minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength" @change="hasEditedName = true">
 					</LabelledComponent>
-					<LabelledComponent title="Update from description">
-						<button class="btn" @click="updateAutomationDescFromFeatureDesc">
-							Update
+					<LabelledComponent title="Save automation" for="saveAutomation">
+						<button class="btn confirm" for="saveAutotomation" @click="saveAutomation()">
+							Save Automation
 						</button>
 					</LabelledComponent>
 				</div>
-			</div>
-		</div>
-		<div class="automation-editor">
-			<VueMonacoEditor v-model:value="automationString" theme="vs-dark" :options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false }" height="750px" language="yaml" @mount="handleMount" />
-		</div>
-	</div>
-	<div class="two-wide uneven">
-		<div />
-		<div v-if="currentDocu" class="docs">
-			<hr>
-			<h3>Documentation: {{ currentContext }}</h3>
-			<Markdown class="small" :text="currentDocu.desc" />
 
-			<div>
+				<div class="editor-field__container">
+					<LabelledComponent title="Feature description" for="featuredescription">
+						<textarea id="featuredescription" v-model="data.description" height="94" placeholder="Enter description" style="height: 93px" :maxlength="store.limits?.descriptionLength" />
+					</LabelledComponent>
+				</div>
+
+				<div v-if="store.isMobile" class="editor-field__container two-wide">
+					<LabelledComponent title="Clear automation" for="clearautomation">
+						<button id="clearautomation" class="btn danger" @click="automationString = 'null'">
+							Clear
+						</button>
+					</LabelledComponent>
+					<LabelledComponent title="Copy Automation" for="copyautomation">
+						<button id="copyautomation" class="btn" @click="copyAutomation()">
+							Copy
+						</button>
+					</LabelledComponent>
+				</div>
+
 				<hr>
-				<h4>Overview</h4>
-				See full documentation <a :href="`https://avrae.readthedocs.io/en/stable/automation_ref.html#${currentDocu.url}`" target="_blank">here</a>.
-				<VueMonacoEditor
-					v-if="currentDocu?.ts"
-					:value="`// Values denoted with an ? are optional.\n${currentDocu.ts}`"
-					theme="vs-dark"
-					:options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, automaticLayout: true, readOnly: true, scrollBeyondLastLine: false }"
-					language="typescript"
-					height="200px"
-				/>
+
+				<div v-if="errorMessage">
+					<hr>
+					<span class="yaml-error" v-html="errorMessage" />
+				</div>
+				<div v-if="showDescriptionButtons && (!errorMessage || errorMessage.length === 0)">
+					<hr>
+					<p class="warning">
+						Feature description and last automation text node do not match.
+					</p>
+					<p>You can update the other with the buttons here.</p>
+					<div class="two-wide editor-field__container">
+						<LabelledComponent title="Update from automation">
+							<button class="btn" @click="updateFeatureDescFromAutomationDesc">
+								Update
+							</button>
+						</LabelledComponent>
+						<LabelledComponent title="Update from description">
+							<button class="btn" @click="updateAutomationDescFromFeatureDesc">
+								Update
+							</button>
+						</LabelledComponent>
+					</div>
+				</div>
 			</div>
-			<div v-if="currentDocu?.opt">
-				<hr>
-				<h4>Options</h4>
-				<ul>
-					<li v-for="(info, name) in currentDocu.opt" :key="name">
-						<span class="highlight">{{ name }}</span>
-						<Markdown :text="info" />
-					</li>
-				</ul>
+			<div class="automation-editor">
+				<VueMonacoEditor v-model:value="automationString" theme="vs-dark" :options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false }" height="750px" language="yaml" @mount="handleMount" />
 			</div>
-			<div v-if="currentDocu?.variables">
+		</div>
+		<div class="two-wide uneven">
+			<div />
+			<div v-if="currentDocu" class="docs">
 				<hr>
-				<h4>Exposed Variables</h4>
-				<ul>
-					<li v-for="(info, name) in currentDocu.variables" :key="name">
-						<span class="highlight">{{ name }}</span>
-						[<code>{{ info.type }}</code>]
-						<Markdown :text="info.desc" />
-					</li>
-				</ul>
+				<h3>Documentation: {{ currentContext }}</h3>
+				<Markdown class="small" :text="currentDocu.desc" />
+
+				<div>
+					<hr>
+					<h4>Overview</h4>
+					See full documentation <a :href="`https://avrae.readthedocs.io/en/stable/automation_ref.html#${currentDocu.url}`" target="_blank">here</a>.
+					<VueMonacoEditor
+						v-if="currentDocu?.ts"
+						:value="`// Values denoted with an ? are optional.\n${currentDocu.ts}`"
+						theme="vs-dark"
+						:options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, automaticLayout: true, readOnly: true, scrollBeyondLastLine: false }"
+						language="typescript"
+						height="200px"
+					/>
+				</div>
+				<div v-if="currentDocu?.opt">
+					<hr>
+					<h4>Options</h4>
+					<ul>
+						<li v-for="(info, name) in currentDocu.opt" :key="name">
+							<span class="highlight">{{ name }}</span>
+							<Markdown :text="info" />
+						</li>
+					</ul>
+				</div>
+				<div v-if="currentDocu?.variables">
+					<hr>
+					<h4>Exposed Variables</h4>
+					<ul>
+						<li v-for="(info, name) in currentDocu.variables" :key="name">
+							<span class="highlight">{{ name }}</span>
+							[<code>{{ info.type }}</code>]
+							<Markdown :text="info.desc" />
+						</li>
+					</ul>
+				</div>
 			</div>
 		</div>
 	</div>

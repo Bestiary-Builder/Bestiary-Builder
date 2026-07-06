@@ -4,12 +4,13 @@ import { onBeforeRouteLeave } from "vue-router";
 import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import { useFetch } from "@/utils/utils";
 import { toast } from "@/utils/app/toast";
-import type { AutomationWithType, Id } from "~/shared";
+import type { AttackModel, AutomationWithType, Id } from "~/shared";
 import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import Modal from "@/components/Global/Modal.vue";
 import { store } from "@/utils/store";
 import { $loading } from "@/utils/app/loading";
 import StandAloneEditor from "@/components/Automations/StandAloneEditor.vue";
+import ImportAutomationUtil from "@/components/Automations/ImportAutomationUtil.vue";
 
 const data = ref<AutomationWithType[]>([]);
 let initialData = "";
@@ -24,7 +25,7 @@ onMounted(async () => {
 const selectedAutomation = ref<AutomationWithType | null>(null);
 
 const newAutomationName = ref<string>("New Automation");
-const addAutomation = async (name: string, automation = null, shouldNotify = true) => {
+const addAutomation = async (name: string, automation: null | AttackModel | AttackModel[], shouldNotify = true) => {
 	if (name === "New Automation") {
 		toast.warning("Automation must have a non-default name!");
 		return;
@@ -120,6 +121,7 @@ onUnmounted(() => {
 			}
 		]"
 	>
+		<ImportAutomationUtil @load-feature="(feature, apiPath) => addAutomation(feature.name, feature.automation)" />
 		<button v-tooltip="'Import a list of automation'" aria-label="Import a list of automation" @click="showImportModal = true">
 			<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
 		</button>
@@ -144,7 +146,7 @@ onUnmounted(() => {
 				</LabelledComponent>
 				<LabelledComponent title="Add new automation" for="addnewautomation">
 					<input id="addnewautomation" v-model="newAutomationName" type="text" :minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength">
-					<button class="btn confirm" @click="addAutomation(newAutomationName)">
+					<button class="btn confirm" @click="addAutomation(newAutomationName, null)">
 						Add
 					</button>
 				</LabelledComponent>

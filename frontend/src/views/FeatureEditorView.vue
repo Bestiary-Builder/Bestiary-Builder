@@ -12,6 +12,7 @@ import { store } from "@/utils/store";
 import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import Markdown from "@/components/Global/Markdown.vue";
 import VisualEditor from "@/components/VisualEditor/VisualEditor.vue";
+import ImportAutomationUtil from "@/components/Automations/ImportAutomationUtil.vue";
 
 const $router = useRouter();
 const $route = useRoute();
@@ -179,22 +180,10 @@ onMounted(async () => {
 	await loadImportedAutomation("my-automations", "myAutomation");
 });
 
-type ImportedData = FeatureEntity;
-const importAutomation = async (apiPath: "automation" | "basic-example" | "srd-feature", name: string, _id: Id | null = null) => {
+type AutomationTypes = "automation" | "basic-example" | "srd-feature";
+const loadFeature = async (feature: FeatureEntity, apiPath: AutomationTypes) => {
 	if (!data.value)
 		return;
-	const { success, data: iData, error } = await useFetch(`/api/${apiPath}/${encodeURIComponent(_id?.toString() ?? name)}`);
-	let feature: ImportedData | null = null;
-	if (!success) {
-		toast.error(`Error: ${error}`);
-		return;
-	}
-	feature = iData as ImportedData | null;
-
-	if (!feature) {
-		toast.error(`Error: Failed to import ${name}`);
-		return;
-	}
 
 	feature.description.replaceAll("$NAME$", data.value.description.name);
 	data.value.features[type][aid] = feature;
@@ -218,6 +207,7 @@ const importAutomation = async (apiPath: "automation" | "basic-example" | "srd-f
 		visualEditorRef.value.currentEffect = null;
 		visualEditorRef.value.currentContext = [];
 	}
+	toast.success(`Successfully loaded ${feature.name}!`);
 	await saveStatblock(false);
 };
 
@@ -444,7 +434,7 @@ watch(toNavigateTo, async () => {
 		<button v-tooltip="'Swap editors'" aria-label="Generate automation" @click="changeEditor">
 			<font-awesome-icon :icon="['fas', 'rotate']" />
 		</button>
-		<VDropdown :distance="6" :positioning-disabled="store.isMobile">
+		<!-- <VDropdown :distance="6" :positioning-disabled="store.isMobile">
 			<button v-tooltip="'Import actions'" aria-label="Import actions">
 				<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
 			</button>
@@ -469,7 +459,9 @@ watch(toNavigateTo, async () => {
 					</div>
 				</div>
 			</template>
-		</VDropdown>
+		</VDropdown> -->
+
+		<ImportAutomationUtil @load-feature="(feature, apiPath) => loadFeature(feature, apiPath)" />
 
 		<button v-if="data && store.isMobile" @click="data.features[type][aid].automation = {}">
 			<font-awesome-icon :icon="['fas', 'trash']" />

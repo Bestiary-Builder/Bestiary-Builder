@@ -180,7 +180,7 @@ export function spellAttackBonus(innate = false, data: Statblock) {
 	return bonus;
 }
 
-export function displayInnateCasting(data: Statblock, v2024 = false): string {
+export function displayInnateCasting(data: Statblock, v2024: boolean): string {
 	if (data.spellcasting.innateSpells.customDescription.length > 0)
 		return data.spellcasting.innateSpells.customDescription;
 

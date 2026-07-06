@@ -21,6 +21,7 @@ import { store } from "@/utils/store";
 import { creatureTypes } from "@/utils/constants";
 import { $loading } from "@/utils/app/loading";
 import CopyManager from "@/components/Bestiary/CopyManager.vue";
+import CreatureListItem from "@/components/Bestiary/CreatureListItem.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -401,15 +402,15 @@ async function creatureManyCreatures() {
 	loader.hide();
 }
 
-async function deleteCreature(creature: CreatureWithStats) {
+async function deleteCreature(id: string) {
 	const loader = $loading.show();
-	const { success, error } = await useFetch(`/api/creature/${creature.id.toString()}/delete`);
+	const { success, error } = await useFetch(`/api/creature/${id.toString()}/delete`);
 	if (success) {
 		toast.success("Deleted creature succesfully");
 		if (!bestiary.value)
 			return;
-		bestiary.value.creatures = bestiary.value.creatures.filter(c => c.id !== creature.id);
-		creatures.value = creatures.value?.filter(c => c.id !== creature.id) ?? [];
+		bestiary.value.creatures = bestiary.value.creatures.filter(c => c.id !== id);
+		creatures.value = creatures.value?.filter(c => c.id !== id) ?? [];
 	}
 	else {
 		toast.error(error);
@@ -809,52 +810,15 @@ const getDraggableKey = (item: any) => {
 					</div>
 					<Shimmer :loading="loading" shimmer-color="orangered">
 						<Draggable :list="sortCreatures() || Array(0).fill({ stats: defaultStatblock })" :animation="500" class="tile-container list-tiles" :item-key="getDraggableKey" :disabled="sortMode !== 'Custom'" @change="saveOrder">
-							<template #item="{ element }">
-								<div v-if="filterCreature(element)" class="content-tile creature-tile" data-shimmer-no-children @mouseover="lastHoveredCreature = element.stats">
-									<div class="left-side">
-										<h3>{{ element.stats?.description?.name }}</h3>
-										<span>{{ element.stats?.core?.size }} {{ element.stats?.core?.race }}{{ element.stats?.description?.alignment ? `, ${element.stats?.description?.alignment}` : "" }}</span>
-									</div>
-									<div class="right-side">
-										<button v-tooltip="'Copy creature'" :aria-label="`Copy ${element.stats.description.name}`" @click="copiedCreatures.push({ ...element, bestiaryName: bestiary.name })">
-											<font-awesome-icon :icon="['fas', 'copy']" />
-										</button>
-										<button v-tooltip="'Pin creature'" @click="lastClickedCreature = element.stats">
-											<font-awesome-icon :icon="['fas', 'thumbtack']" />
-										</button>
-										<VDropdown v-if="isOwner || isEditor" :distance="6" :positioning-disabled="store.isMobile">
-											<button v-tooltip="'Delete creature'" :aria-label="`Delete ${element.stats.description.name}`" @click.stop.prevent="">
-												<font-awesome-icon :icon="['fas', 'trash']" />
-											</button>
-											<template #popper>
-												<div class="v-popper__custom-menu">
-													<span> Are you sure you want to delete this creature? </span>
-													<button v-close-popper class="btn danger" @click.stop="deleteCreature(element)">
-														Confirm
-													</button>
-												</div>
-											</template>
-										</VDropdown>
-										<button v-tooltip="`${isOwner || isEditor ? 'Edit' : 'View'} creature`" :aria-label="`${isOwner || isEditor ? 'Edit' : 'View'} ${element.stats.description.name}`" class="edit-creature" @click.stop="() => {}">
-											<RouterLink class="creature" :to="`/statblock-editor/${element.id}`" :aria-label="`${isOwner || isEditor ? 'Edit' : 'View'} creature`">
-												<font-awesome-icon v-if="isOwner || isEditor" :icon="['fas', 'pen-to-square']" />
-												<font-awesome-icon v-else :icon="['fas', 'eye']" />
-											</RouterLink>
-										</button>
-										<span class="cr"> CR {{ crAsString(element.stats.description.cr) }}</span>
-									</div>
-								</div>
-							</template>
-							<template v-if="initialLoading" #footer>
-								<div class="content-tile creature-tile" data-shimmer-no-children="">
-									<div class="left-side">
-										<h3>aa </h3>
-										<span> some text</span>
-									</div>
-									<div class="right-side">
-										<span class="cr"> CR 0</span>
-									</div>
-								</div>
+							<template #item=" { element }">
+								<CreatureListItem
+									v-if="filterCreature(element)"
+									:id="element.id" :data="element.stats"
+									:can-edit="isOwner || isEditor" @mouseover="lastHoveredCreature = element.stats"
+									@delete-creature="(id) => deleteCreature(id)"
+									@pin-creature="lastClickedCreature = element.stats"
+									@copy-creature="copiedCreatures.push({ ...element, bestiaryName: bestiary.name })"
+								/>
 							</template>
 						</Draggable>
 					</Shimmer>
@@ -997,7 +961,7 @@ const getDraggableKey = (item: any) => {
 	</div>
 </template>
 
-<style scoped lang="less">
+<style lang="less">
 @import url("@/assets/styles/number-input.less");
 @import url("@/assets/styles/mixins.less");
 

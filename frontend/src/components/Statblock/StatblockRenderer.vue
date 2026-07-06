@@ -157,10 +157,10 @@ const calculatePassiveInitiative = () => {
 
 onMounted(async () => {
 	if (design === "Odyssey")
-		await import("../assets/styles/statblock/odyssey/odyssey.css");
+		await import("../../assets/styles/statblock/odyssey/odyssey.css");
 
 	if (design === "Beyond")
-		await import("../assets/styles/statblock/beyond/beyond.css");
+		await import("../../assets/styles/statblock/beyond/beyond.css");
 });
 
 const md = new MarkdownIt();
