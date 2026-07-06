@@ -4,7 +4,7 @@ import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
 import IntExpression from "./shared/IntExpression.vue";
 import type { ButtonInteraction } from "~/shared";
-import LabelledComponent from "@/components/LabelledComponent.vue";
+import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 
 const currentEffect = inject<Ref<ButtonInteraction>>("currentEffect");
 

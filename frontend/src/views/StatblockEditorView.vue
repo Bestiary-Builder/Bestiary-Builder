@@ -4,12 +4,13 @@ import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import { toJpeg } from "html-to-image";
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
 import html2canvas from "html2canvas";
+import { Shimmer } from "@shimmer-from-structure/vue";
 import { toast } from "@/utils/app/toast";
-import Modal from "@/components/Modal.vue";
-import StatblockRenderer from "@/components/StatblockRenderer.vue";
-import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
-import LabelledNumberInput from "@/components/LabelledNumberInput.vue";
-import LabelledComponent from "@/components/LabelledComponent.vue";
+import Modal from "@/components/Global/Modal.vue";
+import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
+import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
+import LabelledNumberInput from "@/components/FormInputs/LabelledNumberInput.vue";
+import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import type { BestiaryExtended, CreatureWithStats, Features, Statblock } from "~/shared";
 import { defaultStatblock, getSpellSlots, getXPbyCR, spellList, spellListFlattened, statFullName } from "~/shared";
 import { useFetch } from "@/utils/utils";
@@ -17,8 +18,8 @@ import { store } from "@/utils/store";
 import { $loading } from "@/utils/app/loading";
 import { alignments, classLevels, classes, conditionList, creatureTypes, languages, newFeatureGenerator, resistanceList, sizes, stats } from "@/utils/constants";
 import SectionHeader from "@/components/VisualEditor/Nodes/shared/SectionHeader.vue";
-import CopyManager from "@/components/CopyManager.vue";
-import SimpleNumberInput from "@/components/SimpleNumberInput.vue";
+import CopyManager from "@/components/Bestiary/CopyManager.vue";
+import SimpleNumberInput from "@/components/FormInputs/SimpleNumberInput.vue";
 
 const $route = useRoute();
 const $router = useRouter();
@@ -28,20 +29,20 @@ const rawInfo = ref<CreatureWithStats | null>(null);
 
 // load creature data
 onMounted(async () => {
-	const loader = $loading.show();
+	// const loader = $loading.show();
 	const { success, data: cData, error } = await useFetch<CreatureWithStats>(`/api/creature/${$route.params.id.toString()}`);
 	if (success) {
 		data.value = (cData).stats;
 		await nextTick(() => madeChanges.value = false);
 		rawInfo.value = cData;
 		await loadRawInfo();
-		loader.hide();
+		// loader.hide();
 	}
 	else {
 		toast.error(`Error: ${error}`);
 		madeChanges.value = false;
 		await $router.push("/error");
-		loader.hide();
+		// loader.hide();
 	}
 });
 
@@ -269,44 +270,7 @@ const exportHomebrery = async () => {
 	}
 };
 
-const exportToImage = async () => {
-	const loader = $loading.show();
-	const filter = (node: HTMLElement) => {
-		return true;
-		return (node.tagName !== "IMG");
-	};
-
-	const doc = document.getElementById("statblock");
-	if (!doc)
-		return;
-	doc.style = "width: 800px; column-count: 2;";
-
-	// The image converter breaks when it encounters css styles imported by monaco. Remove that from the dom, run the function, then add it again.
-	const monacoCss = document.head.querySelector(`[data-name="vs/editor/editor.main"]`);
-	monacoCss?.remove();
-
-	// convert it to an image
-	await toJpeg(doc, { filter, pixelRatio: 2 })
-		.then((dataUrl) => {
-			const link = document.createElement("a");
-			link.download = `${data.value.description.name} from BestiaryBuilder.jpg`;
-			link.href = dataUrl;
-			link.click();
-
-			// timeout because otherwise the browser download window shows up after the toast is shown.
-			setTimeout(() => {
-				toast.success("Statblock successfully exported to an image!");
-				toast.warning("If the statblock contained images, these were ignored due to technical limitations.");
-			}, 1000);
-		});
-
-	if (monacoCss)
-		document.head.appendChild(monacoCss);
-	doc.style = "";
-	loader.hide();
-};
-
-const exportToImageNew = async (type: "1x1" | "2x1" | "2x1 wide") => {
+const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 	const loader = $loading.show();
 	const el = document.getElementById("statblock");
 	if (!el)
@@ -643,13 +607,13 @@ const openFeature = async (path: string) => {
 						<button v-close-popper class="btn confirm" @click="exportStatblock">
 							JSON
 						</button>
-						<button v-close-popper class="btn confirm" @click="exportToImageNew('1x1')">
+						<button v-close-popper class="btn confirm" @click="exportToImage('1x1')">
 							1x1
 						</button>
-						<button v-close-popper class="btn confirm" @click="exportToImageNew('2x1')">
+						<button v-close-popper class="btn confirm" @click="exportToImage('2x1')">
 							2x1
 						</button>
-						<button v-close-popper class="btn confirm" @click="exportToImageNew('2x1 wide')">
+						<button v-close-popper class="btn confirm" @click="exportToImage('2x1 wide')">
 							2x1 wide
 						</button>
 						<button v-close-popper class="btn confirm" @click="exportHomebrery">
@@ -1261,7 +1225,9 @@ const openFeature = async (path: string) => {
 				</div> -->
 			</div>
 			<div class="content-container__inner">
-				<StatblockRenderer id="statblock" :data="data" />
+				<Shimmer :loading="rawInfo === null" :template-props="{ data: defaultStatblock }" shimmer-color="orangered">
+					<StatblockRenderer id="statblock" :data="data || defaultStatblock" />
+				</Shimmer>
 			</div>
 		</div>
 

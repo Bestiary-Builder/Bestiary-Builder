@@ -4,7 +4,7 @@ import HigherLevels from "./shared/HigherLevels.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import AnnotatedString from "./shared/AnnotatedString.vue";
 import { useDataCleanup } from "./shared/utils";
-import LabelledComponent from "@/components/LabelledComponent.vue";
+import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import type { Damage } from "~/shared";
 
 const currentEffect = inject<Ref<Damage>>("currentEffect");

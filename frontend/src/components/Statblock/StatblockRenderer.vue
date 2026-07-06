@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted } from "vue";
-import SimpleMarkdown from "@khanacademy/simple-markdown";
 import MarkdownIt from "markdown-it";
-import Markdown from "./Markdown.vue";
 import type { SaveEntity, SkillsEntity, Stat, Statblock } from "~/shared";
 import { SKILLS_BY_STAT, capitalizeFirstLetter, crAsString, displayCasterCasting, displayInnateCasting, displaySpeedOrSenses, hpCalc, ppCalc, signedNumber, statCalc } from "~/shared";
 import { featureGenerator, resistanceGenerator, stats } from "@/utils/constants";
@@ -19,6 +17,9 @@ else
 	v2024 = is2024;
 
 const showSkills = computed(() => {
+	if (v2024 && data.abilities.skills.length === 1 && data.abilities.skills[0].skillName === "Initiative")
+		return false;
+
 	for (const skill of data.abilities.skills) {
 		if (skill.isProficient || skill.isHalfProficient || skill.isExpertise || skill.override || skill.override === 0)
 			return true;
@@ -180,7 +181,7 @@ md.renderer.rules.paragraph_open = function (tokens, idx, options, env, self) {
 </script>
 
 <template>
-	<div class="stat-block" :class="[v2024 ? 'v2024' : '', design]">
+	<div class="stat-block" :class="[v2024 ? 'v2024' : '', design]" data-shimmer-no-children>
 		<div class="stat-block__row">
 			<h1 class="stat-block__name-container">
 				{{ data.description.name }}
@@ -296,7 +297,7 @@ md.renderer.rules.paragraph_open = function (tokens, idx, options, env, self) {
 				<div v-if="data.defenses.immunities.length > 0 || data.defenses.conditionImmunities.length > 0" class="stat-block__res-container">
 					<b> Immunities  </b>
 					<span> {{ alphaSort(data.defenses.immunities).join(", ") }} </span>
-					<span v-if="data.defenses.immunities.length > 0 && data.defenses.conditionImmunities.length > 0">, </span>
+					<span v-if="data.defenses.immunities.length > 0 && data.defenses.conditionImmunities.length > 0">; </span>
 					<span> {{ alphaSort(data.defenses.conditionImmunities).join(", ") }} </span>
 				</div>
 			</template>
@@ -310,7 +311,7 @@ md.renderer.rules.paragraph_open = function (tokens, idx, options, env, self) {
 				<b> Languages </b>
 				<span v-if="data.core.languages && data.core.languages.length === 0 && !data.misc.telepathy"> — </span>
 				<span v-else> {{ data.core.languages?.sort().join(", ") }} </span>
-				<span v-if="data.misc.telepathy"> telepathy {{ data.misc.telepathy }}ft.</span>
+				<span v-if="data.misc.telepathy"> telepathy {{ data.misc.telepathy }} ft.</span>
 			</div>
 			<div v-if="v2024" class="challenge-prof">
 				<span> <b> CR</b> {{ crAsString(data.description.cr) }} (XP {{ data.description.xp }})
@@ -388,7 +389,7 @@ md.renderer.rules.paragraph_open = function (tokens, idx, options, env, self) {
 			<h2 class="feature-container__title">
 				Description
 			</h2>
-			<div class="markdown" v-html="md.render(data.description.description.replaceAll('\n', '$ReplaceWithNewLineCharacter')).replaceAll('$ReplaceWithNewLineCharacter', '<br>')" />
+			<div class="markdown" v-html="md.render(data.description.description.replaceAll('\n', '$ReplaceWithNewLineCharacter').replaceAll('$ReplaceWithNewLineCharacter*', '\n*')).replaceAll('$ReplaceWithNewLineCharacter', '<br>')" />
 		</div>
 	</div>
 </template>

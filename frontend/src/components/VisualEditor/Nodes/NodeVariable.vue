@@ -4,7 +4,7 @@ import HigherLevels from "./shared/HigherLevels.vue";
 import IntExpression from "./shared/IntExpression.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
-import LabelledComponent from "@/components/LabelledComponent.vue";
+import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import type { Variable } from "~/shared";
 
 const currentEffect = inject<Ref<Variable>>("currentEffect");

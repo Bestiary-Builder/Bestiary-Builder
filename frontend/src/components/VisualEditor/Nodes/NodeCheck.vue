@@ -2,7 +2,7 @@
 import { type Ref, inject } from "vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
-import LabelledComponent from "@/components/LabelledComponent.vue";
+import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import type { Check, } from "~/shared";
 
 const currentEffect = inject<Ref<Check>>("currentEffect");

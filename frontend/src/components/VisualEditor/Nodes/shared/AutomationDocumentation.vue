@@ -2,9 +2,9 @@
 import { computed, onMounted, ref } from "vue";
 import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
 import { useFetch } from "@/utils/utils";
-import type { AutomationDocumentation, AutomationDocumentationEntity } from "~/shared";
+import type { AutomationDocumentation } from "~/shared";
 
-import Markdown from "@/components/Markdown.vue";
+import Markdown from "@/components/Global/Markdown.vue";
 
 const { nodeType } = defineProps<{ nodeType: string | null }>();
 

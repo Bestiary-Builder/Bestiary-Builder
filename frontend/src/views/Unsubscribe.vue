@@ -3,7 +3,7 @@ import { ref } from "vue";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { $loading } from "@/utils/app/loading";
-import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
+import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 
 const status = ref(0);
 const errorMsg = ref("");

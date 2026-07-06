@@ -5,7 +5,7 @@ import SectionHeader from "../shared/SectionHeader.vue";
 import IntExpression from "../shared/IntExpression.vue";
 import AnnotatedString from "../shared/AnnotatedString.vue";
 import { PASSIVE_EFFECTS, type PassiveEffectDef } from "./passiveEffect";
-import LabelledComponent from "@/components/LabelledComponent.vue";
+import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import type { IEffect } from "~/shared";
 
 const currentEffect = inject<Ref<IEffect>>("currentEffect");

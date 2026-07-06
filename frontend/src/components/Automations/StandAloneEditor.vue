@@ -2,26 +2,20 @@
 import { computed, onMounted, onUnmounted, ref, shallowRef, watch } from "vue";
 import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
 import YAML from "yaml";
-import LabelledComponent from "./LabelledComponent.vue";
-import Markdown from "./Markdown.vue";
+import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
+import Markdown from "@/components/Global/Markdown.vue";
 import { useFetch } from "@/utils/utils";
 import { toast } from "@/utils/app/toast";
-import { type AutomationDocumentation, type AutomationWithType, type FeatureEntity, type Id, parseDescIntoAutomation } from "~/shared";
+import type { AutomationDocumentation, AutomationWithType, FeatureEntity } from "~/shared";
 import { store } from "@/utils/store";
 
-const props = withDefaults(defineProps<{ data: FeatureEntity | AutomationWithType; isStandAlone?: boolean; creatureName?: string }>(), { isStandAlone: false, creatureName: "$NAME$" });
+const props = withDefaults(defineProps<{ data: AutomationWithType; creatureName?: string }>(), { creatureName: "$NAME$" });
 
 const emit = defineEmits<{
 	(e: "savedStandaloneData"): void;
 }>();
-
 const errorMessage = ref<null | string>(null);
-
 const hasEditedName = ref(false);
-
-// unfinished
-const _isVisualEditor = ref(false);
-
 // Automation
 const automationString = ref("");
 onMounted(() => {
@@ -30,16 +24,13 @@ onMounted(() => {
 
 watch(automationString, () => validateYaml());
 
-const saveAutomation = async (shouldNotify = false) => {
-	// if standalone: saving commits the change to the database
-	// if not standalone: saving saves automation into the FeatureEntity object so it is preserved between opening/closen and dragging features, but not to the database
+const saveAutomation = async () => {
 	let parsed: AutomationWithType["automation"] = null;
 	try {
 		parsed = YAML.parse(automationString.value);
 	}
 	catch {
-		if (shouldNotify)
-			toast.error("YAML contains Error. Failed to save automation");
+		toast.error("YAML contains Error. Failed to save automation");
 		return;
 	}
 	// parsed == null
@@ -53,31 +44,23 @@ const saveAutomation = async (shouldNotify = false) => {
 			props.data.automation = parsed;
 		}
 		else {
-			if (shouldNotify)
-				toast.error(error);
+			toast.error(error);
 			return;
 		}
 	}
 
-	if (props.isStandAlone && "id" in props.data) {
-		// save standalone to database
-		const { success, error } = await useFetch<FeatureEntity>(`/api/automation/${props.data.id.toString()}/update`, "POST", props.data);
-		if (success && shouldNotify) {
-			emit("savedStandaloneData");
-		}
-		else if (!success) {
-			if (shouldNotify)
-				toast.error(`${props.data.name || "Unnamed feature"}: ${error}`);
-			return;
-		}
+	// save standalone to database
+	const { success, error } = await useFetch<FeatureEntity>(`/api/automation/${props.data.id.toString()}/update`, "POST", props.data);
+
+	if (!success) {
+		toast.error(`${props.data.name || "Unnamed feature"}: ${error}`);
+		return;
 	}
 	else {
-		// save not standalone into statblock object, but not commited to db.
-		props.data.automation = parsed;
+		emit("savedStandaloneData");
 	}
 
-	if (shouldNotify)
-		toast.success("Successfully saved automation!");
+	toast.success("Successfully saved automation!");
 };
 
 // Documentation context by mouse location
@@ -233,6 +216,11 @@ const validateYaml = () => {
 				<LabelledComponent title="Feature name" for="featurename">
 					<input id="featurename" v-model="data.name" type="text" placeholder="Enter name" :minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength" @change="hasEditedName = true">
 				</LabelledComponent>
+				<LabelledComponent title="Save automation" for="saveAutomation">
+					<button class="btn confirm" for="saveAutotomation" @click="saveAutomation()">
+						Save Automation
+					</button>
+				</LabelledComponent>
 			</div>
 
 			<div class="editor-field__container">
@@ -281,10 +269,7 @@ const validateYaml = () => {
 			</div>
 		</div>
 		<div class="automation-editor">
-			<!-- <LabelledComponent title="Change Editors" @click="isVisualEditor = !isVisualEditor"> -->
 			<VueMonacoEditor v-model:value="automationString" theme="vs-dark" :options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false }" height="750px" language="yaml" @mount="handleMount" />
-			<!-- <TreeRoot v-else :data="automationString" /> -->
-			<!-- </LabelledComponent> -->
 		</div>
 	</div>
 	<div class="two-wide uneven">

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import { onMounted, ref } from "vue";
-import Modal from "@/components/Modal.vue";
-import BestiaryList from "@/components/BestiaryList.vue";
-import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
+import Modal from "@/components/Global/Modal.vue";
+import BestiaryList from "@/components/Bestiary/BestiaryList.vue";
+import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 
 import { toast } from "@/utils/app/toast";
 import type { BestiaryExtended } from "~/shared";

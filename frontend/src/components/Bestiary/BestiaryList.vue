@@ -2,8 +2,8 @@
 import { RouterLink } from "vue-router";
 import { computed } from "vue";
 import Draggable from "vuedraggable";
-import UserBanner from "@/components/UserBanner.vue";
-import StatusIcon from "@/components/StatusIcon.vue";
+import UserBanner from "@/components/Bestiary/UserBanner.vue";
+import StatusIcon from "@/components/Bestiary/StatusIcon.vue";
 import type { BestiaryExtended } from "~/shared";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
@@ -38,9 +38,7 @@ const getDraggableKey = (item: any) => {
 
 const saveOrder = async () => {
 	const orderIds = props.bestiaries.map(bestiary => bestiary.id);
-
-	const { success, data, error } = await useFetch("/api/my-bestiaries/order", "POST", orderIds);
-	console.log(success, data, error);
+	await useFetch("/api/my-bestiaries/order", "POST", orderIds);
 };
 </script>
 

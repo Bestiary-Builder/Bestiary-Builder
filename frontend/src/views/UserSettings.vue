@@ -2,13 +2,12 @@
 import { ref } from "vue";
 import { store } from "@/utils/store";
 import { sendToLogin, useFetch } from "@/utils/utils";
-import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
-import JoinPatreon from "@/components/JoinPatreon.vue";
-import { type Bestiary, type Stat, type Statblock, SupporterStatus } from "~/shared";
+import { type Bestiary, type Statblock, SupporterStatus } from "~/shared";
 import { toast } from "@/utils/app/toast";
 import SectionHeader from "@/components/VisualEditor/Nodes/shared/SectionHeader.vue";
-import LabelledComponent from "@/components/LabelledComponent.vue";
-import StatblockRenderer from "@/components/StatblockRenderer.vue";
+import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
+import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
+import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 
 const logoutClick = async () => {
 	const { success, error } = await useFetch("/api/logout");
@@ -307,7 +306,12 @@ const creatureData = {
 					If you enjoy using our site, consider supporting us on Patreon!
 					As a Patreon, you will have several benefits and your support will help Bestiary Builder stay online.
 				</p>
-				<span v-if="!(store.user.supporter === SupporterStatus.wirmling || store.user.supporter === SupporterStatus.greatwyrm)" class="center"> <JoinPatreon /></span>
+				<span v-if="!(store.user.supporter === SupporterStatus.wirmling || store.user.supporter === SupporterStatus.greatwyrm)" class="center">
+					<a href="https://www.patreon.com/join/BestiaryBuilder" class="patreon">
+						<font-awesome-icon icon="fa-brands fa-patreon" />
+						<span> Become a patreon </span>
+					</a>
+				</span>
 				<p v-if="store.user.supporter === SupporterStatus.wirmling">
 					You support us on Patreon as a <b> Wyrmling </b> Tier supporter. Thank you so much for your pledge!
 					If you cannot see your name display change on the website yet, make sure to join our discord.

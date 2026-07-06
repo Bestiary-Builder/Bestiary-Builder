@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { type PropType, computed, ref, useTemplateRef, watch } from "vue";
-import LabelledComponent from "./LabelledComponent.vue";
+import LabelledComponent from "./FormInputs/LabelledComponent.vue/index.js";
 
 const props = defineProps({
 	isClearable: {

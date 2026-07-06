@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from "vue";
 import { onBeforeRouteLeave } from "vue-router";
-import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
+import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import { useFetch } from "@/utils/utils";
 import { toast } from "@/utils/app/toast";
 import type { AutomationWithType, Id } from "~/shared";
-
-import LabelledComponent from "@/components/LabelledComponent.vue";
-import AutomationEditor from "@/components/AutomationEditor.vue";
-import Modal from "@/components/Modal.vue";
+import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
+import Modal from "@/components/Global/Modal.vue";
 import { store } from "@/utils/store";
 import { $loading } from "@/utils/app/loading";
+import StandAloneEditor from "@/components/Automations/StandAloneEditor.vue";
 
 const data = ref<AutomationWithType[]>([]);
 let initialData = "";
@@ -157,7 +156,7 @@ onUnmounted(() => {
 			</div>
 			<hr>
 			<div class="automation-editor">
-				<AutomationEditor v-if="selectedAutomation" :key="selectedAutomation?.id!.toString()" :data="selectedAutomation" :is-stand-alone="true" @saved-standalone-data="initialData = JSON.stringify(data)" />
+				<StandAloneEditor v-if="selectedAutomation" :key="selectedAutomation?.id!.toString()" :data="selectedAutomation" :is-stand-alone="true" @saved-standalone-data="initialData = JSON.stringify(data)" />
 				<div v-else class="no-selected">
 					Select an automation to get started with editing it.
 				</div>

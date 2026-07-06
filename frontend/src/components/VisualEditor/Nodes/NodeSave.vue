@@ -3,7 +3,7 @@ import { type Ref, inject, watch } from "vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
 import IntExpression from "./shared/IntExpression.vue";
-import LabelledComponent from "@/components/LabelledComponent.vue";
+import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import { fullStatNames } from "@/utils/constants";
 import type { Save } from "~/shared";
 

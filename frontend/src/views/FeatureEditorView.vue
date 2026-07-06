@@ -3,14 +3,14 @@ import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vu
 import { computed, nextTick, onMounted, onUnmounted, provide, ref, shallowRef, useTemplateRef, watch } from "vue";
 import YAML from "yaml";
 import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
-import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
+import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import { type AutomationDocumentation, type BestiaryExtended, type CreatureWithStats, type FeatureEntity, type Features, type Id, type Statblock, parseDescIntoAutomation } from "~/shared";
 import { $loading } from "@/utils/app/loading";
 import { useFetch } from "@/utils/utils";
 import { toast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
-import LabelledComponent from "@/components/LabelledComponent.vue";
-import Markdown from "@/components/Markdown.vue";
+import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
+import Markdown from "@/components/Global/Markdown.vue";
 import VisualEditor from "@/components/VisualEditor/VisualEditor.vue";
 
 const $router = useRouter();

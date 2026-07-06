@@ -4,13 +4,14 @@ import { useRoute, useRouter } from "vue-router";
 import { refDebounced, useLocalStorage } from "@vueuse/core";
 import { createPopper } from "@popperjs/core";
 import Draggable from "vuedraggable";
-import UserBanner from "@/components/UserBanner.vue";
-import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
-import StatusIcon from "@/components/StatusIcon.vue";
-import LabelledComponent from "@/components/LabelledComponent.vue";
-import Modal from "@/components/Modal.vue";
-import StatblockRenderer from "@/components/StatblockRenderer.vue";
-import Markdown from "@/components/Markdown.vue";
+import { Shimmer } from "@shimmer-from-structure/vue";
+import UserBanner from "@/components/Bestiary/UserBanner.vue";
+import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
+import StatusIcon from "@/components/Bestiary/StatusIcon.vue";
+import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
+import Modal from "@/components/Global/Modal.vue";
+import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
+import Markdown from "@/components/Global/Markdown.vue";
 
 import { crAsString, defaultStatblock } from "~/shared";
 import type { Bestiary, BestiaryExtended, CreatureWithStats, Statblock, User } from "~/shared";
@@ -19,7 +20,7 @@ import { toast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { creatureTypes } from "@/utils/constants";
 import { $loading } from "@/utils/app/loading";
-import CopyManager from "@/components/CopyManager.vue";
+import CopyManager from "@/components/Bestiary/CopyManager.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -144,13 +145,14 @@ watch(debouncedEnv, () => {
 watch(debouncedFaction, () => {
 	searchOptions.value.faction = searchFaction.value;
 });
-
+const initialLoading = ref(true);
+const loading = ref(true);
 onMounted(async () => {
-	const loader = $loading.show();
+	// const loader = $loading.show();
 	await getBestiary().then(() => {
-		loader.hide();
+		// loader.hide();
 	});
-
+	loading.value = false;
 	if (bestiary.value?.name)
 		document.title = `${bestiary.value?.name.substring(0, 16)} | Bestiary Builder`;
 
@@ -516,6 +518,7 @@ async function getBestiary() {
 	savedBestiary.value = bestiary.value;
 	isOwner.value = store.user?.id === bestiary.value.ownerId;
 	isEditor.value = (bestiary.value?.editors ?? []).map(e => e.userId).includes(store.user?.id ?? "");
+	initialLoading.value = false;
 	// Fetch creatures
 	await useFetch<CreatureWithStats[]>(`/api/bestiary/${bestiary.value.id.toString()}/creatures`).then(async (creatureResult) => {
 		if (creatureResult.success) {
@@ -804,44 +807,58 @@ const getDraggableKey = (item: any) => {
 							</div>
 						</div>
 					</div>
-					<Draggable :list="sortCreatures()" :animation="500" class="tile-container list-tiles" :item-key="getDraggableKey" :disabled="sortMode !== 'Custom'" @change="saveOrder">
-						<template #item="{ element }">
-							<div v-if="filterCreature(element)" class="content-tile creature-tile" @mouseover="lastHoveredCreature = element.stats">
-								<div class="left-side">
-									<h3>{{ element.stats?.description?.name }}</h3>
-									<span>{{ element.stats?.core?.size }} {{ element.stats?.core?.race }}{{ element.stats?.description?.alignment ? `, ${element.stats?.description?.alignment}` : "" }}</span>
-								</div>
-								<div class="right-side">
-									<button v-tooltip="'Copy creature'" :aria-label="`Copy ${element.stats.description.name}`" @click="copiedCreatures.push({ ...element, bestiaryName: bestiary.name })">
-										<font-awesome-icon :icon="['fas', 'copy']" />
-									</button>
-									<button v-tooltip="'Pin creature'" @click="lastClickedCreature = element.stats">
-										<font-awesome-icon :icon="['fas', 'thumbtack']" />
-									</button>
-									<VDropdown v-if="isOwner || isEditor" :distance="6" :positioning-disabled="store.isMobile">
-										<button v-tooltip="'Delete creature'" :aria-label="`Delete ${element.stats.description.name}`" @click.stop.prevent="">
-											<font-awesome-icon :icon="['fas', 'trash']" />
+					<Shimmer :loading="loading" shimmer-color="orangered">
+						<Draggable :list="sortCreatures() || Array(0).fill({ stats: defaultStatblock })" :animation="500" class="tile-container list-tiles" :item-key="getDraggableKey" :disabled="sortMode !== 'Custom'" @change="saveOrder">
+							<template #item="{ element }">
+								<div v-if="filterCreature(element)" class="content-tile creature-tile" data-shimmer-no-children @mouseover="lastHoveredCreature = element.stats">
+									<div class="left-side">
+										<h3>{{ element.stats?.description?.name }}</h3>
+										<span>{{ element.stats?.core?.size }} {{ element.stats?.core?.race }}{{ element.stats?.description?.alignment ? `, ${element.stats?.description?.alignment}` : "" }}</span>
+									</div>
+									<div class="right-side">
+										<button v-tooltip="'Copy creature'" :aria-label="`Copy ${element.stats.description.name}`" @click="copiedCreatures.push({ ...element, bestiaryName: bestiary.name })">
+											<font-awesome-icon :icon="['fas', 'copy']" />
 										</button>
-										<template #popper>
-											<div class="v-popper__custom-menu">
-												<span> Are you sure you want to delete this creature? </span>
-												<button v-close-popper class="btn danger" @click.stop="deleteCreature(element)">
-													Confirm
-												</button>
-											</div>
-										</template>
-									</VDropdown>
-									<button v-tooltip="`${isOwner || isEditor ? 'Edit' : 'View'} creature`" :aria-label="`${isOwner || isEditor ? 'Edit' : 'View'} ${element.stats.description.name}`" class="edit-creature" @click.stop="() => {}">
-										<RouterLink class="creature" :to="`/statblock-editor/${element.id}`" :aria-label="`${isOwner || isEditor ? 'Edit' : 'View'} creature`">
-											<font-awesome-icon v-if="isOwner || isEditor" :icon="['fas', 'pen-to-square']" />
-											<font-awesome-icon v-else :icon="['fas', 'eye']" />
-										</RouterLink>
-									</button>
-									<span class="cr"> CR {{ crAsString(element.stats.description.cr) }}</span>
+										<button v-tooltip="'Pin creature'" @click="lastClickedCreature = element.stats">
+											<font-awesome-icon :icon="['fas', 'thumbtack']" />
+										</button>
+										<VDropdown v-if="isOwner || isEditor" :distance="6" :positioning-disabled="store.isMobile">
+											<button v-tooltip="'Delete creature'" :aria-label="`Delete ${element.stats.description.name}`" @click.stop.prevent="">
+												<font-awesome-icon :icon="['fas', 'trash']" />
+											</button>
+											<template #popper>
+												<div class="v-popper__custom-menu">
+													<span> Are you sure you want to delete this creature? </span>
+													<button v-close-popper class="btn danger" @click.stop="deleteCreature(element)">
+														Confirm
+													</button>
+												</div>
+											</template>
+										</VDropdown>
+										<button v-tooltip="`${isOwner || isEditor ? 'Edit' : 'View'} creature`" :aria-label="`${isOwner || isEditor ? 'Edit' : 'View'} ${element.stats.description.name}`" class="edit-creature" @click.stop="() => {}">
+											<RouterLink class="creature" :to="`/statblock-editor/${element.id}`" :aria-label="`${isOwner || isEditor ? 'Edit' : 'View'} creature`">
+												<font-awesome-icon v-if="isOwner || isEditor" :icon="['fas', 'pen-to-square']" />
+												<font-awesome-icon v-else :icon="['fas', 'eye']" />
+											</RouterLink>
+										</button>
+										<span class="cr"> CR {{ crAsString(element.stats.description.cr) }}</span>
+									</div>
 								</div>
-							</div>
-						</template>
-					</Draggable>
+							</template>
+							<template v-if="initialLoading" #footer>
+								<div class="content-tile creature-tile" data-shimmer-no-children="">
+									<div class="left-side">
+										<h3>aa </h3>
+										<span> some text</span>
+									</div>
+									<div class="right-side">
+										<span class="cr"> CR 0</span>
+									</div>
+								</div>
+							</template>
+						</Draggable>
+					</Shimmer>
+
 					<div v-if="isOwner || isEditor" class="create-tile">
 						<VDropdown v-if="isOwner || isEditor" :distance="6" placement="top" :positioning-disabled="store.isMobile">
 							<span role="button" class="create-text">Add Creature</span>

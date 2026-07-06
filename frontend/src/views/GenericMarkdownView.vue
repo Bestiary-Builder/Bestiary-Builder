@@ -6,7 +6,7 @@ import markdownit from "markdown-it";
 import anchor from "markdown-it-anchor";
 // @ts-expect-error untyped
 import markdownItAttrs from "markdown-it-attrs";
-import Breadcrumbs from "@/constantComponents/Breadcrumbs.vue";
+import Breadcrumbs from "@/Page/Breadcrumbs.vue";
 
 import { prefersReducedMotion } from "@/utils/utils";
 

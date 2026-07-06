@@ -3,7 +3,7 @@ import { type Ref, computed, inject, watch } from "vue";
 import IntExpression from "./shared/IntExpression.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
-import LabelledComponent from "@/components/LabelledComponent.vue";
+import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import type { Condition } from "~/shared";
 
 const currentEffect = inject<Ref<Condition>>("currentEffect");
