@@ -171,18 +171,18 @@ const additionalText = computed(() => {
 			</template>
 			<template v-if="(key as EffectKey) === 'buttons'">
 				<template v-for="(button, index) in effect" :key="index">
-					<p :style="`margin-left: ${(depth + 1) * 15}px;`" @click="currentEffect = (button as any as ButtonInteraction); currentContext = [...context, 'buttons', index.toString()]">
+					<p :style="`margin-left: ${(depth + 2) * 15}px;`" @click="currentEffect = (button as any as ButtonInteraction); currentContext = [...context, 'buttons', index.toString()]">
 						<NodeHeader :type="key" :additional-text="(button as any as ButtonInteraction).label" />
 					</p>
-					<TreeRoot :data="(button as any as ButtonInteraction)" :depth="depth + 1" root-type="button" :context="[...context, index.toString(), key]" />
+					<TreeRoot :data="(button as any as ButtonInteraction)" :depth="depth + 2" root-type="button" :context="[...context, 'buttons', index.toString(), 'automation']" />
 				</template>
 			</template>
 			<template v-if="(key as EffectKey) === 'attacks'">
 				<template v-for="(attack, index) in effect" :key="index">
-					<p :style="`margin-left: ${(depth + 1) * 15}px;`" @click="currentEffect = (attack as any as AttackInteraction); currentContext = [...context, 'attacks', index.toString()]">
+					<p :style="`margin-left: ${(depth + 2) * 15}px;`" @click="currentEffect = (attack as any as AttackInteraction); currentContext = [...context, 'attacks', index.toString()]">
 						<NodeHeader :type="key" :additional-text="(attack as any as AttackInteraction).attack.name" />
 					</p>
-					<TreeRoot :data="(attack as any as AttackModel)" :depth="depth + 1" root-type="attack" :context="[...context, index.toString(), key]" />
+					<TreeRoot :data="(attack as any as AttackModel)" :depth="depth + 2" root-type="attack" :context="[...context, 'attacks', index.toString(), 'automation']" />
 				</template>
 			</template>
 		</template>

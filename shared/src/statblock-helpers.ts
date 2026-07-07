@@ -213,7 +213,7 @@ export function displayInnateCasting(data: Statblock, v2024: boolean): string {
 		else output += `\n${times}/day${sData.spellList[times].length > 1 ? " each" : ""}: `;
 
 		output += sData.spellList[times]
-			.map(x => (x.comment.length > 0 ? `*${x.spell.toLowerCase()} (${x.comment})*` : `*${x.spell.toLowerCase()}*`))
+			.map(x => (x.comment.length > 0 ? `*${v2024 ? x.spell : x.spell.toLowerCase()} (${x.comment})*` : `*${v2024 ? x.spell : x.spell.toLowerCase()}*`))
 			.sort()
 			.join(", ");
 	}

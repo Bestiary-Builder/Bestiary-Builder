@@ -2,6 +2,7 @@
 import { RouterLink } from "vue-router";
 import { computed } from "vue";
 import Draggable from "vuedraggable";
+import ButtonIcon from "../Global/ButtonIcon.vue";
 import UserBanner from "@/components/Bestiary/UserBanner.vue";
 import StatusIcon from "@/components/Bestiary/StatusIcon.vue";
 import type { BestiaryExtended } from "~/shared";
@@ -63,7 +64,7 @@ const saveOrder = async () => {
 						</div>
 						<div class="tile-footer">
 							<span v-if="personal" v-tooltip.left="element.status"><StatusIcon :icon="element.status" /></span>
-							<span v-if="personal && element.ownerId === store.user?.id" v-tooltip="'Delete bestiary'" role="button" class="edit-button" aria-label="Delete bestiary" @click.stop.prevent="openDeleteModal(element)"><font-awesome-icon :icon="['fas', 'trash']" /></span>
+							<ButtonIcon v-if="personal && element.ownerId === store.user?.id" label="Delete bestiary" icon="trash" @click.stop.prevent="openDeleteModal(element)" />
 							<span v-else>
 								<UserBanner :id="element.ownerId" />
 							</span>
