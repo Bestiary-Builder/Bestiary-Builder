@@ -538,7 +538,7 @@ const openFeature = async (path: string) => {
 				},
 				{
 					path: '',
-					text: data?.description.name.substring(0, 32) || 'Unnamed Creature',
+					text: data?.description.name || 'Unnamed Creature',
 					isCurrent: true
 				}
 			]"
