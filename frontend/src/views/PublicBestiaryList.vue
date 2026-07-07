@@ -8,6 +8,7 @@ import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import { useFetch } from "@/utils/utils";
 import { store } from "@/utils/store";
 import { $loading } from "@/utils/app/loading";
+import ButtonIcon from "@/components/Global/ButtonIcon.vue";
 
 onMounted(async () => {
 	const loader = $loading.show();
@@ -89,11 +90,9 @@ watch(debouncedSearch, () => searchBestiaries());
 		</select>
 
 		<VDropdown :distance="6" :positioning-disabled="false">
-			<button v-tooltip="'Filter bestiaries'" aria-label="Filter bestiaries">
-				<font-awesome-icon :icon="['fas', 'tag']" />
-			</button>
+			<ButtonIcon icon="tag" label="Filter bestiaries" />
 			<template #popper>
-				<div class="v-popper__custom-menu">
+				<div class="v-popper__custom-menu" style="min-width: 200px">
 					<span><label for="tagsInput">Filter by tags</label></span>
 					<v-select v-model="selectedTags" placeholder="Select Tags" multiple :options="store.tags" input-id="tagsInput" />
 				</div>
@@ -101,9 +100,7 @@ watch(debouncedSearch, () => searchBestiaries());
 		</VDropdown>
 
 		<VDropdown :distance="6" :positioning-disabled="store.isMobile">
-			<button v-tooltip="'Search bestiaries'" aria-label="Search bestiaries">
-				<font-awesome-icon :icon="['fas', 'magnifying-glass']" />
-			</button>
+			<ButtonIcon icon="magnifying-glass" label="Search bestiaries" />
 			<template #popper>
 				<div class="v-popper__custom-menu">
 					<span><label for="searchinput"> Search bestiaries by name or description</label></span>

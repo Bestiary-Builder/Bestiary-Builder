@@ -4,11 +4,11 @@ import { onMounted, ref } from "vue";
 import Modal from "@/components/Global/Modal.vue";
 import BestiaryList from "@/components/Bestiary/BestiaryList.vue";
 import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
-
 import { toast } from "@/utils/app/toast";
 import type { BestiaryExtended } from "~/shared";
 import { useFetch } from "@/utils/utils";
 import { $loading } from "@/utils/app/loading";
+import ButtonIcon from "@/components/Global/ButtonIcon.vue";
 
 const router = useRouter();
 
@@ -83,9 +83,7 @@ const openDeleteModal = (bestiary: BestiaryExtended) => {
 			}
 		]"
 	>
-		<button v-tooltip="'Create bestiary!'" class="inverted" aria-label="Create bestiary" @click="createBestiary">
-			<font-awesome-icon :icon="['fas', 'plus']" />
-		</button>
+		<ButtonIcon icon="plus" label="Create bestiary!" inverted @click="createBestiary" />
 	</Breadcrumbs>
 	<div class="content">
 		<BestiaryList v-if="bestiaries" :personal="true" :bestiaries @delete-bestiary="openDeleteModal" />

@@ -12,8 +12,8 @@ import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import Modal from "@/components/Global/Modal.vue";
 import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
 import Markdown from "@/components/Global/Markdown.vue";
-
-import { crAsString, defaultStatblock } from "~/shared";
+import ButtonIcon from "@/components/Global/ButtonIcon.vue";
+import { defaultStatblock } from "~/shared";
 import type { Bestiary, BestiaryExtended, CreatureWithStats, Statblock, User } from "~/shared";
 import { useFetch } from "@/utils/utils";
 import { toast } from "@/utils/app/toast";
@@ -22,6 +22,7 @@ import { creatureTypes } from "@/utils/constants";
 import { $loading } from "@/utils/app/loading";
 import CopyManager from "@/components/Bestiary/CopyManager.vue";
 import CreatureListItem from "@/components/Bestiary/CreatureListItem.vue";
+import CRInput from "@/components/FormInputs/CRInput.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -374,7 +375,7 @@ async function createCreature(stats = defaultStatblock, shouldHaveLoader = true,
 		loader.hide();
 }
 
-async function creatureManyCreatures() {
+async function createManyCreatures() {
 	const creatures = [];
 	for (const creature of copiedCreatures.value)
 		creatures.push(creature.stats);
@@ -592,46 +593,6 @@ async function toggleBookmark() {
 	loader.hide();
 }
 
-function changeCR(isIncrease: boolean, isMinimumOption: boolean): void {
-	let cr;
-	if (isMinimumOption)
-		cr = searchOptions.value.minCr;
-	else cr = searchOptions.value.maxCr;
-	if (cr === 0 && isIncrease) {
-		cr = 0.125;
-	}
-	else if (cr === 0.125 && isIncrease) {
-		cr = 0.25;
-	}
-	else if (cr === 0.25 && isIncrease) {
-		cr = 0.5;
-	}
-	else if (cr === 0.5 && isIncrease) {
-		cr = 1;
-	}
-	else if (cr === 0.125 && !isIncrease) {
-		cr = 0;
-	}
-	else if (cr === 0.25 && !isIncrease) {
-		cr = 0.125;
-	}
-	else if (cr === 0.5 && !isIncrease) {
-		cr = 0.25;
-	}
-	else if (cr === 1 && !isIncrease) {
-		cr = 0.5;
-	}
-	else {
-		if (isIncrease)
-			cr = Math.min(30, cr + 1);
-		else
-			cr = Math.max(0, cr - 1);
-	}
-	if (isMinimumOption)
-		searchOptions.value.minCr = cr;
-	else searchOptions.value.maxCr = cr;
-}
-
 type CopiedCreature = CreatureWithStats & { bestiaryName: string };
 const copiedCreatures = useLocalStorage<CopiedCreature[]>("copiedCreatures", []);
 
@@ -671,9 +632,8 @@ const getDraggableKey = (item: any) => {
 			]"
 		>
 			<VDropdown v-if="isOwner || isEditor" :distance="6" placement="top" :positioning-disabled="store.isMobile">
-				<button v-tooltip="'Create creature!'" class="inverted" aria-label="Create creature">
-					<font-awesome-icon :icon="['fas', 'plus']" />
-				</button>
+				<ButtonIcon icon="plus" label="Create creature" inverted />
+
 				<template #popper>
 					<div class="v-popper__custom-menu">
 						<LabelledComponent title="From Scratch" for="fromScratch">
@@ -688,18 +648,14 @@ const getDraggableKey = (item: any) => {
 				</template>
 			</VDropdown>
 
-			<CopyManager :may-import="isOwner || isEditor" :current-creatures="creatures || []" can-copy-current-bestiary @import-creature="(creature) => createCreature(creature, true, false)" @import-all-creatures="creatureManyCreatures" @copy-current-bestiary="copyCurrentBestiary" />
+			<CopyManager :may-import="isOwner || isEditor" :current-creatures="creatures || []" can-copy-current-bestiary @import-creature="(creature) => createCreature(creature, true, false)" @import-all-creatures="createManyCreatures" @copy-current-bestiary="copyCurrentBestiary" />
 
-			<button v-if="lastClickedCreature" v-tooltip="'Unpin currently pinned creature!'" style="rotate: 45deg" aria-label="Unpin currently pinned creature" @click="lastClickedCreature = null">
-				<font-awesome-icon :icon="['fas', 'thumbtack']" />
-			</button>
-			<button v-if="isOwner" v-tooltip="'Edit bestiary!'" aria-label="Edit bestiary" @click="showEditorModal = true">
-				<font-awesome-icon :icon="['fas', 'pen-to-square']" />
-			</button>
+			<ButtonIcon icon="thumbtack" label="Unpin currently pinned creature" style="rotate: 45deg" @click="lastClickedCreature = null" />
+			<ButtonIcon v-if="isOwner" icon="pen-to-square" label="Edit bestiary" @click="showEditorModal = true" />
+
 			<VDropdown :distance="6" :positioning-disabled="store.isMobile">
-				<button v-tooltip="'Filter bestiary'" aria-label="Filter bestiary">
-					<font-awesome-icon :icon="['fas', 'tag']" />
-				</button>
+				<ButtonIcon icon="tag" label="Filter bestiary" />
+
 				<template #popper>
 					<div class="v-popper__custom-menu">
 						<LabelledComponent title="Sort creatures" for="sortcreatures">
@@ -720,34 +676,8 @@ const getDraggableKey = (item: any) => {
 							</div>
 						</LabelledComponent>
 						<div class="two-wide">
-							<div class="flow-vertically">
-								<label class="editor-field__title" for="challengerating"><span class="text"> Minimum CR</span></label>
-								<div class="quantity">
-									<input id="minimumcr" v-model="searchOptions.minCr" type="number" min="0" max="30" inputmode="numeric">
-									<div class="quantity-nav">
-										<div class="quantity-button quantity-up" aria-label="Increase minimum CR" @click="changeCR(true, true)">
-											+
-										</div>
-										<div class="quantity-button quantity-down" aria-label="Decrease maximum CR" @click="changeCR(false, true)">
-											-
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="flow-vertically">
-								<label class="editor-field__title" for="challengerating"><span class="text"> Maximum CR</span></label>
-								<div class="quantity">
-									<input id="maximumcr" v-model="searchOptions.maxCr" type="number" min="0" max="30" inputmode="numeric">
-									<div class="quantity-nav">
-										<div class="quantity-button quantity-up" aria-label="Increase minimum CR" @click="changeCR(true, false)">
-											+
-										</div>
-										<div class="quantity-button quantity-down" aria-label="Decrease maximum CR" @click="changeCR(false, false)">
-											-
-										</div>
-									</div>
-								</div>
-							</div>
+							<CRInput v-model="searchOptions.minCr" title="Minimum CR" />
+							<CRInput v-model="searchOptions.maxCr" title="Maximum CR" />
 						</div>
 						<span v-if="searchOptions.minCr > searchOptions.maxCr" class="warning" style="text-align: center"> Min is bigger than max </span>
 						<LabelledComponent title="Environment" for="environment">
@@ -760,14 +690,11 @@ const getDraggableKey = (item: any) => {
 				</template>
 			</VDropdown>
 
-			<button v-if="isOwner" v-tooltip="'Import bestiary'" aria-label="Import bestiary" @click="showImportModal = true">
-				<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
-			</button>
+			<ButtonIcon v-if="isOwner" icon="arrow-right-to-bracket" label="Import bestiary" @click="showImportModal = true" />
 
 			<VDropdown :distance="6" :positioning-disabled="store.isMobile">
-				<button v-tooltip="'Export bestiary'" aria-label="Export bestiary">
-					<font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" />
-				</button>
+				<ButtonIcon icon="arrow-right-from-bracket" label="Export bestiary" />
+
 				<template #popper>
 					<div class="v-popper__custom-menu">
 						<span>

@@ -11,6 +11,7 @@ import { store } from "@/utils/store";
 import { $loading } from "@/utils/app/loading";
 import StandAloneEditor from "@/components/Automations/StandAloneEditor.vue";
 import ImportAutomationUtil from "@/components/Automations/ImportAutomationUtil.vue";
+import ButtonIcon from "@/components/Global/ButtonIcon.vue";
 
 const data = ref<AutomationWithType[]>([]);
 let initialData = "";
@@ -121,13 +122,9 @@ onUnmounted(() => {
 			}
 		]"
 	>
-		<ImportAutomationUtil @load-feature="(feature, apiPath) => addAutomation(feature.name, feature.automation)" />
-		<button v-tooltip="'Import a list of automation'" aria-label="Import a list of automation" @click="showImportModal = true">
-			<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
-		</button>
-		<button v-tooltip="'Export all automations to your clipboard'" aria-label="Export all automations to your clipboard" @click="exportMyAutomations()">
-			<font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" />
-		</button>
+		<ImportAutomationUtil @load-feature="(feature) => addAutomation(feature.name, feature.automation)" />
+		<ButtonIcon icon="arrow-right-to-bracket" label="Import a list of automation" @click="showImportModal = true" />
+		<ButtonIcon icon="arrow-right-from-bracket" label="Export all automations to your clipboard" @click="exportMyAutomations()" />
 	</Breadcrumbs>
 	<div class="content">
 		<div class="wrapper">

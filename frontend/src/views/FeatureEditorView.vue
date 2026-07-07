@@ -13,6 +13,7 @@ import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import Markdown from "@/components/Global/Markdown.vue";
 import VisualEditor from "@/components/VisualEditor/VisualEditor.vue";
 import ImportAutomationUtil from "@/components/Automations/ImportAutomationUtil.vue";
+import ButtonIcon from "@/components/Global/ButtonIcon.vue";
 
 const $router = useRouter();
 const $route = useRoute();
@@ -424,51 +425,12 @@ watch(toNavigateTo, async () => {
 			}
 		]"
 	>
-		<button v-if="isOwner || isEditor" v-tooltip="'Save'" class="inverted" aria-label="Save creature" @click="saveStatblock(true)">
-			<font-awesome-icon :icon="['fas', 'save']" />
-		</button>
-		<button v-tooltip="'Generate automation from description. May be incomplete or inaccurate. Only works for basic, to hit attacks.'" aria-label="Generate automation" @click="generateAutomation">
-			<font-awesome-icon :icon="['fas', 'wand-sparkles']" />
-		</button>
-
-		<button v-tooltip="'Swap editors'" aria-label="Generate automation" @click="changeEditor">
-			<font-awesome-icon :icon="['fas', 'rotate']" />
-		</button>
-		<!-- <VDropdown :distance="6" :positioning-disabled="store.isMobile">
-			<button v-tooltip="'Import actions'" aria-label="Import actions">
-				<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
-			</button>
-			<template #popper>
-				<div class="v-popper__custom-menu">
-					<div class="editor-field__container" style="min-width: 400px">
-						<LabelledComponent title="Import SRD feature" for="importsrdfeature">
-							<v-select :options="loadedAutomation.srdFeatures" input-id="importsrdfeature" @option:selected="(selected : string) => (importAutomation('srd-feature', selected)) " />
-						</LabelledComponent>
-					</div>
-
-					<div class="editor-field__container">
-						<LabelledComponent title="Import basic example" for="importbasicexample">
-							<v-select :options="loadedAutomation.basicExamples" input-id="importbasicexample" @option:selected="(selected : string) => (importAutomation('basic-example', selected))" />
-						</LabelledComponent>
-					</div>
-
-					<div v-if="true" class="editor-field__container">
-						<LabelledComponent title="Import custom automation" for="importcustomautomation">
-							<v-select :options="loadedAutomation.myAutomation" input-id="importcustomautomation" label="name" @option:selected="(selected : myAutomationSkeleton) => (importAutomation('automation', selected.name, selected.id))" />
-						</LabelledComponent>
-					</div>
-				</div>
-			</template>
-		</VDropdown> -->
-
+		<ButtonIcon v-if="isOwner || isEditor" icon="save" label="Save automation" inverted @click="saveStatblock(true)" />
+		<ButtonIcon icon="wand-sparkles" label="Generate automation from description. May be incomplete or inaccurate. Only works for basic, to hit attacks." @click="generateAutomation" />
+		<ButtonIcon icon="rotate" label="Change editor" @click="changeEditor" />
 		<ImportAutomationUtil @load-feature="(feature, apiPath) => loadFeature(feature, apiPath)" />
-
-		<button v-if="data && store.isMobile" @click="data.features[type][aid].automation = {}">
-			<font-awesome-icon :icon="['fas', 'trash']" />
-		</button>
-		<button v-if="data && store.isMobile" @click="copyAutomation">
-			<font-awesome-icon :icon="['fas', 'copy']" />
-		</button>
+		<ButtonIcon v-if="data && store.isMobile" icon="trash" label="Clear automation" @click="data.features[type][aid].automation = {}" />
+		<ButtonIcon v-if="data && store.isMobile" icon="copy" label="Copy automation" @click="copyAutomation" />
 	</Breadcrumbs>
 	<div v-if="data" class="content">
 		<div class="editor-field__container two-wide uneven">

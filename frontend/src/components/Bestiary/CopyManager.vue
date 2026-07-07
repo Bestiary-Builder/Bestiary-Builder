@@ -40,7 +40,7 @@ const importManyCreatures = () => {
 <template>
 	<VDropdown :distance="6" placement="bottom" :positioning-disabled="store.isMobile">
 		<button v-tooltip="'Copy creatures'" aria-label="Copy creatures" @click.stop.prevent>
-			<font-awesome-icon :icon="['fa', 'copy']" />
+			<font-awesome-icon :icon="['fas', 'copy']" />
 			<div class="notice-dot">
 				{{ copiedCreatures.length }}
 			</div>

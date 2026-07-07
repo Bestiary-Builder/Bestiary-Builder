@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import Draggable from "vuedraggable";
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
-import { toJpeg } from "html-to-image";
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
 import html2canvas from "html2canvas";
 import { Shimmer } from "@shimmer-from-structure/vue";
@@ -20,6 +19,8 @@ import { alignments, classLevels, classes, conditionList, creatureTypes, languag
 import SectionHeader from "@/components/VisualEditor/Nodes/shared/SectionHeader.vue";
 import CopyManager from "@/components/Bestiary/CopyManager.vue";
 import SimpleNumberInput from "@/components/FormInputs/SimpleNumberInput.vue";
+import CRInput from "@/components/FormInputs/CRInput.vue";
+import ButtonIcon from "@/components/Global/ButtonIcon.vue";
 
 const $route = useRoute();
 const $router = useRouter();
@@ -503,43 +504,6 @@ const moveSlide = (event: KeyboardEvent) => {
 	}
 };
 
-// utils
-const changeCR = (isIncrease: boolean) => {
-	let cr = data.value.description.cr;
-
-	if (cr === 0 && isIncrease) {
-		cr = 0.125;
-	}
-	else if (cr === 0.125 && isIncrease) {
-		cr = 0.25;
-	}
-	else if (cr === 0.25 && isIncrease) {
-		cr = 0.5;
-	}
-	else if (cr === 0.5 && isIncrease) {
-		cr = 1;
-	}
-	else if (cr === 0.125 && !isIncrease) {
-		cr = 0;
-	}
-	else if (cr === 0.25 && !isIncrease) {
-		cr = 0.125;
-	}
-	else if (cr === 0.5 && !isIncrease) {
-		cr = 0.25;
-	}
-	else if (cr === 1 && !isIncrease) {
-		cr = 0.5;
-	}
-	else {
-		if (isIncrease)
-			cr = Math.min(30, cr + 1);
-		else cr = Math.max(0, cr - 1);
-	}
-
-	data.value.description.cr = cr;
-};
-
 const selectedSpell = ref({
 	0: null,
 	1: null,
@@ -583,22 +547,21 @@ const openFeature = async (path: string) => {
 				}
 			]"
 		>
-			<button v-if="madeChanges && (isOwner || isEditor)" v-tooltip="'Save creature!'" class="inverted" aria-label="Save creature" @click="saveStatblock()">
-				<font-awesome-icon :icon="['fas', 'save']" />
-			</button>
+			<ButtonIcon v-if="madeChanges && (isOwner || isEditor)" icon="save" label="Save creature" inverted @click="saveStatblock()" />
 			<button v-if="!isOwner && !isEditor" v-tooltip="'Toggle Editor for debugging purposes'" aria-label="Toggle Editor for debugging purposes" @click="shouldShowEditor = !shouldShowEditor">
 				<font-awesome-icon v-if="!shouldShowEditor" :icon="['fas', 'eye']" />
 				<font-awesome-icon v-else :icon="['fas', 'eye-slash']" />
 			</button>
-			<CopyManager v-if="rawInfo" no-import-all :may-import="isOwner || isEditor" :current-creature="{ ...rawInfo, bestiaryName: bestiary.name }" @import-creature="(creature) => importCreature(creature)" />
+			<template v-if="!isOwner && !isEditor">
+				<ButtonIcon v-if="!shouldShowEditor" icon="eye" label="Toggle editor for debugging purposes" @click="shouldShowEditor = !shouldShowEditor" />
+				<ButtonIcon v-else icon="eye-slash" label="Toggle editor for debugging purposes" @click="shouldShowEditor = !shouldShowEditor" />
+			</template>
 
-			<button v-if="isOwner || isEditor" v-tooltip="'Import a creature\'s statblock'" aria-label="Import a creature's statblock" @click="showImportModal = true">
-				<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
-			</button>
+			<CopyManager v-if="rawInfo" no-import-all :may-import="isOwner || isEditor" :current-creature="{ ...rawInfo, bestiaryName: bestiary.name }" @import-creature="(creature) => importCreature(creature)" />
+			<ButtonIcon v-if="isOwner || isEditor" icon="arrow-right-to-bracket" label="Import statblock" @click="showImportModal = true" />
+
 			<VDropdown :distance="6" :positioning-disabled="store.isMobile">
-				<button v-tooltip="'Export statblock'" aria-label="Export statblock">
-					<font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" />
-				</button>
+				<ButtonIcon icon="arrow-right-from-bracket" label="Export statblock" />
 				<template #popper>
 					<div class="v-popper__custom-menu">
 						<span>
@@ -613,13 +576,13 @@ const openFeature = async (path: string) => {
 						<LabelledComponent title="Image export options">
 							<div style="display: flex;flex-direction: column;gap: 1rem;">
 								<button v-close-popper class="btn confirm" @click="exportToImage('2x1')">
-									2x1 (Recommended)
+									2 columns (Recommended)
 								</button>
 								<button v-close-popper class="btn confirm" @click="exportToImage('1x1')">
-									1x1
+									1 column
 								</button>
 								<button v-close-popper class="btn confirm" @click="exportToImage('2x1 wide')">
-									2x1 wide
+									2 columns extra wide
 								</button>
 							</div>
 						</LabelledComponent>
@@ -702,21 +665,7 @@ const openFeature = async (path: string) => {
 							</LabelledComponent>
 						</div>
 						<div class="editor-field__container three-wide">
-							<div class="flow-vertically">
-								<label class="editor-field__title" for="challengerating"><span class="text"> Challenge rating</span></label>
-								<div class="quantity">
-									<input id="challengerating" v-model="data.description.cr" type="number" min="0" max="30" inputmode="numeric">
-									<div class="quantity-nav">
-										<div class="quantity-button quantity-up" aria-label="Increase CR" @click="changeCR(true)">
-											+
-										</div>
-										<div class="quantity-button quantity-down" aria-label="Decrease CR" @click="changeCR(false)">
-											-
-										</div>
-									</div>
-								</div>
-							</div>
-
+							<CRInput v-model="data.description.cr" title="Challenge Rating" />
 							<LabelledNumberInput v-model="data.core.proficiencyBonus" :min="0" title="Proficiency Bonus" :step="1" label-id="proficiencyBonus" />
 							<LabelledNumberInput v-model="data.description.xp" :min="0" :step="1" title="Experience Points" label-id="experience" />
 						</div>
@@ -1324,7 +1273,6 @@ const openFeature = async (path: string) => {
 </template>
 
 <style scoped lang="less">
-@import url("@/assets/styles/number-input.less");
 @import url("@/assets/styles/mixins.less");
 .content {
 	display: grid;

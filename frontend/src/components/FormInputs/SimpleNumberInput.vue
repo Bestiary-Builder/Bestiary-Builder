@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { type PropType, computed, ref, useTemplateRef, watch } from "vue";
-import LabelledComponent from "./FormInputs/LabelledComponent.vue/index.js";
 
 const props = defineProps({
 	isClearable: {
@@ -123,11 +122,11 @@ function clear() {
 <template>
 	<div class="quantity" :class="{ clearable: isClearable }">
 		<div class="quantity-button" :aria-label="`Decrease ${label}`" @click.prevent="decrease">
-			<font-awesome-icon :icon="['fa', 'minus']" />
+			<font-awesome-icon :icon="['fas', 'minus']" />
 		</div>
 		<input :id="labelId" ref="input" :value="isNaN(value) ? '' : value" type="number" :name="label" :min="min" :max="max" inputmode="numeric" @change="change">
 		<div class="quantity-button" :aria-label="`Increase ${label}`" @click.prevent="increase">
-			<font-awesome-icon :icon="['fa', 'plus']" />
+			<font-awesome-icon :icon="['fas', 'plus']" />
 		</div>
 		<div v-if="isClearable" class="quantity-button">
 			<font-awesome-icon :icon="['fas', 'eraser']" @click="clear" />
