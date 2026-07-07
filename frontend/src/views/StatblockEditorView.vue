@@ -143,13 +143,9 @@ onUnmounted(() => {
 	window.removeEventListener("beforeunload", beforeUnLoad);
 });
 
-// document title handling
-const setDocumentTitle = () => {
-	document.title = `${data.value.description.name.substring(0, 16)} | Bestiary Builder`;
-};
-
+// doc title
 watch(() => data.value.description.name, () => {
-	setDocumentTitle();
+	document.title = `${data.value.description.name} | Bestiary Builder`;
 }, { immediate: true });
 
 // draggable stuff
@@ -542,7 +538,7 @@ const openFeature = async (path: string) => {
 				},
 				{
 					path: '',
-					text: data?.description.name || 'Unnamed Creature',
+					text: data?.description.name.substring(0, 32) || 'Unnamed Creature',
 					isCurrent: true
 				}
 			]"
@@ -635,9 +631,9 @@ const openFeature = async (path: string) => {
 									</VDropdown>
 								</div>
 							</LabelledComponent>
-							<LabelledComponent title="Proper Noun" for="propernoun">
+							<LabelledComponent title="Proper noun" for="propernoun">
 								<span>
-									<input id="propernoun" v-model="data.description.isProperNoun" type="checkbox"> <label for="propernoun">Toggles display as "{{ data.description.name }}" instead of "the {{ data.description.name }}"? </label>
+									<input id="propernoun" v-model="data.description.isProperNoun" type="checkbox"> <label for="propernoun" style="word-wrap: anywhere;">Toggles display as "{{ data.description.name }}" instead of "the {{ data.description.name }}"? </label>
 								</span>
 							</LabelledComponent>
 						</div>
