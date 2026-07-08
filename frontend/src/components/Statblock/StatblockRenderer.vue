@@ -4,8 +4,8 @@ import MarkdownIt from "markdown-it";
 import type { SaveEntity, SkillsEntity, Stat, Statblock } from "~/shared";
 import { SKILLS_BY_STAT, capitalizeFirstLetter, crAsString, displayCasterCasting, displayInnateCasting, displaySpeedOrSenses, hpCalc, ppCalc, signedNumber, statCalc } from "~/shared";
 import { featureGenerator, resistanceGenerator, stats } from "@/utils/constants";
-import { store } from "@/utils/store.js";
-import type { StatblockDesign } from "~/shared/prisma/enums.js";
+import { store } from "@/utils/store.ts";
+import type { StatblockDesign } from "~/shared/prisma/enums.ts";
 
 const { data, statblockDesign = null, is2024 = null } = defineProps<{ data: Statblock; statblockDesign?: StatblockDesign; is2024?: boolean }>();
 

@@ -3,7 +3,7 @@ import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
 import html2canvas from "html2canvas";
 import { Shimmer } from "@shimmer-from-structure/vue";
-import { toast } from "@/utils/app/toast";
+import { $toast, htmlToast } from "@/utils/app/toast";
 import Modal from "@/components/Global/Modal.vue";
 import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
 import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
@@ -40,18 +40,19 @@ onMounted(async () => {
 		// loader.hide();
 	}
 	else {
-		toast.error(`Error: ${error}`);
+		$toast.error(`Error: ${error}`);
 		madeChanges.value = false;
 		await $router.push("/error");
 		// loader.hide();
 	}
 });
 
-// ownership
+// bestiary data
 const bestiary = ref<BestiaryExtended | null>(null);
 const isOwner = ref(false);
 const isEditor = ref(false);
 const shouldShowEditor = ref(false);
+
 const loadRawInfo = async () => {
 	const { success, data, error } = await useFetch<BestiaryExtended>(`/api/bestiary/${rawInfo.value?.bestiaryId}`);
 	if (success) {
@@ -62,7 +63,7 @@ const loadRawInfo = async () => {
 			shouldShowEditor.value = true;
 	}
 	else {
-		toast.error(error);
+		$toast.error(error);
 	}
 };
 
@@ -76,7 +77,7 @@ const saveStatblock = async (shouldNotify = true): Promise<boolean> => {
 	const { success, error } = await useFetch<CreatureWithStats>(`/api/creature/${rawInfo.value.id.toString()}/update`, "POST", rawInfo.value);
 	if (success) {
 		if (shouldNotify)
-			toast.success("Saved stat block");
+			$toast.success("Saved stat block");
 		madeChanges.value = false;
 		// watch data only once, as traversing the object deeply is expensive.
 		const unwatch = watch(
@@ -89,7 +90,7 @@ const saveStatblock = async (shouldNotify = true): Promise<boolean> => {
 		);
 	}
 	else {
-		toast.error(`Error saving statblock. ${error}`, { duration: 10000 });
+		$toast.error(htmlToast(error), { duration: Number.POSITIVE_INFINITY });
 	}
 	loader.hide();
 	if (success)
@@ -149,7 +150,7 @@ const toolsjson = ref("");
 
 const import5etools = async () => {
 	if (toolsjson.value.startsWith("___")) {
-		toast.error("You copied the markdown code, not the JSON.");
+		$toast.error("You copied the markdown code, not the JSON.");
 		return;
 	}
 	try {
@@ -160,10 +161,10 @@ const import5etools = async () => {
 		data.value = cData?.stats;
 		notices.value = cData?.notices;
 		toolsjson.value = "";
-		toast.success(`Successfully imported ${data.value.description.name}`);
+		$toast.success(`Successfully imported ${data.value.description.name}`);
 	}
 	catch (e) {
-		toast.error("Failed to import this creature");
+		$toast.error("Failed to import this creature");
 	}
 };
 
@@ -180,10 +181,10 @@ const importBestiaryBuilder = async () => {
 			data.value = creature;
 			notices.value = {};
 			bestiaryBuilderJson.value = "";
-			toast.success(`Successfully imported ${data.value.description.name}`);
+			$toast.success(`Successfully imported ${data.value.description.name}`);
 		}
 		else {
-			toast.error(error.replaceAll("\n", "<br />"), {
+			$toast.error(error.replaceAll("\n", "<br />"), {
 				duration: 0
 			});
 		}
@@ -191,7 +192,7 @@ const importBestiaryBuilder = async () => {
 	}
 	catch (e) {
 		console.error(e);
-		toast.error("Failed to import this creature");
+		$toast.error("Failed to import this creature");
 	}
 };
 
@@ -201,12 +202,12 @@ const importCritterDB = async () => {
 	try {
 		const url = new URL(link);
 		if (url.hostname !== "critterdb.com" && !url.hostname.endsWith(".critterdb.com")) {
-			toast.error("Could not recognize link as a link to a CritterDB bestiary");
+			$toast.error("Could not recognize link as a link to a CritterDB bestiary");
 			return;
 		}
 	}
 	catch {
-		toast.error("Could not recognize link as a link to a CritterDB bestiary");
+		$toast.error("Could not recognize link as a link to a CritterDB bestiary");
 		return;
 	}
 
@@ -215,26 +216,26 @@ const importCritterDB = async () => {
 
 	const { success, data: cData, error } = await useFetch(`/api/critterdbcreature/${link}`);
 	if (!success) {
-		toast.error(error);
+		$toast.error(error);
 		return;
 	}
 
 	data.value = cData as Statblock;
 	showImportModal.value = false;
-	toast.success(`Successfully imported ${data.value.description.name}`);
+	$toast.success(`Successfully imported ${data.value.description.name}`);
 };
 
 const importCreature = async (creature: Statblock) => {
 	data.value = creature;
 	await saveStatblock(false);
-	toast.success(`Successfully imported ${data.value.description.name}`);
+	$toast.success(`Successfully imported ${data.value.description.name}`);
 };
 
 // export
 const exportStatblock = async () => {
 	const text = JSON.stringify(data.value, null, 2);
 	await navigator.clipboard.writeText(text);
-	toast.info("Exported this statblock to your clipboard.");
+	$toast.info("Exported this statblock to your clipboard.");
 };
 
 const exportHomebrery = async () => {
@@ -245,14 +246,14 @@ const exportHomebrery = async () => {
 		);
 		if (success) {
 			await navigator.clipboard.writeText(resultData.metadata);
-			toast.info("Exported this statblock markdown to your clipboard");
+			$toast.info("Exported this statblock markdown to your clipboard");
 		}
 		else {
-			toast.error(error);
+			$toast.error(error);
 		}
 	}
 	catch (err) {
-		toast.error(err as string);
+		$toast.error(err as string);
 	}
 };
 

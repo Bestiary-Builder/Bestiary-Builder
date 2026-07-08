@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from "vue";
+import { h, onMounted, onUnmounted, ref } from "vue";
 import { onBeforeRouteLeave } from "vue-router";
 import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import { useFetch } from "@/utils/utils";
-import { toast } from "@/utils/app/toast";
+import { $toast } from "@/utils/app/toast";
 import type { AttackModel, AutomationWithType, Id } from "~/shared";
 import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import Modal from "@/components/Global/Modal.vue";
@@ -28,7 +28,7 @@ const selectedAutomation = ref<AutomationWithType | null>(null);
 const newAutomationName = ref<string>("New Automation");
 const addAutomation = async (name: string, automation: null | AttackModel | AttackModel[], shouldNotify = true) => {
 	if (name === "New Automation") {
-		toast.warning("Automation must have a non-default name!");
+		$toast.warning("Automation must have a non-default name!");
 		return;
 	}
 	const loader = $loading.show();
@@ -37,10 +37,12 @@ const addAutomation = async (name: string, automation: null | AttackModel | Atta
 		await getMyAutomations();
 		newAutomationName.value = "New Automation";
 		if (shouldNotify)
-			toast.success(`Successfully added automation: ${name}`);
+			$toast.success(`Successfully added automation: ${name}`);
 		selectedAutomation.value = data.value[data.value.length - 1];
 	}
-	else { toast.error(error); }
+	else {
+		$toast.error(error);
+	}
 	loader.hide();
 };
 
@@ -48,11 +50,11 @@ const deleteAutomation = async (_id: Id) => {
 	const loader = $loading.show();
 	const { success, error } = await useFetch(`/api/automation/${_id.toString()}/delete`);
 	if (success) {
-		toast.success("Successfully deleted the automation!");
+		$toast.success("Successfully deleted the automation!");
 		await getMyAutomations();
 		selectedAutomation.value = null;
 	}
-	else { toast.error(error); }
+	else { $toast.error(error); }
 	loader.hide();
 };
 
@@ -60,13 +62,13 @@ const getMyAutomations = async () => {
 	const { success, data: rData, error } = await useFetch<AutomationWithType[]>(`/api/my-automations`);
 	if (success)
 		data.value = rData;
-	else toast.error(error);
+	else $toast.error(error);
 	initialData = JSON.stringify(data.value);
 };
 
 const exportMyAutomations = async () => {
 	await navigator.clipboard.writeText(JSON.stringify(data.value.map(a => a.automation)));
-	toast.success("Copied all automation to clipboard!");
+	$toast.success("Copied all automation to clipboard!");
 };
 
 const showImportModal = ref(false);
@@ -83,7 +85,7 @@ const importAutomations = async () => {
 		else name = a.name;
 		await addAutomation(name, a, false);
 	}
-	toast.info("Done importing automation!");
+	$toast.info("Done importing automation!");
 	showImportModal.value = false;
 };
 

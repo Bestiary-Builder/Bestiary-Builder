@@ -1,5 +1,16 @@
-<?xml version="1.0" encoding="utf-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="45.8602 56.106 251.7778 440.232" preserveAspectRatio="none">
-  <path transform="matrix(0.10000000149011612, 0, 0, -0.10000000149011612, -5.684341886080802e-14, 792.0000000000001)" stroke-width="10" stroke-linecap="butt" stroke-miterlimit="4" stroke-linejoin="miter" fill="none" stroke="#cfad8d" d="M541.398 7358.94 458.602 7276.14V3039.42L541.398 2956.62H2893.58L2976.38 3039.42V7276.14L2893.58 7358.94H541.398Z"/>
-  <path transform="matrix(0.10000000149011612, 0, 0, -0.10000000149011612, -5.684341886080802e-14, 792.0000000000001)" stroke-width="5" stroke-linecap="butt" stroke-miterlimit="4" stroke-linejoin="miter" fill="none" stroke="#cfad8d" d="M480.68 2978.6H2954.29V7336.96H480.68Z"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="100px" height="100px" viewBox="0 0 180 180">
+  <path
+    d="M 26.5 16.5            H 153.5            L 164.5 26.5            V 153.5            L 153.5 163.5            H 26.5            L 15.5 153.5            V 26.5            Z"
+    fill="transparent" />
+  <g transform="translate(9.515, 10.16)">
+
+    <path fill="none"
+      d="M 21.95 1.25              L 1.25 21.95              V 137.73              L 21.95 158.43              H 139.02              L 159.72 137.73              V 21.95              L 139.02 1.25              Z" />
+
+    <path fill="none" stroke="#cfad8d" stroke-width="2.5"
+      d="M 21.95 1.25              L 1.25 21.95              V 137.73              L 21.95 158.43              H 139.02              L 159.72 137.73              V 21.95              L 139.02 1.25              Z" />
+
+    <path fill="none" stroke="#cfad8d" stroke-width="1.25"
+      d="M 6.77 6.74              H 154.2              V 152.93              H 6.77              Z" />
+  </g>
 </svg>

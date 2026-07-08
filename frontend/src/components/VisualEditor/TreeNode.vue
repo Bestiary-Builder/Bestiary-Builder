@@ -18,7 +18,7 @@ const currentContext = inject<Ref<string[]>>("currentContext");
 const automation = inject<Ref<null | AttackModel | AttackModel[]>>("automation");
 const isCollapsed = ref(false);
 
-const branchesCollapsed = ref<string[]>([]);
+const branchesCollapsed = ref<string[]>(["miss", "hit", "onTrue", "onFalse", "fail", "success"]);
 
 const toggleBranch = (key: string) => {
 	if (branchesCollapsed.value.includes(key))
@@ -174,7 +174,7 @@ const additionalText = computed(() => {
 					<p :style="`margin-left: ${(depth + 2) * 15}px;`" @click="currentEffect = (button as any as ButtonInteraction); currentContext = [...context, 'buttons', index.toString()]">
 						<NodeHeader :type="key" :additional-text="(button as any as ButtonInteraction).label" />
 					</p>
-					<TreeRoot :data="(button as any as ButtonInteraction)" :depth="depth + 2" root-type="button" :context="[...context, 'buttons', index.toString(), 'automation']" />
+					<TreeRoot :data="(button as any as AttackModel)" :depth="depth + 2" root-type="button" :context="[...context, 'buttons', index.toString(), 'automation']" />
 				</template>
 			</template>
 			<template v-if="(key as EffectKey) === 'attacks'">

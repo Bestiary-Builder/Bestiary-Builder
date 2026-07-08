@@ -1,20 +1,13 @@
 <script setup lang="ts">
 import { type Ref, computed, inject, watch } from "vue";
 import SectionHeader from "./shared/SectionHeader.vue";
+import { useDataCleanup } from "./shared/utils";
 import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import LabelledNumberInput from "@/components/FormInputs/LabelledNumberInput.vue";
 import type { Target } from "~/shared";
 
 const currentEffect = inject<Ref<Target>>("currentEffect");
 const currentContext = inject<Ref<string[]>>("currentContext");
-
-if (!Object.hasOwn(currentEffect!.value, "sortBy"))
-	currentEffect!.value.sortBy = "user_input";
-
-watch(() => currentEffect!.value?.sortBy, () => {
-	if (currentEffect!.value?.sortBy === "user_input")
-		delete currentEffect!.value.sortBy;
-},);
 
 const isButton = computed(() => currentContext!.value.includes("buttons"));
 const isIAttack = computed(() => currentContext!.value.includes("attacks"));
@@ -33,6 +26,8 @@ const hasAllTarget = computed(() => {
 
 if (currentEffect?.value.target === "each")
 	currentEffect.value.target = "all";
+
+useDataCleanup(currentEffect, ["sortBy"]);
 </script>
 
 <template>
@@ -64,7 +59,7 @@ if (currentEffect?.value.target === "each")
 		<div class="two-wide">
 			<LabelledComponent title="Sort Targets By" for="sortTargetsBy">
 				<select id="sortTargetBy" v-model="currentEffect.sortBy" placeholder="User Input" title="User input" class="ghost">
-					<option value="user_input">
+					<option :value="null">
 						User Input
 					</option>
 					<option value="hp_asc">

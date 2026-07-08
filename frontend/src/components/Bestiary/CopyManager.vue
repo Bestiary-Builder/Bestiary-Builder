@@ -2,7 +2,7 @@
 import { useLocalStorage } from "@vueuse/core";
 import { store } from "@/utils/store";
 import type { CreatureWithStats, Statblock } from "~/shared";
-import { toast } from "@/utils/app/toast";
+import { $toast } from "@/utils/app/toast";
 
 const props = withDefaults(
 	defineProps<{ noImportAll?: boolean; mayImport: boolean; currentCreature?:
@@ -20,7 +20,7 @@ const copiedCreatures = useLocalStorage<CopiedCreature[]>("copiedCreatures", [])
 
 const clearCreatures = () => {
 	copiedCreatures.value = [];
-	toast.success("Successfully cleared copied creatures list");
+	$toast.success("Successfully cleared copied creatures list");
 };
 
 const deleteCreature = (idx: number) => {

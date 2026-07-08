@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
-import { computed, nextTick, onMounted, onUnmounted, provide, ref, shallowRef, useTemplateRef, watch } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, provide, reactive, ref, shallowRef, useTemplateRef, watch } from "vue";
 import YAML from "yaml";
 import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
 import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
-import { type AutomationDocumentation, type BestiaryExtended, type CreatureWithStats, type FeatureEntity, type Features, type Id, type Statblock, parseDescIntoAutomation } from "~/shared";
+import { type AttackModel, type AutomationDocumentation, type BestiaryExtended, type CreatureWithStats, type FeatureEntity, type Features, type Id, type Statblock, parseDescIntoAutomation } from "~/shared";
 import { $loading } from "@/utils/app/loading";
 import { useFetch } from "@/utils/utils";
-import { toast } from "@/utils/app/toast";
+import { $toast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import Markdown from "@/components/Global/Markdown.vue";
@@ -38,7 +38,7 @@ onMounted(async () => {
 		loader.hide();
 	}
 	else {
-		toast.error(`Error: ${error}`);
+		$toast.error(`Error: ${error}`);
 		madeChanges.value = false;
 		await $router.push("/error");
 		loader.hide();
@@ -61,7 +61,7 @@ const loadRawInfo = async () => {
 			shouldShowEditor.value = true;
 	}
 	else {
-		toast.error(error);
+		$toast.error(error);
 	}
 };
 
@@ -108,7 +108,7 @@ async function getBestiary() {
 	const { success, data, error } = await useFetch<BestiaryExtended>(`/api/bestiary/${rawInfo.value?.bestiaryId}`);
 	if (!success) {
 		bestiary.value = null;
-		toast.error(error);
+		$toast.error(error);
 		return;
 	}
 	bestiary.value = data;
@@ -128,7 +128,7 @@ const saveStatblock = async (shouldNotify: boolean) => {
 	if (success) {
 		isSaved.value = true;
 		if (shouldNotify)
-			toast.success("Saved stat block");
+			$toast.success("Saved Action Successfully");
 		madeChanges.value = false;
 		// watch data only once, as traversing the object deeply is expensive.
 		const unwatch = watch(
@@ -141,45 +141,11 @@ const saveStatblock = async (shouldNotify: boolean) => {
 		);
 	}
 	else {
-		toast.error(`Error saving statblock. ${error}`, { duration: 10000 });
+		$toast.error(`Error saving statblock. ${error}`, { duration: 10000 });
 	}
 	if (loader)
 		loader.hide();
 };
-
-// Imported automation helpers
-interface myAutomationSkeleton {
-	name: string;
-	id: Id;
-}
-interface LoadedAutomation {
-	basicExamples: string[];
-	srdFeatures: string[];
-	myAutomation: myAutomationSkeleton[];
-}
-
-const loadedAutomation = ref<LoadedAutomation>({
-	basicExamples: [],
-	srdFeatures: [],
-	myAutomation: []
-});
-
-const loadImportedAutomation = async (apiPath: string, saveTo: keyof LoadedAutomation) => {
-	const { success, data, error } = await useFetch<string[] & myAutomationSkeleton[]>(`/api/${apiPath}`);
-	if (success) {
-		loadedAutomation.value[saveTo] = data;
-	}
-	else {
-		loadedAutomation.value[saveTo] = [];
-		toast.error(error);
-	}
-};
-
-onMounted(async () => {
-	await loadImportedAutomation("basic-examples/list", "basicExamples");
-	await loadImportedAutomation("srd-features/list", "srdFeatures");
-	await loadImportedAutomation("my-automations", "myAutomation");
-});
 
 type AutomationTypes = "automation" | "basic-example" | "srd-feature";
 const loadFeature = async (feature: FeatureEntity, apiPath: AutomationTypes) => {
@@ -208,7 +174,7 @@ const loadFeature = async (feature: FeatureEntity, apiPath: AutomationTypes) => 
 		visualEditorRef.value.currentEffect = null;
 		visualEditorRef.value.currentContext = [];
 	}
-	toast.success(`Successfully loaded ${feature.name}!`);
+	$toast.success(`Successfully loaded ${feature.name}!`);
 	await saveStatblock(false);
 };
 
@@ -222,14 +188,14 @@ const generateAutomation = async () => {
 			automationString.value = YAML.stringify(result);
 		}
 		catch {
-			toast.error("Something went when generating automation!");
+			$toast.error("Something went when generating automation!");
 		}
 	}
 };
 
 const copyAutomation = async () => {
 	await navigator.clipboard.writeText(automationString.value);
-	toast.success("Copied automation to clipboard!");
+	$toast.success("Copied automation to clipboard!");
 };
 
 const automationString = ref("");
@@ -403,6 +369,57 @@ watch(toNavigateTo, async () => {
 	await $router.push(`/statblock-editor/${rawInfo.value?.id}/${toNavigateTo.value[0]}/${toNavigateTo.value[1]}`);
 	$router.go(0);
 });
+
+const parityOptions = reactive({
+	updateName: true,
+	updateDescription: true
+});
+
+watch(() => data.value?.features[type][aid].name, (newName) => {
+	if (prefersVisualEditor.value && parityOptions.updateName) {
+		const automation = data.value?.features[type][aid].automation as AttackModel | AttackModel[] | null;
+		if (!automation)
+			return;
+		if (Array.isArray(automation))
+			automation[0].name = newName || "";
+		else
+			automation.name = newName || "";
+	}
+});
+
+watch(() => data.value?.features[type][aid].description, (newDesc) => {
+	if (prefersVisualEditor.value && parityOptions.updateDescription) {
+		const automation = data.value?.features[type][aid].automation as AttackModel | AttackModel[] | null;
+		if (!automation)
+			return;
+		let auto = automation;
+		if (Array.isArray(automation))
+			auto = automation[0];
+
+		for (const field of ((auto as AttackModel)?.automation || []).reverse() || []) {
+			if (field.type === "text") {
+				field.text = newDesc || "";
+				(auto as AttackModel).automation.reverse();
+				return;
+			}
+		}
+	}
+});
+
+const setName = (newName: string) => {
+	if (!data.value)
+		return;
+	data.value.features[type][aid].name = newName;
+};
+
+const setDesc = (setDesc: string) => {
+	if (!data.value)
+		return;
+	data.value.features[type][aid].description = setDesc;
+};
+
+provide("setActionName", setName);
+provide("setActionDescription", setDesc);
 </script>
 
 <template>
@@ -437,6 +454,10 @@ watch(toNavigateTo, async () => {
 			<div>
 				<LabelledComponent title="Feature name" for="featurename">
 					<input id="featurename" v-model="data.features[type][aid].name" type="text" placeholder="Enter name" :minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength">
+					<span>
+						<input v-model="parityOptions.updateName" type="checkbox" style="scale: .7; translate: 0 4px">
+						<small v-if="prefersVisualEditor" style="font-size: x-small;"> <i>Updates the name of the first action in the automation structure to this text while enabled.</i> </small>
+					</span>
 				</LabelledComponent>
 				<div v-if="!prefersVisualEditor" style="margin-top: .5rem">
 					<b> Status: </b>
@@ -459,7 +480,7 @@ watch(toNavigateTo, async () => {
 						</template>
 					</select>
 				</div>
-				<div v-if="showDescriptionButtons">
+				<div v-if=" !prefersVisualEditor && showDescriptionButtons">
 					<b> Descriptions: </b>
 					<span style="color: var(--color-destructive)"> Don't match. </span>
 					<p style="text-decoration: underline; font-size: smaller; cursor: pointer;" @click="updateAutomationDescFromFeatureDesc">
@@ -472,7 +493,11 @@ watch(toNavigateTo, async () => {
 			</div>
 
 			<LabelledComponent title="Feature description" for="featuredescription">
-				<textarea id="featuredescription" v-model="data.features[type][aid].description" height="94" placeholder="Enter description" style="height: 93px" :maxlength="store.limits?.descriptionLength" />
+				<textarea id="featuredescription" v-model="data.features[type][aid].description" placeholder="Enter description" rows="5" :maxlength="store.limits?.descriptionLength" />
+				<span v-if="prefersVisualEditor" class="sub-action">
+					<input v-model="parityOptions.updateDescription" type="checkbox">
+					<small> <i>Updates the last text node of the first action in the automation structure to this text while enabled.</i> </small>
+				</span>
 			</LabelledComponent>
 		</div>
 
@@ -545,5 +570,17 @@ watch(toNavigateTo, async () => {
 
 a {
 	color: orangered;
+}
+
+.sub-action {
+	line-height: 0.7;
+	small {
+		font-size: x-small;
+	}
+
+	input[type="checkbox"] {
+		scale: 0.7;
+		translate: 0 4px;
+	}
 }
 </style>

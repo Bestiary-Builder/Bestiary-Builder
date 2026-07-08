@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, shallowRef, watch } from "vue";
+import { computed, h, onMounted, onUnmounted, ref, shallowRef, toRef, watch } from "vue";
 import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
 import YAML from "yaml";
+import { useParityHelper } from "./useParityHelpers";
 import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import Markdown from "@/components/Global/Markdown.vue";
 import { useFetch } from "@/utils/utils";
-import { toast } from "@/utils/app/toast";
-import type { AutomationDocumentation, AutomationWithType, FeatureEntity } from "~/shared";
+import { $toast, htmlToast } from "@/utils/app/toast";
+import type { AttackModel, AutomationDocumentation, AutomationWithType, FeatureEntity } from "~/shared";
 import { store } from "@/utils/store";
 
 const props = withDefaults(defineProps<{ data: AutomationWithType; creatureName?: string }>(), { creatureName: "$NAME$" });
@@ -30,7 +31,7 @@ const saveAutomation = async () => {
 		parsed = YAML.parse(automationString.value);
 	}
 	catch {
-		toast.error("YAML contains Error. Failed to save automation");
+		$toast.error("YAML contains Error. Failed to save automation");
 		return;
 	}
 	// parsed == null
@@ -44,7 +45,7 @@ const saveAutomation = async () => {
 			props.data.automation = parsed;
 		}
 		else {
-			toast.error(error);
+			$toast.error(htmlToast(error));
 			return;
 		}
 	}
@@ -53,14 +54,14 @@ const saveAutomation = async () => {
 	const { success, error } = await useFetch<FeatureEntity>(`/api/automation/${props.data.id.toString()}/update`, "POST", props.data);
 
 	if (!success) {
-		toast.error(`${props.data.name || "Unnamed feature"}: ${error}`);
+		$toast.error(error);
 		return;
 	}
 	else {
 		emit("savedStandaloneData");
 	}
 
-	toast.success("Successfully saved automation!");
+	$toast.success("Successfully saved automation!");
 };
 
 // Documentation context by mouse location
@@ -122,78 +123,79 @@ const currentDocu = computed(() => {
 	return docu.value[currentContext.value];
 });
 
+const { updateAutomationDescFromFeatureDesc, updateFeatureDescFromAutomationDesc, showDescriptionButtons } = useParityHelper(() => props.data.description, () => automationString.value, () => props.data.automation as AttackModel | AttackModel[] | null);
 // Description parity helpers
-const updateFeatureDescFromAutomationDesc = () => {
-	let auto;
-	try {
-		auto = YAML.parse(automationString.value);
-	}
-	catch {
-		return;
-	}
-	if (Array.isArray(auto))
-		return;
-	for (const field of auto?.automation?.reverse() || []) {
-		if (field.type === "text") {
-			props.data.description = field.text;
-			return;
-		}
-	}
-};
+// const updateFeatureDescFromAutomationDesc = () => {
+// 	let auto;
+// 	try {
+// 		auto = YAML.parse(automationString.value);
+// 	}
+// 	catch {
+// 		return;
+// 	}
+// 	if (Array.isArray(auto))
+// 		return;
+// 	for (const field of auto?.automation?.reverse() || []) {
+// 		if (field.type === "text") {
+// 			props.data.description = field.text;
+// 			return;
+// 		}
+// 	}
+// };
 
-const updateAutomationDescFromFeatureDesc = () => {
-	let auto;
-	try {
-		auto = YAML.parse(automationString.value);
-	}
-	catch {
-		return;
-	}
-	if (Array.isArray(auto))
-		return;
-	for (const field of auto?.automation?.reverse() || []) {
-		if (field.type === "text") {
-			field.text = props.data.description;
-			auto.automation.reverse();
-			automationString.value = YAML.stringify(auto);
-			return;
-		}
-	}
-};
+// const updateAutomationDescFromFeatureDesc = () => {
+// 	let auto;
+// 	try {
+// 		auto = YAML.parse(automationString.value);
+// 	}
+// 	catch {
+// 		return;
+// 	}
+// 	if (Array.isArray(auto))
+// 		return;
+// 	for (const field of auto?.automation?.reverse() || []) {
+// 		if (field.type === "text") {
+// 			field.text = props.data.description;
+// 			auto.automation.reverse();
+// 			automationString.value = YAML.stringify(auto);
+// 			return;
+// 		}
+// 	}
+// };
 
-const getAutomationDescription = (): string | boolean => {
-	let auto;
-	try {
-		auto = YAML.parse(automationString.value);
-	}
-	catch {
-		return false;
-	}
-	if (Array.isArray(auto))
-		return false;
-	if (!props.data.automation || !auto || auto?.automation?.length === 0)
-		return false;
-	for (const field of auto?.automation?.reverse() || []) {
-		if (field?.type === "text")
-			return field.text;
-	}
-	return "";
-};
+// const getAutomationDescription = (): string | boolean => {
+// 	let auto;
+// 	try {
+// 		auto = YAML.parse(automationString.value);
+// 	}
+// 	catch {
+// 		return false;
+// 	}
+// 	if (Array.isArray(auto))
+// 		return false;
+// 	if (!props.data.automation || !auto || auto?.automation?.length === 0)
+// 		return false;
+// 	for (const field of auto?.automation?.reverse() || []) {
+// 		if (field?.type === "text")
+// 			return field.text;
+// 	}
+// 	return "";
+// };
 
-const showDescriptionButtons = computed(() => {
-	const desc = props.data.description;
-	const autoDesc = getAutomationDescription();
-	if (Array.isArray(props.data.automation) || !desc || !autoDesc)
-		return false;
-	if (desc !== autoDesc)
-		return true;
-	return false;
-});
+// const showDescriptionButtons = computed(() => {
+// 	const desc = props.data.description;
+// 	const autoDesc = getAutomationDescription();
+// 	if (Array.isArray(props.data.automation) || !desc || !autoDesc)
+// 		return false;
+// 	if (desc !== autoDesc)
+// 		return true;
+// 	return false;
+// });
 
 // utils
 const copyAutomation = async () => {
 	await navigator.clipboard.writeText(automationString.value);
-	toast.success("Copied automation to clipboard!");
+	$toast.success("Copied automation to clipboard!");
 };
 
 const validateYaml = () => {
@@ -249,6 +251,7 @@ const validateYaml = () => {
 					<hr>
 					<span class="yaml-error" v-html="errorMessage" />
 				</div>
+				{{ showDescriptionButtons }}
 				<div v-if="showDescriptionButtons && (!errorMessage || errorMessage.length === 0)">
 					<hr>
 					<p class="warning">

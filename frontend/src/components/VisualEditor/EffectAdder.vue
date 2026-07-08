@@ -2,10 +2,11 @@
 import { type Ref, computed, inject } from "vue";
 import { Icon } from "@iconify/vue";
 import { useRoute } from "vue-router";
+import { useWindowSize } from "@vueuse/core";
 import { store } from "../../utils/store";
 import { activation_type, defaultNodes, displayNames } from "./util";
 import type { AttackInteraction, AttackModel, ButtonInteraction, EffectWithTarget, Features } from "~/shared";
-import { toast } from "@/utils/app/toast";
+import { $toast } from "@/utils/app/toast";
 
 const props = defineProps<{ context: string[]; name?: string }>();
 const $route = useRoute();
@@ -104,7 +105,7 @@ const addAndSelect = async (node: string, pasteCopied = false) => {
 			if (copiedEffect) {
 				const { isTargetContext } = computedContext.value;
 				if (!isTargetContext && ["error", "attack", "save", "damage", "temphp", "check"].includes(copiedEffect.value?.type || "error")) {
-					toast.error(`Effect of type \`${copiedEffect.value?.type}\` cannot be placed outside a Target Effect.`);
+					$toast.error(`Effect of type \`${copiedEffect.value?.type}\` cannot be placed outside a Target Effect.`);
 					return;
 				}
 
@@ -120,10 +121,11 @@ const addAndSelect = async (node: string, pasteCopied = false) => {
 };
 
 const copiedEffect = inject<Ref<EffectWithTarget | null>>("copiedEffect");
+const { width } = useWindowSize();
 </script>
 
 <template>
-	<VDropdown v-if="displayNames" :distance="6" :positioning-disabled="store.isMobile" placement="left" container="#effectAdderContainer">
+	<VDropdown v-if="displayNames" :distance="6" :positioning-disabled="store.isMobile" :placement="width < 1200 ? 'bottom-start' : 'left'" container="#effectAdderContainer">
 		<div role="button" class="container">
 			<span class="icon"><Icon icon="material-symbols:add-circle" width="1em" color="orangered" /></span><span>Add Effect</span>
 		</div>

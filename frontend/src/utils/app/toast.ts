@@ -1,3 +1,10 @@
-import { app } from "@/main";
+import { toast } from "vue-sonner";
+import { h } from "vue";
 
-export const toast = app.config.globalProperties.$toast;
+export const $toast = toast;
+
+export const htmlToast = (html: string) => {
+	return h("div", {
+		innerHTML: `${html}`
+	});
+};

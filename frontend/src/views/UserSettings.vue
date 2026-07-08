@@ -3,7 +3,7 @@ import { ref } from "vue";
 import { store } from "@/utils/store";
 import { sendToLogin, useFetch } from "@/utils/utils";
 import { type Bestiary, type Statblock, SupporterStatus } from "~/shared";
-import { toast } from "@/utils/app/toast";
+import { $toast } from "@/utils/app/toast";
 import SectionHeader from "@/components/VisualEditor/Nodes/shared/SectionHeader.vue";
 import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
@@ -13,7 +13,7 @@ const logoutClick = async () => {
 	const { success, error } = await useFetch("/api/logout");
 	if (success)
 		location.reload();
-	else toast.error(error);
+	else $toast.error(error);
 };
 
 const bestiaryCount = ref(0);
@@ -33,7 +33,7 @@ const saveSettings = async () => {
 	const { success, data } = await useFetch("/api/user/updatePreferences", "POST", { statblockDesign: design.value, statblockLayout: layout.value, preferredEditor: editor.value });
 	if (success) {
 		store.user = (data as any).data;
-		toast.success("Successfully saved your preferences");
+		$toast.success("Successfully saved your preferences");
 	}
 };
 

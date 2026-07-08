@@ -16,7 +16,7 @@ import ButtonIcon from "@/components/Global/ButtonIcon.vue";
 import { defaultStatblock } from "~/shared";
 import type { Bestiary, BestiaryExtended, CreatureWithStats, Statblock, User } from "~/shared";
 import { useFetch } from "@/utils/utils";
-import { toast } from "@/utils/app/toast";
+import { $toast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { creatureTypes } from "@/utils/constants";
 import { $loading } from "@/utils/app/loading";
@@ -123,7 +123,7 @@ watch(lastClickedCreature, (): void => {
 	if (!hasPinnedBefore.value)
 		hasPinnedBefore.value = true;
 
-	toast.info("Pinned creature to the view. Click unpin there to go back to hover behaviour.");
+	$toast.info("Pinned creature to the view. Click unpin there to go back to hover behaviour.");
 });
 
 watch(() => bestiary.value?.status, (newValue): void => {
@@ -163,7 +163,7 @@ onMounted(async () => {
 			srdCreatures.value = data;
 
 		if (error)
-			toast.error(error);
+			$toast.error(error);
 	});
 });
 
@@ -198,14 +198,14 @@ async function exportHomebrewery() {
 
 		if (success) {
 			await navigator.clipboard.writeText(resultData.metadata);
-			toast.info("Exported this bestiary markdown to your clipboard");
+			$toast.info("Exported this bestiary markdown to your clipboard");
 		}
 		else {
-			toast.error(error);
+			$toast.error(error);
 		}
 	}
 	catch (err) {
-		toast.error(err as string);
+		$toast.error(err as string);
 	}
 	finally {
 		loader.hide();
@@ -248,7 +248,7 @@ async function exportBestiary(asFile: boolean) {
 				2
 			)
 		);
-		toast.info("Exported this bestiary to your clipboard.");
+		$toast.info("Exported this bestiary to your clipboard.");
 	}
 }
 
@@ -258,7 +258,7 @@ async function importBestiaryFromCritterDB() {
 	try {
 		const url = new URL(link);
 		if (url.hostname !== "critterdb.com" && !url.hostname.endsWith(".critterdb.com")) {
-			toast.error("Could not recognize link as a link to a CritterDB bestiary");
+			$toast.error("Could not recognize link as a link to a CritterDB bestiary");
 			return;
 		}
 	}
@@ -269,7 +269,7 @@ async function importBestiaryFromCritterDB() {
 	const linkEls = link.split("/");
 	link = linkEls[linkEls.length - 1];
 
-	toast.info("Fetching bestiary data has started. This may take a while.");
+	$toast.info("Fetching bestiary data has started. This may take a while.");
 	const loader = $loading.show();
 	const { success, data, error } = await useFetch<{
 		data: {
@@ -281,30 +281,30 @@ async function importBestiaryFromCritterDB() {
 	}>(`/api/critterdb/${link}/${isPublic}`);
 	if (success) {
 		if (data.failedCreatures.length > 0)
-			toast.error(`Failed to parse ${data.failedCreatures.length} creatures, due to invalid data recieved.`);
+			$toast.error(`Failed to parse ${data.failedCreatures.length} creatures, due to invalid data recieved.`);
 		for (const creature of data.failedCreatures)
 			notices.value[creature] = "Failed to parse, due to unrecognized data.";
 	}
 	else {
-		toast.error(error);
+		$toast.error(error);
 		loader.hide();
 		return;
 	}
-	toast.info("Saving creatures has started. This may take a while.");
+	$toast.info("Saving creatures has started. This may take a while.");
 	const { success: cSuccess, data: creatureData, error: cError } = await useFetch<{ error?: string; ignoredCreatures: { creature: string; error: string }[] }>(`/api/bestiary/${bestiary.value?.id.toString()}/addcreatures`, "POST", data.data.creatures);
 	if (!cSuccess) {
 		notices.value = {};
-		toast.error(cError);
+		$toast.error(cError);
 	}
 	else if (creatureData.error) {
-		toast.error("The import was completed with errors.");
+		$toast.error("The import was completed with errors.");
 		notices.value.Errors = creatureData.error;
 		for (const error of creatureData.ignoredCreatures)
 			notices.value[error.creature] = error.error;
 	}
 	await getBestiary();
 	loader.hide();
-	toast.success("Importing has finished!");
+	$toast.success("Importing has finished!");
 	if (cSuccess && !creatureData.error)
 		showImportModal.value = false;
 }
@@ -317,7 +317,7 @@ async function importCreaturesFromBestiaryBuilder() {
 	}
 	catch (e) {
 		console.error(e);
-		toast.error("Something is wrong with the format of your JSON");
+		$toast.error("Something is wrong with the format of your JSON");
 		loader.hide();
 		return;
 	}
@@ -325,21 +325,21 @@ async function importCreaturesFromBestiaryBuilder() {
 	if (!Array.isArray(creaturesToImport))
 		creaturesToImport = [creaturesToImport];
 
-	toast.info("Importing creatures has started. This may take a while.");
+	$toast.info("Importing creatures has started. This may take a while.");
 	const { success, data, error } = await useFetch<{ error?: string; ignoredCreatures: { creature: string; error: string }[] }>(`/api/bestiary/${bestiary.value?.id.toString()}/addcreatures`, "POST", creaturesToImport);
 
 	if (!success) {
 		notices.value = {};
-		toast.error(error);
+		$toast.error(error);
 	}
 	else if (data.error) {
-		toast.error("The import was completed with errors.");
+		$toast.error("The import was completed with errors.");
 		notices.value.Errors = data.error;
 		for (const error of data.ignoredCreatures)
 			notices.value[error.creature] = error.error;
 	}
 	else {
-		toast.success("Importing has finished!");
+		$toast.success("Importing has finished!");
 	}
 
 	await getBestiary();
@@ -368,7 +368,7 @@ async function createCreature(stats = defaultStatblock, shouldHaveLoader = true,
 			await getBestiary();
 	}
 	else {
-		toast.error(error);
+		$toast.error(error);
 	}
 
 	if (shouldHaveLoader && loader)
@@ -382,21 +382,21 @@ async function createManyCreatures() {
 
 	const loader = $loading.show();
 
-	toast.info("Importing creatures has started. This may take a while.");
+	$toast.info("Importing creatures has started. This may take a while.");
 	const { success, data, error } = await useFetch<{ error?: string; ignoredCreatures: { creature: string; error: string }[] }>(`/api/bestiary/${bestiary.value?.id.toString()}/addcreatures`, "POST", creatures);
 
 	if (!success) {
 		notices.value = {};
-		toast.error(error);
+		$toast.error(error);
 	}
 	else if (data.error) {
-		toast.error("The import was completed with errors.");
+		$toast.error("The import was completed with errors.");
 		notices.value.Errors = data.error;
 		for (const error of data.ignoredCreatures)
 			notices.value[error.creature] = error.error;
 	}
 	else {
-		toast.success("Importing has finished!");
+		$toast.success("Importing has finished!");
 	}
 
 	await getBestiary();
@@ -407,14 +407,14 @@ async function deleteCreature(id: string) {
 	const loader = $loading.show();
 	const { success, error } = await useFetch(`/api/creature/${id.toString()}/delete`);
 	if (success) {
-		toast.success("Deleted creature succesfully");
+		$toast.success("Deleted creature succesfully");
 		if (!bestiary.value)
 			return;
 		bestiary.value.creatures = bestiary.value.creatures.filter(c => c.id !== id);
 		creatures.value = creatures.value?.filter(c => c.id !== id) ?? [];
 	}
 	else {
-		toast.error(error);
+		$toast.error(error);
 	}
 	loader.hide();
 }
@@ -426,7 +426,7 @@ async function importSrdCreature(creature: string) {
 		return data;
 	}
 	else {
-		toast.error(error);
+		$toast.error(error);
 	}
 }
 
@@ -484,9 +484,9 @@ async function addEditor() {
 	const loader = $loading.show();
 	const { success, error } = await useFetch(`/api/bestiary/${bestiary.value.id.toString()}/editors/add/${id}`);
 	if (success)
-		toast.success("Added editor succesfully");
+		$toast.success("Added editor succesfully");
 	else
-		toast.error(error);
+		$toast.error(error);
 
 	await getBestiary();
 	loader.hide();
@@ -498,9 +498,9 @@ async function removeEditor(id: string) {
 	const loader = $loading.show();
 	const { success, error } = await useFetch(`/api/bestiary/${bestiary.value.id.toString()}/editors/remove/${id}`);
 	if (success)
-		toast.success("Removed editor succesfully");
+		$toast.success("Removed editor succesfully");
 	else
-		toast.error(error);
+		$toast.error(error);
 
 	await getBestiary();
 	loader.hide();
@@ -513,7 +513,7 @@ async function getBestiary() {
 	const { success, data, error } = await useFetch<BestiaryExtended>(`/api/bestiary/${id.toString()}`);
 	if (!success) {
 		bestiary.value = null;
-		toast.error(error);
+		$toast.error(error);
 		return;
 	}
 	bestiary.value = data;
@@ -528,7 +528,7 @@ async function getBestiary() {
 		}
 		else {
 			creatures.value = null;
-			toast.error(creatureResult.error);
+			$toast.error(creatureResult.error);
 		}
 	});
 	// Fetch editors
@@ -538,7 +538,7 @@ async function getBestiary() {
 			if (editorResult.success)
 				editors.value.push(editorResult.data as User);
 			else
-				toast.error(editorResult.error);
+				$toast.error(editorResult.error);
 		});
 	}
 	// Bookmark state
@@ -549,7 +549,7 @@ async function getBestiary() {
 			}
 			else {
 				bookmarked.value = false;
-				toast.error(bookmarkResult.error);
+				$toast.error(bookmarkResult.error);
 			}
 		});
 	}
@@ -565,12 +565,12 @@ async function updateBestiary() {
 	// Send to backend
 	const { success, error } = await useFetch<Bestiary>(`/api/bestiary/${bestiary.value.id.toString()}/update`, "POST", bestiary.value);
 	if (success) {
-		toast.success("Saved bestiary");
+		$toast.success("Saved bestiary");
 		savedBestiary.value = bestiary.value;
 		showEditorModal.value = false;
 	}
 	else {
-		toast.error(error);
+		$toast.error(error);
 	}
 	loader.hide();
 }
@@ -583,12 +583,12 @@ async function toggleBookmark() {
 	if (success) {
 		bookmarked.value = data.state;
 		if (bookmarked.value)
-			toast.success("Successfully bookmarked this bestiary!");
-		else toast.success("Successfully unbookmarked this bestiary!");
+			$toast.success("Successfully bookmarked this bestiary!");
+		else $toast.success("Successfully unbookmarked this bestiary!");
 	}
 	else {
 		bookmarked.value = false;
-		toast.error(error);
+		$toast.error(error);
 	}
 	loader.hide();
 }
@@ -604,7 +604,7 @@ const copyCurrentBestiary = () => {
 		toAdd.push({ ...creature, bestiaryName: bestiary.value.name });
 
 	copiedCreatures.value = copiedCreatures.value.concat(toAdd);
-	toast.success("Successfully copied current Bestiary");
+	$toast.success("Successfully copied current Bestiary");
 };
 
 // draggable stuff

@@ -57,7 +57,7 @@ watch(() => currentEffect!.value?.style, () => {
 		</LabelledComponent>
 		<SectionHeader title="Casting Overrides" />
 		<small>
-			Use these options to pass casting information about the caster to the button, or arbritary number variables you can use for anything, such as a number of dice.
+			Use these options to pass casting information about the caster to the button, or arbritary number variables you can use for anything, such as a number of dice. Use the variables below in your button automation to access the values you set here.
 		</small>
 		<div class="two-wide" style="margin-top: .5rem">
 			<LabelledComponent title="Default DC" for="defaultDc">

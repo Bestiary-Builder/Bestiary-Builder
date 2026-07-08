@@ -5,9 +5,9 @@ import LabelledNumberInput from "../FormInputs/LabelledNumberInput.vue";
 import Modal from "../Global/Modal.vue";
 import LabelledComponent from "../FormInputs/LabelledComponent.vue";
 import { type CreatureWithStats, type Statblock, defaultStatblock, getSpellSlots, spellList, spellListFlattened } from "~/shared";
-import { classLevels, classes, stats } from "@/utils/constants.js";
-import { toast } from "@/utils/app/toast.js";
-import { store } from "@/utils/store.js";
+import { classLevels, classes, stats } from "@/utils/constants";
+import { $toast } from "@/utils/app/toast";
+import { store } from "@/utils/store";
 
 const { data, rawInfo } = defineProps<{ data: Statblock; rawInfo: CreatureWithStats | null }>();
 
@@ -90,7 +90,7 @@ const newDailyAmount = ref<number | null>(null);
 
 const addNewDaily = () => {
 	if (!newDailyAmount.value) {
-		toast.error("You did not choose an amount per day");
+		$toast.error("You did not choose an amount per day");
 		return;
 	}
 	if (newDailyAmount.value >= 4)

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import LabelledComponent from "../FormInputs/LabelledComponent.vue";
-import { toast } from "@/utils/app/toast";
+import { $toast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import type { FeatureEntity, Id } from "~/shared";
@@ -35,7 +35,7 @@ const loadImportedAutomation = async (apiPath: string, saveTo: keyof LoadedAutom
 	}
 	else {
 		loadedAutomation.value[saveTo] = [];
-		toast.error(error);
+		$toast.error(error);
 	}
 };
 
@@ -49,13 +49,13 @@ const selectAndLoad = async (apiPath: AutomationTypes, name: string, _id: Id | n
 	const { success, data: iData, error } = await useFetch(`/api/${apiPath}/${encodeURIComponent(_id?.toString() ?? name)}`);
 	let feature: FeatureEntity | null = null;
 	if (!success) {
-		toast.error(`Error: ${error}`);
+		$toast.error(`Error: ${error}`);
 		return;
 	}
 	feature = iData as FeatureEntity | null;
 
 	if (!feature) {
-		toast.error(`Error: Failed to import ${name}`);
+		$toast.error(`Error: Failed to import ${name}`);
 		return;
 	}
 
@@ -77,7 +77,7 @@ const selectAndLoad = async (apiPath: AutomationTypes, name: string, _id: Id | n
 				</div>
 
 				<div class="editor-field__container">
-					<LabelledComponent title="Import basic example" for="importbasicexample">
+					<LabelledComponent title="Import basic template" for="importbasicexample">
 						<v-select :options="loadedAutomation.basicExamples" input-id="importbasicexample" @option:selected="(selected : string) => (selectAndLoad('basic-example', selected))" />
 					</LabelledComponent>
 				</div>

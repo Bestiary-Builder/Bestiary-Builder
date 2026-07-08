@@ -10,14 +10,19 @@ body .v-popper__custom-menu .stat-block.Odyssey {
     background-size:  100% 100%;
     background-repeat: no-repeat;
 
-    border: 1px solid #cfac8d;
 
-    box-shadow: 0 0 3px #f3f5f9;
-    border: 1px solid #cfac8d;
-    padding: 15px;
+    /* box-shadow: 0 0 3px #f3f5f9;
+    border: 1px solid #cfac8d; 
     outline: 1px solid #cfac8d;
     outline-offset: -0.25rem;
-    border-radius: .5rem;
+    border-radius: .5rem; */
+    padding: 0px;
+    border: 15px solid transparent;
+
+    border-image-source: url("./border.svg");
+    border-image-repeat: stretch;
+    border-image-slice: 18;
+    border-image-outset: 10px;
 
     .stat-block__name-container {
         font-family: 'Odyssey';

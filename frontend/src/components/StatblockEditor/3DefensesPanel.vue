@@ -3,7 +3,7 @@ import LabelledComponent from "../FormInputs/LabelledComponent.vue";
 import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
 import LabelledNumberInput from "../FormInputs/LabelledNumberInput.vue";
 import type { Statblock } from "~/shared";
-import { conditionList, resistanceList } from "@/utils/constants.js";
+import { conditionList, resistanceList } from "@/utils/constants";
 
 const { data } = defineProps<{ data: Statblock }>();
 </script>

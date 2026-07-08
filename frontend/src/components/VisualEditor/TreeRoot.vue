@@ -4,14 +4,14 @@ import TreeNode from "./TreeNode.vue";
 import EffectAdder from "./EffectAdder.vue";
 import type { AttackModel, ButtonInteraction, EffectWithTarget } from "~/shared";
 
-const { data, depth = 0, parentType = "root", rootType = "root", context = ["root"] } = defineProps<{ data: AttackModel | AttackModel[] | ButtonInteraction; depth?: number; parentType?: string; rootType?: "root" | "button" | "attack"; context?: string[] }>();
+const { data, depth = 0, parentType = "root", rootType = "root", context = ["root"] } = defineProps<{ data: AttackModel | AttackModel[]; depth?: number; parentType?: string; rootType?: "root" | "button" | "attack"; context?: string[] }>();
 
 const automation = inject<Ref<null | AttackModel | AttackModel[]>>("automation");
 const makeListAttack = () => {
 	if (Array.isArray(data) || !automation || rootType !== "root")
 		return;
 	const currentAttack = data;
-	automation.value = [currentAttack as AttackModel, { _v: 2, name: "New Attack", automation: [] }];
+	automation.value = [currentAttack, { _v: 2, name: "New Attack", automation: [] }];
 };
 
 const addListAttack = () => {
@@ -21,7 +21,7 @@ const addListAttack = () => {
 	automation.value.push({ _v: 2, name: "New Attack", automation: [] });
 };
 
-const currentEffect = inject<Ref<EffectWithTarget | AttackModel | ButtonInteraction >>("currentEffect");
+const currentEffect = inject<Ref<EffectWithTarget | AttackModel >>("currentEffect");
 const currentContext = inject<Ref<string[]>>("currentContext");
 </script>
 
@@ -29,7 +29,7 @@ const currentContext = inject<Ref<string[]>>("currentContext");
 	<section :class="{ container: rootType === 'root' }">
 		<template v-if="Array.isArray(data)">
 			<template v-for="auto, index in data" :key="index">
-				<p v-if="rootType === 'root'" class="add" @click="currentEffect = data[index]; currentContext = [...context]">
+				<p v-if="rootType === 'root'" class="add root" @click="currentEffect = data[index]; currentContext = [...context]">
 					-{{ auto.name }}-
 				</p>
 				<TransitionGroup name="fade">
@@ -46,8 +46,8 @@ const currentContext = inject<Ref<string[]>>("currentContext");
 			</p>
 		</template>
 		<template v-else>
-			<p v-if="rootType === 'root'" class="add" @click="currentEffect = data; currentContext = [...context]">
-				-Attack Root-
+			<p v-if="rootType === 'root'" class="add root" @click="currentEffect = data; currentContext = [...context]">
+				-Attack Root ({{ data.name }})-
 			</p>
 			<TransitionGroup name="fade">
 				<div v-for="(node, idx) in data.automation ?? []" :key="(node as any)">
@@ -94,6 +94,10 @@ div {
 	&:hover {
 		color: color-mix(in srgb, currentColor, white) !important;
 	}
+}
+
+.root {
+	color: orangered;
 }
 
 .fade-move,

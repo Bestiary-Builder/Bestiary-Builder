@@ -28,6 +28,8 @@ watch(() => descIsText.value, () => {
 });
 
 useDataCleanup(currentEffect, ["title"]);
+
+const setDesc = inject<any>("setActionDescription");
 </script>
 
 <template>
@@ -42,6 +44,7 @@ useDataCleanup(currentEffect, ["title"]);
 		<LabelledComponent title="Description" for="text" style="margin-top: 1rem">
 			<div v-if="descIsText" class="input-wrapper">
 				<textarea id="text" v-model="(currentEffect.text as string)" rows="5" placeholder="Description" /><AnnotatedString />
+				<small style="font-size: x-small; cursor: pointer" role="button" @click="setDesc(currentEffect.text)"> <i>Set the description of the statblock trait to this text.</i> </small>
 			</div>
 			<v-select v-else v-model="currentEffect.text" :options="abilities" label="name" input-id="text" :reduce="(x : any) => ({ id: x.id, typeId: x.typeId })" />
 		</labelledcomponent>

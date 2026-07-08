@@ -132,7 +132,7 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: string]
 
 	outputData.description = {
 		name: data.name,
-		description: data.flavor.description.replaceAll("<i>", "*").replaceAll("</i>", "*").replaceAll("<b>", "**").replaceAll("</b>", "**"),
+		description: data.flavor.description.replaceAll("<i>", "*").replaceAll("</i>", "*").replaceAll("<b>", "**").replaceAll("</b>", "**").replaceAll("<I>", "*").replaceAll("</I>", "*").replaceAll("<B>", "**").replaceAll("</B>", "**"),
 		isProperNoun: data.flavor.nameIsProper,
 		faction: data.flavor.faction,
 		environment: data.flavor.environment,
@@ -445,7 +445,7 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: string]
 		if (!sData)
 			return defaultStatblock.spellcasting.casterSpells;
 
-		sData = sData.replaceAll("<i>", "").replaceAll("</i>", "").replaceAll("<b>", "").replaceAll("</b>", "");
+		sData = sData.replaceAll("<i>", "").replaceAll("</i>", "").replaceAll("<b>", "").replaceAll("</b>", "").replaceAll("<I>", "").replaceAll("</I>", "").replaceAll("<B>", "").replaceAll("</B>", "");
 
 		const typeMatch = sData.match(/spellcasting ability is (\w+) \(spell save DC (\d+), [+\-](\d+) to hit/i);
 		if (!typeMatch)

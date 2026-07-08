@@ -40,7 +40,7 @@ const searchBestiaries = async () => {
 	else {
 		bestiaries.value = [];
 		totalPages.value = 1;
-		toast.error(error);
+		$toast.error(error);
 	}
 };
 
@@ -52,7 +52,7 @@ const getBookmarkedBestiaries = async () => {
 	}
 	else {
 		bestiaries.value = [];
-		toast.error(error);
+		$toast.error(error);
 	}
 };
 

@@ -5,7 +5,7 @@ import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
 import { statFullName } from "~/shared";
 import type { Statblock } from "~/shared";
 import { store } from "@/utils/store";
-import { toast } from "@/utils/app/toast";
+import { $toast } from "@/utils/app/toast";
 
 const { data } = defineProps<{ data: Statblock }>();
 
@@ -15,11 +15,11 @@ const deleteSkill = (index: number) => {
 
 const addNewSkill = (newSkillName: string) => {
 	if (!newSkillName) {
-		toast.error("No skill chosen.");
+		$toast.error("No skill chosen.");
 		return;
 	}
 	if (data.abilities.skills.some(obj => obj.skillName === newSkillName)) {
-		toast.error("You already have this skill.");
+		$toast.error("You already have this skill.");
 		return;
 	}
 

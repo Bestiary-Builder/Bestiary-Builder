@@ -2,7 +2,7 @@
 import { ref, watchEffect } from "vue";
 import { isClient } from "@vueuse/shared";
 import { useElementSize, useShare } from "@vueuse/core";
-import { toast } from "@/utils/app/toast";
+import { $toast } from "@/utils/app/toast";
 
 const { isLessWide = false, routes } = defineProps<{ routes: links; isLessWide?: boolean }>();
 type links = {
@@ -24,7 +24,7 @@ async function startShare() {
 		return share().catch(err => err);
 	// webshare API is not supported
 	await navigator.clipboard.writeText(options.value.url);
-	toast.success("Copied link to clipboard!");
+	$toast.success("Copied link to clipboard!");
 }
 
 const breadcrumbs = ref(null);

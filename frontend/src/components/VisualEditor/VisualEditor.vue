@@ -91,14 +91,6 @@ h3 {
 	margin-bottom: 0.25rem;
 }
 
-.two-wide.uneven {
-	width: 100%;
-	display: grid;
-	gap: 0rem 1rem;
-	margin-bottom: 1rem;
-	grid-template-columns: 1fr 3fr;
-}
-
 section {
 	background-color: var(--color-surface-1);
 	min-height: 800px;
@@ -112,5 +104,24 @@ section {
 	border-radius: 6px;
 	box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 	background-color: var(--color-surface-0);
+}
+
+.two-wide.uneven {
+	width: 100%;
+	display: grid;
+	gap: 0rem 1rem;
+	margin-bottom: 1rem;
+	grid-template-columns: 1fr 3fr;
+}
+
+@media screen and (max-width: 1200px) {
+	.two-wide.two-wide.uneven {
+		grid-template-columns: 1fr;
+	}
+
+	section,
+	.container {
+		min-height: unset;
+	}
 }
 </style>

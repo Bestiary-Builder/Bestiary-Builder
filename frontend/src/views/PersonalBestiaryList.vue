@@ -4,7 +4,7 @@ import { onMounted, ref } from "vue";
 import Modal from "@/components/Global/Modal.vue";
 import BestiaryList from "@/components/Bestiary/BestiaryList.vue";
 import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
-import { toast } from "@/utils/app/toast";
+import { $toast } from "@/utils/app/toast";
 import type { BestiaryExtended } from "~/shared";
 import { useFetch } from "@/utils/utils";
 import { $loading } from "@/utils/app/loading";
@@ -28,7 +28,7 @@ const getBestiaries = async () => {
 	}
 	else {
 		bestiaries.value = [];
-		toast.error(error);
+		$toast.error(error);
 	}
 };
 
@@ -40,11 +40,11 @@ const createBestiary = async () => {
 		status: "private"
 	});
 	if (success) {
-		toast.success("Created bestiary");
+		$toast.success("Created bestiary");
 		await router.push(`/bestiary-viewer/${data.id.toString()}`);
 	}
 	else {
-		toast.error(error);
+		$toast.error(error);
 	}
 	await getBestiaries();
 };
@@ -55,11 +55,11 @@ const deleteBestiary = async (bestiary: BestiaryExtended | null) => {
 	const loader = $loading.show();
 	const { success, error } = await useFetch(`/api/bestiary/${bestiary.id.toString()}/delete`);
 	if (success) {
-		toast.success("Deleted bestiary succesfully");
+		$toast.success("Deleted bestiary succesfully");
 		showDeleteModal.value = false;
 	}
 	else {
-		toast.error(error);
+		$toast.error(error);
 	}
 	loader.hide();
 	await getBestiaries();

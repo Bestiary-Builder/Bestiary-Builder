@@ -4,11 +4,12 @@ import { inject } from "vue";
 import Draggable from "vuedraggable";
 import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
 import LabelledNumberInput from "../FormInputs/LabelledNumberInput.vue";
-import { getDraggableKey } from "./utils.js";
+import ButtonIcon from "../Global/ButtonIcon.vue";
+import { getDraggableKey } from "./utils";
 import type { CreatureWithStats, Features, Statblock } from "~/shared";
-import { newFeatureGenerator } from "@/utils/constants.js";
-import { toast } from "@/utils/app/toast.js";
-import { store } from "@/utils/store.js";
+import { newFeatureGenerator } from "@/utils/constants";
+import { $toast } from "@/utils/app/toast";
+import { store } from "@/utils/store";
 
 const { data, rawInfo } = defineProps<{ data: Statblock; rawInfo: CreatureWithStats | null }>();
 const $router = useRouter();
@@ -19,7 +20,7 @@ const openFeature = async (path: string) => {
 	if (didSave)
 		await $router.push(path);
 	else
-		toast.error("Cannot open action while creature cannot save.");
+		$toast.error("Cannot open action while creature cannot save.");
 };
 
 const deleteFeature = (type: keyof Features, index: number) => {
@@ -87,9 +88,7 @@ const createNewFeature = (type: keyof Features) => {
 							</th>
 							<td class="edit-buttons">
 								<VDropdown :distance="6" :positioning-disabled="store.isMobile">
-									<button v-tooltip="'Export statblock'" aria-label="Export statblock" class="btn-icon" style="color: orangered; margin: 0px; font-size: smaller; padding: 0">
-										<font-awesome-icon :icon="['fas', 'edit']" />
-									</button>
+									<ButtonIcon icon="edit" label="Edit feature header" />
 									<template #popper>
 										<div class="v-popper__custom-menu">
 											<span style="color: lightgray"> You can set text to show at<br> the top of each section here.</span>
@@ -106,9 +105,8 @@ const createNewFeature = (type: keyof Features) => {
 							</th>
 							<td>
 								<VDropdown :distance="6" :positioning-disabled="store.isMobile">
-									<button v-tooltip="'Export statblock'" aria-label="Export statblock" class="btn-icon" style="color: orangered; margin: 0px; font-size: smaller; padding: 0">
-										<font-awesome-icon :icon="['fas', 'edit']" />
-									</button>
+									<ButtonIcon icon="edit" label="Edit legendary actions per round" />
+
 									<template #popper>
 										<div class="v-popper__custom-menu">
 											<LabelledNumberInput v-model="data.misc.legActionsPerRound" title="Legendary actions per round" :step="1" :min="0" />
