@@ -25,6 +25,7 @@ app.post("/api/5etools-import", async (req, res) => {
 });
 
 export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string[] }] {
+	console.log(data.name);
 	const outputData = {} as Statblock;
 	outputData.description = {
 		name: data.name,
@@ -63,6 +64,9 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 			if (!typeData?.tags || typeData?.tags.length === 0)
 				return capitalizeFirstLetter(baseType);
 
+			if (typeData.type.choose) {
+				return `${capitalizeFirstLetter(typeData.type.choose[0])}`;
+			}
 			if (typeof typeData?.tags[0] == "string")
 				return `${capitalizeFirstLetter(baseType)} (${typeData?.tags.map((a: string) => capitalizeFirstLetter(a)).join(" ")})`;
 
@@ -470,7 +474,17 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 			}
 			return output;
 		})(),
-		conditionImmunities: (data?.conditionImmune || []).map((c: string) => capitalizeFirstLetter(c))
+		conditionImmunities: (() => {
+			const output: string[] = [];
+			for (const x of data?.conditionImmune || []) {
+				if (typeof (x) === "string")
+					output.push(capitalizeFirstLetter(x));
+				if (typeof (x) === "object") {
+					output.push(`${x.conditionImmune[0]} (${x.note})`);
+				}
+			}
+			return output;
+		})()
 	};
 
 	outputData.spellcasting = {

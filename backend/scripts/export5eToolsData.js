@@ -2,7 +2,7 @@
 /* eslint-disable */
 
 // This script extracts 5e.tools creature data from the bestiary page. Should not require manual cleanup.
-const els = document.querySelectorAll(".lst__row-inner")
+const els = document.querySelectorAll(".ve-lst__row a")
 async function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -23,9 +23,10 @@ for (el of els) {
     codeButton.dispatchEvent(shiftClick)
     await sleep(100)
 
-    const dataElement = document.querySelector("div.hwin__wrp-table > div > pre")
+    const dataElement = document.querySelector(".ve-hwin__wrp-table pre")
     output.push(JSON.parse(dataElement.innerText))
     const closeButton = document.querySelector('[title="Close (CTRL to Close All)"]')
     closeButton.click()
 }
 
+console.log(output)

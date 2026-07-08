@@ -614,7 +614,6 @@ const getDraggableKey = (item: any) => {
 </script>
 
 <template>
-	<p>Test</p>
 	<div>
 		<Breadcrumbs
 			v-if="bestiary"

@@ -4,6 +4,7 @@ import { type FeatureEntity, parseDescIntoAutomation } from "~/shared";
 export function abilityParser(fData: any, activationType: number): [FeatureEntity[], string[]] {
 	const output = [] as FeatureEntity[];
 	const notices = [] as string[];
+
 	for (const f of fData ?? []) {
 		const name = markdownReplacer(f.name);
 
@@ -45,6 +46,11 @@ export function descParser(dData: any) {
 export function markdownReplacer(text: string): string {
 	text = text
 		.replaceAll("{@atk mw}", "*Melee Weapon Attack:*")
+		.replaceAll("{@atk m}", "*Melee Attack:*")
+		.replaceAll("{@atk r}", "*Ranged Attack:*")
+		.replaceAll("{@atkr m}", "*Melee Attack Roll:*")
+		.replaceAll("{@atkr r}", "*Ranged Attack Roll:*")
+		.replaceAll("{@atkr m,r}", "*Melee or Ranged Attack Roll:*")
 		.replaceAll("{@atk rw}", "*Ranged Weapon Attack:*")
 		.replaceAll("{@atk mw,rw}", "*Melee or Ranged Weapon Attack:*")
 		.replaceAll("{@atk ms}", "*Melee Spell Attack:*")
@@ -54,11 +60,30 @@ export function markdownReplacer(text: string): string {
 		.replace(/\{@damage\s+([^}]+)\}/g, "$1")
 		.replace(/\{@dc\s+([^}]+)\}/g, "DC $1")
 		.replace(/\{@dice\s+([^}]+)\}/g, "$1")
-		.replace(/\{@spell\s+([^}]+)\}/g, "$1")
-		.replace(/\{@item\s+([^}]+)\}/g, "$1")
-		.replace(/\{@skill\s+([^}]+)\}/g, "$1")
-		.replace(/\{@condition\s+([^}]+)\}/g, "<u>$1</u>")
+		.replace(/\{@spell\s+([^}|]+).*\}/g, "*$1*")
+		.replace(/\{@item\s+([^}|]+).*\}/g, "$1")
+		.replace(/\{@skill\s+([^}|]+).*\}/g, "$1")
+		.replace(/\{@variantrule\s+([^}|]+).*\}/g, "$1")
+		.replace(/\{@action\s+([^}|]+).*\}/g, "$1")
+		.replace(/\{@condition\s+([^}|]+).*\}/g, "*$1*")
+		.replace(/\{@status\s+([^}|]+).*\}/g, "$1")
+		.replace(/\{@creature\s+([^}|]+).*\}/g, "*$1*")
+		.replace(/\{@hazard\s+([^}|]+).*\}/g, "$1")
+		.replace(" [Area of Effect]", "")
 		.replace(/\{@recharge\s+(\d+)\}/g, "(Recharge $1-6)")
+		.replace("{@actSave str}", "*Strength Saving Throw*:")
+		.replace("{@actSave dex}", "*Dexterity Saving Throw*:")
+		.replace("{@actSave con}", "*Constitution Saving Throw*:")
+		.replace("{@actSave wis}", "*Wisdom Saving Throw*:")
+		.replace("{@actSave cha}", "*Charisma Saving Throw*:")
+		.replace("{@actSave int}", "*Intelligence Saving Throw*:")
+		.replace("{@hom}", "*Hit or Miss*: ")
+		.replace("{@actSaveFail}", "*Failure*:")
+		.replace("{@actSaveFail 1}", "*First Failure*:")
+		.replace("{@actSaveFail 2}", "*Second Failure*:")
+		.replace("{@actSaveFail 3}", "*Third Failure*:")
+		.replace("{@actSaveSuccess}", "*Success*:")
+		.replace("{@actSaveSuccessOrFail}", "*Failure or Success*:")
 		.replace(
 			/\{@quickref\s[a-z\s]+\|+\d+\}/,
 			"$1".replace(/(?:^|\s)\S/g, (t) => {
