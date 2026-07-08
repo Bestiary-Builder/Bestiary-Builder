@@ -332,7 +332,7 @@ const render = (str: string) => {
 				<h3 v-if="v2024" class="feature-container__title">
 					Traits
 				</h3>
-				<p v-if="data.misc.featureHeaderTexts.features">
+				<p v-if="data.misc.featureHeaderTexts.features" class="feature-header">
 					{{ data.misc.featureHeaderTexts.features }}
 				</p>
 				<p v-for="(feature, index) in data.features.features" :key="index">
@@ -356,7 +356,7 @@ const render = (str: string) => {
 			<h3 class="feature-container__title">
 				Actions
 			</h3>
-			<p v-if="data.misc.featureHeaderTexts.actions">
+			<p v-if="data.misc.featureHeaderTexts.actions" class="feature-header">
 				{{ data.misc.featureHeaderTexts.actions }}
 			</p>
 			<p v-for="(feature, index) in data.features.actions" :key="index">
