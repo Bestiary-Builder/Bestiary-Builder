@@ -60,7 +60,8 @@ useDataCleanup(currentEffect, ["allowOverflow", "fixedValue"]);
 				</select>
 			</LabelledComponent>
 			<LabelledComponent v-if="counterType === 'cc' " title="Counter Name*" for="counterName">
-				<input id="counterName" v-model="currentEffect.counter" type="text" :class="{ required: (currentEffect.counter as string).length === 0 }">
+				<input id="counterName" v-model="currentEffect.counter" type="text">
+				<small style="font-size: x-small"> Leave empty and set Error Behaviour to <i>Ignore</i> to take arbitrary <code>-amt #</code> input.</small>
 			</LabelledComponent>
 			<LabelledComponent v-if="counterType === 'ss' " title="Slot Level*" for="slotLevel">
 				<div class="input-wrapper">
