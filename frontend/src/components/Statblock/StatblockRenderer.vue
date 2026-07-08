@@ -4,7 +4,7 @@ import MarkdownIt from "markdown-it";
 import type { SaveEntity, SkillsEntity, Stat, Statblock } from "~/shared";
 import { SKILLS_BY_STAT, capitalizeFirstLetter, crAsString, displayCasterCasting, displayInnateCasting, displaySpeedOrSenses, hpCalc, ppCalc, signedNumber, statCalc } from "~/shared";
 import { featureGenerator, resistanceGenerator, stats } from "@/utils/constants";
-import { store } from "@/utils/store.ts";
+import { store } from "@/utils/store";
 import type { StatblockDesign } from "~/shared/prisma/enums.ts";
 
 const { data, statblockDesign = null, is2024 = null } = defineProps<{ data: Statblock; statblockDesign?: StatblockDesign; is2024?: boolean }>();
@@ -333,17 +333,17 @@ md.renderer.rules.paragraph_open = function (tokens, idx, options, env, self) {
 				</p>
 				<p v-for="(feature, index) in data.features.features" :key="index">
 					<b> <i>{{ feature.name }}.</i><sup v-if="feature.automation" v-tooltip="'Has Automation'" class="feature-container__automation-icon">†</sup> </b>
-					<span class="feature-container__desc" v-html="md.render(feature.description.replaceAll('\n', '$ReplaceWithNewLineCharacter')).replaceAll('$ReplaceWithNewLineCharacter', '<br>')" />
+					<span class="feature-container__desc" v-html="md.render(feature.description.replaceAll('\n', '$ReplaceWithNewLineCharacter').replaceAll('$ReplaceWithNewLineCharacter*', '\n*')).replaceAll('$ReplaceWithNewLineCharacter', '<br>')" />
 				</p>
 
 				<p v-if="showInnateCasting && !data.spellcasting.innateSpells.displayAsAction">
 					<b><i>Innate Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics"> (Psionics)</span>.</i></b>
-					<span class="feature-container__desc" v-html="md.render(displayInnateCasting(data, v2024).replaceAll('\n', '$ReplaceWithNewLineCharacter')).replaceAll('$ReplaceWithNewLineCharacter', '<br>')" />
+					<span class="feature-container__desc" v-html="md.render(displayInnateCasting(data, v2024).replaceAll('\n', '$ReplaceWithNewLineCharacter').replaceAll('$ReplaceWithNewLineCharacter*', '\n*')).replaceAll('$ReplaceWithNewLineCharacter', '<br>')" />
 				</p>
 
 				<p v-if="showCasterCasting && data.spellcasting.casterSpells.castingClass && data.spellcasting.casterSpells.casterLevel && data.spellcasting.casterSpells.spellSlotList">
 					<b><i>Spellcasting</i></b>
-					<span class="feature-container__desc" v-html="md.render(displayCasterCasting(data, v2024).replaceAll('\n', '$ReplaceWithNewLineCharacter')).replaceAll('$ReplaceWithNewLineCharacter', '<br>')" />
+					<span class="feature-container__desc" v-html="md.render(displayCasterCasting(data, v2024).replaceAll('\n', '$ReplaceWithNewLineCharacter').replaceAll('$ReplaceWithNewLineCharacter*', '\n*')).replaceAll('$ReplaceWithNewLineCharacter', '<br>')" />
 				</p>
 			</div>
 		</div>
@@ -357,12 +357,12 @@ md.renderer.rules.paragraph_open = function (tokens, idx, options, env, self) {
 			</p>
 			<p v-for="(feature, index) in data.features.actions" :key="index">
 				<b> <i>{{ feature.name }}.</i><sup v-if="feature.automation" v-tooltip="'Has Automation'" class="feature-container__automation-icon">†</sup></b>
-				<span class="feature-container__desc" v-html="md.render(feature.description.replaceAll('\n', '$ReplaceWithNewLineCharacter')).replaceAll('$ReplaceWithNewLineCharacter', '<br>')" />
+				<span class="feature-container__desc" v-html="md.render(feature.description.replaceAll('\n', '$ReplaceWithNewLineCharacter').replaceAll('$ReplaceWithNewLineCharacter*', '\n*')).replaceAll('$ReplaceWithNewLineCharacter', '<br>')" />
 			</p>
 
 			<p v-if="showInnateCasting && data.spellcasting.innateSpells.displayAsAction">
 				<b><i>Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics"> (Psionics)</span>.</i></b>
-				<span class="feature-container__desc" v-html="md.render(displayInnateCasting(data, v2024).replaceAll('\n', '$ReplaceWithNewLineCharacter')).replaceAll('$ReplaceWithNewLineCharacter', '<br>')" />
+				<span class="feature-container__desc" v-html="md.render(displayInnateCasting(data, v2024).replaceAll('\n', '$ReplaceWithNewLineCharacter').replaceAll('$ReplaceWithNewLineCharacter*', '\n*')).replaceAll('$ReplaceWithNewLineCharacter', '<br>')" />
 			</p>
 		</div>
 
@@ -381,7 +381,7 @@ md.renderer.rules.paragraph_open = function (tokens, idx, options, env, self) {
 				<p v-for="(feature, index) in data.features[fType]" :key="index" class="feature-description">
 					<b> <i> {{ feature.name }}.</i></b>
 					<sup v-if="feature.automation" v-tooltip="'Has Automation'" class="feature-container__automation-icon">†</sup>
-					<span class="feature-container__desc" v-html="md.render(feature.description.replaceAll('\n', '$ReplaceWithNewLineCharacter')).replaceAll('$ReplaceWithNewLineCharacter', '<br>')" />
+					<span class="feature-container__desc" v-html="md.render(feature.description.replaceAll('\n', '$ReplaceWithNewLineCharacter').replaceAll('$ReplaceWithNewLineCharacter*', '\n*')).replaceAll('$ReplaceWithNewLineCharacter', '<br>')" />
 				</p>
 			</div>
 		</template>

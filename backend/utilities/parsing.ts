@@ -35,7 +35,7 @@ export function descParser(dData: any) {
 		if (typeof d == "object") {
 			if (d.type === "list") {
 				for (const i of d.items)
-					output.push(`<br><b class="indent">${markdownReplacer(i.name)}</b> ${markdownReplacer(i.entry || i?.entries.join("\n"))}`);
+					output.push(`* *${markdownReplacer(i.name)}*: ${markdownReplacer(i.entry || i?.entries.join("\n"))}`);
 			}
 		}
 	}
