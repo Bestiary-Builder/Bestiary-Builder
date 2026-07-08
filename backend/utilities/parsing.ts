@@ -12,7 +12,7 @@ export function abilityParser(fData: any, activationType: number): [FeatureEntit
 			continue;
 
 		// f.entries for 5etools, f.description for critterdb
-		const description = descParser(f.entries || f.description.replaceAll("<i>", "*").replaceAll("<b>", "**").replaceAll("</i>", "*").replaceAll("</b>", "**"));
+		const description = descParser(f.entries || f.description.replaceAll("<i>", "*").replaceAll("<b>", "**").replaceAll("</i>", "*").replaceAll("</b>", "**").replaceAll("<I>", "*").replaceAll("</I>", "*").replaceAll("<B>", "**").replaceAll("</B>", "**"));
 		const [automation, notice] = parseDescIntoAutomation(description, name, activationType);
 		if (notice)
 			notices.push(notice);
@@ -56,6 +56,7 @@ export function markdownReplacer(text: string): string {
 		.replace(/\{@dice\s+([^}]+)\}/g, "$1")
 		.replace(/\{@spell\s+([^}]+)\}/g, "$1")
 		.replace(/\{@item\s+([^}]+)\}/g, "$1")
+		.replace(/\{@skill\s+([^}]+)\}/g, "$1")
 		.replace(/\{@condition\s+([^}]+)\}/g, "<u>$1</u>")
 		.replace(/\{@recharge\s+(\d+)\}/g, "(Recharge $1-6)")
 		.replace(
