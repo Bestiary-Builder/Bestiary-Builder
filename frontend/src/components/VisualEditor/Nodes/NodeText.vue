@@ -62,7 +62,7 @@ const setDesc = inject<any>("setActionDescription");
 </template>
 
 <style scoped>
-	@import url("../../../assets/styles/automation-editor.less");
+	@import url("./styles/automation-editor.less");
 textarea {
 	min-height: 150px;
 }

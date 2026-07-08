@@ -5,7 +5,7 @@ import TreeRoot from "./TreeRoot.vue";
 import EffectAdder from "./EffectAdder.vue";
 import NodeHeader from "./Nodes/shared/NodeHeader.vue";
 import { deepKeys } from "./util";
-import type { AttackInteraction, AttackModel, ButtonInteraction, EffectKey, EffectWithTarget, Target } from "~/shared";
+import type { AttackInteraction, AttackModel, ButtonInteraction, EffectKey, EffectWithTarget, IEffect, Target } from "~/shared";
 
 const props = defineProps<{ data: EffectWithTarget; depth: number; parentType: string; context: string[] }>();
 
@@ -127,6 +127,13 @@ const additionalText = computed(() => {
 			return "";
 
 		return target.toString().substring(0, 1).toUpperCase();
+	}
+	if (selfType.value === "ieffect2") {
+		const target = (props.data as IEffect).name || "";
+		if (!target)
+			return "";
+
+		return target.toString().substring(0, 5);
 	}
 	return "";
 });

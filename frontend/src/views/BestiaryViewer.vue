@@ -888,7 +888,7 @@ const getDraggableKey = (item: any) => {
 </template>
 
 <style lang="less">
-@import url("@/assets/styles/number-input.less");
+@import url("@/components/FormInputs/styles/number-input.less");
 @import url("@/assets/styles/mixins.less");
 
 .flow-vertically {

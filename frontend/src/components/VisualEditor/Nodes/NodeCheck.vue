@@ -63,5 +63,5 @@ if (currentEffect?.value.ability.length === 0)
 </template>
 
 <style scoped>
-@import url("../../../assets/styles/automation-editor.less");
+@import url("./styles/automation-editor.less");
 </style>

@@ -58,5 +58,5 @@ const changeCR = (isIncrease: boolean) => {
 </template>
 
 <style scoped>
-@import url("@/assets/styles/number-input.less");
+@import url("./styles/number-input.less");
 </style>

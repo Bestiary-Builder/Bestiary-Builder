@@ -50,5 +50,5 @@ useDataCleanup(currentEffect, ["errorBehaviour"]);
 </template>
 
 <style scoped>
-@import url("../../../assets/styles/automation-editor.less");
+@import url("./styles/automation-editor.less");
 </style>

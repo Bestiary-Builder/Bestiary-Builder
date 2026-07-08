@@ -140,5 +140,5 @@ function clear() {
 </template>
 
 <style scoped lang="less">
-@import url("@/assets/styles/number-input.less");
+@import url("./styles/number-input.less");
 </style>

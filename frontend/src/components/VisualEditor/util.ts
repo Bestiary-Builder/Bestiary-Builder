@@ -15,7 +15,7 @@ export const displayNames: Record<string, { label: string; icon: string }> = {
 	attack: { label: "Attack Roll", icon: "material-symbols:swords" },
 	roll: { label: "Roll", icon: "ion:dice" },
 	spell: { label: "Spell", icon: "material-symbols:magic-button" },
-	ieffect2: { label: "Initiative Effect", icon: "streamline-sharp:magic-wand-2-remix" },
+	ieffect2: { label: "Init Effect", icon: "streamline-sharp:magic-wand-2-remix" },
 	counter: { label: "Use Counter", icon: "material-symbols:123" },
 	remove_ieffect: { label: "Remove Initiative Effect", icon: "material-symbols:delete-sharp" },
 	attacks: { label: "Action", icon: "" },

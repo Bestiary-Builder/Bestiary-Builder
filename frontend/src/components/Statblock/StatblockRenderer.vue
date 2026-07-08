@@ -157,10 +157,10 @@ const calculatePassiveInitiative = () => {
 
 onMounted(async () => {
 	if (design === "Odyssey")
-		await import("../../assets/styles/statblock/odyssey/odyssey.css");
+		await import("./styles/odyssey/odyssey.css");
 
 	if (design === "Beyond")
-		await import("../../assets/styles/statblock/beyond/beyond.css");
+		await import("./styles/beyond/beyond.css");
 });
 
 const md = new MarkdownIt();
@@ -177,6 +177,10 @@ md.renderer.rules.paragraph_open = function (tokens, idx, options, env, self) {
 		}
 	}
 	return result + defaultParagraphRenderer(tokens, idx, options, env, self);
+};
+
+const render = (str: string) => {
+	return md.render(str.replaceAll("\n", "$ReplaceWithNewLineCharacter").replaceAll("$ReplaceWithNewLineCharacter*", "\n*")).replaceAll("$ReplaceWithNewLineCharacter", "<br>");
 };
 </script>
 
@@ -333,17 +337,17 @@ md.renderer.rules.paragraph_open = function (tokens, idx, options, env, self) {
 				</p>
 				<p v-for="(feature, index) in data.features.features" :key="index">
 					<b> <i>{{ feature.name }}.</i><sup v-if="feature.automation" v-tooltip="'Has Automation'" class="feature-container__automation-icon">†</sup> </b>
-					<span class="feature-container__desc" v-html="md.render(feature.description.replaceAll('\n', '$ReplaceWithNewLineCharacter').replaceAll('$ReplaceWithNewLineCharacter*', '\n*')).replaceAll('$ReplaceWithNewLineCharacter', '<br>')" />
+					<span class="feature-container__desc" v-html="render(feature.description)" />
 				</p>
 
 				<p v-if="showInnateCasting && !data.spellcasting.innateSpells.displayAsAction">
 					<b><i>Innate Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics"> (Psionics)</span>.</i></b>
-					<span class="feature-container__desc" v-html="md.render(displayInnateCasting(data, v2024).replaceAll('\n', '$ReplaceWithNewLineCharacter').replaceAll('$ReplaceWithNewLineCharacter*', '\n*')).replaceAll('$ReplaceWithNewLineCharacter', '<br>')" />
+					<span class="feature-container__desc" v-html="render(displayInnateCasting(data, v2024))" />
 				</p>
 
 				<p v-if="showCasterCasting && data.spellcasting.casterSpells.castingClass && data.spellcasting.casterSpells.casterLevel && data.spellcasting.casterSpells.spellSlotList">
 					<b><i>Spellcasting</i></b>
-					<span class="feature-container__desc" v-html="md.render(displayCasterCasting(data, v2024).replaceAll('\n', '$ReplaceWithNewLineCharacter').replaceAll('$ReplaceWithNewLineCharacter*', '\n*')).replaceAll('$ReplaceWithNewLineCharacter', '<br>')" />
+					<span class="feature-container__desc" v-html="render(displayCasterCasting(data, v2024))" />
 				</p>
 			</div>
 		</div>
@@ -357,12 +361,12 @@ md.renderer.rules.paragraph_open = function (tokens, idx, options, env, self) {
 			</p>
 			<p v-for="(feature, index) in data.features.actions" :key="index">
 				<b> <i>{{ feature.name }}.</i><sup v-if="feature.automation" v-tooltip="'Has Automation'" class="feature-container__automation-icon">†</sup></b>
-				<span class="feature-container__desc" v-html="md.render(feature.description.replaceAll('\n', '$ReplaceWithNewLineCharacter').replaceAll('$ReplaceWithNewLineCharacter*', '\n*')).replaceAll('$ReplaceWithNewLineCharacter', '<br>')" />
+				<span class="feature-container__desc" v-html="render(feature.description)" />
 			</p>
 
 			<p v-if="showInnateCasting && data.spellcasting.innateSpells.displayAsAction">
 				<b><i>Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics"> (Psionics)</span>.</i></b>
-				<span class="feature-container__desc" v-html="md.render(displayInnateCasting(data, v2024).replaceAll('\n', '$ReplaceWithNewLineCharacter').replaceAll('$ReplaceWithNewLineCharacter*', '\n*')).replaceAll('$ReplaceWithNewLineCharacter', '<br>')" />
+				<span class="feature-container__desc" v-html="render(displayInnateCasting(data, v2024))" />
 			</p>
 		</div>
 
@@ -372,7 +376,7 @@ md.renderer.rules.paragraph_open = function (tokens, idx, options, env, self) {
 				<h3 class="feature-container__title">
 					{{ title }}
 				</h3>
-				<p v-if="fType === 'legendary' && data.misc.featureHeaderTexts[fType]" class="feature-header">
+				<p v-if="fType === 'legendary' && data.features.legendary.length > 0" class="feature-header">
 					{{ data.misc.featureHeaderTexts[fType].replace("$NUM$", data.misc.legActionsPerRound.toString()) }}
 				</p>
 				<p v-else-if="data.misc.featureHeaderTexts[fType]" class="feature-header">
@@ -381,7 +385,7 @@ md.renderer.rules.paragraph_open = function (tokens, idx, options, env, self) {
 				<p v-for="(feature, index) in data.features[fType]" :key="index" class="feature-description">
 					<b> <i> {{ feature.name }}.</i></b>
 					<sup v-if="feature.automation" v-tooltip="'Has Automation'" class="feature-container__automation-icon">†</sup>
-					<span class="feature-container__desc" v-html="md.render(feature.description.replaceAll('\n', '$ReplaceWithNewLineCharacter').replaceAll('$ReplaceWithNewLineCharacter*', '\n*')).replaceAll('$ReplaceWithNewLineCharacter', '<br>')" />
+					<span class="feature-container__desc" v-html="render(feature.description)" />
 				</p>
 			</div>
 		</template>
@@ -389,11 +393,11 @@ md.renderer.rules.paragraph_open = function (tokens, idx, options, env, self) {
 			<h2 class="feature-container__title">
 				Description
 			</h2>
-			<div class="markdown" v-html="md.render(data.description.description.replaceAll('\n', '$ReplaceWithNewLineCharacter').replaceAll('$ReplaceWithNewLineCharacter*', '\n*')).replaceAll('$ReplaceWithNewLineCharacter', '<br>')" />
+			<div class="markdown" v-html="render(data.description.description)" />
 		</div>
 	</div>
 </template>
 
 <style scoped lang="less">
-@import "@/assets/styles/statblock/default.less";
+@import "./styles/default.less";
 </style>

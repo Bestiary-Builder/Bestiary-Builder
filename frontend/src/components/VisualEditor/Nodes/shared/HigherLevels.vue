@@ -22,7 +22,7 @@ const model = defineModel<Record<number, string>>({ required: true });
 </template>
 
 <style scoped>
-@import url("../../../../assets/styles/automation-editor.less");
+@import url("../styles/automation-editor.less");
 
 li {
 	margin-bottom: 0.5rem;

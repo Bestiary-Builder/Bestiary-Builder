@@ -155,7 +155,7 @@ useDataCleanup(currentEffect, ["end", "tick_on_caster", "conc", "desc", "save_as
 </template>
 
 <style scoped>
-@import url("../../../../assets/styles/automation-editor.less");
+@import url("../styles/automation-editor.less");
 
 .standout {
 	border-left: 2px dashed orangered;

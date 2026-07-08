@@ -53,7 +53,7 @@ provide("copiedEffect", copiedEffect);
 			<div v-if="!currentEffect && currentContext.length === 0">
 				<SectionHeader title="No Effect Selected" />
 				Select or create a node in the Effect Tree to get started.
-				<img src="../../../public/Devourer.png" style="max-width: 200px;     transform: scale(-1, 1); margin-top: 1rem">
+				<img src="/Devourer.png" style="max-width: 200px; transform: scale(-1, 1); margin-top: 1rem">
 				<sub> Nom nom nom</sub>
 			</div>
 			<template v-else>
