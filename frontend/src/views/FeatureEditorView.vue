@@ -116,9 +116,9 @@ async function getBestiary() {
 
 // saving
 const isSaved = ref(false);
-const saveStatblock = async (shouldNotify: boolean) => {
+const saveStatblock = async (shouldNotify: boolean): Promise<boolean> => {
 	if (!rawInfo.value || !data.value)
-		return;
+		return false;
 	rawInfo.value.stats = data.value;
 	let loader;
 	if (shouldNotify)
@@ -145,6 +145,11 @@ const saveStatblock = async (shouldNotify: boolean) => {
 	}
 	if (loader)
 		loader.hide();
+
+	if (success)
+		return true;
+	else
+		return false;
 };
 
 type AutomationTypes = "automation" | "basic-example" | "srd-feature";
@@ -366,7 +371,11 @@ const changeEditor = () => {
 const toNavigateTo = ref([-1, -1]);
 
 watch(toNavigateTo, async () => {
-	await $router.push(`/statblock-editor/${rawInfo.value?.id}/${toNavigateTo.value[0]}/${toNavigateTo.value[1]}`);
+	const didSave = await saveStatblock(false);
+	if (didSave)
+		await $router.push(`/statblock-editor/${rawInfo.value?.id}/${toNavigateTo.value[0]}/${toNavigateTo.value[1]}`);
+	else
+		$toast.error("Could not open another action as this action did not save correctly.");
 	$router.go(0);
 });
 
