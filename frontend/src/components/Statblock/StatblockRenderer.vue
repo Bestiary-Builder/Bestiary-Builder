@@ -5,6 +5,7 @@ import { Markdown, MarkdownManager } from "@tiptap/markdown";
 import StarterKit from "@tiptap/starter-kit";
 import { generateHTML } from "@tiptap/vue-3";
 import { Document } from "@tiptap/extension-document";
+import { marked } from "marked";
 import type { SaveEntity, SkillsEntity, Stat, Statblock } from "~/shared";
 import { SKILLS_BY_STAT, capitalizeFirstLetter, crAsString, displayCasterCasting, displayInnateCasting, displaySpeedOrSenses, hpCalc, ppCalc, signedNumber, statCalc } from "~/shared";
 import { featureGenerator, resistanceGenerator, stats } from "@/utils/constants";
@@ -196,12 +197,14 @@ const extensions = [
 	Markdown,
 ];
 const manager = new MarkdownManager({
-	extensions
+	extensions,
 });
 
-const render = (str: string) => {
+const render = (str: string, inline?: boolean) => {
 	try {
 		const markdown = str;
+		if (inline)
+			return marked.parseInline(str);
 		const json = manager.parse(markdown);
 		return generateHTML(json, extensions);
 	}
@@ -223,7 +226,7 @@ const render = (str: string) => {
 		<div class="stat-block__row two-wide picture-container">
 			<div>
 				<div>
-					<b> {{ v2024 ? 'AC ' : 'Armor Class ' }} </b><span>{{ data.defenses.ac.ac }}</span><span v-if="data.defenses.ac.acSource"> ({{ data.defenses.ac.acSource }}) </span>
+					<b> {{ v2024 ? 'AC ' : 'Armor Class ' }} </b><span>{{ data.defenses.ac.ac }}</span>(<span v-if="data.defenses.ac.acSource" v-html="render(data.defenses.ac.acSource, true)" />)
 					<b v-if="v2024" style="padding-left: .45rem"> Initiative </b> <span v-if="v2024"> {{ signedNumber(calculatedInitiativeNumber()) }} ({{ calculatePassiveInitiative() }})</span>
 				</div>
 				<div>
@@ -233,7 +236,7 @@ const render = (str: string) => {
 				</div>
 				<div class="stat-block__speed-container">
 					<b> Speed </b>
-					{{ displaySpeedOrSenses(data.core.speed, false, v2024) }}
+					<span v-html="render(displaySpeedOrSenses(data.core.speed, false, v2024), true)" />
 				</div>
 			</div>
 			<!-- <img v-if="data.description.image" class="stat-block__image" :src="data.description.image"> -->
@@ -308,7 +311,7 @@ const render = (str: string) => {
 				<template v-for="title, resType of resistanceGenerator">
 					<div v-if="data.defenses[resType].length > 0" :key="resType" class="stat-block__res-container">
 						<b> {{ title }}  </b>
-						<span> {{ alphaSort(data.defenses[resType]).join(", ") }} </span>
+						<span v-html="render(alphaSort(data.defenses[resType]).join(', '), true)" />
 					</div>
 				</template>
 			</template>
@@ -319,23 +322,23 @@ const render = (str: string) => {
 				</div>
 				<div v-if="data.defenses.vulnerabilities.length > 0" class="stat-block__res-container">
 					<b> Vulnerabilities  </b>
-					<span> {{ alphaSort(data.defenses.vulnerabilities).join(", ") }} </span>
+					<span v-html="render(alphaSort(data.defenses.vulnerabilities).join(', '), true)" />
 				</div>
 				<div v-if="data.defenses.resistances.length > 0" class="stat-block__res-container">
 					<b> Resistances  </b>
-					<span> {{ alphaSort(data.defenses.resistances).join(", ") }} </span>
+					<span v-html="render(alphaSort(data.defenses.resistances).join(', '), true)" />
 				</div>
 				<div v-if="data.defenses.immunities.length > 0 || data.defenses.conditionImmunities.length > 0" class="stat-block__res-container">
 					<b> Immunities  </b>
-					<span> {{ alphaSort(data.defenses.immunities).join(", ") }} </span>
+					<span v-html="render(alphaSort(data.defenses.immunities).join(', '), true)" />
 					<span v-if="data.defenses.immunities.length > 0 && data.defenses.conditionImmunities.length > 0">; </span>
-					<span> {{ alphaSort(data.defenses.conditionImmunities).join(", ") }} </span>
+					<span v-html="render(alphaSort(data.defenses.conditionImmunities).join(', '), true)" />
 				</div>
 			</template>
 
 			<div ckass="stat-block__senses-container">
 				<b> Senses </b>
-				{{ displaySpeedOrSenses(data.core.senses, false, v2024) }}{{ data.core.senses.length > 0 ? ';' : '' }}
+				<span v-html="render(displaySpeedOrSenses(data.core.senses, false, v2024), true)" />{{ data.core.senses.length > 0 ? ';' : '' }}
 				{{ v2024 ? 'P' : 'p' }}assive Perception {{ ppCalc(data) }}
 			</div>
 			<div class="stat-block__language-container">
@@ -360,7 +363,7 @@ const render = (str: string) => {
 					Traits
 				</h3>
 				<p v-if="data.misc.featureHeaderTexts.features" class="feature-header">
-					{{ data.misc.featureHeaderTexts.features }}
+					<span v-html="render(data.misc.featureHeaderTexts.features)" />
 				</p>
 				<p v-for="(feature, index) in data.features.features" :key="index">
 					<b> <i>{{ feature.name }}.</i><sup v-if="feature.automation" v-tooltip="'Has Automation'" class="feature-container__automation-icon">†</sup> </b>
@@ -385,7 +388,7 @@ const render = (str: string) => {
 					Actions
 				</h3>
 				<p v-if="data.misc.featureHeaderTexts.actions" class="feature-header">
-					{{ data.misc.featureHeaderTexts.actions }}
+					<span v-html="render(data.misc.featureHeaderTexts.actions)" />
 				</p>
 				<p v-for="(feature, index) in data.features.actions" :key="index">
 					<b> <i>{{ feature.name }}.</i><sup v-if="feature.automation" v-tooltip="'Has Automation'" class="feature-container__automation-icon">†</sup></b>
@@ -407,10 +410,10 @@ const render = (str: string) => {
 						{{ title }}
 					</h3>
 					<p v-if="fType === 'legendary' && data.features.legendary.length > 0" class="feature-header">
-						{{ data.misc.featureHeaderTexts[fType].replace("$NUM$", data.misc.legActionsPerRound.toString()) }}
+						<span v-html="render(data.misc.featureHeaderTexts[fType].replace('$NUM$', data.misc.legActionsPerRound.toString()))" />
 					</p>
 					<p v-else-if="data.misc.featureHeaderTexts[fType]" class="feature-header">
-						{{ data.misc.featureHeaderTexts[fType] }}
+						<span v-html="render(data.misc.featureHeaderTexts[fType])" />
 					</p>
 					<p v-for="(feature, index) in data.features[fType]" :key="index" class="feature-description">
 						<b> <i> {{ feature.name }}.</i></b>
