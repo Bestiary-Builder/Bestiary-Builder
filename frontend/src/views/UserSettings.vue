@@ -362,6 +362,9 @@ const creatureData = {
 								<option value="Odyssey">
 									Odyssey
 								</option>
+								<option value="MonsterManual">
+									Monster Manual
+								</option>
 							</select>
 						</LabelledComponent>
 						<VDropdown :positioning-disabled="store.isMobile">

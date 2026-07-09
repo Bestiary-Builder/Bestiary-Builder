@@ -165,6 +165,9 @@ onMounted(async () => {
 
 	if (design === "Beyond")
 		await import("./styles/beyond/beyond.css");
+
+	if (design === "MonsterManual")
+		await import("./styles/monstermanual/mm.css");
 });
 
 const md = new MarkdownIt();
@@ -342,11 +345,11 @@ const render = (str: string) => {
 				<span v-if="data.misc.telepathy"> telepathy {{ data.misc.telepathy }} ft.</span>
 			</div>
 			<div v-if="v2024" class="challenge-prof">
-				<span> <b> CR</b> {{ crAsString(data.description.cr) }} (XP {{ data.description.xp }})
+				<span> <b> CR</b> {{ crAsString(data.description.cr) }} (XP {{ data.description.xp }}; PB {{ signedNumber(data.core.proficiencyBonus) }})
 				</span>
 			</div>
 			<div v-else class="challenge-prof">
-				<span> <b> Challenge </b> {{ crAsString(data.description.cr) }} ({{ data.description.xp }}) </span>
+				<span> <b> Challenge </b> {{ crAsString(data.description.cr) }} ({{ data.description.xp }} XP) </span>
 				<span> <b> Proficiency Bonus </b> +{{ data.core.proficiencyBonus }}</span>
 			</div>
 		</div>
@@ -376,41 +379,45 @@ const render = (str: string) => {
 			</div>
 		</div>
 
-		<div v-if="data.features.actions.length > 0 || (showInnateCasting && data.spellcasting.innateSpells.displayAsAction)" class="feature-container">
-			<h3 class="feature-container__title">
-				Actions
-			</h3>
-			<p v-if="data.misc.featureHeaderTexts.actions" class="feature-header">
-				{{ data.misc.featureHeaderTexts.actions }}
-			</p>
-			<p v-for="(feature, index) in data.features.actions" :key="index">
-				<b> <i>{{ feature.name }}.</i><sup v-if="feature.automation" v-tooltip="'Has Automation'" class="feature-container__automation-icon">†</sup></b>
-				<span class="feature-container__desc" v-html="render(feature.description)" />
-			</p>
+		<div v-if="data.features.actions.length > 0 || (showInnateCasting && data.spellcasting.innateSpells.displayAsAction)" class="stat-block__row">
+			<div class="feature-container">
+				<h3 class="feature-container__title">
+					Actions
+				</h3>
+				<p v-if="data.misc.featureHeaderTexts.actions" class="feature-header">
+					{{ data.misc.featureHeaderTexts.actions }}
+				</p>
+				<p v-for="(feature, index) in data.features.actions" :key="index">
+					<b> <i>{{ feature.name }}.</i><sup v-if="feature.automation" v-tooltip="'Has Automation'" class="feature-container__automation-icon">†</sup></b>
+					<span class="feature-container__desc" v-html="render(feature.description)" />
+				</p>
 
-			<p v-if="showInnateCasting && data.spellcasting.innateSpells.displayAsAction">
-				<b><i>Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics"> (Psionics)</span>.</i></b>
-				<span class="feature-container__desc" v-html="render(displayInnateCasting(data, v2024))" />
-			</p>
+				<p v-if="showInnateCasting && data.spellcasting.innateSpells.displayAsAction">
+					<b><i>Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics"> (Psionics)</span>.</i></b>
+					<span class="feature-container__desc" v-html="render(displayInnateCasting(data, v2024))" />
+				</p>
+			</div>
 		</div>
 
 		<!-- TODO: Add features and actions to the generator here once they no longer need special handling because of spellcasting -->
 		<template v-for="title, fType of featureGenerator">
-			<div v-if="data.features[fType].length > 0" :key="fType" class="feature-container">
-				<h3 class="feature-container__title">
-					{{ title }}
-				</h3>
-				<p v-if="fType === 'legendary' && data.features.legendary.length > 0" class="feature-header">
-					{{ data.misc.featureHeaderTexts[fType].replace("$NUM$", data.misc.legActionsPerRound.toString()) }}
-				</p>
-				<p v-else-if="data.misc.featureHeaderTexts[fType]" class="feature-header">
-					{{ data.misc.featureHeaderTexts[fType] }}
-				</p>
-				<p v-for="(feature, index) in data.features[fType]" :key="index" class="feature-description">
-					<b> <i> {{ feature.name }}.</i></b>
-					<sup v-if="feature.automation" v-tooltip="'Has Automation'" class="feature-container__automation-icon">†</sup>
-					<span class="feature-container__desc" v-html="render(feature.description)" />
-				</p>
+			<div v-if="data.features[fType].length > 0" :key="fType" class="stat-block__row">
+				<div class="feature-container">
+					<h3 class="feature-container__title">
+						{{ title }}
+					</h3>
+					<p v-if="fType === 'legendary' && data.features.legendary.length > 0" class="feature-header">
+						{{ data.misc.featureHeaderTexts[fType].replace("$NUM$", data.misc.legActionsPerRound.toString()) }}
+					</p>
+					<p v-else-if="data.misc.featureHeaderTexts[fType]" class="feature-header">
+						{{ data.misc.featureHeaderTexts[fType] }}
+					</p>
+					<p v-for="(feature, index) in data.features[fType]" :key="index" class="feature-description">
+						<b> <i> {{ feature.name }}.</i></b>
+						<sup v-if="feature.automation" v-tooltip="'Has Automation'" class="feature-container__automation-icon">†</sup>
+						<span class="feature-container__desc" v-html="render(feature.description)" />
+					</p>
+				</div>
 			</div>
 		</template>
 		<div v-if="data.description.description" class="feature-container">

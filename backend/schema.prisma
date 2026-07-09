@@ -153,6 +153,7 @@ enum StatblockDesign {
   BestiaryBuilder
   Beyond
   Odyssey
+  MonsterManual
 }
 
 enum Editor {

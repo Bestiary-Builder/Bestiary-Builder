@@ -1,0 +1,72 @@
+body .content .stat-block.MonsterManual,
+body .v-popper__custom-menu .stat-block.MonsterManual {
+    background: #e2dbd5 !important;
+    box-shadow: 0 0 5px #f3f5f9;
+    border: 1px solid #d4d0ce;
+    padding: 15px;
+    outline: 1px solid #afa47a;
+    outline-offset: -0.25rem;
+    border-radius: .5rem;
+    color: #4d1e20;
+
+    .stat-block__name-container {
+        color: #4d1e20;
+        border-color: #4d1e20;
+        margin-bottom: .1rem;
+    }
+
+    .feature-container {
+        color: black;
+        .feature-container__title {
+            color: #4d1e20;
+            border-color: #4d1e20;
+            margin-bottom: 0.45rem !important;
+        }
+    }
+
+    h1, h2, h3, h4, h5 {
+        font-family: "Scala Sans Offc", Roboto, Helvetica, sans-serif;
+        color: #4d1e20;
+        line-height: 1.1;
+        font-variant: small-caps;
+        letter-spacing: 0.07rem;
+        font-weight: bold;
+    }
+
+    hr {
+        border-color: #4d1e20;
+    }
+
+    a {
+        color: #4d1e20
+    }
+
+    .stat-table:first-of-type {
+        tbody > tr > td {
+            background-color: #ded4cc;;
+        }
+
+        tbody > tr > th,
+        tbody > tr > td:first-of-type {
+            background-color: #ede6d9;
+        }
+    }
+
+    .stat-table:nth-of-type(2) {
+        tbody > tr > td {
+            background-color: #d0caca;
+        }
+
+        tbody > tr > th,
+        tbody > tr > td:first-of-type {
+            background-color: #d8dad1;
+        }
+    }
+
+    &.toPrint {
+        .feature-container__title {
+            margin-bottom: -.1rem !important;
+            margin-top: .3rem !important;
+        }
+    }
+}
