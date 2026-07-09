@@ -16,8 +16,9 @@ _???, 2026_
 - Fixed class based spellcasting to hit not having a + on positive values.
 - Fixed newlines in fields displaying as a single line as markdown, such as description, requiring many newlines to force newlines. Behaviour is now the same as Discord.
 - Fixed minor issues with critterDB importer, now is more flexible with expected formatting of actions.
-- Fixed issues with 5e.tools importer, now supports more types of data for a few fields.
-
+- Fixed issues with 5e.tools importer, now supports more types of data for a few fields, supports displayed as action spellcasting.
+- Reactions now import from 5e.tools.
+- Innate spellcasting now displays the different spell amounts in the correct order.
 ## v2.6.6
 _June 12, 2026_
 
