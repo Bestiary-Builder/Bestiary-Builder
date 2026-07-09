@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import { computed, onMounted } from "vue";
 import MarkdownIt from "markdown-it";
+import { Markdown, MarkdownManager } from "@tiptap/markdown";
+import StarterKit from "@tiptap/starter-kit";
+import { generateHTML } from "@tiptap/vue-3";
+import { Document } from "@tiptap/extension-document";
 import type { SaveEntity, SkillsEntity, Stat, Statblock } from "~/shared";
 import { SKILLS_BY_STAT, capitalizeFirstLetter, crAsString, displayCasterCasting, displayInnateCasting, displaySpeedOrSenses, hpCalc, ppCalc, signedNumber, statCalc } from "~/shared";
 import { featureGenerator, resistanceGenerator, stats } from "@/utils/constants";
 import { store } from "@/utils/store";
-import type { StatblockDesign } from "~/shared/prisma/enums.ts";
+import type { StatblockDesign } from "~/shared/prisma/enums";
 
 const { data, statblockDesign = null, is2024 = null } = defineProps<{ data: Statblock; statblockDesign?: StatblockDesign; is2024?: boolean }>();
 
@@ -179,8 +183,28 @@ md.renderer.rules.paragraph_open = function (tokens, idx, options, env, self) {
 	return result + defaultParagraphRenderer(tokens, idx, options, env, self);
 };
 
+const CustomDocument = Document.extend({
+	renderMarkdown: (node, h) =>
+		node.content ? h.renderChildren(node.content, "\n\n") : "",
+});
+const extensions = [
+	StarterKit.configure({ document: false }),
+	CustomDocument,
+	Markdown,
+];
+const manager = new MarkdownManager({
+	extensions
+});
+
 const render = (str: string) => {
-	return md.render(str.replaceAll("\n", "$ReplaceWithNewLineCharacter").replaceAll("$ReplaceWithNewLineCharacter*", "\n*")).replaceAll("$ReplaceWithNewLineCharacter", "<br>");
+	try {
+		const markdown = str;
+		const json = manager.parse(markdown);
+		return generateHTML(json, extensions);
+	}
+	catch {
+		return "";
+	}
 };
 </script>
 

@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { watch } from "vue";
+import { ref, useTemplateRef, watch } from "vue";
 import LabelledComponent from "../FormInputs/LabelledComponent.vue";
 import LabelledNumberInput from "../FormInputs/LabelledNumberInput.vue";
 import CRInput from "../FormInputs/CRInput.vue";
+import Editor from "./Editor.vue";
 import { type Statblock, getXPbyCR } from "~/shared";
 import { store } from "@/utils/store";
 import { alignments, creatureTypes, sizes } from "@/utils/constants";
@@ -45,8 +46,8 @@ watch(() => data.description.cr, () => {
 		</div>
 
 		<div class="editor-field__container one-wide">
-			<LabelledComponent title="Description" for="description">
-				<textarea id="description" v-model="data.description.description" rows="5" :maxlength="store.limits?.descriptionLength" />
+			<LabelledComponent v-if="data" title="Description" for="description">
+				<Editor v-model="data.description.description" />
 			</LabelledComponent>
 		</div>
 		<div class="editor-field__container three-wide">

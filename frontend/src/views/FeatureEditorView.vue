@@ -14,6 +14,7 @@ import Markdown from "@/components/Global/Markdown.vue";
 import VisualEditor from "@/components/VisualEditor/VisualEditor.vue";
 import ImportAutomationUtil from "@/components/Automations/ImportAutomationUtil.vue";
 import ButtonIcon from "@/components/Global/ButtonIcon.vue";
+import Editor from "@/components/StatblockEditor/Editor.vue";
 
 const $router = useRouter();
 const $route = useRoute();
@@ -160,8 +161,14 @@ const loadFeature = async (feature: FeatureEntity, apiPath: AutomationTypes) => 
 	feature.description.replaceAll("$NAME$", data.value.description.name);
 	data.value.features[type][aid] = feature;
 
-	if (apiPath === "basic-example" && feature.automation && !Array.isArray(feature.automation)) {
-		const lastNode = feature.automation.automation[feature.automation.automation.length - 1];
+	if (apiPath === "basic-example" && feature.automation) {
+		let lastNode;
+
+		if (Array.isArray(feature.automation))
+			lastNode = feature.automation[0].automation[feature.automation[0].automation.length - 1];
+		else
+			lastNode = feature.automation.automation[feature.automation.automation.length - 1];
+
 		if (lastNode.type === "text") {
 			if (typeof (lastNode.text) === "string")
 				feature.description = lastNode.text;
@@ -501,8 +508,8 @@ provide("setActionDescription", setDesc);
 				</div>
 			</div>
 
-			<LabelledComponent title="Feature description" for="featuredescription">
-				<textarea id="featuredescription" v-model="data.features[type][aid].description" placeholder="Enter description" rows="5" :maxlength="store.limits?.descriptionLength" />
+			<LabelledComponent title="Description" for="description">
+				<Editor v-model="data.features[type][aid].description" />
 				<span v-if="prefersVisualEditor" class="sub-action">
 					<input v-model="parityOptions.updateDescription" type="checkbox">
 					<small> <i>Updates the last text node of the first action in the automation structure to this text while enabled.</i> </small>

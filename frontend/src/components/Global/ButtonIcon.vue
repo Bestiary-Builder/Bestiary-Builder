@@ -1,23 +1,25 @@
 <script setup lang="ts">
-const { icon, inverted = false, label } = defineProps<{ icon: string; inverted?: boolean; label: string }>();
+const { icon, inverted = false, label } = defineProps<{ icon: string; inverted?: boolean; label: string; noscale?: boolean }>();
 </script>
 
 <template>
-	<button v-tooltip="label" :class="{ inverted }" :aria-label="label">
+	<button v-tooltip="label" :class="{ inverted, noscale }" :aria-label="label">
 		<font-awesome-icon :icon="['fas', icon]" />
 	</button>
 </template>
 
-<style scoped>
+<style scoped lang="less">
 button {
 	color: orangered;
 	background-color: unset;
 	border: unset;
 	cursor: pointer;
-	transition: scale 0.5s;
+	&:not(.noscale) {
+		transition: scale 0.5s;
+	}
 }
 
-button:hover {
+button&:not(.noscale):hover {
 	scale: 1.2;
 }
 </style>

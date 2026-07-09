@@ -210,29 +210,31 @@
                 {
                     "name": "Wind Staff",
                     "description": "*Melee or Ranged Attack Roll:* +5, reach 5 ft. or range 120 ft. *Hit:* 7 (1d8 + 3) Bludgeoning damage plus 11 (2d10) Lightning damage.",
-                    "automation": {
-                        "name": "Wind Staff",
-                        "automation": [
-                            {
-                                "type": "target",
-                                "target": "each",
-                                "effects": [
-                                    {
-                                        "type": "damage",
-                                        "damage": "1d8 + 3[Bludgeoning]",
-                                        "overheal": false
-                                    }
-                                ]
-                            },
-                            {
-                                "type": "text",
-                                "text": "*Melee or Ranged Attack Roll:* +5, reach 5 ft. or range 120 ft. *Hit:* 7 (1d8 + 3) Bludgeoning damage plus 11 (2d10) Lightning damage.",
-                                "title": "Effect"
-                            }
-                        ],
-                        "_v": 2,
-                        "activation_type": 1
-                    }
+                    "automation": [
+                        {
+                            "type": "text",
+                            "text": "*Melee or Ranged Attack Roll:* +5, reach 5 ft. or range 120 ft. *Hit:* 7 (1d8 + 3) Bludgeoning damage plus 11 (2d10) Lightning damage.",
+                            "title": "Effect"
+                        },
+                        {
+                            "type": "target",
+                            "target": "each",
+                            "effects": [
+                                {
+                                    "type": "attack",
+                                    "hit": [
+                                        {
+                                            "type": "damage",
+                                            "damage": "(1d8 + 3 [bludgeoning]) + (2d10 [lightning]) ",
+                                            "overheal": false
+                                        }
+                                    ],
+                                    "miss": [],
+                                    "attackBonus": "5"
+                                }
+                            ]
+                        }
+                    ]
                 }
             ],
             "bonus": [],
@@ -415,58 +417,102 @@
             "features": [],
             "actions": [
                 {
-                    "name": "Talons",
-                    "description": "*Melee Attack Roll:* +4, reach 5 ft. *Hit:* 4 (1d4 + 2) Slashing damage, or 9 (3d4 + 2) Slashing damage if the aarakocra moved 30+ feet straight toward the target immediately before the hit.",
-                    "automation": {
-                        "name": "Talons",
-                        "automation": [
-                            {
-                                "type": "target",
-                                "target": "each",
-                                "effects": [
-                                    {
-                                        "type": "damage",
-                                        "damage": "1d4 + 2[Slashing]",
-                                        "overheal": false
-                                    }
-                                ]
-                            },
-                            {
-                                "type": "text",
-                                "text": "*Melee Attack Roll:* +4, reach 5 ft. *Hit:* 4 (1d4 + 2) Slashing damage, or 9 (3d4 + 2) Slashing damage if the aarakocra moved 30+ feet straight toward the target immediately before the hit.",
-                                "title": "Effect"
-                            }
-                        ],
-                        "_v": 2,
-                        "activation_type": 1
-                    }
+                    "name": "Wind Javelin",
+                    "description": "*Melee or Ranged Attack Roll* +4, reach 5 ft. or range 30/120 ft. *Hit:* 5 (1d6 + 2) Piercing damage plus 2 (1d4) Thunder damage. *Hit or Miss:* The javelin magically returns to the aarakocra's hand immediately after a ranged attack.",
+                    "automation": [
+                        {
+                            "type": "text",
+                            "text": "*Melee or Ranged Attack Roll* +4, reach 5 ft. or range 30/120 ft. *Hit:* 5 (1d6 + 2) Piercing damage plus 2 (1d4) Thunder damage. *Hit or Miss:* The javelin magically returns to the aarakocra's hand immediately after a ranged attack.",
+                            "title": "Effect"
+                        },
+                        {
+                            "type": "target",
+                            "target": "each",
+                            "effects": [
+                                {
+                                    "type": "attack",
+                                    "hit": [
+                                        {
+                                            "type": "damage",
+                                            "damage": "(1d6 + 2 [piercing]) + (1d4 [thunder])",
+                                            "overheal": false
+                                        },
+                                        {
+                                            "type": "text",
+                                            "text": "The javelin magically returns to the aarakocra's hand immediately after a ranged attack.",
+                                            "title": "Effect"
+                                        }
+                                    ],
+                                    "miss": [
+                                        {
+                                            "type": "text",
+                                            "text": "The javelin magically returns to the aarakocra's hand immediately after a ranged attack.",
+                                            "title": "Effect"
+                                        }
+                                    ],
+                                    "attackBonus": "4"
+                                }
+                            ]
+                        }
+                    ]
                 },
                 {
-                    "name": "Wind Javelin",
-                    "description": "*Melee or Ranged Attack Roll:* +4, reach 5 ft. or range 30/120 ft. *Hit:* 5 (1d6 + 2) Piercing damage plus 2 (1d4) Thunder damage. *Hit or Miss*: The javelin magically returns to the aarakocra's hand immediately after a ranged attack.",
-                    "automation": {
-                        "name": "Wind Javelin",
-                        "automation": [
-                            {
-                                "type": "target",
-                                "target": "each",
-                                "effects": [
-                                    {
-                                        "type": "damage",
-                                        "damage": "1d6 + 2[Piercing]",
-                                        "overheal": false
-                                    }
-                                ]
-                            },
-                            {
-                                "type": "text",
-                                "text": "*Melee or Ranged Attack Roll:* +4, reach 5 ft. or range 30/120 ft. *Hit:* 5 (1d6 + 2) Piercing damage plus 2 (1d4) Thunder damage. *Hit or Miss*: The javelin magically returns to the aarakocra's hand immediately after a ranged attack.",
-                                "title": "Effect"
-                            }
-                        ],
-                        "_v": 2,
-                        "activation_type": 1
-                    }
+                    "name": "Talons",
+                    "description": "*Melee Attack Roll:* +4, reach 5 ft. *Hit:* 4 (1d4 + 2) Slashing damage.",
+                    "automation": [
+                        {
+                            "type": "text",
+                            "text": "*Melee Attack Roll:* +4, reach 5 ft. *Hit:* 4 (1d4 + 2) Slashing damage.",
+                            "title": "Effect"
+                        },
+                        {
+                            "type": "target",
+                            "target": "each",
+                            "effects": [
+                                {
+                                    "type": "attack",
+                                    "hit": [
+                                        {
+                                            "type": "damage",
+                                            "damage": "1d4 + 2 [slashing]",
+                                            "overheal": false
+                                        }
+                                    ],
+                                    "miss": [],
+                                    "attackBonus": "4"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Talons - Charge",
+                    "description": "*Melee Attack Roll:* +4, reach 5 ft. *Hit:* 9 (3d4 + 2) Slashing damage.",
+                    "automation": [
+                        {
+                            "type": "text",
+                            "text": "*Melee Attack Roll:* +4, reach 5 ft. *Hit:* 9 (3d4 + 2) Slashing damage.",
+                            "title": "Effect"
+                        },
+                        {
+                            "type": "target",
+                            "target": "each",
+                            "effects": [
+                                {
+                                    "type": "attack",
+                                    "hit": [
+                                        {
+                                            "type": "damage",
+                                            "damage": "3d4 + 2 [slashing]",
+                                            "overheal": false
+                                        }
+                                    ],
+                                    "miss": [],
+                                    "attackBonus": "4"
+                                }
+                            ]
+                        }
+                    ]
                 }
             ],
             "bonus": [],

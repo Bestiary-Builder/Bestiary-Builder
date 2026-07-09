@@ -4,6 +4,7 @@ import {
 	faArrowRightFromBracket,
 	faArrowRightToBracket,
 	faBars,
+	faBold,
 	faCircleInfo,
 	faCode,
 	faCopy,
@@ -14,7 +15,9 @@ import {
 	faEyeSlash,
 	faGripVertical,
 	faHourglass,
+	faItalic,
 	faLink,
+	faList,
 	faLock,
 	faMagnifyingGlass,
 	faMinus,
@@ -31,6 +34,7 @@ import {
 	faTag,
 	faThumbTack,
 	faTrash,
+	faUnderline,
 	faUserLock,
 	faWandSparkles,
 	faXmark
@@ -77,5 +81,9 @@ library.add(
 	faEraser,
 	faSection,
 	faRotate,
-	faDatabase
+	faDatabase,
+	faBold,
+	faItalic,
+	faUnderline,
+	faList
 );
