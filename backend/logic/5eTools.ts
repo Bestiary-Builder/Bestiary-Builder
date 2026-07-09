@@ -1,5 +1,6 @@
+import splitOnFirst from "split-on-first";
 import { type CasterSpells, type InnateSpellsList, SKILLS_BY_STAT, type SenseEntity, type SkillsEntity, type SpeedEntity, type SpellSlotList, type Stat, type Statblock, capitalizeFirstLetter, defaultStatblock, getXPbyCR, spellListFlattened } from "~/shared";
-import { abilityParser } from "@/utilities/parsing";
+import { abilityParser, markdownReplacer } from "@/utilities/parsing";
 import { app } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
 
@@ -498,7 +499,7 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 					3: []
 				} as InnateSpellsList;
 				for (const t of data?.spellcasting ?? []) {
-					if (t.name.includes("Innate Spellcasting"))
+					if ((t.name.includes("Innate Spellcasting") || ((t?.will || []).length > 0 || (Object.keys(t?.daily || {}) || []).length > 0)) && !((t?.hidden || []).length > 0))
 						sData = t;
 				}
 
@@ -516,12 +517,12 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 						const level = Number.parseInt(l.replace("e", ""));
 						if (level >= 0 && level < 4) {
 							for (const sp of sData.daily[l]) {
-								let t = sp.replace("{@spell ", "");
-								t = t.split("}");
+								let t = sp.replace("{@spell ", "").replace(/\|([^\s}]*)/, "");
+								t = splitOnFirst(t, "}");
 								if (t) {
 									output[level].push({
 										spell: spellListFlattened.find((item: string) => item.toLowerCase() === t[0].toLowerCase()) || t[0],
-										comment: t[1].replace(" (", "").replace(")", "") ?? ""
+										comment: markdownReplacer(t[1].replace(" (", "").replace(")", "") ?? "")
 									});
 								}
 							}
@@ -533,7 +534,7 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 			spellDcOverride: (() => {
 				let sData = [];
 				for (const t of data?.spellcasting ?? []) {
-					if (t.name.includes("Innate Spellcasting"))
+					if ((t.name.includes("Innate Spellcasting") || ((t?.will || []).length > 0 || (Object.keys(t?.daily || {}) || []).length > 0)) && !((t?.hidden || []).length > 0))
 						sData = t;
 				}
 
@@ -551,7 +552,7 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 			spellBonusOverride: (() => {
 				let sData = [];
 				for (const t of data?.spellcasting ?? []) {
-					if (t.name.includes("Innate Spellcasting"))
+					if ((t.name.includes("Innate Spellcasting") || ((t?.will || []).length > 0 || (Object.keys(t?.daily || {}) || []).length > 0)) && !((t?.hidden || []).length > 0))
 						sData = t;
 				}
 
@@ -570,7 +571,7 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 			displayAsAction: (() => {
 				let sData = [];
 				for (const t of data?.spellcasting ?? []) {
-					if (t.name.includes("Innate Spellcasting"))
+					if ((t.name.includes("Innate Spellcasting") || ((t?.will || []).length > 0 || (Object.keys(t?.daily || {}) || []).length > 0)) && !((t?.hidden || []).length > 0))
 						sData = t;
 				}
 
@@ -581,7 +582,7 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 			noComponentsOfType: (() => {
 				let sData = [];
 				for (const t of data?.spellcasting ?? []) {
-					if (t.name.includes("Innate Spellcasting"))
+					if ((t.name.includes("Innate Spellcasting") || ((t?.will || []).length > 0 || (Object.keys(t?.daily || {}) || []).length > 0)) && !((t?.hidden || []).length > 0))
 						sData = t;
 				}
 
@@ -608,7 +609,7 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 			})(),
 			spellCastingAbility: (() => {
 				for (const t of data?.spellcasting ?? []) {
-					if (t.name.includes("Innate Spellcasting"))
+					if ((t.name.includes("Innate Spellcasting") || ((t?.will || []).length > 0 || (Object.keys(t?.daily || {}) || []).length > 0)) && !((t?.hidden || []).length > 0))
 						return t.ability;
 				}
 
@@ -804,19 +805,27 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 			actions: (data?.actionHeader ?? []).join("\n") ?? "",
 			bonus: (data?.bonusHeader ?? []).join("\n") ?? "",
 			reactions: (data?.reactionHeader ?? []).join("\n") ?? "",
-			legendary: (data?.legendaryHeader ?? []).join("\n") ?? defaultStatblock.misc.featureHeaderTexts.legendary,
+			legendary: (data?.legendaryHeader ?? [defaultStatblock.misc.featureHeaderTexts.legendary]).join("\n"),
 			lair: defaultStatblock.misc.featureHeaderTexts.lair,
 			mythic: (data?.mythicHeader ?? []).join("\n") ?? defaultStatblock.misc.featureHeaderTexts.mythic,
 			regional: defaultStatblock.misc.featureHeaderTexts.regional
 		}
 	};
-	const [features, FnoteList] = abilityParser(data.trait, 2);
-	const [actions, AnoteList] = abilityParser(data.action, 1);
-	const [bonus, BnoteList] = abilityParser(data.bonus, 3);
-	const [reactions, RnoteList] = abilityParser(data.lair, 4);
-	const [legendary, LenoteList] = abilityParser(data.legendary, 9);
-	const [lair, LanoteList] = [[], []];
-	const [mythic, MnoteList] = abilityParser(data.mythic, 10);
+	const Traits = data.trait;
+	const Actions = (data.action ?? []).concat(((data?.spellcasting as any) ?? []).filter((i: any) => ((i?.hidden || []).length > 0) && i?.displayAs === "action"));
+	const Bonus = (data.bonus ?? []).concat(((data?.spellcasting as any) ?? []).filter((i: any) => ((i?.hidden || []).length > 0) && i?.displayAs === "bonus"));
+	const Reaction = (data.reaction ?? []).concat(((data?.spellcasting as any) ?? []).filter((i: any) => ((i?.hidden || []).length > 0) && i?.displayAs === "reaction"));
+	const Legendary = (data.legendary ?? []).concat(((data?.spellcasting as any) ?? []).filter((i: any) => ((i?.hidden || []).length > 0) && i?.displayAs === "legendary"));
+	const Lair = data.lair;
+	const Mythic = data.mythic;
+
+	const [features, FnoteList] = abilityParser(Traits, 2);
+	const [actions, AnoteList] = abilityParser(Actions, 1);
+	const [bonus, BnoteList] = abilityParser(Bonus, 3);
+	const [reactions, RnoteList] = abilityParser(Reaction, 4);
+	const [legendary, LenoteList] = abilityParser(Legendary, 9);
+	const [lair, LanoteList] = abilityParser(Lair, 11);
+	const [mythic, MnoteList] = abilityParser(Mythic, 10);
 	const [regional, RenoteList] = [[], []];
 
 	const notices = {
