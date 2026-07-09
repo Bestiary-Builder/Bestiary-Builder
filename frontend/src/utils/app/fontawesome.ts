@@ -1,6 +1,10 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 
 import {
+	fa1,
+	fa2,
+	fa3,
+	fa4,
 	faArrowRightFromBracket,
 	faArrowRightToBracket,
 	faBars,
@@ -14,10 +18,12 @@ import {
 	faEye,
 	faEyeSlash,
 	faGripVertical,
+	faHeading,
 	faHourglass,
 	faItalic,
 	faLink,
 	faList,
+	faListOl,
 	faLock,
 	faMagnifyingGlass,
 	faMinus,
@@ -85,5 +91,11 @@ library.add(
 	faBold,
 	faItalic,
 	faUnderline,
-	faList
+	faList,
+	faListOl,
+	faHeading,
+	fa1,
+	fa2,
+	fa3,
+	fa4
 );

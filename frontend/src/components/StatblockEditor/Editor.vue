@@ -15,9 +15,9 @@ const CustomDocument = Document.extend({
 
 const editor = new Editor({
 	extensions: [
+		Markdown,
 		StarterKit.configure({ document: false }), // disables the default
 		CustomDocument,
-		Markdown
 	],
 	content: model.value,
 	onUpdate: () => {
@@ -48,7 +48,13 @@ watch(model, (value) => {
 		<ButtonIcon icon="bold" label="Bold" noscale @click="editor.commands.toggleBold()" />
 		<ButtonIcon icon="italic" label="Italic" noscale @click="editor.commands.toggleItalic()" />
 		<ButtonIcon icon="underline" label="Underline" noscale @click="editor.commands.toggleUnderline()" />
-		<ButtonIcon icon="list" label="List" noscale @click="editor.commands.toggleBulletList()" />
+		<ButtonIcon icon="list" label="List unordered" noscale @click="editor.commands.toggleBulletList()" />
+		<ButtonIcon icon="list-ol" label="List ordered" noscale @click="editor.commands.toggleOrderedList()" />
+		<span style="margin-left: 1rem"> H </span>
+		<ButtonIcon icon="1" label="Heading one" noscale @click="editor.commands.toggleHeading({ level: 1 })" />
+		<ButtonIcon icon="2" label="Heading two" noscale @click="editor.commands.toggleHeading({ level: 2 })" />
+		<ButtonIcon icon="3" label="Heading three" noscale @click="editor.commands.toggleHeading({ level: 3 })" />
+		<ButtonIcon icon="4" label="Heading four" noscale @click="editor.commands.toggleHeading({ level: 3 })" />
 	</div>
 	<div class="tip-tap-container">
 		<EditorContent :editor="editor" />
@@ -109,26 +115,20 @@ watch(model, (value) => {
 	h5,
 	h6 {
 		line-height: 1.1;
-		margin-top: 2.5rem;
 		text-wrap: pretty;
 	}
 
-	h1,
-	h2 {
-		margin-top: 3.5rem;
-		margin-bottom: 1.5rem;
-	}
-
 	h1 {
-		font-size: 1.4rem;
+		font-size: 2.1rem;
 	}
 
 	h2 {
-		font-size: 1.2rem;
+		font-size: 1.5rem !important;
+		margin-bottom: 0 !important;
 	}
 
 	h3 {
-		font-size: 1.1rem;
+		font-size: 1.2rem;
 	}
 
 	h4,
@@ -163,14 +163,14 @@ watch(model, (value) => {
 	}
 
 	blockquote {
-		border-left: 3px solid var(--gray-3);
+		border-left: 3px solid grey;
 		margin: 1.5rem 0;
 		padding-left: 1rem;
 	}
 
 	hr {
 		border: none;
-		border-top: 1px solid var(--gray-2);
+		border-top: 1px solid grey;
 		margin: 2rem 0;
 	}
 }
