@@ -204,20 +204,33 @@ export function displayInnateCasting(data: Statblock, v2024: boolean): string {
 		output += `${name} casts one of the following spells${componentsString(sData.noComponentsOfType)} and using ${fullSpellAbilityName(sData.spellCastingAbility)} as the spellcasting ability (spell save DC ${spellDc(true, data)}, ${signedNumber(spellAttackBonus(true, data))} to hit with spell attacks).`;
 	}
 
+	let addZero = false;
+	const listOutput = [];
 	for (const times in sData.spellList) {
-		if (sData.spellList[times].length === 0)
+		const spells = sData.spellList[times];
+		if (spells.length === 0)
 			continue;
-
-		if (Number.parseInt(times) === 0)
-			output += "\nAt will: ";
-		else output += `\n${times}/day${sData.spellList[times].length > 1 ? " each" : ""}: `;
-
-		output += sData.spellList[times]
+		if (Number.parseInt(times) === 0) {
+			addZero = true;
+			continue;
+		}
+		let levelOutput = "";
+		levelOutput += `**${times}/${v2024 ? "D" : "d"}ay${spells.length > 1 ? (v2024 ? " Each" : " each") : ""}**: `;
+		levelOutput += spells
 			.map(x => (x.comment.length > 0 ? `*${v2024 ? x.spell : x.spell.toLowerCase()} (${x.comment})*` : `*${v2024 ? x.spell : x.spell.toLowerCase()}*`))
 			.sort()
 			.join(", ");
+		listOutput.unshift(levelOutput);
 	}
-	return output;
+
+	if (addZero) {
+		listOutput.unshift(`\n**At ${v2024 ? "W" : "w"}ill**: ${sData.spellList["0"]
+			.map(x => (x.comment.length > 0 ? `*${v2024 ? x.spell : x.spell.toLowerCase()} (${x.comment})*` : `*${v2024 ? x.spell : x.spell.toLowerCase()}*`))
+			.sort()
+			.join(", ")}`
+		);
+	}
+	return output + listOutput.join("\n");
 }
 
 export function displayCasterCasting(data: Statblock, v2024 = false): string {
