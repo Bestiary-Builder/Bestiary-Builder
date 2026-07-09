@@ -66,7 +66,7 @@ body .v-popper__custom-menu .stat-block.MonsterManual {
     &.toPrint {
         .feature-container__title {
             margin-bottom: -.1rem !important;
-            margin-top: .3rem !important;
+            margin-top: .2rem !important;
         }
     }
 }
