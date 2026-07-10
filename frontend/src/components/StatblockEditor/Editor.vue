@@ -1,208 +1,413 @@
 <script setup lang="ts">
-import StarterKit from "@tiptap/starter-kit";
-import { Editor, EditorContent } from "@tiptap/vue-3";
-import { onBeforeUnmount, watch } from "vue";
-import { Markdown } from "@tiptap/markdown";
-import { Document } from "@tiptap/extension-document";
-import { Placeholder } from "@tiptap/extensions";
+import { ref, shallowRef, useTemplateRef, watch } from "vue";
+import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
+import type * as Monaco from "monaco-editor";
 import ButtonIcon from "../Global/ButtonIcon.vue";
-import HangingList from "./HangingList";
+
+const { height = 250 } = defineProps<{ height?: number }>();
 
 const model = defineModel<string>();
+const editorRef = shallowRef();
+function handleMount(
+	editor: Monaco.editor.IStandaloneCodeEditor,
+	monaco: typeof Monaco
+) {
+	editorRef.value = editor;
 
-const CustomDocument = Document.extend({
-	renderMarkdown: (node, h) =>
-		node.content ? h.renderChildren(node.content, "\n\n") : "",
-});
+	updateDecorations(editor);
 
-const editor = new Editor({
-	extensions: [
-		Markdown,
-		HangingList,
-		StarterKit.configure({ document: false }), // disables the default
-		CustomDocument,
-		Placeholder.configure({
-			placeholder: "Write something …",
-		}),
-	],
-	content: model.value,
-	onUpdate: () => {
-		if (editor)
-			model.value = editor.getMarkdown();
-	},
-	contentType: "markdown"
-});
+	editor.onDidChangeModelContent(() => {
+		updateDecorations(editor);
+	});
 
-onBeforeUnmount(() => {
-	editor?.destroy();
-});
+	editor.addCommand(
+		monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyB,
+		() => {
+			toggleMarkdown(editor, "**");
+		}
+	);
 
-watch(model, (value) => {
-	const incoming = value ?? "";
-	if (incoming === editor.getMarkdown())
+	editor.addCommand(
+		monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyI,
+		() => {
+			toggleMarkdown(editor, "*");
+		}
+	);
+
+	editor.addCommand(
+		monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyU,
+		() => {
+			toggleMarkdown(editor, "__");
+		}
+	);
+}
+
+let decorationIds: string[] = [];
+
+function updateDecorations(editor: Monaco.editor.IStandaloneCodeEditor) {
+	const model = editor.getModel();
+
+	if (!model)
 		return;
 
-	editor.commands.setContent(incoming, {
-		contentType: "markdown",
-		emitUpdate: false,
-	});
-});
+	const text = model.getValue();
+
+	const decorations = [];
+
+	const regex = /^::.*$/gm;
+
+	let match: RegExpExecArray | null;
+
+	// eslint-disable-next-line no-cond-assign
+	while ((match = regex.exec(text))) {
+		const start = model.getPositionAt(match.index + 2);
+		const end = model.getPositionAt(
+			match.index + match[0].length
+		);
+
+		decorations.push({
+			range: {
+				startLineNumber: start.lineNumber,
+				startColumn: start.column,
+
+				endLineNumber: end.lineNumber,
+				endColumn: end.column,
+			},
+
+			options: {
+				inlineClassName: "markdown-highlight",
+			},
+		});
+
+		const markerStart = model.getPositionAt(match.index);
+		const markerEnd = model.getPositionAt(match.index + 2);
+
+		decorations.push({
+			range: {
+				startLineNumber: markerStart.lineNumber,
+				startColumn: markerStart.column,
+				endLineNumber: markerEnd.lineNumber,
+				endColumn: markerEnd.column,
+			},
+			options: {
+				inlineClassName: "markdown-marker",
+			},
+		});
+	}
+	decorationIds = editor.deltaDecorations(
+		decorationIds,
+		decorations
+	);
+}
+
+function toggleMarkdown(
+	editor: Monaco.editor.IStandaloneCodeEditor,
+	marker: string
+) {
+	const model = editor.getModel();
+	const selection = editor.getSelection();
+
+	if (!model || !selection)
+		return;
+
+	const selectedText = model.getValueInRange(selection);
+
+	const startOffset = model.getOffsetAt(selection.getStartPosition());
+	const endOffset = model.getOffsetAt(selection.getEndPosition());
+
+	const text = model.getValue();
+
+	const before = text.slice(
+		startOffset - marker.length,
+		startOffset
+	);
+
+	const after = text.slice(
+		endOffset,
+		endOffset + marker.length
+	);
+
+	const hasMarkers
+    = before === marker
+    	&& after === marker;
+
+	if (hasMarkers) {
+		// Remove markers
+		editor.executeEdits("markdown-toggle", [
+			{
+				range: {
+					startLineNumber: selection.startLineNumber,
+					startColumn:
+            selection.startColumn - marker.length,
+
+					endLineNumber: selection.endLineNumber,
+					endColumn:
+            selection.endColumn + marker.length,
+				},
+				text: selectedText,
+			},
+		]);
+
+		// Restore selection without markers
+		editor.setSelection({
+			startLineNumber: selection.startLineNumber,
+			startColumn:
+        selection.startColumn - marker.length,
+
+			endLineNumber: selection.endLineNumber,
+			endColumn:
+        selection.endColumn - marker.length,
+		});
+	}
+	else {
+		// Add markers
+		editor.executeEdits("markdown-toggle", [
+			{
+				range: selection,
+				text: `${marker}${selectedText}${marker}`,
+			},
+		]);
+
+		// Keep cursor around the content
+		editor.setSelection({
+			startLineNumber: selection.startLineNumber,
+			startColumn:
+        selection.startColumn + marker.length,
+
+			endLineNumber: selection.endLineNumber,
+			endColumn:
+        selection.endColumn + marker.length,
+		});
+	}
+
+	editor.focus();
+}
+
+function toggleLinePrefix(
+	editor: Monaco.editor.IStandaloneCodeEditor,
+	prefix: string
+) {
+	const model = editor.getModel();
+	const selection = editor.getSelection();
+
+	if (!model || !selection)
+		return;
+
+	const startLine = selection.startLineNumber;
+	const endLine = selection.endLineNumber;
+
+	const lines = [];
+
+	let remove = true;
+
+	for (let line = startLine; line <= endLine; line++) {
+		const text = model.getLineContent(line);
+
+		if (!text.trim().startsWith(prefix)) {
+			remove = false;
+			break;
+		}
+	}
+
+	for (let line = startLine; line <= endLine; line++) {
+		const text = model.getLineContent(line);
+
+		if (remove) {
+			const index = text.indexOf(prefix);
+
+			lines.push(
+				index >= 0
+					? text.slice(0, index) + text.slice(index + prefix.length)
+					: text
+			);
+		}
+		else {
+			lines.push(prefix + text);
+		}
+	}
+
+	editor.executeEdits("toggle-line-prefix", [
+		{
+			range: {
+				startLineNumber: startLine,
+				startColumn: 1,
+				endLineNumber: endLine,
+				endColumn: model.getLineMaxColumn(endLine),
+			},
+			text: lines.join("\n"),
+		},
+	]);
+}
+
+function toggleOrderedList(
+	editor: Monaco.editor.IStandaloneCodeEditor
+) {
+	const model = editor.getModel();
+	const selection = editor.getSelection();
+
+	if (!model || !selection)
+		return;
+
+	const start = selection.startLineNumber;
+	const end = selection.endLineNumber;
+
+	const lines = [];
+
+	let remove = true;
+
+	for (let line = start; line <= end; line++) {
+		const text = model.getLineContent(line);
+
+		if (!/^\s*\d+\.\s/.test(text)) {
+			remove = false;
+			break;
+		}
+	}
+
+	for (let line = start; line <= end; line++) {
+		let text = model.getLineContent(line);
+
+		if (remove)
+			text = text.replace(/^\s*\d+\.\s/, "");
+		else
+			text = `${line - start + 1}. ${text}`;
+
+		lines.push(text);
+	}
+
+	editor.executeEdits("toggle-ordered-list", [
+		{
+			range: {
+				startLineNumber: start,
+				startColumn: 1,
+				endLineNumber: end,
+				endColumn: model.getLineMaxColumn(end),
+			},
+			text: lines.join("\n"),
+		},
+	]);
+}
+
+function toggleHeading(
+	editor: Monaco.editor.IStandaloneCodeEditor,
+	level: number
+) {
+	const model = editor.getModel();
+	const selection = editor.getSelection();
+
+	if (!model || !selection)
+		return;
+
+	const startLine = selection.startLineNumber;
+	const endLine = selection.endLineNumber;
+
+	const prefix = `${"#".repeat(level)} `;
+
+	const edits = [];
+
+	for (let line = startLine; line <= endLine; line++) {
+		const text = model.getLineContent(line);
+
+		// Match existing heading
+		const match = text.match(/^#{1,4}\s+/);
+
+		let newText: string;
+
+		if (match) {
+			const existingPrefix = match[0];
+
+			// Same heading level -> remove heading
+			if (existingPrefix === prefix) {
+				newText = text.slice(existingPrefix.length);
+			}
+			// Different level -> replace heading
+			else {
+				newText
+          = prefix
+          	+ text.slice(existingPrefix.length);
+			}
+		}
+		// No heading -> add one
+		else {
+			newText = prefix + text;
+		}
+
+		edits.push({
+			range: {
+				startLineNumber: line,
+				startColumn: 1,
+				endLineNumber: line,
+				endColumn: model.getLineMaxColumn(line),
+			},
+			text: newText,
+		});
+	}
+
+	editor.executeEdits(
+		"toggle-heading",
+		edits
+	);
+}
 </script>
 
 <template>
-	<div>
+	<div class="monaco-wrapper-thing">
 		<div class="button-container">
-			<ButtonIcon icon="bold" label="Bold" noscale @click="editor.commands.toggleBold()" />
-			<ButtonIcon icon="italic" label="Italic" noscale @click="editor.commands.toggleItalic()" />
-			<ButtonIcon icon="underline" label="Underline" noscale @click="editor.commands.toggleUnderline()" />
-			<ButtonIcon icon="list" label="List unordered" noscale @click="editor.commands.toggleBulletList()" />
-			<ButtonIcon icon="list-ol" label="List ordered" noscale @click="editor.commands.toggleOrderedList()" />
+			<ButtonIcon icon="bold" label="Bold" noscale @click="toggleMarkdown(editorRef, '**')" />
+			<ButtonIcon icon="italic" label="Italic" noscale @click="toggleMarkdown(editorRef, '*')" />
+			<ButtonIcon icon="list" label="List" noscale @click="toggleLinePrefix(editorRef, '* ')" />
+			<ButtonIcon icon="list-ol" label="Ordered list" noscale @click="toggleOrderedList(editorRef)" />
+			<ButtonIcon icon="grip-vertical" label="Hanging list" noscale @click="toggleLinePrefix(editorRef, ':: ')" />
+
 			<span style="margin-left: 1rem"> H </span>
-			<ButtonIcon icon="1" label="Heading one" noscale @click="editor.commands.toggleHeading({ level: 1 })" />
-			<ButtonIcon icon="2" label="Heading two" noscale @click="editor.commands.toggleHeading({ level: 2 })" />
-			<ButtonIcon icon="3" label="Heading three" noscale @click="editor.commands.toggleHeading({ level: 3 })" />
-			<ButtonIcon icon="4" label="Heading four" noscale @click="editor.commands.toggleHeading({ level: 3 })" />
+			<ButtonIcon icon="1" label="Heading 1" noscale @click="toggleHeading(editorRef, 1)" />
+			<ButtonIcon icon="2" label="Heading 2" noscale @click="toggleHeading(editorRef, 2)" />
+			<ButtonIcon icon="3" label="Heading 3" noscale @click="toggleHeading(editorRef, 3)" />
+			<ButtonIcon icon="4" label="Heading 4" noscale @click="toggleHeading(editorRef, 4)" />
 		</div>
-		<div class="tip-tap-container">
-			<EditorContent :editor="editor" />
-		</div>
+		<VueMonacoEditor
+			v-model:value="model" theme="vs-dark"
+			:options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false, lineNumbers: 'off' }"
+			class="description-editor" :height="`${height}px`" language="markdown" @mount="handleMount"
+		/>
 	</div>
 </template>
 
-<style lang="less">
-.tip-tap-container {
-	resize: vertical;
-	overflow: auto;
-	min-height: 100px;
-	padding: 6px 12px;
-	background: var(--color-surface-0);
-	border: 1px solid var(--color-surface-1);
-	border-top-width: 0px;
-	border-bottom-left-radius: 6px;
-	border-bottom-right-radius: 6px;
-	font-size: 13px;
-	color: #f7f8f8;
-	height: 46px;
-}
-
+<style lang="less" scoped>
 .button-container {
 	display: flex;
 	gap: 0.2rem;
 	background-color: #262525;
 	border-top-left-radius: 6px;
 	border-top-right-radius: 6px;
+	font-size: smaller;
 }
+</style>
 
-/* Basic editor styles */
-.tiptap {
-	&:focus {
-		outline: none;
+<style lang="less">
+.monaco-wrapper-thing {
+	.monaco-editor,
+	.overflow-guard {
+		border-bottom-left-radius: 6px;
+		border-bottom-right-radius: 6px;
+		border-top-left-radius: 0px;
+		border-top-right-radius: 0px;
 	}
 
-	&:first-child {
-		margin-top: 0;
+	.margin {
+		width: 0px;
 	}
 
-	/* List styles */
-	ul,
-	ol {
-		padding: 0 1rem;
-		margin: 1.25rem 1rem 1.25rem 0.4rem;
-
-		li p {
-			margin-top: 0.25em;
-			margin-bottom: 0.25em;
-		}
+	.monaco-scrollable-element.editor-scrollable {
+		left: 20px !important;
 	}
 
-	/* Heading styles */
-	h1,
-	h2,
-	h3,
-	h4,
-	h5,
-	h6 {
-		line-height: 1.1;
-		text-wrap: pretty;
+	.markdown-highlight {
+		color: #ff79c6;
 	}
 
-	h1 {
-		font-size: 2.1rem;
+	.markdown-marker {
+		opacity: 0.5;
 	}
-
-	h2 {
-		font-size: 1.5rem !important;
-		margin-bottom: 0 !important;
-	}
-
-	h3 {
-		font-size: 1.2rem;
-	}
-
-	h4,
-	h5,
-	h6 {
-		font-size: 1rem;
-	}
-
-	/* Code and preformatted text styles */
-	code {
-		background-color: var(--purple-light);
-		border-radius: 0.4rem;
-		color: var(--black);
-		font-size: 0.85rem;
-		padding: 0.25em 0.3em;
-	}
-
-	pre {
-		border-radius: 0.5rem;
-		font-family: "JetBrainsMono", monospace;
-		margin: 1.5rem 0;
-		padding: 0.75rem 1rem;
-
-		code {
-			background: none;
-			color: inherit;
-			font-size: 0.8rem;
-			padding: 0;
-		}
-	}
-
-	blockquote {
-		border-left: 3px solid grey;
-		margin: 1.5rem 0;
-		padding-left: 1rem;
-	}
-
-	hr {
-		border: none;
-		border-top: 1px solid grey;
-		margin: 2rem 0;
-	}
-
-	.hanging-list {
-		position: relative;
-		margin-left: 1rem;
-		display: inline-flex;
-		color: rgb(193, 143, 220);
-		font-style: italic;
-		&::before {
-			content: "::";
-			position: absolute;
-			left: -10px;
-			background-color: rgb(74, 74, 74);
-			border-radius: 5px;
-			line-height: 1.2rem;
-		}
-	}
-}
-
-/* Placeholder (at the top) */
-p.is-editor-empty:first-child::before {
-	color: grey;
-	content: attr(data-placeholder);
-	float: left;
-	height: 0;
-	pointer-events: none;
 }
 </style>

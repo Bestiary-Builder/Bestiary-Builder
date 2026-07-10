@@ -511,7 +511,7 @@ provide("setActionDescription", setDesc);
 			</div>
 
 			<LabelledComponent title="Description" for="description">
-				<Editor v-model="data.features[type][aid].description" />
+				<Editor v-model="data.features[type][aid].description" :height="100" />
 				<span v-if="prefersVisualEditor" class="sub-action">
 					<input v-model="parityOptions.updateDescription" type="checkbox">
 					<small> <i>Updates the last text node of the first action in the automation structure to this text while enabled.</i> </small>

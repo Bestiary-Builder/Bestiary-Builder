@@ -23,7 +23,7 @@ const Highlight = Node.create({
 
 		tokenize: (src, tokens, lexer) => {
 			// Match ::content::
-			const match = /^::([\s\S]*?)::/.exec(src);
+			const match = /^::([\s\S]*)$/.exec(src);
 
 			if (!match)
 				return undefined;
@@ -49,7 +49,7 @@ const Highlight = Node.create({
 
 	renderMarkdown: (node, helpers) => {
 		const content = helpers.renderChildren(node.content || []);
-		return `::${content}::`;
+		return `::${content}`;
 	},
 });
 

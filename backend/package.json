@@ -24,6 +24,7 @@
 		"@prisma/client": "^7.7.0",
 		"bad-words-next": "^2.3.2",
 		"body-parser": "^2.2.0",
+		"codemirror": "^6.0.2",
 		"compression": "^1.8.0",
 		"cookie-parser": "^1.4.7",
 		"cors": "^2.8.5",
@@ -44,6 +45,7 @@
 		"split-on-first": "^4.0.0",
 		"ts-interface-checker": "^1.0.2",
 		"uuid": "^14.0.0",
+		"vue-codemirror6": "^1.6.1",
 		"winston": "^3.17.0"
 	},
 	"devDependencies": {
