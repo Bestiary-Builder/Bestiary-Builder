@@ -65,7 +65,7 @@ function updateDecorations(editor: Monaco.editor.IStandaloneCodeEditor) {
 
 	const decorations = [];
 
-	const regex = /^::.*$/gm;
+	const regex = /::.*::/g;
 
 	let match: RegExpExecArray | null;
 
@@ -359,6 +359,128 @@ function toggleHeading(
 		edits
 	);
 }
+
+function toggleInlineHighlight(
+	editor: Monaco.editor.IStandaloneCodeEditor
+) {
+	const model = editor.getModel();
+	const selection = editor.getSelection();
+
+	if (!model || !selection)
+		return;
+
+	const selectedText = model.getValueInRange(selection);
+
+	// Case 1: selected text
+	if (selectedText.length > 0) {
+		const startOffset = model.getOffsetAt(
+			selection.getStartPosition()
+		);
+
+		const endOffset = model.getOffsetAt(
+			selection.getEndPosition()
+		);
+
+		const fullText = model.getValue();
+
+		const before = fullText.slice(
+			startOffset - 2,
+			startOffset
+		);
+
+		const after = fullText.slice(
+			endOffset,
+			endOffset + 2
+		);
+
+		const isHighlighted
+      = before === "::"
+      	&& after === "::";
+
+		if (isHighlighted) {
+			editor.executeEdits("toggle-highlight", [
+				{
+					range: {
+						startLineNumber: selection.startLineNumber,
+						startColumn: selection.startColumn - 2,
+						endLineNumber: selection.endLineNumber,
+						endColumn: selection.endColumn + 2,
+					},
+					text: selectedText,
+				},
+			]);
+
+			editor.setSelection({
+				startLineNumber: selection.startLineNumber,
+				startColumn: selection.startColumn - 2,
+				endLineNumber: selection.endLineNumber,
+				endColumn: selection.endColumn - 2,
+			});
+		}
+		else {
+			editor.executeEdits("toggle-highlight", [
+				{
+					range: selection,
+					text: `::${selectedText}::`,
+				},
+			]);
+
+			editor.setSelection({
+				startLineNumber: selection.startLineNumber,
+				startColumn: selection.startColumn + 2,
+				endLineNumber: selection.endLineNumber,
+				endColumn: selection.endColumn + 2,
+			});
+		}
+
+		editor.focus();
+		return;
+	}
+
+	// Case 2: no selection -> current line
+	const lineNumber = selection.startLineNumber;
+	const lineText = model.getLineContent(lineNumber);
+
+	const match = lineText.match(/^::(.*)::$/);
+
+	const range = {
+		startLineNumber: lineNumber,
+		startColumn: 1,
+		endLineNumber: lineNumber,
+		endColumn: model.getLineMaxColumn(lineNumber),
+	};
+
+	if (match) {
+		// Remove :: markers
+		editor.executeEdits("toggle-highlight", [
+			{
+				range,
+				text: match[1],
+			},
+		]);
+
+		editor.setPosition({
+			lineNumber,
+			column: match[1].length + 1,
+		});
+	}
+	else {
+		// Add :: markers
+		editor.executeEdits("toggle-highlight", [
+			{
+				range,
+				text: `::${lineText}::`,
+			},
+		]);
+
+		editor.setPosition({
+			lineNumber,
+			column: lineText.length + 3,
+		});
+	}
+
+	editor.focus();
+}
 </script>
 
 <template>
@@ -368,7 +490,7 @@ function toggleHeading(
 			<ButtonIcon icon="italic" label="Italic" noscale @click="toggleMarkdown(editorRef, '*')" />
 			<ButtonIcon icon="list" label="List" noscale @click="toggleLinePrefix(editorRef, '* ')" />
 			<ButtonIcon icon="list-ol" label="Ordered list" noscale @click="toggleOrderedList(editorRef)" />
-			<ButtonIcon icon="grip-vertical" label="Hanging list" noscale @click="toggleLinePrefix(editorRef, ':: ')" />
+			<ButtonIcon icon="grip-vertical" label="Hanging list" noscale @click="toggleInlineHighlight(editorRef)" />
 
 			<span style="margin-left: 1rem"> H </span>
 			<ButtonIcon icon="1" label="Heading 1" noscale @click="toggleHeading(editorRef, 1)" />
