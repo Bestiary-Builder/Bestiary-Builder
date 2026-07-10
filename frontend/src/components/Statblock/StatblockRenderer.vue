@@ -226,7 +226,7 @@ const render = (str: string, inline?: boolean) => {
 		<div class="stat-block__row two-wide picture-container">
 			<div>
 				<div>
-					<b> {{ v2024 ? 'AC ' : 'Armor Class ' }} </b><span>{{ data.defenses.ac.ac }}</span>(<span v-if="data.defenses.ac.acSource" v-html="render(data.defenses.ac.acSource, true)" />)
+					<b> {{ v2024 ? 'AC ' : 'Armor Class ' }} </b><span>{{ data.defenses.ac.ac }}</span><span v-if="data.defenses.ac.acSource" v-html="render(`(${data.defenses.ac.acSource})`, true)" />
 					<b v-if="v2024" style="padding-left: .45rem"> Initiative </b> <span v-if="v2024"> {{ signedNumber(calculatedInitiativeNumber()) }} ({{ calculatePassiveInitiative() }})</span>
 				</div>
 				<div>
@@ -365,17 +365,17 @@ const render = (str: string, inline?: boolean) => {
 				<p v-if="data.misc.featureHeaderTexts.features" class="feature-header">
 					<span v-html="render(data.misc.featureHeaderTexts.features)" />
 				</p>
-				<p v-for="(feature, index) in data.features.features" :key="index">
+				<p v-for="(feature, index) in data.features.features" :key="index" class="feature-description">
 					<b> <i>{{ feature.name }}.</i><sup v-if="feature.automation" v-tooltip="'Has Automation'" class="feature-container__automation-icon">†</sup> </b>
 					<span class="feature-container__desc" v-html="render(feature.description)" />
 				</p>
 
-				<p v-if="showInnateCasting && !data.spellcasting.innateSpells.displayAsAction">
+				<p v-if="showInnateCasting && !data.spellcasting.innateSpells.displayAsAction" class="feature-description">
 					<b><i>Innate Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics"> (Psionics)</span>.</i></b>
 					<span class="feature-container__desc" v-html="render(displayInnateCasting(data, v2024))" />
 				</p>
 
-				<p v-if="showCasterCasting && data.spellcasting.casterSpells.castingClass && data.spellcasting.casterSpells.casterLevel && data.spellcasting.casterSpells.spellSlotList">
+				<p v-if="showCasterCasting && data.spellcasting.casterSpells.castingClass && data.spellcasting.casterSpells.casterLevel && data.spellcasting.casterSpells.spellSlotList" class="feature-description">
 					<b><i>Spellcasting</i></b>
 					<span class="feature-container__desc" v-html="render(displayCasterCasting(data, v2024))" />
 				</p>
@@ -390,12 +390,12 @@ const render = (str: string, inline?: boolean) => {
 				<p v-if="data.misc.featureHeaderTexts.actions" class="feature-header">
 					<span v-html="render(data.misc.featureHeaderTexts.actions)" />
 				</p>
-				<p v-for="(feature, index) in data.features.actions" :key="index">
+				<p v-for="(feature, index) in data.features.actions" :key="index" class="feature-description">
 					<b> <i>{{ feature.name }}.</i><sup v-if="feature.automation" v-tooltip="'Has Automation'" class="feature-container__automation-icon">†</sup></b>
 					<span class="feature-container__desc" v-html="render(feature.description)" />
 				</p>
 
-				<p v-if="showInnateCasting && data.spellcasting.innateSpells.displayAsAction">
+				<p v-if="showInnateCasting && data.spellcasting.innateSpells.displayAsAction" class="feature-description">
 					<b><i>Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics"> (Psionics)</span>.</i></b>
 					<span class="feature-container__desc" v-html="render(displayInnateCasting(data, v2024))" />
 				</p>

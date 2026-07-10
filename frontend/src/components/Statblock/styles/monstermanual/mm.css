@@ -20,7 +20,11 @@ body .v-popper__custom-menu .stat-block.MonsterManual {
         .feature-container__title {
             color: #4d1e20;
             border-color: #4d1e20;
-            margin-bottom: 0.45rem !important;
+            margin-bottom: 0.3rem !important;
+        }
+
+        .feature-description {
+            margin-bottom: 5px;
         }
     }
 

@@ -363,7 +363,7 @@ const creatureData = {
 									Odyssey
 								</option>
 								<option value="MonsterManual">
-									Monster Manual
+									Monster Manual (Compact)
 								</option>
 							</select>
 						</LabelledComponent>
