@@ -14,6 +14,17 @@ function handleMount(
 ) {
 	editorRef.value = editor;
 
+	monaco.editor.defineTheme("my-dark-theme", {
+		base: "vs-dark",
+		inherit: true,
+		rules: [],
+		colors: {
+			"editor.background": "#1a1919",
+		},
+	});
+
+	monaco.editor.setTheme("my-dark-theme");
+
 	updateDecorations(editor);
 
 	editor.onDidChangeModelContent(() => {
