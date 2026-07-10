@@ -158,8 +158,8 @@ const loadFeature = async (feature: FeatureEntity, apiPath: AutomationTypes) => 
 	if (!data.value)
 		return;
 
-	feature.description = feature.description.replaceAll("$NAMECAPITALNOUN$", `${data.value.description.isProperNoun ? "" : "The "}${data.value.description.name}`);
-	feature.description = feature.description.replaceAll("$NAMELOWERNOUN$", `${data.value.description.isProperNoun ? "" : "the "}${data.value.description.name}`);
+	feature.description = feature.description.replaceAll("$NAMECAPITALNOUN$", `${data.value.description.isProperNoun ? "" : "The "}${data.value.description.isProperNoun ? data.value.description.name : data.value.description.name.toLowerCase()}`);
+	feature.description = feature.description.replaceAll("$NAMELOWERNOUN$", `${data.value.description.isProperNoun ? "" : "the "}${data.value.description.isProperNoun ? data.value.description.name : data.value.description.name.toLowerCase()}`);
 
 	data.value.features[type][aid] = feature;
 

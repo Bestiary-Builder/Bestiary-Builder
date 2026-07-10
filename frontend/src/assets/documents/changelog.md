@@ -21,6 +21,8 @@ _???, 2026_
 - Fixed issues with 5e.tools importer, now supports more types of data for a few fields, supports displayed as action spellcasting.
 - Reactions now import from 5e.tools.
 - Innate spellcasting now displays the different spell amounts in the correct order.
+- Importing text only actions now respects the name of the creature and if it is a proper noun.
+
 ## v2.6.6
 _June 12, 2026_
 

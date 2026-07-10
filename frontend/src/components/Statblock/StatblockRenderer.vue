@@ -6,6 +6,7 @@ import StarterKit from "@tiptap/starter-kit";
 import { generateHTML } from "@tiptap/vue-3";
 import { Document } from "@tiptap/extension-document";
 import { marked } from "marked";
+import HangingList from "../StatblockEditor/HangingList";
 import type { SaveEntity, SkillsEntity, Stat, Statblock } from "~/shared";
 import { SKILLS_BY_STAT, capitalizeFirstLetter, crAsString, displayCasterCasting, displayInnateCasting, displaySpeedOrSenses, hpCalc, ppCalc, signedNumber, statCalc } from "~/shared";
 import { featureGenerator, resistanceGenerator, stats } from "@/utils/constants";
@@ -171,30 +172,16 @@ onMounted(async () => {
 		await import("./styles/monstermanual/mm.css");
 });
 
-const md = new MarkdownIt();
-const defaultParagraphRenderer = md.renderer.rules.paragraph_open || ((tokens, idx, options, env, self) => self.renderToken(tokens, idx, options));
-md.renderer.rules.paragraph_open = function (tokens, idx, options, env, self) {
-	let result = "";
-	if (idx > 1) {
-		const inline = tokens[idx - 2];
-		const paragraph = tokens[idx];
-		if (inline.type === "inline" && inline.map && inline.map[1] && paragraph.map && paragraph.map[0]) {
-			const diff = paragraph.map[0] - inline.map[1];
-			if (diff > 0)
-				result = "<br>".repeat(diff);
-		}
-	}
-	return result + defaultParagraphRenderer(tokens, idx, options, env, self);
-};
-
 const CustomDocument = Document.extend({
 	renderMarkdown: (node, h) =>
 		node.content ? h.renderChildren(node.content, "\n\n") : "",
 });
 const extensions = [
+	HangingList,
 	StarterKit.configure({ document: false }),
 	CustomDocument,
 	Markdown,
+
 ];
 const manager = new MarkdownManager({
 	extensions,

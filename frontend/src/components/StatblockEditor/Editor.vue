@@ -4,7 +4,9 @@ import { Editor, EditorContent } from "@tiptap/vue-3";
 import { onBeforeUnmount, watch } from "vue";
 import { Markdown } from "@tiptap/markdown";
 import { Document } from "@tiptap/extension-document";
+import { Placeholder } from "@tiptap/extensions";
 import ButtonIcon from "../Global/ButtonIcon.vue";
+import HangingList from "./HangingList";
 
 const model = defineModel<string>();
 
@@ -16,8 +18,12 @@ const CustomDocument = Document.extend({
 const editor = new Editor({
 	extensions: [
 		Markdown,
+		HangingList,
 		StarterKit.configure({ document: false }), // disables the default
 		CustomDocument,
+		Placeholder.configure({
+			placeholder: "Write something …",
+		}),
 	],
 	content: model.value,
 	onUpdate: () => {
@@ -44,20 +50,22 @@ watch(model, (value) => {
 </script>
 
 <template>
-	<div class="button-container">
-		<ButtonIcon icon="bold" label="Bold" noscale @click="editor.commands.toggleBold()" />
-		<ButtonIcon icon="italic" label="Italic" noscale @click="editor.commands.toggleItalic()" />
-		<ButtonIcon icon="underline" label="Underline" noscale @click="editor.commands.toggleUnderline()" />
-		<ButtonIcon icon="list" label="List unordered" noscale @click="editor.commands.toggleBulletList()" />
-		<ButtonIcon icon="list-ol" label="List ordered" noscale @click="editor.commands.toggleOrderedList()" />
-		<span style="margin-left: 1rem"> H </span>
-		<ButtonIcon icon="1" label="Heading one" noscale @click="editor.commands.toggleHeading({ level: 1 })" />
-		<ButtonIcon icon="2" label="Heading two" noscale @click="editor.commands.toggleHeading({ level: 2 })" />
-		<ButtonIcon icon="3" label="Heading three" noscale @click="editor.commands.toggleHeading({ level: 3 })" />
-		<ButtonIcon icon="4" label="Heading four" noscale @click="editor.commands.toggleHeading({ level: 3 })" />
-	</div>
-	<div class="tip-tap-container">
-		<EditorContent :editor="editor" />
+	<div>
+		<div class="button-container">
+			<ButtonIcon icon="bold" label="Bold" noscale @click="editor.commands.toggleBold()" />
+			<ButtonIcon icon="italic" label="Italic" noscale @click="editor.commands.toggleItalic()" />
+			<ButtonIcon icon="underline" label="Underline" noscale @click="editor.commands.toggleUnderline()" />
+			<ButtonIcon icon="list" label="List unordered" noscale @click="editor.commands.toggleBulletList()" />
+			<ButtonIcon icon="list-ol" label="List ordered" noscale @click="editor.commands.toggleOrderedList()" />
+			<span style="margin-left: 1rem"> H </span>
+			<ButtonIcon icon="1" label="Heading one" noscale @click="editor.commands.toggleHeading({ level: 1 })" />
+			<ButtonIcon icon="2" label="Heading two" noscale @click="editor.commands.toggleHeading({ level: 2 })" />
+			<ButtonIcon icon="3" label="Heading three" noscale @click="editor.commands.toggleHeading({ level: 3 })" />
+			<ButtonIcon icon="4" label="Heading four" noscale @click="editor.commands.toggleHeading({ level: 3 })" />
+		</div>
+		<div class="tip-tap-container">
+			<EditorContent :editor="editor" />
+		</div>
 	</div>
 </template>
 
@@ -69,6 +77,7 @@ watch(model, (value) => {
 	padding: 6px 12px;
 	background: var(--color-surface-0);
 	border: 1px solid var(--color-surface-1);
+	border-top-width: 0px;
 	border-bottom-left-radius: 6px;
 	border-bottom-right-radius: 6px;
 	font-size: 13px;
@@ -82,7 +91,6 @@ watch(model, (value) => {
 	background-color: #262525;
 	border-top-left-radius: 6px;
 	border-top-right-radius: 6px;
-	translate: 0 8px;
 }
 
 /* Basic editor styles */
@@ -147,9 +155,7 @@ watch(model, (value) => {
 	}
 
 	pre {
-		background: var(--black);
 		border-radius: 0.5rem;
-		color: var(--white);
 		font-family: "JetBrainsMono", monospace;
 		margin: 1.5rem 0;
 		padding: 0.75rem 1rem;
@@ -173,11 +179,27 @@ watch(model, (value) => {
 		border-top: 1px solid grey;
 		margin: 2rem 0;
 	}
+
+	.hanging-list {
+		position: relative;
+		margin-left: 1rem;
+		display: inline-flex;
+		color: rgb(193, 143, 220);
+		font-style: italic;
+		&::before {
+			content: "::";
+			position: absolute;
+			left: -10px;
+			background-color: rgb(74, 74, 74);
+			border-radius: 5px;
+			line-height: 1.2rem;
+		}
+	}
 }
 
 /* Placeholder (at the top) */
 p.is-editor-empty:first-child::before {
-	color: var(--gray-4);
+	color: grey;
 	content: attr(data-placeholder);
 	float: left;
 	height: 0;
