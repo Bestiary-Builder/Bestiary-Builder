@@ -2,12 +2,13 @@
 import { ref, shallowRef, useTemplateRef, watch } from "vue";
 import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
 import type * as Monaco from "monaco-editor";
+import { useResizeObserver } from "@vueuse/core";
 import ButtonIcon from "../Global/ButtonIcon.vue";
 
 const { height = 250 } = defineProps<{ height?: number }>();
 
 const model = defineModel<string>();
-const editorRef = shallowRef();
+const editorRef = shallowRef<Monaco.editor.IStandaloneCodeEditor>();
 function handleMount(
 	editor: Monaco.editor.IStandaloneCodeEditor,
 	monaco: typeof Monaco
@@ -481,22 +482,28 @@ function toggleInlineHighlight(
 
 	editor.focus();
 }
+
+const wrapper = useTemplateRef("wrapper");
+useResizeObserver(wrapper, () => {
+	if (editorRef.value)
+		editorRef.value.layout();
+});
 </script>
 
 <template>
-	<div class="monaco-wrapper-thing">
+	<div ref="wrapper" class="monaco-wrapper-thing">
 		<div class="button-container">
-			<ButtonIcon icon="bold" label="Bold" noscale @click="toggleMarkdown(editorRef, '**')" />
-			<ButtonIcon icon="italic" label="Italic" noscale @click="toggleMarkdown(editorRef, '*')" />
-			<ButtonIcon icon="list" label="List" noscale @click="toggleLinePrefix(editorRef, '* ')" />
-			<ButtonIcon icon="list-ol" label="Ordered list" noscale @click="toggleOrderedList(editorRef)" />
-			<ButtonIcon icon="grip-vertical" label="Hanging list" noscale @click="toggleInlineHighlight(editorRef)" />
+			<ButtonIcon icon="bold" label="Bold" noscale @click="toggleMarkdown(editorRef!, '**')" />
+			<ButtonIcon icon="italic" label="Italic" noscale @click="toggleMarkdown(editorRef!, '*')" />
+			<ButtonIcon icon="list" label="List" noscale @click="toggleLinePrefix(editorRef!, '* ')" />
+			<ButtonIcon icon="list-ol" label="Ordered list" noscale @click="toggleOrderedList(editorRef!)" />
+			<ButtonIcon icon="grip-vertical" label="Hanging list" noscale @click="toggleInlineHighlight(editorRef!)" />
 
 			<span style="margin-left: 1rem"> H </span>
-			<ButtonIcon icon="1" label="Heading 1" noscale @click="toggleHeading(editorRef, 1)" />
-			<ButtonIcon icon="2" label="Heading 2" noscale @click="toggleHeading(editorRef, 2)" />
-			<ButtonIcon icon="3" label="Heading 3" noscale @click="toggleHeading(editorRef, 3)" />
-			<ButtonIcon icon="4" label="Heading 4" noscale @click="toggleHeading(editorRef, 4)" />
+			<ButtonIcon icon="1" label="Heading 1" noscale @click="toggleHeading(editorRef!, 1)" />
+			<ButtonIcon icon="2" label="Heading 2" noscale @click="toggleHeading(editorRef!, 2)" />
+			<ButtonIcon icon="3" label="Heading 3" noscale @click="toggleHeading(editorRef!, 3)" />
+			<ButtonIcon icon="4" label="Heading 4" noscale @click="toggleHeading(editorRef!, 4)" />
 		</div>
 		<VueMonacoEditor
 			v-model:value="model" theme="vs-dark"
@@ -519,7 +526,12 @@ function toggleInlineHighlight(
 
 <style lang="less">
 .monaco-wrapper-thing {
-	max-width: calc(100vw - 7%);
+	max-width: 100%;
+
+	.monaco-editor {
+		min-height: 100px;
+	}
+
 	.monaco-editor,
 	.overflow-guard {
 		border-bottom-left-radius: 6px;
@@ -542,6 +554,12 @@ function toggleInlineHighlight(
 
 	.markdown-marker {
 		opacity: 0.5;
+	}
+}
+
+@media screen and (max-width: 1200px) {
+	.monaco-wrapper-thing {
+		max-width: 80vw;
 	}
 }
 </style>
