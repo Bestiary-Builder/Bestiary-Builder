@@ -649,7 +649,7 @@ const getDraggableKey = (item: any) => {
 
 			<CopyManager :may-import="isOwner || isEditor" :current-creatures="creatures || []" can-copy-current-bestiary @import-creature="(creature) => createCreature(creature, true, false)" @import-all-creatures="createManyCreatures" @copy-current-bestiary="copyCurrentBestiary" />
 
-			<ButtonIcon icon="thumbtack" label="Unpin currently pinned creature" style="rotate: 45deg" @click="lastClickedCreature = null" />
+			<ButtonIcon v-if="false" icon="thumbtack" label="Unpin currently pinned creature" style="rotate: 45deg" @click="lastClickedCreature = null" />
 			<ButtonIcon v-if="isOwner" icon="pen-to-square" label="Edit bestiary" @click="showEditorModal = true" />
 
 			<VDropdown :distance="6" :positioning-disabled="store.isMobile">
@@ -768,7 +768,7 @@ const getDraggableKey = (item: any) => {
 					</div>
 				</div>
 				<div v-if="creatures && lastHoveredCreature" class="statblock-container">
-					<span v-if="lastClickedCreature" class="pin-notice">
+					<span v-if="false && lastClickedCreature" class="pin-notice">
 						<span class="unpin-button" role="button" aria-label="unpin currently pinned creature" @click="lastClickedCreature = null"><b>unpin</b></span>📌
 					</span>
 					<Transition name="fade" mode="out-in">
@@ -936,6 +936,7 @@ const getDraggableKey = (item: any) => {
 		transition: all 1s;
 		transition-timing-function: cubic-bezier(0.06, 0.975, 0.195, 0.985);
 		border-radius: 2px;
+		border-radius: 3px;
 
 		h3 {
 			font-size: 1.5rem;
@@ -946,9 +947,17 @@ const getDraggableKey = (item: any) => {
 			flex-wrap: nowrap;
 			justify-content: space-between;
 
-			.left-side span {
-				font-style: italic;
-				font-size: 0.85rem;
+			.left-side {
+				span,
+				p {
+					font-style: italic;
+					font-size: 0.85rem;
+				}
+				.cr {
+					color: orangered;
+					width: 3rem;
+					display: inline-block;
+				}
 			}
 
 			.right-side {
@@ -973,10 +982,6 @@ const getDraggableKey = (item: any) => {
 
 					svg {
 						color: #536d8c;
-					}
-
-					&.cr {
-						width: 5rem;
 					}
 				}
 

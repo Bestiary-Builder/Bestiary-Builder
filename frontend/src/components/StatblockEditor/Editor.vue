@@ -519,6 +519,7 @@ function toggleInlineHighlight(
 
 <style lang="less">
 .monaco-wrapper-thing {
+	max-width: calc(100vw - 7%);
 	.monaco-editor,
 	.overflow-guard {
 		border-bottom-left-radius: 6px;

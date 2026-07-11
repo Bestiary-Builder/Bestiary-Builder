@@ -14,16 +14,23 @@ const emit = defineEmits<{
 <template>
 	<div class="content-tile creature-tile" data-shimmer-no-children>
 		<div class="left-side">
-			<h3>{{ data.description?.name }}</h3>
-			<span>{{ data?.core?.size }} {{ data?.core?.race }}{{ data?.description?.alignment ? `, ${data?.description?.alignment}` : "" }}</span>
+			<h3 style="color: orangered">
+				{{ data.description?.name }} <span>				CR {{ crAsString(data.description.cr) }}
+				</span>
+			</h3>
+
+			<p>{{ data?.core?.size }} {{ data?.core?.race }}</p>
+			<p v-if="data.description.alignment">
+				{{ data?.description?.alignment }}
+			</p>
 		</div>
 		<div class="right-side">
 			<button v-tooltip="'Copy creature'" :aria-label="`Copy ${data.description.name}`" @click="emit('copyCreature')">
 				<font-awesome-icon :icon="['fas', 'copy']" />
 			</button>
-			<button v-tooltip="'Pin creature'" @click="emit('pinCreature')">
+			<!-- <button v-tooltip="'Pin creature'" @click="emit('pinCreature')">
 				<font-awesome-icon :icon="['fas', 'thumbtack']" />
-			</button>
+			</button> -->
 			<VDropdown v-if="canEdit" :distance="6" :positioning-disabled="store.isMobile">
 				<button v-tooltip="'Delete creature'" :aria-label="`Delete ${data.description.name}`" @click.stop.prevent="">
 					<font-awesome-icon :icon="['fas', 'trash']" />
@@ -43,7 +50,6 @@ const emit = defineEmits<{
 					<font-awesome-icon v-else :icon="['fas', 'eye']" />
 				</RouterLink>
 			</button>
-			<span class="cr"> CR {{ crAsString(data.description.cr) }}</span>
 		</div>
 	</div>
 </template>
