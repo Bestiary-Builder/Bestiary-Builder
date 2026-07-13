@@ -14,10 +14,10 @@ const emit = defineEmits<{
 <template>
 	<div class="content-tile creature-tile" data-shimmer-no-children>
 		<div class="left-side">
-			<h3 style="color: orangered">
+			<h2 style="color: orangered">
 				{{ data.description?.name }} <span>				CR {{ crAsString(data.description.cr) }}
 				</span>
-			</h3>
+			</h2>
 
 			<p>{{ data?.core?.size }} {{ data?.core?.race }}</p>
 			<p v-if="data.description.alignment">

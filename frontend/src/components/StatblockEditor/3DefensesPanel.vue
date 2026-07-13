@@ -49,3 +49,7 @@ const { data } = defineProps<{ data: Statblock }>();
 		</div>
 	</div>
 </template>
+
+<style lang="less">
+@import url("@/components/StatblockEditor/styles/tabpane.less");
+</style>

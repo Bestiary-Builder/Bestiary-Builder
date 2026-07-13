@@ -216,3 +216,7 @@ const showSpellSlotModal = ref(false);
 		</template>
 	</Modal>
 </template>
+
+<style lang="less">
+@import url("@/components/StatblockEditor/styles/tabpane.less");
+</style>

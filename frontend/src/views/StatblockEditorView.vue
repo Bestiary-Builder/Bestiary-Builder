@@ -577,25 +577,6 @@ const moveSlide = (event: KeyboardEvent) => {
 		}
 	}
 }
-
-@media screen and (max-width: 1080px) {
-	.editor-nav {
-		grid-template-columns: 1fr 1fr 1fr;
-	}
-}
-
-@media screen and (max-width: 1080px) {
-	.editor-content__tab-inner .editor-field__container.three-wide {
-		grid-template-columns: 1fr 1fr;
-	}
-}
-
-@media screen and (max-width: 950px) {
-	.editor-content__tab-inner
-		.editor-field__container:is(.two-wide, .three-wide) {
-		grid-template-columns: 1fr;
-	}
-}
 </style>
 
 <style lang="less">
@@ -607,5 +588,5 @@ const moveSlide = (event: KeyboardEvent) => {
 }
 
 @import url("@/assets/styles/mixins.less");
-@import url("@/components/StatblockEditor/statblock-editor.less");
+@import url("@/components/StatblockEditor/styles/statblock-editor.less");
 </style>

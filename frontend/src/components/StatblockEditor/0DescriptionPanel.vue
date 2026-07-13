@@ -104,3 +104,7 @@ watch(() => data.description.cr, () => {
 		</div>
 	</div>
 </template>
+
+<style lang="less">
+@import url("@/components/StatblockEditor/styles/tabpane.less");
+</style>

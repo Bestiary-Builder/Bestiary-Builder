@@ -155,6 +155,7 @@ function clear() {
 	margin: auto;
 	border: 1px solid rgb(60, 63, 68);
 	color: white;
+	max-width: 90vw;
 }
 
 input[type="number"]::-webkit-inner-spin-button,

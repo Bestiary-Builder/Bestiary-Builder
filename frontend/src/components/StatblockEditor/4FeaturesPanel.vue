@@ -121,3 +121,7 @@ const createNewFeature = (type: keyof Features) => {
 		</div>
 	</div>
 </template>
+
+<style lang="less">
+@import url("@/components/StatblockEditor/styles/tabpane.less");
+</style>
