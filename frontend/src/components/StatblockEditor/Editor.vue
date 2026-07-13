@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref, shallowRef, useTemplateRef, watch } from "vue";
+import { onMounted, shallowRef, useTemplateRef } from "vue";
 import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
 import type * as Monaco from "monaco-editor";
-import { useDebounce, useResizeObserver } from "@vueuse/core";
+import { useResizeObserver } from "@vueuse/core";
 import ButtonIcon from "../Global/ButtonIcon.vue";
 
 const { height = 250 } = defineProps<{ height?: number }>();
@@ -487,10 +487,19 @@ useResizeObserver(document.body, () => {
 	if (editorRef.value)
 		editorRef.value.layout();
 });
+
+const wrapper = useTemplateRef("wrapper");
+const editor = useTemplateRef("editor");
+
+setInterval(() => {
+	console.log(wrapper.value?.clientWidth, editor.value?.width);
+	if (wrapper.value?.clientWidth !== editor.value?.width)
+		editorRef.value?.layout({ width: wrapper.value?.clientWidth || 600, height: wrapper.value?.clientHeight || height });
+}, 1000);
 </script>
 
 <template>
-	<div class="monaco-wrapper-thing">
+	<div ref="wrapper" class="monaco-wrapper-thing">
 		<div class="button-container">
 			<ButtonIcon icon="bold" label="Bold" noscale @click="toggleMarkdown(editorRef!, '**')" />
 			<ButtonIcon icon="italic" label="Italic" noscale @click="toggleMarkdown(editorRef!, '*')" />
@@ -506,9 +515,9 @@ useResizeObserver(document.body, () => {
 		</div>
 		<div class="editor-container" :style="`height: ${height}px`">
 			<VueMonacoEditor
-				v-model:value="model"
+				ref="editor" v-model:value="model"
 				theme="vs-dark"
-				:options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false, lineNumbers: 'off' }" class="description-editor" height="100%" language="markdown" @mount="handleMount"
+				:options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false, lineNumbers: 'off' }" class="description-editor" height="100%" width="100%" language="markdown" @mount="handleMount"
 			/>
 		</div>
 	</div>
@@ -528,7 +537,9 @@ useResizeObserver(document.body, () => {
 	resize: vertical;
 	overflow: auto;
 	min-height: 100px;
-	max-width: 50vw;
+}
+
+.description-editor {
 }
 </style>
 
@@ -539,7 +550,7 @@ useResizeObserver(document.body, () => {
 	.monaco-editor {
 		min-height: 100px;
 		height: 100%;
-		max-width: min(100%, 50vw);
+		width: 100%;
 	}
 
 	.monaco-editor,
@@ -569,7 +580,8 @@ useResizeObserver(document.body, () => {
 
 @media screen and (max-width: 1200px) {
 	.monaco-wrapper-thing,
-	.monaco-editor {
+	.monaco-editor,
+	.editor-container {
 		max-width: 90vw;
 	}
 }

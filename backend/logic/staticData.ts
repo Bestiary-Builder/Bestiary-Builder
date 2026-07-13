@@ -1,17 +1,17 @@
 import fetch from "node-fetch";
 import { app } from "@/utilities/constants";
-import basicExamples from "@/staticData/basicExamples.json";
-import srdFeatures from "@/staticData/srdFeatures.json";
-import srdCreatures from "@/staticData/srdCreatures.json";
-import tOF from "@/staticData/textOnlyFeatures.json";
+import basicExamples from "@/staticData/shared/basicExamples.json";
+import SRDAttacks2014 from "@/staticData/2014/SRDAttacks2014.json";
+import SRDCreatures2014 from "@/staticData/2014/SRDCreatures2014.json";
+import tOF from "@/staticData/shared/textOnlyFeatures.json";
 import tags from "@/staticData/tags.json";
 import limits from "@/staticData/limits.json";
 import data from "@/staticData/automationDocumentation.json";
 
 const textOnlyFeatures = tOF as { [key: string]: string };
-const allSrdFeatures = Object.keys(textOnlyFeatures)
+const attacks2014 = Object.keys(textOnlyFeatures)
 	.map(key => ({ name: key, description: textOnlyFeatures[key] as string, automation: null as unknown }))
-	.concat(srdFeatures);
+	.concat(SRDAttacks2014);
 
 // Basic example
 app.get("/api/basic-examples/list", async (req, res) => {
@@ -28,13 +28,13 @@ app.get("/api/basic-example/:name", async (req, res) => {
 });
 
 // Features
-app.get("/api/srd-features/list", async (req, res) => {
-	const names = allSrdFeatures.map(a => a.name) ?? [];
+app.get("/api/srd-features/2014/list", async (req, res) => {
+	const names = attacks2014.map(a => a.name) ?? [];
 	return res.json(names);
 });
-app.get("/api/srd-feature/:name", async (req, res) => {
+app.get("/api/srd-feature/2014/:name", async (req, res) => {
 	const name = decodeURIComponent(req.params.name);
-	const data = allSrdFeatures.find(a => a.name === name);
+	const data = attacks2014.find(a => a.name === name);
 	if (data)
 		return res.json(data);
 	else
@@ -43,12 +43,12 @@ app.get("/api/srd-feature/:name", async (req, res) => {
 
 // Creatures
 
-app.get("/api/srd-creatures/list", async (req, res) => {
-	return res.json(Object.keys(srdCreatures));
+app.get("/api/srd-creatures/2014/list", async (req, res) => {
+	return res.json(Object.keys(SRDCreatures2014));
 });
-app.get("/api/srd-creature/:name", async (req, res) => {
+app.get("/api/srd-creature/2014/:name", async (req, res) => {
 	const name = decodeURIComponent(req.params.name);
-	const data = (srdCreatures as any)[name];
+	const data = (SRDCreatures2014 as any)[name];
 	if (data)
 		return res.json(data);
 	else

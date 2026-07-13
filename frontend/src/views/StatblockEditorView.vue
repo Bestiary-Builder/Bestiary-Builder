@@ -435,7 +435,7 @@ const moveSlide = (event: KeyboardEvent) => {
 					</button>
 				</div>
 
-				<div class="editor-content">
+				<div v-if="rawInfo !== null" class="editor-content">
 					<DescriptionPanel :data="data" />
 					<CorePanel :data="data" />
 					<StatsPanel :data="data" />

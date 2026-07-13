@@ -1,6 +1,4 @@
-multiline
 <drac2>
-# created by @death8673 (THANK YOU!)
 n = "\n"
 args_raw = """&*&""".strip()
 
@@ -9,10 +7,7 @@ try:
 except:
     pfx = "!"
 
-# Leave blank to CREATE a new gvar.
-# Put a gvar UUID here to EDIT/MERGE into that existing gvar instead.
-SAVE_GVAR_ID = "1835e9e6-7eb7-45a9-b30e-9219f58ce03f"
-
+SAVE_GVAR_ID = "835e9e6-7eb7-45a9-b30e-9219f58ce03f"
 GVAR_COMMAND_LIMIT = 95000
 PART_LIMIT = 8500
 MAX_PARTS_TO_CLEAR = 30
@@ -20,14 +15,11 @@ MAX_PARTS_TO_CLEAR = 30
 def esc(s):
     return str(s).replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
 
+def q(s):
+    return str(s).replace("\\", "\\\\").replace('"', '\\"')
+
 def emb(title, desc, color="gold"):
     return f'{pfx}embed -title "{esc(title)}" -desc "{esc(desc)}" -color {color}'
-
-def j(v):
-    try:
-        return dump_json(v)
-    except:
-        return "null"
 
 def tn(v):
     try:
@@ -47,173 +39,72 @@ def is_dict(v):
 def is_str(v):
     return "str" in str(tn(v)).lower()
 
-def strip_quotes(s):
-    s = str(s).strip()
-    if len(s) >= 2:
-        if s[0] == '"' and s[-1] == '"':
-            return s[1:-1].strip()
-        if s[0] == "'" and s[-1] == "'":
-            return s[1:-1].strip()
-    return s
+def title_case_name(s):
+    words = str(s).strip().split()
+    small = ["a", "an", "and", "as", "at", "but", "by", "for", "from", "in", "into", "nor", "of", "on", "or", "the", "to", "with"]
+    out = []
 
-def parse_args(raw):
-    raw = str(raw).strip()
+    for i, w in enumerate(words):
+        lw = w.lower()
 
-    if not raw:
-        return {
-            "target": "",
-            "manualName": ""
-        }
-
-    qpos = -1
-    try:
-        qpos = raw.index('"')
-    except:
-        qpos = -1
-
-    if qpos >= 0:
-        before = raw[:qpos].strip()
-        after = raw[qpos:].strip()
-
-        if before:
-            target = before.split()[0]
+        if i > 0 and lw in small:
+            out.append(lw)
+        elif len(w) > 1:
+            out.append(w[0].upper() + w[1:].lower())
         else:
-            target = ""
+            out.append(w.upper())
 
-        return {
-            "target": target,
-            "manualName": strip_quotes(after)
-        }
+    return " ".join(out)
 
-    bits = raw.split()
+def quoted_args(raw):
+    raw = str(raw)
+    out = []
+    cur = ""
+    inq = False
+    escn = False
+
+    for ch in raw:
+        if escn:
+            cur += ch
+            escn = False
+        elif ch == "\\":
+            escn = True
+        elif ch == '"':
+            if inq:
+                out.append(cur.strip())
+                cur = ""
+                inq = False
+            else:
+                inq = True
+                cur = ""
+        else:
+            if inq:
+                cur += ch
+
+    return [x for x in out if str(x).strip()]
+
+def remove_flag_with_value(raw, flag_names):
+    parts = str(raw).split()
+    found = ""
+    i = 0
+    out = []
+
+    while i < len(parts):
+        p = parts[i]
+
+        if p in flag_names:
+            if i + 1 < len(parts):
+                found = parts[i + 1]
+                i += 2
+                continue
+
+        out.append(p)
+        i += 1
 
     return {
-        "target": bits[0],
-        "manualName": ""
+        "raw": " ".join(out).strip(),
+        "value": found
     }
-
-def raw_obj(c):
-    for src in ["raw", "statblock.raw", "monster.raw"]:
-        try:
-            if src == "raw":
-                r = load_json(dump_json(c.raw))
-            elif src == "statblock.raw":
-                r = load_json(dump_json(c.statblock.raw))
-            else:
-                r = load_json(dump_json(c.monster.raw))
-
-            if r:
-                return r
-        except:
-            pass
-
-    return {}
-
-def first_raw(raw, keys, default=""):
-    for k in keys:
-        try:
-            if "." in k:
-                bits = k.split(".")
-                cur = raw
-                ok = True
-
-                for b in bits:
-                    if is_dict(cur) and b in cur:
-                        cur = cur[b]
-                    else:
-                        ok = False
-                        break
-
-                if ok and cur != None and str(cur).strip() != "":
-                    return cur
-            else:
-                if is_dict(raw) and k in raw and raw[k] != None and str(raw[k]).strip() != "":
-                    return raw[k]
-        except:
-            pass
-
-    return default
-
-def export_creature_name(c, raw, manual_name=""):
-    if manual_name:
-        return str(manual_name).strip()
-
-    raw_name = first_raw(
-        raw,
-        [
-            "description.name",
-            "core.name",
-            "statblock.name",
-            "monster.name",
-            "name"
-        ],
-        ""
-    )
-
-    if raw_name:
-        return str(raw_name).strip()
-
-    try:
-        return str(c.name).strip()
-    except:
-        return "Unknown Creature"
-
-def get_ac(c):
-    try:
-        return c.ac
-    except:
-        return "?"
-
-def get_hp(c):
-    try:
-        return f"{c.hp}/{c.max_hp}"
-    except:
-        pass
-
-    try:
-        return f"{c.hp}/{c.maxhp}"
-    except:
-        pass
-
-    try:
-        return c.hp_str()
-    except:
-        pass
-
-    return "?"
-
-def get_init(c):
-    try:
-        return c.init
-    except:
-        pass
-
-    try:
-        return c.initiative
-    except:
-        pass
-
-    return "?"
-
-def clean_name_from_text(txt, fallback="Unknown"):
-    s = str(txt).strip()
-
-    if not s:
-        return fallback
-
-    idx = -1
-    try:
-        idx = s.index(".")
-    except:
-        idx = -1
-
-    if idx > 0 and idx <= 80:
-        return s[:idx].strip()
-
-    if len(s) <= 80:
-        return s
-
-    return fallback
 
 def textify(v):
     if v == None:
@@ -224,9 +115,11 @@ def textify(v):
 
     if is_list(v):
         parts = []
+
         try:
             for x in v:
                 tx = textify(x)
+
                 if tx:
                     parts.append(tx)
         except:
@@ -251,12 +144,6 @@ def textify(v):
         try:
             if "items" in v and v["items"] != None:
                 return textify(v["items"])
-        except:
-            pass
-
-        try:
-            if "choose" in v and v["choose"] != None:
-                return textify(v["choose"]).replace(n, " or ")
         except:
             pass
 
@@ -285,12 +172,32 @@ def first_text_from_automation(auto):
         try:
             for e in auto:
                 found = first_text_from_automation(e)
+
                 if found:
                     return found
         except:
             pass
 
     return ""
+
+def clean_name_from_text(txt, fallback="Unknown"):
+    s = str(txt).strip()
+
+    if not s:
+        return fallback
+
+    try:
+        idx = s.index(".")
+    except:
+        idx = -1
+
+    if idx > 0 and idx <= 80:
+        return s[:idx].strip()
+
+    if len(s) <= 80:
+        return s
+
+    return fallback
 
 def get_entry_name(entry, fallback="Unknown"):
     if is_dict(entry):
@@ -332,9 +239,8 @@ def get_entry_automation(entry):
     for k in ["automation", "auto"]:
         try:
             if k in entry and entry[k] != None:
-                a = entry[k]
-                if a:
-                    return a
+                if entry[k]:
+                    return entry[k]
         except:
             pass
 
@@ -374,10 +280,9 @@ def category_from_activation_type(v, fallback="actions"):
     if sv == "6" or "mythic" in sv:
         return "mythic"
 
-    if sv == "regional" or "regional" in sv:
+    if "regional" in sv:
         return "regional"
 
-    # Avrae's Other / passive / special buckets go into features.
     if sv in ["0", "7", "8", "10", "12", "other", "special", "none"]:
         return "features"
 
@@ -388,14 +293,19 @@ def category_from_name(name, fallback="actions"):
 
     if "bonus action" in low:
         return "bonus"
+
     if "reaction" in low:
         return "reactions"
+
     if "legendary action" in low:
         return "legendary"
+
     if "lair action" in low:
         return "lair"
+
     if "mythic action" in low:
         return "mythic"
+
     if "regional effect" in low:
         return "regional"
 
@@ -404,17 +314,14 @@ def category_from_name(name, fallback="actions"):
 def category_from_description(name, desc, fallback="actions"):
     low = (str(name) + " " + str(desc)).lower()
 
-    # Helps catch things like Mucus Cloud that Avrae shows under Other.
     if fallback == "actions":
-        if "at the start of" in low:
+        if "aura" in low and "melee attack roll" not in low:
             return "features"
-        if "at the end of" in low:
-            return "features"
-        if "while underwater" in low:
-            return "features"
+
         if "is surrounded by" in low:
             return "features"
-        if "aura" in low and "melee attack roll" not in low:
+
+        if "while underwater" in low:
             return "features"
 
     return fallback
@@ -459,10 +366,7 @@ def add_entry_to_category(out, category, name, desc="", automation=None):
     if category not in out:
         category = "actions"
 
-    merge_entry(
-        out[category],
-        make_feature_entry(name, desc, automation)
-    )
+    merge_entry(out[category], make_feature_entry(name, desc, automation))
 
 def looks_like_nested_automation_object(v):
     if not is_dict(v):
@@ -492,6 +396,7 @@ def nested_automation_objects(auto):
     if is_dict(auto):
         if looks_like_nested_automation_object(auto):
             out.append(auto)
+
         return out
 
     if is_list(auto):
@@ -514,6 +419,7 @@ def process_entry(out, entry, fallback_category="actions", fallback_name="Unknow
                 process_entry(out, e, fallback_category, fallback_name)
         except:
             pass
+
         return
 
     if is_str(entry):
@@ -566,32 +472,18 @@ def process_entry(out, entry, fallback_category="actions", fallback_name="Unknow
 
     add_entry_to_category(out, cat, outer_name, outer_desc, outer_auto)
 
-def add_raw_keys(out, raw, keys, category, fallback_name="Unknown"):
-    if not is_dict(raw):
-        return
+def make_creature_block(c):
+    out = {
+        "features": [],
+        "actions": [],
+        "bonus": [],
+        "reactions": [],
+        "legendary": [],
+        "lair": [],
+        "mythic": [],
+        "regional": []
+    }
 
-    for key in keys:
-        try:
-            if key in raw and raw[key] != None:
-                process_entry(out, raw[key], category, fallback_name)
-        except:
-            pass
-
-def process_feature_container(out, container):
-    if not is_dict(container):
-        process_entry(out, container, "features", "Feature")
-        return
-
-    add_raw_keys(out, container, ["features", "traits", "trait", "special", "specialAbilities"], "features", "Feature")
-    add_raw_keys(out, container, ["actions", "action"], "actions", "Action")
-    add_raw_keys(out, container, ["bonus", "bonusActions", "bonus_actions", "bonusAction"], "bonus", "Bonus Action")
-    add_raw_keys(out, container, ["reactions", "reaction"], "reactions", "Reaction")
-    add_raw_keys(out, container, ["legendary", "legendaryActions", "legendary_actions"], "legendary", "Legendary Action")
-    add_raw_keys(out, container, ["lair", "lairActions", "lair_actions"], "lair", "Lair Action")
-    add_raw_keys(out, container, ["mythic", "mythicActions", "mythic_actions"], "mythic", "Mythic Action")
-    add_raw_keys(out, container, ["regional", "regionalEffects", "regional_effects", "regionalActions", "regional_actions"], "regional", "Regional Effect")
-
-def add_avrae_attacks(out, c):
     try:
         for atk in c.attacks:
             raw = {}
@@ -603,8 +495,7 @@ def add_avrae_attacks(out, c):
                 pass
 
             try:
-                raw_text = dump_json(atk.raw).replace(', "meta": []', '')
-                raw = load_json(raw_text)
+                raw = load_json(dump_json(atk.raw).replace(', "meta": []', ''))
             except:
                 raw = {}
 
@@ -615,7 +506,6 @@ def add_avrae_attacks(out, c):
                 except:
                     pass
 
-                # Try to copy activation fields from the Avrae attack object.
                 try:
                     if "activation_type" not in raw:
                         raw["activation_type"] = atk.activation_type
@@ -640,72 +530,33 @@ def add_avrae_attacks(out, c):
     except:
         pass
 
-def make_creature_feature_block(c):
-    raw = raw_obj(c)
-
-    out = {
-        "features": [],
-        "actions": [],
-        "bonus": [],
-        "reactions": [],
-        "legendary": [],
-        "lair": [],
-        "mythic": [],
-        "regional": []
-    }
-
-    # Pull from Avrae's attack list first, because this is what !i a uses.
-    add_avrae_attacks(out, c)
-
-    # Pull raw statblock sections as fallback / extra source.
-    add_raw_keys(out, raw, ["traits", "trait", "special", "specialAbilities"], "features", "Feature")
-    add_raw_keys(out, raw, ["actions", "action"], "actions", "Action")
-    add_raw_keys(out, raw, ["bonus", "bonusActions", "bonus_actions", "bonusAction"], "bonus", "Bonus Action")
-    add_raw_keys(out, raw, ["reactions", "reaction"], "reactions", "Reaction")
-    add_raw_keys(out, raw, ["legendary", "legendaryActions", "legendary_actions"], "legendary", "Legendary Action")
-    add_raw_keys(out, raw, ["lair", "lairActions", "lair_actions"], "lair", "Lair Action")
-    add_raw_keys(out, raw, ["mythic", "mythicActions", "mythic_actions"], "mythic", "Mythic Action")
-    add_raw_keys(out, raw, ["regional", "regionalEffects", "regional_effects", "regionalActions", "regional_actions"], "regional", "Regional Effect")
-
-    try:
-        if "features" in raw:
-            if is_dict(raw["features"]):
-                process_feature_container(out, raw["features"])
-            elif is_list(raw["features"]):
-                process_entry(out, raw["features"], "features", "Feature")
-    except:
-        pass
-
-    try:
-        if "abilities" in raw and is_dict(raw["abilities"]):
-            process_feature_container(out, raw["abilities"])
-    except:
-        pass
-
     return out
 
-def find_combatant(q):
-    cs = combat().combatants
+def clean_json_noise(js):
+    null_keys = "duration verb level attackBonus castingMod parent save_as defaultDC defaultAttackBonus defaultCastingMod desc effects".split()
+    false_keys = "end conc target_self overheal hidden cantripScale fixedValue tick_on_caster stacking".split()
+    empty_list_keys = "miss success attacks buttons onFalse".split()
 
-    if not q:
-        return None
+    for key in null_keys:
+        js = js.replace(f', "{key}": null', '')
+        js = js.replace(f'"{key}": null, ', '')
+        js = js.replace(f'"{key}": null', '')
 
-    ql = str(q).lower()
+    for key in false_keys:
+        js = js.replace(f', "{key}": false', '')
+        js = js.replace(f'"{key}": false, ', '')
+        js = js.replace(f'"{key}": false', '')
 
-    if ql.isdigit():
-        i = int(ql)
-        if i >= 0 and i < len(cs):
-            return cs[i]
+    for key in empty_list_keys:
+        js = js.replace(f', "{key}": []', '')
+        js = js.replace(f'"{key}": [], ', '')
+        js = js.replace(f'"{key}": []', '')
 
-    for c in cs:
-        if str(c.name).lower() == ql:
-            return c
+    js = js.replace("{, ", "{")
+    js = js.replace(", }", "}")
+    js = js.replace("[, ", "[")
 
-    for c in cs:
-        if ql in str(c.name).lower():
-            return c
-
-    return None
+    return js
 
 def split_text(txt, size):
     out = []
@@ -717,7 +568,7 @@ def split_text(txt, size):
 
     return out
 
-def fallback_to_uvars(creature_name, js, creature_block, reason):
+def fallback_to_uvars(js, reason):
     parts = split_text(js, PART_LIMIT)
 
     for i in range(1, MAX_PARTS_TO_CLEAR + 1):
@@ -730,133 +581,108 @@ def fallback_to_uvars(creature_name, js, creature_block, reason):
         set_uvar(f"creature_part_{i}", part)
 
     index_lines = []
-    index_lines.append(f"Features export: {creature_name}")
     index_lines.append(f"Could not create/edit direct GVAR: {reason}")
     index_lines.append(f"Length: {len(js)} characters")
     index_lines.append(f"Parts: {len(parts)}")
     index_lines.append("")
     index_lines.append("Copy these in order:")
-    index_lines.append("")
 
     for i in range(1, len(parts) + 1):
         index_lines.append(f"{pfx}uvar creature_part_{i}")
-
-    index_lines.append("")
-    index_lines.append("Summary:")
-    index_lines.append(f"Features/Other: {len(creature_block['features'])}")
-    index_lines.append(f"Actions: {len(creature_block['actions'])}")
-    index_lines.append(f"Bonus: {len(creature_block['bonus'])}")
-    index_lines.append(f"Reactions: {len(creature_block['reactions'])}")
-    index_lines.append(f"Legendary: {len(creature_block['legendary'])}")
-    index_lines.append(f"Lair: {len(creature_block['lair'])}")
-    index_lines.append(f"Mythic: {len(creature_block['mythic'])}")
-    index_lines.append(f"Regional: {len(creature_block['regional'])}")
 
     try:
         set_uvar("creature_index", n.join(index_lines))
     except:
         pass
 
-    return emb(
-        "Gimme: fallback used",
-        f"{creature_name} was too large for direct gvar create/edit. Use `{pfx}uvar creature_index`.",
-        "red"
-    )
+    return emb("Gimme: fallback used", f"Too large for direct gvar create/edit. Use `{pfx}uvar creature_index`.", "red")
 
-def make_save_payload(creature_name, creature_block):
-    # New requested shape:
-    # {
-    #   "Adult Black Dragon": {
-    #     "features": [],
-    #     "actions": [],
-    #     ...
-    #   }
-    # }
-    return {
-        creature_name: creature_block
-    }
+def add_monsters(raw):
+    names = quoted_args(raw)
+    lines = []
 
-def make_existing_gvar_payload(gid, creature_name, creature_block):
-    existing = {}
+    for raw_name in names:
+        query = str(raw_name).strip()
+
+        if not query:
+            continue
+
+        display = title_case_name(query)
+        lines.append(f'{pfx}init madd "{q(query)}" -name "{q(display)}"')
+
+    if len(lines) == 0:
+        return emb("Gimme", "No monster names found. Use quotes, like `!gimme \"stone golem\" \"aboleth\"`.", "red")
+
+    return "multiline " + n.join(lines)
+
+def collect_all(target_gvar=""):
+    payload = {}
 
     try:
-        raw_existing = get_gvar(gid)
-        if raw_existing and str(raw_existing).strip():
-            existing = load_json(raw_existing)
+        for c in combat().combatants:
+            payload[str(c.name)] = make_creature_block(c)
     except:
-        existing = {}
+        pass
 
-    if not is_dict(existing):
-        existing = {}
+    if len(payload) == 0:
+        return emb("Gimme", "No combatants found to export.", "red")
 
-    existing[creature_name] = creature_block
+    if target_gvar:
+        try:
+            existing_raw = get_gvar(target_gvar)
+            existing = {}
 
-    return existing
+            if existing_raw and str(existing_raw).strip():
+                existing = load_json(existing_raw)
+
+            if not is_dict(existing):
+                existing = {}
+
+            for k in payload:
+                existing[k] = payload[k]
+
+            js = clean_json_noise(dump_json(existing))
+            cmd = f"{pfx}gvar edit {target_gvar} {js}"
+        except:
+            js = clean_json_noise(dump_json(payload))
+            cmd = f"{pfx}gvar edit {target_gvar} {js}"
+    else:
+        js = clean_json_noise(dump_json(payload))
+        cmd = f"{pfx}gvar create {js}"
+
+    if len(cmd) <= GVAR_COMMAND_LIMIT:
+        return "multiline " + cmd
+
+    return fallback_to_uvars(js, f"command length {len(cmd)} over limit {GVAR_COMMAND_LIMIT}")
+
+raw = args_raw.strip()
+
+gvar_result = remove_flag_with_value(raw, ["--gvar", "-g"])
+raw = gvar_result["raw"]
+target_gvar = gvar_result["value"]
+
+if not target_gvar:
+    target_gvar = SAVE_GVAR_ID
+
+if not raw or raw.lower() == "help":
+    return emb(
+        "Gimme",
+        f'Add monsters:\n`{pfx}gimme "stone golem" "adult bronze dragon" "banshee" "beholder" "aboleth"`\n\nCollect everything in init into the saved GVAR:\n`{pfx}gimme all`\n\nSaved GVAR:\n`{SAVE_GVAR_ID}`\n\nOverride GVAR:\n`{pfx}gimme all --gvar <gvar id>`',
+        "gold"
+    )
 
 if not combat():
     return emb("Gimme", "You are not in initiative.", "red")
 
-parsed = parse_args(args_raw)
-target_arg = parsed["target"]
-manual_name = parsed["manualName"]
+if raw.startswith('"'):
+    return add_monsters(raw)
 
-if target_arg == "" or target_arg.lower() == "list":
-    lines = []
-    lines.append(f"Use `{pfx}gimme <index or name>` to export one creature's features/actions directly into a GVAR.")
-    lines.append("")
-    lines.append("Examples:")
-    lines.append(f"`{pfx}gimme 0`")
-    lines.append(f"`{pfx}gimme ab1`")
-    lines.append(f"`{pfx}gimme ab1 \"Aboleth\"`")
-    lines.append("")
-    lines.append("Output shape:")
-    lines.append('`{"Creature Name":{"features":[],"actions":[],"bonus":[],"reactions":[],"legendary":[],"lair":[],"mythic":[],"regional":[]}}`')
-    lines.append("")
-    lines.append("Avrae's `Other` bucket is exported into that creature's `features` array.")
-    lines.append("")
-    if SAVE_GVAR_ID:
-        lines.append(f"Mode: editing/merging into `{SAVE_GVAR_ID}`")
-    else:
-        lines.append("Mode: creating a new GVAR")
-    lines.append("")
-    lines.append("Targets:")
+if raw.lower() == "all":
+    return collect_all(target_gvar)
 
-    for i, c in enumerate(combat().combatants):
-        try:
-            ac = get_ac(c)
-            hp = get_hp(c)
-            init = get_init(c)
-            attacks = len(c.attacks)
-        except:
-            ac = "?"
-            hp = "?"
-            init = "?"
-            attacks = "?"
-
-        lines.append(f"[{i}] {c.name} - AC {ac}, HP {hp}, Init {init}, Attacks {attacks}")
-
-    return emb("Gimme: target list", n.join(lines), "gold")
-
-c = find_combatant(target_arg)
-
-if not c:
-    return emb("Gimme", f"Could not find combatant `{target_arg}`. Use `{pfx}gimme list`.", "red")
-
-raw = raw_obj(c)
-creature_name = export_creature_name(c, raw, manual_name)
-creature_block = make_creature_feature_block(c)
-
-if SAVE_GVAR_ID:
-    payload = make_existing_gvar_payload(SAVE_GVAR_ID, creature_name, creature_block)
-    js = dump_json(payload)
-    cmd = f"{pfx}gvar edit {SAVE_GVAR_ID} {js}"
-else:
-    payload = make_save_payload(creature_name, creature_block)
-    js = dump_json(payload)
-    cmd = f"{pfx}gvar create {js}"
-
-if len(cmd) <= GVAR_COMMAND_LIMIT:
-    return cmd
-
-return fallback_to_uvars(creature_name, js, creature_block, f"command length {len(cmd)} over limit {GVAR_COMMAND_LIMIT}")
+return emb(
+    "Gimme",
+    f'Use quoted monster names to add, or `{pfx}gimme all` to collect.\n\nExample:\n`{pfx}gimme "stone golem" "aboleth"`',
+    "red"
+)
 </drac2>

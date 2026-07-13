@@ -6,8 +6,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 GVAR_ID = "1835e9e6-7eb7-45a9-b30e-9219f58ce03f"
-MASTER_FILE = "../../staticData/SRDCreatures2024.json"
-OUTPUT_FILE = "../../staticData/SRDAttacks2024.json"
+MASTER_FILE = "../../staticData/2024/SRDCreatures2024.json"
+OUTPUT_FILE = "../../staticData/2024/SRDAttacks2024.json"
 
 # Load allowed monster names
 with open(MASTER_FILE, "r", encoding="utf-8") as f:
@@ -182,13 +182,13 @@ for monster in monsters:
     if name.lower() not in output_keys:
         missing.append(name)
 
-    if len(missing) == 5:
+    if len(missing) == 10:
         break
 
 if missing:
-    print("\n\nNext missing creatures:")
-    for name in missing:
-        print(f'!addsee "{name}"\n!aexport {name}')
+    print("\n\nNext missing creatures:\n")
+    print("!aexport " + " ".join(f'"{item}"' for item in missing))
+    print("!aexport all")
 else:
     print("No missing creatures found.")
 

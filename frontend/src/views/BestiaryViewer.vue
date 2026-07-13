@@ -64,7 +64,8 @@ const sortMode = useLocalStorage("sortModeForBestiaries", "Alphabetically");
 const isExpanded = ref(false);
 const showEditorModal = ref(false);
 const showImportModal = ref(false);
-const srdCreatures = ref<string[]>([]);
+const srdCreatures2014 = ref<string[]>([]);
+const srdCreatures2024 = ref<string[]>([]);
 
 const sortCreatures = () => {
 	if (!creatures.value)
@@ -158,9 +159,9 @@ onMounted(async () => {
 	if (bestiary.value?.name)
 		document.title = `${bestiary.value?.name.substring(0, 16)} | Bestiary Builder`;
 
-	await useFetch<string[]>(`/api/srd-creatures/list`).then(({ success, data, error }) => {
+	await useFetch<string[]>(`/api/srd-creatures/2014/list`).then(({ success, data, error }) => {
 		if (success)
-			srdCreatures.value = data;
+			srdCreatures2014.value = data;
 
 		if (error)
 			$toast.error(error);
@@ -419,14 +420,29 @@ async function deleteCreature(id: string) {
 	loader.hide();
 }
 
-async function importSrdCreature(creature: string) {
-	const { success, data, error } = await useFetch<Statblock>(`/api/srd-creature/${encodeURIComponent(creature)}`);
-	if (success) {
-		await createCreature(data);
-		return data;
+async function importSrdCreature(creature: string, v2024: boolean) {
+	let importSucces;
+	let cData;
+	let iError;
+	if (v2024) {
+		const { success, data, error } = await useFetch<Statblock>(`/api/srd-creature/2024/${encodeURIComponent(creature)}`);
+		importSucces = success;
+		cData = data;
+		iError = error;
 	}
 	else {
-		$toast.error(error);
+		const { success, data, error } = await useFetch<Statblock>(`/api/srd-creature/2014/${encodeURIComponent(creature)}`);
+		importSucces = success;
+		cData = data;
+		iError = error;
+	}
+
+	if (importSucces) {
+		await createCreature(cData);
+		return cData;
+	}
+	else {
+		$toast.error(iError || "");
 	}
 }
 
@@ -641,7 +657,7 @@ const getDraggableKey = (item: any) => {
 							</button>
 						</LabelledComponent>
 						<LabelledComponent title="From SRD Creature" for="fromSrd">
-							<v-select ref="toggle" :options="srdCreatures" input-id="fromSrd" placeholder="Select SRD creature" style="min-width: 300px" append-to-body :calculate-position="withPopper" @option:selected="(selected : string) => (importSrdCreature(selected))" />
+							<v-select ref="toggle" :options="srdCreatures2014" input-id="fromSrd" placeholder="Select SRD creature" style="min-width: 300px" append-to-body :calculate-position="withPopper" @option:selected="(selected : string) => (importSrdCreature(selected, false))" />
 						</LabelledComponent>
 					</div>
 				</template>
@@ -760,7 +776,7 @@ const getDraggableKey = (item: any) => {
 										</button>
 									</LabelledComponent>
 									<LabelledComponent title="From SRD Creature" for="fromSrd">
-										<v-select :options="srdCreatures" input-id="fromSrd" placeholder="Select SRD creature" style="min-width: 300px" append-to-body :calculate-position="withPopper" @option:selected="(selected : string) => (importSrdCreature(selected))" />
+										<v-select :options="srdCreatures2014" input-id="fromSrd" placeholder="Select SRD creature" style="min-width: 300px" append-to-body :calculate-position="withPopper" @option:selected="(selected : string) => (importSrdCreature(selected, false))" />
 									</LabelledComponent>
 								</div>
 							</template>
