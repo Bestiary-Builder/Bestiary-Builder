@@ -182,7 +182,7 @@ for monster in monsters:
     if name.lower() not in output_keys:
         missing.append(name)
 
-    if len(missing) == 10:
+    if len(missing) == 20:
         break
 
 if missing:
