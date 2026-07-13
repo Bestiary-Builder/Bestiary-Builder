@@ -30,6 +30,7 @@ model User {
   statblockDesign        StatblockDesign @default(BestiaryBuilder)
   preferredEditor        Editor          @default(Visual)
   unsubscribedFromEmails Boolean         @default(false)
+  SRDVersion             SRDVersion      @default(SRD_2024)
 
   // Lists
   bestiaries Bestiary[]             @relation("BestiaryOwner")
@@ -154,6 +155,11 @@ enum StatblockDesign {
   Beyond
   Odyssey
   MonsterManual
+}
+
+enum SRDVersion {
+  SRD_2014
+  SRD_2024
 }
 
 enum Editor {

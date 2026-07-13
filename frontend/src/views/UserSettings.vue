@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { reactive, ref } from "vue";
 import { store } from "@/utils/store";
 import { sendToLogin, useFetch } from "@/utils/utils";
 import { type Bestiary, type Statblock, SupporterStatus } from "~/shared";
@@ -20,17 +20,15 @@ const bestiaryCount = ref(0);
 if (store.user)
 	useFetch<Bestiary[]>(`/api/user/${store.user.id}/bestiaries`).then(result => bestiaryCount.value = result.data?.length ?? 0).catch(() => { });
 
-const design = ref();
-design.value = store.user?.statblockDesign;
-
-const layout = ref();
-layout.value = store.user?.statblockLayout;
-
-const editor = ref();
-editor.value = store.user?.preferredEditor;
+const preferences = reactive({
+	statblockDesign: store.user?.statblockDesign,
+	statblockLayout: store.user?.statblockLayout,
+	preferredEditor: store.user?.preferredEditor,
+	SRDVersion: store.user?.SRDVersion
+});
 
 const saveSettings = async () => {
-	const { success, data } = await useFetch("/api/user/updatePreferences", "POST", { statblockDesign: design.value, statblockLayout: layout.value, preferredEditor: editor.value });
+	const { success, data } = await useFetch("/api/user/updatePreferences", "POST", preferences);
 	if (success) {
 		store.user = (data as any).data;
 		$toast.success("Successfully saved your preferences");
@@ -329,7 +327,7 @@ const creatureData = {
 				<div class="preferences">
 					<div class="with-button">
 						<LabelledComponent title="Statblock Layout">
-							<select v-model="layout">
+							<select v-model="preferences.statblockLayout">
 								<option value="SL_2024">
 									2024 (OneD&D / Default)
 								</option>
@@ -344,7 +342,7 @@ const creatureData = {
 							</button>
 							<template #popper>
 								<div class="v-popper__custom-menu">
-									<StatblockRenderer :data="creatureData" :statblock-design="design" :is2024="layout === 'SL_2024' " style="max-width: 650px" />
+									<StatblockRenderer :data="creatureData" :statblock-design="preferences.statblockDesign" :is2024="preferences.statblockLayout === 'SL_2024' " style="max-width: 650px" />
 								</div>
 							</template>
 						</VDropdown>
@@ -352,7 +350,7 @@ const creatureData = {
 
 					<div class="with-button">
 						<LabelledComponent title="Statblock Design">
-							<select v-model="design">
+							<select v-model="preferences.statblockDesign">
 								<option value="BestiaryBuilder">
 									Bestiary Builder (Default)
 								</option>
@@ -373,19 +371,30 @@ const creatureData = {
 							</button>
 							<template #popper>
 								<div class="v-popper__custom-menu">
-									<StatblockRenderer :data="creatureData" :statblock-design="design" :is2024="layout === 'SL_2024' " style="max-width: 650px" />
+									<StatblockRenderer :data="creatureData" :statblock-design="preferences.statblockDesign" :is2024="preferences.statblockLayout === 'SL_2024' " style="max-width: 650px" />
 								</div>
 							</template>
 						</VDropdown>
 					</div>
 
 					<LabelledComponent title="Automation Editor">
-						<select v-model="editor">
+						<select v-model="preferences.preferredEditor">
 							<option value="Visual">
 								Visual (Default)
 							</option>
 							<option value="Code">
 								Code
+							</option>
+						</select>
+					</LabelledComponent>
+
+					<LabelledComponent title="SRD Version">
+						<select v-model="preferences.SRDVersion">
+							<option value="SRD_2024">
+								2024 (Default)
+							</option>
+							<option value="SRD_2014">
+								2014
 							</option>
 						</select>
 					</LabelledComponent>

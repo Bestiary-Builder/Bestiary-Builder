@@ -3,6 +3,7 @@ import { app } from "@/utilities/constants";
 import basicExamples from "@/staticData/shared/basicExamples.json";
 import SRDAttacks2014 from "@/staticData/2014/SRDAttacks2014.json";
 import SRDCreatures2014 from "@/staticData/2014/SRDCreatures2014.json";
+import SRDCreatures2024 from "@/staticData/2024/SRDCreatures2024.json";
 import tOF from "@/staticData/shared/textOnlyFeatures.json";
 import tags from "@/staticData/tags.json";
 import limits from "@/staticData/limits.json";
@@ -42,13 +43,26 @@ app.get("/api/srd-feature/2014/:name", async (req, res) => {
 });
 
 // Creatures
-
+const CreatureNames2014 = Object.keys(SRDCreatures2014);
 app.get("/api/srd-creatures/2014/list", async (req, res) => {
-	return res.json(Object.keys(SRDCreatures2014));
+	return res.json(CreatureNames2014);
 });
-app.get("/api/srd-creature/2014/:name", async (req, res) => {
+app.get("/api/srd-creatures/2014/:name", async (req, res) => {
 	const name = decodeURIComponent(req.params.name);
 	const data = (SRDCreatures2014 as any)[name];
+	if (data)
+		return res.json(data);
+	else
+		return res.status(404).json({ error: "No srd creature found with that name" });
+});
+
+const CreatureNames2024 = Object.keys(SRDCreatures2024);
+app.get("/api/srd-creatures/2024/list", async (req, res) => {
+	return res.json(CreatureNames2024);
+});
+app.get("/api/srd-creatures/2024/:name", async (req, res) => {
+	const name = decodeURIComponent(req.params.name);
+	const data = (SRDCreatures2024 as any)[name];
 	if (data)
 		return res.json(data);
 	else

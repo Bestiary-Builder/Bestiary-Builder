@@ -6,29 +6,26 @@ from dotenv import load_dotenv
 
 load_dotenv()
 GVAR_ID = "1835e9e6-7eb7-45a9-b30e-9219f58ce03f"
-MASTER_FILE = "../../staticData/2024/SRDCreatures2024.json"
-OUTPUT_FILE = "../../staticData/2024/SRDAttacks2024.json"
+MONSTER_FILE = "../../staticData/2024/SRDCreatures2024.json"
+PROGRESS_FILE = "./progress.json"
 
-# Load allowed monster names
-with open(MASTER_FILE, "r", encoding="utf-8") as f:
+# Load monster data
+with open(MONSTER_FILE, "r", encoding="utf-8") as f:
     monsters = json.load(f)
-
 allowed_lookup = {
-    monster["description"]["name"].lower(): monster["description"]["name"]
-    for monster in monsters
+    name.lower(): name
+    for name in monsters
 }
 
-# Load output.json
-if os.path.exists(OUTPUT_FILE):
+# Load progress
+if os.path.exists(PROGRESS_FILE):
     try:
-        with open(OUTPUT_FILE, "r", encoding="utf-8") as f:
-            output = json.load(f)
+        with open(PROGRESS_FILE, "r", encoding="utf-8") as f:
+            progress = set(json.load(f))
     except json.JSONDecodeError:
-        output = {}
+        progress = set()
 else:
-    output = {}
-
-
+    progress = set()
 
 
 # Fetch GVAR
@@ -45,6 +42,7 @@ data = json.loads(response.json()["value"])
 added = []
 rejected = []
 already_present = []
+creature_data = {}
 for key, value in data.items():
     lookup = key.lower()
 
@@ -55,14 +53,14 @@ for key, value in data.items():
     # Use the correctly-capitalized name from monsters.json
     canonical_key = allowed_lookup[lookup]
 
-    if canonical_key not in output:
-        output[canonical_key] = value
+    if canonical_key not in progress:
+        progress.add(canonical_key)
         added.append(canonical_key)
+        creature_data[canonical_key] = value
     else:
         already_present.append(canonical_key)
 
-with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-    json.dump(output, f, indent=4, ensure_ascii=False)
+
 
 if len(added) > 0:
     print(f"Added {len(added)} key(s):")
@@ -79,10 +77,10 @@ if len(already_present)>0:
     for key in already_present:
         print(f" - {key}")
 
-allowed_names = set(allowed_lookup.values())
+allowed_names = set(monsters.keys())
 
-collected = len(allowed_names & set(output.keys()))
-remaining = len(allowed_names - set(output.keys()))
+collected = len(allowed_names & set(progress))
+remaining = len(allowed_names - set(progress))
 
 print(f"\nCollected {collected}/{len(allowed_names)}")
 print(f"Remaining: {remaining}")
@@ -100,23 +98,17 @@ FEATURE_SECTIONS = (
 )
 
 # Build lookup of monsters by canonical name
-monster_lookup = {
-    monster["description"]["name"]: monster
-    for monster in monsters
-}
-
 warnings = defaultdict(list)
 
 # Merge output.json data into monsters.json
-for key, creature_data in output.items():
-
+for key, creature_data in creature_data.items():
     # Match case-insensitively to canonical monster name
     canonical_name = allowed_lookup.get(key.lower())
 
     if canonical_name is None:
         continue
 
-    monster = monster_lookup[canonical_name]
+    monster = monsters[canonical_name]
 
     monster_features = monster.setdefault("features", {})
 
@@ -165,21 +157,14 @@ for key, creature_data in output.items():
 #     print("\nNo duplicate entries found.")
 
 # Save updated monsters.json
-with open(MASTER_FILE, "w", encoding="utf-8") as f:
+with open(MONSTER_FILE, "w", encoding="utf-8") as f:
     json.dump(monsters, f, indent=4, ensure_ascii=False)
 
 
-output_keys = {
-        key.lower()
-        for key in output.keys()
-    }
-
 missing = []
 
-for monster in monsters:
-    name = monster["description"]["name"]
-
-    if name.lower() not in output_keys:
+for name in monsters:
+    if name.lower() not in progress:
         missing.append(name)
 
     if len(missing) == 20:
@@ -193,3 +178,8 @@ else:
     print("No missing creatures found.")
 
 print(f"\n!gvar edit {GVAR_ID} {{}}")
+
+with open(PROGRESS_FILE, "w", encoding="utf-8") as f:
+    json.dump(list(progress), f, indent=4, ensure_ascii=False)
+
+
