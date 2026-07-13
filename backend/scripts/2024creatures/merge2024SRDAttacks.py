@@ -164,7 +164,7 @@ with open(MONSTER_FILE, "w", encoding="utf-8") as f:
 missing = []
 
 for name in monsters:
-    if name.lower() not in progress:
+    if name not in progress:
         missing.append(name)
 
     if len(missing) == 20:
@@ -177,7 +177,8 @@ if missing:
 else:
     print("No missing creatures found.")
 
-print(f"\n!gvar edit {GVAR_ID} {{}}")
+## empty the gvar
+print(f"\n!empty")
 
 with open(PROGRESS_FILE, "w", encoding="utf-8") as f:
     json.dump(list(progress), f, indent=4, ensure_ascii=False)
