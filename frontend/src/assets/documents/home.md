@@ -22,9 +22,11 @@ By creating an account with us, you agree to our [Terms and Conditions](/terms-a
 ---
 ## Acknowledgements
 
-Sincere thanks go out to the developers of [Avrae](https://avrae.io/), specifically zhudotexe and Croebh. Their code to parse attacks from CritterDB has been modified and used within Bestiary Builder. Without their work, parsing attacks would not have been possible!
+* Sincere thanks go out to the developers of [Avrae](https://avrae.io/), specifically zhudotexe and Croebh. Their code to parse attacks from CritterDB has been modified and used within Bestiary Builder. Without their work, parsing attacks would not have been possible!
 
-Front page image from the Monster Manual, illustrated by Raymond Swanland.
+* A huge thank you to @death8673, who made adding 2024 SRD creatures and attacks possible by making a custom alias for us. Thank you!
+
+* Front page image from the Monster Manual, illustrated by Raymond Swanland.
 
 ---
 ## Feedback and issues
