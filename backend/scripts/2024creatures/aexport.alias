@@ -1,0 +1,862 @@
+multiline
+<drac2>
+# created by @death8673 (THANK YOU!)
+n = "\n"
+args_raw = """&*&""".strip()
+
+try:
+    pfx = ctx.prefix
+except:
+    pfx = "!"
+
+# Leave blank to CREATE a new gvar.
+# Put a gvar UUID here to EDIT/MERGE into that existing gvar instead.
+SAVE_GVAR_ID = "1835e9e6-7eb7-45a9-b30e-9219f58ce03f"
+
+GVAR_COMMAND_LIMIT = 95000
+PART_LIMIT = 8500
+MAX_PARTS_TO_CLEAR = 30
+
+def esc(s):
+    return str(s).replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
+
+def emb(title, desc, color="gold"):
+    return f'{pfx}embed -title "{esc(title)}" -desc "{esc(desc)}" -color {color}'
+
+def j(v):
+    try:
+        return dump_json(v)
+    except:
+        return "null"
+
+def tn(v):
+    try:
+        return typeof(v)
+    except:
+        try:
+            return str(type(v))
+        except:
+            return ""
+
+def is_list(v):
+    return "list" in str(tn(v)).lower()
+
+def is_dict(v):
+    return "dict" in str(tn(v)).lower()
+
+def is_str(v):
+    return "str" in str(tn(v)).lower()
+
+def strip_quotes(s):
+    s = str(s).strip()
+    if len(s) >= 2:
+        if s[0] == '"' and s[-1] == '"':
+            return s[1:-1].strip()
+        if s[0] == "'" and s[-1] == "'":
+            return s[1:-1].strip()
+    return s
+
+def parse_args(raw):
+    raw = str(raw).strip()
+
+    if not raw:
+        return {
+            "target": "",
+            "manualName": ""
+        }
+
+    qpos = -1
+    try:
+        qpos = raw.index('"')
+    except:
+        qpos = -1
+
+    if qpos >= 0:
+        before = raw[:qpos].strip()
+        after = raw[qpos:].strip()
+
+        if before:
+            target = before.split()[0]
+        else:
+            target = ""
+
+        return {
+            "target": target,
+            "manualName": strip_quotes(after)
+        }
+
+    bits = raw.split()
+
+    return {
+        "target": bits[0],
+        "manualName": ""
+    }
+
+def raw_obj(c):
+    for src in ["raw", "statblock.raw", "monster.raw"]:
+        try:
+            if src == "raw":
+                r = load_json(dump_json(c.raw))
+            elif src == "statblock.raw":
+                r = load_json(dump_json(c.statblock.raw))
+            else:
+                r = load_json(dump_json(c.monster.raw))
+
+            if r:
+                return r
+        except:
+            pass
+
+    return {}
+
+def first_raw(raw, keys, default=""):
+    for k in keys:
+        try:
+            if "." in k:
+                bits = k.split(".")
+                cur = raw
+                ok = True
+
+                for b in bits:
+                    if is_dict(cur) and b in cur:
+                        cur = cur[b]
+                    else:
+                        ok = False
+                        break
+
+                if ok and cur != None and str(cur).strip() != "":
+                    return cur
+            else:
+                if is_dict(raw) and k in raw and raw[k] != None and str(raw[k]).strip() != "":
+                    return raw[k]
+        except:
+            pass
+
+    return default
+
+def export_creature_name(c, raw, manual_name=""):
+    if manual_name:
+        return str(manual_name).strip()
+
+    raw_name = first_raw(
+        raw,
+        [
+            "description.name",
+            "core.name",
+            "statblock.name",
+            "monster.name",
+            "name"
+        ],
+        ""
+    )
+
+    if raw_name:
+        return str(raw_name).strip()
+
+    try:
+        return str(c.name).strip()
+    except:
+        return "Unknown Creature"
+
+def get_ac(c):
+    try:
+        return c.ac
+    except:
+        return "?"
+
+def get_hp(c):
+    try:
+        return f"{c.hp}/{c.max_hp}"
+    except:
+        pass
+
+    try:
+        return f"{c.hp}/{c.maxhp}"
+    except:
+        pass
+
+    try:
+        return c.hp_str()
+    except:
+        pass
+
+    return "?"
+
+def get_init(c):
+    try:
+        return c.init
+    except:
+        pass
+
+    try:
+        return c.initiative
+    except:
+        pass
+
+    return "?"
+
+def clean_name_from_text(txt, fallback="Unknown"):
+    s = str(txt).strip()
+
+    if not s:
+        return fallback
+
+    idx = -1
+    try:
+        idx = s.index(".")
+    except:
+        idx = -1
+
+    if idx > 0 and idx <= 80:
+        return s[:idx].strip()
+
+    if len(s) <= 80:
+        return s
+
+    return fallback
+
+def textify(v):
+    if v == None:
+        return ""
+
+    if is_str(v):
+        return str(v)
+
+    if is_list(v):
+        parts = []
+        try:
+            for x in v:
+                tx = textify(x)
+                if tx:
+                    parts.append(tx)
+        except:
+            pass
+
+        return n.join(parts)
+
+    if is_dict(v):
+        for k in ["description", "desc", "text", "entry"]:
+            try:
+                if k in v and v[k] != None:
+                    return textify(v[k])
+            except:
+                pass
+
+        try:
+            if "entries" in v and v["entries"] != None:
+                return textify(v["entries"])
+        except:
+            pass
+
+        try:
+            if "items" in v and v["items"] != None:
+                return textify(v["items"])
+        except:
+            pass
+
+        try:
+            if "choose" in v and v["choose"] != None:
+                return textify(v["choose"]).replace(n, " or ")
+        except:
+            pass
+
+        return ""
+
+    return str(v)
+
+def first_text_from_automation(auto):
+    if not auto:
+        return ""
+
+    if is_dict(auto):
+        try:
+            if auto.get("type") == "text":
+                return auto.get("text", "")
+        except:
+            pass
+
+        try:
+            if "automation" in auto:
+                return first_text_from_automation(auto["automation"])
+        except:
+            pass
+
+    if is_list(auto):
+        try:
+            for e in auto:
+                found = first_text_from_automation(e)
+                if found:
+                    return found
+        except:
+            pass
+
+    return ""
+
+def get_entry_name(entry, fallback="Unknown"):
+    if is_dict(entry):
+        for k in ["name", "title"]:
+            try:
+                if k in entry and entry[k]:
+                    return str(entry[k])
+            except:
+                pass
+
+    if is_str(entry):
+        return clean_name_from_text(entry, fallback)
+
+    return fallback
+
+def get_entry_description(entry):
+    if is_dict(entry):
+        for k in ["description", "desc", "text", "entries", "entry", "items"]:
+            try:
+                if k in entry and entry[k] != None:
+                    return textify(entry[k])
+            except:
+                pass
+
+        try:
+            if "automation" in entry:
+                return first_text_from_automation(entry["automation"])
+        except:
+            pass
+
+        return ""
+
+    return textify(entry)
+
+def get_entry_automation(entry):
+    if not is_dict(entry):
+        return None
+
+    for k in ["automation", "auto"]:
+        try:
+            if k in entry and entry[k] != None:
+                a = entry[k]
+                if a:
+                    return a
+        except:
+            pass
+
+    return None
+
+def activation_value(entry):
+    if not is_dict(entry):
+        return ""
+
+    for k in ["activation_type", "activationType", "activation"]:
+        try:
+            if k in entry:
+                return entry[k]
+        except:
+            pass
+
+    return ""
+
+def category_from_activation_type(v, fallback="actions"):
+    sv = str(v).lower().strip()
+
+    if sv == "1" or sv == "action":
+        return "actions"
+
+    if sv == "2" or "bonus" in sv:
+        return "bonus"
+
+    if sv == "3" or "reaction" in sv:
+        return "reactions"
+
+    if sv == "4" or sv == "9" or "legendary" in sv:
+        return "legendary"
+
+    if sv == "5" or sv == "11" or "lair" in sv:
+        return "lair"
+
+    if sv == "6" or "mythic" in sv:
+        return "mythic"
+
+    if sv == "regional" or "regional" in sv:
+        return "regional"
+
+    # Avrae's Other / passive / special buckets go into features.
+    if sv in ["0", "7", "8", "10", "12", "other", "special", "none"]:
+        return "features"
+
+    return fallback
+
+def category_from_name(name, fallback="actions"):
+    low = str(name).lower()
+
+    if "bonus action" in low:
+        return "bonus"
+    if "reaction" in low:
+        return "reactions"
+    if "legendary action" in low:
+        return "legendary"
+    if "lair action" in low:
+        return "lair"
+    if "mythic action" in low:
+        return "mythic"
+    if "regional effect" in low:
+        return "regional"
+
+    return fallback
+
+def category_from_description(name, desc, fallback="actions"):
+    low = (str(name) + " " + str(desc)).lower()
+
+    # Helps catch things like Mucus Cloud that Avrae shows under Other.
+    if fallback == "actions":
+        if "at the start of" in low:
+            return "features"
+        if "at the end of" in low:
+            return "features"
+        if "while underwater" in low:
+            return "features"
+        if "is surrounded by" in low:
+            return "features"
+        if "aura" in low and "melee attack roll" not in low:
+            return "features"
+
+    return fallback
+
+def make_feature_entry(name, description="", automation=None):
+    if not name:
+        name = "Unknown"
+
+    if not description:
+        description = ""
+
+    if not automation:
+        automation = None
+
+    return {
+        "name": str(name),
+        "description": str(description),
+        "automation": automation
+    }
+
+def merge_entry(lst, entry):
+    name = str(entry.get("name", "Unknown")).lower().strip()
+
+    for existing in lst:
+        try:
+            ename = str(existing.get("name", "Unknown")).lower().strip()
+
+            if ename == name:
+                if not existing.get("description", "") and entry.get("description", ""):
+                    existing["description"] = entry.get("description", "")
+
+                if not existing.get("automation", None) and entry.get("automation", None):
+                    existing["automation"] = entry.get("automation", None)
+
+                return
+        except:
+            pass
+
+    lst.append(entry)
+
+def add_entry_to_category(out, category, name, desc="", automation=None):
+    if category not in out:
+        category = "actions"
+
+    merge_entry(
+        out[category],
+        make_feature_entry(name, desc, automation)
+    )
+
+def looks_like_nested_automation_object(v):
+    if not is_dict(v):
+        return False
+
+    has_auto = False
+    has_nameish = False
+
+    try:
+        has_auto = "automation" in v
+    except:
+        has_auto = False
+
+    try:
+        has_nameish = "name" in v or "_v" in v or "activation_type" in v or "activationType" in v
+    except:
+        has_nameish = False
+
+    return has_auto and has_nameish
+
+def nested_automation_objects(auto):
+    out = []
+
+    if not auto:
+        return out
+
+    if is_dict(auto):
+        if looks_like_nested_automation_object(auto):
+            out.append(auto)
+        return out
+
+    if is_list(auto):
+        try:
+            for e in auto:
+                if looks_like_nested_automation_object(e):
+                    out.append(e)
+        except:
+            pass
+
+    return out
+
+def process_entry(out, entry, fallback_category="actions", fallback_name="Unknown"):
+    if entry == None:
+        return
+
+    if is_list(entry):
+        try:
+            for e in entry:
+                process_entry(out, e, fallback_category, fallback_name)
+        except:
+            pass
+        return
+
+    if is_str(entry):
+        desc = str(entry)
+        name = clean_name_from_text(desc, fallback_name)
+        cat = category_from_description(name, desc, fallback_category)
+        add_entry_to_category(out, cat, name, desc, None)
+        return
+
+    if not is_dict(entry):
+        return
+
+    outer_name = get_entry_name(entry, fallback_name)
+    outer_desc = get_entry_description(entry)
+    outer_auto = get_entry_automation(entry)
+
+    nested = nested_automation_objects(outer_auto)
+
+    if nested:
+        for sub in nested:
+            sub_name = get_entry_name(sub, outer_name)
+            sub_desc = get_entry_description(sub)
+
+            try:
+                sub_auto = sub.get("automation", None)
+            except:
+                sub_auto = None
+
+            if not sub_desc:
+                sub_desc = first_text_from_automation(sub_auto)
+
+            if not sub_desc:
+                sub_desc = outer_desc
+
+            sub_cat = category_from_activation_type(activation_value(sub), fallback_category)
+            sub_cat = category_from_name(sub_name, sub_cat)
+            sub_cat = category_from_description(sub_name, sub_desc, sub_cat)
+
+            add_entry_to_category(out, sub_cat, sub_name, sub_desc, sub_auto)
+
+        return
+
+    cat = category_from_activation_type(activation_value(entry), fallback_category)
+    cat = category_from_name(outer_name, cat)
+
+    if not outer_desc:
+        outer_desc = first_text_from_automation(outer_auto)
+
+    cat = category_from_description(outer_name, outer_desc, cat)
+
+    add_entry_to_category(out, cat, outer_name, outer_desc, outer_auto)
+
+def add_raw_keys(out, raw, keys, category, fallback_name="Unknown"):
+    if not is_dict(raw):
+        return
+
+    for key in keys:
+        try:
+            if key in raw and raw[key] != None:
+                process_entry(out, raw[key], category, fallback_name)
+        except:
+            pass
+
+def process_feature_container(out, container):
+    if not is_dict(container):
+        process_entry(out, container, "features", "Feature")
+        return
+
+    add_raw_keys(out, container, ["features", "traits", "trait", "special", "specialAbilities"], "features", "Feature")
+    add_raw_keys(out, container, ["actions", "action"], "actions", "Action")
+    add_raw_keys(out, container, ["bonus", "bonusActions", "bonus_actions", "bonusAction"], "bonus", "Bonus Action")
+    add_raw_keys(out, container, ["reactions", "reaction"], "reactions", "Reaction")
+    add_raw_keys(out, container, ["legendary", "legendaryActions", "legendary_actions"], "legendary", "Legendary Action")
+    add_raw_keys(out, container, ["lair", "lairActions", "lair_actions"], "lair", "Lair Action")
+    add_raw_keys(out, container, ["mythic", "mythicActions", "mythic_actions"], "mythic", "Mythic Action")
+    add_raw_keys(out, container, ["regional", "regionalEffects", "regional_effects", "regionalActions", "regional_actions"], "regional", "Regional Effect")
+
+def add_avrae_attacks(out, c):
+    try:
+        for atk in c.attacks:
+            raw = {}
+            name = "Unknown"
+
+            try:
+                name = str(atk.name)
+            except:
+                pass
+
+            try:
+                raw_text = dump_json(atk.raw).replace(', "meta": []', '')
+                raw = load_json(raw_text)
+            except:
+                raw = {}
+
+            if raw:
+                try:
+                    if "name" not in raw:
+                        raw["name"] = name
+                except:
+                    pass
+
+                # Try to copy activation fields from the Avrae attack object.
+                try:
+                    if "activation_type" not in raw:
+                        raw["activation_type"] = atk.activation_type
+                except:
+                    pass
+
+                try:
+                    if "activationType" not in raw:
+                        raw["activationType"] = atk.activationType
+                except:
+                    pass
+
+                try:
+                    if "activation" not in raw:
+                        raw["activation"] = atk.activation
+                except:
+                    pass
+
+                process_entry(out, raw, "actions", name)
+            else:
+                add_entry_to_category(out, "actions", name, "", None)
+    except:
+        pass
+
+def make_creature_feature_block(c):
+    raw = raw_obj(c)
+
+    out = {
+        "features": [],
+        "actions": [],
+        "bonus": [],
+        "reactions": [],
+        "legendary": [],
+        "lair": [],
+        "mythic": [],
+        "regional": []
+    }
+
+    # Pull from Avrae's attack list first, because this is what !i a uses.
+    add_avrae_attacks(out, c)
+
+    # Pull raw statblock sections as fallback / extra source.
+    add_raw_keys(out, raw, ["traits", "trait", "special", "specialAbilities"], "features", "Feature")
+    add_raw_keys(out, raw, ["actions", "action"], "actions", "Action")
+    add_raw_keys(out, raw, ["bonus", "bonusActions", "bonus_actions", "bonusAction"], "bonus", "Bonus Action")
+    add_raw_keys(out, raw, ["reactions", "reaction"], "reactions", "Reaction")
+    add_raw_keys(out, raw, ["legendary", "legendaryActions", "legendary_actions"], "legendary", "Legendary Action")
+    add_raw_keys(out, raw, ["lair", "lairActions", "lair_actions"], "lair", "Lair Action")
+    add_raw_keys(out, raw, ["mythic", "mythicActions", "mythic_actions"], "mythic", "Mythic Action")
+    add_raw_keys(out, raw, ["regional", "regionalEffects", "regional_effects", "regionalActions", "regional_actions"], "regional", "Regional Effect")
+
+    try:
+        if "features" in raw:
+            if is_dict(raw["features"]):
+                process_feature_container(out, raw["features"])
+            elif is_list(raw["features"]):
+                process_entry(out, raw["features"], "features", "Feature")
+    except:
+        pass
+
+    try:
+        if "abilities" in raw and is_dict(raw["abilities"]):
+            process_feature_container(out, raw["abilities"])
+    except:
+        pass
+
+    return out
+
+def find_combatant(q):
+    cs = combat().combatants
+
+    if not q:
+        return None
+
+    ql = str(q).lower()
+
+    if ql.isdigit():
+        i = int(ql)
+        if i >= 0 and i < len(cs):
+            return cs[i]
+
+    for c in cs:
+        if str(c.name).lower() == ql:
+            return c
+
+    for c in cs:
+        if ql in str(c.name).lower():
+            return c
+
+    return None
+
+def split_text(txt, size):
+    out = []
+    i = 0
+
+    while i < len(txt):
+        out.append(txt[i:i + size])
+        i += size
+
+    return out
+
+def fallback_to_uvars(creature_name, js, creature_block, reason):
+    parts = split_text(js, PART_LIMIT)
+
+    for i in range(1, MAX_PARTS_TO_CLEAR + 1):
+        try:
+            set_uvar(f"creature_part_{i}", "")
+        except:
+            pass
+
+    for i, part in enumerate(parts, 1):
+        set_uvar(f"creature_part_{i}", part)
+
+    index_lines = []
+    index_lines.append(f"Features export: {creature_name}")
+    index_lines.append(f"Could not create/edit direct GVAR: {reason}")
+    index_lines.append(f"Length: {len(js)} characters")
+    index_lines.append(f"Parts: {len(parts)}")
+    index_lines.append("")
+    index_lines.append("Copy these in order:")
+    index_lines.append("")
+
+    for i in range(1, len(parts) + 1):
+        index_lines.append(f"{pfx}uvar creature_part_{i}")
+
+    index_lines.append("")
+    index_lines.append("Summary:")
+    index_lines.append(f"Features/Other: {len(creature_block['features'])}")
+    index_lines.append(f"Actions: {len(creature_block['actions'])}")
+    index_lines.append(f"Bonus: {len(creature_block['bonus'])}")
+    index_lines.append(f"Reactions: {len(creature_block['reactions'])}")
+    index_lines.append(f"Legendary: {len(creature_block['legendary'])}")
+    index_lines.append(f"Lair: {len(creature_block['lair'])}")
+    index_lines.append(f"Mythic: {len(creature_block['mythic'])}")
+    index_lines.append(f"Regional: {len(creature_block['regional'])}")
+
+    try:
+        set_uvar("creature_index", n.join(index_lines))
+    except:
+        pass
+
+    return emb(
+        "Gimme: fallback used",
+        f"{creature_name} was too large for direct gvar create/edit. Use `{pfx}uvar creature_index`.",
+        "red"
+    )
+
+def make_save_payload(creature_name, creature_block):
+    # New requested shape:
+    # {
+    #   "Adult Black Dragon": {
+    #     "features": [],
+    #     "actions": [],
+    #     ...
+    #   }
+    # }
+    return {
+        creature_name: creature_block
+    }
+
+def make_existing_gvar_payload(gid, creature_name, creature_block):
+    existing = {}
+
+    try:
+        raw_existing = get_gvar(gid)
+        if raw_existing and str(raw_existing).strip():
+            existing = load_json(raw_existing)
+    except:
+        existing = {}
+
+    if not is_dict(existing):
+        existing = {}
+
+    existing[creature_name] = creature_block
+
+    return existing
+
+if not combat():
+    return emb("Gimme", "You are not in initiative.", "red")
+
+parsed = parse_args(args_raw)
+target_arg = parsed["target"]
+manual_name = parsed["manualName"]
+
+if target_arg == "" or target_arg.lower() == "list":
+    lines = []
+    lines.append(f"Use `{pfx}gimme <index or name>` to export one creature's features/actions directly into a GVAR.")
+    lines.append("")
+    lines.append("Examples:")
+    lines.append(f"`{pfx}gimme 0`")
+    lines.append(f"`{pfx}gimme ab1`")
+    lines.append(f"`{pfx}gimme ab1 \"Aboleth\"`")
+    lines.append("")
+    lines.append("Output shape:")
+    lines.append('`{"Creature Name":{"features":[],"actions":[],"bonus":[],"reactions":[],"legendary":[],"lair":[],"mythic":[],"regional":[]}}`')
+    lines.append("")
+    lines.append("Avrae's `Other` bucket is exported into that creature's `features` array.")
+    lines.append("")
+    if SAVE_GVAR_ID:
+        lines.append(f"Mode: editing/merging into `{SAVE_GVAR_ID}`")
+    else:
+        lines.append("Mode: creating a new GVAR")
+    lines.append("")
+    lines.append("Targets:")
+
+    for i, c in enumerate(combat().combatants):
+        try:
+            ac = get_ac(c)
+            hp = get_hp(c)
+            init = get_init(c)
+            attacks = len(c.attacks)
+        except:
+            ac = "?"
+            hp = "?"
+            init = "?"
+            attacks = "?"
+
+        lines.append(f"[{i}] {c.name} - AC {ac}, HP {hp}, Init {init}, Attacks {attacks}")
+
+    return emb("Gimme: target list", n.join(lines), "gold")
+
+c = find_combatant(target_arg)
+
+if not c:
+    return emb("Gimme", f"Could not find combatant `{target_arg}`. Use `{pfx}gimme list`.", "red")
+
+raw = raw_obj(c)
+creature_name = export_creature_name(c, raw, manual_name)
+creature_block = make_creature_feature_block(c)
+
+if SAVE_GVAR_ID:
+    payload = make_existing_gvar_payload(SAVE_GVAR_ID, creature_name, creature_block)
+    js = dump_json(payload)
+    cmd = f"{pfx}gvar edit {SAVE_GVAR_ID} {js}"
+else:
+    payload = make_save_payload(creature_name, creature_block)
+    js = dump_json(payload)
+    cmd = f"{pfx}gvar create {js}"
+
+if len(cmd) <= GVAR_COMMAND_LIMIT:
+    return cmd
+
+return fallback_to_uvars(creature_name, js, creature_block, f"command length {len(cmd)} over limit {GVAR_COMMAND_LIMIT}")
+</drac2>
