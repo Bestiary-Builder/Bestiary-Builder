@@ -2,7 +2,7 @@ import http from "node:http";
 import "@/utilities/env";
 // Logging
 import discord from "./logic/discord";
-import { doTheThing } from "./scripts/2024creatures";
+import { doTheThing } from "./scripts/ParseCreaturesFrom5eTools";
 import { log } from "@/utilities/logger";
 // App
 import { app } from "@/utilities/constants";
@@ -61,5 +61,3 @@ httpServer.listen(Number.parseInt(process.env.port ?? "5000"), () => {
 
 // Start discord bot
 discord.login(process.env.discordBotToken!).catch(() => log.error("Failed to connect to discord bot"));
-
-doTheThing();

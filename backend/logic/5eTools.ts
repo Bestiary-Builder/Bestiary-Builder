@@ -326,7 +326,7 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 				if (typeof data.ac[0] != "object")
 					return "";
 				if (data.ac[0].from)
-					return (data.ac[0].from[0] ?? "").replace(/\{@item\s[^|]+\|[^|]+\|([^}]+)\}/, "$1");
+					return markdownReplacer(data.ac[0].from[0] ?? "");
 				else
 					return "";
 			})()

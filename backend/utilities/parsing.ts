@@ -90,12 +90,14 @@ export function markdownReplacer(text: string): string {
 		.replaceAll("{@actTrigger}", "*Trigger*:")
 		.replaceAll("{@actResponse}", "*Response*:")
 		.replaceAll("{@actResponse d}", "*Response*—")
+		.replaceAll(/\{@quickref.*\|([^|}]*)\}/g, "$1")
 		.replaceAll(
 			/\{@quickref\s[a-z\s]+\|+\d+\}/g,
 			"$1".replace(/(?:^|\s)\S/g, (t) => {
 				return t.toUpperCase();
 			})
 		)
+		.replaceAll(/\{@chance.*\|([^|}]*)\}/g, "$1")
 		.replaceAll("Recharge 6-6", "Recharge 6")
 		.replaceAll("{@recharge}", "(Recharge 6)")
 		.replaceAll(/\{@hit\s+(-?\d+)\}/g, (_, number) => (number >= 0 ? `+${number}` : number))
