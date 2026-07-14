@@ -1,0 +1,91 @@
+Adult Gold Dragon
+  Banish
+    - features: automation
+    - legendary: NO automation
+  Pounce
+    - features: automation
+    - legendary: NO automation
+
+Adult Green Dragon
+  Noxious Miasma
+    - features: automation
+    - legendary: NO automation
+  Pounce
+    - features: automation
+    - legendary: NO automation
+
+Adult Red Dragon
+  Pounce
+    - features: automation
+    - legendary: NO automation
+
+Adult Silver Dragon
+  Cold Gale
+    - features: automation
+    - legendary: NO automation
+  Pounce
+    - features: automation
+    - legendary: NO automation
+
+Ancient Gold Dragon
+  Banish
+    - features: automation
+    - legendary: NO automation
+  Pounce
+    - features: automation
+    - legendary: NO automation
+
+Ancient Green Dragon
+  Noxious Miasma
+    - features: automation
+    - legendary: NO automation
+  Pounce
+    - features: automation
+    - legendary: NO automation
+
+Ancient Red Dragon
+  Pounce
+    - features: automation
+    - legendary: NO automation
+
+Ancient Silver Dragon
+  Cold Gale
+    - features: automation
+    - legendary: NO automation
+  Pounce
+    - features: automation
+    - legendary: NO automation
+
+Animal Lord
+  Feral Strike
+    - features: automation
+    - legendary: NO automation
+  Radiant Strike
+    - features: automation
+    - legendary: NO automation
+
+Badger
+  Bite
+    - features: automation
+    - actions: NO automation
+
+Bat
+  Bite
+    - features: automation
+    - actions: NO automation
+
+Gelatinous Cube
+  Engulf
+    - features: automation
+    - actions: NO automation
+
+Spectator
+  Spell Reflection
+    - features: automation
+    - reactions: NO automation
+
+Stone Golem
+  Slow (Recharge 5-6)
+    - actions: automation
+    - bonus: NO automation
+

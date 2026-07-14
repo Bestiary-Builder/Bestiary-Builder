@@ -193,3 +193,62 @@ with open(PROGRESS_FILE, "w", encoding="utf-8") as f:
     json.dump(sorted(list(progress)), f, indent=4, ensure_ascii=False)
 
 
+import json
+from collections import defaultdict
+
+OUTPUT_FILE = "missing_automation_report.txt"
+
+FEATURE_SECTIONS = [
+    "features",
+    "actions",
+    "bonus",
+    "reactions",
+    "legendary",
+    "mythic",
+    "villain",
+    "lair",
+]
+
+
+with open(OUTPUT_FILE, "w", encoding="utf-8") as out:
+    for creature_name, creature in sorted(monsters.items()):
+        features = creature.get("features", {})
+
+        # name -> list of occurrences
+        by_name = defaultdict(list)
+
+        for section in FEATURE_SECTIONS:
+            for item in features.get(section, []):
+                if not isinstance(item, dict):
+                    continue
+
+                name = item.get("name")
+                if not name:
+                    continue
+
+                by_name[name].append({
+                    "section": section,
+                    "automation": item.get("automation"),
+                })
+
+        found_any = False
+
+        for name, occurrences in sorted(by_name.items()):
+            automated = [o for o in occurrences if o["automation"] is not None]
+            unautomated = [o for o in occurrences if o["automation"] is None]
+
+            if automated and unautomated:
+                if not found_any:
+                    out.write(f"{creature_name}\n")
+                    found_any = True
+
+                out.write(f"  {name}\n")
+
+                for occ in occurrences:
+                    status = "automation" if occ["automation"] is not None else "NO automation"
+                    out.write(f"    - {occ['section']}: {status}\n")
+
+        if found_any:
+            out.write("\n")
+
+print(f"Wrote report to {OUTPUT_FILE}")
