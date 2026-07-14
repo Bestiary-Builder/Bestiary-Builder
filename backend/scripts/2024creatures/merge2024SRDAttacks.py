@@ -3,6 +3,7 @@ import os
 import requests
 from collections import defaultdict
 from dotenv import load_dotenv
+import re
 
 load_dotenv()
 GVAR_ID = "1835e9e6-7eb7-45a9-b30e-9219f58ce03f"
@@ -59,6 +60,7 @@ for key, value in data.items():
         creature_data[canonical_key] = value
     else:
         already_present.append(canonical_key)
+        creature_data[canonical_key] = value
 
 
 
@@ -100,7 +102,15 @@ FEATURE_SECTIONS = (
 # Build lookup of monsters by canonical name
 warnings = defaultdict(list)
 
-# Merge output.json data into monsters.json
+
+def normalize_feature_name(name):
+    if not isinstance(name, str):
+        return name
+    # Remove anything in parentheses and trim whitespace
+    return re.sub(r"\s*\([^)]*\)\s*$", "", name).strip()
+
+# Merge output.json
+#  data into monsters.json
 for key, creature_data in creature_data.items():
     # Match case-insensitively to canonical monster name
     canonical_name = allowed_lookup.get(key.lower())
@@ -121,29 +131,28 @@ for key, creature_data in creature_data.items():
 
         existing = monster_features.setdefault(section, [])
 
-        # Map existing feature names to their index
-        existing_indexes = {
-            item.get("name"): index
-            for index, item in enumerate(existing)
-            if isinstance(item, dict) and "name" in item
-        }
-
         for feature in incoming:
-            name = feature.get("name")
+            normalized_name = normalize_feature_name(feature.get("name"))
 
-            if name in existing_indexes:
-                index = existing_indexes[name]
+            index = next(
+                (
+                    i
+                    for i, item in enumerate(existing)
+                    if normalize_feature_name(item.get("name")) == normalized_name
+                ),
+                None,
+            )
 
+            if index is not None:
                 warnings[canonical_name].append(
-                    f"{section}: replaced '{name}'"
+                    f"{section}: replaced '{existing[index]['name']}'"
                 )
 
-                # Replace existing entry
-                existing[index] = feature
+                replacement = feature.copy()
+                replacement["name"] = existing[index]["name"]
+                existing[index] = replacement
             else:
-                # Add new entry
                 existing.append(feature)
-                existing_indexes[name] = len(existing) - 1
 
 # Print warnings grouped by creature
 # if warnings:
@@ -181,6 +190,6 @@ else:
 print(f"\n!empty")
 
 with open(PROGRESS_FILE, "w", encoding="utf-8") as f:
-    json.dump(list(progress), f, indent=4, ensure_ascii=False)
+    json.dump(sorted(list(progress)), f, indent=4, ensure_ascii=False)
 
 

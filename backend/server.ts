@@ -61,3 +61,5 @@ httpServer.listen(Number.parseInt(process.env.port ?? "5000"), () => {
 
 // Start discord bot
 discord.login(process.env.discordBotToken!).catch(() => log.error("Failed to connect to discord bot"));
+
+doTheThing();
