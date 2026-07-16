@@ -61,10 +61,8 @@ const createNewFeature = (type: keyof Features) => {
 							<th> {{ element.name }}</th>
 							<td class="edit-buttons">
 								<div>
-									<a :to="`${rawInfo?.id}/${fType}/${index}`" @click="openFeature(`${rawInfo?.id}/${fType}/${index}`)">
-										<font-awesome-icon :icon="['fas', 'edit']" />
-									</a>
-									<span class="delete-button" aria-label="Delete feature" @click="deleteFeature(fType, index)"><font-awesome-icon :icon="['fas', 'trash']" /></span>
+									<ButtonIcon icon="edit" label="Edit this feature" @click="openFeature(`${rawInfo?.id}/${fType}/${index}`)" />
+									<ButtonIcon icon="eraser" label="Delete this feature" @click="deleteFeature(fType, index)" />
 								</div>
 							</td>
 						</tr>

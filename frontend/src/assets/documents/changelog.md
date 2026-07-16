@@ -14,10 +14,11 @@ _???, 2026_
 - Improved code quality and maintainability.
 - Minor fields like ac source and senses now support markdown formatting, i.e. can be made italic or bold etc.
 - Added 2024 SRD Creature and Actions.
-- Added a user setting to choose between 2024 and 2014 SRD.
-
+- Added a user setting to choose between 2024 and 2014 SRD options.
+- Added more image export options: 1 column, 2 column, 2 column extra wide
+-
 ### Fixes
-- Improved the accuracy of the 2014 SRD Creatures and Actions.
+- Improved the accuracy of the 2014 SRD Creatures and Actions data.
 - Fixed class based spellcasting to hit not having a + on positive values.
 - Fixed newlines in fields displaying as a single line as markdown, such as description, requiring many newlines to force newlines. Behaviour is now the same as Discord.
 - Fixed minor issues with critterDB importer, now is more flexible with expected formatting of actions.
@@ -25,6 +26,7 @@ _???, 2026_
 - Reactions now import from 5e.tools.
 - Innate spellcasting now displays the different spell amounts in the correct order.
 - Importing text only actions now respects the name of the creature and if it is a proper noun.
+- Improved accuracy of the image export. Spacing and fonts should now be consistent with the site.
 
 ## v2.6.6
 _June 12, 2026_

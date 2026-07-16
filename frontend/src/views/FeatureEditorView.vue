@@ -153,7 +153,7 @@ const saveStatblock = async (shouldNotify: boolean): Promise<boolean> => {
 		return false;
 };
 
-type AutomationTypes = "automation" | "basic-example" | "srd-feature";
+type AutomationTypes = "automation" | "basic-example" | "srd-features/2014" | "srd-features/2024";
 const loadFeature = async (feature: FeatureEntity, apiPath: AutomationTypes) => {
 	if (!data.value)
 		return;

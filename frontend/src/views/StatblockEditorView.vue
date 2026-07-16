@@ -285,8 +285,10 @@ const tabsContent = document.getElementsByClassName("editor-content__tab-inner")
 
 onMounted(async () => {
 	if (typeof ($route.query.pane) == "string") {
-		showSlides(Math.max(0, Math.min(6, Math.abs(Number.parseInt($route.query.pane)))));
-		await $router.replace({ query: undefined });
+		setTimeout(async () => {
+			showSlides(Math.max(0, Math.min(6, Math.abs(Number.parseInt($route.query.pane as string)))));
+			await $router.replace({ query: undefined });
+		}, 100);
 	}
 	else { showSlides(1); }
 });
