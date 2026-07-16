@@ -290,7 +290,7 @@ const creatureData = {
 	/>
 	<div class="content less-wide">
 		<div v-if="!store.user">
-			<p> You are not logged in. Login with Discord to log in.</p>
+			<p> You are not logged in. Login with Discord to begin.</p>
 			<button class="btn confirm" @click.prevent="sendToLogin($route.path)">
 				Login
 			</button>
@@ -320,13 +320,14 @@ const creatureData = {
 				</p>
 			</div>
 
-			<div class="container">
+			<div class="preferences-container">
 				<SectionHeader
 					title="User Preferences"
 				/>
 				<div class="preferences">
-					<div class="with-button">
-						<LabelledComponent title="Statblock Layout">
+					<LabelledComponent title="Statblock Layout">
+						Set statblock layout - this impacts where some aspects of the statblocks are located, whether stats and saves are displayed as table, and whether some words are capitalized according to the 2014 or 2024 format.
+						<div class="preview-container">
 							<select v-model="preferences.statblockLayout">
 								<option value="SL_2024">
 									2024 (OneD&D / Default)
@@ -335,21 +336,22 @@ const creatureData = {
 									2014 (5e2014)
 								</option>
 							</select>
-						</LabelledComponent>
-						<VDropdown :positioning-disabled="store.isMobile">
-							<button v-tooltip="'Preview statblock'" aria-label="Preview statblock" class="btn-icon" style="color: orangered">
-								<font-awesome-icon :icon="['fas', 'eye']" />
-							</button>
-							<template #popper>
-								<div class="v-popper__custom-menu">
-									<StatblockRenderer :data="creatureData" :statblock-design="preferences.statblockDesign" :is2024="preferences.statblockLayout === 'SL_2024' " style="max-width: 650px" />
-								</div>
-							</template>
-						</VDropdown>
-					</div>
+							<VDropdown :positioning-disabled="store.isMobile">
+								<button v-tooltip="'Preview statblock'" aria-label="Preview statblock" class="btn-icon" style="color: orangered">
+									<font-awesome-icon :icon="['fas', 'eye']" />
+								</button>
+								<template #popper>
+									<div class="v-popper__custom-menu">
+										<StatblockRenderer :data="creatureData" :statblock-design="preferences.statblockDesign" :is2024="preferences.statblockLayout === 'SL_2024' " style="max-width: 650px" />
+									</div>
+								</template>
+							</VDropdown>
+						</div>
+					</LabelledComponent>
 
-					<div class="with-button">
-						<LabelledComponent title="Statblock Design">
+					<LabelledComponent title="Statblock Design">
+						Change the visual design of the statblock. This changes its appearance only.
+						<div class="preview-container">
 							<select v-model="preferences.statblockDesign">
 								<option value="BestiaryBuilder">
 									Bestiary Builder (Default)
@@ -364,20 +366,21 @@ const creatureData = {
 									Monster Manual (Compact)
 								</option>
 							</select>
-						</LabelledComponent>
-						<VDropdown :positioning-disabled="store.isMobile">
-							<button v-tooltip="'Preview statblock'" aria-label="Preview statblock" class="btn-icon" style="color: orangered">
-								<font-awesome-icon :icon="['fas', 'eye']" />
-							</button>
-							<template #popper>
-								<div class="v-popper__custom-menu">
-									<StatblockRenderer :data="creatureData" :statblock-design="preferences.statblockDesign" :is2024="preferences.statblockLayout === 'SL_2024' " style="max-width: 650px" />
-								</div>
-							</template>
-						</VDropdown>
-					</div>
+							<VDropdown :positioning-disabled="store.isMobile">
+								<button v-tooltip="'Preview statblock'" aria-label="Preview statblock" class="btn-icon" style="color: orangered">
+									<font-awesome-icon :icon="['fas', 'eye']" />
+								</button>
+								<template #popper>
+									<div class="v-popper__custom-menu">
+										<StatblockRenderer :data="creatureData" :statblock-design="preferences.statblockDesign" :is2024="preferences.statblockLayout === 'SL_2024' " style="max-width: 650px" />
+									</div>
+								</template>
+							</VDropdown>
+						</div>
+					</LabelledComponent>
 
 					<LabelledComponent title="Automation Editor">
+						Set the default for which editor you want to edit automation with by default. Visual allows you to edit automation in a complete editor. Code allows you to edit YAML directly - this is for experienced Avrae coders. <br>You can always switch which editor to use when editing a feature directly.
 						<select v-model="preferences.preferredEditor">
 							<option value="Visual">
 								Visual (Default)
@@ -389,6 +392,7 @@ const creatureData = {
 					</LabelledComponent>
 
 					<LabelledComponent title="SRD Version">
+						Set whether creating Creatures and Features from the SRD should use the 2024 or 2014 list of options.
 						<select v-model="preferences.SRDVersion">
 							<option value="SRD_2024">
 								2024 (Default)
@@ -398,16 +402,16 @@ const creatureData = {
 							</option>
 						</select>
 					</LabelledComponent>
-
-					<button class="btn confirm" @click.prevent="saveSettings">
-						Save Preferences
-					</button>
 				</div>
-				<hr>
-				<button class="btn" @click.prevent="logoutClick">
-					Log out of Bestiary Builder
+
+				<button class="btn confirm" @click.prevent="saveSettings">
+					Save Preferences
 				</button>
 			</div>
+			<hr>
+			<button class="btn danger" @click.prevent="logoutClick">
+				Log out of Bestiary Builder
+			</button>
 		</div>
 	</div>
 </template>
@@ -444,28 +448,37 @@ const creatureData = {
 		}
 	}
 
-	&.container {
+	&.preferences-container {
 		display: grid;
 		margin-top: 1rem;
 
 		.preferences {
 			display: flex;
 			flex-direction: column;
-			gap: 1rem;
+			gap: 1.5rem;
 			padding: 0 0.5rem;
 
-			.with-button {
+			.container {
 				display: flex;
-				gap: 1rem;
-				align-items: flex-end;
+				flex-direction: column;
+				gap: 0.6rem;
 			}
-
 			select {
 				width: 300px;
 			}
 
 			.btn {
 				margin-left: 0;
+			}
+
+			.preview-container {
+				display: flex;
+				flex-direction: row;
+				gap: 0.5rem;
+
+				& > div {
+					margin: auto 0;
+				}
 			}
 		}
 	}
