@@ -13,8 +13,11 @@ _???, 2026_
 - Improved the statblock editor by modernizing many interfaces.
 - Improved code quality and maintainability.
 - Minor fields like ac source and senses now support markdown formatting, i.e. can be made italic or bold etc.
+- Added 2024 SRD Creature and Actions.
+- Added a user setting to choose between 2024 and 2014 SRD.
 
 ### Fixes
+- Improved the accuracy of the 2014 SRD Creatures and Actions.
 - Fixed class based spellcasting to hit not having a + on positive values.
 - Fixed newlines in fields displaying as a single line as markdown, such as description, requiring many newlines to force newlines. Behaviour is now the same as Discord.
 - Fixed minor issues with critterDB importer, now is more flexible with expected formatting of actions.
