@@ -3,6 +3,9 @@ _???, 2026_
 
 ### Features
 - Added a proper automation editor for editing actions.
+  - Supports all types of nodes, attacks, buttons, etc.
+  - Allows you to create automation directly within BB without knowing how to code YAML.
+  - Includes improvements over the avrae dasbhoard editor, such as being able to copy/cut and paste entire sections of automation.
 - Improved styling of the statblock
 - Added 2024 statblock formatting and a toggle in user settings.
 - Added Beyond Odyssey, Monster Manual styling for statblocks, and a toggle in user settings.
