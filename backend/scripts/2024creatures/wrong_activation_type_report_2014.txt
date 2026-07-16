@@ -1,121 +1,121 @@
 Abominable Yeti
-  Chilling Gaze (Expected 1 (ACTION); received 2 (NO_ACTION))
+  Chilling Gaze (Expected 1 (ACTION); received MISSING activation_type)
 
 Adult Blue Dracolich
-  Frightful Presence (Expected 1 (ACTION); received 2 (NO_ACTION))
+  Frightful Presence (Expected 1 (ACTION); received MISSING activation_type)
 
 Behir
-  Swallow (Expected 1 (ACTION); received 2 (NO_ACTION))
+  Swallow (Expected 1 (ACTION); received MISSING activation_type)
 
 Chuul
-  Tentacles (Expected 1 (ACTION); received 2 (NO_ACTION))
+  Tentacles (Expected 1 (ACTION); received MISSING activation_type)
 
 Cloaker
-  Moan (Expected 1 (ACTION); received 2 (NO_ACTION))
+  Moan (Expected 1 (ACTION); received MISSING activation_type)
 
 Demilich
-  Life Drain (Expected 1 (ACTION); received 2 (NO_ACTION))
+  Life Drain (Expected 1 (ACTION); received MISSING activation_type)
 
 Djinni
-  Create Whirlwind (Expected 1 (ACTION); received 2 (NO_ACTION))
+  Create Whirlwind (Expected 1 (ACTION); received MISSING activation_type)
 
 Faerie Dragon (Blue)
-  Superior Invisibility (Expected 2 (NO_ACTION); received 3 (BONUS_ACTION))
+  Superior Invisibility (Expected 2 (NO_ACTION); received MISSING activation_type)
 
 Faerie Dragon (Green)
-  Superior Invisibility (Expected 2 (NO_ACTION); received 3 (BONUS_ACTION))
+  Superior Invisibility (Expected 2 (NO_ACTION); received MISSING activation_type)
 
 Faerie Dragon (Indigo)
-  Superior Invisibility (Expected 2 (NO_ACTION); received 3 (BONUS_ACTION))
+  Superior Invisibility (Expected 2 (NO_ACTION); received MISSING activation_type)
 
 Faerie Dragon (Orange)
-  Superior Invisibility (Expected 2 (NO_ACTION); received 3 (BONUS_ACTION))
+  Superior Invisibility (Expected 2 (NO_ACTION); received MISSING activation_type)
 
 Faerie Dragon (Red)
-  Superior Invisibility (Expected 2 (NO_ACTION); received 3 (BONUS_ACTION))
+  Superior Invisibility (Expected 2 (NO_ACTION); received MISSING activation_type)
 
 Faerie Dragon (Violet)
-  Superior Invisibility (Expected 2 (NO_ACTION); received 3 (BONUS_ACTION))
+  Superior Invisibility (Expected 2 (NO_ACTION); received MISSING activation_type)
 
 Faerie Dragon (Yellow)
-  Superior Invisibility (Expected 2 (NO_ACTION); received 3 (BONUS_ACTION))
+  Superior Invisibility (Expected 2 (NO_ACTION); received MISSING activation_type)
 
 Fomorian
-  Evil Eye (Expected 1 (ACTION); received 2 (NO_ACTION))
+  Evil Eye (Expected 1 (ACTION); received MISSING activation_type)
 
 Gelatinous Cube
-  Engulf (Expected 1 (ACTION); received 2 (NO_ACTION))
+  Engulf (Expected 1 (ACTION); received MISSING activation_type)
 
 Ghost
-  Horrifying Visage (Expected 1 (ACTION); received 2 (NO_ACTION))
+  Horrifying Visage (Expected 1 (ACTION); received MISSING activation_type)
 
 Giant Crocodile
-  Tail (Expected 1 (ACTION); received 2 (NO_ACTION))
+  Tail (Expected 1 (ACTION); received MISSING activation_type)
 
 Guardian Naga
-  Spit Poison (Expected 1 (ACTION); received 2 (NO_ACTION))
+  Spit Poison (Expected 1 (ACTION); received MISSING activation_type)
 
 Intellect Devourer
-  Devour Intellect (Expected 1 (ACTION); received 2 (NO_ACTION))
+  Devour Intellect (Expected 1 (ACTION); received MISSING activation_type)
 
 Kraken
-  Fling (Expected 1 (ACTION); received 2 (NO_ACTION))
-  Lightning Storm (Expected 1 (ACTION); received 2 (NO_ACTION))
+  Fling (Expected 1 (ACTION); received MISSING activation_type)
+  Lightning Storm (Expected 1 (ACTION); received MISSING activation_type)
 
 Kuo-toa
-  Net (Expected 1 (ACTION); received 2 (NO_ACTION))
-  Sticky Shield (Expected 4 (REACTION); received 2 (NO_ACTION))
+  Net (Expected 1 (ACTION); received MISSING activation_type)
+  Sticky Shield (Expected 4 (REACTION); received MISSING activation_type)
 
 Lamia
-  Intoxicating Touch (Expected 1 (ACTION); received 2 (NO_ACTION))
+  Intoxicating Touch (Expected 1 (ACTION); received MISSING activation_type)
 
 Marid
-  Water Jet (Expected 1 (ACTION); received 2 (NO_ACTION))
+  Water Jet (Expected 1 (ACTION); received MISSING activation_type)
 
 Mummy
-  Dreadful Glare (Expected 1 (ACTION); received 2 (NO_ACTION))
+  Dreadful Glare (Expected 1 (ACTION); received MISSING activation_type)
 
 Mummy Lord
-  Dreadful Glare (Expected 1 (ACTION); received 2 (NO_ACTION))
+  Dreadful Glare (Expected 1 (ACTION); received MISSING activation_type)
 
 Otyugh
-  Tentacle Slam (Expected 1 (ACTION); received 2 (NO_ACTION))
+  Tentacle Slam (Expected 1 (ACTION); received MISSING activation_type)
 
 Pixie
-  Superior Invisibility (Expected 1 (ACTION); received 2 (NO_ACTION))
+  Superior Invisibility (Expected 1 (ACTION); received MISSING activation_type)
 
 Remorhaz
-  Swallow (Expected 1 (ACTION); received 2 (NO_ACTION))
+  Swallow (Expected 1 (ACTION); received MISSING activation_type)
 
 Roper
-  Tendril (Expected 1 (ACTION); received 2 (NO_ACTION))
+  Tendril (Expected 1 (ACTION); received MISSING activation_type)
 
 Rust Monster
-  Antennae (Expected 1 (ACTION); received 2 (NO_ACTION))
+  Antennae (Expected 1 (ACTION); received MISSING activation_type)
 
 Scarecrow
-  Terrifying Glare (Expected 1 (ACTION); received 2 (NO_ACTION))
+  Terrifying Glare (Expected 1 (ACTION); received MISSING activation_type)
 
 Shambling Mound
-  Engulf (Expected 1 (ACTION); received 2 (NO_ACTION))
+  Engulf (Expected 1 (ACTION); received MISSING activation_type)
 
 Tarrasque
-  Swallow (Expected 1 (ACTION); received 2 (NO_ACTION))
+  Swallow (Expected 1 (ACTION); received MISSING activation_type)
 
 Unicorn
-  Hooves (Expected 9 (LEGENDARY); received 1 (ACTION), 2 (NO_ACTION))
+  Hooves (Expected 9 (LEGENDARY); received MISSING activation_type)
 
 Vampire
-  Unarmed Strike (Expected 9 (LEGENDARY); received 2 (NO_ACTION))
+  Unarmed Strike (Expected 9 (LEGENDARY); received MISSING activation_type)
 
 Vampire Spellcaster
-  Charm (Expected 1 (ACTION); received 2 (NO_ACTION))
-  Unarmed Strike (Expected 9 (LEGENDARY); received 2 (NO_ACTION))
+  Charm (Expected 1 (ACTION); received MISSING activation_type)
+  Unarmed Strike (Expected 9 (LEGENDARY); received MISSING activation_type)
 
 Vampire Warrior
-  Charm (Expected 1 (ACTION); received 2 (NO_ACTION))
-  Unarmed Strike (Expected 9 (LEGENDARY); received 2 (NO_ACTION))
+  Charm (Expected 1 (ACTION); received MISSING activation_type)
+  Unarmed Strike (Expected 9 (LEGENDARY); received MISSING activation_type)
 
 Will-o'-Wisp
-  Consume Life (Expected 2 (NO_ACTION); received 3 (BONUS_ACTION))
+  Consume Life (Expected 2 (NO_ACTION); received MISSING activation_type)
 

@@ -90,7 +90,7 @@ const saveStatblock = async (shouldNotify = true): Promise<boolean> => {
 		);
 	}
 	else {
-		$toast.error(htmlToast(error), { duration: Number.POSITIVE_INFINITY });
+		$toast.error(htmlToast(error), { duration: Number.POSITIVE_INFINITY, dismissible: true });
 	}
 	loader.hide();
 	if (success)

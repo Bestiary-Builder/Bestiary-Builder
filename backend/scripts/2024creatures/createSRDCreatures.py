@@ -8,15 +8,17 @@ import re
 load_dotenv()
 
 # 1 == 2024, 0 == 2014
-mode = 1
+mode = 0
 
 GVAR_ID = "1835e9e6-7eb7-45a9-b30e-9219f58ce03f"
 if mode:
     MONSTER_FILE = "../../staticData/2024/SRDCreatures2024.json"
+    ATTACKS_FILE = "../../staticData/2024/SRDAttacks2024.json"
     PROGRESS_FILE = "./progress2024.json"
     REPORT_FILE = "wrong_activation_type_report_2024.txt"
 else:
     MONSTER_FILE = "../../staticData/2014/SRDCreatures2014.json"
+    ATTACKS_FILE = "../../staticData/2014/SRDAttacks2014.json"
     PROGRESS_FILE = "./progress2014.json"
     REPORT_FILE = "wrong_activation_type_report_2014.txt"
 
@@ -219,18 +221,10 @@ FEATURE_SECTION_IDS = {
     "legendary": 9,    # LEGENDARY
     "mythic": 10,      # MYTHIC
     "lair": 11,        # LAIR
-    # "villain" intentionally omitted since there is no corresponding number
+    "regional": 2
 }
 
-FEATURE_SECTIONS = [
-    "features",
-    "actions",
-    "bonus",
-    "reactions",
-    "legendary",
-    "mythic",
-    "lair",
-]
+
 
 with open(REPORT_FILE, "w", encoding="utf-8") as out:
     for creature_name, creature in sorted(monsters.items()):
@@ -312,3 +306,18 @@ with open(REPORT_FILE, "w", encoding="utf-8") as out:
             out.write("\n")
 
 print(f"Wrote report to {REPORT_FILE}")
+
+
+attacks = {}
+for creature in monsters.values():  # or monsters.values() if monsters is a dict
+    creature_name = creature["description"]["name"]
+
+    for section in FEATURE_SECTIONS:
+        for feature in creature.get("features", {}).get(section, []):
+            if feature.get("automation") is None:
+                continue
+
+            attacks[f"{creature_name} - {feature['name']}"] = feature
+
+with open(ATTACKS_FILE, "w", encoding="utf-8") as f:
+    json.dump(attacks, f, indent=4, ensure_ascii=False)

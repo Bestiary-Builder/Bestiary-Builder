@@ -4,17 +4,14 @@ import basicExamples from "@/staticData/shared/basicExamples.json";
 import SRDAttacks2014 from "@/staticData/2014/SRDAttacks2014.json";
 import SRDCreatures2014 from "@/staticData/2014/SRDCreatures2014.json";
 import SRDCreatures2024 from "@/staticData/2024/SRDCreatures2024.json";
+import SRDAttacks2024 from "@/staticData/2024/SRDAttacks2024.json";
+
 import tOF from "@/staticData/shared/textOnlyFeatures.json";
 import tags from "@/staticData/tags.json";
 import limits from "@/staticData/limits.json";
 import data from "@/staticData/automationDocumentation.json";
 
-const textOnlyFeatures = tOF as { [key: string]: string };
-const attacks2014 = Object.keys(textOnlyFeatures)
-	.map(key => ({ name: key, description: textOnlyFeatures[key] as string, automation: null as unknown }))
-	.concat(SRDAttacks2014);
-
-// Basic example
+// Basic example attacks
 app.get("/api/basic-examples/list", async (req, res) => {
 	const names = basicExamples.map(a => a.name);
 	return res.json(names);
@@ -28,18 +25,41 @@ app.get("/api/basic-example/:name", async (req, res) => {
 		return res.status(404).json({ error: "No example found with that name" });
 });
 
-// Features
+// Actions
+const textOnlyFeatures = {} as { [key: string]: { name: string; description: string; automation: null } };
+
+for (const [key, value] of Object.entries(tOF)) {
+	textOnlyFeatures[key] = { name: key, description: value, automation: null };
+}
+
+Object.assign(SRDAttacks2014, textOnlyFeatures);
+const names2014 = Object.keys(SRDAttacks2014);
 app.get("/api/srd-features/2014/list", async (req, res) => {
-	const names = attacks2014.map(a => a.name) ?? [];
-	return res.json(names);
+	return res.json(names2014);
 });
-app.get("/api/srd-feature/2014/:name", async (req, res) => {
+
+app.get("/api/srd-features/2014/:name", async (req, res) => {
 	const name = decodeURIComponent(req.params.name);
-	const data = attacks2014.find(a => a.name === name);
+	const data = (SRDAttacks2014 as any)[name];
 	if (data)
 		return res.json(data);
 	else
-		return res.status(404).json({ error: "No srd feature found with that name" });
+		return res.status(404).json({ error: "No SRD feature found with that name" });
+});
+
+Object.assign(SRDAttacks2024, textOnlyFeatures);
+const names2024 = Object.keys(SRDAttacks2024);
+app.get("/api/srd-features/2024/list", async (req, res) => {
+	return res.json(names2024);
+});
+
+app.get("/api/srd-features/2024/:name", async (req, res) => {
+	const name = decodeURIComponent(req.params.name);
+	const data = (SRDAttacks2024 as any)[name];
+	if (data)
+		return res.json(data);
+	else
+		return res.status(404).json({ error: "No SRD feature found with that name" });
 });
 
 // Creatures

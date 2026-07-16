@@ -11,7 +11,7 @@ const emit = defineEmits<{
 }>();
 
 // Imported automation helpers
-type AutomationTypes = "automation" | "basic-example" | "srd-feature";
+type AutomationTypes = "automation" | "basic-example" | "srd-features/2014" | "srd-features/2024";
 interface myAutomationSkeleton {
 	name: string;
 	id: Id;
@@ -40,8 +40,13 @@ const loadImportedAutomation = async (apiPath: string, saveTo: keyof LoadedAutom
 };
 
 onMounted(async () => {
+	if (store.user?.SRDVersion === "SRD_2024")
+		await loadImportedAutomation("srd-features/2024/list", "srdFeatures");
+
+	else
+		await loadImportedAutomation("srd-features/2014/list", "srdFeatures");
+
 	await loadImportedAutomation("basic-examples/list", "basicExamples");
-	await loadImportedAutomation("srd-features/list", "srdFeatures");
 	await loadImportedAutomation("my-automations", "myAutomation");
 });
 
@@ -72,7 +77,7 @@ const selectAndLoad = async (apiPath: AutomationTypes, name: string, _id: Id | n
 			<div class="v-popper__custom-menu">
 				<div class="editor-field__container" style="min-width: 400px">
 					<LabelledComponent title="Import SRD feature" for="importsrdfeature">
-						<v-select :options="loadedAutomation.srdFeatures" input-id="importsrdfeature" @option:selected="(selected : string) => (selectAndLoad('srd-feature', selected)) " />
+						<v-select :options="loadedAutomation.srdFeatures" input-id="importsrdfeature" @option:selected="(selected : string) => (selectAndLoad(`srd-features/${store.user?.SRDVersion === 'SRD_2024' ? '2024' : '2014'}`, selected)) " />
 					</LabelledComponent>
 				</div>
 
