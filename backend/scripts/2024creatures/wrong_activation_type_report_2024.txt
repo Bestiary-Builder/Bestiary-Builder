@@ -1,0 +1,49 @@
+Adult Gold Dragon
+  Banish (Expected 9 (LEGENDARY); received MISSING activation_type)
+  Pounce (Expected 9 (LEGENDARY); received MISSING activation_type)
+
+Adult Green Dragon
+  Noxious Miasma (Expected 9 (LEGENDARY); received MISSING activation_type)
+  Pounce (Expected 9 (LEGENDARY); received MISSING activation_type)
+
+Adult Red Dragon
+  Pounce (Expected 9 (LEGENDARY); received MISSING activation_type)
+
+Adult Silver Dragon
+  Cold Gale (Expected 9 (LEGENDARY); received MISSING activation_type)
+  Pounce (Expected 9 (LEGENDARY); received MISSING activation_type)
+
+Ancient Gold Dragon
+  Banish (Expected 9 (LEGENDARY); received MISSING activation_type)
+  Pounce (Expected 9 (LEGENDARY); received MISSING activation_type)
+
+Ancient Green Dragon
+  Noxious Miasma (Expected 9 (LEGENDARY); received MISSING activation_type)
+  Pounce (Expected 9 (LEGENDARY); received MISSING activation_type)
+
+Ancient Red Dragon
+  Pounce (Expected 9 (LEGENDARY); received MISSING activation_type)
+
+Ancient Silver Dragon
+  Cold Gale (Expected 9 (LEGENDARY); received MISSING activation_type)
+  Pounce (Expected 9 (LEGENDARY); received MISSING activation_type)
+
+Animal Lord
+  Feral Strike (Expected 9 (LEGENDARY); received MISSING activation_type)
+  Radiant Strike (Expected 9 (LEGENDARY); received MISSING activation_type)
+
+Badger
+  Bite (Expected 1 (ACTION); received MISSING activation_type)
+
+Bat
+  Bite (Expected 1 (ACTION); received MISSING activation_type)
+
+Gelatinous Cube
+  Engulf (Expected 1 (ACTION); received MISSING activation_type)
+
+Spectator
+  Spell Reflection (Expected 4 (REACTION); received MISSING activation_type)
+
+Stone Golem
+  Slow (Recharge 5-6) (Expected 3 (BONUS_ACTION); received MISSING activation_type)
+

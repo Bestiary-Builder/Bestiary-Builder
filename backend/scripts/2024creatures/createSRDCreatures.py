@@ -6,9 +6,20 @@ from dotenv import load_dotenv
 import re
 
 load_dotenv()
+
+# 1 == 2024, 0 == 2014
+mode = 1
+
 GVAR_ID = "1835e9e6-7eb7-45a9-b30e-9219f58ce03f"
-MONSTER_FILE = "../../staticData/2024/SRDCreatures2024.json"
-PROGRESS_FILE = "./progress.json"
+if mode:
+    MONSTER_FILE = "../../staticData/2024/SRDCreatures2024.json"
+    PROGRESS_FILE = "./progress2024.json"
+    REPORT_FILE = "wrong_activation_type_report_2024.txt"
+else:
+    MONSTER_FILE = "../../staticData/2014/SRDCreatures2014.json"
+    PROGRESS_FILE = "./progress2014.json"
+    REPORT_FILE = "wrong_activation_type_report_2014.txt"
+
 
 # Load monster data
 with open(MONSTER_FILE, "r", encoding="utf-8") as f:
@@ -98,6 +109,7 @@ FEATURE_SECTIONS = (
     "mythic",
     "regional",
 )
+
 
 # Build lookup of monsters by canonical name
 warnings = defaultdict(list)
@@ -196,7 +208,19 @@ with open(PROGRESS_FILE, "w", encoding="utf-8") as f:
 import json
 from collections import defaultdict
 
-OUTPUT_FILE = "missing_automation_report.txt"
+
+from collections import defaultdict
+
+FEATURE_SECTION_IDS = {
+    "actions": 1,      # ACTION
+    "features": 2,     # NO_ACTION
+    "bonus": 3,        # BONUS_ACTION
+    "reactions": 4,    # REACTION
+    "legendary": 9,    # LEGENDARY
+    "mythic": 10,      # MYTHIC
+    "lair": 11,        # LAIR
+    # "villain" intentionally omitted since there is no corresponding number
+}
 
 FEATURE_SECTIONS = [
     "features",
@@ -205,12 +229,10 @@ FEATURE_SECTIONS = [
     "reactions",
     "legendary",
     "mythic",
-    "villain",
     "lair",
 ]
 
-
-with open(OUTPUT_FILE, "w", encoding="utf-8") as out:
+with open(REPORT_FILE, "w", encoding="utf-8") as out:
     for creature_name, creature in sorted(monsters.items()):
         features = creature.get("features", {})
 
@@ -227,28 +249,66 @@ with open(OUTPUT_FILE, "w", encoding="utf-8") as out:
                     continue
 
                 by_name[name].append({
-                    "section": section,
+                    "section_id": FEATURE_SECTION_IDS.get(section),
                     "automation": item.get("automation"),
                 })
 
         found_any = False
 
-        for name, occurrences in sorted(by_name.items()):
-            automated = [o for o in occurrences if o["automation"] is not None]
-            unautomated = [o for o in occurrences if o["automation"] is None]
+        SECTION_NAMES = {
+            1: "ACTION",
+            2: "NO_ACTION",
+            3: "BONUS_ACTION",
+            4: "REACTION",
+            6: "MINUTE",
+            7: "HOUR",
+            8: "SPECIAL",
+            9: "LEGENDARY",
+            10: "MYTHIC",
+            11: "LAIR",
+        }
 
-            if automated and unautomated:
+        def format_ids(ids):
+            return ", ".join(f"{i} ({SECTION_NAMES.get(i, 'UNKNOWN')})" for i in ids)
+
+        for name, occurrences in sorted(by_name.items()):
+            expected = sorted({
+                o["section_id"]
+                for o in occurrences
+                if o["automation"] is None and o["section_id"] is not None
+            })
+
+            received = sorted({
+                o["activation_type"]
+                for o in occurrences
+                if (
+                    o["automation"] is not None
+                    and o.get("activation_type") is not None
+                )
+            })
+
+            missing_activation = any(
+                o["automation"] is not None
+                and o.get("activation_type") is None
+                for o in occurrences
+            )
+
+            if expected and (received or missing_activation):
                 if not found_any:
                     out.write(f"{creature_name}\n")
                     found_any = True
 
-                out.write(f"  {name}\n")
+                if missing_activation:
+                    received_text = "MISSING activation_type"
+                else:
+                    received_text = format_ids(received)
 
-                for occ in occurrences:
-                    status = "automation" if occ["automation"] is not None else "NO automation"
-                    out.write(f"    - {occ['section']}: {status}\n")
+                out.write(
+                    f"  {name} (Expected {format_ids(expected)}; "
+                    f"received {received_text})\n"
+                )
 
         if found_any:
             out.write("\n")
 
-print(f"Wrote report to {OUTPUT_FILE}")
+print(f"Wrote report to {REPORT_FILE}")

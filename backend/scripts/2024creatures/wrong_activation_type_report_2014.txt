@@ -1,0 +1,121 @@
+Abominable Yeti
+  Chilling Gaze (Expected 1 (ACTION); received 2 (NO_ACTION))
+
+Adult Blue Dracolich
+  Frightful Presence (Expected 1 (ACTION); received 2 (NO_ACTION))
+
+Behir
+  Swallow (Expected 1 (ACTION); received 2 (NO_ACTION))
+
+Chuul
+  Tentacles (Expected 1 (ACTION); received 2 (NO_ACTION))
+
+Cloaker
+  Moan (Expected 1 (ACTION); received 2 (NO_ACTION))
+
+Demilich
+  Life Drain (Expected 1 (ACTION); received 2 (NO_ACTION))
+
+Djinni
+  Create Whirlwind (Expected 1 (ACTION); received 2 (NO_ACTION))
+
+Faerie Dragon (Blue)
+  Superior Invisibility (Expected 2 (NO_ACTION); received 3 (BONUS_ACTION))
+
+Faerie Dragon (Green)
+  Superior Invisibility (Expected 2 (NO_ACTION); received 3 (BONUS_ACTION))
+
+Faerie Dragon (Indigo)
+  Superior Invisibility (Expected 2 (NO_ACTION); received 3 (BONUS_ACTION))
+
+Faerie Dragon (Orange)
+  Superior Invisibility (Expected 2 (NO_ACTION); received 3 (BONUS_ACTION))
+
+Faerie Dragon (Red)
+  Superior Invisibility (Expected 2 (NO_ACTION); received 3 (BONUS_ACTION))
+
+Faerie Dragon (Violet)
+  Superior Invisibility (Expected 2 (NO_ACTION); received 3 (BONUS_ACTION))
+
+Faerie Dragon (Yellow)
+  Superior Invisibility (Expected 2 (NO_ACTION); received 3 (BONUS_ACTION))
+
+Fomorian
+  Evil Eye (Expected 1 (ACTION); received 2 (NO_ACTION))
+
+Gelatinous Cube
+  Engulf (Expected 1 (ACTION); received 2 (NO_ACTION))
+
+Ghost
+  Horrifying Visage (Expected 1 (ACTION); received 2 (NO_ACTION))
+
+Giant Crocodile
+  Tail (Expected 1 (ACTION); received 2 (NO_ACTION))
+
+Guardian Naga
+  Spit Poison (Expected 1 (ACTION); received 2 (NO_ACTION))
+
+Intellect Devourer
+  Devour Intellect (Expected 1 (ACTION); received 2 (NO_ACTION))
+
+Kraken
+  Fling (Expected 1 (ACTION); received 2 (NO_ACTION))
+  Lightning Storm (Expected 1 (ACTION); received 2 (NO_ACTION))
+
+Kuo-toa
+  Net (Expected 1 (ACTION); received 2 (NO_ACTION))
+  Sticky Shield (Expected 4 (REACTION); received 2 (NO_ACTION))
+
+Lamia
+  Intoxicating Touch (Expected 1 (ACTION); received 2 (NO_ACTION))
+
+Marid
+  Water Jet (Expected 1 (ACTION); received 2 (NO_ACTION))
+
+Mummy
+  Dreadful Glare (Expected 1 (ACTION); received 2 (NO_ACTION))
+
+Mummy Lord
+  Dreadful Glare (Expected 1 (ACTION); received 2 (NO_ACTION))
+
+Otyugh
+  Tentacle Slam (Expected 1 (ACTION); received 2 (NO_ACTION))
+
+Pixie
+  Superior Invisibility (Expected 1 (ACTION); received 2 (NO_ACTION))
+
+Remorhaz
+  Swallow (Expected 1 (ACTION); received 2 (NO_ACTION))
+
+Roper
+  Tendril (Expected 1 (ACTION); received 2 (NO_ACTION))
+
+Rust Monster
+  Antennae (Expected 1 (ACTION); received 2 (NO_ACTION))
+
+Scarecrow
+  Terrifying Glare (Expected 1 (ACTION); received 2 (NO_ACTION))
+
+Shambling Mound
+  Engulf (Expected 1 (ACTION); received 2 (NO_ACTION))
+
+Tarrasque
+  Swallow (Expected 1 (ACTION); received 2 (NO_ACTION))
+
+Unicorn
+  Hooves (Expected 9 (LEGENDARY); received 1 (ACTION), 2 (NO_ACTION))
+
+Vampire
+  Unarmed Strike (Expected 9 (LEGENDARY); received 2 (NO_ACTION))
+
+Vampire Spellcaster
+  Charm (Expected 1 (ACTION); received 2 (NO_ACTION))
+  Unarmed Strike (Expected 9 (LEGENDARY); received 2 (NO_ACTION))
+
+Vampire Warrior
+  Charm (Expected 1 (ACTION); received 2 (NO_ACTION))
+  Unarmed Strike (Expected 9 (LEGENDARY); received 2 (NO_ACTION))
+
+Will-o'-Wisp
+  Consume Life (Expected 2 (NO_ACTION); received 3 (BONUS_ACTION))
+
