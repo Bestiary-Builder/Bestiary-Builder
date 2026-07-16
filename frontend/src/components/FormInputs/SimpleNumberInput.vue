@@ -120,32 +120,32 @@ function clear() {
 </script>
 
 <template>
-	<div class="quantity" :class="{ clearable: isClearable }">
-		<div class="quantity-button" :aria-label="`Decrease ${label}`" @click.prevent="decrease">
+	<div class="simple-quantity" :class="{ clearable: isClearable }">
+		<div class="simple-quantity-button" :aria-label="`Decrease ${label}`" @click.prevent="decrease">
 			<font-awesome-icon :icon="['fas', 'minus']" />
 		</div>
 		<input :id="labelId" ref="input" :value="isNaN(value) ? '' : value" type="number" :name="label" :min="min" :max="max" inputmode="numeric" @change="change">
-		<div class="quantity-button" :aria-label="`Increase ${label}`" @click.prevent="increase">
+		<div class="simple-quantity-button" :aria-label="`Increase ${label}`" @click.prevent="increase">
 			<font-awesome-icon :icon="['fas', 'plus']" />
 		</div>
-		<div v-if="isClearable" class="quantity-button">
+		<div v-if="isClearable" class="simple-quantity-button">
 			<font-awesome-icon :icon="['fas', 'eraser']" @click="clear" />
 		</div>
 	</div>
 </template>
 
 <style scoped lang="less">
-.quantity {
+.simple-quantity {
+	display: inline-grid;
 	grid-template-columns: 1fr 2fr 1fr;
-	display: grid;
+	gap: 0.5rem;
 	&.clearable {
 		grid-template-columns: 1fr 2fr 1fr 1fr;
 	}
 }
 
-.quantity input {
+.simple-quantity input {
 	background-color: var(--color-surface-0);
-	width: 100%;
 	height: 32px;
 	line-height: 1.25;
 	font-size: 0.9rem;
@@ -156,6 +156,7 @@ function clear() {
 	border: 1px solid rgb(60, 63, 68);
 	color: white;
 	max-width: 90vw;
+	width: 4rem;
 }
 
 input[type="number"]::-webkit-inner-spin-button,
@@ -169,8 +170,9 @@ input[type="number"] {
 	appearance: textfield;
 }
 
-.quantity-button {
+.simple-quantity-button {
 	margin: auto;
 	font-size: 0.8em;
+	width: 0.8rem;
 }
 </style>

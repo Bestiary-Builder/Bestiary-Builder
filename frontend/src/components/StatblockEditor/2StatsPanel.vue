@@ -82,7 +82,7 @@ const addNewSkill = (newSkillName: string) => {
 		</div>
 		<SectionHeader title="Skills" />
 		<div>
-			<table class="list-table" style="margin-bottom: 1rem;">
+			<table v-if="data.abilities.skills.length > 0" class="list-table" style="margin-bottom: 1rem;">
 				<thead>
 					<tr>
 						<th> Ability </th>
@@ -129,7 +129,7 @@ const addNewSkill = (newSkillName: string) => {
 					</tr>
 				</tbody>
 			</table>
-			<div class="two-wide">
+			<div class="two-wide editor-field__container">
 				<LabelledComponent title="Add new skill" for="addnewskill">
 					<v-select
 						placeholder="Select skill"

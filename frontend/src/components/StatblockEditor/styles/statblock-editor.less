@@ -182,10 +182,10 @@
 
 .list-table {
 	width: 100%;
-	table-layout: fixed;
 	overflow-wrap: break-word;
 	display: table;
 	margin-bottom: 1rem;
+	table-layout: auto;
 	select {
 		font-size: small;
 		max-width: 80%;
@@ -200,13 +200,25 @@
 	td {
 		padding: 2px 4px;
 	}
+	
+	td:has(.handle) {
+		width: 0;
+	}
 
-	.edit-buttons div {
+	td:has(.simple-quantity) {
+		width: 0;
+	}
+
+	.edit-buttons {
+		width: 0;
+	}
+	.edit-buttons > div {
+		width: 100%;
 		display: inline-flex;
 		flex-direction: row;
-		gap: 1em;
 		justify-content: center;
 		color: orangered;
+		gap: .3rem;
 		a {
 			color: orangered;
 		}
@@ -228,6 +240,10 @@
 
 	tbody th {
 		padding-left: 12px;
+	}
+
+	.edit-buttons > div {
+		gap: .6rem;
 	}
 }
 
@@ -252,8 +268,9 @@ tr.table-footer {
 			color: gray;
 		}
 	}
-	.edit-buttons div {
-		color: lightgray;
+	.edit-buttons button {
+		width: 30px;
+		color: var(--color-base);
 	}
 }
 @media screen and (max-width: 450px) {

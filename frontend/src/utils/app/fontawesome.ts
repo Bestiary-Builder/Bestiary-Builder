@@ -11,6 +11,7 @@ import {
 	faBold,
 	faCircleInfo,
 	faCode,
+	faComment,
 	faCopy,
 	faDatabase,
 	faEarthEurope,
@@ -30,6 +31,7 @@ import {
 	faPenToSquare,
 	faPlus,
 	faRotate,
+	faRuler,
 	faSave,
 	faScaleBalanced,
 	faSection,
@@ -97,5 +99,7 @@ library.add(
 	fa1,
 	fa2,
 	fa3,
-	fa4
+	fa4,
+	faComment,
+	faRuler
 );

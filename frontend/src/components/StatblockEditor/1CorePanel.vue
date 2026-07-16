@@ -4,10 +4,12 @@ import LabelledComponent from "../FormInputs/LabelledComponent.vue";
 import LabelledNumberInput from "../FormInputs/LabelledNumberInput.vue";
 import SimpleNumberInput from "../FormInputs/SimpleNumberInput.vue";
 import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
+import ButtonIcon from "../Global/ButtonIcon.vue";
 import { getDraggableKey } from "./utils";
 import type { Statblock } from "~/shared";
 import { languages } from "@/utils/constants";
 import { $toast } from "@/utils/app/toast";
+import { store } from "@/utils/store";
 
 const { data } = defineProps<{ data: Statblock }>();
 const addNewSpeed = (newSpeedName: string) => {
@@ -37,7 +39,7 @@ const addNewSense = (newSenseName: string) => {
 <template>
 	<div id="tabpanel-2" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-2">
 		<SectionHeader title="Speed" />
-		<table class="list-table speed-senses">
+		<table v-if="data.core.speed.length > 0" class="list-table speed-senses">
 			<thead>
 				<tr>
 					<td> Order </td>
@@ -48,13 +50,7 @@ const addNewSense = (newSenseName: string) => {
 						Value
 					</td>
 					<td>
-						Unit
-					</td>
-					<td>
-						Comment
-					</td>
-					<td>
-						Delete
+						Options
 					</td>
 				</tr>
 			</thead>
@@ -62,27 +58,41 @@ const addNewSense = (newSenseName: string) => {
 				<template #item="{ element, idx }">
 					<tr>
 						<td>
-							<span><font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle" /> </span>
+							<font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle" />
 						</td>
 						<th> {{ element.name }}</th>
 						<td>
 							<SimpleNumberInput v-model="element.value" :min="0" :step="5" :label="element.name" />
 						</td>
-						<td>
-							<select v-model="element.unit" class="ghost" title="Select speed unit">
-								<option>ft</option>
-								<option>m</option>
-								<option>km</option>
-								<option>mi</option>
-								<option>none</option>
-							</select>
-						</td>
-						<td>
-							<input v-model="element.comment" type="text" placeholder="comment" style="width: 100%; padding: 6px; height: unset">
-						</td>
 						<td class="edit-buttons">
 							<div>
-								<font-awesome-icon :icon="['fas', 'eraser']" @click="data.core.speed.splice(idx, 1)" />
+								<VDropdown :distance="6" :positioning-disabled="store.isMobile">
+									<ButtonIcon icon="ruler" label="Set unit for this speed" />
+
+									<template #popper>
+										<div class="v-popper__custom-menu">
+											Set unit for this speed
+											<select v-model="element.unit" class="ghost" title="Select speed unit">
+												<option>ft</option>
+												<option>m</option>
+												<option>km</option>
+												<option>mi</option>
+												<option>none</option>
+											</select>
+										</div>
+									</template>
+								</VDropdown>
+								<VDropdown :distance="6" :positioning-disabled="store.isMobile">
+									<ButtonIcon icon="comment" label="Set comment for this speed" />
+
+									<template #popper>
+										<div class="v-popper__custom-menu">
+											Set (comment) for this speed
+											<input v-model="element.comment" type="text" placeholder="comment">
+										</div>
+									</template>
+								</VDropdown>
+								<ButtonIcon icon="eraser" label="Remove this speed" @click="data.core.speed.splice(idx, 1)" />
 							</div>
 						</td>
 					</tr>
@@ -97,7 +107,7 @@ const addNewSense = (newSenseName: string) => {
 		</div>
 
 		<SectionHeader title="Senses" />
-		<table class="list-table speed-senses">
+		<table v-if="data.core.senses.length > 0" class="list-table speed-senses">
 			<thead>
 				<tr>
 					<td> Order </td>
@@ -108,13 +118,7 @@ const addNewSense = (newSenseName: string) => {
 						Value
 					</td>
 					<td>
-						Unit
-					</td>
-					<td>
-						Comment
-					</td>
-					<td>
-						Delete
+						Options
 					</td>
 				</tr>
 			</thead>
@@ -128,28 +132,42 @@ const addNewSense = (newSenseName: string) => {
 						<td>
 							<SimpleNumberInput v-model="element.value" :min="0" :step="5" :label="element.name" />
 						</td>
-						<td>
-							<select v-model="element.unit" class="ghost" title="Select speed unit">
-								<option>ft</option>
-								<option>m</option>
-								<option>km</option>
-								<option>mi</option>
-								<option>none</option>
-							</select>
-						</td>
-						<td>
-							<input v-model="element.comment" type="text" placeholder="comment" style="width: 100%; padding: 6px; height: unset">
-						</td>
 						<td class="edit-buttons">
 							<div>
-								<font-awesome-icon :icon="['fas', 'eraser']" @click="data.core.speed.splice(idx, 1)" />
+								<VDropdown :distance="6" :positioning-disabled="store.isMobile">
+									<ButtonIcon icon="ruler" label="Set unit for this speed" />
+
+									<template #popper>
+										<div class="v-popper__custom-menu">
+											Set unit for this speed
+											<select v-model="element.unit" class="ghost" title="Select speed unit">
+												<option>ft</option>
+												<option>m</option>
+												<option>km</option>
+												<option>mi</option>
+												<option>none</option>
+											</select>
+										</div>
+									</template>
+								</VDropdown>
+								<VDropdown :distance="6" :positioning-disabled="store.isMobile">
+									<ButtonIcon icon="comment" label="Set comment for this sense" />
+
+									<template #popper>
+										<div class="v-popper__custom-menu">
+											Set (comment) for this sense
+											<input v-model="element.comment" type="text" placeholder="comment" style="width: 100%; padding: 6px; height: unset">
+										</div>
+									</template>
+								</VDropdown>
+								<ButtonIcon icon="eraser" label="Remove this speed" @click="data.core.senses.splice(idx, 1)" />
 							</div>
 						</td>
 					</tr>
 				</template>
 			</Draggable>
 		</table>
-		<div class="two-wide" style="margin-bottom: 2rem;">
+		<div class="two-wide editor-field__container" style="margin-bottom: 2rem;">
 			<LabelledComponent title="Add sense" takes-custom-text-input for="addsense">
 				<v-select :options="['Darkvision', 'Blindsight', 'Truesight', 'Tremorsense']" :taggable="true" :push-tags="true" input-id="addsense" placeholder="Select sense" @option:selected="(selected : string) => (addNewSense(selected))" />
 			</LabelledComponent>

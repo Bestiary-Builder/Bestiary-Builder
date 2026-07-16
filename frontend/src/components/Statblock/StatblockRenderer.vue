@@ -105,8 +105,8 @@ const hitDieBonus = computed(() => {
 	const hp = data.defenses.hp.numOfHitDie * statCalc("con", data);
 	if (hp !== 0) {
 		if (hp > 0)
-			return `+${hp.toString()}`;
-		else return hp.toString();
+			return ` + ${hp.toString()}`;
+		else return `${hp.toString().replace('-', ' - ')}`;
 	}
 	return "";
 });

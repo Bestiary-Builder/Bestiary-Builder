@@ -491,8 +491,7 @@ useResizeObserver(document.body, () => {
 const wrapper = useTemplateRef("wrapper");
 const editor = useTemplateRef("editor");
 
-setInterval(() => {
-	console.log(wrapper.value?.clientWidth, editor.value?.width);
+setTimeout(() => {
 	if (wrapper.value?.clientWidth !== editor.value?.width)
 		editorRef.value?.layout({ width: wrapper.value?.clientWidth || 600, height: wrapper.value?.clientHeight || height });
 }, 1000);
