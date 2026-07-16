@@ -38,7 +38,7 @@ const addNewSkill = (newSkillName: string) => {
 	<div id="tabpanel-3" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-3">
 		<SectionHeader title="Ability Scores & Saving Throws" />
 		<div>
-			<table class="list-table">
+			<table class="list-table quiet">
 				<thead>
 					<tr>
 						<th> Ability </th>
@@ -82,7 +82,7 @@ const addNewSkill = (newSkillName: string) => {
 		</div>
 		<SectionHeader title="Skills" />
 		<div>
-			<table v-if="data.abilities.skills.length > 0" class="list-table" style="margin-bottom: 1rem;">
+			<table v-if="data.abilities.skills.length > 0" class="list-table quiet" style="margin-bottom: 1rem;">
 				<thead>
 					<tr>
 						<th> Ability </th>

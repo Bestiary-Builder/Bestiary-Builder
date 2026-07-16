@@ -75,18 +75,18 @@ const importManyCreatures = () => {
 				</table>
 				<table v-else class="list-table">
 					<caption align="top">
-						Copied creatures list empty
+						No creatures copied.
 					</caption>
 					<tbody>
 						<tr>
 							<td style="color: grey; border: 0px">
-								Start copying creatures to manage them here!
+								Start copying creatures<br>to manage them here!
 							</td>
 						</tr>
 					</tbody>
 				</table>
 
-				<div class="buttons">
+				<div class="copy-manager-buttons">
 					<button v-if="copiedCreatures.length > 0" class="btn danger-hover" @click="clearCreatures()">
 						Clear list <font-awesome-icon :icon="['fas', 'trash']" />
 					</button>
@@ -105,7 +105,7 @@ const importManyCreatures = () => {
 	</VDropdown>
 </template>
 
-<style lang="less">
+<style lang="less" scoped>
 .notice-dot {
 	position: absolute;
 	width: 12px;
@@ -123,7 +123,7 @@ const importManyCreatures = () => {
 }
 
 .list-table {
-	margin: 1rem auto 0;
+	margin: 0 auto 0;
 	padding: 0.5rem 0.5rem 0;
 	padding-bottom: 0;
 	min-width: 300px;
@@ -177,7 +177,7 @@ const importManyCreatures = () => {
 	}
 }
 
-.buttons {
+.copy-manager-buttons {
 	display: flex;
 	gap: 1rem;
 	justify-content: center;
