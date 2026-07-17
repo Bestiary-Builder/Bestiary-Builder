@@ -1,4 +1,4 @@
-import type { EffectWithTarget, Features } from "~/shared";
+import type { AttackModel, EffectWithTarget, Features } from "~/shared";
 
 export const displayNames: Record<string, { label: string; icon: string }> = {
 	variable: { label: "Set Variable", icon: "proicons:braces-variable" },

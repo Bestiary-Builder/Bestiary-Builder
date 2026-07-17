@@ -19,7 +19,7 @@ _???, 2026_
 - Added 2024 SRD Creature and Actions.
 - Added a user setting to choose between 2024 and 2014 SRD options.
 - Added more image export options: 1 column, 2 column, 2 column extra wide
--
+- Updated the available default spells to choose from when editing spellcasting on a creature.
 ### Fixes
 - Improved the accuracy of the 2014 SRD Creatures and Actions data.
 - Fixed class based spellcasting to hit not having a + on positive values.

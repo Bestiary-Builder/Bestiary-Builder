@@ -1,5 +1,6 @@
 import splitOnFirst from "split-on-first";
-import { type CasterSpells, type InnateSpellsList, SKILLS_BY_STAT, type SenseEntity, type SkillsEntity, type SpeedEntity, type SpellSlotList, type Stat, type Statblock, capitalizeFirstLetter, defaultStatblock, getXPbyCR, spellListFlattened } from "~/shared";
+import { spellListFlattened } from "./staticData";
+import { type CasterSpells, type InnateSpellsList, SKILLS_BY_STAT, type SenseEntity, type SkillsEntity, type SpeedEntity, type SpellSlotList, type Stat, type Statblock, capitalizeFirstLetter, defaultStatblock, getXPbyCR } from "~/shared";
 import { abilityParser, markdownReplacer } from "@/utilities/parsing";
 import { app } from "@/utilities/constants";
 import { log } from "@/utilities/logger";

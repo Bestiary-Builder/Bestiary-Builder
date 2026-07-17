@@ -1,15 +1,30 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
 import LabelledNumberInput from "../FormInputs/LabelledNumberInput.vue";
 import Modal from "../Global/Modal.vue";
 import LabelledComponent from "../FormInputs/LabelledComponent.vue";
-import { type CreatureWithStats, type Statblock, defaultStatblock, getSpellSlots, spellList, spellListFlattened } from "~/shared";
+import { type CreatureWithStats, type Statblock, defaultStatblock, getSpellSlots } from "~/shared";
 import { classLevels, classes, stats } from "@/utils/constants";
 import { $toast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
+import { useFetch } from "@/utils/utils";
 
 const { data, rawInfo } = defineProps<{ data: Statblock; rawInfo: CreatureWithStats | null }>();
+
+const spellList = ref<{ [key: number]: string[] }>();
+const spellListFlattened = ref<string[]>();
+onMounted(async () => {
+	const { success, data } = await useFetch<{ [key: number]: string[] }>(`/api/spells/all`);
+	if (success) {
+		spellList.value = data;
+		let spellListFlattenedTemp: string[] = [];
+		for (const list of Object.values(spellList.value))
+			spellListFlattenedTemp = spellListFlattenedTemp.concat(list);
+		spellListFlattenedTemp.sort();
+		spellListFlattened.value = [...spellListFlattenedTemp];
+	}
+});
 
 const selectedSpell = ref({
 	0: null,
@@ -39,10 +54,9 @@ const spellLevelList = computed((): number[] => {
 });
 
 const getSpellsByLevel = (level: number): string[] => {
-	// this function is needed for typescript.
-	if (level < 0 || level > 9)
+	if (level < 0 || level > 9 || !spellList.value)
 		return [];
-	return spellList[level as 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9];
+	return spellList.value[level];
 };
 
 // helpers for managing spellcasting
@@ -115,7 +129,7 @@ const showSpellSlotModal = ref(false);
 				<span> <input id="displayasaction" v-model="data.spellcasting.innateSpells.displayAsAction" type="checkbox"> <label for="displayasaction">Toggles display as action</label> </span>
 			</LabelledComponent>
 		</div>
-		<div class="editor-field__container three-wide">
+		<div class="editor-field__container two-wide">
 			<TransitionGroup name="list">
 				<template v-for="_, times in data.spellcasting.innateSpells.spellList" :key="times">
 					<LabelledComponent :title="times === '0' ? 'At will' : `${times}/day`" takes-custom-text-input :for="`innateSpellTimes${times}`">
@@ -176,7 +190,7 @@ const showSpellSlotModal = ref(false);
 		</div>
 		<div v-if="data.spellcasting.casterSpells.castingClass" class="editor-field__container two-wide">
 			<LabelledComponent v-if="!['Ranger', 'Paladin'].includes(data.spellcasting.casterSpells.castingClass)" title="Cantrips" takes-custom-text-input for="cantrips">
-				<v-select v-model="data.spellcasting.casterSpells.spellList[0]" :options="spellList[0]" multiple :deselect-from-dropdown="true" :close-on-select="false" :taggable="true" :push-tags="true" input-id="cantrips" />
+				<v-select v-model="data.spellcasting.casterSpells.spellList[0]" :options="spellList![0]" multiple :deselect-from-dropdown="true" :close-on-select="false" :taggable="true" :push-tags="true" input-id="cantrips" />
 			</LabelledComponent>
 			<LabelledComponent v-for="level in spellLevelList" :key="level" :title="`Level ${level}`" takes-custom-text-input :for="`spellLevel${level}`">
 				<v-select v-model="data.spellcasting.casterSpells.spellList[level]" :options="getSpellsByLevel(level)" multiple :deselect-from-dropdown="true" :close-on-select="false" :taggable="true" :push-tags="true" :title="`Level ${level}`" :input-id="`spellLevel${level}`" />

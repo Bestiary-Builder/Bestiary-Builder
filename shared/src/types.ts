@@ -207,6 +207,7 @@ export interface AttackModel {
 	thumb?: string;
 	extra_crit_damage?: string;
 	activation_type?: number;
+	list_display_override?: string;
 }
 
 export type IntExpression = string;

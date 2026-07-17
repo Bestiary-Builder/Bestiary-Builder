@@ -7,7 +7,7 @@ import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 
 const currentEffect = inject<Ref<AttackModel>>("currentEffect");
 
-useDataCleanup(currentEffect, ["thumb", "verb", "proper", "phrase", "criton", "extra_crit_damage", "activation_type"]);
+useDataCleanup(currentEffect, ["thumb", "verb", "proper", "phrase", "criton", "extra_crit_damage", "activation_type", "list_display_override"]);
 
 const setName = inject<any>("setActionName");
 </script>
@@ -88,6 +88,9 @@ const setName = inject<any>("setActionName");
 						Lair
 					</option>
 				</select>
+			</LabelledComponent>
+			<LabelledComponent title="List display override" for="listDisplayOverride">
+				<input id="listDisplayOverride" v-model="currentEffect.list_display_override" type="text">
 			</LabelledComponent>
 		</div>
 	</template>

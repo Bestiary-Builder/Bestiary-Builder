@@ -5,7 +5,7 @@ import SRDAttacks2014 from "@/staticData/2014/SRDAttacks2014.json";
 import SRDCreatures2014 from "@/staticData/2014/SRDCreatures2014.json";
 import SRDCreatures2024 from "@/staticData/2024/SRDCreatures2024.json";
 import SRDAttacks2024 from "@/staticData/2024/SRDAttacks2024.json";
-
+import spells from "@/staticData/shared/spells.json";
 import tOF from "@/staticData/shared/textOnlyFeatures.json";
 import tags from "@/staticData/tags.json";
 import limits from "@/staticData/limits.json";
@@ -90,6 +90,17 @@ app.get("/api/srd-creatures/2024/:name", async (req, res) => {
 });
 
 // Spells
+app.get("/api/spells/all", async (req, res) => {
+	return res.json(spells);
+});
+
+let spellListFlattenedTemp: string[] = [];
+for (const list of Object.values(spells))
+	spellListFlattenedTemp = spellListFlattenedTemp.concat(list);
+spellListFlattenedTemp.sort();
+export const spellListFlattened = [...spellListFlattenedTemp];
+
+// Gamedata from avrae
 const getAllEntitlements = async () => await fetch("https://api.avrae.io/gamedata/entitlements?free=aaa", {
 	method: "GET",
 	headers: {
@@ -97,13 +108,13 @@ const getAllEntitlements = async () => await fetch("https://api.avrae.io/gamedat
 	},
 }).then(response => response.json());
 
-let spells: Array<{ label: string; id: number }>;
+let gameDataspells: Array<{ label: string; id: number }>;
 getAllEntitlements().then((x) => {
-	spells = Object.values(x.data).filter((x: any) => x.entity_type === "spell").map((x: any) => ({ label: x.name, id: x.entity_id }));
+	gameDataspells = Object.values(x.data).filter((x: any) => x.entity_type === "spell").map((x: any) => ({ label: x.name, id: x.entity_id }));
 });
 
 app.get("/api/gamedata/spells", async (req, res) => {
-	res.json(spells);
+	res.json(gameDataspells);
 });
 
 // limiteduse abilities
