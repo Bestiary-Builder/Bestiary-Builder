@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
-import { computed, nextTick, onMounted, onUnmounted, provide, reactive, ref, shallowRef, useTemplateRef, watch } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, provide, ref, shallowRef, useTemplateRef, watch } from "vue";
 import YAML from "yaml";
 import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
+import { useLocalStorage } from "@vueuse/core";
 import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
-import { type AttackModel, type AutomationDocumentation, type BestiaryExtended, type CreatureWithStats, type FeatureEntity, type Features, type Id, type Statblock, parseDescIntoAutomation } from "~/shared";
+import { type AttackModel, type AutomationDocumentation, type BestiaryExtended, type CreatureWithStats, type FeatureEntity, type Features, type Statblock, parseDescIntoAutomation } from "~/shared";
 import { $loading } from "@/utils/app/loading";
 import { useFetch } from "@/utils/utils";
-import { $toast } from "@/utils/app/toast";
+import { $toast, htmlToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import Markdown from "@/components/Global/Markdown.vue";
@@ -116,6 +117,19 @@ async function getBestiary() {
 }
 
 // saving
+const validateAttack = async (automation: any): Promise<boolean> => {
+	if (automation === null)
+		return true;
+	const { success, error } = await useFetch("/api/validate/automation", "POST", automation);
+	if (success) {
+		return true;
+	}
+	else {
+		$toast.error(htmlToast(error), { duration: 20000 });
+		return false;
+	}
+};
+
 const isSaved = ref(false);
 const saveStatblock = async (shouldNotify: boolean): Promise<boolean> => {
 	if (!rawInfo.value || !data.value)
@@ -124,6 +138,13 @@ const saveStatblock = async (shouldNotify: boolean): Promise<boolean> => {
 	let loader;
 	if (shouldNotify)
 		loader = $loading.show();
+	// validate it as valid avrae automation
+	// null | AttackModel | AttackModel[]
+	const isValidAutomation = await validateAttack(data.value.features[type][aid].automation);
+	if (!isValidAutomation) {
+		loader?.hide();
+		return false;
+	}
 	// Send to backend
 	const { success, error } = await useFetch<CreatureWithStats>(`/api/creature/${rawInfo.value.id.toString()}/update`, "POST", rawInfo.value);
 	if (success) {
@@ -213,27 +234,6 @@ const copyAutomation = async () => {
 };
 
 const automationString = ref("");
-const automationStringValidated = ref(true);
-
-watch(automationString, async () => {
-	automationStringValidated.value = false;
-	isSaved.value = false;
-	await validateYaml();
-});
-
-const validateYaml = async () => {
-	if (!data.value)
-		return;
-	try {
-		const parsed = YAML.parse(automationString.value);
-		data.value.features[type][aid].automation = parsed;
-		automationStringValidated.value = true;
-		await saveStatblock(false);
-	}
-	catch (err) {
-
-	}
-};
 
 // monaco editor
 const editorRef = shallowRef();
@@ -388,13 +388,13 @@ watch(toNavigateTo, async () => {
 	$router.go(0);
 });
 
-const parityOptions = reactive({
+const parityOptions = useLocalStorage("featureEditParityOptions", {
 	updateName: true,
 	updateDescription: true
 });
 
 watch(() => data.value?.features[type][aid].name, (newName) => {
-	if (prefersVisualEditor.value && parityOptions.updateName) {
+	if (prefersVisualEditor.value && parityOptions.value.updateName) {
 		const automation = data.value?.features[type][aid].automation as AttackModel | AttackModel[] | null;
 		if (!automation)
 			return;
@@ -406,7 +406,7 @@ watch(() => data.value?.features[type][aid].name, (newName) => {
 });
 
 watch(() => data.value?.features[type][aid].description, (newDesc) => {
-	if (prefersVisualEditor.value && parityOptions.updateDescription) {
+	if (prefersVisualEditor.value && parityOptions.value.updateDescription) {
 		const automation = data.value?.features[type][aid].automation as AttackModel | AttackModel[] | null;
 		if (!automation)
 			return;
@@ -472,18 +472,11 @@ provide("setActionDescription", setDesc);
 			<div>
 				<LabelledComponent title="Feature name" for="featurename">
 					<input id="featurename" v-model="data.features[type][aid].name" type="text" placeholder="Enter name" :minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength">
-					<span>
+					<span v-if="prefersVisualEditor">
 						<input v-model="parityOptions.updateName" type="checkbox" style="scale: .7; translate: 0 4px">
-						<small v-if="prefersVisualEditor" style="font-size: x-small;"> <i>Updates the name of the first action in the automation structure to this text while enabled.</i> </small>
+						<small style="font-size: x-small;"> <i>Updates the name of the first action in the automation structure to this text while enabled.</i> </small>
 					</span>
 				</LabelledComponent>
-				<div v-if="!prefersVisualEditor" style="margin-top: .5rem">
-					<b> Status: </b>
-					<span v-if="!automationStringValidated" style="color: var(--color-destructive)"> Automation invalid. </span>
-					<span v-else-if="isSaved"> Saved <font-awesome-icon style="color: var(--color-success)" :icon="['fas', 'save']" />
-					</span>
-					<span v-else> Saving...</span>
-				</div>
 				<div style="margin-top: 1rem;">
 					<select v-model="toNavigateTo" class="ghost" placeholder="Open other attack">
 						<option :value="[-1, -1]" disabled selected>
