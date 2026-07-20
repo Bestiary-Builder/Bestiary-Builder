@@ -735,7 +735,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 30,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -1095,7 +1095,7 @@
         },
         "misc": {
             "legActionsPerRound": 3,
-            "telepathy": null,
+            "telepathy": 120,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -14988,7 +14988,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 120,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -18462,7 +18462,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 120,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -20327,7 +20327,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 120,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -20782,7 +20782,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 120,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -21617,7 +21617,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 120,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -26037,7 +26037,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 60,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -26577,7 +26577,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 120,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -32017,7 +32017,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 120,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -32440,7 +32440,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 120,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -36590,7 +36590,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 120,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -41087,7 +41087,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 60,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -42948,7 +42948,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 120,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -45815,7 +45815,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 60,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -50361,7 +50361,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 120,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -51387,7 +51387,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 60,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -51750,7 +51750,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 60,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -53793,7 +53793,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 60,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -67419,7 +67419,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 120,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -72271,7 +72271,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 60,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -73280,7 +73280,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 120,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -77972,7 +77972,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 120,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -80221,7 +80221,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 120,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -81312,7 +81312,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 120,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -82332,7 +82332,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 60,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -82689,7 +82689,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 60,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -85660,7 +85660,7 @@
         },
         "misc": {
             "legActionsPerRound": 3,
-            "telepathy": null,
+            "telepathy": 120,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -92490,7 +92490,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 120,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -94324,7 +94324,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 60,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -95039,7 +95039,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 120,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -95539,7 +95539,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 120,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -99588,7 +99588,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 120,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -101455,7 +101455,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 60,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -103171,7 +103171,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 120,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -107048,7 +107048,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 120,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -108022,7 +108022,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 120,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -113598,7 +113598,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 60,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -120541,7 +120541,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 120,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -123116,7 +123116,7 @@
         },
         "misc": {
             "legActionsPerRound": 3,
-            "telepathy": null,
+            "telepathy": 120,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -123526,7 +123526,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 120,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -125833,7 +125833,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 120,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -128933,7 +128933,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 60,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -129723,7 +129723,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 60,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -132699,7 +132699,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 60,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -132980,7 +132980,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 120,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -136217,7 +136217,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 120,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -136907,7 +136907,7 @@
         },
         "misc": {
             "legActionsPerRound": 3,
-            "telepathy": null,
+            "telepathy": 120,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",
@@ -140550,7 +140550,7 @@
         },
         "misc": {
             "legActionsPerRound": 0,
-            "telepathy": null,
+            "telepathy": 120,
             "passivePerceptionOverride": null,
             "featureHeaderTexts": {
                 "features": "",

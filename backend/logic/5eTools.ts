@@ -783,7 +783,7 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 				return 0;
 			for (const s of data?.languages ?? []) {
 				if (s.includes("telepathy"))
-					return Number.parseInt(s.replace(/[a-z]/gi, ""));
+					return Number.parseInt(s.match(/\d+(\.\d+)?/gi)[0] || "0");
 			}
 
 			return 0;
