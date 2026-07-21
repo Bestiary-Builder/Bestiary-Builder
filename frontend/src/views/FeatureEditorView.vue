@@ -75,7 +75,7 @@ const unwatch = watch(() => data.value,	() => {
 },	{ deep: true });
 
 onBeforeRouteUpdate(() => {
-	if (prefersVisualEditor.value)
+	if (isVisualEditor.value)
 		return;
 
 	if (madeChanges.value && (isOwner.value || isEditor.value)) {
@@ -86,7 +86,7 @@ onBeforeRouteUpdate(() => {
 });
 onBeforeRouteLeave(() => {
 	// when the user leaves this route
-	if (prefersVisualEditor.value)
+	if (isVisualEditor.value)
 		return;
 
 	if (madeChanges.value && (isOwner.value || isEditor.value)) {
@@ -97,7 +97,7 @@ onBeforeRouteLeave(() => {
 });
 
 const beforeUnLoad = (event: Event) => {
-	if (prefersVisualEditor.value)
+	if (isVisualEditor.value)
 		return;
 	if (madeChanges.value && (isOwner.value || isEditor.value)) {
 		event.preventDefault();
@@ -145,7 +145,7 @@ const saveStatblock2 = async (shouldNotify: boolean): Promise<boolean> => {
 
 	try {
 		// Parse
-		if (!prefersVisualEditor.value) {
+		if (!isVisualEditor.value) {
 			const automationAsCode = YAML.parse(automationString.value);
 			data.value.features[type][aid].automation = automationAsCode;
 		}
@@ -292,7 +292,7 @@ const currentContext = ref("");
 const cursorPosition = ref(0);
 
 const ourInterval = setInterval(() => {
-	if (!prefersVisualEditor.value)
+	if (!isVisualEditor.value)
 		cursorPosition.value = editorRef.value?.getModel().getOffsetAt(editorRef.value?.getPosition());
 }, 1000);
 
@@ -395,7 +395,7 @@ const getAutomationDescription = (): string | boolean => {
 		return false;
 	if (!data.value?.features[type][aid].automation || !auto || auto?.automation?.length === 0)
 		return false;
-	for (const field of auto?.automation?.reverse() || []) {
+	for (const field of (auto?.automation || []).reverse() || []) {
 		if (field?.type === "text")
 			return field.text;
 	}
@@ -414,17 +414,17 @@ const showDescriptionButtons = computed(() => {
 	return false;
 });
 
-const prefersVisualEditor = ref(store.user?.preferredEditor === "Visual");
+const isVisualEditor = ref(store.user?.preferredEditor === "Visual");
 
 const changeEditor = () => {
 	if (data.value) {
 		try {
-			if (prefersVisualEditor.value)
+			if (isVisualEditor.value)
 				automationString.value = YAML.stringify(data.value.features[type][aid].automation);
 			else
 				data.value.features[type][aid].automation = YAML.parse(automationString.value);
 
-			prefersVisualEditor.value = !prefersVisualEditor.value;
+			isVisualEditor.value = !isVisualEditor.value;
 		}
 		catch (err) {
 			$toast.error(`Error parsing automation YAML. ${err instanceof Error ? err.message : "An unexpected error occurred."}`, {
@@ -451,7 +451,7 @@ const parityOptions = useLocalStorage("featureEditParityOptions", {
 });
 
 watch(() => data.value?.features[type][aid].name, (newName) => {
-	if (prefersVisualEditor.value && parityOptions.value.updateName) {
+	if (isVisualEditor.value && parityOptions.value.updateName) {
 		const automation = data.value?.features[type][aid].automation as AttackModel | AttackModel[] | null;
 		if (!automation)
 			return;
@@ -463,7 +463,7 @@ watch(() => data.value?.features[type][aid].name, (newName) => {
 });
 
 watch(() => data.value?.features[type][aid].description, (newDesc) => {
-	if (prefersVisualEditor.value && parityOptions.value.updateDescription) {
+	if (isVisualEditor.value && parityOptions.value.updateDescription) {
 		const automation = data.value?.features[type][aid].automation as AttackModel | AttackModel[] | null;
 		if (!automation)
 			return;
@@ -529,7 +529,7 @@ provide("setActionDescription", setDesc);
 			<div>
 				<LabelledComponent title="Feature name" for="featurename">
 					<input id="featurename" v-model="data.features[type][aid].name" type="text" placeholder="Enter name" :minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength">
-					<span v-if="prefersVisualEditor">
+					<span v-if="isVisualEditor">
 						<input v-model="parityOptions.updateName" type="checkbox" style="scale: .7; translate: 0 4px">
 						<small style="font-size: x-small;"> <i>Updates the name of the first action in the automation structure to this text while enabled.</i> </small>
 					</span>
@@ -548,7 +548,7 @@ provide("setActionDescription", setDesc);
 						</template>
 					</select>
 				</div>
-				<div v-if=" !prefersVisualEditor && showDescriptionButtons">
+				<div v-if=" !isVisualEditor && showDescriptionButtons">
 					<b> Descriptions: </b>
 					<span style="color: var(--color-destructive)"> Don't match. </span>
 					<p style="text-decoration: underline; font-size: smaller; cursor: pointer;" @click="updateAutomationDescFromFeatureDesc">
@@ -562,20 +562,20 @@ provide("setActionDescription", setDesc);
 
 			<LabelledComponent title="Description" for="description">
 				<Editor v-model="data.features[type][aid].description" :height="100" />
-				<span v-if="prefersVisualEditor" class="sub-action">
+				<span v-if="isVisualEditor" class="sub-action">
 					<input v-model="parityOptions.updateDescription" type="checkbox">
 					<small> <i>Updates the last text node of the first action in the automation structure to this text while enabled.</i> </small>
 				</span>
 			</LabelledComponent>
 		</div>
 
-		<div v-if="!prefersVisualEditor" class="editor">
+		<div v-if="!isVisualEditor" class="editor">
 			<VueMonacoEditor v-model:value="automationString" theme="vs-dark" :options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false }" height="500px" language="yaml" @mount="handleMount" />
 		</div>
 		<div v-else style="margin-top: 2rem">
 			<VisualEditor ref="VisualEditorRef" v-model="data.features[type][aid].automation" :name="data.features[type][aid].name" />
 		</div>
-		<div v-if="!prefersVisualEditor">
+		<div v-if="!isVisualEditor">
 			<div v-if="currentDocu" class="docs">
 				<hr>
 				<h3>Documentation: {{ currentContext }}</h3>
