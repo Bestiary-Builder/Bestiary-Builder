@@ -403,14 +403,22 @@ const moveSlide = (event: KeyboardEvent) => {
 					</button>
 				</div>
 
-				<div v-if="rawInfo !== null" class="editor-content">
+				<Shimmer :loading="rawInfo === null" :template-props="{ data: defaultStatblock }" shimmer-color="orangered" class="editor-content">
 					<DescriptionPanel v-if="slideIndex === 1" :data="data" />
 					<CorePanel v-if="slideIndex === 2" :data="data" />
 					<StatsPanel v-if="slideIndex === 3" :data="data" />
 					<DefensesPanel v-if="slideIndex === 4" :data="data" />
 					<FeaturesPanel v-if="slideIndex === 5" :data="data" :raw-info="rawInfo" />
 					<SpellcastingPanel v-if="slideIndex === 6" :data="data" :raw-info="rawInfo" />
-				</div>
+				</Shimmer>
+				<!-- <div v-if="rawInfo !== null" class="editor-content">
+					<DescriptionPanel v-if="slideIndex === 1" :data="data" />
+					<CorePanel v-if="slideIndex === 2" :data="data" />
+					<StatsPanel v-if="slideIndex === 3" :data="data" />
+					<DefensesPanel v-if="slideIndex === 4" :data="data" />
+					<FeaturesPanel v-if="slideIndex === 5" :data="data" :raw-info="rawInfo" />
+					<SpellcastingPanel v-if="slideIndex === 6" :data="data" :raw-info="rawInfo" />
+				</div> -->
 			</div>
 			<div class="content-container__inner">
 				<Shimmer :loading="rawInfo === null" :template-props="{ data: defaultStatblock }" shimmer-color="orangered">
