@@ -24,8 +24,8 @@ const hasAllTarget = computed(() => {
 	return !isButton.value;
 });
 
-if (currentEffect?.value.target === "each")
-	currentEffect.value.target = "all";
+if (currentEffect?.value.target === "all")
+	currentEffect.value.target = "each";
 
 useDataCleanup(currentEffect, ["sortBy"]);
 </script>
@@ -36,8 +36,8 @@ useDataCleanup(currentEffect, ["sortBy"]);
 		<div class="two-wide">
 			<LabelledComponent title="Target" for="target">
 				<select id="target" v-model="currentEffect.target" title="Target" class="ghost">
-					<option v-if="hasAllTarget" value="all">
-						All
+					<option v-if="hasAllTarget" value="each">
+						Each/All
 					</option>
 					<option value="self">
 						Self/Caster

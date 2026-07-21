@@ -17,7 +17,7 @@ const setName = inject<any>("setActionName");
 		<SectionHeader title="Attack Model" />
 		<div class="two-wide">
 			<LabelledComponent title="Attack Name*" for="name">
-				<input id="name" v-model="currentEffect.name" type="text" :class="{ required: currentEffect.name.length === 0 }">
+				<input id="name" v-model="currentEffect.name" type="text" :class="{ required: (currentEffect.name ?? '').length === 0 }">
 				<small style="font-size: x-small; cursor: pointer" role="button" @click="setName(currentEffect.name)"> <i>Click here to set the name of the statblock feature to this name.</i> </small>
 			</LabelledComponent>
 			<LabelledComponent title="Thumbnail URL" for="thumb">

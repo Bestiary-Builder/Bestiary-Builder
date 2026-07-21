@@ -22,7 +22,7 @@ watch(() => currentEffect!.value?.style, () => {
 
 <template>
 	<template v-if="currentEffect">
-		<SectionHeader :title="`Button (${currentEffect.label})`" />
+		<SectionHeader :title="`Button (${currentEffect.label.substring(0, 40).trim()})`" />
 		<div class="two-wide">
 			<LabelledComponent title="Button Label*" for="label">
 				<input id="label" v-model="currentEffect.label" type="text" :class="{ required: currentEffect.label.length === 0 }">

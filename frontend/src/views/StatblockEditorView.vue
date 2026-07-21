@@ -278,60 +278,26 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 	loader.hide();
 };
 
-// slide managers for accessibility:
-const slideIndex = ref(2);
-const tabs = document.getElementsByClassName("editor-nav__tab") as HTMLCollectionOf<HTMLElement>;
-const tabsContent = document.getElementsByClassName("editor-content__tab-inner") as HTMLCollectionOf<HTMLElement>;
-
+// Tabs
+const slideIndex = ref(1);
 onMounted(async () => {
 	if (typeof ($route.query.pane) == "string") {
-		setTimeout(async () => {
-			showSlides(Math.max(0, Math.min(6, Math.abs(Number.parseInt($route.query.pane as string)))));
-			await $router.replace({ query: undefined });
-		}, 100);
+		slideIndex.value = Math.max(0, Math.min(6, Math.abs(Number.parseInt($route.query.pane))));
+		await $router.replace({ query: undefined });
 	}
-	else { showSlides(1); }
 });
-
-const showSlides = (n: number) => {
-	if (slideIndex.value === n)
-		return;
-
-	for (let i = 0; i < tabs.length; i++) {
-		const tab = tabs[i];
-		if (i !== n - 1) {
-			tab.setAttribute("aria-selected", "false");
-			tab.tabIndex = -1;
-		}
-		else {
-			tab.setAttribute("aria-selected", "true");
-			tab.removeAttribute("tabindex");
-			tab.focus();
-		}
-	}
-
-	for (let i = 0; i < tabsContent.length; i++) {
-		if (i !== n - 1)
-			tabsContent[i].style.display = "none";
-		else
-			tabsContent[i].style.display = "block";
-	}
-
-	slideIndex.value = n;
-};
-
 const moveSlide = (event: KeyboardEvent) => {
 	const currentSlide = slideIndex.value;
 	let moveToSlide = 0;
 	switch (event.key) {
 		case "ArrowLeft":
 			if (currentSlide === 1)
-				moveToSlide = tabs.length;
+				moveToSlide = 6;
 			else moveToSlide = currentSlide - 1;
 			break;
 
 		case "ArrowRight":
-			if (currentSlide === tabs.length)
+			if (currentSlide === 6)
 				moveToSlide = 1;
 			else moveToSlide = currentSlide + 1;
 			break;
@@ -341,14 +307,14 @@ const moveSlide = (event: KeyboardEvent) => {
 			break;
 
 		case "End":
-			moveToSlide = tabs.length;
+			moveToSlide = 6;
 			break;
 	}
 
 	if (moveToSlide) {
 		event.stopPropagation();
 		event.preventDefault();
-		showSlides(moveToSlide);
+		slideIndex.value = moveToSlide;
 	}
 };
 </script>
@@ -417,33 +383,33 @@ const moveSlide = (event: KeyboardEvent) => {
 		<div class="content more-wide" :class="{ 'is-statblock-only': !shouldShowEditor }">
 			<div v-show="shouldShowEditor" class="content-container__inner editor">
 				<div class="editor-nav" role="tablist" aria-label="Statblock editor tabs">
-					<button id="tab-1" :class="{ 'active-slide': slideIndex === 1 }" class="editor-nav__tab" role="tab" aria-controls="tabpanel-1" @click="showSlides(1)" @keydown="moveSlide">
+					<button id="tab-1" :class="{ 'active-slide': slideIndex === 1 }" class="editor-nav__tab" role="tab" aria-controls="tabpanel-1" @click="slideIndex = 1" @keydown="moveSlide">
 						Description
 					</button>
-					<button id="tab-2" :class="{ 'active-slide': slideIndex === 2 }" class="editor-nav__tab" role="tab" aria-controls="tabpanel-2" @click="showSlides(2)" @keydown="moveSlide">
+					<button id="tab-2" :class="{ 'active-slide': slideIndex === 2 }" class="editor-nav__tab" role="tab" aria-controls="tabpanel-2" @click="slideIndex = 2" @keydown="moveSlide">
 						Core
 					</button>
-					<button id="tab-3" :class="{ 'active-slide': slideIndex === 3 }" class="editor-nav__tab" role="tab" aria-controls="tabpanel-3" @click="showSlides(3)" @keydown="moveSlide">
+					<button id="tab-3" :class="{ 'active-slide': slideIndex === 3 }" class="editor-nav__tab" role="tab" aria-controls="tabpanel-3" @click="slideIndex = 3" @keydown="moveSlide">
 						Stats
 					</button>
-					<button id="tab-4" :class="{ 'active-slide': slideIndex === 4 }" class="editor-nav__tab" role="tab" aria-controls="tabpanel-4" @click="showSlides(4)" @keydown="moveSlide">
+					<button id="tab-4" :class="{ 'active-slide': slideIndex === 4 }" class="editor-nav__tab" role="tab" aria-controls="tabpanel-4" @click="slideIndex = 4" @keydown="moveSlide">
 						Defenses
 					</button>
-					<button id="tab-5" :class="{ 'active-slide': slideIndex === 5 }" class="editor-nav__tab" role="tab" aria-controls="tabpanel-5" @click="showSlides(5)" @keydown="moveSlide">
+					<button id="tab-5" :class="{ 'active-slide': slideIndex === 5 }" class="editor-nav__tab" role="tab" aria-controls="tabpanel-5" @click="slideIndex = 5" @keydown="moveSlide">
 						Features
 					</button>
-					<button id="tab-6" :class="{ 'active-slide': slideIndex === 6 }" class="editor-nav__tab" role="tab" aria-controls="tabpanel-6" @click="showSlides(6)" @keydown="moveSlide">
+					<button id="tab-6" :class="{ 'active-slide': slideIndex === 6 }" class="editor-nav__tab" role="tab" aria-controls="tabpanel-6" @click="slideIndex = 6" @keydown="moveSlide">
 						Spells
 					</button>
 				</div>
 
 				<div v-if="rawInfo !== null" class="editor-content">
-					<DescriptionPanel :data="data" />
-					<CorePanel :data="data" />
-					<StatsPanel :data="data" />
-					<DefensesPanel :data="data" />
-					<FeaturesPanel :data="data" :raw-info="rawInfo" />
-					<SpellcastingPanel :data="data" :raw-info="rawInfo" />
+					<DescriptionPanel v-if="slideIndex === 1" :data="data" />
+					<CorePanel v-if="slideIndex === 2" :data="data" />
+					<StatsPanel v-if="slideIndex === 3" :data="data" />
+					<DefensesPanel v-if="slideIndex === 4" :data="data" />
+					<FeaturesPanel v-if="slideIndex === 5" :data="data" :raw-info="rawInfo" />
+					<SpellcastingPanel v-if="slideIndex === 6" :data="data" :raw-info="rawInfo" />
 				</div>
 			</div>
 			<div class="content-container__inner">
