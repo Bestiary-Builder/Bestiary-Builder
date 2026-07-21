@@ -147,9 +147,9 @@ const additionalText = computed(() => {
 		<NodeHeader :type="selfType" :additional-text="additionalText" :is-current="isCurrentSelectedContext" />
 		<span class="tree-buttons">
 			<Icon v-if="(nodeListEffectIsPartOf || []).length > 0 && indexInRespectToParent !== 0" icon="ooui:arrow-up" inline width=".75em" @click.prevent="moveUp" />
-			<Icon v-else icon="ooui:arrow-up" inline width=".75em" color="#3f3f3f" />
+			<Icon v-else icon="ooui:arrow-up" inline width=".75em" color="#3f3f3f" class="disabled" />
 			<Icon v-if="(nodeListEffectIsPartOf || []).length > 0 && indexInRespectToParent !== (nodeListEffectIsPartOf || []).length - 1 " icon="ooui:arrow-down" inline width=".75em" @click.prevent="moveDown" />
-			<Icon v-else icon="ooui:arrow-down" inline width=".75em" color="#3f3f3f" />
+			<Icon v-else icon="ooui:arrow-down" inline width=".75em" color="#3f3f3f" class="disabled" />
 
 			<Icon icon="fa7-solid:eraser" inline width=".75em" @click="deleteNode" />
 			<Icon icon="ooui:copy-ltr" inline width=".75em" @click="copyNode" />
