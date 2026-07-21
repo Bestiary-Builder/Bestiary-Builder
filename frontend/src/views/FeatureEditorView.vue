@@ -124,42 +124,79 @@ async function getBestiary() {
 }
 
 // saving
-const validateAttack = async (automation: any): Promise<boolean> => {
+const validateAttack = async (automation: any): Promise<true | string> => {
 	if (automation === null)
 		return true;
 	const { success, error } = await useFetch("/api/validate/automation", "POST", automation);
-	if (success) {
+	if (success)
 		return true;
-	}
-	else {
-		$toast.error(htmlToast(error), { duration: 20000 });
-		return false;
-	}
+	else
+		return error;
 };
 
 const isSaved = ref(false);
-const saveStatblock = async (shouldNotify: boolean): Promise<boolean> => {
+
+const saveStatblock2 = async (shouldNotify: boolean): Promise<boolean> => {
 	if (!rawInfo.value || !data.value)
 		return false;
+
 	rawInfo.value.stats = data.value;
-	let loader;
-	if (shouldNotify)
-		loader = $loading.show();
-	// validate it as valid avrae automation
-	// null | AttackModel | AttackModel[]
-	const isValidAutomation = await validateAttack(data.value.features[type][aid].automation);
-	if (!isValidAutomation) {
-		loader?.hide();
+	const toastId = shouldNotify ? $toast.loading("Validating...") : undefined;
+
+	try {
+		// Parse
+		if (!prefersVisualEditor.value) {
+			const automationAsCode = YAML.parse(automationString.value);
+			data.value.features[type][aid].automation = automationAsCode;
+		}
+	}
+	catch (err) {
+		if (toastId) {
+			$toast.error(`Error parsing automation YAML. ${err instanceof Error ? err.message : "An unexpected error occurred."}`, {
+				id: toastId,
+				duration: 10000,
+			});
+		}
+		else {
+			$toast.error(`Error parsing automation YAML. ${err instanceof Error ? err.message : "An unexpected error occurred."}`, {
+				duration: 10000,
+			});
+		}
 		return false;
 	}
-	// Send to backend
-	const { success, error } = await useFetch<CreatureWithStats>(`/api/creature/${rawInfo.value.id.toString()}/update`, "POST", rawInfo.value);
-	if (success) {
+	try {
+		// Validate
+		const validAutomation = await validateAttack(data.value.features[type][aid].automation);
+		if (validAutomation !== true) {
+			if (toastId)
+				$toast.error(htmlToast(validAutomation), { duration: 20000, id: toastId, dismissible: true });
+			return false;
+		}
+
+		// Update loading message
+		if (toastId)
+			$toast.loading("Saving...", { id: toastId });
+		// Save
+		const { success, error } = await useFetch<CreatureWithStats>(`/api/creature/${rawInfo.value.id}/update`, "POST", rawInfo.value);
+		if (!success) {
+			if (toastId) {
+				$toast.error(`Error saving statblock. ${error}`, {
+					id: toastId,
+					duration: 10000,
+				});
+			}
+			else {
+				$toast.error(`Error saving statblock. ${error}`, {
+					duration: 10000,
+				});
+			}
+
+			return false;
+		}
+
 		isSaved.value = true;
-		if (shouldNotify)
-			$toast.success("Saved Action Successfully");
 		madeChanges.value = false;
-		// watch data only once, as traversing the object deeply is expensive.
+
 		const unwatch = watch(
 			() => data.value,
 			() => {
@@ -168,17 +205,22 @@ const saveStatblock = async (shouldNotify: boolean): Promise<boolean> => {
 			},
 			{ deep: true }
 		);
-	}
-	else {
-		$toast.error(`Error saving statblock. ${error}`, { duration: 10000 });
-	}
-	if (loader)
-		loader.hide();
 
-	if (success)
+		if (toastId)
+			setTimeout(() => $toast.success("Saved action successfully.", { id: toastId }), 500);
+
 		return true;
-	else
+	}
+	catch (err) {
+		if (toastId) {
+			$toast.error(
+				err instanceof Error ? err.message : "An unexpected error occurred.",
+				{ id: toastId }
+			);
+		}
+
 		return false;
+	}
 };
 
 type AutomationTypes = "automation" | "basic-example" | "srd-features/2014" | "srd-features/2024";
@@ -217,7 +259,7 @@ const loadFeature = async (feature: FeatureEntity, apiPath: AutomationTypes) => 
 		visualEditorRef.value.currentContext = [];
 	}
 	$toast.success(`Successfully loaded ${feature.name}!`);
-	await saveStatblock(false);
+	await saveStatblock2(false);
 };
 
 const generateAutomation = async () => {
@@ -376,18 +418,26 @@ const prefersVisualEditor = ref(store.user?.preferredEditor === "Visual");
 
 const changeEditor = () => {
 	if (data.value) {
-		if (prefersVisualEditor.value)
-			automationString.value = YAML.stringify(data.value.features[type][aid].automation);
-		else
-			data.value.features[type][aid].automation = YAML.parse(automationString.value);
+		try {
+			if (prefersVisualEditor.value)
+				automationString.value = YAML.stringify(data.value.features[type][aid].automation);
+			else
+				data.value.features[type][aid].automation = YAML.parse(automationString.value);
+
+			prefersVisualEditor.value = !prefersVisualEditor.value;
+		}
+		catch (err) {
+			$toast.error(`Error parsing automation YAML. ${err instanceof Error ? err.message : "An unexpected error occurred."}`, {
+				duration: 10000,
+			});
+		}
 	}
-	prefersVisualEditor.value = !prefersVisualEditor.value;
 };
 
 const toNavigateTo = ref([-1, -1]);
 
 watch(toNavigateTo, async () => {
-	const didSave = await saveStatblock(false);
+	const didSave = await saveStatblock2(false);
 	if (didSave)
 		await $router.push(`/statblock-editor/${rawInfo.value?.id}/${toNavigateTo.value[0]}/${toNavigateTo.value[1]}`);
 	else
@@ -467,7 +517,7 @@ provide("setActionDescription", setDesc);
 			}
 		]"
 	>
-		<ButtonIcon v-if="isOwner || isEditor" icon="save" label="Save automation" inverted @click="saveStatblock(true)" />
+		<ButtonIcon v-if="isOwner || isEditor" icon="save" label="Save automation" inverted @click="saveStatblock2(true)" />
 		<ButtonIcon icon="wand-sparkles" label="Generate automation from description. May be incomplete or inaccurate. Only works for basic, to hit attacks." @click="generateAutomation" />
 		<ButtonIcon icon="rotate" label="Change editor" @click="changeEditor" />
 		<ImportAutomationUtil @load-feature="(feature, apiPath) => loadFeature(feature, apiPath)" />
