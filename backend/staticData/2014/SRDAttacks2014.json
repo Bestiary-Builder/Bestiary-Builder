@@ -120,7 +120,8 @@
                                     "desc": "Can only breathe underwater"
                                 }
                             ],
-                            "dc": "14"
+                            "dc": "14",
+                            "success": []
                         }
                     ]
                 },
@@ -259,7 +260,8 @@
                                     "desc": "Charmed by {{caster.name}}\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw whenever it takes damage, ending the effect on a success"
                                 }
                             ],
-                            "dc": "14"
+                            "dc": "14",
+                            "success": []
                         }
                     ]
                 },
@@ -389,7 +391,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "14"
+                            "dc": "14",
+                            "success": []
                         }
                     ]
                 },
@@ -427,7 +430,8 @@
                                     "damage": "{damage}"
                                 }
                             ],
-                            "dc": "14"
+                            "dc": "14",
+                            "success": []
                         }
                     ]
                 },
@@ -526,7 +530,8 @@
                                     "desc": "They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "18"
+                            "dc": "18",
+                            "success": []
                         }
                     ]
                 },
@@ -902,7 +907,8 @@
                                     "desc": "Frightened of {{caster.name}}\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "16"
+                            "dc": "16",
+                            "success": []
                         }
                     ]
                 },
@@ -960,7 +966,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "19"
+                            "dc": "19",
+                            "success": []
                         }
                     ]
                 },
@@ -1009,7 +1016,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -1257,7 +1265,8 @@
                                     "desc": "Frightened of {{caster.name}}\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "18"
+                            "dc": "18",
+                            "success": []
                         }
                     ]
                 },
@@ -1384,7 +1393,8 @@
                                     "damage": "{damage}"
                                 }
                             ],
-                            "dc": "21"
+                            "dc": "21",
+                            "success": []
                         }
                     ]
                 },
@@ -1637,7 +1647,8 @@
                                     "desc": "Frightened of {{caster.name}}\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "17"
+                            "dc": "17",
+                            "success": []
                         }
                     ]
                 },
@@ -1695,7 +1706,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "20"
+                            "dc": "20",
+                            "success": []
                         }
                     ]
                 },
@@ -1782,7 +1794,8 @@
                                     "desc": "Target is buried and can't breathe or standup\n - A creature can take an action to make a DC 10 Strength check to uncover them"
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -1846,7 +1859,8 @@
                                     "desc": "They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -1884,7 +1898,8 @@
                                     "damage": "{damage}"
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -2169,7 +2184,8 @@
                                     ]
                                 }
                             ],
-                            "dc": "18"
+                            "dc": "18",
+                            "success": []
                         }
                     ]
                 },
@@ -2229,7 +2245,8 @@
                                     "desc": "Frightened of {{caster.name}}\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "16"
+                            "dc": "16",
+                            "success": []
                         }
                     ]
                 },
@@ -2287,7 +2304,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "19"
+                            "dc": "19",
+                            "success": []
                         }
                     ]
                 },
@@ -2336,7 +2354,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -2400,7 +2419,8 @@
                                     "desc": "They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -2667,7 +2687,8 @@
                             "type": "save",
                             "stat": "str",
                             "fail": [],
-                            "dc": "19"
+                            "dc": "19",
+                            "success": []
                         }
                     ]
                 },
@@ -2727,7 +2748,8 @@
                                     "desc": "Frightened of {{caster.name}}\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "17"
+                            "dc": "17",
+                            "success": []
                         }
                     ]
                 },
@@ -2785,7 +2807,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "20"
+                            "dc": "20",
+                            "success": []
                         }
                     ]
                 },
@@ -2829,7 +2852,8 @@
                                     "end": true
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -3129,7 +3153,8 @@
                                     "desc": "Target's speed is halved\n - Can use either an action or a bonus action on its turn, not both, nor make more than one attack during its turn, and can't use reactions\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "18"
+                            "dc": "18",
+                            "success": []
                         }
                     ]
                 },
@@ -3189,7 +3214,8 @@
                                     "desc": "Frightened of {{caster.name}}\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "16"
+                            "dc": "16",
+                            "success": []
                         }
                     ]
                 },
@@ -3247,7 +3273,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "19"
+                            "dc": "19",
+                            "success": []
                         }
                     ]
                 },
@@ -3287,7 +3314,8 @@
                                     }
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -3595,7 +3623,8 @@
                                     "desc": "They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "21"
+                            "dc": "21",
+                            "success": []
                         }
                     ]
                 },
@@ -3655,7 +3684,8 @@
                                     "desc": "Frightened of {{caster.name}}\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "21"
+                            "dc": "21",
+                            "success": []
                         }
                     ]
                 },
@@ -3713,7 +3743,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "22"
+                            "dc": "22",
+                            "success": []
                         }
                     ]
                 },
@@ -3792,7 +3823,8 @@
                                     "parent": "banish"
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -4045,7 +4077,8 @@
                                     "desc": "Frightened of {{caster.name}}\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "16"
+                            "dc": "16",
+                            "success": []
                         }
                     ]
                 },
@@ -4103,7 +4136,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "19"
+                            "dc": "19",
+                            "success": []
                         }
                     ]
                 },
@@ -4141,7 +4175,8 @@
                                     "damage": "{damage}"
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -4208,7 +4243,8 @@
                                     ]
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -4243,7 +4279,8 @@
                                     "desc": "Charmed by {{caster.name}}"
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -4496,7 +4533,8 @@
                                     "desc": "Frightened of {{caster.name}}\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "19"
+                            "dc": "19",
+                            "success": []
                         }
                     ]
                 },
@@ -4554,7 +4592,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "22"
+                            "dc": "22",
+                            "success": []
                         }
                     ]
                 },
@@ -4647,7 +4686,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -4688,7 +4728,8 @@
                                     "end": true
                                 }
                             ],
-                            "dc": "13"
+                            "dc": "13",
+                            "success": []
                         }
                     ]
                 },
@@ -4898,7 +4939,8 @@
                                     "desc": "They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "20"
+                            "dc": "20",
+                            "success": []
                         }
                     ]
                 },
@@ -5048,7 +5090,8 @@
                                     "desc": "Frightened of {{caster.name}}\n - Target can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on itself on a success"
                                 }
                             ],
-                            "dc": "18"
+                            "dc": "18",
+                            "success": []
                         }
                     ]
                 },
@@ -5106,7 +5149,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "22"
+                            "dc": "22",
+                            "success": []
                         }
                     ]
                 },
@@ -5144,7 +5188,8 @@
                                     "damage": "{damage}"
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -5397,7 +5442,8 @@
                                     "desc": "Frightened of {{caster.name}}\n - Target can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on itself on a success"
                                 }
                             ],
-                            "dc": "14"
+                            "dc": "14",
+                            "success": []
                         }
                     ]
                 },
@@ -5455,7 +5501,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "19"
+                            "dc": "19",
+                            "success": []
                         }
                     ]
                 },
@@ -5572,7 +5619,8 @@
                                     "damage": "3d6 [piercing]"
                                 }
                             ],
-                            "attackBonus": "7"
+                            "attackBonus": "7",
+                            "miss": []
                         }
                     ]
                 },
@@ -5727,7 +5775,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "13"
+                            "dc": "13",
+                            "success": []
                         }
                     ]
                 },
@@ -6048,7 +6097,8 @@
                                     "desc": "Frightened of {{caster.name}}\n - Target can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on itself on a success"
                                 }
                             ],
-                            "dc": "19"
+                            "dc": "19",
+                            "success": []
                         }
                     ]
                 },
@@ -6106,7 +6156,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "23"
+                            "dc": "23",
+                            "success": []
                         }
                     ]
                 },
@@ -6155,7 +6206,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -6493,7 +6545,8 @@
                                     "desc": "Frightened of {{caster.name}}\n - Target can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on itself on a success"
                                 }
                             ],
-                            "dc": "20"
+                            "dc": "20",
+                            "success": []
                         }
                     ]
                 },
@@ -6551,7 +6604,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "24"
+                            "dc": "24",
+                            "success": []
                         }
                     ]
                 },
@@ -6638,7 +6692,8 @@
                                     "desc": "Target is buried and can't breathe or standup\n - A creature can take an action to make a DC 10 Strength check to uncover them"
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -6702,7 +6757,8 @@
                                     "desc": "They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -6740,7 +6796,8 @@
                                     "damage": "{damage}"
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -7025,7 +7082,8 @@
                                     ]
                                 }
                             ],
-                            "dc": "21"
+                            "dc": "21",
+                            "success": []
                         }
                     ]
                 },
@@ -7085,7 +7143,8 @@
                                     "desc": "Frightened of {{caster.name}}\n - Target can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on itself on a success"
                                 }
                             ],
-                            "dc": "18"
+                            "dc": "18",
+                            "success": []
                         }
                     ]
                 },
@@ -7143,7 +7202,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "22"
+                            "dc": "22",
+                            "success": []
                         }
                     ]
                 },
@@ -7192,7 +7252,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -7256,7 +7317,8 @@
                                     "desc": "They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -7523,7 +7585,8 @@
                             "type": "save",
                             "stat": "str",
                             "fail": [],
-                            "dc": "23"
+                            "dc": "23",
+                            "success": []
                         }
                     ]
                 },
@@ -7583,7 +7646,8 @@
                                     "desc": "Frightened of {{caster.name}}\n - Target can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on itself on a success"
                                 }
                             ],
-                            "dc": "20"
+                            "dc": "20",
+                            "success": []
                         }
                     ]
                 },
@@ -7641,7 +7705,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "24"
+                            "dc": "24",
+                            "success": []
                         }
                     ]
                 },
@@ -7685,7 +7750,8 @@
                                     "end": true
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -7985,7 +8051,8 @@
                                     "desc": "Target's speed is halved\n - Can use either an action or a bonus action on its turn, not both, nor make more than one attack during its turn, and can't use reactions\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "22"
+                            "dc": "22",
+                            "success": []
                         }
                     ]
                 },
@@ -8045,7 +8112,8 @@
                                     "desc": "Frightened of {{caster.name}}\n - Target can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on itself on a success"
                                 }
                             ],
-                            "dc": "19"
+                            "dc": "19",
+                            "success": []
                         }
                     ]
                 },
@@ -8103,7 +8171,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "23"
+                            "dc": "23",
+                            "success": []
                         }
                     ]
                 },
@@ -8143,7 +8212,8 @@
                                     }
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -8451,7 +8521,8 @@
                                     "desc": "They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "24"
+                            "dc": "24",
+                            "success": []
                         }
                     ]
                 },
@@ -8511,7 +8582,8 @@
                                     "desc": "Frightened of {{caster.name}}\n - Target can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on itself on a success"
                                 }
                             ],
-                            "dc": "24"
+                            "dc": "24",
+                            "success": []
                         }
                     ]
                 },
@@ -8569,7 +8641,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "25"
+                            "dc": "25",
+                            "success": []
                         }
                     ]
                 },
@@ -8648,7 +8721,8 @@
                                     "parent": "banish"
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -8901,7 +8975,8 @@
                                     "desc": "Frightened of {{caster.name}}\n - Target can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on itself on a success"
                                 }
                             ],
-                            "dc": "19"
+                            "dc": "19",
+                            "success": []
                         }
                     ]
                 },
@@ -8959,7 +9034,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "23"
+                            "dc": "23",
+                            "success": []
                         }
                     ]
                 },
@@ -8997,7 +9073,8 @@
                                     "damage": "{damage}"
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -9064,7 +9141,8 @@
                                     ]
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -9099,7 +9177,8 @@
                                     "desc": "Charmed by {{caster.name}}"
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -9352,7 +9431,8 @@
                                     "desc": "Frightened of {{caster.name}}\n - Target can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on itself on a success"
                                 }
                             ],
-                            "dc": "21"
+                            "dc": "21",
+                            "success": []
                         }
                     ]
                 },
@@ -9410,7 +9490,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "25"
+                            "dc": "25",
+                            "success": []
                         }
                     ]
                 },
@@ -9503,7 +9584,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -9544,7 +9626,8 @@
                                     "end": true
                                 }
                             ],
-                            "dc": "13"
+                            "dc": "13",
+                            "success": []
                         }
                     ]
                 },
@@ -9844,7 +9927,8 @@
                                     "desc": "They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "24"
+                            "dc": "24",
+                            "success": []
                         }
                     ]
                 },
@@ -9904,7 +9988,8 @@
                                     "desc": "Frightened of {{caster.name}}\n - Target can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on itself on a success"
                                 }
                             ],
-                            "dc": "21"
+                            "dc": "21",
+                            "success": []
                         }
                     ]
                 },
@@ -9962,7 +10047,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "25"
+                            "dc": "25",
+                            "success": []
                         }
                     ]
                 },
@@ -10000,7 +10086,8 @@
                                     "damage": "{damage}"
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -10253,7 +10340,8 @@
                                     "desc": "Frightened of {{caster.name}}\n - Target can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on itself on a success"
                                 }
                             ],
-                            "dc": "16"
+                            "dc": "16",
+                            "success": []
                         }
                     ]
                 },
@@ -10311,7 +10399,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "22"
+                            "dc": "22",
+                            "success": []
                         }
                     ]
                 },
@@ -10428,7 +10517,8 @@
                                     "damage": "3d6 [piercing]"
                                 }
                             ],
-                            "attackBonus": "7"
+                            "attackBonus": "7",
+                            "miss": []
                         }
                     ]
                 },
@@ -10534,7 +10624,8 @@
                                     "desc": "Frightened of {{caster.name}}\n - Target can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on itself on a success"
                                 }
                             ],
-                            "dc": "18"
+                            "dc": "18",
+                            "success": []
                         }
                     ]
                 },
@@ -10605,7 +10696,8 @@
                                     "desc": "Frightened of {{caster.name}}\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "18"
+                            "dc": "18",
+                            "success": []
                         }
                     ]
                 },
@@ -10706,7 +10798,8 @@
                             "type": "save",
                             "stat": "con",
                             "fail": [],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -11315,7 +11408,8 @@
                                     "damage": "1d10 + 3 [bludgeoning] + 1d6 [fire]"
                                 }
                             ],
-                            "attackBonus": "5"
+                            "attackBonus": "5",
+                            "miss": []
                         }
                     ]
                 },
@@ -11812,7 +11906,8 @@
                                     "desc": "Frightened of {{caster.name}}\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, with disadvantage if the banshee is within line of sight, ending the effect on a success"
                                 }
                             ],
-                            "dc": "13"
+                            "dc": "13",
+                            "success": []
                         }
                     ]
                 },
@@ -12151,7 +12246,8 @@
                                                                     "type": "ieffect2",
                                                                     "name": "Petrified"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "success": []
                                                         }
                                                     ]
                                                 },
@@ -12168,7 +12264,8 @@
                                     "desc": "They must repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of its next turn, ending the effect on a success\n - On a failure, the target is petrified"
                                 }
                             ],
-                            "dc": "12"
+                            "dc": "12",
+                            "success": []
                         }
                     ]
                 },
@@ -12501,7 +12598,8 @@
                                 }
                             ],
                             "attackBonus": "10",
-                            "adv": "0"
+                            "adv": "0",
+                            "miss": []
                         }
                     ]
                 },
@@ -12555,7 +12653,8 @@
                                                                     "removeParent": "always"
                                                                 }
                                                             ],
-                                                            "dc": "14"
+                                                            "dc": "14",
+                                                            "success": []
                                                         }
                                                     ]
                                                 },
@@ -12576,7 +12675,8 @@
                             ]
                         }
                     ],
-                    "errorBehaviour": "false"
+                    "errorBehaviour": "false",
+                    "onFalse": []
                 },
                 {
                     "type": "text",
@@ -12654,7 +12754,8 @@
                                     "desc": "Charmed by {{caster.name}} until the beholder harms the creature"
                                 }
                             ],
-                            "dc": "16"
+                            "dc": "16",
+                            "success": []
                         }
                     ]
                 },
@@ -12714,7 +12815,8 @@
                                     "desc": "They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "16"
+                            "dc": "16",
+                            "success": []
                         }
                     ]
                 },
@@ -12774,7 +12876,8 @@
                                     "desc": "Frightened of {{caster.name}}\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "16"
+                            "dc": "16",
+                            "success": []
                         }
                     ]
                 },
@@ -12834,7 +12937,8 @@
                                     "desc": "Target's speed is halved\n - Can use either an action or a bonus action on its turn, not both, nor make more than one attack during its turn, and can't use reactions\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "16"
+                            "dc": "16",
+                            "success": []
                         }
                     ]
                 },
@@ -12930,7 +13034,8 @@
                                     "parent": "startOfCaster"
                                 }
                             ],
-                            "dc": "16"
+                            "dc": "16",
+                            "success": []
                         }
                     ]
                 },
@@ -12975,7 +13080,8 @@
                                     ]
                                 }
                             ],
-                            "dc": "16"
+                            "dc": "16",
+                            "success": []
                         }
                     ]
                 },
@@ -13031,7 +13137,8 @@
                                                                     "type": "ieffect2",
                                                                     "name": "Petrified"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "success": []
                                                         }
                                                     ]
                                                 },
@@ -13048,7 +13155,8 @@
                                     "desc": "They must repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of its next turn, ending the effect on a success\n - On a failure, the target is petrified"
                                 }
                             ],
-                            "dc": "16"
+                            "dc": "16",
+                            "success": []
                         }
                     ]
                 },
@@ -13085,7 +13193,8 @@
                                     "damage": "{damage}"
                                 }
                             ],
-                            "dc": "16"
+                            "dc": "16",
+                            "success": []
                         }
                     ]
                 },
@@ -13122,7 +13231,8 @@
                                     "damage": "{damage}"
                                 }
                             ],
-                            "dc": "16"
+                            "dc": "16",
+                            "success": []
                         }
                     ]
                 },
@@ -13190,7 +13300,8 @@
                                     "save_as": "grapple"
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -13335,7 +13446,8 @@
                                     "desc": "They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "14"
+                            "dc": "14",
+                            "success": []
                         }
                     ]
                 },
@@ -13395,7 +13507,8 @@
                                     "desc": "Frightened of {{caster.name}}\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "14"
+                            "dc": "14",
+                            "success": []
                         }
                     ]
                 },
@@ -13475,7 +13588,8 @@
                                     "damage": "{damage}"
                                 }
                             ],
-                            "dc": "14"
+                            "dc": "14",
+                            "success": []
                         }
                     ]
                 },
@@ -14221,7 +14335,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "11"
+                            "dc": "11",
+                            "success": []
                         }
                     ]
                 },
@@ -14392,7 +14507,8 @@
                                 }
                             ],
                             "attackBonus": "5",
-                            "adv": "0"
+                            "adv": "0",
+                            "miss": []
                         }
                     ]
                 }
@@ -14432,7 +14548,8 @@
                                     "tick_on_caster": true
                                 }
                             ],
-                            "dc": "13"
+                            "dc": "13",
+                            "success": []
                         }
                     ]
                 }
@@ -14465,7 +14582,8 @@
                                 }
                             ],
                             "attackBonus": "5",
-                            "adv": "0"
+                            "adv": "0",
+                            "miss": []
                         }
                     ]
                 }
@@ -14505,7 +14623,8 @@
                                     "tick_on_caster": true
                                 }
                             ],
-                            "dc": "13"
+                            "dc": "13",
+                            "success": []
                         }
                     ]
                 }
@@ -14717,7 +14836,8 @@
                                     ]
                                 }
                             ],
-                            "dc": "11"
+                            "dc": "11",
+                            "success": []
                         }
                     ]
                 },
@@ -14936,7 +15056,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "12"
+                            "dc": "12",
+                            "success": []
                         }
                     ]
                 },
@@ -15302,7 +15423,8 @@
                                     "damage": "1d8 + 1 [piercing]"
                                 }
                             ],
-                            "attackBonus": "3"
+                            "attackBonus": "3",
+                            "miss": []
                         }
                     ]
                 },
@@ -15367,7 +15489,8 @@
                                     "damage": "1d8 + 4 [piercing] + 1d6 [fire]"
                                 }
                             ],
-                            "attackBonus": "7"
+                            "attackBonus": "7",
+                            "miss": []
                         }
                     ]
                 },
@@ -15495,7 +15618,8 @@
                                     "desc": "Charmed by {{caster.name}}\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw if the target suffers any harm or recieves a suicidal command, ending the effect on a success"
                                 }
                             ],
-                            "dc": "14"
+                            "dc": "14",
+                            "success": []
                         }
                     ]
                 },
@@ -15924,7 +16048,8 @@
                                     "desc": "Frightened of {{caster.name}}"
                                 }
                             ],
-                            "dc": "14"
+                            "dc": "14",
+                            "success": []
                         }
                     ]
                 },
@@ -15993,7 +16118,8 @@
                                     "desc": "Ends if the target takes damage or another creature splashes them with holy water"
                                 }
                             ],
-                            "dc": "12"
+                            "dc": "12",
+                            "success": []
                         }
                     ]
                 },
@@ -16320,7 +16446,8 @@
                                     "desc": "They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "13"
+                            "dc": "13",
+                            "success": []
                         }
                     ]
                 },
@@ -16360,7 +16487,8 @@
                             ]
                         }
                     ],
-                    "errorBehaviour": "false"
+                    "errorBehaviour": "false",
+                    "onFalse": []
                 },
                 {
                     "type": "text",
@@ -16571,7 +16699,8 @@
                                     "desc": "Frightened of {{caster.name}}"
                                 }
                             ],
-                            "dc": "13"
+                            "dc": "13",
+                            "success": []
                         }
                     ]
                 },
@@ -17049,7 +17178,8 @@
                                     "desc": "Target's speed is halved\n - Can use either an action or a bonus action on its turn, not both, nor make more than one attack during its turn, and can't use reactions\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "11"
+                            "dc": "11",
+                            "success": []
                         }
                     ]
                 },
@@ -17182,7 +17312,8 @@
                                     "damage": "1d4 + 1 [slashing]"
                                 }
                             ],
-                            "attackBonus": "3"
+                            "attackBonus": "3",
+                            "miss": []
                         }
                     ]
                 },
@@ -17586,7 +17717,8 @@
                                     "damage": "1d10 + 5 [slashing] + 4d8 [necrotic]"
                                 }
                             ],
-                            "attackBonus": "11"
+                            "attackBonus": "11",
+                            "miss": []
                         }
                     ]
                 },
@@ -17759,7 +17891,8 @@
                                     "damage": "1d8 + 5 [magical piercing] + 2d6 [necrotic]"
                                 }
                             ],
-                            "attackBonus": "9"
+                            "attackBonus": "9",
+                            "miss": []
                         }
                     ]
                 },
@@ -17790,7 +17923,8 @@
                                     "damage": "1d10 + 5 [magical slashing] + 2d6 [necrotic]"
                                 }
                             ],
-                            "attackBonus": "9"
+                            "attackBonus": "9",
+                            "miss": []
                         }
                     ]
                 },
@@ -17972,7 +18106,8 @@
                                     "desc": "Charmed by {{caster.name}} until the beholder harms the creature"
                                 }
                             ],
-                            "dc": "17"
+                            "dc": "17",
+                            "success": []
                         }
                     ]
                 },
@@ -18032,7 +18167,8 @@
                                     "desc": "They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "17"
+                            "dc": "17",
+                            "success": []
                         }
                     ]
                 },
@@ -18092,7 +18228,8 @@
                                     "desc": "Frightened of {{caster.name}}\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "17"
+                            "dc": "17",
+                            "success": []
                         }
                     ]
                 },
@@ -18152,7 +18289,8 @@
                                     "desc": "Target's speed is halved\n - Can use either an action or a bonus action on its turn, not both, nor make more than one attack during its turn, and can't use reactions\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "17"
+                            "dc": "17",
+                            "success": []
                         }
                     ]
                 },
@@ -18248,7 +18386,8 @@
                                     "parent": "startOfCaster"
                                 }
                             ],
-                            "dc": "17"
+                            "dc": "17",
+                            "success": []
                         }
                     ]
                 },
@@ -18293,7 +18432,8 @@
                                     ]
                                 }
                             ],
-                            "dc": "17"
+                            "dc": "17",
+                            "success": []
                         }
                     ]
                 },
@@ -18349,7 +18489,8 @@
                                                                     "type": "ieffect2",
                                                                     "name": "Petrified"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "success": []
                                                         }
                                                     ]
                                                 },
@@ -18366,7 +18507,8 @@
                                     "desc": "They must repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of its next turn, ending the effect on a success\n - On a failure, the target is petrified"
                                 }
                             ],
-                            "dc": "17"
+                            "dc": "17",
+                            "success": []
                         }
                     ]
                 },
@@ -18403,7 +18545,8 @@
                                     "damage": "{damage}"
                                 }
                             ],
-                            "dc": "17"
+                            "dc": "17",
+                            "success": []
                         }
                     ]
                 },
@@ -18440,7 +18583,8 @@
                                     "damage": "{damage}"
                                 }
                             ],
-                            "dc": "17"
+                            "dc": "17",
+                            "success": []
                         }
                     ]
                 },
@@ -18508,7 +18652,8 @@
                                     "save_as": "grapple"
                                 }
                             ],
-                            "dc": "17"
+                            "dc": "17",
+                            "success": []
                         }
                     ]
                 },
@@ -18665,7 +18810,8 @@
                                     "value": "totalDamage + lastDamage"
                                 }
                             ],
-                            "dc": "19"
+                            "dc": "19",
+                            "success": []
                         }
                     ]
                 },
@@ -18813,7 +18959,8 @@
                                     }
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -18855,7 +19002,8 @@
                                     "stacking": true
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -18921,7 +19069,8 @@
                                     "desc": "They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -18970,7 +19119,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "19"
+                            "dc": "19",
+                            "success": []
                         }
                     ]
                 },
@@ -19173,7 +19323,8 @@
                                     "damage": "2d6 + 5 [slashing] + 1d6 [thunder]"
                                 }
                             ],
-                            "attackBonus": "9"
+                            "attackBonus": "9",
+                            "miss": []
                         }
                     ]
                 },
@@ -19251,7 +19402,8 @@
                                     "parent": "parent"
                                 }
                             ],
-                            "dc": "18"
+                            "dc": "18",
+                            "success": []
                         }
                     ]
                 },
@@ -19683,7 +19835,8 @@
                                                                                         "desc": "The target can take either an action or a bonus action on its turn, not both, and can't take reactions"
                                                                                     }
                                                                                 ],
-                                                                                "dc": "11"
+                                                                                "dc": "11",
+                                                                                "success": []
                                                                             },
                                                                             {
                                                                                 "type": "text",
@@ -19760,7 +19913,8 @@
                                                             "desc": "The target can take either an action or a bonus action on its turn, not both, and can't take reactions"
                                                         }
                                                     ],
-                                                    "dc": "11"
+                                                    "dc": "11",
+                                                    "success": []
                                                 },
                                                 {
                                                     "type": "text",
@@ -19850,7 +20004,8 @@
                                     "damage": "1d10 + 3 [slashing]"
                                 }
                             ],
-                            "attackBonus": "6"
+                            "attackBonus": "6",
+                            "miss": []
                         }
                     ]
                 },
@@ -20085,7 +20240,8 @@
                                     "damage": "1d8 - 1 [bludgeoning]"
                                 }
                             ],
-                            "attackBonus": "2"
+                            "attackBonus": "2",
+                            "miss": []
                         }
                     ]
                 },
@@ -20248,7 +20404,8 @@
                                     "damage": "1d6 + 2 [bludgeoning]"
                                 }
                             ],
-                            "attackBonus": "4"
+                            "attackBonus": "4",
+                            "miss": []
                         }
                     ]
                 },
@@ -20362,7 +20519,8 @@
                                     "desc": "Charmed by {{caster.name}}\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw each time the dryad or its allies does anything harmful to the target, ending the effect on a success"
                                 }
                             ],
-                            "dc": "14"
+                            "dc": "14",
+                            "success": []
                         }
                     ]
                 },
@@ -20614,7 +20772,8 @@
                             "type": "save",
                             "stat": "con",
                             "fail": [],
-                            "dc": "10"
+                            "dc": "10",
+                            "success": []
                         }
                     ]
                 },
@@ -20756,7 +20915,8 @@
                                     "desc": "They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "10"
+                            "dc": "10",
+                            "success": []
                         }
                     ]
                 },
@@ -20940,7 +21100,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "12"
+                            "dc": "12",
+                            "success": []
                         }
                     ]
                 },
@@ -21061,7 +21222,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "13"
+                            "dc": "13",
+                            "success": []
                         }
                     ]
                 },
@@ -21195,7 +21357,8 @@
                                     "damage": "7d6 [thunder]"
                                 }
                             ],
-                            "attackBonus": "15"
+                            "attackBonus": "15",
+                            "miss": []
                         }
                     ]
                 },
@@ -21294,7 +21457,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "25"
+                            "dc": "25",
+                            "success": []
                         }
                     ]
                 },
@@ -21353,7 +21517,8 @@
                                     "damage": "1d10 + 4 [magical slashing] + 3d8 [poison]"
                                 }
                             ],
-                            "attackBonus": "8"
+                            "attackBonus": "8",
+                            "miss": []
                         }
                     ]
                 },
@@ -21602,7 +21767,8 @@
                                     "desc": "The target is restrained as long as it remains in the webs or until it breaks free\n - A target restrained by the webs can use its action to make a DC 11 Strength check\n - If it succeeds, it is no longer restrained"
                                 }
                             ],
-                            "attackBonus": "4"
+                            "attackBonus": "4",
+                            "miss": []
                         }
                     ]
                 },
@@ -21823,7 +21989,8 @@
                                     "desc": "Target can't take reactions\n - Must roll a d6 at the start of its turns to determine its behavior"
                                 }
                             ],
-                            "dc": "11"
+                            "dc": "11",
+                            "success": []
                         }
                     ]
                 },
@@ -22016,7 +22183,8 @@
                                     "desc": "Target can't take reactions\n - Must roll a d6 at the start of its turns to determine its behavior"
                                 }
                             ],
-                            "dc": "11"
+                            "dc": "11",
+                            "success": []
                         }
                     ]
                 },
@@ -22209,7 +22377,8 @@
                                     "desc": "Target can't take reactions\n - Must roll a d6 at the start of its turns to determine its behavior"
                                 }
                             ],
-                            "dc": "11"
+                            "dc": "11",
+                            "success": []
                         }
                     ]
                 },
@@ -22402,7 +22571,8 @@
                                     "desc": "Target can't take reactions\n - Must roll a d6 at the start of its turns to determine its behavior"
                                 }
                             ],
-                            "dc": "11"
+                            "dc": "11",
+                            "success": []
                         }
                     ]
                 },
@@ -22595,7 +22765,8 @@
                                     "desc": "Target can't take reactions\n - Must roll a d6 at the start of its turns to determine its behavior"
                                 }
                             ],
-                            "dc": "11"
+                            "dc": "11",
+                            "success": []
                         }
                     ]
                 },
@@ -22788,7 +22959,8 @@
                                     "desc": "Target can't take reactions\n - Must roll a d6 at the start of its turns to determine its behavior"
                                 }
                             ],
-                            "dc": "11"
+                            "dc": "11",
+                            "success": []
                         }
                     ]
                 },
@@ -22981,7 +23153,8 @@
                                     "desc": "Target can't take reactions\n - Must roll a d6 at the start of its turns to determine its behavior"
                                 }
                             ],
-                            "dc": "11"
+                            "dc": "11",
+                            "success": []
                         }
                     ]
                 },
@@ -23356,7 +23529,8 @@
                             ]
                         }
                     ],
-                    "errorBehaviour": "false"
+                    "errorBehaviour": "false",
+                    "onFalse": []
                 },
                 {
                     "type": "text",
@@ -23478,7 +23652,8 @@
                                     }
                                 }
                             ],
-                            "dc": "10"
+                            "dc": "10",
+                            "success": []
                         }
                     ]
                 },
@@ -23815,10 +23990,12 @@
                                             "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                         }
                                     ],
-                                    "dc": "16"
+                                    "dc": "16",
+                                    "success": []
                                 }
                             ],
-                            "attackBonus": "8"
+                            "attackBonus": "8",
+                            "miss": []
                         }
                     ]
                 },
@@ -23994,7 +24171,8 @@
                                     "name": "Spore Burst (Diseased)"
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -24127,7 +24305,8 @@
                                     "save_as": "swallowed"
                                 }
                             ],
-                            "dc": "12"
+                            "dc": "12",
+                            "success": []
                         }
                     ]
                 },
@@ -24173,7 +24352,8 @@
                             ]
                         }
                     ],
-                    "errorBehaviour": "false"
+                    "errorBehaviour": "false",
+                    "onFalse": []
                 },
                 {
                     "type": "text",
@@ -24210,7 +24390,8 @@
                                     }
                                 }
                             ],
-                            "dc": "10"
+                            "dc": "10",
+                            "success": []
                         }
                     ]
                 },
@@ -24409,10 +24590,12 @@
                                             "title": "Effect"
                                         }
                                     ],
-                                    "errorBehaviour": "false"
+                                    "errorBehaviour": "false",
+                                    "onFalse": []
                                 }
                             ],
-                            "dc": "13"
+                            "dc": "13",
+                            "success": []
                         }
                     ]
                 },
@@ -24493,7 +24676,8 @@
                                     "save_as": "possessed"
                                 }
                             ],
-                            "dc": "13"
+                            "dc": "13",
+                            "success": []
                         }
                     ]
                 },
@@ -24527,7 +24711,8 @@
                             ]
                         }
                     ],
-                    "errorBehaviour": "false"
+                    "errorBehaviour": "false",
+                    "onFalse": []
                 },
                 {
                     "type": "text",
@@ -24815,7 +25000,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "13"
+                            "dc": "13",
+                            "success": []
                         }
                     ]
                 },
@@ -25106,10 +25292,12 @@
                                             "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                         }
                                     ],
-                                    "dc": "16"
+                                    "dc": "16",
+                                    "success": []
                                 }
                             ],
-                            "attackBonus": "8"
+                            "attackBonus": "8",
+                            "miss": []
                         }
                     ]
                 },
@@ -25229,7 +25417,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "14"
+                            "dc": "14",
+                            "success": []
                         }
                     ]
                 },
@@ -25445,7 +25634,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "13"
+                            "dc": "13",
+                            "success": []
                         }
                     ]
                 },
@@ -25835,7 +26025,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "11"
+                            "dc": "11",
+                            "success": []
                         }
                     ]
                 },
@@ -26050,7 +26241,8 @@
                                     "desc": "The target is restrained as long as it remains in the webs or until it breaks free\n - A target restrained by the webs can use its action to make a DC 12 Strength check\n - If it succeeds, it is no longer restrained"
                                 }
                             ],
-                            "attackBonus": "5"
+                            "attackBonus": "5",
+                            "miss": []
                         }
                     ]
                 },
@@ -26339,7 +26531,8 @@
                                     "desc": "Each creature that starts its turn in that area must succeed on a DC 10 Strength saving throw or have its speed reduced to 0 until the start of its next turn."
                                 }
                             ],
-                            "dc": "10"
+                            "dc": "10",
+                            "success": []
                         }
                     ]
                 },
@@ -26420,7 +26613,8 @@
                                     "desc": "Target can't take reactions\n - Roll 1d8 at the start its turns to determine its behavior for that turn"
                                 }
                             ],
-                            "dc": "10"
+                            "dc": "10",
+                            "success": []
                         }
                     ]
                 },
@@ -26544,7 +26738,8 @@
                                     "parent": "endOfCaster"
                                 }
                             ],
-                            "dc": "13"
+                            "dc": "13",
+                            "success": []
                         }
                     ]
                 },
@@ -26779,7 +26974,8 @@
                                     "damage": "2d8 + 4 [piercing]"
                                 }
                             ],
-                            "attackBonus": "7"
+                            "attackBonus": "7",
+                            "miss": []
                         }
                     ]
                 },
@@ -26912,7 +27108,8 @@
                                     "damage": "1d8 + 2 [piercing]"
                                 }
                             ],
-                            "attackBonus": "4"
+                            "attackBonus": "4",
+                            "miss": []
                         }
                     ]
                 },
@@ -27264,7 +27461,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "10"
+                            "dc": "10",
+                            "success": []
                         }
                     ]
                 },
@@ -27674,7 +27872,8 @@
                                     "desc": "They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "13"
+                            "dc": "13",
+                            "success": []
                         }
                     ]
                 },
@@ -27722,7 +27921,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "16"
+                            "dc": "16",
+                            "success": []
                         }
                     ]
                 },
@@ -27894,7 +28094,8 @@
                                                                     "type": "ieffect2",
                                                                     "name": "Petrified"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "success": []
                                                         }
                                                     ]
                                                 },
@@ -27911,7 +28112,8 @@
                                     "desc": "They must repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of its next turn, ending the effect on a success\n - On a failure, the target is petrified"
                                 }
                             ],
-                            "dc": "13"
+                            "dc": "13",
+                            "success": []
                         }
                     ]
                 },
@@ -27966,10 +28168,12 @@
                                             "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                         }
                                     ],
-                                    "dc": "21"
+                                    "dc": "21",
+                                    "success": []
                                 }
                             ],
-                            "attackBonus": "13"
+                            "attackBonus": "13",
+                            "miss": []
                         }
                     ]
                 },
@@ -28192,7 +28396,8 @@
                                     "damage": "1d6 + 3 [magical piercing]"
                                 }
                             ],
-                            "attackBonus": "7"
+                            "attackBonus": "7",
+                            "miss": []
                         }
                     ]
                 },
@@ -28223,7 +28428,8 @@
                                     "damage": "1d10 + 3 [magical slashing]"
                                 }
                             ],
-                            "attackBonus": "7"
+                            "attackBonus": "7",
+                            "miss": []
                         }
                     ]
                 },
@@ -28613,7 +28819,8 @@
                                     "damage": "2d6 + 4 [piercing]"
                                 }
                             ],
-                            "attackBonus": "7"
+                            "attackBonus": "7",
+                            "miss": []
                         }
                     ]
                 },
@@ -28644,7 +28851,8 @@
                                     "damage": "1d6 + 4 [slashing]"
                                 }
                             ],
-                            "attackBonus": "7"
+                            "attackBonus": "7",
+                            "miss": []
                         }
                     ]
                 },
@@ -29151,7 +29359,8 @@
                                     "damage": "1d8 + 1 [piercing]"
                                 }
                             ],
-                            "attackBonus": "3"
+                            "attackBonus": "3",
+                            "miss": []
                         }
                     ]
                 },
@@ -29263,7 +29472,8 @@
                                     "dc": "15"
                                 }
                             ],
-                            "attackBonus": "8"
+                            "attackBonus": "8",
+                            "miss": []
                         }
                     ]
                 },
@@ -29324,7 +29534,8 @@
                             "type": "save",
                             "stat": "con",
                             "fail": [],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -29356,7 +29567,8 @@
                                     "damage": "2d10 + 3 [slashing]"
                                 }
                             ],
-                            "attackBonus": "5"
+                            "attackBonus": "5",
+                            "miss": []
                         }
                     ]
                 },
@@ -29455,7 +29667,8 @@
                                     "damage": "1d10 + 3 [slashing]"
                                 }
                             ],
-                            "attackBonus": "5"
+                            "attackBonus": "5",
+                            "miss": []
                         }
                     ]
                 },
@@ -29774,7 +29987,8 @@
                                     "desc": "Charmed by {{caster.name}}'s song, ignoring the songs of other harpies\n If farther than 5 ft from the harpy, moves on its turn towards them, taking most direct route\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "11"
+                            "dc": "11",
+                            "success": []
                         }
                     ]
                 },
@@ -29964,7 +30178,8 @@
                                     "damage": "1d10 + 4 [slashing]"
                                 }
                             ],
-                            "attackBonus": "6"
+                            "attackBonus": "6",
+                            "miss": []
                         }
                     ]
                 },
@@ -30037,7 +30252,8 @@
                                     }
                                 }
                             ],
-                            "dc": "14"
+                            "dc": "14",
+                            "success": []
                         }
                     ]
                 },
@@ -30299,7 +30515,8 @@
                                     "damage": "1d10 + 1 [slashing]"
                                 }
                             ],
-                            "attackBonus": "3"
+                            "attackBonus": "3",
+                            "miss": []
                         }
                     ]
                 },
@@ -30550,7 +30767,8 @@
                                     "damage": "1d10 + 3 [slashing]"
                                 }
                             ],
-                            "attackBonus": "9"
+                            "attackBonus": "9",
+                            "miss": []
                         }
                     ]
                 },
@@ -31440,7 +31658,8 @@
                                     "dc": "11"
                                 }
                             ],
-                            "attackBonus": "5"
+                            "attackBonus": "5",
+                            "miss": []
                         }
                     ]
                 },
@@ -31549,7 +31768,8 @@
                                     "damage": "1d6 + 3 [slashing]"
                                 }
                             ],
-                            "attackBonus": "5"
+                            "attackBonus": "5",
+                            "miss": []
                         }
                     ]
                 },
@@ -31643,7 +31863,8 @@
                                     "desc": "Charmed by {{caster.name}}\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw if the target suffers any harm or recieves a suicidal command, ending the effect on a success"
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -31702,7 +31923,8 @@
                                     "stacking": true
                                 }
                             ],
-                            "errorBehaviour": "false"
+                            "errorBehaviour": "false",
+                            "onFalse": []
                         }
                     ]
                 },
@@ -31788,10 +32010,12 @@
                                             "desc": "Targets Intelligence is reduced to 0"
                                         }
                                     ],
-                                    "errorBehaviour": "false"
+                                    "errorBehaviour": "false",
+                                    "onFalse": []
                                 }
                             ],
-                            "dc": "12"
+                            "dc": "12",
+                            "success": []
                         }
                     ]
                 },
@@ -32048,7 +32272,8 @@
                                     "damage": "1d4 + 2 [piercing]"
                                 }
                             ],
-                            "attackBonus": "4"
+                            "attackBonus": "4",
+                            "miss": []
                         }
                     ]
                 },
@@ -32079,7 +32304,8 @@
                                     "damage": "1d6 + 2 [slashing]"
                                 }
                             ],
-                            "attackBonus": "4"
+                            "attackBonus": "4",
+                            "miss": []
                         }
                     ]
                 },
@@ -32192,7 +32418,8 @@
                                     ]
                                 }
                             ],
-                            "dc": "10"
+                            "dc": "10",
+                            "success": []
                         }
                     ]
                 },
@@ -32619,7 +32846,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "18"
+                            "dc": "18",
+                            "success": []
                         }
                     ]
                 },
@@ -32869,7 +33097,8 @@
                             "type": "save",
                             "stat": "str",
                             "fail": [],
-                            "dc": "23"
+                            "dc": "23",
+                            "success": []
                         }
                     ]
                 },
@@ -33012,7 +33241,8 @@
                                     "damage": "1d8 + 1 [piercing]"
                                 }
                             ],
-                            "attackBonus": "3"
+                            "attackBonus": "3",
+                            "miss": []
                         }
                     ]
                 },
@@ -33083,7 +33313,8 @@
                                     "save_as": "grapple"
                                 }
                             ],
-                            "attackBonus": "3"
+                            "attackBonus": "3",
+                            "miss": []
                         }
                     ]
                 },
@@ -33110,7 +33341,8 @@
                             "type": "save",
                             "stat": "str",
                             "fail": [],
-                            "dc": "11"
+                            "dc": "11",
+                            "success": []
                         }
                     ]
                 },
@@ -33456,7 +33688,8 @@
                                     }
                                 }
                             ],
-                            "attackBonus": "5"
+                            "attackBonus": "5",
+                            "miss": []
                         }
                     ]
                 },
@@ -33584,7 +33817,8 @@
                                     "desc": "Frightened of {{caster.name}}\n - Target can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on itself on a success"
                                 }
                             ],
-                            "dc": "18"
+                            "dc": "18",
+                            "success": []
                         }
                     ]
                 },
@@ -33763,7 +33997,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "13"
+                            "dc": "13",
+                            "success": []
                         }
                     ]
                 },
@@ -34005,7 +34240,8 @@
                                     "damage": "1d8 + 3 [piercing]"
                                 }
                             ],
-                            "attackBonus": "5"
+                            "attackBonus": "5",
+                            "miss": []
                         }
                     ]
                 },
@@ -34342,7 +34578,8 @@
                                     "damage": "1d4 + 2 [slashing]"
                                 }
                             ],
-                            "attackBonus": "4"
+                            "attackBonus": "4",
+                            "miss": []
                         }
                     ]
                 },
@@ -34704,7 +34941,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "18"
+                            "dc": "18",
+                            "success": []
                         }
                     ]
                 },
@@ -34940,7 +35178,8 @@
                                     "damage": "2d8 + 6 [piercing]"
                                 }
                             ],
-                            "attackBonus": "10"
+                            "attackBonus": "10",
+                            "miss": []
                         }
                     ]
                 },
@@ -35205,7 +35444,8 @@
                                                                             "type": "ieffect2",
                                                                             "name": "Petrified"
                                                                         }
-                                                                    ]
+                                                                    ],
+                                                                    "success": []
                                                                 }
                                                             ]
                                                         },
@@ -35225,7 +35465,8 @@
                                     "errorBehaviour": "false"
                                 }
                             ],
-                            "dc": "14"
+                            "dc": "14",
+                            "success": []
                         }
                     ]
                 },
@@ -35364,7 +35605,8 @@
                                     "damage": "1d8 [piercing]"
                                 }
                             ],
-                            "attackBonus": "2"
+                            "attackBonus": "2",
+                            "miss": []
                         }
                     ]
                 },
@@ -35565,7 +35807,8 @@
                                     "damage": "1d8 + 4 [magical piercing]"
                                 }
                             ],
-                            "attackBonus": "7"
+                            "attackBonus": "7",
+                            "miss": []
                         }
                     ]
                 },
@@ -35630,7 +35873,8 @@
                                     "damage": "1d8 + 3 [bludgeoning]"
                                 }
                             ],
-                            "attackBonus": "5"
+                            "attackBonus": "5",
+                            "miss": []
                         }
                     ]
                 },
@@ -35875,7 +36119,8 @@
                                     "desc": "Target is incapacitated, can't move, and can speak only falteringly\n - Automatically fails Strength and Dexterity saving throws\n - Attack rolls against the creature have advantage\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -36052,7 +36297,8 @@
                                     "desc": "Target is incapacitated, can't move, and can speak only falteringly\n - Automatically fails Strength and Dexterity saving throws\n - Attack rolls against the creature have advantage\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -36104,7 +36350,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "14"
+                            "dc": "14",
+                            "success": []
                         }
                     ]
                 },
@@ -36256,7 +36503,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "14"
+                            "dc": "14",
+                            "success": []
                         }
                     ]
                 },
@@ -36433,7 +36681,8 @@
                                     "end": true
                                 }
                             ],
-                            "dc": "11"
+                            "dc": "11",
+                            "success": []
                         }
                     ]
                 },
@@ -36581,7 +36830,8 @@
                                     "desc": "They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "11"
+                            "dc": "11",
+                            "success": []
                         }
                     ]
                 },
@@ -36714,7 +36964,8 @@
                                     "errorBehaviour": "false"
                                 }
                             ],
-                            "dc": "11"
+                            "dc": "11",
+                            "success": []
                         }
                     ]
                 },
@@ -36813,7 +37064,8 @@
                                     "errorBehaviour": "false"
                                 }
                             ],
-                            "dc": "16"
+                            "dc": "16",
+                            "success": []
                         }
                     ]
                 },
@@ -36847,7 +37099,8 @@
                                     "end": true
                                 }
                             ],
-                            "dc": "16"
+                            "dc": "16",
+                            "success": []
                         }
                     ]
                 },
@@ -36882,7 +37135,8 @@
                                     "desc": "Target is incapacitated, can't move, and can speak only falteringly\n - Automatically fails Strength and Dexterity saving throws\n - Attack rolls against the creature have advantage"
                                 }
                             ],
-                            "dc": "16"
+                            "dc": "16",
+                            "success": []
                         }
                     ]
                 },
@@ -36988,7 +37242,8 @@
                                     "desc": "Target is incapacitated, can't move, and can speak only falteringly\n - Automatically fails Strength and Dexterity saving throws\n - Attack rolls against the creature have advantage\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "11"
+                            "dc": "11",
+                            "success": []
                         }
                     ]
                 },
@@ -37143,7 +37398,8 @@
                                     "desc": "They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "12"
+                            "dc": "12",
+                            "success": []
                         }
                     ]
                 },
@@ -37204,7 +37460,8 @@
                                     "desc": "Target is incapacitated, can't move, and can speak only falteringly\n - Automatically fails Strength and Dexterity saving throws\n - Attack rolls against the creature have advantage\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "12"
+                            "dc": "12",
+                            "success": []
                         }
                     ]
                 },
@@ -37479,7 +37736,8 @@
                                     "desc": "Frightened of {{caster.name}}\n - Target can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on itself on a success"
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -37578,7 +37836,8 @@
                                     "damage": "2d8 + 4 [slashing]"
                                 }
                             ],
-                            "attackBonus": "7"
+                            "attackBonus": "7",
+                            "miss": []
                         }
                     ]
                 },
@@ -37832,7 +38091,8 @@
                                     "damage": "{damage}"
                                 }
                             ],
-                            "dc": "12"
+                            "dc": "12",
+                            "success": []
                         }
                     ]
                 },
@@ -38269,7 +38529,8 @@
                                     "damage": "1d8 + 4 [magical slashing]"
                                 }
                             ],
-                            "attackBonus": "7"
+                            "attackBonus": "7",
+                            "miss": []
                         }
                     ]
                 },
@@ -38436,7 +38697,8 @@
                                     "damage": "2d8 + 3 [piercing]"
                                 }
                             ],
-                            "attackBonus": "5"
+                            "attackBonus": "5",
+                            "miss": []
                         }
                     ]
                 },
@@ -38535,7 +38797,8 @@
                                     "damage": "2d8 + 4 [piercing]"
                                 }
                             ],
-                            "attackBonus": "6"
+                            "attackBonus": "6",
+                            "miss": []
                         }
                     ]
                 },
@@ -38955,7 +39218,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "12"
+                            "dc": "12",
+                            "success": []
                         }
                     ]
                 },
@@ -39199,7 +39463,8 @@
                                     "desc": "They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "11"
+                            "dc": "11",
+                            "success": []
                         }
                     ]
                 },
@@ -39395,7 +39660,8 @@
                                     "desc": "Frightened of {{caster.name}}"
                                 }
                             ],
-                            "dc": "21"
+                            "dc": "21",
+                            "success": []
                         }
                     ]
                 },
@@ -39878,7 +40144,8 @@
                                     "damage": "2d6 + 2 [force]"
                                 }
                             ],
-                            "dc": "12"
+                            "dc": "12",
+                            "success": []
                         }
                     ]
                 }
@@ -39910,7 +40177,8 @@
                                     "damage": "2d4 + 2 [bludgeoning]"
                                 }
                             ],
-                            "attackBonus": "4"
+                            "attackBonus": "4",
+                            "miss": []
                         }
                     ]
                 }
@@ -40437,10 +40705,12 @@
                                             "damage": "2d4 [poison]"
                                         }
                                     ],
-                                    "dc": "10"
+                                    "dc": "10",
+                                    "success": []
                                 }
                             ],
-                            "attackBonus": "4"
+                            "attackBonus": "4",
+                            "miss": []
                         }
                     ]
                 },
@@ -40511,7 +40781,8 @@
                                     "desc": "Frightened of {{caster.name}}\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, with disadvantage if the quasit is within line of sight, ending the effect on a success"
                                 }
                             ],
-                            "dc": "10"
+                            "dc": "10",
+                            "success": []
                         }
                     ]
                 },
@@ -41105,7 +41376,8 @@
                                 }
                             ],
                             "attackBonus": "11",
-                            "adv": "0"
+                            "adv": "0",
+                            "miss": []
                         }
                     ]
                 },
@@ -41159,7 +41431,8 @@
                                                                     "removeParent": "always"
                                                                 }
                                                             ],
-                                                            "dc": "15"
+                                                            "dc": "15",
+                                                            "success": []
                                                         }
                                                     ]
                                                 },
@@ -41180,7 +41453,8 @@
                             ]
                         }
                     ],
-                    "errorBehaviour": "false"
+                    "errorBehaviour": "false",
+                    "onFalse": []
                 },
                 {
                     "type": "text",
@@ -41321,7 +41595,8 @@
                                     "desc": "Frightened of {{caster.name}}\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, with disadvantage if they can see the revenant, ending the effect on a success"
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -41374,7 +41649,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -41617,7 +41893,8 @@
                                     "save_as": "grapple"
                                 }
                             ],
-                            "attackBonus": "7"
+                            "attackBonus": "7",
+                            "miss": []
                         }
                     ]
                 },
@@ -41650,7 +41927,8 @@
                             ]
                         }
                     ],
-                    "errorBehaviour": "false"
+                    "errorBehaviour": "false",
+                    "onFalse": []
                 },
                 {
                     "type": "text",
@@ -41736,7 +42014,8 @@
                             "type": "save",
                             "stat": "dex",
                             "fail": [],
-                            "dc": "11"
+                            "dc": "11",
+                            "success": []
                         }
                     ]
                 },
@@ -41784,7 +42063,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "14"
+                            "dc": "14",
+                            "success": []
                         }
                     ]
                 },
@@ -41959,7 +42239,8 @@
                                 }
                             ],
                             "attackBonus": "3",
-                            "adv": "bloodFrenzy"
+                            "adv": "bloodFrenzy",
+                            "miss": []
                         }
                     ]
                 },
@@ -42099,7 +42380,8 @@
                                 }
                             ],
                             "attackBonus": "7",
-                            "adv": "bloodFrenzy"
+                            "adv": "bloodFrenzy",
+                            "miss": []
                         }
                     ]
                 },
@@ -42285,7 +42567,8 @@
                                     "damage": "2d8 + 4 [piercing] + 1d6 [fire]"
                                 }
                             ],
-                            "attackBonus": "7"
+                            "attackBonus": "7",
+                            "miss": []
                         }
                     ]
                 },
@@ -42523,7 +42806,8 @@
                                     "desc": "Frightened of {{caster.name}}"
                                 }
                             ],
-                            "dc": "11"
+                            "dc": "11",
+                            "success": []
                         }
                     ]
                 },
@@ -42685,7 +42969,8 @@
                                     "desc": "Frightened of {{caster.name}}\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, with disadvantage if the hag is within line of sight, ending the effect on a success"
                                 }
                             ],
-                            "dc": "11"
+                            "dc": "11",
+                            "success": []
                         }
                     ]
                 },
@@ -42758,7 +43043,8 @@
                                     "damage": "{death} [Drop to 0]"
                                 }
                             ],
-                            "dc": "11"
+                            "dc": "11",
+                            "success": []
                         }
                     ]
                 },
@@ -42958,7 +43244,8 @@
                                                                     "damage": "{engulfDamage} [bludgeoning]"
                                                                 }
                                                             ],
-                                                            "dc": "14"
+                                                            "dc": "14",
+                                                            "success": []
                                                         }
                                                     ]
                                                 },
@@ -42989,7 +43276,8 @@
                             ]
                         }
                     ],
-                    "errorBehaviour": "false"
+                    "errorBehaviour": "false",
+                    "onFalse": []
                 },
                 {
                     "type": "text",
@@ -43307,7 +43595,8 @@
                                     "desc": "They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "13"
+                            "dc": "13",
+                            "success": []
                         }
                     ]
                 },
@@ -43535,7 +43824,8 @@
                                     "parent": "endOfCaster"
                                 }
                             ],
-                            "dc": "10"
+                            "dc": "10",
+                            "success": []
                         }
                     ]
                 },
@@ -43716,7 +44006,8 @@
                                     "name": "Blinded"
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -43786,7 +44077,8 @@
                                     "desc": "Can't take reactions\n - Target can't move, and uses its action to make a melee or ranged attack against a random target"
                                 }
                             ],
-                            "dc": "13"
+                            "dc": "13",
+                            "success": []
                         }
                     ]
                 },
@@ -43847,7 +44139,8 @@
                                     "desc": "They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "13"
+                            "dc": "13",
+                            "success": []
                         }
                     ]
                 },
@@ -43908,7 +44201,8 @@
                                     "desc": "Frightened of {{caster.name}}\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, with disadvantage if the spectator is visible to the target, ending the effect on a success"
                                 }
                             ],
-                            "dc": "13"
+                            "dc": "13",
+                            "success": []
                         }
                     ]
                 },
@@ -44279,7 +44573,8 @@
                             "type": "save",
                             "stat": "cha",
                             "fail": [],
-                            "dc": "10"
+                            "dc": "10",
+                            "success": []
                         }
                     ]
                 },
@@ -44455,7 +44750,8 @@
                                     "damage": "{damage}"
                                 }
                             ],
-                            "dc": "10"
+                            "dc": "10",
+                            "success": []
                         }
                     ]
                 },
@@ -44709,7 +45005,8 @@
                             "type": "save",
                             "stat": "dex",
                             "fail": [],
-                            "dc": "10"
+                            "dc": "10",
+                            "success": []
                         }
                     ]
                 },
@@ -44851,7 +45148,8 @@
                                     "desc": "Target can't use reactions\n - Speed is halved\n - Can't make more than one attack on its turn\n - Can take either an action or a bonus action, not both\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "17"
+                            "dc": "17",
+                            "success": []
                         }
                     ]
                 },
@@ -45040,7 +45338,8 @@
                                     "damage": "1d6 + 3 [slashing]"
                                 }
                             ],
-                            "attackBonus": "5"
+                            "attackBonus": "5",
+                            "miss": []
                         }
                     ]
                 },
@@ -45134,7 +45433,8 @@
                                     "desc": "Charmed by {{caster.name}}\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw if the target suffers any harm or recieves a suicidal command, ending the effect on a success"
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -45193,7 +45493,8 @@
                                     "stacking": true
                                 }
                             ],
-                            "errorBehaviour": "false"
+                            "errorBehaviour": "false",
+                            "onFalse": []
                         }
                     ]
                 },
@@ -45550,7 +45851,8 @@
                                 }
                             ],
                             "attackBonus": "4",
-                            "adv": "0"
+                            "adv": "0",
+                            "miss": []
                         }
                     ]
                 }
@@ -45754,7 +46056,8 @@
                                 }
                             ],
                             "attackBonus": "19",
-                            "adv": "0"
+                            "adv": "0",
+                            "miss": []
                         }
                     ]
                 },
@@ -45808,7 +46111,8 @@
                                                                     "removeParent": "always"
                                                                 }
                                                             ],
-                                                            "dc": "20"
+                                                            "dc": "20",
+                                                            "success": []
                                                         }
                                                     ]
                                                 },
@@ -45829,7 +46133,8 @@
                             ]
                         }
                     ],
-                    "errorBehaviour": "false"
+                    "errorBehaviour": "false",
+                    "onFalse": []
                 },
                 {
                     "type": "text",
@@ -45887,7 +46192,8 @@
                                     "desc": "Frightened of {{caster.name}}\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, with disadvantage if the tarrasque is within line of sight, ending the effect on a success"
                                 }
                             ],
-                            "dc": "17"
+                            "dc": "17",
+                            "success": []
                         }
                     ]
                 },
@@ -46072,7 +46378,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "13"
+                            "dc": "13",
+                            "success": []
                         }
                     ]
                 },
@@ -46267,7 +46574,8 @@
                                     "damage": "1d8 + 1 [piercing]"
                                 }
                             ],
-                            "attackBonus": "3"
+                            "attackBonus": "3",
+                            "miss": []
                         }
                     ]
                 },
@@ -46349,7 +46657,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "13"
+                            "dc": "13",
+                            "success": []
                         }
                     ]
                 },
@@ -46568,7 +46877,8 @@
                                     }
                                 }
                             ],
-                            "dc": "12"
+                            "dc": "12",
+                            "success": []
                         }
                     ]
                 },
@@ -46892,7 +47202,8 @@
                                     "damage": "1d10 + 3 [magical slashing]"
                                 }
                             ],
-                            "attackBonus": "8"
+                            "attackBonus": "8",
+                            "miss": []
                         }
                     ]
                 },
@@ -46960,7 +47271,8 @@
                                     "desc": "Charmed by {{caster.name}}"
                                 }
                             ],
-                            "dc": "17"
+                            "dc": "17",
+                            "success": []
                         }
                     ]
                 },
@@ -47042,7 +47354,8 @@
                                     "desc": "Target can't take reactions\n - Roll 1d8 at the start its turns to determine its behavior for that turn"
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -47163,7 +47476,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -47463,7 +47777,8 @@
                                     "save_as": "grapple"
                                 }
                             ],
-                            "attackBonus": "9"
+                            "attackBonus": "9",
+                            "miss": []
                         }
                     ]
                 },
@@ -47496,7 +47811,8 @@
                             ]
                         }
                     ],
-                    "errorBehaviour": "false"
+                    "errorBehaviour": "false",
+                    "onFalse": []
                 },
                 {
                     "type": "text",
@@ -47547,7 +47863,8 @@
                                     "stacking": true
                                 }
                             ],
-                            "attackBonus": "9"
+                            "attackBonus": "9",
+                            "miss": []
                         }
                     ]
                 },
@@ -47677,7 +47994,8 @@
                                     "desc": "Charmed by {{caster.name}}\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw each time the vampire or its companions do anything harmful to the target, ending the effect on a success"
                                 }
                             ],
-                            "dc": "17"
+                            "dc": "17",
+                            "success": []
                         }
                     ]
                 },
@@ -47959,7 +48277,8 @@
                                     "save_as": "grapple"
                                 }
                             ],
-                            "attackBonus": "9"
+                            "attackBonus": "9",
+                            "miss": []
                         }
                     ]
                 },
@@ -47992,7 +48311,8 @@
                             ]
                         }
                     ],
-                    "errorBehaviour": "false"
+                    "errorBehaviour": "false",
+                    "onFalse": []
                 },
                 {
                     "type": "text",
@@ -48043,7 +48363,8 @@
                                     "stacking": true
                                 }
                             ],
-                            "attackBonus": "9"
+                            "attackBonus": "9",
+                            "miss": []
                         }
                     ]
                 },
@@ -48113,7 +48434,8 @@
                                     "desc": "Charmed by {{caster.name}}\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw each time the vampire or its companions do anything harmful to the target, ending the effect on a success"
                                 }
                             ],
-                            "dc": "17"
+                            "dc": "17",
+                            "success": []
                         }
                     ]
                 },
@@ -48328,7 +48650,8 @@
                                     "save_as": "grapple"
                                 }
                             ],
-                            "attackBonus": "9"
+                            "attackBonus": "9",
+                            "miss": []
                         }
                     ]
                 },
@@ -48361,7 +48684,8 @@
                             ]
                         }
                     ],
-                    "errorBehaviour": "false"
+                    "errorBehaviour": "false",
+                    "onFalse": []
                 },
                 {
                     "type": "text",
@@ -48412,7 +48736,8 @@
                                     "stacking": true
                                 }
                             ],
-                            "attackBonus": "9"
+                            "attackBonus": "9",
+                            "miss": []
                         }
                     ]
                 },
@@ -48482,7 +48807,8 @@
                                     "desc": "Charmed by {{caster.name}}\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw each time the vampire or its companions do anything harmful to the target, ending the effect on a success"
                                 }
                             ],
-                            "dc": "17"
+                            "dc": "17",
+                            "success": []
                         }
                     ]
                 },
@@ -48573,7 +48899,8 @@
                                     "damage": "1d10 + 3 [slashing]"
                                 }
                             ],
-                            "attackBonus": "5"
+                            "attackBonus": "5",
+                            "miss": []
                         }
                     ]
                 },
@@ -48827,7 +49154,8 @@
                                     ]
                                 }
                             ],
-                            "dc": "12"
+                            "dc": "12",
+                            "success": []
                         }
                     ]
                 },
@@ -49063,7 +49391,8 @@
                                     "desc": "While poisoned, the target takes 1d10 poison at the start of its turns\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "14"
+                            "dc": "14",
+                            "success": []
                         }
                     ]
                 },
@@ -49109,7 +49438,8 @@
                                     "desc": "Target is incapacitated, can't move, and can speak only falteringly\n - Automatically fails Strength and Dexterity saving throws\n - Attack rolls against the creature have advantage"
                                 }
                             ],
-                            "dc": "14"
+                            "dc": "14",
+                            "success": []
                         }
                     ]
                 },
@@ -49192,7 +49522,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "14"
+                            "dc": "14",
+                            "success": []
                         }
                     ]
                 },
@@ -49467,7 +49798,8 @@
                                     "target_self": true
                                 }
                             ],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -49574,10 +49906,12 @@
                                             "name": "Cursed (Werebear Lycanthropy)"
                                         }
                                     ],
-                                    "dc": "14"
+                                    "dc": "14",
+                                    "success": []
                                 }
                             ],
-                            "attackBonus": "7"
+                            "attackBonus": "7",
+                            "miss": []
                         }
                     ]
                 },
@@ -49608,7 +49942,8 @@
                                     "damage": "2d8 + 4 [slashing]"
                                 }
                             ],
-                            "attackBonus": "7"
+                            "attackBonus": "7",
+                            "miss": []
                         }
                     ]
                 },
@@ -49639,7 +49974,8 @@
                                     "damage": "1d12 + 4 [slashing]"
                                 }
                             ],
-                            "attackBonus": "7"
+                            "attackBonus": "7",
+                            "miss": []
                         }
                     ]
                 },
@@ -49803,7 +50139,8 @@
                                     "damage": "2d6 + 3 [bludgeoning]"
                                 }
                             ],
-                            "attackBonus": "5"
+                            "attackBonus": "5",
+                            "miss": []
                         }
                     ]
                 },
@@ -49842,10 +50179,12 @@
                                             "name": "Cursed (Wereboar Lycanthropy)"
                                         }
                                     ],
-                                    "dc": "12"
+                                    "dc": "12",
+                                    "success": []
                                 }
                             ],
-                            "attackBonus": "5"
+                            "attackBonus": "5",
+                            "miss": []
                         }
                     ]
                 },
@@ -49965,7 +50304,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "13"
+                            "dc": "13",
+                            "success": []
                         }
                     ]
                 },
@@ -50005,10 +50345,12 @@
                                             "name": "Cursed (Wererat Lycanthropy)"
                                         }
                                     ],
-                                    "dc": "11"
+                                    "dc": "11",
+                                    "success": []
                                 }
                             ],
-                            "attackBonus": "4"
+                            "attackBonus": "4",
+                            "miss": []
                         }
                     ]
                 },
@@ -50039,7 +50381,8 @@
                                     "damage": "1d6 + 2 [piercing]"
                                 }
                             ],
-                            "attackBonus": "4"
+                            "attackBonus": "4",
+                            "miss": []
                         }
                     ]
                 },
@@ -50070,7 +50413,8 @@
                                     "damage": "1d6 + 2 [piercing]"
                                 }
                             ],
-                            "attackBonus": "4"
+                            "attackBonus": "4",
+                            "miss": []
                         }
                     ]
                 },
@@ -50220,7 +50564,8 @@
                                     "desc": "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
                                 }
                             ],
-                            "dc": "14"
+                            "dc": "14",
+                            "success": []
                         }
                     ]
                 },
@@ -50260,10 +50605,12 @@
                                             "name": "Cursed (Weretiger Lycanthropy)"
                                         }
                                     ],
-                                    "dc": "13"
+                                    "dc": "13",
+                                    "success": []
                                 }
                             ],
-                            "attackBonus": "5"
+                            "attackBonus": "5",
+                            "miss": []
                         }
                     ]
                 },
@@ -50294,7 +50641,8 @@
                                     "damage": "1d8 + 3 [slashing]"
                                 }
                             ],
-                            "attackBonus": "5"
+                            "attackBonus": "5",
+                            "miss": []
                         }
                     ]
                 },
@@ -50325,7 +50673,8 @@
                                     "damage": "1d6 + 3 [slashing]"
                                 }
                             ],
-                            "attackBonus": "5"
+                            "attackBonus": "5",
+                            "miss": []
                         }
                     ]
                 },
@@ -50356,7 +50705,8 @@
                                     "damage": "1d8 + 2 [piercing]"
                                 }
                             ],
-                            "attackBonus": "4"
+                            "attackBonus": "4",
+                            "miss": []
                         }
                     ]
                 },
@@ -50531,10 +50881,12 @@
                                             "name": "Curse (Werewolf Lycanthropy)"
                                         }
                                     ],
-                                    "dc": "12"
+                                    "dc": "12",
+                                    "success": []
                                 }
                             ],
-                            "attackBonus": "4"
+                            "attackBonus": "4",
+                            "miss": []
                         }
                     ]
                 },
@@ -50565,7 +50917,8 @@
                                     "damage": "2d4 + 2 [slashing]"
                                 }
                             ],
-                            "attackBonus": "4"
+                            "attackBonus": "4",
+                            "miss": []
                         }
                     ]
                 },
@@ -50596,7 +50949,8 @@
                                     "damage": "1d8 + 2 [piercing]"
                                 }
                             ],
-                            "attackBonus": "4"
+                            "attackBonus": "4",
+                            "miss": []
                         }
                     ]
                 },
@@ -50887,7 +51241,8 @@
                                     "damage": "1d10 + 2 [slashing]"
                                 }
                             ],
-                            "attackBonus": "4"
+                            "attackBonus": "4",
+                            "miss": []
                         }
                     ]
                 },
@@ -51098,7 +51453,8 @@
                                     "damage": "{{death}} [death]"
                                 }
                             ],
-                            "dc": "10"
+                            "dc": "10",
+                            "success": []
                         }
                     ]
                 },
@@ -51117,7 +51473,8 @@
                             ]
                         }
                     ],
-                    "errorBehaviour": "false"
+                    "errorBehaviour": "false",
+                    "onFalse": []
                 },
                 {
                     "type": "text",
@@ -51718,7 +52075,8 @@
                                     "errorBehaviour": "false"
                                 }
                             ],
-                            "dc": "13"
+                            "dc": "13",
+                            "success": []
                         }
                     ]
                 },
@@ -51750,7 +52108,8 @@
                                     "damage": "1d6 + 2 [bludgeoning] + 6d6 [poison]"
                                 }
                             ],
-                            "attackBonus": "6"
+                            "attackBonus": "6",
+                            "miss": []
                         }
                     ]
                 },
@@ -51781,7 +52140,8 @@
                                     "damage": "1d6 + 2 [piercing] + 6d6 [poison]"
                                 }
                             ],
-                            "attackBonus": "6"
+                            "attackBonus": "6",
+                            "miss": []
                         }
                     ]
                 },
@@ -52381,7 +52741,8 @@
                                     ]
                                 }
                             ],
-                            "dc": "14"
+                            "dc": "14",
+                            "success": []
                         }
                     ]
                 },
@@ -52613,7 +52974,8 @@
                             "type": "save",
                             "stat": "str",
                             "fail": [],
-                            "dc": "15"
+                            "dc": "15",
+                            "success": []
                         }
                     ]
                 },
@@ -52878,7 +53240,8 @@
                                     "desc": "Target's speed is halved\n - Can use either an action or a bonus action on its turn, not both, nor make more than one attack during its turn, and can't use reactions\n - They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "14"
+                            "dc": "14",
+                            "success": []
                         }
                     ]
                 },
@@ -53151,7 +53514,8 @@
                                     "desc": "They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "17"
+                            "dc": "17",
+                            "success": []
                         }
                     ]
                 },
@@ -53950,7 +54314,8 @@
                                     "desc": "They can repeat the DC {lastSaveDC} {lastSaveAbility} saving throw at the end of each of its turns, ending the effect on a success"
                                 }
                             ],
-                            "dc": "17"
+                            "dc": "17",
+                            "success": []
                         }
                     ]
                 },
@@ -54207,7 +54572,8 @@
                                     "damage": "2d6 + 4 [slashing]"
                                 }
                             ],
-                            "attackBonus": "7"
+                            "attackBonus": "7",
+                            "miss": []
                         }
                     ]
                 },
@@ -54238,7 +54604,8 @@
                                     "damage": "2d8 + 3 [piercing] + 3d6 [poison]"
                                 }
                             ],
-                            "attackBonus": "6"
+                            "attackBonus": "6",
+                            "miss": []
                         }
                     ]
                 },
@@ -54371,7 +54738,8 @@
                                     "damage": "1d6 + 3 [slashing]"
                                 }
                             ],
-                            "attackBonus": "5"
+                            "attackBonus": "5",
+                            "miss": []
                         }
                     ]
                 },
@@ -54402,7 +54770,8 @@
                                     "damage": "1d8 + 2 [piercing] + 2d6 [poison]"
                                 }
                             ],
-                            "attackBonus": "4"
+                            "attackBonus": "4",
+                            "miss": []
                         }
                     ]
                 },
@@ -54535,7 +54904,8 @@
                                     "damage": "1d4 + 3 [piercing] + 2d6 [poison]"
                                 }
                             ],
-                            "attackBonus": "5"
+                            "attackBonus": "5",
+                            "miss": []
                         }
                     ]
                 },
@@ -54600,7 +54970,8 @@
                                     "damage": "1d6 + 3 [slashing]"
                                 }
                             ],
-                            "attackBonus": "5"
+                            "attackBonus": "5",
+                            "miss": []
                         }
                     ]
                 },
@@ -54631,7 +55002,8 @@
                                     "damage": "1d8 + 2 [piercing]"
                                 }
                             ],
-                            "attackBonus": "4"
+                            "attackBonus": "4",
+                            "miss": []
                         }
                     ]
                 },

@@ -75,7 +75,9 @@ const unwatch = watch(() => data.value,	() => {
 },	{ deep: true });
 
 onBeforeRouteUpdate(() => {
-	// just in case the user manages to navigate to a page that also uses StatblockEditorView
+	if (prefersVisualEditor.value)
+		return;
+
 	if (madeChanges.value && (isOwner.value || isEditor.value)) {
 		const answer = window.confirm("Do you really want to leave? you have unsaved changes!");
 		if (!answer)
@@ -84,6 +86,9 @@ onBeforeRouteUpdate(() => {
 });
 onBeforeRouteLeave(() => {
 	// when the user leaves this route
+	if (prefersVisualEditor.value)
+		return;
+
 	if (madeChanges.value && (isOwner.value || isEditor.value)) {
 		const answer = window.confirm("Do you really want to leave? you have unsaved changes!");
 		if (!answer)
@@ -92,6 +97,8 @@ onBeforeRouteLeave(() => {
 });
 
 const beforeUnLoad = (event: Event) => {
+	if (prefersVisualEditor.value)
+		return;
 	if (madeChanges.value && (isOwner.value || isEditor.value)) {
 		event.preventDefault();
 		event.returnValue = true;

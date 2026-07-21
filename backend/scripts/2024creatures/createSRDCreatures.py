@@ -180,6 +180,60 @@ for key, creature_data in creature_data.items():
 #     print("\nNo duplicate entries found.")
 
 # Save updated monsters.json
+["effects", "hit", "miss", "fail", "success", "onTrue", "onFalse"]
+required_keys = {
+    "attack": [
+        "hit",
+        "miss",
+    ],
+    "save": [
+        "success",
+        "fail",
+    ],
+    "condition": [
+        "onTrue",
+        "onFalse"
+    ],
+}
+
+from collections.abc import Mapping
+
+def visit_automation(node, required_keys):
+    """Recursively visit an automation node."""
+
+    if not isinstance(node, Mapping):
+        return
+
+    node_type = node.get("type")
+
+    if node_type in required_keys:
+        for key in required_keys[node_type]:
+            node.setdefault(key, [])
+
+    for value in node.values():
+        if isinstance(value, Mapping):
+            visit_automation(value, required_keys)
+        elif isinstance(value, list):
+            for item in value:
+                if isinstance(item, Mapping):
+                    visit_automation(item, required_keys)
+
+
+def ensure_automation_keys(data, required_keys):
+    """Walk every feature automation in every monster."""
+
+    for monster in data.values():
+        for feature_list in monster.get("features", {}).values():
+            if not isinstance(feature_list, list):
+                continue
+
+            for feature in feature_list:
+                automation = feature.get("automation")
+                if automation:
+                    visit_automation(automation, required_keys)
+
+ensure_automation_keys(monsters, required_keys)
+
 with open(MONSTER_FILE, "w", encoding="utf-8") as f:
     json.dump(monsters, f, indent=4, ensure_ascii=False)
 
