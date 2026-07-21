@@ -182,7 +182,7 @@ const additionalText = computed(() => {
 			<template v-if="(key as EffectKey) === 'buttons'">
 				<template v-for="(button, index) in effect" :key="index">
 					<p :style="`margin-left: ${(depth + 2) * 15}px;`" class="tree-row" @click="currentEffect = (button as any as ButtonInteraction); currentContext = [...context, 'buttons', index.toString()]">
-						<NodeHeader :type="key" :additional-text="(button as any as ButtonInteraction).label.trim()" />
+						<NodeHeader :type="key" :additional-text="(button as any as ButtonInteraction).label.trim()" :is-current="JSON.stringify(currentContext) === JSON.stringify([...context, 'buttons', index.toString()])" />
 					</p>
 					<TreeRoot :data="(button as any as AttackModel)" :depth="depth + 2" root-type="button" :context="[...context, 'buttons', index.toString(), 'automation']" />
 				</template>
@@ -190,7 +190,7 @@ const additionalText = computed(() => {
 			<template v-if="(key as EffectKey) === 'attacks'">
 				<template v-for="(attack, index) in effect" :key="index">
 					<p :style="`margin-left: ${(depth + 2) * 15}px;`" class="tree-row" @click="currentEffect = (attack as any as AttackInteraction); currentContext = [...context, 'attacks', index.toString()]">
-						<NodeHeader :type="key" :additional-text="(attack as any as AttackInteraction).attack.name.trim()" />
+						<NodeHeader :type="key" :additional-text="(attack as any as AttackInteraction).attack.name.trim()" :is-current="JSON.stringify(currentContext) === JSON.stringify([...context, 'attacks', index.toString()])" />
 					</p>
 					<TreeRoot :data="(attack as any as AttackModel)" :depth="depth + 2" root-type="attack" :context="[...context, 'attacks', index.toString(), 'automation']" />
 				</template>
