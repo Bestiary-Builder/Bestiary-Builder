@@ -155,8 +155,6 @@ const additionalText = computed(() => {
 			<Icon icon="ooui:copy-ltr" inline width=".75em" @click="copyNode" />
 			<Icon icon="ooui:cut-ltr" inline width=".75em" @click="cutNode" />
 		</span>
-
-		<!-- <Icon icon="material-symbols:ink-pen" inline width="1em" style="margin-left: .5em" /> -->
 		<span v-if="['attack', 'condition', 'save'].includes(selfType)" class="collapse-button" @click.stop="isCollapsed = !isCollapsed">
 			<Icon icon="solar:alt-arrow-right-bold" inline width=".75em" :rotate="isCollapsed ? 0 : 45" />
 		</span>

@@ -44,7 +44,8 @@ const currentContext = inject<Ref<string[]>>("currentContext");
 	<section :class="{ container: rootType === 'root' }">
 		<template v-if="Array.isArray(data)">
 			<template v-for="auto, index in data" :key="index">
-				<p v-if="rootType === 'root'" class="add root tree-row" @click="currentEffect = data[index]; currentContext = [...context]">
+				<p v-if="rootType === 'root'" class="add root tree-row" @click="currentEffect = data[index]; currentContext = [index.toString(), ...context]">
+					<Icon :icon="JSON.stringify(currentContext) === JSON.stringify([index.toString(), ...context]) ? 'material-symbols:asterisk' : 'material-symbols:swords'" :inline="true" width="1em" :color="JSON.stringify(currentContext) === JSON.stringify([index.toString(), ...context]) ? 'var(--color-success)' : 'grey'" />
 					-{{ auto.name }}-
 					<span class="tree-buttons" @click.stop>
 						<VDropdown :distance="6" :positioning-disabled="store.isMobile" class="delete-attack-button">
@@ -60,7 +61,8 @@ const currentContext = inject<Ref<string[]>>("currentContext");
 									</button>
 								</div>
 							</template>
-						</VDropdown>					</span>
+						</VDropdown>
+					</span>
 				</p>
 				<TransitionGroup name="fade">
 					<div v-for="(node, idx) in auto.automation ?? []" :key="(node as any)">
@@ -77,6 +79,7 @@ const currentContext = inject<Ref<string[]>>("currentContext");
 		</template>
 		<template v-else>
 			<p v-if="rootType === 'root'" class="add root tree-row" @click="currentEffect = data; currentContext = [...context]">
+				<Icon :icon="JSON.stringify(currentContext) === JSON.stringify(context) ? 'material-symbols:asterisk' : 'material-symbols:swords'" :inline="true" width="1em" :color="JSON.stringify(currentContext) === JSON.stringify(context) ? 'var(--color-success)' : 'grey'" />
 				-Attack Root ({{ data.name }})-
 				<span class="tree-buttons" @click.stop>
 					<VDropdown :distance="6" :positioning-disabled="store.isMobile" class="delete-attack-button">
