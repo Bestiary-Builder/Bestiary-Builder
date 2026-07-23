@@ -8,7 +8,6 @@ import type { AbilityReference, Counter, SpellSlotReference } from "~/shared";
 import { useFetch } from "@/utils/utils";
 
 const currentEffect = inject<Ref<Counter>>("currentEffect");
-const _currentContext = inject<Ref<string[]>>("currentContext");
 
 const counterType = ref("cc");
 
@@ -19,7 +18,7 @@ watch(counterType, (newValue: string) => {
 		currentEffect!.value.counter = { slot: 1 };
 	else if (newValue === "abi")
 		currentEffect!.value.counter = { id: 0, typeId: 0 };
-}, { immediate: true });
+});
 
 if (!Object.hasOwn(currentEffect!.value, "errorBehaviour"))
 	currentEffect!.value.errorBehaviour = "warn";
@@ -59,18 +58,19 @@ useDataCleanup(currentEffect, ["allowOverflow", "fixedValue"]);
 					</option>
 				</select>
 			</LabelledComponent>
-			<LabelledComponent v-if="counterType === 'cc' " title="Counter Name*" for="counterName">
+			<LabelledComponent v-if="typeof (currentEffect.counter) === 'string'" title="Counter Name*" for="counterName">
 				<input id="counterName" v-model="currentEffect.counter" type="text">
 				<small style="font-size: x-small"> Leave empty and set Error Behaviour to <i>Ignore</i> to take arbitrary <code>-amt #</code> input.</small>
 			</LabelledComponent>
-			<LabelledComponent v-if="counterType === 'ss' " title="Slot Level*" for="slotLevel">
+			<LabelledComponent v-else-if="typeof (currentEffect!.counter) === 'object' && Object.hasOwn(currentEffect!.counter, 'slot')" title="Slot Level*" for="slotLevel">
 				<div class="input-wrapper">
 					<input id="slotLevel" v-model="(currentEffect.counter as SpellSlotReference).slot" type="text" :class="{ required: (currentEffect.counter as SpellSlotReference).slot.toString().length === 0 }"> <IntExpression />
 				</div>
 			</LabelledComponent>
-			<LabelledComponent v-if="counterType === 'abi' " title="Ability Reference" for="abilityReference">
+			<LabelledComponent v-else-if="typeof (currentEffect!.counter) === 'object' && Object.hasOwn(currentEffect!.counter, 'id') && Object.hasOwn(currentEffect!.counter, 'typeId')" title="Ability Reference" for="abilityReference">
 				<span style="color: var(--color-destructive)"> Ability Reference is not implemented in this editor.</span>
 			</LabelledComponent>
+			<span v-else> Something went wrong with this node. Please delete it and recreate the counter node.</span>
 			<LabelledComponent v-if="counterType !== 'abi'" title="Amount" for="amount">
 				<div class="input-wrapper">
 					<input id="amount" v-model="currentEffect.amount" type="text"><IntExpression />
