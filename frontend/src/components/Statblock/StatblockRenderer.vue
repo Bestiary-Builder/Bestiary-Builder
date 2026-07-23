@@ -106,7 +106,7 @@ const hitDieBonus = computed(() => {
 	if (hp !== 0) {
 		if (hp > 0)
 			return ` + ${hp.toString()}`;
-		else return `${hp.toString().replace('-', ' - ')}`;
+		else return `${hp.toString().replace("-", " - ")}`;
 	}
 	return "";
 });
@@ -178,10 +178,9 @@ const CustomDocument = Document.extend({
 });
 const extensions = [
 	HangingList,
-	StarterKit.configure({ document: false }),
 	CustomDocument,
+	StarterKit.configure({ document: false }),
 	Markdown,
-
 ];
 const manager = new MarkdownManager({
 	extensions,
@@ -189,9 +188,14 @@ const manager = new MarkdownManager({
 
 const render = (str: string, inline?: boolean) => {
 	try {
-		const markdown = str.replaceAll(/(?<!\n)\n(?!\n)/g, "\n\n").replaceAll("&emsp;", "\u2003")
+		let markdown = str
+			.replaceAll("&emsp;", "\u2003")
 			.replaceAll("&ensp;", "\u2002")
 			.replaceAll("&nbsp;", "\u00A0");
+		console.log(markdown);
+		if (!inline)
+			markdown = markdown.replaceAll(/(?<!\n)\n(?!\n)/g, "\n\n");
+
 		if (inline)
 			return marked.parseInline(markdown);
 		const json = manager.parse(markdown);
@@ -393,7 +397,7 @@ const render = (str: string, inline?: boolean) => {
 				>
 					<b><i>Innate Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics">
 						(Psionics)</span>.</i></b>
-					<span class="feature-container__desc" v-html="render(displayInnateCasting(data, v2024))" />
+					<span class="feature-container__desc" v-html="render(displayInnateCasting(data, v2024), true)" />
 				</p>
 
 				<p
@@ -430,7 +434,7 @@ const render = (str: string, inline?: boolean) => {
 					class="feature-description"
 				>
 					<b><i>Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics"> (Psionics)</span>.</i></b>
-					<span class="feature-container__desc" v-html="render(displayInnateCasting(data, v2024))" />
+					<span class="feature-container__desc" v-html="render(displayInnateCasting(data, v2024), true)" />
 				</p>
 			</div>
 		</div>
