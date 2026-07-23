@@ -61,6 +61,8 @@ const loadRawInfo = async () => {
 		isEditor.value = (bestiary.value?.editors ?? []).map(e => e.userId).includes(store.user?.id ?? "");
 		if (isOwner.value || isEditor.value)
 			shouldShowEditor.value = true;
+		if (!isOwner.value && !isEditor.value)
+			await $router.push(`/creature/view/${rawInfo.value?.id}`);
 	}
 	else {
 		$toast.error(error);
@@ -439,7 +441,7 @@ const toNavigateTo = ref([-1, -1]);
 watch(toNavigateTo, async () => {
 	const didSave = await saveStatblock2(false);
 	if (didSave)
-		await $router.push(`/statblock-editor/${rawInfo.value?.id}/${toNavigateTo.value[0]}/${toNavigateTo.value[1]}`);
+		await $router.push(`/creature/edit/${rawInfo.value?.id}/${toNavigateTo.value[0]}/${toNavigateTo.value[1]}`);
 	else
 		$toast.error("Could not open another action as this action did not save correctly.");
 	$router.go(0);
@@ -501,12 +503,12 @@ provide("setActionDescription", setDesc);
 	<Breadcrumbs
 		:routes="[
 			{
-				path: `/bestiary-viewer/${rawInfo?.bestiaryId}`,
+				path: `/bestiary/edit/${rawInfo?.bestiaryId}`,
 				text: bestiary?.name || 'Unnamed Bestiary',
 				isCurrent: false
 			},
 			{
-				path: `/statblock-editor/${$route.params.id}?pane=5`,
+				path: `/creature/edit/${$route.params.id}?pane=5`,
 				text: data?.description.name.substring(0, 30) || 'Unnamed Creature',
 				isCurrent: false
 			},
