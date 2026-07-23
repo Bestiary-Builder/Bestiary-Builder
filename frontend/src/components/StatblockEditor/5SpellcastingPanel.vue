@@ -126,7 +126,7 @@ const showSpellSlotModal = ref(false);
 				<v-select v-model="data.spellcasting.innateSpells.noComponentsOfType" :options="['Material', 'Verbal', 'Somatic']" multiple :deselect-from-dropdown="true" :close-on-select="false" input-id="notthesecomponents" />
 			</LabelledComponent>
 			<LabelledComponent title="Display as action?" for="displayasaction">
-				<span> <input id="displayasaction" v-model="data.spellcasting.innateSpells.displayAsAction" type="checkbox"> <label for="displayasaction">Toggles display as action</label> </span>
+				<span> <input id="displayasaction" v-model="data.spellcasting.innateSpells.displayAsAction" type="checkbox"> <label for="displayasaction"><small>Toggles display as action</small></label> </span>
 			</LabelledComponent>
 		</div>
 		<div class="editor-field__container two-wide">
@@ -151,7 +151,7 @@ const showSpellSlotModal = ref(false);
 			</LabelledComponent>
 
 			<LabelledComponent title="Is psionics?" for="ispsionics">
-				<span> <input id="ispsionics" v-model="data.spellcasting.innateSpells.isPsionics" type="checkbox"> <label for="ispsionics">Toggles display as psionics</label>  </span>
+				<span> <input id="ispsionics" v-model="data.spellcasting.innateSpells.isPsionics" type="checkbox"> <label for="ispsionics"><small>Toggles display as psionics</small></label>  </span>
 			</LabelledComponent>
 
 			<LabelledComponent title="Edit specific spells" for="editspells">

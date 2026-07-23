@@ -49,11 +49,12 @@ watch(() => data.description.cr, () => {
 			</LabelledComponent>
 			<LabelledComponent title="Proper noun" for="propernoun">
 				<span>
-					<input id="propernoun" v-model="data.description.isProperNoun" type="checkbox"> <label
-						for="propernoun" style="word-wrap: anywhere;"
-					>Toggles display as "{{ data.description.name }}"
-						instead of "the {{
-							data.description.name }}"? </label>
+					<input id="propernoun" v-model="data.description.isProperNoun" type="checkbox">
+					<label for="propernoun" style="word-wrap: anywhere;">
+						<small>
+							Toggles display as "{{ data.description.name }}" instead of "the {{ data.description.name }}"?
+						</small>
+					</label>
 				</span>
 			</LabelledComponent>
 		</div>
