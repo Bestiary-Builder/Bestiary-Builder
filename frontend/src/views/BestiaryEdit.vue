@@ -521,6 +521,10 @@ async function getBestiary() {
 	savedBestiary.value = bestiary.value;
 	isOwner.value = store.user?.id === bestiary.value.ownerId;
 	isEditor.value = (bestiary.value?.editors ?? []).map(e => e.userId).includes(store.user?.id ?? "");
+
+	if (!isOwner.value && !isEditor.value)
+		await router.push(`/bestiary/view/${bestiary.value.id}`);
+
 	initialLoading.value = false;
 	// Fetch creatures
 	await useFetch<CreatureWithStats[]>(`/api/bestiary/${bestiary.value.id.toString()}/creatures`).then(async (creatureResult) => {

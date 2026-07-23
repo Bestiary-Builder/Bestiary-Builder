@@ -61,6 +61,9 @@ const loadRawInfo = async () => {
 		isEditor.value = (bestiary.value?.editors ?? []).map(e => e.userId).includes(store.user?.id ?? "");
 		if (isOwner.value || isEditor.value)
 			shouldShowEditor.value = true;
+
+		if (!isOwner.value && !isEditor.value)
+			await $router.push(`/creature/view/${rawInfo.value?.id}`);
 	}
 	else {
 		$toast.error(error);
@@ -325,12 +328,12 @@ const moveSlide = (event: KeyboardEvent) => {
 			v-if="bestiary && (data.description.name || data.description.name === '')"
 			:routes="[
 				{
-					path: '../my-bestiaries/',
-					text: shouldShowEditor ? 'My Bestiaries' : 'Public Bestiaries',
+					path: '/bestiaries/personal',
+					text: 'My Bestiaries',
 					isCurrent: false
 				},
 				{
-					path: `../bestiary-viewer/${bestiary?.id}`,
+					path: `/bestiary/edit/${bestiary?.id}`,
 					text: bestiary?.name,
 					isCurrent: false
 				},
@@ -411,14 +414,6 @@ const moveSlide = (event: KeyboardEvent) => {
 					<FeaturesPanel v-if="slideIndex === 5" :data="data" :raw-info="rawInfo" />
 					<SpellcastingPanel v-if="slideIndex === 6" :data="data" :raw-info="rawInfo" />
 				</Shimmer>
-				<!-- <div v-if="rawInfo !== null" class="editor-content">
-					<DescriptionPanel v-if="slideIndex === 1" :data="data" />
-					<CorePanel v-if="slideIndex === 2" :data="data" />
-					<StatsPanel v-if="slideIndex === 3" :data="data" />
-					<DefensesPanel v-if="slideIndex === 4" :data="data" />
-					<FeaturesPanel v-if="slideIndex === 5" :data="data" :raw-info="rawInfo" />
-					<SpellcastingPanel v-if="slideIndex === 6" :data="data" :raw-info="rawInfo" />
-				</div> -->
 			</div>
 			<div class="content-container__inner">
 				<Shimmer :loading="rawInfo === null" :template-props="{ data: defaultStatblock }" shimmer-color="orangered">

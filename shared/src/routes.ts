@@ -18,7 +18,7 @@ export const routes: Route[] = [
 	{
 		path: "/",
 		name: "",
-		file: "HomeView.vue",
+		file: "FrontPage.vue",
 		meta: { navbar: false, loggedIn: false, dynamic: false },
 	},
 	// help
@@ -29,46 +29,53 @@ export const routes: Route[] = [
 		meta: { navbar: true, loggedIn: false, dynamic: false },
 		props: { filePath: "help" },
 	},
-	// a list of your bestiaries
 	{
-		path: "/my-bestiaries",
+		path: "/bestiaries/personal",
 		name: "My Bestiaries",
-		file: "PersonalBestiaryList.vue",
+		file: "BestiariesPersonal.vue",
 		meta: { navbar: true, loggedIn: true, dynamic: false },
 	},
-	// a page to edit your personal automation
 	{
-		path: "/my-automation",
-		name: "My Automations",
-		file: "PersonalAutomation.vue",
-		meta: { navbar: true, loggedIn: true, dynamic: false },
-	},
-	// a list of all public bestiaries
-	{
-		path: "/bestiaries",
+		path: "/bestiaries/public",
 		name: "Public Bestiaries",
-		file: "PublicBestiaryList.vue",
+		file: "BestiariesPublic.vue",
 		meta: { navbar: true, loggedIn: false, dynamic: false },
 	},
-	// viewing a particular bestiary or edit it
 	{
-		path: "/bestiary-viewer/:id",
+		path: "/bestiary/edit/:id",
+		name: "Bestiary Edit",
+		file: "BestiaryEdit.vue",
+		meta: { navbar: false, loggedIn: true, dynamic: true },
+	},
+	{
+		path: "/bestiary/view/:id",
 		name: "Bestiary Viewer",
-		file: "BestiaryViewer.vue",
+		file: "BestiaryView.vue",
 		meta: { navbar: false, loggedIn: false, dynamic: true },
 	},
-	// editing a creature in a bestiary (which one by url param)
 	{
-		path: "/statblock-editor/:id",
+		path: "/creature/edit/:id",
 		name: "Stat block Editor",
-		file: "StatblockEditorView.vue",
+		file: "CreatureEdit.vue",
 		meta: { navbar: false, loggedIn: true, dynamic: true },
 	},
 	{
-		path: "/statblock-editor/:id/:type/:aid",
+		path: "/creature/view/:id",
+		name: "View Creature",
+		file: "CreatureView.vue",
+		meta: { navbar: false, loggedIn: false, dynamic: true },
+	},
+	{
+		path: "/creature/edit/:id/:type/:aid",
 		name: "Feature Editor",
-		file: "FeatureEditorView.vue",
+		file: "CreatureFeatureEdit.vue",
 		meta: { navbar: false, loggedIn: true, dynamic: true },
+	},
+	{
+		path: "/automations/personal",
+		name: "My Automations",
+		file: "AutomationsPersonal.vue",
+		meta: { navbar: true, loggedIn: true, dynamic: false },
 	},
 	// user settings
 	{

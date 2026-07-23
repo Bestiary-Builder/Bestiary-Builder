@@ -45,7 +45,7 @@ const emit = defineEmits<{
 				</template>
 			</VDropdown>
 			<button v-tooltip="`${canEdit ? 'Edit' : 'View'} creature`" :aria-label="`${canEdit ? 'Edit' : 'View'} ${data.description.name}`" class="edit-creature" @click.stop="() => {}">
-				<RouterLink class="creature" :to="`/statblock-editor/${id}`" :aria-label="`${canEdit ? 'Edit' : 'View'} creature`">
+				<RouterLink class="creature" :to="`/creature/${canEdit ? 'edit' : 'view'}/${id}`" :aria-label="`${canEdit ? 'Edit' : 'View'} creature`">
 					<font-awesome-icon v-if="canEdit" :icon="['fas', 'pen-to-square']" />
 					<font-awesome-icon v-else :icon="['fas', 'eye']" />
 				</RouterLink>

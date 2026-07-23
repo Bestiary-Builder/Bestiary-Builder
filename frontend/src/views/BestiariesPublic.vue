@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
 import { refDebounced } from "@vueuse/core";
-import { toast } from "../utils/app/toast";
+import { $toast } from "../utils/app/toast";
 import BestiaryList from "@/components/Bestiary/BestiaryList.vue";
 import type { BestiaryExtended, BestiaryWithCount } from "~/shared";
 import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
