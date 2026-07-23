@@ -29,7 +29,7 @@ const currentNode = computed(() => {
 		return "buttonroot";
 	if (currentContext.value[currentContext.value.length - 2] === "attacks")
 		return "attackroot";
-	if (currentContext.value[1] === "root" && currentContext.value.length === 2)
+	if (currentContext.value.length === 2 && currentContext.value[1] === "root")
 		return "noderoot";
 	if (Object.hasOwn(currentEffect.value, "type"))
 		// @ts-expect-error Yes it fucking does
