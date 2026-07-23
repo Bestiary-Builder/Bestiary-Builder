@@ -127,7 +127,7 @@ const { width } = useWindowSize();
 <template>
 	<VDropdown v-if="displayNames" :distance="6" :positioning-disabled="store.isMobile" :placement="width < 1200 ? 'bottom-start' : 'left'" container="#effectAdderContainer">
 		<div role="button" class="container">
-			<span class="icon"><Icon icon="material-symbols:add-circle" width="1em" color="orangered" /></span><span>Add Effect</span>
+			<span class="icon"><Icon icon="material-symbols:add-circle" width="1em" color="orangered" /></span><span>{{ automation === null ? 'Create Automation' : 'Add Effect' }}</span>
 		</div>
 		<template #popper>
 			<div class="v-popper__custom-menu">
