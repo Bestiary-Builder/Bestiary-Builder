@@ -43,7 +43,7 @@ const createBestiary = async () => {
 	if (success) {
 		$toast.success("Created bestiary");
 		getUmami()?.track("Add bestiary");
-		await router.push(`/bestiary-viewer/${data.id.toString()}`);
+		await router.push(`/bestiary/edit/${data.id.toString()}`);
 	}
 	else {
 		$toast.error(error);
