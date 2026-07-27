@@ -41,5 +41,5 @@ jobs:
                   build-args: |
                     "VITE_DISCORD_ID=${{ secrets.VITE_DISCORD_ID }}"
                     "VITE_ERROR_WEBHOOK=${{ secrets.VITE_ERROR_WEBHOOK }}"
-                    "VITE_UMAMI_URL=${{ vars.UMAMI_URL }}"
-                    "VITE_UMAMI_WEBSITE_ID=${{ vars.UMAMI_WEBSITE_ID }}"
+                    "UMAMI_URL=${{ vars.UMAMI_URL }}"
+                    "UMAMI_WEBSITE_ID=${{ vars.UMAMI_WEBSITE_ID }}"
