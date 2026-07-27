@@ -1,20 +1,18 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { onMounted, ref, watch } from "vue";
+import { useRoute } from "vue-router";
 import { refDebounced, useLocalStorage } from "@vueuse/core";
-import { createPopper } from "@popperjs/core";
 import Draggable from "vuedraggable";
 import { Shimmer } from "@shimmer-from-structure/vue";
 import UserBanner from "@/components/Bestiary/UserBanner.vue";
 import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import StatusIcon from "@/components/Bestiary/StatusIcon.vue";
 import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
-import Modal from "@/components/Global/Modal.vue";
 import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
 import Markdown from "@/components/Global/Markdown.vue";
 import ButtonIcon from "@/components/Global/ButtonIcon.vue";
 import { defaultStatblock } from "~/shared";
-import type { Bestiary, BestiaryExtended, CreatureWithStats, Statblock, User } from "~/shared";
+import type { BestiaryExtended, CreatureWithStats, Statblock, User } from "~/shared";
 import { useFetch } from "@/utils/utils";
 import { $toast } from "@/utils/app/toast";
 import { store } from "@/utils/store";

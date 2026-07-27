@@ -68,7 +68,7 @@ useDataCleanup(currentEffect, ["allowOverflow", "fixedValue"]);
 				</div>
 			</LabelledComponent>
 			<LabelledComponent v-else-if="typeof (currentEffect!.counter) === 'object' && Object.hasOwn(currentEffect!.counter, 'id') && Object.hasOwn(currentEffect!.counter, 'typeId')" title="Ability Reference" for="abilityReference">
-				<span style="color: var(--color-destructive)"> Ability Reference is not implemented in this editor.</span>
+				<v-select v-model="currentEffect.counter" :options="limitedUse" label="name" input-id="text" :reduce="(x : any) => ({ id: x.id, typeId: x.typeId })" />
 			</LabelledComponent>
 			<span v-else> Something went wrong with this node. Please delete it and recreate the counter node.</span>
 			<LabelledComponent v-if="counterType !== 'abi'" title="Amount" for="amount">
