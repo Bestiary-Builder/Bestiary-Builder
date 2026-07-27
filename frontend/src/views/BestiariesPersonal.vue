@@ -9,6 +9,7 @@ import type { BestiaryExtended } from "~/shared";
 import { useFetch } from "@/utils/utils";
 import { $loading } from "@/utils/app/loading";
 import ButtonIcon from "@/components/Global/ButtonIcon.vue";
+import { getUmami } from "@/utils/app/analytics";
 
 const router = useRouter();
 
@@ -41,6 +42,7 @@ const createBestiary = async () => {
 	});
 	if (success) {
 		$toast.success("Created bestiary");
+		getUmami()?.track("Add bestiary");
 		await router.push(`/bestiary-viewer/${data.id.toString()}`);
 	}
 	else {
@@ -56,6 +58,7 @@ const deleteBestiary = async (bestiary: BestiaryExtended | null) => {
 	const { success, error } = await useFetch(`/api/bestiary/${bestiary.id.toString()}/delete`);
 	if (success) {
 		$toast.success("Deleted bestiary succesfully");
+		getUmami()?.track("Delete bestiary");
 		showDeleteModal.value = false;
 	}
 	else {

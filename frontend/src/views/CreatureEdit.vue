@@ -21,6 +21,7 @@ import StatsPanel from "@/components/StatblockEditor/2StatsPanel.vue";
 import DefensesPanel from "@/components/StatblockEditor/3DefensesPanel.vue";
 import FeaturesPanel from "@/components/StatblockEditor/4FeaturesPanel.vue";
 import SpellcastingPanel from "@/components/StatblockEditor/5SpellcastingPanel.vue";
+import { getUmami } from "@/utils/app/analytics";
 
 const $route = useRoute();
 const $router = useRouter();
@@ -165,6 +166,7 @@ const import5etools = async () => {
 		notices.value = cData?.notices;
 		toolsjson.value = "";
 		$toast.success(`Successfully imported ${data.value.description.name}`);
+		getUmami()?.track("Import creature from 5eTools");
 	}
 	catch (e) {
 		$toast.error("Failed to import this creature");
@@ -185,6 +187,7 @@ const importBestiaryBuilder = async () => {
 			notices.value = {};
 			bestiaryBuilderJson.value = "";
 			$toast.success(`Successfully imported ${data.value.description.name}`);
+			getUmami()?.track("Import creature from BestiaryBuilder");
 		}
 		else {
 			$toast.error(error.replaceAll("\n", "<br />"), {
@@ -226,6 +229,7 @@ const importCritterDB = async () => {
 	data.value = cData as Statblock;
 	showImportModal.value = false;
 	$toast.success(`Successfully imported ${data.value.description.name}`);
+	getUmami()?.track("Import creature from CritterDB");
 };
 
 const importCreature = async (creature: Statblock) => {
@@ -239,6 +243,7 @@ const exportStatblock = async () => {
 	const text = JSON.stringify(data.value, null, 2);
 	await navigator.clipboard.writeText(text);
 	$toast.info("Exported this statblock to your clipboard.");
+	getUmami()?.track("Export statblock to clipboard");
 };
 
 const exportHomebrery = async () => {
@@ -250,6 +255,7 @@ const exportHomebrery = async () => {
 		if (success) {
 			await navigator.clipboard.writeText(resultData.metadata);
 			$toast.info("Exported this statblock markdown to your clipboard");
+			getUmami()?.track("Export statblock to homebrewery");
 		}
 		else {
 			$toast.error(error);
@@ -279,6 +285,7 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 	el.classList.remove("toPrint");
 	el.style = "";
 	loader.hide();
+	getUmami()?.track("Export statblock to image");
 };
 
 // Tabs

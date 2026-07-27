@@ -9,6 +9,7 @@ import { useFetch } from "@/utils/utils";
 import { store } from "@/utils/store";
 import { $loading } from "@/utils/app/loading";
 import ButtonIcon from "@/components/Global/ButtonIcon.vue";
+import { getUmami } from "@/utils/app/analytics";
 
 onMounted(async () => {
 	const loader = $loading.show();
@@ -26,16 +27,18 @@ const debouncedSearch = refDebounced(search, 600);
 const totalPages = ref(1);
 
 const searchBestiaries = async () => {
-	// Request bestiary info
-	const { success, data, error } = await useFetch<{ results: BestiaryWithCount[]; pageAmount: number }>(`/api/search`, "POST", {
+	const searchData = {
 		search: search.value,
 		page: selectedPage.value - 1,
 		tags: selectedTags.value,
 		mode: viewMode.value.toLowerCase()
-	});
+	};
+	// Request bestiary info
+	const { success, data, error } = await useFetch<{ results: BestiaryWithCount[]; pageAmount: number }>(`/api/search`, "POST", searchData);
 	if (success) {
 		bestiaries.value = data.results.map(bestiary => ({ ...bestiary, creatures: Array(bestiary.creatureCount), editors: [] }));
 		totalPages.value = data.pageAmount;
+		getUmami()?.track("Search bestiary", searchData);
 	}
 	else {
 		bestiaries.value = [];
@@ -49,6 +52,7 @@ const getBookmarkedBestiaries = async () => {
 	const { success, data, error } = await useFetch<BestiaryExtended[]>(`/api/user/bookmarks`);
 	if (success) {
 		bestiaries.value = data;
+		getUmami()?.track("View bookmarked bestiaries");
 	}
 	else {
 		bestiaries.value = [];

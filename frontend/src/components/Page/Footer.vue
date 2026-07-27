@@ -13,23 +13,23 @@
 				<nav id="footer-places">
 					<ul>
 						<li id="footer-places-github">
-							<a href="https://github.com/Bestiary-Builder/Bestiary-Builder" target="_blank" title="Edit on Github">Github<font-awesome-icon icon="fa-brands fa-github" /></a>
+							<a href="https://github.com/Bestiary-Builder/Bestiary-Builder" target="_blank" data-umami-event="Edit on GitHub (footer)" title="Edit on GitHub">GitHub<font-awesome-icon icon="fa-brands fa-github" /></a>
 						</li>
 						<li id="footer-places-patreon">
-							<a href="https://patreon.com/BestiaryBuilder" target="_blank" title="Support us on Patreon">Patreon<font-awesome-icon icon="fa-brands fa-patreon" /></a>
+							<a href="https://patreon.com/BestiaryBuilder" target="_blank" data-umami-event="Support us on Patreon (footer)" title="Support us on Patreon">Patreon<font-awesome-icon icon="fa-brands fa-patreon" /></a>
 						</li>
 						<li id="footer-places-discord">
-							<a href="https://discord.gg/a6bwXCSymN" target="_blank" title="Join our Discord server">Discord<font-awesome-icon icon="fa-brands fa-discord" /></a>
+							<a href="https://discord.gg/a6bwXCSymN" target="_blank" data-umami-event="Join our Discord server (footer)" title="Join our Discord server">Discord<font-awesome-icon icon="fa-brands fa-discord" /></a>
 						</li>
 					</ul>
 				</nav>
 				<nav id="footer-places">
 					<ul>
 						<li id="footer-places-privacy">
-							<a href="/privacy-policy" title="Privacy policy">Privacy Policy<font-awesome-icon :icon="['fas', 'user-lock']" /></a>
+							<a href="/privacy-policy" data-umami-event="Privacy policy (footer)" title="Privacy policy">Privacy Policy<font-awesome-icon :icon="['fas', 'user-lock']" /></a>
 						</li>
 						<li id="footer-places-terms">
-							<a href="/terms-and-conditions" title="Terms And Conditions">Terms And Conditions<font-awesome-icon icon="fa-solid fa-scale-balanced" /></a>
+							<a href="/terms-and-conditions" data-umami-event="Terms And Conditions (footer)" title="Terms And Conditions">Terms And Conditions<font-awesome-icon icon="fa-solid fa-scale-balanced" /></a>
 						</li>
 					</ul>
 				</nav>
