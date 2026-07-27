@@ -1,0 +1,63 @@
+import fetch from "node-fetch";
+import { requireUser } from "./login";
+import { app } from "@/utilities/constants";
+import "@/utilities/env";
+import { log } from "@/utilities/logger";
+
+const API = "https://api.avrae.io/characters";
+const HEADERS = {
+	"Content-Type": "application/json",
+	"Authorization": process.env.AVRAE_TOKEN || ""
+};
+
+app.get("/api/character/list", requireUser, async (req, res) => {
+	try {
+		const result = await fetch(`${API}/meta`, {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json",
+				"Authorization": req.headers["avrae-token"] || ""
+			}
+		}).then(response => response.json());
+		if (result?.error)
+			return res.status(500).json({ error: result.error });
+		else
+			return res.json(result);
+	}
+	catch (err) {
+		log.log("critical", err);
+		return res.status(500).json({ error: "Unknown server error occured, please try again." });
+	}
+});
+
+app.post("/api/character/:upstream/attacks/add/", requireUser, async (req, res) => {
+	const automationList = req.body.data;
+	const upstream = req.params.upstream;
+
+	if (!upstream)
+		return res.status(400).json({ error: "No character ID given." });
+	try {
+		const currentAttacks = await fetch(`${API}/${upstream}/attacks`, {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json",
+				"Authorization": req.headers["avrae-token"] || ""
+			}
+		}).then(response => response.json());
+		if (currentAttacks?.error)
+			return res.status(500).json({ error: currentAttacks.error });
+
+		const putAttacks = await fetch(`${API}/${upstream}/attacks`, {
+			method: "PUT",
+			headers: HEADERS,
+			body: JSON.stringify(currentAttacks.concat(automationList))
+		}).then(response => response.json());
+		if (putAttacks?.error)
+			return res.status(500).json({ error: currentAttacks.error });
+		return res.json(putAttacks);
+	}
+	catch (err) {
+		log.log("critical", err);
+		return res.status(500).json({ error: "Unknown server error occured, please try again." });
+	}
+});

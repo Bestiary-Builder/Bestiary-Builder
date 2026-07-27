@@ -1,6 +1,7 @@
 /// <reference types="vitest" />
 
 import { URL, fileURLToPath } from "node:url";
+import svgLoader from "vite-svg-loader";
 
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
@@ -15,6 +16,7 @@ import { routes } from "../shared/";
 export default defineConfig({
 	plugins: [
 		vue(),
+		svgLoader(),
 		Pages({
 			dirs: "src/views",
 			onRoutesGenerated: (_fileroutes) => {

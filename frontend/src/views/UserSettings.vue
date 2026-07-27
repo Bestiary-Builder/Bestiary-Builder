@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref } from "vue";
+import { useLocalStorage } from "@vueuse/core";
 import { store } from "@/utils/store";
 import { sendToLogin, useFetch } from "@/utils/utils";
 import { type Bestiary, type Statblock, SupporterStatus } from "~/shared";
@@ -278,6 +279,8 @@ const creatureData = {
 		}
 	}
 } as Statblock;
+
+const AvraeToken = useLocalStorage("AvraeToken", "");
 </script>
 
 <template>
@@ -411,6 +414,11 @@ const creatureData = {
 						<small>
 							Set whether creating Creatures and Features from the SRD should use the 2024 or 2014 list of options.
 						</small>
+					</LabelledComponent>
+					<LabelledComponent title="Avrae Token">
+						<div class="preview-container">
+							<input v-model="AvraeToken" type="text">
+						</div>
 					</LabelledComponent>
 				</div>
 

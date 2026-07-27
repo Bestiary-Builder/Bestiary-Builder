@@ -95,7 +95,7 @@ watchEffect(() => {
 				scale: 1.1;
 				translate: 0 -2px;
 			}
-			&:hover {
+			&:not(.avrae):hover {
 				background-color: orangered;
 				color: var(--color-surface-0);
 			}

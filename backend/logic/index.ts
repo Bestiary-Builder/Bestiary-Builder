@@ -3,6 +3,7 @@ import "./automations";
 import "./avrae";
 import "./bestiaries";
 import "./creatures";
+import "./character";
 import "./critterdb";
 import "./discord";
 import "./homebrewery";

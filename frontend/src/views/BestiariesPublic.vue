@@ -93,7 +93,7 @@ watch(debouncedSearch, () => searchBestiaries());
 			<option>Bookmarked</option>
 		</select>
 
-		<VDropdown :distance="6" :positioning-disabled="false">
+		<VDropdown :distance="6" :positioning-disabled="store.isMobile">
 			<ButtonIcon icon="tag" label="Filter bestiaries" />
 			<template #popper>
 				<div class="v-popper__custom-menu" style="min-width: 200px">

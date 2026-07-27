@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import AvraeIcon from "@/../public/Avrae_Logo.svg";
+
 const { icon, inverted = false, label } = defineProps<{ icon: string; inverted?: boolean; label: string; noscale?: boolean }>();
 </script>
 
 <template>
 	<button v-tooltip="label" :class="{ inverted, noscale }" :aria-label="label">
-		<font-awesome-icon :icon="['fas', icon]" />
+		<font-awesome-icon v-if="icon !== 'avrae'" :icon="['fas', icon]" />
+		<AvraeIcon v-if="icon === 'avrae'" class="avrae" />
 	</button>
 </template>
 

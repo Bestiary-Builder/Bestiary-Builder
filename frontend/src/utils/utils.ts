@@ -22,7 +22,8 @@ export async function useFetch<Type>(url: string, method: "GET" | "POST" = "GET"
 			method,
 			headers: {
 				"Accept": "application/json",
-				"Content-Type": "application/json"
+				"Content-Type": "application/json",
+				"Avrae-Token": localStorage.getItem("AvraeToken") || ""
 			},
 			body: body
 				? JSON.stringify({

@@ -209,7 +209,7 @@ export function getCreatureMarkdown(creature: Statblock) {
 
 		const feat = {
 			name: featureName,
-			description: displayInnateCasting(creature).replaceAll("\n", "\n\n"),
+			description: displayInnateCasting(creature, true).replaceAll("\n", "\n\n"),
 			automation: null
 		};
 

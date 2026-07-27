@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { h, onMounted, onUnmounted, ref } from "vue";
+import { onMounted, onUnmounted, ref, watch } from "vue";
 import { onBeforeRouteLeave } from "vue-router";
 import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import { useFetch } from "@/utils/utils";
@@ -115,6 +115,47 @@ onMounted(() => {
 onUnmounted(() => {
 	window.removeEventListener("beforeunload", unloadHandler);
 });
+
+const characters = ref<Array<any>>([]);
+const getAvraeCharacters = async () => {
+	const toasterId = $toast.loading("Getting character data from Avrae...");
+	const { success, data, error } = await useFetch("/api/character/list");
+	if (success) {
+		$toast.success("Loaded Avrae Characters", { id: toasterId });
+		getUmami()?.track("Loaded Avrae Characters");
+		characters.value = data as any[];
+	}
+	else {
+		$toast.error(error);
+	}
+};
+
+const selectedCharacter = ref<any>();
+watch(selectedCharacter, async () => {
+	console.log(selectedCharacter.value);
+	if (!selectedAutomation.value) {
+		$toast.info("No automation selected.");
+		return;
+	}
+	if (selectedAutomation.value.automation === null) {
+		$toast.info("You cannot import empty automation.");
+		return;
+	}
+	let automation: any = selectedAutomation.value.automation;
+	if (!Array.isArray(selectedAutomation.value.automation))
+		automation = [automation];
+
+	const toasterId = $toast.loading("Waiting on the Avrae API...");
+	const { success, error } = await useFetch(`/api/character/${selectedCharacter.value.upstream}/attacks/add`, "POST", automation);
+
+	if (success) {
+		$toast.success(`Successfully imported ${selectedAutomation.value.name} to ${selectedCharacter.value.name}`, { id: toasterId });
+		getUmami()?.track("Imported Attack to Avrae");
+	}
+	else {
+		$toast.error(error);
+	}
+});
 </script>
 
 <template>
@@ -128,6 +169,24 @@ onUnmounted(() => {
 		]"
 	>
 		<ImportAutomationUtil @load-feature="(feature) => addAutomation(feature.name, feature.automation)" />
+		<VDropdown :distance="6" :positioning-disabled="store.isMobile">
+			<ButtonIcon icon="avrae" label="Import to Avrae Character" />
+			<template #popper>
+				<div class="v-popper__custom-menu" style="min-width: 200px">
+					<button v-if="characters.length === 0" class="btn confirm" @click="getAvraeCharacters">
+						Get Avrae Characters
+					</button>
+					<div v-else>
+						<p> Choose Avrae Character <br> to import this feature to.<br></p>
+						<select v-model="selectedCharacter" style="margin-top: 1rem;">
+							<option v-for="char, idx of characters" :key="idx" :value="char">
+								{{ char.name }}
+							</option>
+						</select>
+					</div>
+				</div>
+			</template>
+		</VDropdown>
 		<ButtonIcon icon="arrow-right-to-bracket" label="Import a list of automation" @click="showImportModal = true" />
 		<ButtonIcon icon="arrow-right-from-bracket" label="Export all automations to your clipboard" @click="exportMyAutomations()" />
 	</Breadcrumbs>
