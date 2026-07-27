@@ -370,7 +370,7 @@ async function createCreature(stats = defaultStatblock, shouldHaveLoader = true,
 		const data = resultData;
 		getUmami()?.track("Create creature");
 		if (openPage)
-			await router.push(`../statblock-editor/${data.id.toString()}`);
+			await router.push(`/creature/edit/${data.id.toString()}`);
 		else
 			await getBestiary();
 	}

@@ -6,7 +6,7 @@ import EffectAdder from "./EffectAdder.vue";
 import type { AttackModel, EffectWithTarget } from "~/shared";
 import { store } from "@/utils/store";
 
-const { data, depth = 0, parentType = "root", rootType = "root", context = ["root"] } = defineProps<{ data: AttackModel | AttackModel[]; depth?: number; parentType?: string; rootType?: "root" | "button" | "attack"; context?: string[] }>();
+const { data, depth = 0, parentType = "root", rootType = "root", context = ["root"], noListAttack = false } = defineProps<{ data: AttackModel | AttackModel[]; depth?: number; parentType?: string; rootType?: "root" | "button" | "attack"; context?: string[]; noListAttack?: boolean }>();
 
 const automation = inject<Ref<null | AttackModel | AttackModel[]>>("automation");
 const makeListAttack = () => {
@@ -106,7 +106,7 @@ const currentContext = inject<Ref<string[]>>("currentContext");
 			<p :style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`">
 				<EffectAdder :context="context" />
 			</p>
-			<p v-if="rootType === 'root'" :style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`" class="add" @click="makeListAttack()">
+			<p v-if="!noListAttack && rootType === 'root'" :style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`" class="add" @click="makeListAttack()">
 				Add Attack to this feature
 			</p>
 		</template>

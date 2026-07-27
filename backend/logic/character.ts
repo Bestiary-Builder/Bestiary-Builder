@@ -53,7 +53,29 @@ app.post("/api/character/:upstream/attacks/add/", requireUser, async (req, res) 
 			body: JSON.stringify(currentAttacks.concat(automationList))
 		}).then(response => response.json());
 		if (putAttacks?.error)
-			return res.status(500).json({ error: currentAttacks.error });
+			return res.status(500).json({ error: putAttacks.error });
+		return res.json(putAttacks);
+	}
+	catch (err) {
+		log.log("critical", err);
+		return res.status(500).json({ error: "Unknown server error occured, please try again." });
+	}
+});
+
+app.post("/api/character/:upstream/attacks/set/", requireUser, async (req, res) => {
+	const automationList = req.body.data;
+	const upstream = req.params.upstream;
+
+	if (!upstream)
+		return res.status(400).json({ error: "No character ID given." });
+	try {
+		const putAttacks = await fetch(`${API}/${upstream}/attacks`, {
+			method: "PUT",
+			headers: HEADERS,
+			body: JSON.stringify(automationList)
+		}).then(response => response.json());
+		if (putAttacks?.error)
+			return res.status(500).json({ error: putAttacks.error });
 		return res.json(putAttacks);
 	}
 	catch (err) {

@@ -77,6 +77,18 @@ export const routes: Route[] = [
 		file: "AutomationsPersonal.vue",
 		meta: { navbar: true, loggedIn: true, dynamic: false },
 	},
+	{
+		path: "/characters",
+		name: "My Characters",
+		file: "CharactersPersonal.vue",
+		meta: { navbar: true, loggedIn: true, dynamic: false },
+	},
+	{
+		path: "/characters/:upstream",
+		name: "Character Attacks",
+		file: "CharacterAttacksEdit.vue",
+		meta: { navbar: false, loggedIn: true, dynamic: false },
+	},
 	// user settings
 	{
 		path: "/user",

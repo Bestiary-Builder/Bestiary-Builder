@@ -6,9 +6,9 @@ import EffectAdder from "./EffectAdder.vue";
 import AutomationDocumentation from "./Nodes/shared/AutomationDocumentation.vue";
 import EffectAsRaw from "./Nodes/shared/EffectAsRaw.vue";
 import SectionHeader from "./Nodes/shared/SectionHeader.vue";
-import type { AttackModel, ButtonInteraction, Effect, EffectWithTarget } from "~/shared";
+import type { AttackModel, ButtonInteraction, EffectWithTarget } from "~/shared";
 
-const props = defineProps<{ name: string }>();
+const { name, noListAttack = true } = defineProps<{ name: string; noListAttack?: boolean }>();
 const currentEffect = ref<EffectWithTarget | AttackModel | ButtonInteraction | null>(null);
 const currentContext = ref<string[]>([]);
 provide("currentEffect", currentEffect);
@@ -17,8 +17,6 @@ provide("currentContext", currentContext);
 defineExpose<{ currentEffect: any; currentContext: any }>({ currentEffect, currentContext });
 
 const automation = defineModel<null | AttackModel | AttackModel[]>();
-// if (automation.value == null)
-// 	automation.value = { _v: 2, name: "Action", automation: [] };
 provide("automation", ref(automation));
 const currentNode = computed(() => {
 	if (!currentEffect.value)
@@ -46,9 +44,9 @@ provide("copiedEffect", copiedEffect);
 	<section class="two-wide uneven">
 		<div class="tree">
 			<SectionHeader title="Effect Tree" />
-			<TreeRoot v-if="automation" :data="automation" :depth="-1" />
+			<TreeRoot v-if="automation" :data="automation" :depth="-1" :no-list-attack="noListAttack" />
 			<p v-else class="container" style="padding: 6px">
-				<EffectAdder :context="['root']" :name="props.name" />
+				<EffectAdder :context="['root']" :name="name" />
 			</p>
 		</div>
 		<div class="editor">

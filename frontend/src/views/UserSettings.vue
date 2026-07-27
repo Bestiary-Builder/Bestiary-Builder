@@ -419,6 +419,7 @@ const AvraeToken = useLocalStorage("AvraeToken", "");
 						<div class="preview-container">
 							<input v-model="AvraeToken" type="text">
 						</div>
+						<small> Log in on Avrae Dashboard -> Open developer console (CTRL-SHIFT-I or Right click -> Inspect) -> Application -> Local storage (avrae.io) -> copy and paste `avrae-token` value </small>
 					</LabelledComponent>
 				</div>
 
