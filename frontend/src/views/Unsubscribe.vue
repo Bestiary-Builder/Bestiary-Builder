@@ -4,6 +4,7 @@ import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { $loading } from "@/utils/app/loading";
 import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
+import { getUmami } from "@/utils/app/analytics";
 
 const status = ref(0);
 const errorMsg = ref("");
@@ -12,9 +13,9 @@ const loader = $loading.show();
 
 useFetch("/api/unsubscribe")
 	.then((result) => {
-		console.log(result);
 		if (result.success) {
 			status.value = 1;
+			getUmami()?.track("Unsubscribe email", { id: store.user?.id });
 			if (store.user)
 				store.user.unsubscribedFromEmails = false;
 		}

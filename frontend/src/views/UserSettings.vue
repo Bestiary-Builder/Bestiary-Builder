@@ -8,6 +8,7 @@ import SectionHeader from "@/components/VisualEditor/Nodes/shared/SectionHeader.
 import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
 import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
+import { getUmami } from "@/utils/app/analytics";
 
 const logoutClick = async () => {
 	const { success, error } = await useFetch("/api/logout");
@@ -31,6 +32,7 @@ const saveSettings = async () => {
 	const { success, data } = await useFetch("/api/user/updatePreferences", "POST", preferences);
 	if (success) {
 		store.user = (data as any).data;
+		getUmami()?.track("Update preferences", preferences);
 		$toast.success("Successfully saved your preferences");
 	}
 };

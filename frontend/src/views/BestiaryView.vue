@@ -23,6 +23,7 @@ import { $loading } from "@/utils/app/loading";
 import CopyManager from "@/components/Bestiary/CopyManager.vue";
 import CreatureListItem from "@/components/Bestiary/CreatureListItem.vue";
 import CRInput from "@/components/FormInputs/CRInput.vue";
+import { getUmami } from "@/utils/app/analytics";
 
 const route = useRoute();
 
@@ -184,6 +185,7 @@ async function exportHomebrewery() {
 		if (success) {
 			await navigator.clipboard.writeText(resultData.metadata);
 			$toast.info("Exported this bestiary markdown to your clipboard");
+			getUmami()?.track("Export bestiary to homebrewery");
 		}
 		else {
 			$toast.error(error);
@@ -234,6 +236,7 @@ async function exportBestiary(asFile: boolean) {
 			)
 		);
 		$toast.info("Exported this bestiary to your clipboard.");
+		getUmami()?.track("Export bestiary to clipboard");
 	}
 }
 
@@ -296,9 +299,14 @@ async function toggleBookmark() {
 	const { success, data, error } = await useFetch<{ state: boolean }>(`/api/bestiary/${bestiary.value.id.toString()}/bookmark/toggle`);
 	if (success) {
 		bookmarked.value = data.state;
-		if (bookmarked.value)
+		if (bookmarked.value) {
 			$toast.success("Successfully bookmarked this bestiary!");
-		else $toast.success("Successfully unbookmarked this bestiary!");
+			getUmami()?.track("Bookmark bestiary");
+		}
+		else {
+			$toast.success("Successfully unbookmarked this bestiary!");
+			getUmami()?.track("Unbookmark bestiary");
+		}
 	}
 	else {
 		bookmarked.value = false;
@@ -319,6 +327,7 @@ const copyCurrentBestiary = () => {
 
 	copiedCreatures.value = copiedCreatures.value.concat(toAdd);
 	$toast.success("Successfully copied current Bestiary");
+	getUmami()?.track("Copy bestiary");
 };
 
 // draggable stuff

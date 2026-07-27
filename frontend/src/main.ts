@@ -18,6 +18,9 @@ import "vue-select/dist/vue-select.css";
 // monaco editor
 import { loader } from "@guolao/vue-monaco-editor";
 
+// Analytics
+import "./utils/app/analytics";
+
 import router from "@/router";
 import App from "@/App.vue";
 
@@ -32,10 +35,6 @@ loader.config({
 		vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.43.0/min/vs"
 	}
 });
-
-// Google analytics
-if (import.meta.env.MODE === "production")
-	import("./utils/app/gtag.js" as any).catch(() => {});
 
 // error handling
 if (import.meta.env.MODE === "production")

@@ -1,12 +1,20 @@
 import { reactive, watch } from "vue";
 import { useWindowSize } from "@vueuse/core";
 import { useFetch } from "./utils";
+import { getUmami } from "./app/analytics"
 import type { User } from "~/shared";
 
 const user = useFetch<User>("/api/user").then(async (result) => {
-  console.log("Fetched user", result);
-  if (result.success) return result.data;
-  else return null;
+  if (result.success) {
+    getUmami()?.identify(result.data.id, {
+      supporter: result.data.supporter,
+      verified: result.data.verified
+    });
+    return result.data;
+  }
+  else {
+    return null;
+  }
 });
 
 interface limitsType {

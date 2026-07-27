@@ -15,6 +15,7 @@ import { store } from "@/utils/store";
 import { $loading } from "@/utils/app/loading";
 import CopyManager from "@/components/Bestiary/CopyManager.vue";
 import ButtonIcon from "@/components/Global/ButtonIcon.vue";
+import { getUmami } from "@/utils/app/analytics";
 
 const $route = useRoute();
 
@@ -48,6 +49,7 @@ const exportStatblock = async () => {
 	const text = JSON.stringify(data.value, null, 2);
 	await navigator.clipboard.writeText(text);
 	$toast.info("Exported this statblock to your clipboard.");
+	getUmami()?.track("Export statblock to clipboard");
 };
 
 const exportHomebrery = async () => {
@@ -59,6 +61,7 @@ const exportHomebrery = async () => {
 		if (success) {
 			await navigator.clipboard.writeText(resultData.metadata);
 			$toast.info("Exported this statblock markdown to your clipboard");
+			getUmami()?.track("Export statblock to homebrewery");
 		}
 		else {
 			$toast.error(error);
@@ -90,6 +93,7 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 	el.classList.remove("toPrint");
 	el.style = "";
 	loader.hide();
+	getUmami()?.track("Export statblock to image");
 };
 </script>
 

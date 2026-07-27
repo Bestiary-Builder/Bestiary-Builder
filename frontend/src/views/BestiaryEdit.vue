@@ -23,6 +23,7 @@ import { $loading } from "@/utils/app/loading";
 import CopyManager from "@/components/Bestiary/CopyManager.vue";
 import CreatureListItem from "@/components/Bestiary/CreatureListItem.vue";
 import CRInput from "@/components/FormInputs/CRInput.vue";
+import { getUmami } from "@/utils/app/analytics";
 
 const route = useRoute();
 const router = useRouter();
@@ -124,6 +125,7 @@ watch(lastClickedCreature, (): void => {
 		hasPinnedBefore.value = true;
 
 	$toast.info("Pinned creature to the view. Click unpin there to go back to hover behaviour.");
+	getUmami()?.track("Pinned creature");
 });
 
 watch(() => bestiary.value?.status, (newValue): void => {
@@ -199,6 +201,7 @@ async function exportHomebrewery() {
 		if (success) {
 			await navigator.clipboard.writeText(resultData.metadata);
 			$toast.info("Exported this bestiary markdown to your clipboard");
+			getUmami()?.track("Export bestiary to homebrewery");
 		}
 		else {
 			$toast.error(error);
@@ -249,6 +252,7 @@ async function exportBestiary(asFile: boolean) {
 			)
 		);
 		$toast.info("Exported this bestiary to your clipboard.");
+		getUmami()?.track("Export bestiary to clipboard");
 	}
 }
 
@@ -305,6 +309,7 @@ async function importBestiaryFromCritterDB() {
 	await getBestiary();
 	loader.hide();
 	$toast.success("Importing has finished!");
+	getUmami()?.track("Import bestiary from CritterDB");
 	if (cSuccess && !creatureData.error)
 		showImportModal.value = false;
 }
@@ -340,6 +345,7 @@ async function importCreaturesFromBestiaryBuilder() {
 	}
 	else {
 		$toast.success("Importing has finished!");
+		getUmami()?.track("Import bestiary from BestiaryBuilder");
 	}
 
 	await getBestiary();
@@ -362,6 +368,7 @@ async function createCreature(stats = defaultStatblock, shouldHaveLoader = true,
 	const { success, data: resultData, error } = await useFetch<CreatureWithStats>("/api/creature/add", "POST", data);
 	if (success) {
 		const data = resultData;
+		getUmami()?.track("Create creature");
 		if (openPage)
 			await router.push(`../statblock-editor/${data.id.toString()}`);
 		else
@@ -397,6 +404,7 @@ async function createManyCreatures() {
 	}
 	else {
 		$toast.success("Importing has finished!");
+		getUmami()?.track("Imported creatures from BestiaryBuilder", { count: creatures.length });
 	}
 
 	await getBestiary();
@@ -408,6 +416,7 @@ async function deleteCreature(id: string) {
 	const { success, error } = await useFetch(`/api/creature/${id.toString()}/delete`);
 	if (success) {
 		$toast.success("Deleted creature succesfully");
+		getUmami()?.track("Delete creature");
 		if (!bestiary.value)
 			return;
 		bestiary.value.creatures = bestiary.value.creatures.filter(c => c.id !== id);
@@ -424,6 +433,7 @@ async function importSrdCreature(creature: string) {
 
 	if (success) {
 		await createCreature(data);
+		getUmami()?.track("Import SRD creature");
 		return data;
 	}
 	else {
@@ -484,10 +494,13 @@ async function addEditor() {
 	const id = editorToAdd.value;
 	const loader = $loading.show();
 	const { success, error } = await useFetch(`/api/bestiary/${bestiary.value.id.toString()}/editors/add/${id}`);
-	if (success)
+	if (success) {
 		$toast.success("Added editor succesfully");
-	else
+		getUmami()?.track("Add bestiary editor");
+	}
+	else {
 		$toast.error(error);
+	}
 
 	await getBestiary();
 	loader.hide();
@@ -498,10 +511,13 @@ async function removeEditor(id: string) {
 		return;
 	const loader = $loading.show();
 	const { success, error } = await useFetch(`/api/bestiary/${bestiary.value.id.toString()}/editors/remove/${id}`);
-	if (success)
+	if (success) {
 		$toast.success("Removed editor succesfully");
-	else
+		getUmami()?.track("Remove bestiary editor");
+	}
+	else {
 		$toast.error(error);
+	}
 
 	await getBestiary();
 	loader.hide();
@@ -587,9 +603,14 @@ async function toggleBookmark() {
 	const { success, data, error } = await useFetch<{ state: boolean }>(`/api/bestiary/${bestiary.value.id.toString()}/bookmark/toggle`);
 	if (success) {
 		bookmarked.value = data.state;
-		if (bookmarked.value)
+		if (bookmarked.value) {
 			$toast.success("Successfully bookmarked this bestiary!");
-		else $toast.success("Successfully unbookmarked this bestiary!");
+			getUmami()?.track("Bookmark bestiary");
+		}
+		else {
+			$toast.success("Successfully unbookmarked this bestiary!");
+			getUmami()?.track("Unbookmark bestiary");
+		}
 	}
 	else {
 		bookmarked.value = false;
@@ -610,6 +631,7 @@ const copyCurrentBestiary = () => {
 
 	copiedCreatures.value = copiedCreatures.value.concat(toAdd);
 	$toast.success("Successfully copied current Bestiary");
+	getUmami()?.track("Copy bestiary");
 };
 
 // draggable stuff

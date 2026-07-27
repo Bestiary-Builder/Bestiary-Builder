@@ -12,6 +12,7 @@ import { $loading } from "@/utils/app/loading";
 import StandAloneEditor from "@/components/Automations/StandAloneEditor.vue";
 import ImportAutomationUtil from "@/components/Automations/ImportAutomationUtil.vue";
 import ButtonIcon from "@/components/Global/ButtonIcon.vue";
+import { getUmami } from "@/utils/app/analytics";
 
 const data = ref<AutomationWithType[]>([]);
 let initialData = "";
@@ -39,6 +40,7 @@ const addAutomation = async (name: string, automation: null | AttackModel | Atta
 		if (shouldNotify)
 			$toast.success(`Successfully added automation: ${name}`);
 		selectedAutomation.value = data.value[data.value.length - 1];
+		getUmami()?.track("Add automation");
 	}
 	else {
 		$toast.error(error);
@@ -51,6 +53,7 @@ const deleteAutomation = async (_id: Id) => {
 	const { success, error } = await useFetch(`/api/automation/${_id.toString()}/delete`);
 	if (success) {
 		$toast.success("Successfully deleted the automation!");
+		getUmami()?.track("Delete automation");
 		await getMyAutomations();
 		selectedAutomation.value = null;
 	}
