@@ -32,10 +32,10 @@ app.use(
 			directives: {
 				"default-src": ["'self'"],
 				"img-src": ["https://cdn.discordapp.com", "*", "'self'", "data: 'self'"],
-				"script-src": ["'self'", "'sha256-reBsRZd5I88opZSwT59Ir+QlBhrEhdRJ1aQUr4GXhyw='", "http://localhost:4000", "https://cdn.jsdelivr.net"],
+				"script-src": ["'self'", "'sha256-reBsRZd5I88opZSwT59Ir+QlBhrEhdRJ1aQUr4GXhyw='", "https://analytics.bestiarybuilder.com/", "https://cdn.jsdelivr.net"],
 				"style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdn.jsdelivr.net"],
 				"font-src": ["'self'", "data: https://fonts.gstatic.com", "https://cdn.jsdelivr.net"],
-				"connect-src": ["'self'", "https://discord.com", "http://localhost:4000", "https://cdn.jsdelivr.net", "https://api.iconify.design"],
+				"connect-src": ["'self'", "https://discord.com", "https://analytics.bestiarybuilder.com/", "https://cdn.jsdelivr.net", "https://api.iconify.design"],
 				"worker-src": ["'self'", "blob:"]
 			},
 			useDefaults: true
