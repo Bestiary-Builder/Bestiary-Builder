@@ -75,13 +75,16 @@ onUnmounted(() => {
 	height: 100%;
 
 	background-color: rgba(0, 0, 0, 0.5);
-	backdrop-filter: blur(2.5px);
+	backdrop-filter: blur(.5px);
 
 	display: flex;
 	justify-content: center;
 	align-items: center;
 
 	z-index: 1000;
+	overscroll-behavior: none;
+	overflow: hidden;
+
 }
 
 .modal__content {
@@ -91,7 +94,7 @@ onUnmounted(() => {
 	padding: 2rem;
 	max-height: 80%;
 	background-color: var(--color-surface-1);
-	border-radius: 1rem;
+	border-radius: .2rem;
 	overflow-y: scroll;
 	overscroll-behavior: contain;
 	box-shadow:
@@ -171,21 +174,21 @@ onUnmounted(() => {
 	}
 }
 
-.modal-enter-active {
-	animation: slideIn 0.4s;
-}
-.modal-leave-active {
-	animation: slideIn 0.4s reverse;
-}
+// .modal-enter-active {
+// 	animation: slideIn 0.4s;
+// }
+// .modal-leave-active {
+// 	animation: slideIn 0.4s reverse;
+// }
 
-@keyframes slideIn {
-	0% {
-		transform: translateY(-100%);
-		opacity: 0;
-	}
-	100% {
-		transform: translateY(0px);
-		opacity: 1;
-	}
-}
+// @keyframes slideIn {
+// 	0% {
+// 		transform: translateY(-100%);
+// 		opacity: 0;
+// 	}
+// 	100% {
+// 		transform: translateY(0px);
+// 		opacity: 1;
+// 	}
+// }
 </style>
