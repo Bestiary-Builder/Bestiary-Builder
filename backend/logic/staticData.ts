@@ -33,61 +33,51 @@ for (const [key, value] of Object.entries(tOF)) {
 }
 
 Object.assign(SRDAttacks2014, textOnlyFeatures);
-const names2014 = Object.keys(SRDAttacks2014);
-app.get("/api/srd-features/2014/list", async (req, res) => {
-	return res.json(names2014);
-});
-
-app.get("/api/srd-features/2014/:name", async (req, res) => {
-	const name = decodeURIComponent(req.params.name);
-	const data = (SRDAttacks2014 as any)[name];
-	if (data)
-		return res.json(data);
-	else
-		return res.status(404).json({ error: "No SRD feature found with that name" });
-});
-
 Object.assign(SRDAttacks2024, textOnlyFeatures);
-const names2024 = Object.keys(SRDAttacks2024);
-app.get("/api/srd-features/2024/list", async (req, res) => {
-	return res.json(names2024);
-});
 
-app.get("/api/srd-features/2024/:name", async (req, res) => {
-	const name = decodeURIComponent(req.params.name);
-	const data = (SRDAttacks2024 as any)[name];
-	if (data)
-		return res.json(data);
-	else
-		return res.status(404).json({ error: "No SRD feature found with that name" });
-});
+const registerStaticDataRoutes = (routes: Array<{
+	path: string;
+	data: Record<string, unknown>;
+	error: string;
+}>) => {
+	for (const { path, data, error } of routes) {
+		const names = Object.keys(data);
+		app.get(`${path}/list`, async (req, res) => {
+			return res.json(names);
+		});
+		app.get(`${path}/:name`, async (req, res) => {
+			const name = decodeURIComponent(req.params.name);
+			const item = data[name];
+			if (item)
+				return res.json(item);
+			else
+				return res.status(404).json({ error });
+		});
+	}
+};
 
-// Creatures
-const CreatureNames2014 = Object.keys(SRDCreatures2014);
-app.get("/api/srd-creatures/2014/list", async (req, res) => {
-	return res.json(CreatureNames2014);
-});
-app.get("/api/srd-creatures/2014/:name", async (req, res) => {
-	const name = decodeURIComponent(req.params.name);
-	const data = (SRDCreatures2014 as any)[name];
-	if (data)
-		return res.json(data);
-	else
-		return res.status(404).json({ error: "No srd creature found with that name" });
-});
-
-const CreatureNames2024 = Object.keys(SRDCreatures2024);
-app.get("/api/srd-creatures/2024/list", async (req, res) => {
-	return res.json(CreatureNames2024);
-});
-app.get("/api/srd-creatures/2024/:name", async (req, res) => {
-	const name = decodeURIComponent(req.params.name);
-	const data = (SRDCreatures2024 as any)[name];
-	if (data)
-		return res.json(data);
-	else
-		return res.status(404).json({ error: "No srd creature found with that name" });
-});
+registerStaticDataRoutes([
+	{
+		path: "/api/srd-features/2014",
+		data: SRDAttacks2014 as Record<string, unknown>,
+		error: "No SRD feature found with that name"
+	},
+	{
+		path: "/api/srd-features/2024",
+		data: SRDAttacks2024 as Record<string, unknown>,
+		error: "No SRD feature found with that name"
+	},
+	{
+		path: "/api/srd-creatures/2014",
+		data: SRDCreatures2014 as Record<string, unknown>,
+		error: "No srd creature found with that name"
+	},
+	{
+		path: "/api/srd-creatures/2024",
+		data: SRDCreatures2024 as Record<string, unknown>,
+		error: "No srd creature found with that name"
+	}
+]);
 
 // Spells
 app.get("/api/spells/all", async (req, res) => {
