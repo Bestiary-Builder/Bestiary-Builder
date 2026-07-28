@@ -64,7 +64,7 @@ const addAttack = () => {
 	currentEffect!.value.attacks.push({ attack: { name: "New Attack", automation: [], _v: 2 } });
 };
 
-useDataCleanup(currentEffect, ["end", "tick_on_caster", "conc", "desc", "save_as", "parent", "target_self", "stacking"], { effects: PASSIVE_EFFECTS.map(x => x.value) });
+useDataCleanup(currentEffect, ["end", "tick_on_caster", "conc", "desc", "save_as", "parent", "target_self", "stacking", "hidden"], { effects: PASSIVE_EFFECTS.map(x => x.value) });
 </script>
 
 <template>
@@ -151,6 +151,9 @@ useDataCleanup(currentEffect, ["end", "tick_on_caster", "conc", "desc", "save_as
 			</LabelledComponent>
 			<LabelledComponent title="Target Self" for="targetSelf">
 				<span><input id="targetSelf" v-model="currentEffect.target_self" type="checkbox"> <label for="end">Target Self</label>  </span>
+			</LabelledComponent>
+			<LabelledComponent title="Hidden effect" for="hidden">
+				<span><input id="hidden" v-model="currentEffect.hidden" type="checkbox"> <label for="end">Hidden Effect</label>  </span>
 			</LabelledComponent>
 		</div>
 	</template>

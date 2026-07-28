@@ -276,6 +276,7 @@ export interface IEffect {
 	parent?: string;
 	target_self?: boolean;
 	tick_on_caster?: boolean;
+	hidden?: boolean;
 }
 
 export interface PassiveEffects {

@@ -144,10 +144,12 @@
 			"save_as": "*optional, default None* - If supplied, saves an `IEffectMetaVar` to the automation runtime, which can be used in another IEffect's `parent` key to set its parent to this effect. Must be a valid identifier.",
 			"parent": "*optional, default None* - If supplied, sets the created effect's parent to the given effect. This must be the name of an existing `IEffectMetaVar`.\n - If `parent` is supplied but the parent effect does not exist, will not set a parent.\n - If `conc` is true, the given parent effect will take priority over the concentration effect.\n - If `stacking` is true and a valid stack parent exists, the stack parent will take priority over the given parent.",
 			"target_self": "*optional, default false* - If true, the effect will be applied to the caster of the action, rather than the target.",
-			"tick_on_caster": "*optional, default false* - If true, the effect's duration will be dependent on the caster of the action, rather than the target. For example, a `tick_on_caster` effect with a duration of 1 will last until the target of the *caster's* next turn, rather than the *target's*.\n\nIf the caster is not in combat, this has no effect."
+			"tick_on_caster": "*optional, default false* - If true, the effect's duration will be dependent on the caster of the action, rather than the target. For example, a `tick_on_caster` effect with a duration of 1 will last until the target of the *caster's* next turn, rather than the *target's*.\n\nIf the caster is not in combat, this has no effect.",
+			"hidden": "*optional, default false* - If true, the effect's stat bonuses and description will be hidden in combat displays while still showing the effect name and duration."
+
 		},
 		"url": "ieffect",
-		"ts": "{\n    type: \"ieffect2\";\n    name: string;\n    duration?: int | IntExpression;\n    effects?: PassiveEffects;\n    attacks?: AttackInteraction[];\n    buttons?: ButtonInteraction[];\n    end?: boolean;\n    conc?: boolean;\n    desc?: AnnotatedString;\n    stacking?: boolean;\n    save_as?: string;\n    parent?: string;\n    target_self?: boolean;\n    tick_on_caster?: boolean;\n}",
+		"ts": "{\n    type: \"ieffect2\";\n    name: string;\n    duration?: int | IntExpression;\n    effects?: PassiveEffects;\n    attacks?: AttackInteraction[];\n    buttons?: ButtonInteraction[];\n    end?: boolean;\n    conc?: boolean;\n    desc?: AnnotatedString;\n    stacking?: boolean;\n    save_as?: string;\n    parent?: string;\n    target_self?: boolean;\n    tick_on_caster?: boolean;\n    hidden?: boolean;\n}",
 		"variables": {
 			"(supplied save_as)": {
 				"type": "IEffectMetaVar or None",
