@@ -22,14 +22,12 @@ export default antfu(
 			commaDangle: ["error", "never"],
 			quoteProps: "consistent-as-needed",
 		},
-
 	},
 	{
 		rules: {
 			"antfu/top-level-function": "off",
 			"style/comma-dangle": "off",
 			"vue/comma-dangle": "off",
-			"style/comma-dangle": "off",
 			"jsonc/comma-dangle": "off",
 			// TODO: Refactor components so this can be turned to error.
 			"vue/no-mutating-props": "off",

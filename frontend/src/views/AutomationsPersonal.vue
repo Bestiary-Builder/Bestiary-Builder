@@ -132,7 +132,6 @@ const getAvraeCharacters = async () => {
 
 const selectedCharacter = ref<any>();
 watch(selectedCharacter, async () => {
-	console.log(selectedCharacter.value);
 	if (!selectedAutomation.value) {
 		$toast.info("No automation selected.");
 		return;

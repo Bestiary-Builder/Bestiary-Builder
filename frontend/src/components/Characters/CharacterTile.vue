@@ -3,7 +3,6 @@ import { Icon } from "@iconify/vue";
 import { computed } from "vue";
 
 const { character } = defineProps<{ character: any }>();
-console.log(character);
 
 const image = computed(() => {
 	if (character.overrides.image && (!character.overrides.image.includes("discordapp.com")))

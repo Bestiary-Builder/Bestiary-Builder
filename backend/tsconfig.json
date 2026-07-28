@@ -17,6 +17,6 @@
 		"esModuleInterop": true,
 		"skipLibCheck": true,
 	},
-	"exclude": [ "scripts/*" ],
-	"include": [ "**/*.ts" ]
+	"include": ["**/*.ts"],
+	"exclude": ["scripts/*"]
 }

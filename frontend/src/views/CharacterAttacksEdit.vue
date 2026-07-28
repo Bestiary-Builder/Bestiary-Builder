@@ -22,7 +22,6 @@ const getAvraeCharacters = async () => {
 	const { success, data, error } = await useFetch("/api/character/list");
 	if (success) {
 		getUmami()?.track("Loaded Avrae Characters");
-		console.log((data as any[]).find(char => char.upstream === $route.params.upstream));
 		character.value = (data as any[]).find(char => char.upstream === $route.params.upstream);
 		$toast.dismiss(toasterId);
 	}

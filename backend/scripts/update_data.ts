@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { Prisma, PrismaClient } from "~/shared/src/prisma-types";
-import type { Creature } from "~/shared";
+import { Prisma, PrismaClient } from "../../shared/src/prisma-types";
+import type { Creature, Statblock } from "../../shared";
 
 const adapter = new PrismaPg({
 	connectionString: process.env.DATABASE_URL!,
@@ -115,7 +115,7 @@ function createSavesOperation(creature: Creature) {
 }
 
 function createSkillsOperation(creature: Creature) {
-	const stats = creature.stats;
+	const stats: Statblock = creature.stats;
 	stats.abilities.skills.forEach((skill) => {
 		skill.adv = null;
 	});

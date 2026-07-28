@@ -43,7 +43,6 @@
 		"winston": "^3.17.0"
 	},
 	"devDependencies": {
-		"@antfu/eslint-config": "^2.27.3",
 		"@types/compression": "^1.7.5",
 		"@types/cookie-parser": "^1.4.8",
 		"@types/cors": "^2.8.17",
@@ -51,11 +50,9 @@
 		"@types/jsonwebtoken": "^9.0.9",
 		"@types/node": "^20.17.30",
 		"@types/node-fetch": "^2.6.12",
-		"eslint": "8.57.0",
 		"nodemon": "^3.1.10",
 		"prisma-json-types-generator": "^5.1.0",
 		"tsx": "^4.19.3",
-		"typescript": "^6.0.3",
 		"vitest": "^3.1.2"
 	}
 }

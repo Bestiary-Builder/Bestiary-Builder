@@ -1,4 +1,4 @@
-import { Mark, Node, mergeAttributes } from "@tiptap/core";
+import { Node } from "@tiptap/core";
 
 const Highlight = Node.create({
 	name: "admonition",

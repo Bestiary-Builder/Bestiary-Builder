@@ -27,7 +27,6 @@ app.post("/api/5etools-import", async (req, res) => {
 });
 
 export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string[] }] {
-	console.log(data.name);
 	const outputData = {} as Statblock;
 	outputData.description = {
 		name: data.name,
@@ -783,7 +782,7 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 				return 0;
 			for (const s of data?.languages ?? []) {
 				if (s.includes("telepathy"))
-					return Number.parseInt(s.match(/\d+(\.\d+)?/gi)[0] || "0");
+					return Number.parseInt(s.match(/\d+(\.\d+)?/g)[0] || "0");
 			}
 
 			return 0;

@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { $toast } from "./utils/app/toast";
 import { store } from "./utils/store";
-import { app } from "./main";
 // @ts-expect-error Comes in from vite-plugin-pages
 
 import fileRoutes from "~pages";

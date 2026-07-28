@@ -330,7 +330,7 @@ app.post("/api/bestiary/:id/creatures/order", requireUser, async (req, res) => {
 			let index = creatureIds.indexOf(creatureId);
 			if (index < 0)
 				index = creatureIds.length + 1;
-			return prisma.creature.update(({ where: { id: creatureId }, data: { index } }))
+			return prisma.creature.update(({ where: { id: creatureId }, data: { index } }));
 		}));
 
 		if (result.length === bestiaryCreatures.length)

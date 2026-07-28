@@ -1,5 +1,5 @@
 import { type Ref, watch } from "vue";
-import type { AttackInteraction, AttackModel, ButtonInteraction, Effect, EffectWithTarget } from "~/shared";
+import type { AttackInteraction, AttackModel, ButtonInteraction, EffectWithTarget } from "~/shared";
 
 // type NestedData<T> = {
 // 	[K in keyof T]?: T[K] extends object ? Array<keyof T[K]> : never;

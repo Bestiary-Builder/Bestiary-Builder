@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, onMounted } from "vue";
-import MarkdownIt from "markdown-it";
 import { Markdown, MarkdownManager } from "@tiptap/markdown";
 import StarterKit from "@tiptap/starter-kit";
 import { generateHTML } from "@tiptap/vue-3";
@@ -192,7 +191,6 @@ const render = (str: string, inline?: boolean) => {
 			.replaceAll("&emsp;", "\u2003")
 			.replaceAll("&ensp;", "\u2002")
 			.replaceAll("&nbsp;", "\u00A0");
-		console.log(markdown);
 		if (!inline)
 			markdown = markdown.replaceAll(/(?<!\n)\n(?!\n)/g, "\n\n");
 

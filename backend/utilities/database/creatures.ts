@@ -1,4 +1,3 @@
-import type { JsonObject } from "@prisma/client/runtime/client";
 import { getPrismaClient } from ".";
 import { log } from "@/utilities/logger";
 import type { Id } from "~/shared";

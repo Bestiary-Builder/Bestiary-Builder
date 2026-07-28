@@ -70,7 +70,6 @@ input[type="checkbox"] {
 		top: 15%;
 	}
 
-
 	&.round {
 		border-radius: 100%;
 		&::before {
@@ -141,7 +140,7 @@ textarea {
 	height: 46px;
 	appearance: none;
 	transition: border 0.15s ease 0s;
-	    max-width: 90vw;
+	max-width: 90vw;
 
 	:focus {
 		outline: none;
@@ -176,7 +175,7 @@ select {
 	}
 
 	& optgroup {
-		background-color: var(--color-surface-1)
+		background-color: var(--color-surface-1);
 	}
 }
 
@@ -221,8 +220,6 @@ select {
 		padding: 2rem 25vw;
 	}
 }
-
-
 
 .v-select,
 .vs__dropdown-menu {
@@ -374,7 +371,7 @@ body
 	&:not(:has(.stat-block)) {
 		color: orangered;
 	}
-	
+
 	.stat-block {
 		color: var(--color-base);
 	}
@@ -388,7 +385,6 @@ body:has(.v-popper__popper--no-positioning[aria-hidden="false"]) {
 html:has(.open-modal) {
 	overflow: hidden;
 }
-
 
 .v-popper__popper--no-positioning:not(.right-pane) {
 	position: fixed;
@@ -412,7 +408,8 @@ html:has(.open-modal) {
 	transition: transform 0.15s ease-out;
 }
 
-.v-popper__popper--no-positioning:not(.right-pane).v-popper__popper--hidden .v-popper__wrapper {
+.v-popper__popper--no-positioning:not(.right-pane).v-popper__popper--hidden
+	.v-popper__wrapper {
 	transform: translateY(100%);
 }
 
@@ -432,7 +429,6 @@ html:has(.open-modal) {
 		grid-template-columns: 9fr 1fr;
 	}
 }
-
 
 p:has(img[src="/Beholder.webp"]) {
 	strong {
@@ -458,7 +454,6 @@ blockquote:has(p img[src="/Beholder.webp"]) ~ p {
 	margin: auto;
 	width: 70%;
 }
-
 
 .btn-icon {
 	padding: 0;
@@ -486,6 +481,6 @@ blockquote:has(p img[src="/Beholder.webp"]) ~ p {
 
 [data-sonner-toast][data-type="loading"] {
 	--normal-bg: hsl(215, 100%, 6%);
-    --normal-border: hsl(223, 43%, 17%);
-    --normal-text: hsl(216, 87%, 65%);
+	--normal-border: hsl(223, 43%, 17%);
+	--normal-text: hsl(216, 87%, 65%);
 }

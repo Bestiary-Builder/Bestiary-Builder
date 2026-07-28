@@ -95,9 +95,7 @@ watch(() => data.spellcasting.casterSpells.castingClass, (newValue) => {
 			data.spellcasting.casterSpells.spellCastingAbility = "cha";
 	}
 	// set spell slots in case they changed full caster/half caster/arti half/warlock
-	console.log(sClass, data.spellcasting.casterSpells.spellSlotList);
 	data.spellcasting.casterSpells.spellSlotList = getSpellSlots(sClass, data.spellcasting.casterSpells.casterLevel);
-	console.log(sClass, data.spellcasting.casterSpells.spellSlotList);
 });
 
 const newDailyAmount = ref<number | null>(null);

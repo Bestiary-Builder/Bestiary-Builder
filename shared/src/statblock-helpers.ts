@@ -1,5 +1,5 @@
 import YAML from "yaml";
-import type { AttackModel, CasterSpells, FeatureEntity, InnateSpells, SenseEntity, SkillsEntity, SpeedEntity, SpellSlotList, Stat, Statblock } from "./types";
+import type { AttackModel, CasterSpells, FeatureEntity, InnateSpells, SenseEntity, SpeedEntity, SpellSlotList, Stat, Statblock } from "./types";
 
 export const SKILLS_BY_STAT = {
 	str: ["athletics", "strength"],
@@ -126,7 +126,7 @@ export function displaySpeedOrSenses(data: SenseEntity[] | SpeedEntity[], hasEnd
 		if (item.name === "New speed" || item.name === "New sense")
 			continue;
 
-		if (item.name !== "Walk" || item.name === "Walk" && index !== 0) {
+		if (item.name !== "Walk" || (item.name === "Walk" && index !== 0)) {
 			if (version2024) {
 				output += `${capitalizeFirstLetter(item.name.toLowerCase())} `;
 			}

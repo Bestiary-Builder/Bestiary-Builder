@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
-import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute } from "vue-router";
+import { onMounted, ref } from "vue";
+import { useRoute } from "vue-router";
 import html2canvas from "html2canvas";
 import { Shimmer } from "@shimmer-from-structure/vue";
-import { $toast, htmlToast } from "@/utils/app/toast";
-import Modal from "@/components/Global/Modal.vue";
+import { $toast } from "@/utils/app/toast";
 import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
 import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
-import type { BestiaryExtended, CreatureWithStats, Statblock } from "~/shared";
+import type { BestiaryExtended, CreatureWithStats } from "~/shared";
 import { defaultStatblock } from "~/shared";
 import { useFetch } from "@/utils/utils";
 import { store } from "@/utils/store";

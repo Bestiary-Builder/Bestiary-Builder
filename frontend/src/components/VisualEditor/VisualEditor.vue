@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, provide, ref, watch } from "vue";
+import { computed, provide, ref } from "vue";
 import TreeRoot from "./TreeRoot.vue";
 import NodeHelper from "./NodeHelper.vue";
 import EffectAdder from "./EffectAdder.vue";

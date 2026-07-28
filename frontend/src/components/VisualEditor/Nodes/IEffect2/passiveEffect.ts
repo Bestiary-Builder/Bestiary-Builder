@@ -75,7 +75,7 @@ export interface PassiveEffectDef {
 }
 
 export const PASSIVE_EFFECTS: PassiveEffectDef[] = [
-	 {
+	{
 		label: "Attack Advantage",
 		value: "attack_advantage",
 		type: IntExpression,
@@ -102,7 +102,7 @@ export const PASSIVE_EFFECTS: PassiveEffectDef[] = [
 		type: IntExpression,
 		defaultOptions: [{ label: "True", value: "1" }]
 	},
-	 {
+	{
 		label: "Silvered Damage",
 		value: "silvered_damage",
 		type: IntExpression,
@@ -168,7 +168,7 @@ export const PASSIVE_EFFECTS: PassiveEffectDef[] = [
 		isList: true,
 		defaultOptions: SAVING_THROWS
 	},
-	 {
+	{
 		label: "Saving Throw Disadvantage",
 		value: "save_dis",
 		type: AnnotatedString,

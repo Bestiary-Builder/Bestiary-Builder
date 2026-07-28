@@ -1,4 +1,4 @@
-import { type MaybeRefOrGetter, type Ref, computed, toValue, watch } from "vue";
+import { type MaybeRefOrGetter, computed, toValue } from "vue";
 import YAML from "yaml";
 import type { AttackModel } from "~/shared";
 

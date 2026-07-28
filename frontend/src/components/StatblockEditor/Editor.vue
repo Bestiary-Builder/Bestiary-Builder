@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, shallowRef, useTemplateRef } from "vue";
+import { shallowRef, useTemplateRef } from "vue";
 import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
 import type * as Monaco from "monaco-editor";
 import { useResizeObserver } from "@vueuse/core";
@@ -140,8 +140,8 @@ function toggleMarkdown(
 	);
 
 	const hasMarkers
-    = before === marker
-    	&& after === marker;
+	= before === marker
+		&& after === marker;
 
 	if (hasMarkers) {
 		// Remove markers
@@ -150,11 +150,11 @@ function toggleMarkdown(
 				range: {
 					startLineNumber: selection.startLineNumber,
 					startColumn:
-            selection.startColumn - marker.length,
+			selection.startColumn - marker.length,
 
 					endLineNumber: selection.endLineNumber,
 					endColumn:
-            selection.endColumn + marker.length,
+			selection.endColumn + marker.length,
 				},
 				text: selectedText,
 			},
@@ -164,11 +164,11 @@ function toggleMarkdown(
 		editor.setSelection({
 			startLineNumber: selection.startLineNumber,
 			startColumn:
-        selection.startColumn - marker.length,
+		selection.startColumn - marker.length,
 
 			endLineNumber: selection.endLineNumber,
 			endColumn:
-        selection.endColumn - marker.length,
+		selection.endColumn - marker.length,
 		});
 	}
 	else {
@@ -184,11 +184,11 @@ function toggleMarkdown(
 		editor.setSelection({
 			startLineNumber: selection.startLineNumber,
 			startColumn:
-        selection.startColumn + marker.length,
+		selection.startColumn + marker.length,
 
 			endLineNumber: selection.endLineNumber,
 			endColumn:
-        selection.endColumn + marker.length,
+		selection.endColumn + marker.length,
 		});
 	}
 
@@ -329,15 +329,11 @@ function toggleHeading(
 			const existingPrefix = match[0];
 
 			// Same heading level -> remove heading
-			if (existingPrefix === prefix) {
+			if (existingPrefix === prefix)
 				newText = text.slice(existingPrefix.length);
-			}
 			// Different level -> replace heading
-			else {
-				newText
-          = prefix
-          	+ text.slice(existingPrefix.length);
-			}
+			else
+				newText = prefix + text.slice(existingPrefix.length);
 		}
 		// No heading -> add one
 		else {
@@ -394,9 +390,7 @@ function toggleInlineHighlight(
 			endOffset + 2
 		);
 
-		const isHighlighted
-      = before === "::"
-      	&& after === "::";
+		const isHighlighted = (before === "::" && after === "::");
 
 		if (isHighlighted) {
 			editor.executeEdits("toggle-highlight", [

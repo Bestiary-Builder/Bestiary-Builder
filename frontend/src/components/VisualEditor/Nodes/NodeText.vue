@@ -3,7 +3,6 @@ import { type Ref, inject, onMounted, ref, watch } from "vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import AnnotatedString from "./shared/AnnotatedString.vue";
 import { useDataCleanup } from "./shared/utils";
-import AutomationDocumentation from "./shared/AutomationDocumentation.vue";
 import type { AbilityReference, Text } from "~/shared";
 import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import { useFetch } from "@/utils/utils";

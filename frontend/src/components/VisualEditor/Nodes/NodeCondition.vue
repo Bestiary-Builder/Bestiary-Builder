@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type Ref, computed, inject, watch } from "vue";
+import { type Ref, computed, inject } from "vue";
 import IntExpression from "./shared/IntExpression.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
@@ -9,7 +9,18 @@ import type { Condition } from "~/shared";
 const currentEffect = inject<Ref<Condition>>("currentEffect");
 
 const isWarning = computed(() => {
-	return (((currentEffect?.value.condition.includes(" = ")) ?? false) || (((currentEffect?.value.condition.includes("=")) ?? false) && !((currentEffect?.value.condition.includes("==")) ?? false) && currentEffect?.value.condition[currentEffect?.value.condition.length - 1] !== "=") && !(currentEffect?.value.condition.includes(">") || currentEffect?.value.condition.includes("<") || currentEffect?.value.condition.includes("!")));
+	return (
+		(
+			(currentEffect?.value.condition.includes(" = ")) ?? false
+		) || (
+			(
+				(currentEffect?.value.condition.includes("=") ?? false)
+				&& !(currentEffect?.value.condition.includes("==") ?? false)
+				&& currentEffect?.value.condition[currentEffect?.value.condition.length - 1] !== "="
+			)
+			&& !(currentEffect?.value.condition.includes(">") || currentEffect?.value.condition.includes("<") || currentEffect?.value.condition.includes("!"))
+		)
+	);
 });
 
 useDataCleanup(currentEffect, ["errorBehaviour"]);

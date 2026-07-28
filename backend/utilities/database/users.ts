@@ -9,7 +9,7 @@ const userSecretCache = {} as { [key: string]: User };
 const userSecrets = {} as { [key: string]: string };
 export function resetUserCache(id: string) {
 	delete userCache[id];
-	delete userSecretCache[userSecrets[id]]
+	delete userSecretCache[userSecrets[id]];
 }
 // User functions
 export async function getUser(id: string) {

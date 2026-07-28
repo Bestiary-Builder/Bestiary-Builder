@@ -1,6 +1,5 @@
 @import url("@/assets/styles/mixins.less");
 
-
 .two-wide {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
@@ -9,7 +8,7 @@
 
 .editor-content {
 	padding: 0.5rem 1rem;
-	margin-top: .5rem;
+	margin-top: 0.5rem;
 	&__tab-inner {
 		background-color: var(--color-surface-1);
 
@@ -77,8 +76,6 @@
 	}
 }
 
-
-
 .scale-in {
 	-webkit-animation: scale-in 0.2s ease-in-out;
 	-moz-animation: scale-in 0.2s ease-in-out;
@@ -126,8 +123,6 @@
 	height: 40px;
 	translate: 0 5px;
 }
-
-
 
 .select-with-delete {
 	display: flex;
@@ -180,7 +175,6 @@
 	}
 }
 
-
 .list-table {
 	width: 100%;
 	overflow-wrap: break-word;
@@ -192,7 +186,7 @@
 	select {
 		font-size: small;
 		max-width: 80%;
-		color: var(--color-base)
+		color: var(--color-base);
 	}
 
 	thead {
@@ -227,12 +221,12 @@
 			}
 		}
 
-		th, td {
+		th,
+		td {
 			padding: 2px 4px;
 		}
 	}
-	
-	
+
 	td:has(.handle) {
 		width: 0;
 	}
@@ -250,7 +244,7 @@
 		flex-direction: row;
 		justify-content: center;
 		color: var(--color-base);
-		gap: .3rem;
+		gap: 0.3rem;
 		a {
 			color: orangered;
 		}
@@ -270,7 +264,6 @@
 			color: gray !important;
 		}
 	}
-
 }
 
 .list-table ~ .two-wide {
@@ -291,13 +284,12 @@
 	}
 
 	.edit-buttons > div {
-		gap: .6rem;
+		gap: 0.6rem;
 		button {
 			color: orangered;
 		}
 	}
 }
-
 
 .list-table.quiet {
 	color: var(--color-base) !important;
@@ -328,4 +320,3 @@
 		}
 	}
 }
-

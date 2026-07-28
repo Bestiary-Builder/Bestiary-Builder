@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, h, onMounted, onUnmounted, ref, shallowRef, toRef, watch } from "vue";
+import { computed, onMounted, onUnmounted, ref, shallowRef, watch } from "vue";
 import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
 import YAML from "yaml";
 import { useParityHelper } from "./useParityHelpers";

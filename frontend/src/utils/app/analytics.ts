@@ -16,7 +16,7 @@ export class Umami {
 	public track(event_name: string): void;
 	// Custom event with data
 	public track(event_name: string, data: object): void;
-	// Mock implementation for typescript
+	// eslint-disable-next-line  unused-imports/no-unused-vars
 	public track(a?: unknown, b?: unknown): void {}
 
 	// Assign ID to current session
@@ -25,7 +25,7 @@ export class Umami {
 	public identify(unique_id: string, data: object): void;
 	// Session data without ID
 	public identify(data: object): void;
-	// Mock implementation for typescript
+	// eslint-disable-next-line  unused-imports/no-unused-vars
 	public identify(a?: unknown, b?: unknown): void { }
 }
 
