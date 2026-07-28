@@ -1,10 +1,9 @@
-import type { Creature, Statblock, User } from "~/shared";
-import { checkBadwords } from "@/utilities/badwords";
-import { app, checkCreatureAmountLimit, checkCreatureLimits, limits } from "@/utilities/constants";
+import type { Creature, User } from "~/shared";
+import { app, checkCreatureAmountLimit } from "@/utilities/constants";
 import { createCreature, deleteCreature, getBestiary, getBestiaryCreatureCount, getCreature, getCreaturesByBestiary, getPrismaClient, updateCreature } from "@/utilities/database";
 import { log } from "@/utilities/logger";
-import { defaultStatblock } from "~/shared";
 import { canEditBestiary, checkBestiaryPermission } from "./bestiaries";
+import { prepareCreatureStats } from "./creaturePreparation";
 import { possibleUser, requireUser } from "./login";
 import { validateCreatureInput } from "./validation";
 
@@ -82,61 +81,14 @@ app.post("/api/creature/add", requireUser, async (req, res) => {
 		if (!user)
 			return res.status(404).json({ error: "Couldn't find current user." });
 
-		// Make sure all fields are present
-		const oldStats = data.stats;
-		const stats = {} as Statblock;
-		for (const key in defaultStatblock) {
-			const k = key as keyof Statblock;
-			stats[k] = { ...defaultStatblock[k], ...(oldStats ? oldStats[k] : {}) } as any;
-		}
-		// Check limits
-		const limitError = checkCreatureLimits(stats);
-		if (limitError)
-			return res.status(400).json({ error: limitError });
-		// Check image link
-		let image = stats.description.image as string;
-		// remove any url parameters from the string
-		if (image) {
-			try {
-				image = new URL(image).origin + new URL(image).pathname;
-				stats.description.image = image;
-			}
-			catch {
-				return res.status(400).json({ error: `Invalid image url.` });
-			}
-		}
-		let failedToImportImage = false;
-		if (image && image !== "") {
-			if (!image.startsWith("https")) {
-				stats.description.image = "";
-				failedToImportImage = true;
-			}
-			let isApproved = false;
-			if (!failedToImportImage) {
-				for (const format of limits.imageFormats) {
-					if (image.endsWith(`.${format}`))
-						isApproved = true;
-				}
-			}
-			if (!isApproved) {
-				stats.description.image = "";
-				failedToImportImage = true;
-			}
-		}
-		data.stats = stats;
 		// Get bestiary
 		const bestiary = await getBestiary(data.bestiaryId);
 		if (!bestiary)
 			return res.status(404).json({ error: "Bestiary not found" });
-		// Remove bad words
-		if (bestiary.status !== "private") {
-			const nameError = checkBadwords(stats.description.name);
-			if (nameError)
-				return res.status(400).json({ error: `Creature name ${nameError}` });
-			const descError = checkBadwords(stats.description.description);
-			if (descError)
-				return res.status(400).json({ error: `Creature description ${descError}` });
-		}
+		const prepared = prepareCreatureStats(data.stats, bestiary.status);
+		if (prepared.error)
+			return res.status(400).json({ error: prepared.error });
+		data.stats = prepared.stats;
 		// Check permissions
 		if (!await canEditBestiary(bestiary, user))
 			return res.status(401).json({ error: "You don't have permission to add creatures to this bestiary." });
@@ -153,8 +105,8 @@ app.post("/api/creature/add", requireUser, async (req, res) => {
 			return res.status(500).json({ error: "Failed to create creature." });
 		data.id = _id;
 		log.info(`New creature created with the id: ${_id}`);
-		if (failedToImportImage)
-			return res.status(400).json({ error: "Image link not recognized as an allowed image format. Make sure it is from a secure https location and ends in an image file format extension (e.g. .png)" });
+		if (prepared.imageWarning)
+			return res.status(400).json({ error: prepared.imageWarning });
 		return res.status(201).json(data);
 	}
 	catch (err) {
@@ -191,61 +143,14 @@ app.post("/api/creature/:id/update", requireUser, async (req, res) => {
 		const user = req.body.user;
 		if (!user)
 			return res.status(404).json({ error: "Couldn't find current user." });
-		// Make sure all fields are present
-		const oldStats = data.stats;
-		const stats = {} as Statblock;
-		for (const key in defaultStatblock) {
-			const k = key as keyof Statblock;
-			stats[k] = { ...defaultStatblock[k], ...oldStats[k] } as any;
-		}
-		// Check limits
-		const limitError = checkCreatureLimits(stats);
-		if (limitError)
-			return res.status(400).json({ error: limitError });
-		// Check image link
-		let image = stats.description.image as string;
-		// remove any url parameters from the string
-		if (image) {
-			try {
-				image = new URL(image).origin + new URL(image).pathname;
-				stats.description.image = image;
-			}
-			catch {
-				return res.status(400).json({ error: `Invalid image url.` });
-			}
-		}
-		let failedToImportImage = false;
-		if (image && image !== "") {
-			if (!image.startsWith("https")) {
-				stats.description.image = "";
-				failedToImportImage = true;
-			}
-			let isApproved = false;
-			if (!failedToImportImage) {
-				for (const format of limits.imageFormats) {
-					if (image.endsWith(`.${format}`))
-						isApproved = true;
-				}
-			}
-			if (!isApproved) {
-				stats.description.image = "";
-				failedToImportImage = true;
-			}
-		}
-		data.stats = stats;
 		// Get bestiary
 		const bestiary = await getBestiary(data.bestiaryId);
 		if (!bestiary)
 			return res.status(404).json({ error: "Bestiary not found" });
-		// Remove bad words
-		if (bestiary.status !== "private") {
-			const nameError = checkBadwords(stats.description.name);
-			if (nameError)
-				return res.status(400).json({ error: `Creature name ${nameError}` });
-			const descError = checkBadwords(stats.description.description);
-			if (descError)
-				return res.status(400).json({ error: `Creature description ${descError}` });
-		}
+		const prepared = prepareCreatureStats(data.stats, bestiary.status);
+		if (prepared.error)
+			return res.status(400).json({ error: prepared.error });
+		data.stats = prepared.stats;
 		// Check permissions
 		if (!await canEditBestiary(bestiary, user))
 			return res.status(401).json({ error: "You don't have permission to update this creature." });
@@ -253,8 +158,8 @@ app.post("/api/creature/:id/update", requireUser, async (req, res) => {
 		const updatedId = await updateCreature(data, _id);
 		if (updatedId) {
 			log.info(`Updated creature with the id ${_id}`);
-			if (failedToImportImage)
-				return res.status(400).json({ error: "Image link not recognized as an allowed image format. Make sure it is from a secure https location and ends in an image file format extension (e.g. .png)" });
+			if (prepared.imageWarning)
+				return res.status(400).json({ error: prepared.imageWarning });
 			return res.status(201).json(data);
 		}
 		else {

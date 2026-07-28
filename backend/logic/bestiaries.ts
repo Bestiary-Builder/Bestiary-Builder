@@ -4,12 +4,13 @@ import type { Bestiary, BestiaryCreateInput, BestiaryStatus, Creature } from "~/
 import { createCheckers } from "ts-interface-checker";
 import tags from "@/staticData/tags.json";
 import { checkBadwords } from "@/utilities/badwords";
-import { app, checkBestiaryLimits, checkCreatureAmountLimit, checkCreatureLimits, limits } from "@/utilities/constants";
+import { app, checkBestiaryLimits, checkCreatureAmountLimit, limits } from "@/utilities/constants";
 import { addBestiaryEditor, addBookmark, createBestiary, createCreatures, deleteBestiary, getBestiariesByOwner, getBestiariesByUser, getBestiary, getBestiaryCreatureCount, getPrismaClient, getPublicBestiariesByOwner, incrementBestiaryViewCount, isBestiaryBookmarked, removeBestiaryEditor, removeBookmark, updateBestiary } from "@/utilities/database";
 import { log } from "@/utilities/logger";
-import { defaultStatblock, typeInterface } from "~/shared";
+import { typeInterface } from "~/shared";
 
 import { createCollectionService } from "./collections";
+import { prepareCreatureStats } from "./creaturePreparation";
 import { colors, publicLog } from "./discord";
 import { possibleUser, requireUser } from "./login";
 
@@ -357,71 +358,19 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 		for (const creature of data) {
 			if (!creature)
 				continue;
-			const oldStats = creature.stats;
-			const stats = {} as Statblock;
-			for (const key in defaultStatblock) {
-				// @ts-expect-error untyped
-				stats[key] = { ...defaultStatblock[key], ...oldStats[key] };
-			}
 			// Set bestiary id
 			creature.bestiaryId = _id;
 			// Set last updated
 			creature.lastUpdated = now;
 			// Set index
 			creature.index = creatureIndex++;
-			// Check limits
-			const creatureLimits = checkCreatureLimits(stats);
-			if (creatureLimits) {
-				ignoredCreatures.push({ creature: stats.description.name, error: creatureLimits });
+			const prepared = prepareCreatureStats(creature.stats, bestiary.status);
+			if (prepared.error) {
+				ignoredCreatures.push({ creature: prepared.stats.description.name, error: prepared.error });
 				continue;
 			}
-			// Check image link
-			let image = stats.description.image as string;
-			// remove any url parameters from the string
-			if (image) {
-				try {
-					image = new URL(image).origin + new URL(image).pathname;
-					stats.description.image = image;
-				}
-				catch {
-					log.error(`Image url not recognized. (${image})`);
-					ignoredCreatures.push({ creature: stats.description.name, error: "Image url not recognized." });
-					continue;
-				}
-			}
-			let failedToImportImage = false;
-			if (image && image !== "") {
-				if (!image.startsWith("https")) {
-					stats.description.image = "";
-					failedToImportImage = true;
-				}
-				let isApproved = false;
-				if (!failedToImportImage) {
-					for (const format of limits.imageFormats) {
-						if (image.endsWith(`.${format}`))
-							isApproved = true;
-					}
-				}
-				if (!isApproved) {
-					stats.description.image = "";
-					failedToImportImage = true;
-				}
-			}
-			// Badwords check
-			if (bestiary.status !== "private") {
-				const badwordsName = checkBadwords(stats.description.name);
-				if (badwordsName) {
-					ignoredCreatures.push({ creature: stats.description.name, error: badwordsName });
-					continue;
-				}
-				const badwordsDesc = checkBadwords(stats.description.description);
-				if (badwordsDesc) {
-					ignoredCreatures.push({ creature: stats.description.name, error: badwordsDesc });
-					continue;
-				}
-			}
 			// Push data
-			fixedData.push({ ...creature, stats });
+			fixedData.push({ ...creature, stats: prepared.stats });
 		}
 		let error = "";
 		// Failed creatures:
