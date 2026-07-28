@@ -73,8 +73,8 @@ export const routes: Route[] = [
 	},
 	{
 		path: "/automations/personal",
-		name: "My Automations",
-		file: "AutomationsPersonal.vue",
+		name: "My Automation Collections",
+		file: "AutomationCollectionsPersonal.vue",
 		meta: { navbar: true, loggedIn: true, dynamic: false },
 	},
 	{
