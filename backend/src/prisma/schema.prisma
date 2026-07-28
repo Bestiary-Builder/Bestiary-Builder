@@ -1,0 +1,201 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../../../shared/prisma"
+}
+
+generator json {
+  provider  = "prisma-json-types-generator"
+  namespace = "PrismaJson"
+  allowAny  = false
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id          String          @id
+  username    String
+  avatar      String
+  email       String
+  verified    Boolean
+  bannerColor String          @map("banner_color")
+  globalName  String          @map("global_name")
+  supporter   SupporterStatus @default(none)
+  joinedAt    DateTime        @default(now())
+  secret      String          @unique
+
+  // User preferences
+  statblockLayout        StatblockLayout @default(SL_2024)
+  statblockDesign        StatblockDesign @default(BestiaryBuilder)
+  preferredEditor        Editor          @default(Visual)
+  unsubscribedFromEmails Boolean         @default(false)
+  SRDVersion             SRDVersion      @default(SRD_2024)
+
+  // Lists
+  bestiaries                  Bestiary[]                   @relation("BestiaryOwner")
+  automationCollections       AutomationCollection[]
+  editedAutomationCollections AutomationCollectionEditor[]
+  editedIn                    BestiaryEditor[]
+  bookmarks                   UserBestiaryBookmark[]
+  ordered                     UserBestiaryOrder[]
+
+  @@map("Users")
+}
+
+model Bestiary {
+  id          String         @id
+  name        String
+  ownerId     String         @map("owner")
+  status      BestiaryStatus
+  description String
+  tags        String[]
+  viewCount   Int            @default(0)
+  bookmarks   Int            @default(0)
+  lastUpdated DateTime       @updatedAt
+
+  owner        User                   @relation("BestiaryOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  creatures    Creature[]
+  editors      BestiaryEditor[]
+  bookmarkedBy UserBestiaryBookmark[]
+  orderedBy    UserBestiaryOrder[]
+
+  @@index([ownerId])
+  @@index([status])
+  @@map("Bestiaries")
+}
+
+model Creature {
+  id          String   @id @default(cuid())
+  bestiaryId  String   @map("bestiary")
+  lastUpdated DateTime @updatedAt
+
+  /// [DbStatblock]
+  stats Json
+
+  index Int
+
+  bestiary Bestiary @relation(fields: [bestiaryId], references: [id], onDelete: Cascade)
+
+  @@index([bestiaryId])
+  @@map("Creatures")
+}
+
+model Automation {
+  id           String   @id @default(cuid())
+  name         String
+  description  String
+  collectionId String
+  lastUpdated  DateTime @default(now())
+
+  /// [DbAutomation]
+  automation Json?
+
+  collection AutomationCollection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+
+  @@index([collectionId])
+  @@map("Automations")
+}
+
+model AutomationCollection {
+  id          String         @id @default(cuid())
+  name        String
+  ownerId     String         @map("owner")
+  status      BestiaryStatus @default(private)
+  lastUpdated DateTime       @updatedAt
+
+  owner       User                         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  automations Automation[]
+  editors     AutomationCollectionEditor[]
+
+  @@index([ownerId])
+  @@index([status])
+  @@map("AutomationCollections")
+}
+
+model AutomationCollectionEditor {
+  collectionId String
+  userId       String
+
+  collection AutomationCollection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  user       User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([collectionId, userId])
+  @@index([userId])
+  @@index([collectionId])
+  @@map("AutomationCollectionEditors")
+}
+
+model BestiaryEditor {
+  bestiaryId String
+  userId     String
+
+  bestiary Bestiary @relation(fields: [bestiaryId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([bestiaryId, userId])
+  @@index([userId])
+  @@map("BestiaryEditors")
+}
+
+model UserBestiaryBookmark {
+  userId     String
+  bestiaryId String
+  createdAt  DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bestiary Bestiary @relation(fields: [bestiaryId], references: [id], onDelete: Cascade)
+
+  @@id([userId, bestiaryId])
+  @@index([userId])
+  @@index([bestiaryId])
+  @@map("UserBestiaryBookmarks")
+}
+
+model UserBestiaryOrder {
+  userId     String
+  bestiaryId String
+
+  index Int
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bestiary Bestiary @relation(fields: [bestiaryId], references: [id], onDelete: Cascade)
+
+  @@id([userId, bestiaryId])
+  @@index([userId])
+  @@map("UserBestiaryOrders")
+}
+
+enum BestiaryStatus {
+  public
+  private
+  unlisted
+}
+
+enum SupporterStatus {
+  none
+  wirmling
+  greatwyrm
+}
+
+enum StatblockLayout {
+  SL_2014
+  SL_2024
+}
+
+enum StatblockDesign {
+  BestiaryBuilder
+  Beyond
+  Odyssey
+  MonsterManual
+}
+
+enum SRDVersion {
+  SRD_2014
+  SRD_2024
+}
+
+enum Editor {
+  Code
+  Visual
+}
