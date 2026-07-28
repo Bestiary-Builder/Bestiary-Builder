@@ -129,10 +129,8 @@ export async function getAutomationCollectionsByUser(userId: Id) {
 
 export async function createAutomationCollection(data: AutomationCollectionCreateInput) {
 	try {
-		return await getPrismaClient().automationCollection.upsert({
-			where: { id: data.id },
-			update: data,
-			create: data,
+		return await getPrismaClient().automationCollection.create({
+			data,
 			include: { editors: { select: { userId: true } } }
 		});
 	}

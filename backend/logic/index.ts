@@ -1,4 +1,5 @@
 import "./5eTools";
+import "./automationCollections";
 import "./automations";
 import "./avrae";
 import "./bestiaries";
