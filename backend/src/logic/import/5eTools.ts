@@ -1,7 +1,7 @@
 import type { CasterSpells, InnateSpellsList, SkillsEntity, SpellSlotList, Stat, Statblock } from "~/shared";
 import splitOnFirst from "split-on-first";
-import { app } from "@/src/utilities/constants";
-import { abilityParser, buildSpeedEntries, detectCastingClass, markdownReplacer, parseSenses } from "@/src/utilities/parsing";
+import { app } from "@/utilities/constants";
+import { abilityParser, buildSpeedEntries, detectCastingClass, markdownReplacer, parseSenses } from "@/utilities/parsing";
 import { capitalizeFirstLetter, defaultStatblock, getXPbyCR, SKILLS_BY_STAT } from "~/shared";
 import { spellListFlattened } from "../creatures/staticData";
 

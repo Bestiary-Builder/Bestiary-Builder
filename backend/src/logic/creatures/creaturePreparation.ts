@@ -1,6 +1,6 @@
 import type { BestiaryStatus, Statblock } from "~/shared";
-import { checkBadwords } from "@/src/utilities/badwords";
-import { checkCreatureLimits, limits } from "@/src/utilities/constants";
+import { checkBadwords } from "@/utilities/badwords";
+import { checkCreatureLimits, limits } from "@/utilities/constants";
 import { defaultStatblock } from "~/shared";
 
 interface PreparedCreatureStats {

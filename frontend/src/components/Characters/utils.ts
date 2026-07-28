@@ -1,19 +1,19 @@
+import type { AttackModel } from "~/shared";
 import { getUmami } from "@/utils/app/analytics";
 import { $toast } from "@/utils/app/toast";
 import { useFetch } from "@/utils/utils";
-import type { AttackModel } from "~/shared";
 
 export type AvraeCharacter = Record<string, unknown> & {
-  overrides: {
-    attacks: AttackModel[];
+	overrides: {
+		attacks: AttackModel[];
+		image: string;
+	};
+	name: string;
+	levels: { total_level: number; classes: { [key: string]: number } };
+	active: boolean;
 	image: string;
-  };
-  name: string,
-  levels: { total_level: number, classes: {[key: string]: number}},
-  active: boolean;
-  image: string;
-  upstream: string;
-}
+	upstream: string;
+};
 
 export const getAvraeCharacters = async () => {
 	const toasterId = $toast.loading("Getting character data from Avrae...");
@@ -30,21 +30,20 @@ export const getAvraeCharacters = async () => {
 			$toast.error("No Avrae Token set.", { id: toasterId });
 		else
 			$toast.error(error, { id: toasterId });
-        return null
+		return null;
 	}
-
 };
 
 export const getAvraeCharacterByUpstream = async (upstream: string) => {
-    const characters = await getAvraeCharacters() 
-    if (characters) {
-        const char = characters.find(char => char.upstream === upstream);
-        if (!char) {
-                $toast.error(`Could not find your character with upstream ${upstream}.`)
-                return null
-        }
-        return char
-    }
-    $toast.error(`Could not find your characters.`)
-    return null
-}
+	const characters = await getAvraeCharacters();
+	if (characters) {
+		const char = characters.find(char => char.upstream === upstream);
+		if (!char) {
+			$toast.error(`Could not find your character with upstream ${upstream}.`);
+			return null;
+		}
+		return char;
+	}
+	$toast.error(`Could not find your characters.`);
+	return null;
+};

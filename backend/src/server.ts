@@ -1,11 +1,11 @@
 import http from "node:http";
 // App
-import { app } from "@/src/utilities/constants";
+import { app } from "@/utilities/constants";
 // Setup database connection
-import { startConnection } from "@/src/utilities/database";
-import { getFrontendHtml } from "@/src/utilities/frontend";
-import { log } from "@/src/utilities/logger";
-import { errorHandler } from "@/src/utilities/middleware";
+import { startConnection } from "@/utilities/database";
+import { getFrontendHtml } from "@/utilities/frontend";
+import { log } from "@/utilities/logger";
+import { errorHandler } from "@/utilities/middleware";
 
 import { routes } from "~/shared";
 

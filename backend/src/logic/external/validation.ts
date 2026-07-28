@@ -5,7 +5,7 @@ import type { Statblock } from "~/shared";
 import fetch from "node-fetch";
 // Validate input
 import { createCheckers } from "ts-interface-checker";
-import { app } from "@/src/utilities/constants";
+import { app } from "@/utilities/constants";
 import { interfaceValidation, typeInterface } from "~/shared";
 
 app.post("/api/validate/automation", async (req, res) => {

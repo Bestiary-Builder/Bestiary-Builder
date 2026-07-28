@@ -1,9 +1,9 @@
 import type { User } from "~/shared";
 import { Buffer } from "node:buffer";
 import discord from "discord.js";
-import { isProduction } from "@/src/utilities/constants";
-import { getPrismaClient } from "@/src/utilities/database";
-import { log } from "@/src/utilities/logger";
+import { isProduction } from "@/utilities/constants";
+import { getPrismaClient } from "@/utilities/database";
+import { log } from "@/utilities/logger";
 import { SupporterStatus } from "~/shared";
 
 const client = new discord.Client({

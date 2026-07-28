@@ -4,10 +4,10 @@ import crypto from "node:crypto";
 import express from "express";
 
 // Limits
-import l from "@/src/staticData/limits.json";
+import l from "@/staticData/limits.json";
 
 // Secrets:
-import "@/src/utilities/env";
+import "@/utilities/env";
 
 // Import badwords
 import "./badwords";

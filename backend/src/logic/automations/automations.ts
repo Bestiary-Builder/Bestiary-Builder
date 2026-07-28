@@ -1,9 +1,9 @@
 import type { Automation, Id } from "~/shared";
 import type { AutomationCreateInput } from "~/shared/src/prisma-types";
-import { checkBadwords } from "@/src/utilities/badwords";
-import { app, checkAutomationLimits } from "@/src/utilities/constants";
-import { createAutomation, deleteAutomation, getAutomation, updateAutomation } from "@/src/utilities/database";
-import { log } from "@/src/utilities/logger";
+import { checkBadwords } from "@/utilities/badwords";
+import { app, checkAutomationLimits } from "@/utilities/constants";
+import { createAutomation, deleteAutomation, getAutomation, updateAutomation } from "@/utilities/database";
+import { log } from "@/utilities/logger";
 import { Prisma } from "~/shared/src/prisma-types";
 import { automationCollections, getOrCreateDefaultAutomationCollection } from "../collections/automationCollections";
 import { possibleUser, requireUser } from "../main/login";

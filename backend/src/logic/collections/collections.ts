@@ -1,5 +1,5 @@
 import type { BestiaryStatus, Id } from "~/shared";
-import { getUser } from "@/src/utilities/database";
+import { getUser } from "@/utilities/database";
 
 export type CollectionPermission = "none" | "view" | "editor" | "owner";
 export type CollectionAction = "view" | "edit" | "delete" | "manage-editors";

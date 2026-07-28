@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import type { Bestiary, BestiaryExtended, CreatureWithStats, Statblock, User } from "~/shared";
 import { createPopper } from "@popperjs/core";
 import { Shimmer } from "@shimmer-from-structure/vue";
 import { refDebounced, useLocalStorage } from "@vueuse/core";
 import { onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import Draggable from "vuedraggable";
-import type { Bestiary, BestiaryExtended, CreatureWithStats, Statblock, User } from "~/shared";
 import CopyManager from "@/components/Bestiary/CopyManager.vue";
 import CreatureListItem from "@/components/Bestiary/CreatureListItem.vue";
 import StatusIcon from "@/components/Bestiary/StatusIcon.vue";

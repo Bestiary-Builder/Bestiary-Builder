@@ -1,7 +1,7 @@
 import type { Creature, User } from "~/shared";
-import { app, checkCreatureAmountLimit } from "@/src/utilities/constants";
-import { createCreature, deleteCreature, getBestiary, getBestiaryCreatureCount, getCreature, getCreaturesByBestiary, getPrismaClient, updateCreature } from "@/src/utilities/database";
-import { log } from "@/src/utilities/logger";
+import { app, checkCreatureAmountLimit } from "@/utilities/constants";
+import { createCreature, deleteCreature, getBestiary, getBestiaryCreatureCount, getCreature, getCreaturesByBestiary, getPrismaClient, updateCreature } from "@/utilities/database";
+import { log } from "@/utilities/logger";
 import { canEditBestiary, checkBestiaryPermission } from "../collections/bestiaries";
 import { validateCreatureInput } from "../external/validation";
 import { possibleUser, requireUser } from "../main/login";

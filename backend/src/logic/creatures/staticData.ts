@@ -1,15 +1,15 @@
 import fetch from "node-fetch";
-import SRDAttacks2014 from "@/src/staticData/2014/SRDAttacks2014.json";
-import SRDCreatures2014 from "@/src/staticData/2014/SRDCreatures2014.json";
-import SRDAttacks2024 from "@/src/staticData/2024/SRDAttacks2024.json";
-import SRDCreatures2024 from "@/src/staticData/2024/SRDCreatures2024.json";
-import data from "@/src/staticData/automationDocumentation.json";
-import limits from "@/src/staticData/limits.json";
-import basicExamples from "@/src/staticData/shared/basicExamples.json";
-import spells from "@/src/staticData/shared/spells.json";
-import tOF from "@/src/staticData/shared/textOnlyFeatures.json";
-import tags from "@/src/staticData/tags.json";
-import { app } from "@/src/utilities/constants";
+import SRDAttacks2014 from "@/staticData/2014/SRDAttacks2014.json";
+import SRDCreatures2014 from "@/staticData/2014/SRDCreatures2014.json";
+import SRDAttacks2024 from "@/staticData/2024/SRDAttacks2024.json";
+import SRDCreatures2024 from "@/staticData/2024/SRDCreatures2024.json";
+import data from "@/staticData/automationDocumentation.json";
+import limits from "@/staticData/limits.json";
+import basicExamples from "@/staticData/shared/basicExamples.json";
+import spells from "@/staticData/shared/spells.json";
+import tOF from "@/staticData/shared/textOnlyFeatures.json";
+import tags from "@/staticData/tags.json";
+import { app } from "@/utilities/constants";
 
 // Basic example attacks
 app.get("/api/basic-examples/list", async (req, res) => {

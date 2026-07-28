@@ -1,9 +1,9 @@
 import type { CasterSpells, InnateSpellsEntity, SkillsEntity, SpellCasting, SpellSlotList, Stat, Statblock } from "~/shared";
 import fetch from "node-fetch";
-import { app } from "@/src/utilities/constants";
-import { log } from "@/src/utilities/logger";
+import { app } from "@/utilities/constants";
+import { log } from "@/utilities/logger";
 
-import { abilityParser, buildSpeedEntries, detectCastingClass, parseSenses } from "@/src/utilities/parsing";
+import { abilityParser, buildSpeedEntries, detectCastingClass, parseSenses } from "@/utilities/parsing";
 // Parsing
 import { capitalizeFirstLetter, defaultStatblock, SKILLS_BY_STAT } from "~/shared";
 import { spellListFlattened } from "../creatures/staticData";

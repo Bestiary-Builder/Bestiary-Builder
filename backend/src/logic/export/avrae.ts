@@ -1,7 +1,7 @@
 import type { InnateSpellsEntity, SkillsEntity, SpellCasting, Stat, Statblock } from "~/shared";
-import { app } from "@/src/utilities/constants";
-import { getBestiary, getCreaturesByBestiary, incrementBestiaryViewCount } from "@/src/utilities/database";
-import { log } from "@/src/utilities/logger";
+import { app } from "@/utilities/constants";
+import { getBestiary, getCreaturesByBestiary, incrementBestiaryViewCount } from "@/utilities/database";
+import { log } from "@/utilities/logger";
 import { crAsString, displaySpeedOrSenses, hpCalc, ppCalc, SKILLS_BY_STAT, spellAttackBonus, spellDc, statCalc } from "~/shared";
 import { getSpellcastingFeatures } from "./spellcastingFeatures";
 

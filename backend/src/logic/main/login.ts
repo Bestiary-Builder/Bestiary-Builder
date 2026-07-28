@@ -2,9 +2,9 @@ import type { NextFunction, Request, Response } from "express";
 import type { User } from "~/shared";
 import jwt from "jsonwebtoken";
 import fetch from "node-fetch";
-import { app, isProduction } from "@/src/utilities/constants";
-import { getUserFromSecret, updateUser } from "@/src/utilities/database";
-import { log } from "@/src/utilities/logger";
+import { app, isProduction } from "@/utilities/constants";
+import { getUserFromSecret, updateUser } from "@/utilities/database";
+import { log } from "@/utilities/logger";
 
 declare module "express-serve-static-core" {
 	interface Request {

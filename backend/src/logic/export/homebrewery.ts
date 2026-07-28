@@ -1,7 +1,7 @@
 import type { FeatureEntity, SaveEntity, Stat, Statblock } from "~/shared";
-import { app } from "@/src/utilities/constants";
-import { getBestiary, getCreature, getCreaturesByBestiary, incrementBestiaryViewCount } from "@/src/utilities/database";
-import { log } from "@/src/utilities/logger";
+import { app } from "@/utilities/constants";
+import { getBestiary, getCreature, getCreaturesByBestiary, incrementBestiaryViewCount } from "@/utilities/database";
+import { log } from "@/utilities/logger";
 import { capitalizeFirstLetter, displayCasterCasting, displayInnateCasting, displaySpeedOrSenses, hpCalc, ppCalc, SKILLS_BY_STAT, statCalc } from "~/shared";
 import { checkBestiaryPermission } from "../collections/bestiaries";
 import { checkCreaturePermission } from "../creatures/creatures";

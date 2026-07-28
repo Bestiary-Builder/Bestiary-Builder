@@ -1,8 +1,8 @@
 import fetch from "node-fetch";
-import { app } from "@/src/utilities/constants";
-import { log } from "@/src/utilities/logger";
+import { app } from "@/utilities/constants";
+import { log } from "@/utilities/logger";
 import { requireUser } from "../main/login";
-import "@/src/utilities/env";
+import "@/utilities/env";
 
 const API = "https://api.avrae.io/characters";
 
@@ -91,7 +91,7 @@ app.post("/api/character/makeattackgvar", async (req, res) => {
 	if (!automationList)
 		return res.status(400).json({ error: "No automation given." });
 
-	const makeGvar = await fetch(`${API}/customizations/gvars`, {
+	await fetch(`${API}/customizations/gvars`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",

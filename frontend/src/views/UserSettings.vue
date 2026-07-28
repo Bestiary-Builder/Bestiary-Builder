@@ -417,11 +417,11 @@ const AvraeToken = useLocalStorage("AvraeToken", "");
 						</small>
 					</LabelledComponent>
 					<LabelledComponent title="Avrae Token">
-						<div class="preview-container" id="avrae-token">
+						<div id="avrae-token" class="preview-container">
 							<input v-model="AvraeToken" type="text">
 						</div>
 						<small> With this setting you can edit character attacks and import attacks to characters directly within BB. </small>
-						<small> To get the Token: 
+						<small> To get the Token:
 							<ol>
 								<li>
 									Log in on the <a href="https://avrae.io/dashboard/characters" style="color: orangered"> Avrae Dashboard </a>
@@ -429,13 +429,13 @@ const AvraeToken = useLocalStorage("AvraeToken", "");
 								<li>
 									Open developer console (CTRL-SHIFT-I or Right click -> Inspect)
 								</li>
-								<li> 
+								<li>
 									Open the <code> Application </code> Tab.
 								</li>
 								<li>
 									Choose Local Storage (https://avrae.io)
 								</li>
-								<li> 
+								<li>
 									Copy the entire value of the <code> avrae-token key and paste it into the field above. </code>
 								</li>
 							</ol>

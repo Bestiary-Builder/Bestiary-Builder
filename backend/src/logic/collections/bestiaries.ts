@@ -1,11 +1,11 @@
 import type { CollectionWithEditors } from "./collections";
 import type { Id, Statblock, User } from "~/shared";
 import type { Bestiary, BestiaryCreateInput, BestiaryStatus, Creature } from "~/shared/src/prisma-types";
-import tags from "@/src/staticData/tags.json";
-import { checkBadwords } from "@/src/utilities/badwords";
-import { app, checkBestiaryLimits, checkCreatureAmountLimit, limits } from "@/src/utilities/constants";
-import { addBestiaryEditor, addBookmark, createBestiary, createCreatures, deleteBestiary, getBestiariesByOwner, getBestiariesByUser, getBestiary, getBestiaryCreatureCount, getPrismaClient, getPublicBestiariesByOwner, incrementBestiaryViewCount, isBestiaryBookmarked, removeBestiaryEditor, removeBookmark, updateBestiary } from "@/src/utilities/database";
-import { log } from "@/src/utilities/logger";
+import tags from "@/staticData/tags.json";
+import { checkBadwords } from "@/utilities/badwords";
+import { app, checkBestiaryLimits, checkCreatureAmountLimit, limits } from "@/utilities/constants";
+import { addBestiaryEditor, addBookmark, createBestiary, createCreatures, deleteBestiary, getBestiariesByOwner, getBestiariesByUser, getBestiary, getBestiaryCreatureCount, getPrismaClient, getPublicBestiariesByOwner, incrementBestiaryViewCount, isBestiaryBookmarked, removeBestiaryEditor, removeBookmark, updateBestiary } from "@/utilities/database";
+import { log } from "@/utilities/logger";
 
 import { prepareCreatureStats } from "../creatures/creaturePreparation";
 import { colors, publicLog } from "../external/discord";

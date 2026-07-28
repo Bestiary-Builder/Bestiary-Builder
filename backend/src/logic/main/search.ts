@@ -1,8 +1,8 @@
 import type { Response } from "express";
 import type { BestiaryWithCount, SearchOptions } from "~/shared";
-import { app } from "@/src/utilities/constants";
-import { getGlobalStats, getPrismaClient } from "@/src/utilities/database";
-import { log } from "@/src/utilities/logger";
+import { app } from "@/utilities/constants";
+import { getGlobalStats, getPrismaClient } from "@/utilities/database";
+import { log } from "@/utilities/logger";
 
 import { Prisma } from "~/shared/prisma/client";
 

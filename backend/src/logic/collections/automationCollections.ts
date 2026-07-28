@@ -1,9 +1,9 @@
 import type { CollectionWithEditors } from "./collections";
 import type { Automation, AutomationCollection, Id } from "~/shared";
 import type { BestiaryStatus } from "~/shared/src/prisma-types";
-import { checkBadwords } from "@/src/utilities/badwords";
-import { app, limits } from "@/src/utilities/constants";
-import { addAutomationCollectionEditor, createAutomationCollection, deleteAutomationCollection, getAutomationCollection, getAutomationCollectionsByOwner, getAutomationCollectionsByUser, getPublicAutomationCollectionsByOwner, removeAutomationCollectionEditor, updateAutomationCollection } from "@/src/utilities/database";
+import { checkBadwords } from "@/utilities/badwords";
+import { app, limits } from "@/utilities/constants";
+import { addAutomationCollectionEditor, createAutomationCollection, deleteAutomationCollection, getAutomationCollection, getAutomationCollectionsByOwner, getAutomationCollectionsByUser, getPublicAutomationCollectionsByOwner, removeAutomationCollectionEditor, updateAutomationCollection } from "@/utilities/database";
 import { possibleUser, requireUser } from "../main/login";
 import { createCollectionService } from "./collections";
 
