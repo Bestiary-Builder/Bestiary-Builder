@@ -93,6 +93,46 @@ app.get("/api/user/:userid/bestiaries", possibleUser, async (req, res) => {
 });
 
 // Update info
+interface BestiaryData {
+	name: string;
+	description: string;
+	status: BestiaryStatus;
+	tags: string[];
+}
+
+function normalizeBestiaryData<T extends Partial<Bestiary>>(input: T): T & BestiaryData {
+	return {
+		name: "",
+		status: "private",
+		description: "",
+		...input,
+		tags: (input.tags ?? []).filter(t => tags.includes(t))
+	};
+}
+
+function validateBestiaryData(data: BestiaryData, creatureCount: number) {
+	const limitError = checkBestiaryLimits(data);
+	if (limitError)
+		return limitError;
+	const amountError = checkCreatureAmountLimit(creatureCount);
+	if (amountError)
+		return amountError;
+	if (data.status !== "private") {
+		const nameError = checkBadwords(data.name);
+		if (nameError)
+			return `Bestiary name ${nameError}`;
+		const descError = checkBadwords(data.description);
+		if (descError)
+			return `Bestiary description ${descError}`;
+	}
+	if (data.status === "public") {
+		if (creatureCount === 0)
+			return "A bestiary must include at least 1 creature to be made public.";
+		if (data.name.toLowerCase().includes("new bestiary"))
+			return "A bestiary must have a non default name.";
+	}
+}
+
 app.post("/api/bestiary/:id/update", requireUser, async (req, res) => {
 	// Get input
 	const user = req.body.user;
@@ -112,41 +152,13 @@ app.post("/api/bestiary/:id/update", requireUser, async (req, res) => {
 	};
 
 	const data: UpdateData & { id: Bestiary["id"] } = {
-		...{
-			name: "",
-			status: "private",
-			description: "",
-		},
-		...(req.body.data as Partial<Bestiary>),
-		tags: req.body.data.tags.filter((t: string) => tags.includes(t)) ?? [],
+		...normalizeBestiaryData(req.body.data as Partial<Bestiary>),
 		id
 	};
-		// Check limits
-	const limitError = checkBestiaryLimits(data);
-	if (limitError)
-		return res.status(400).json({ error: limitError });
 	const count = await getBestiaryCreatureCount(data.id);
-	const amountError = checkCreatureAmountLimit(count);
-	if (amountError)
-		return res.status(400).json({ error: amountError });
-		// Remove bad words
-	if (data.status !== "private") {
-		const nameError = checkBadwords(data.name);
-		if (nameError)
-			return res.status(400).json({ error: `Bestiary name ${nameError}` });
-		const descError = checkBadwords(data.description);
-		if (descError)
-			return res.status(400).json({ error: `Bestiary description ${descError}` });
-	}
-	// Public?
-	if (data.status === "public") {
-		const creatureCount = await getBestiaryCreatureCount(data.id);
-		if (creatureCount === 0)
-			return res.status(400).json({ error: "A bestiary must include at least 1 creature to be made public." });
-		if (data.name.toLowerCase().includes("new bestiary"))
-			return res.status(400).json({ error: "A bestiary must have a non default name." });
-	}
-	// Update bestiary
+	const validationError = validateBestiaryData(data, count);
+	if (validationError)
+		return res.status(400).json({ error: validationError });
 	const authorization = await bestiaryCollections.authorize(id, user.id, "edit");
 	if (!authorization.ok) {
 		if (authorization.reason === "collection-not-found")
@@ -164,7 +176,7 @@ app.post("/api/bestiary/:id/update", requireUser, async (req, res) => {
 	};
 	if (permissionLevel === "editor")
 		delete update.status;
-		// Public log
+	// Public log
 	if (update.status === "public" && bestiary.status !== "public")
 		publicLog("New public bestiary", `Bestiary "${data.name}" changed to public by ${user.username}.`, `https://${req.hostname}/bestiary-viewer/${bestiary.id}`, user, colors.Blurple);
 
@@ -176,45 +188,19 @@ app.post("/api/bestiary/:id/update", requireUser, async (req, res) => {
 	}
 });
 app.post("/api/bestiary/add", requireUser, async (req, res) => {
-	// Get input
 	const user = req.body.user;
 	if (!user)
 		return res.status(404).json({ error: "Couldn't find current user." });
 	if (!req.body.data)
 		return res.status(400).json({ error: "Bestiary data not found." });
-	const data: Omit<BestiaryCreateInput, "id" | "owner"> = {
-		...{
-			name: "",
-			status: "private",
-			description: "",
-			viewCount: 0,
-			bookmarks: 0,
-		},
-		...(req.body.data as Partial<Bestiary>),
-		tags: (req.body.data.tags ?? []).filter((t: string) => tags.includes(t))
+	const data: Omit<BestiaryCreateInput, "id" | "owner"> & BestiaryData = {
+		viewCount: 0,
+		bookmarks: 0,
+		...normalizeBestiaryData(req.body.data as Partial<Bestiary>)
 	};
-		// Check limits
-	const limitError = checkBestiaryLimits(data);
-	if (limitError)
-		return res.status(400).json({ error: limitError });
-		// Remove bad words
-	if (data.status !== "private") {
-		const nameError = checkBadwords(data.name);
-		if (nameError)
-			return res.status(400).json({ error: `Bestiary name ${nameError}` });
-		const descError = checkBadwords(data.description);
-		if (descError)
-			return res.status(400).json({ error: `Bestiary description ${descError}` });
-	}
-	// Public?
-	if (data.status === "public") {
-		const creatureCount = 0;
-		if (creatureCount === 0)
-			return res.status(400).json({ error: "A bestiary must include at least 1 creature to be made public." });
-		if (data.name.toLowerCase().includes("new bestiary"))
-			return res.status(400).json({ error: "A bestiary must have a non default name." });
-	}
-	// Create new bestiary
+	const validationError = validateBestiaryData(data, 0);
+	if (validationError)
+		return res.status(400).json({ error: validationError });
 	const _id = await createBestiary({ ...data }, user);
 	if (!_id)
 		return res.status(500).json({ error: "Failed to create bestiary." });
@@ -229,7 +215,7 @@ app.get("/api/bestiary/:id/delete", requireUser, async (req, res) => {
 	const user = req.body.user;
 	if (!user)
 		return res.status(404).json({ error: "Couldn't find current user." });
-		// Permissions
+	// Permissions
 	const result = await bestiaryCollections.deleteCollection(_id, user.id);
 	if (result.ok) {
 		log.info(`Deleted bestiary with the id ${_id}`);
@@ -274,7 +260,8 @@ app.post("/api/my-bestiaries/order", requireUser, async (req, res) => {
 
 	if (result.length - 1 === userBestiaries.length)
 		return res.status(200).json({});
-	throw new Error("Failed to update bestiary order.");
+	else
+		return res.status(500).json({ error: "Unknown server error occured, please try again." });
 });
 
 // Add many creatures
@@ -287,13 +274,13 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 	const bestiary = await getBestiary(_id);
 	if (!bestiary)
 		return res.status(404).json({ error: "Bestiary not found" });
-		// Check owner
+	// Check owner
 	const user = req.body.user;
 	if (!user)
 		return res.status(404).json({ error: "Couldn't find current user." });
 	if (!await canEditBestiary(bestiary, user))
 		return res.status(401).json({ error: "You don't have permission to add creatures to this bestiary." });
-		// Get creature input
+	// Get creature input
 	let data;
 	try {
 		const inputData = req.body.data as Statblock[];
@@ -314,7 +301,7 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 	for (const creature of data) {
 		if (!creature)
 			continue;
-			// Set bestiary id
+		// Set bestiary id
 		creature.bestiaryId = _id;
 		// Set last updated
 		creature.lastUpdated = now;
@@ -409,7 +396,7 @@ app.get("/api/bestiary/:id/bookmark/toggle", requireUser, async (req, res) => {
 	const user = req.body.user;
 	if (!user)
 		return res.status(404).json({ error: "Couldn't find current user." });
-		// Permissions
+	// Permissions
 	if ((await checkBestiaryPermission(bestiary, user)) === "none")
 		return res.status(401).json({ error: "You don't have permission to view this bestiary." });
 
@@ -444,7 +431,7 @@ app.get("/api/bestiary/:id/bookmark/get", requireUser, async (req, res) => {
 	const user = req.body.user;
 	if (!user)
 		return res.status(404).json({ error: "Couldn't find current user." });
-		// Permissions
+	// Permissions
 	if ((await checkBestiaryPermission(bestiary, user)) === "none")
 		return res.status(401).json({ error: "You don't have permission to view this bestiary." });
 
