@@ -1,18 +1,17 @@
 import type { CollectionWithEditors } from "./collections";
 import type { Id, Statblock, User } from "~/shared";
 import type { Bestiary, BestiaryCreateInput, BestiaryStatus, Creature } from "~/shared/src/prisma-types";
-import { createCheckers } from "ts-interface-checker";
 import tags from "@/staticData/tags.json";
 import { checkBadwords } from "@/utilities/badwords";
 import { app, checkBestiaryLimits, checkCreatureAmountLimit, limits } from "@/utilities/constants";
 import { addBestiaryEditor, addBookmark, createBestiary, createCreatures, deleteBestiary, getBestiariesByOwner, getBestiariesByUser, getBestiary, getBestiaryCreatureCount, getPrismaClient, getPublicBestiariesByOwner, incrementBestiaryViewCount, isBestiaryBookmarked, removeBestiaryEditor, removeBookmark, updateBestiary } from "@/utilities/database";
 import { log } from "@/utilities/logger";
-import { typeInterface } from "~/shared";
 
 import { createCollectionService } from "./collections";
 import { prepareCreatureStats } from "./creaturePreparation";
 import { colors, publicLog } from "./discord";
 import { possibleUser, requireUser } from "./login";
+import { StatblockChecker } from "./validation";
 
 type BestiaryWithEditors = Bestiary & CollectionWithEditors;
 type BestiaryForUser = BestiaryWithEditors & { creatures: { id: Id }[]; orderedBy: { index: number }[] };
@@ -443,7 +442,6 @@ app.get("/api/bestiary/:id/bookmark/get", requireUser, async (req, res) => {
 		return res.json({ state: false });
 });
 
-const { Statblock: StatblockChecker } = createCheckers(typeInterface);
 function validateStatblockInput(input: Statblock[]) {
 	for (const block of input) {
 		if (!StatblockChecker.test(block))

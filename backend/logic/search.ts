@@ -1,13 +1,12 @@
 import type { Response } from "express";
 import type { BestiaryWithCount, SearchOptions } from "~/shared";
-import { createCheckers } from "ts-interface-checker";
 import { app } from "@/utilities/constants";
 import { getGlobalStats, getPrismaClient } from "@/utilities/database";
 import { log } from "@/utilities/logger";
-// Validate input
-import { interfaceValidation, typeInterface } from "~/shared";
 
 import { Prisma } from "~/shared/prisma/client";
+
+import { SearchOptionsChecker, validateInput } from "./validation";
 
 const amountPerPage = 12;
 
@@ -106,15 +105,8 @@ app.post("/api/search", async (req, res) => {
 	return res.json(output);
 });
 
-const { SearchOptions: SearchChecker } = createCheckers(typeInterface);
 function validateSearchInput(input: SearchOptions, res: Response) {
-	if (SearchChecker.test(input)) {
-		return true;
-	}
-	else {
-		res.status(400).json({ error: `Creature data not valid:\n${interfaceValidation(SearchChecker.validate(input) ?? [])}` });
-		return false;
-	}
+	return validateInput(input, SearchOptionsChecker, res, "Search");
 }
 
 // Global stats

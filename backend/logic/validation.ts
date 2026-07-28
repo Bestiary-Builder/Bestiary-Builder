@@ -1,4 +1,5 @@
 import type { Response } from "express";
+import type { Checker } from "ts-interface-checker";
 
 import type { Statblock } from "~/shared";
 import fetch from "node-fetch";
@@ -22,16 +23,20 @@ app.post("/api/validate/automation", async (req, res) => {
 	else
 		return res.status(400).json(result);
 });
-const { Statblock: StatblockChecker } = createCheckers(typeInterface);
+const { SearchOptions: SearchOptionsChecker, Statblock: StatblockChecker } = createCheckers(typeInterface);
+
+export { SearchOptionsChecker, StatblockChecker };
+
+export function validateInput(input: unknown, checker: Checker, res: Response, dataName: string) {
+	if (checker.test(input))
+		return true;
+
+	res.status(400).json({ error: `${dataName} data not valid:\n${interfaceValidation(checker.validate(input) ?? [])}` });
+	return false;
+}
 
 export function validateCreatureInput(input: Statblock, res: Response) {
-	if (StatblockChecker.test(input)) {
-		return true;
-	}
-	else {
-		res.status(400).json({ error: `Creature data not valid:\n${interfaceValidation(StatblockChecker.validate(input) ?? [])}` });
-		return false;
-	}
+	return validateInput(input, StatblockChecker, res, "Creature");
 }
 
 app.post("/api/validate/creature", async (req, res) => {
