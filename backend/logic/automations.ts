@@ -1,21 +1,169 @@
 import type { Automation, AutomationCollection, Id } from "~/shared";
 import type { AutomationCreateInput } from "~/shared/src/prisma-types";
 import { checkBadwords } from "@/utilities/badwords";
-import { app, checkAutomationLimits } from "@/utilities/constants";
-import { createAutomation, createAutomationCollection, deleteAutomation, getAutomation, getAutomationCollection, getAutomationCollectionsByOwner, getAutomationsByCollectionIds, updateAutomation } from "@/utilities/database";
+import { app, checkAutomationLimits, limits } from "@/utilities/constants";
+import { addAutomationCollectionEditor, createAutomation, createAutomationCollection, deleteAutomation, deleteAutomationCollection, getAutomation, getAutomationCollection, getAutomationCollectionsByUser, getUser, removeAutomationCollectionEditor, updateAutomation, updateAutomationCollection } from "@/utilities/database";
 import { log } from "@/utilities/logger";
 import { Prisma } from "~/shared/src/prisma-types";
 import { requireUser } from "./login";
 
+type AutomationCollectionPermission = "none" | "editor" | "owner";
+type AutomationCollectionWithEditors = AutomationCollection & { editors: { userId: Id }[] };
+
+function checkAutomationCollectionPermission(collection: AutomationCollectionWithEditors, userId: Id): AutomationCollectionPermission {
+	if (collection.ownerId === userId)
+		return "owner";
+	if (collection.editors.some(editor => editor.userId === userId))
+		return "editor";
+	return "none";
+}
+
 async function canAccessAutomation(automation: Automation, userId: Id) {
 	const collection = await getAutomationCollection(automation.collectionId);
-	return collection?.ownerId === userId;
+	return collection !== null && checkAutomationCollectionPermission(collection, userId) !== "none";
 }
 
 async function getAutomationsForUser(userId: Id) {
-	const collections = await getAutomationCollectionsByOwner(userId);
-	return await getAutomationsByCollectionIds(collections.map(collection => collection.id));
+	const collections = await getAutomationCollectionsByUser(userId);
+	return collections.flatMap(collection => collection.automations);
 }
+
+// Automation collections
+app.get("/api/my-automation-collections", requireUser, async (req, res) => {
+	try {
+		const user = req.body.user;
+		if (!user)
+			return res.status(404).json({ error: "Couldn't find current user." });
+		return res.json(await getAutomationCollectionsByUser(user.id));
+	}
+	catch (err) {
+		log.log("critical", err);
+		return res.status(500).json({ error: "Unknown server error occured, please try again." });
+	}
+});
+
+app.get("/api/automation-collection/:id", requireUser, async (req, res) => {
+	try {
+		const user = req.body.user;
+		if (!user)
+			return res.status(404).json({ error: "Couldn't find current user." });
+		const collection = await getAutomationCollection(req.params.id);
+		if (!collection)
+			return res.status(404).json({ error: "Automation collection not found." });
+		if (checkAutomationCollectionPermission(collection, user.id) === "none")
+			return res.status(401).json({ error: "You don't have access to this automation collection." });
+		return res.json(collection);
+	}
+	catch (err) {
+		log.log("critical", err);
+		return res.status(500).json({ error: "Unknown server error occured, please try again." });
+	}
+});
+
+app.post("/api/automation-collection/:id/update", requireUser, async (req, res) => {
+	try {
+		const user = req.body.user;
+		if (!user)
+			return res.status(404).json({ error: "Couldn't find current user." });
+		const collection = await getAutomationCollection(req.params.id);
+		if (!collection)
+			return res.status(404).json({ error: "Automation collection not found." });
+		if (checkAutomationCollectionPermission(collection, user.id) === "none")
+			return res.status(401).json({ error: "You don't have permission to update this automation collection." });
+
+		const name = (req.body.data as Partial<AutomationCollection> | undefined)?.name;
+		if (typeof name !== "string")
+			return res.status(400).json({ error: "Automation collection name not found." });
+		if (name.length < limits.nameMin)
+			return res.status(400).json({ error: `Name is less than the minimum character limit of ${limits.nameMin} characters.` });
+		if (name.length > limits.nameLength)
+			return res.status(400).json({ error: `Name exceeds the character limit of ${limits.nameLength} characters.` });
+		const nameError = checkBadwords(name);
+		if (nameError)
+			return res.status(400).json({ error: `Automation collection name ${nameError}` });
+
+		const updatedCollection = await updateAutomationCollection({ name }, collection.id);
+		if (!updatedCollection)
+			return res.status(500).json({ error: "Failed to update automation collection." });
+		return res.json(updatedCollection);
+	}
+	catch (err) {
+		log.log("critical", err);
+		return res.status(500).json({ error: "Unknown server error occured, please try again." });
+	}
+});
+
+app.post("/api/automation-collection/:id/delete", requireUser, async (req, res) => {
+	try {
+		const user = req.body.user;
+		if (!user)
+			return res.status(404).json({ error: "Couldn't find current user." });
+		const collection = await getAutomationCollection(req.params.id);
+		if (!collection)
+			return res.status(404).json({ error: "Automation collection not found." });
+		if (checkAutomationCollectionPermission(collection, user.id) !== "owner")
+			return res.status(401).json({ error: "You don't have permission to delete this automation collection." });
+		if (!await deleteAutomationCollection(collection.id))
+			return res.status(500).json({ error: "Failed to delete automation collection." });
+		return res.json({});
+	}
+	catch (err) {
+		log.log("critical", err);
+		return res.status(500).json({ error: "Unknown server error occured, please try again." });
+	}
+});
+
+app.post("/api/automation-collection/:collectionid/editors/add/:userid", requireUser, async (req, res) => {
+	try {
+		const user = req.body.user;
+		if (!user)
+			return res.status(404).json({ error: "Couldn't find current user." });
+		const collection = await getAutomationCollection(req.params.collectionid);
+		if (!collection)
+			return res.status(404).json({ error: "Automation collection not found." });
+		if (checkAutomationCollectionPermission(collection, user.id) !== "owner")
+			return res.status(401).json({ error: "You don't have permission to add editors to this automation collection." });
+		const editor = await getUser(req.params.userid);
+		if (!editor)
+			return res.status(404).json({ error: "No user with that id found." });
+		if (editor.id === collection.ownerId)
+			return res.status(400).json({ error: "The collection owner cannot be added as an editor." });
+		if (collection.editors.some(existingEditor => existingEditor.userId === editor.id))
+			return res.status(409).json({ error: "User is already an editor." });
+		if (!await addAutomationCollectionEditor(collection.id, editor.id))
+			return res.status(500).json({ error: "Failed to add automation collection editor." });
+		return res.json({});
+	}
+	catch (err) {
+		log.log("critical", err);
+		return res.status(500).json({ error: "Unknown server error occured, please try again." });
+	}
+});
+
+app.post("/api/automation-collection/:collectionid/editors/remove/:userid", requireUser, async (req, res) => {
+	try {
+		const user = req.body.user;
+		if (!user)
+			return res.status(404).json({ error: "Couldn't find current user." });
+		const collection = await getAutomationCollection(req.params.collectionid);
+		if (!collection)
+			return res.status(404).json({ error: "Automation collection not found." });
+		if (checkAutomationCollectionPermission(collection, user.id) !== "owner")
+			return res.status(401).json({ error: "You don't have permission to remove editors from this automation collection." });
+		const editor = await getUser(req.params.userid);
+		if (!editor)
+			return res.status(404).json({ error: "No user with that id found." });
+		if (!collection.editors.some(existingEditor => existingEditor.userId === editor.id))
+			return res.status(404).json({ error: "User is not an editor." });
+		if (!await removeAutomationCollectionEditor(collection.id, editor.id))
+			return res.status(500).json({ error: "Failed to remove automation collection editor." });
+		return res.json({});
+	}
+	catch (err) {
+		log.log("critical", err);
+		return res.status(500).json({ error: "Unknown server error occured, please try again." });
+	}
+});
 
 // Get info
 app.get("/api/automation/:id", requireUser, async (req, res) => {
@@ -61,14 +209,8 @@ app.get("/api/my-automations/list", requireUser, async (req, res) => {
 		if (!user)
 			return res.status(404).json({ error: "Couldn't find user" });
 		const allAutomations = await getAutomationsForUser(user.id);
-		log.info(`Retrieved all automations in list form from the current user with the id ${req.params.userid}`);
-		return res.json(
-			// eslint-disable-next-line array-callback-return
-			allAutomations.map((a) => {
-				// eslint-disable-next-line ts/no-unused-expressions, no-sequences
-				a.name, a.id;
-			}) ?? []
-		);
+		log.info(`Retrieved all automations in list form from the current user with the id ${user.id}`);
+		return res.json(allAutomations.map(({ id, name }) => ({ id, name })));
 	}
 	catch (err) {
 		log.log("critical", err);
@@ -168,7 +310,7 @@ app.post("/api/automation/add", requireUser, async (req, res) => {
 			? Prisma.DbNull
 			: data.automation as unknown as AutomationCreateInput["automation"];
 		let collectionId = input.collectionId;
-		let collection: AutomationCollection | null = null;
+		let collection: AutomationCollectionWithEditors | null = null;
 		if (collectionId) {
 			collection = await getAutomationCollection(collectionId);
 		}
@@ -187,7 +329,7 @@ app.post("/api/automation/add", requireUser, async (req, res) => {
 		}
 		if (!collection)
 			return res.status(404).json({ error: "Automation collection not found." });
-		if (collection.ownerId !== user.id)
+		if (checkAutomationCollectionPermission(collection, user.id) === "none")
 			return res.status(401).json({ error: "You don't have permission to add an automation to this collection." });
 		// Create new automation
 		const automation = await createAutomation(
