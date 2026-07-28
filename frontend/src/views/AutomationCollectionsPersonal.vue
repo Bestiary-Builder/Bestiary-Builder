@@ -1,23 +1,184 @@
 <script setup lang="ts">
 import { $toast } from '@/utils/app/toast';
-import { store } from '@/utils/store';
 import { useFetch } from '@/utils/utils';
-import { onMounted, ref } from 'vue';
+import { onMounted, reactive, ref, toValue } from 'vue';
+import Breadcrumbs from '@/components/Page/Breadcrumbs.vue';
+import ButtonIcon from '@/components/Global/ButtonIcon.vue';
+import {  type AutomationCollectionExtended } from '~/shared';
+import { useRouter } from 'vue-router';
+import { getUmami } from '@/utils/app/analytics';
+import Modal from '@/components/Global/Modal.vue';
+import LabelledComponent from '@/components/FormInputs/LabelledComponent.vue';
+import { store } from '@/utils/store';
+import AutomationCollectionTile from '@/components/Automations/AutomationCollectionTile.vue';
+import Draggable from "vuedraggable";
 
-const automationCollections = ref()
+const $router = useRouter()
+const automationCollections = ref<AutomationCollectionExtended[]>()
 const getMyCollections = async () => {
-    const { success, data, error } = await useFetch(`/api/my-automation-collections`);
+    const { success, data, error } = await useFetch<AutomationCollectionExtended[]>(`/api/automation-collections/personal`);
     if (success)
         automationCollections.value = data;
     else $toast.error(error);
+    console.log(success, data, error)
 };
+
+const showCreateModal = ref(false)
+const createOptions = reactive({
+    name: "",
+    description: "",
+    status: "unlisted"
+})
+
+const resetCreateInput = () => {
+    createOptions.name = ""
+    createOptions.description = ""
+    createOptions.status = "unlisted"
+}
+const createAutomationCollection = async () => {
+    const { success, data, error } = await useFetch<AutomationCollectionExtended>("/api/automation-collections/add", "POST", toValue(createOptions));
+
+    if (success) {
+		$toast.success("Created automation collection");
+		getUmami()?.track("Add automation collection");
+        showCreateModal.value = false
+        resetCreateInput()
+		// await $router.push(`/bestiary/edit/${data.id.toString()}`);
+	}
+	else {
+		$toast.error(error);
+	}
+
+    await getMyCollections()
+}
+
+
+const cancelCreate = () => {
+    showCreateModal.value = false;
+    resetCreateInput()
+}
 
 onMounted(async () => {
 	await getMyCollections()
 })
+
+const deleteAutomationCollection = async (id: AutomationCollectionExtended["id"]) => {
+    const { success, data, error } = await useFetch<AutomationCollectionExtended>(`/api/automation-collections/${id}/delete`, "POST");
+
+    if (success) {
+		$toast.success("Successfully deleted automation collection");
+		getUmami()?.track("Delete automation collection");
+
+		// await $router.push(`/bestiary/edit/${data.id.toString()}`);
+	}
+	else {
+		$toast.error(error);
+	}
+
+    await getMyCollections()
+}
+
+const getDraggableKey = (item: any) => {
+	return item;
+};
+
+const saveOrder = async () => {
+    if (!automationCollections.value) return
+	const orderIds = automationCollections.value.map(coll => coll.id);
+	// await useFetch("/api/my-bestiaries/order", "POST", orderIds);
+};
+
 </script>
 
 
 <template>
-	{{ automationCollections }}
+    <Breadcrumbs
+        :routes="[
+            {
+                path: '',
+                text: 'My Automation Collections',
+                isCurrent: true
+            }
+        ]"
+    >
+		<ButtonIcon icon="plus" label="Create bestiary!" inverted @click="showCreateModal = true" />
+        <ButtonIcon icon="arrow-right-from-bracket" label="Export all automations to your clipboard" />
+    </Breadcrumbs>
+    <div class="content">
+        <Draggable :key="Math.random()" :list="automationCollections" :animation="150" :item-key="getDraggableKey" class="tile-container" :handle=" store.isMobile ? '.handle' : ''"  @change="saveOrder">
+			<template #item="{ element, idx }">
+			    <AutomationCollectionTile :key="idx" :collection="element" @delete-collection="(id) => deleteAutomationCollection(id)"/>
+			</template>
+		</Draggable>
+    </div>
+
+	<Modal :show="showCreateModal" @close="showCreateModal = false">
+		<template #header>
+			Create new automation collection
+		</template>
+		<template #body>
+			<p class="modal-desc">
+				<LabelledComponent title="Name">
+                    <input type="text" :maxlength="store.limits?.nameLength" :minlength="store.limits?.nameMin" v-model="createOptions.name" />
+                </LabelledComponent>
+                <LabelledComponent title="Description">
+                    <input type="text" :maxlength="store.limits?.descriptionLength" :minlength="store.limits?.nameMin" v-model="createOptions.description" />
+                </LabelledComponent>
+                <LabelledComponent title="Status">
+                    <select v-model="createOptions.status">
+                        <option value="private">
+                            Private
+                        </option>
+                        <option value="unlisted">
+                            Unlisted
+                        </option>
+                        <option value="public">
+                            Public
+                        </option>
+                    </select>
+                </LabelledComponent>
+			</p>
+		</template>
+		<template #footer>
+		<button class="btn confirm" @click="createAutomationCollection">
+            Create
+        </button>
+        <button class="btn" @click="cancelCreate">
+            Cancel
+        </button>
+		</template>
+	</Modal>
+
 </template>
+
+<style lang="less" scoped>
+.tile-container {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr 1fr ;
+	gap: 1em;
+}
+
+@media screen and (max-width: 1600px) {
+	.tile-container {
+		grid-template-columns: 1fr 1fr 1fr;
+	}
+}
+
+@media screen and (max-width: 1200px) {
+	.tile-container {
+		grid-template-columns: 1fr 1fr;
+	}
+}
+
+@media screen and (max-width: 800px) {
+	.tile-container {
+		grid-template-columns: 1fr;
+	}
+}
+
+.modal-desc {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+</style>

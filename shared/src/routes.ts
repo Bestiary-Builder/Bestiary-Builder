@@ -78,6 +78,12 @@ export const routes: Route[] = [
 		meta: { navbar: true, loggedIn: true, dynamic: false },
 	},
 	{
+		path: "/automations/edit/:id",
+		name: "Edit Automations",
+		file: "AutomationCollectionEdit.vue",
+		meta: { navbar: false, loggedIn: true, dynamic: false },
+	},
+	{
 		path: "/characters",
 		name: "My Characters",
 		file: "CharactersPersonal.vue",

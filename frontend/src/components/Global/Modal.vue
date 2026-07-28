@@ -121,7 +121,7 @@ onUnmounted(() => {
 .modal__close-button {
 	position: absolute;
 	top: 0.3rem;
-	right: 0.1rem;
+	right: 0rem;
 
 	font-size: 2rem;
 	color: var(--color-surface-0);
@@ -135,8 +135,8 @@ onUnmounted(() => {
 }
 
 .modal__header {
-	border-bottom: 1px solid orangered;
-	font-size: 1.3rem;
+	border-bottom: 0px solid orangered;
+	font-size: 1rem;
 	margin-bottom: 0.5rem;
 }
 

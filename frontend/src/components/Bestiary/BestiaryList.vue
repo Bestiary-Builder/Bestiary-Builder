@@ -45,7 +45,6 @@ const saveOrder = async () => {
 
 <template>
 	<div>
-		<TransitionGroup name="popin">
 			<Draggable :key="Math.random()" :list="bestiaries" group="bestiaries" :animation="150" :item-key="getDraggableKey" class="tile-container" :handle=" store.isMobile ? '.handle' : ''" :disabled="!personal" @change="saveOrder">
 				<template #item="{ element, index }">
 					<RouterLink class="content-tile bestiary-tile" :to="`/bestiary/${personal ? 'edit' : 'view'}/${element.id}`" :class="{ 'four-tall': element.ownerId !== store.user?.id, 'draggable': !store.isMobile && personal }" :aria-label="`Open Bestiary ${element.name}`">
@@ -74,12 +73,12 @@ const saveOrder = async () => {
 					</RouterLink>
 				</template>
 			</Draggable>
-		</TransitionGroup>
 	</div>
 </template>
 
 <style scoped lang="less">
 @import "@/assets/styles/mixins.less";
+@import "../Global/tile.less";
 .edit-button {
 	color: orangered;
 	.scale-on-hover(1.2);
@@ -119,92 +118,6 @@ const saveOrder = async () => {
 	}
 }
 
-.content-tile {
-	aspect-ratio: 1 / 1;
-	background: var(--color-surface-1);
-	color: #cbcbcb;
-	padding: 1rem;
-	box-shadow:
-		rgba(0, 0, 0, 0.19) 0px 10px 20px,
-		rgba(0, 0, 0, 0.23) 0px 6px 6px;
-
-	display: grid;
-	grid-template-rows: 1fr 6fr 1fr;
-	gap: 0.3rem;
-
-	text-decoration: unset;
-
-	.tile-header {
-		text-align: center;
-		text-wrap: nowrap;
-		overflow: hidden;
-		color: white;
-	}
-
-	.tile-content {
-		overflow-y: auto;
-
-		.tags {
-			font-style: italic;
-		}
-
-		&.tile-has-image {
-			position: relative;
-			overflow-y: hidden;
-			.description,
-			.tags {
-				position: absolute;
-				width: 90%;
-				height: 100%;
-				left: 5%;
-				top: 500px;
-				display: inline;
-				z-index: 1;
-				transition: top 300ms ease-out;
-			}
-
-			.tags {
-				overflow: hidden;
-				text-wrap: nowrap;
-				text-overflow: ellipsis;
-			}
-
-			.tile-image {
-				width: 100%;
-				height: 100%;
-				object-fit: cover;
-				filter: brightness(75%);
-				transition: filter 300ms ease-out;
-			}
-		}
-	}
-	&:hover:has(.tile-has-image) {
-		.tags {
-			top: 0;
-		}
-
-		.description {
-			top: 18px;
-			overflow-y: scroll;
-			padding-bottom: 20px;
-		}
-		.tile-image {
-			filter: brightness(25%);
-		}
-	}
-
-	&.draggable {
-		cursor: grab;
-	}
-	.tile-footer {
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-		font-size: 1.1rem;
-		width: 100%;
-		margin: auto;
-	}
-}
 
 a.content-tile,
 .create-tile {
@@ -213,42 +126,6 @@ a.content-tile,
 
 .bestiary-tile:hover {
 	background-color: #454241;
-}
-
-.popin-enter-active {
-	animation: bounce-in 0.7s ease;
-}
-.popin-leave-active {
-	animation: bounce-in 0.7s ease reverse;
-}
-
-.popin-enter-from,
-.popin-leave-to {
-	scale: 0;
-}
-
-/* ensure leaving items are taken out of layout flow so that moving
-   animations can be calculated correctly. */
-
-.popin-leave-active {
-	position: absolute;
-}
-
-@keyframes bounce-in {
-	0% {
-		opacity: 0;
-		transform: scale(0.3);
-	}
-	50% {
-		opacity: 1;
-		transform: scale(1.05);
-	}
-	70% {
-		transform: scale(0.9);
-	}
-	100% {
-		transform: scale(1);
-	}
 }
 
 .zero-found {

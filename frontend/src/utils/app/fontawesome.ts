@@ -47,7 +47,8 @@ import {
 	faUnderline,
 	faUserLock,
 	faWandSparkles,
-	faXmark
+	faXmark,
+	faCircleNodes
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -101,5 +102,6 @@ library.add(
 	fa3,
 	fa4,
 	faComment,
-	faRuler
+	faRuler,
+	faCircleNodes
 );

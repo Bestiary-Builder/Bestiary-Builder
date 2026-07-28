@@ -81,7 +81,7 @@ function validateAutomationCollectionData(data: AutomationCollectionData, automa
 }
 
 // Automation collections
-app.post("/api/automation-collection/add", requireUser, async (req, res) => {
+app.post("/api/automation-collections/add", requireUser, async (req, res) => {
 	const user = req.user!;
 	const input = normalizeAutomationCollectionData(req.body.data as Partial<AutomationCollection>);
 	const validationError = validateAutomationCollectionData(input, 0);
@@ -99,7 +99,7 @@ app.post("/api/automation-collection/add", requireUser, async (req, res) => {
 	return res.status(201).json(collection);
 });
 
-app.get("/api/my-automation-collections", requireUser, async (req, res) => {
+app.get("/api/automation-collections/personal", requireUser, async (req, res) => {
 	const user = req.user!;
 	const collections = await automationCollections.getForUser(user.id);
 	return res.json(collections.sort((a, b) => (a.orderedBy[0]?.index ?? collections.length) - (b.orderedBy[0]?.index ?? collections.length)).map((collection) => {
@@ -123,14 +123,14 @@ app.post("/api/my-automation-collections/order", requireUser, async (req, res) =
 	return res.status(500).json({ error: "Failed to update automation collection order." });
 });
 
-app.get("/api/user/:userid/automation-collections", possibleUser, async (req, res) => {
+app.get("/api/automation-collections/user/:userid", possibleUser, async (req, res) => {
 	const user = req.user;
 	if (user?.id === req.params.userid)
 		return res.json((await getAutomationCollectionsByOwner(user.id)));
 	return res.json((await getPublicAutomationCollectionsByOwner(req.params.userid)));
 });
 
-app.get("/api/automation-collection/:id", possibleUser, async (req, res) => {
+app.get("/api/automation-collections/:id", possibleUser, async (req, res) => {
 	const authorization = await automationCollections.authorize(req.params.id, req.user?.id ?? null, "view");
 	if (!authorization.ok) {
 		if (authorization.reason === "collection-not-found")
@@ -149,7 +149,7 @@ app.get("/api/automation-collection/:id", possibleUser, async (req, res) => {
 	return res.json(authorization.collection);
 });
 
-app.post("/api/automation-collection/:id/update", requireUser, async (req, res) => {
+app.post("/api/automation-collections/:id/update", requireUser, async (req, res) => {
 	const user = req.user!;
 	const authorization = await automationCollections.authorize(req.params.id, user.id, "edit");
 	if (!authorization.ok) {
@@ -173,7 +173,7 @@ app.post("/api/automation-collection/:id/update", requireUser, async (req, res) 
 	return res.json(collection);
 });
 
-app.post("/api/automation-collection/:id/delete", requireUser, async (req, res) => {
+app.post("/api/automation-collections/:id/delete", requireUser, async (req, res) => {
 	const user = req.user!;
 	const result = await automationCollections.deleteCollection(req.params.id, user.id);
 	if (result.ok)
@@ -185,35 +185,7 @@ app.post("/api/automation-collection/:id/delete", requireUser, async (req, res) 
 	return res.status(500).json({ error: "Failed to delete automation collection." });
 });
 
-app.get("/api/automation-collection/:id/automations", possibleUser, async (req, res) => {
-	const authorization = await automationCollections.authorize(req.params.id, req.user?.id ?? null, "view");
-	if (!authorization.ok) {
-		if (authorization.reason === "collection-not-found")
-			return res.status(404).json({ error: "Automation collection not found." });
-		return res.status(401).json({ error: "You don't have access to this automation collection." });
-	}
-	return res.json(await getAutomationsByCollection(authorization.collection.id));
-});
-
-app.post("/api/automation-collection/:id/automations/order", requireUser, async (req, res) => {
-	const automationIds = req.body.data;
-	if (!automationIds || !Array.isArray(automationIds))
-		return res.status(400).json({ error: "Invalid automation id array." });
-	const result = await automationCollections.reorderItems(req.params.id, req.user!.id, automationIds);
-	if (result.ok)
-		return res.json({});
-	if (result.reason === "collection-not-found")
-		return res.status(404).json({ error: "Automation collection not found." });
-	if (result.reason === "forbidden")
-		return res.status(401).json({ error: "You don't have permission to reorder automations in this collection." });
-	if (result.reason === "items-not-in-collection")
-		return res.status(403).json({ error: "Specified automations are not part of this collection." });
-	if (result.reason === "duplicate-items")
-		return res.status(400).json({ error: "Automation ids must be unique." });
-	return res.status(500).json({ error: "Failed to update automation order." });
-});
-
-app.post("/api/automation-collection/:collectionid/editors/add/:userid", requireUser, async (req, res) => {
+app.post("/api/automation-collections/:collectionid/editors/add/:userid", requireUser, async (req, res) => {
 	const user = req.user!;
 	const result = await automationCollections.addEditor(req.params.collectionid, user.id, req.params.userid);
 	if (result.ok)
@@ -228,7 +200,7 @@ app.post("/api/automation-collection/:collectionid/editors/add/:userid", require
 	}
 });
 
-app.post("/api/automation-collection/:collectionid/editors/remove/:userid", requireUser, async (req, res) => {
+app.post("/api/automation-collections/:collectionid/editors/remove/:userid", requireUser, async (req, res) => {
 	const user = req.user!;
 	const result = await automationCollections.removeEditor(req.params.collectionid, user.id, req.params.userid);
 	if (result.ok)

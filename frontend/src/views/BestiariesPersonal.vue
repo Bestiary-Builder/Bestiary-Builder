@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { BestiaryExtended } from "~/shared";
-import { onMounted, ref } from "vue";
+import { onMounted, reactive, ref, toValue } from "vue";
 import { useRouter } from "vue-router";
 import BestiaryList from "@/components/Bestiary/BestiaryList.vue";
 import ButtonIcon from "@/components/Global/ButtonIcon.vue";
@@ -10,6 +10,8 @@ import { getUmami } from "@/utils/app/analytics";
 import { $loading } from "@/utils/app/loading";
 import { $toast } from "@/utils/app/toast";
 import { useFetch } from "@/utils/utils";
+import { store } from "@/utils/store";
+import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 
 const router = useRouter();
 
@@ -33,13 +35,22 @@ const getBestiaries = async () => {
 	}
 };
 
+const showCreateModal = ref(false)
+const createOptions = reactive({
+    name: "",
+    description: "",
+    status: "unlisted"
+})
+
+const resetCreateInput = () => {
+    createOptions.name = ""
+    createOptions.description = ""
+    createOptions.status = "unlisted"
+}
+
 const createBestiary = async () => {
 	// Send data to server
-	const { success, data, error } = await useFetch<BestiaryExtended>("/api/bestiary/add", "POST", {
-		name: "New bestiary",
-		description: "",
-		status: "private"
-	});
+	const { success, data, error } = await useFetch<BestiaryExtended>("/api/bestiary/add", "POST", toValue(createOptions));
 	if (success) {
 		$toast.success("Created bestiary");
 		getUmami()?.track("Add bestiary");
@@ -50,6 +61,11 @@ const createBestiary = async () => {
 	}
 	await getBestiaries();
 };
+
+const cancelCreate = () => {
+    showCreateModal.value = false;
+    resetCreateInput()
+}
 
 const deleteBestiary = async (bestiary: BestiaryExtended | null) => {
 	if (!bestiary)
@@ -86,7 +102,7 @@ const openDeleteModal = (bestiary: BestiaryExtended) => {
 			}
 		]"
 	>
-		<ButtonIcon icon="plus" label="Create bestiary!" inverted @click="createBestiary" />
+		<ButtonIcon icon="plus" label="Create bestiary!" inverted @click="showCreateModal = true" />
 	</Breadcrumbs>
 	<div class="content">
 		<BestiaryList v-if="bestiaries" :personal="true" :bestiaries @delete-bestiary="openDeleteModal" />
@@ -115,4 +131,50 @@ const openDeleteModal = (bestiary: BestiaryExtended) => {
 			</button>
 		</template>
 	</Modal>
+
+		<Modal :show="showCreateModal" @close="showCreateModal = false">
+		<template #header>
+			Create new bestiary
+		</template>
+		<template #body>
+			<div class="modal-desc">
+				<LabelledComponent title="Name">
+                    <input type="text" :maxlength="store.limits?.nameLength" :minlength="store.limits?.nameMin" v-model="createOptions.name" />
+                </LabelledComponent>
+                <LabelledComponent title="Description">
+                    <input type="text" :maxlength="store.limits?.descriptionLength" :minlength="store.limits?.nameMin" v-model="createOptions.description" />
+                </LabelledComponent>
+                <LabelledComponent title="Status">
+                    <select v-model="createOptions.status">
+                        <option value="private">
+                            Private
+                        </option>
+                        <option value="unlisted">
+                            Unlisted
+                        </option>
+                        <option value="public">
+                            Public
+                        </option>
+                    </select>
+                </LabelledComponent>
+			</div>
+		</template>
+		<template #footer>
+		<button class="btn confirm" @click="createBestiary">
+            Create
+        </button>
+        <button class="btn" @click="cancelCreate">
+            Cancel
+        </button>
+		</template>
+	</Modal>
+	
 </template>
+
+<style scoped>
+.modal-desc {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+</style>

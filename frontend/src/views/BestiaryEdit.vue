@@ -25,15 +25,13 @@ import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { defaultStatblock } from "~/shared";
 
-const route = useRoute();
-const router = useRouter();
-
+const $route = useRoute();
+const $router = useRouter();
 const searchText = ref("");
 const debouncedSearch = refDebounced(searchText, 500);
 
 const searchEnv = ref("");
 const debouncedEnv = refDebounced(searchEnv, 500);
-
 const searchFaction = ref("");
 const debouncedFaction = refDebounced(searchFaction, 500);
 
@@ -370,7 +368,7 @@ async function createCreature(stats = defaultStatblock, shouldHaveLoader = true,
 		const data = resultData;
 		getUmami()?.track("Create creature");
 		if (openPage)
-			await router.push(`/creature/edit/${data.id.toString()}`);
+			await $router.push(`/creature/edit/${data.id.toString()}`);
 		else
 			await getBestiary();
 	}
@@ -525,7 +523,7 @@ async function removeEditor(id: string) {
 
 async function getBestiary() {
 	// Get id
-	const id = route.params.id;
+	const id = $route.params.id;
 	// Request bestiary info
 	const { success, data, error } = await useFetch<BestiaryExtended>(`/api/bestiary/${id.toString()}`);
 	if (!success) {
@@ -539,7 +537,7 @@ async function getBestiary() {
 	isEditor.value = (bestiary.value?.editors ?? []).map(e => e.userId).includes(store.user?.id ?? "");
 
 	if (!isOwner.value && !isEditor.value)
-		await router.push(`/bestiary/view/${bestiary.value.id}`);
+		await $router.push(`/bestiary/view/${bestiary.value.id}`);
 
 	initialLoading.value = false;
 	// Fetch creatures
@@ -876,11 +874,14 @@ const getDraggableKey = (item: any) => {
 					</LabelledComponent>
 				</div>
 				<div class="editor-block">
-					<h3>Editors</h3>
-					<p v-if="isOwner">
-						Editors can add, edit, and remove creatures. They can edit the name of the bestiary and its description. Editors cannot change the status of the bestiary or delete the bestiary. Editors cannot add other editors. The owner can remove editors at any time.
-					</p>
-					<div class="editor-container">
+					<h3 style="margin-bottom: .5rem">Editors</h3>
+					<small v-if="isOwner" >
+						Editors can add, edit, and remove creatures. <br>
+						They can edit the name of the bestiary and its description. <br>
+						Editors cannot change the status of the bestiary or delete the bestiary. <br>
+						Editors cannot add other editors. The owner can remove editors at any time.
+					</small>
+					<div class="editor-container" style="margin-top: .5rem">
 						<div v-for="editor in editors" :key="editor.id" class="editor-list">
 							<p>
 								<UserBanner :id="editor.id" />
@@ -888,7 +889,7 @@ const getDraggableKey = (item: any) => {
 							</p>
 						</div>
 					</div>
-					<LabelledComponent title="Add editor" for="addeditor">
+					<LabelledComponent title="Add editor" for="addeditor" style="margin-top: .5rem">
 						<div class="button-container">
 							<input id="addeditor" v-model="editorToAdd" type="text" inputmode="numeric" placeholder="Discord user ID">
 							<button class="btn" @click="addEditor()">

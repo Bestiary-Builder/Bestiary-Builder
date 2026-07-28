@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { AttackModel, AutomationWithType, Id } from "~/shared";
+import { type AutomationCollectionExtended, type AttackModel, type AutomationWithType, type Id } from "~/shared";
 import { onMounted, onUnmounted, ref, watch } from "vue";
-import { onBeforeRouteLeave } from "vue-router";
+import { onBeforeRouteLeave, useRoute } from "vue-router";
 import ImportAutomationUtil from "@/components/Automations/ImportAutomationUtil.vue";
 import StandAloneEditor from "@/components/Automations/StandAloneEditor.vue";
 import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
@@ -14,13 +14,23 @@ import { $toast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 
+const $route = useRoute()
 const data = ref<AutomationWithType[]>([]);
+const collection = ref<AutomationCollectionExtended | null>(null)
 let initialData = "";
 // get our data
 onMounted(async () => {
     const loader = $loading.show();
+    const { success, data, error} = await useFetch<AutomationCollectionExtended>(`/api/automation-collections/${$route.params.id}`)
+
+    if (success) {
+        collection.value = data
+	}
+	else {
+		$toast.error(error);
+	}
+
     await getMyAutomations();
-    initialData = JSON.stringify(data.value);
     loader.hide();
 });
 
@@ -161,8 +171,13 @@ watch(selectedCharacter, async () => {
     <Breadcrumbs
         :routes="[
             {
-                path: '',
+                path: '/automations/personal',
                 text: 'My Automation',
+                isCurrent: false
+            },
+            {
+                path: '',
+                text: collection ? collection.name : 'Unknown name',
                 isCurrent: true
             }
         ]"
