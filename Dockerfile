@@ -22,7 +22,7 @@ COPY . .
 # Build app
 
 ## Install dependencies
-RUN bun install --production
+RUN bun install
 
 ## Generate prisma types
 RUN cd backend && bun run generate
