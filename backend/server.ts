@@ -11,7 +11,6 @@ import { routes } from "~/shared";
 
 // Logging
 import discord from "./logic/discord";
-import "@/utilities/env";
 
 // Import middleware
 import "@/utilities/middleware";

@@ -1,13 +1,14 @@
 import type { Automation, BestiaryStatus, Id, Statblock, User } from "~/shared";
 // Express app
 import crypto from "node:crypto";
-
-// Secrets:
-
 import express from "express";
 
 // Limits
 import l from "@/staticData/limits.json";
+
+// Secrets:
+import "@/utilities/env";
+
 // Import badwords
 import "./badwords";
 
