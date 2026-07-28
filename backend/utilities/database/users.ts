@@ -2,6 +2,7 @@ import type { Id, User } from "~/shared";
 import { generateUserSecret } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
 import { getPrismaClient } from ".";
+import { withDatabaseFallback } from "./operations";
 
 // User cache
 const userCache = {} as { [key: string]: User };
@@ -13,7 +14,7 @@ export function resetUserCache(id: string) {
 }
 // User functions
 export async function getUser(id: string) {
-	try {
+	return await withDatabaseFallback(async () => {
 		if (id in userCache)
 			return userCache[id];
 		const user = await getPrismaClient().user.findUnique({ where: { id }, omit: { secret: true } });
@@ -21,14 +22,10 @@ export async function getUser(id: string) {
 			userCache[user.id] = user;
 		log.log("database", `Reading user info for ${id}.`);
 		return user;
-	}
-	catch (err) {
-		log.log("critical", err);
-		return null;
-	}
+	}, null);
 }
 export async function getUserFromSecret(secret: string) {
-	try {
+	return await withDatabaseFallback(async () => {
 		if (!secret)
 			return null;
 
@@ -44,14 +41,10 @@ export async function getUserFromSecret(secret: string) {
 		}
 		log.log("database", "Reading user from secret.");
 		return user;
-	}
-	catch (err) {
-		log.log("critical", err);
-		return null;
-	}
+	}, null);
 }
 export async function updateUser(data: { id: string; username: string; avatar: string; email: string; verified: boolean; bannerColor: string; globalName: string }) {
-	try {
+	return await withDatabaseFallback(async () => {
 		log.log("database", `Upserting user with id ${data.id}`);
 		const user = await getPrismaClient().user.upsert({
 			where: { id: data.id },
@@ -60,14 +53,10 @@ export async function updateUser(data: { id: string; username: string; avatar: s
 		});
 		resetUserCache(data.id);
 		return user.secret;
-	}
-	catch (err) {
-		log.log("critical", err);
-		return null;
-	}
+	}, null);
 }
 export async function addBookmark(userId: string, bestiaryId: Id) {
-	try {
+	return await withDatabaseFallback(async () => {
 		log.log("database", `Adding bookmark to user ${userId}.`);
 		const prisma = getPrismaClient();
 		await prisma.$transaction([
@@ -75,14 +64,10 @@ export async function addBookmark(userId: string, bestiaryId: Id) {
 			prisma.bestiary.update({ where: { id: bestiaryId }, data: { bookmarks: { increment: 1 } } })
 		]);
 		return true;
-	}
-	catch (err) {
-		log.log("critical", err);
-		return false;
-	}
+	}, false);
 }
 export async function removeBookmark(userId: string, bestiaryId: Id) {
-	try {
+	return await withDatabaseFallback(async () => {
 		log.log("database", `Removing bookmark from user ${userId}.`);
 		const prisma = getPrismaClient();
 		await prisma.$transaction([
@@ -90,22 +75,14 @@ export async function removeBookmark(userId: string, bestiaryId: Id) {
 			prisma.bestiary.update({ where: { id: bestiaryId }, data: { bookmarks: { decrement: 1 } } })
 		]);
 		return true;
-	}
-	catch (err) {
-		log.log("critical", err);
-		return false;
-	}
+	}, false);
 }
 
 export async function isBestiaryBookmarked(userId: string, bestiaryId: Id) {
-	try {
+	return await withDatabaseFallback(async () => {
 		const bookmark = await getPrismaClient().userBestiaryBookmark.findUnique({
 			where: { userId_bestiaryId: { userId, bestiaryId } }
 		});
 		return Boolean(bookmark);
-	}
-	catch (err) {
-		log.log("critical", err);
-		return false;
-	}
+	}, false);
 }

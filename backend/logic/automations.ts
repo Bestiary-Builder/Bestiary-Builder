@@ -52,7 +52,7 @@ app.get("/api/automation/:id", possibleUser, async (req, res) => {
 	const automation = await getAutomation(id);
 	if (!automation)
 		return res.status(404).json({ error: "No automation with that id found." });
-	if (!await canViewAutomation(automation, req.body.user?.id ?? null))
+	if (!await canViewAutomation(automation, req.user?.id ?? null))
 		return res.status(401).json({ error: "You don't have access to this automation." });
 
 	log.info(`Retrieved automation with the id ${id}`);
@@ -60,18 +60,14 @@ app.get("/api/automation/:id", possibleUser, async (req, res) => {
 });
 
 app.get("/api/my-automations", requireUser, async (req, res) => {
-	const user = req.body.user;
-	if (!user)
-		return res.status(404).json({ error: "Couldn't find user" });
+	const user = req.user!;
 	const automations = await getAutomationsForUser(user.id);
 	log.info(`Retrieved ${automations.length} automations from the current user with the id ${user.id}`);
 	return res.json(automations);
 });
 
 app.get("/api/my-automations/list", requireUser, async (req, res) => {
-	const user = req.body.user;
-	if (!user)
-		return res.status(404).json({ error: "Couldn't find user" });
+	const user = req.user!;
 	const automations = await getAutomationsForUser(user.id);
 	log.info(`Retrieved all automations in list form from the current user with the id ${user.id}`);
 	return res.json(automations.map(({ id, name }) => ({ id, name })));
@@ -79,9 +75,7 @@ app.get("/api/my-automations/list", requireUser, async (req, res) => {
 
 // Update info
 app.post("/api/automation/:id/update", requireUser, async (req, res) => {
-	const user = req.body.user;
-	if (!user)
-		return res.status(404).json({ error: "Couldn't find current user." });
+	const user = req.user!;
 	const id = req.params.id;
 	if (!id)
 		return res.status(400).json({ error: "Invalid automation id." });
@@ -109,9 +103,7 @@ app.post("/api/automation/:id/update", requireUser, async (req, res) => {
 });
 
 app.post("/api/automation/add", requireUser, async (req, res) => {
-	const user = req.body.user;
-	if (!user)
-		return res.status(404).json({ error: "Couldn't find current user." });
+	const user = req.user!;
 	if (!req.body.data)
 		return res.status(400).json({ error: "Automation data not found." });
 	const input = req.body.data as Partial<Automation>;
@@ -147,9 +139,7 @@ app.get("/api/automation/:id/delete", requireUser, async (req, res) => {
 	const id = req.params.id;
 	if (!id)
 		return res.status(400).json({ error: "Automation id not valid." });
-	const user = req.body.user;
-	if (!user)
-		return res.status(404).json({ error: "Couldn't find current user." });
+	const user = req.user!;
 	const automation = await getAutomation(id);
 	if (!automation)
 		return res.status(404).json({ error: "Couldn't find automation." });

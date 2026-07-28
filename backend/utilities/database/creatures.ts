@@ -2,76 +2,53 @@ import type { Id } from "~/shared";
 import type { Creature, CreatureCreateInput, CreatureCreateManyInput } from "~/shared/src/prisma-types";
 import { log } from "@/utilities/logger";
 import { getPrismaClient } from ".";
+import { withDatabaseFallback } from "./operations";
 
 // Creature functions
 export async function getCreature(id: Id) {
-	try {
+	return await withDatabaseFallback(async () => {
 		log.log("database", `Getting creature with the id ${id}.`);
 		return await getPrismaClient().creature.findUnique({ where: { id } });
-	}
-	catch (err) {
-		log.log("critical", err);
-		return null;
-	}
+	}, null);
 }
 export async function createCreature(data: Creature) {
-	try {
+	return await withDatabaseFallback(async () => {
 		const creature: CreatureCreateInput = { stats: data.stats, lastUpdated: new Date(Date.now()), index: data.index, bestiary: { connect: { id: data.bestiaryId } } };
 		log.log("database", `Creating creature.`);
 		return (await getPrismaClient().creature.create({ data: creature })).id;
-	}
-	catch (err) {
-		log.log("critical", err);
-		return null;
-	}
+	}, null);
 }
 export async function updateCreature(data: Creature, id: Id) {
-	try {
+	return await withDatabaseFallback(async () => {
 		const creature: Omit<CreatureCreateInput, "index"> = { stats: data.stats, lastUpdated: new Date(Date.now()), bestiary: { connect: { id: data.bestiaryId } } };
 		log.log("database", `Updating creature with the id ${id}.`);
 		return (await getPrismaClient().creature.update({ where: { id }, data: creature })).id;
-	}
-	catch (err) {
-		log.log("critical", err);
-		return null;
-	}
+	}, null);
 }
 export async function createCreatures(data: CreatureCreateManyInput[]) {
-	try {
+	return await withDatabaseFallback(async () => {
 		const now = new Date(Date.now());
 		log.log("database", `Creating ${data.length} creatures.`);
 		return await getPrismaClient().creature.createMany({ data: data.map(creature => ({ ...creature, lastUpdated: now })) });
-	}
-	catch (err) {
-		log.log("critical", err);
-		return null;
-	}
+	}, null);
 }
 
 export async function getCreaturesByBestiary(bestiaryId: Id) {
-	try {
+	return await withDatabaseFallback(async () => {
 		return await getPrismaClient().creature.findMany({ where: { bestiaryId }, orderBy: { index: "asc" } });
-	}
-	catch (err) {
-		log.log("critical", err);
-		return [];
-	}
+	}, []);
 }
 
 export async function getCreaturesByIds(ids: Id[]) {
-	try {
+	return await withDatabaseFallback(async () => {
 		if (!ids.length)
 			return [];
 		return await getPrismaClient().creature.findMany({ where: { id: { in: ids } } });
-	}
-	catch (err) {
-		log.log("critical", err);
-		return [];
-	}
+	}, []);
 }
 
 export async function deleteCreature(creatureId: Id) {
-	try {
+	return await withDatabaseFallback(async () => {
 		log.log("database", `Deleting creature with the id ${creatureId}.`);
 		return await getPrismaClient().$transaction(async () => {
 			const creature = await getCreature(creatureId);
@@ -80,9 +57,5 @@ export async function deleteCreature(creatureId: Id) {
 			await getPrismaClient().creature.delete({ where: { id: creatureId } });
 			return true;
 		});
-	}
-	catch (err) {
-		log.log("critical", err);
-		return false;
-	}
+	}, false);
 }

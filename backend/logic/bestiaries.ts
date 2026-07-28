@@ -41,7 +41,7 @@ app.get("/api/bestiary/:id", possibleUser, async (req, res) => {
 	if (!bestiary)
 		return res.status(404).json({ error: "No bestiary with that id found." });
 
-	const user = req.body.user;
+	const user = req.user;
 	const permissionLevel = await checkBestiaryPermission(bestiary, user);
 	if (permissionLevel !== "none") {
 		// Increment view count
@@ -65,9 +65,7 @@ app.get("/api/bestiary/:id", possibleUser, async (req, res) => {
 	}
 });
 app.get("/api/my-bestiaries", requireUser, async (req, res) => {
-	const user = req.body.user;
-	if (!user)
-		return res.status(404).json({ error: "Couldn't find user" });
+	const user = req.user!;
 	const allBestiaries = await bestiaryCollections.getForUser(user.id);
 	log.info(`Retrieved all bestiaries from the current user with the id ${user.id}`);
 	return res.json(allBestiaries.sort((a, b) => (a.orderedBy[0]?.index ?? allBestiaries.length) - (b.orderedBy[0]?.index ?? allBestiaries.length)).map((bestiary) => {
@@ -78,7 +76,7 @@ app.get("/api/my-bestiaries", requireUser, async (req, res) => {
 });
 app.get("/api/user/:userid/bestiaries", possibleUser, async (req, res) => {
 	let allBestiaries = [];
-	const user = req.body.user;
+	const user = req.user;
 	if (user && user.id === req.params.userid) {
 		// Own user
 		allBestiaries = await getBestiariesByOwner(user.id);
@@ -134,9 +132,7 @@ function validateBestiaryData(data: BestiaryData, creatureCount: number) {
 
 app.post("/api/bestiary/:id/update", requireUser, async (req, res) => {
 	// Get input
-	const user = req.body.user;
-	if (!user)
-		return res.status(404).json({ error: "Couldn't find current user." });
+	const user = req.user!;
 	const id = req.params.id;
 	if (!id)
 		return res.status(400).json({ error: "BestiaryupdateBestiary id not valid." });
@@ -187,9 +183,7 @@ app.post("/api/bestiary/:id/update", requireUser, async (req, res) => {
 	}
 });
 app.post("/api/bestiary/add", requireUser, async (req, res) => {
-	const user = req.body.user;
-	if (!user)
-		return res.status(404).json({ error: "Couldn't find current user." });
+	const user = req.user!;
 	if (!req.body.data)
 		return res.status(400).json({ error: "Bestiary data not found." });
 	const data: Omit<BestiaryCreateInput, "id" | "owner"> & BestiaryData = {
@@ -211,9 +205,7 @@ app.get("/api/bestiary/:id/delete", requireUser, async (req, res) => {
 	const _id = req.params.id;
 	if (!_id)
 		return res.status(400).json({ error: "Bestiary id not valid." });
-	const user = req.body.user;
-	if (!user)
-		return res.status(404).json({ error: "Couldn't find current user." });
+	const user = req.user!;
 	// Permissions
 	const result = await bestiaryCollections.deleteCollection(_id, user.id);
 	if (result.ok) {
@@ -229,9 +221,7 @@ app.get("/api/bestiary/:id/delete", requireUser, async (req, res) => {
 
 // Change bestiary order
 app.post("/api/my-bestiaries/order", requireUser, async (req, res) => {
-	const user = req.body.user;
-	if (!user)
-		return res.status(404).json({ error: "Couldn't find current user." });
+	const user = req.user!;
 	const bestiaryIds = req.body.data;
 	if (!bestiaryIds || !Array.isArray(bestiaryIds))
 		return res.status(400).json({ error: "Invalid bestiary id array." });
@@ -259,8 +249,7 @@ app.post("/api/my-bestiaries/order", requireUser, async (req, res) => {
 
 	if (result.length - 1 === userBestiaries.length)
 		return res.status(200).json({});
-	else
-		return res.status(500).json({ error: "Unknown server error occured, please try again." });
+	throw new Error("Failed to update bestiary order.");
 });
 
 // Add many creatures
@@ -274,24 +263,14 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 	if (!bestiary)
 		return res.status(404).json({ error: "Bestiary not found" });
 	// Check owner
-	const user = req.body.user;
-	if (!user)
-		return res.status(404).json({ error: "Couldn't find current user." });
+	const user = req.user!;
 	if (!await canEditBestiary(bestiary, user))
 		return res.status(401).json({ error: "You don't have permission to add creatures to this bestiary." });
 	// Get creature input
-	let data;
-	try {
-		const inputData = req.body.data as Statblock[];
-		if (!validateStatblockInput(inputData))
-			data = null;
-		data = inputData.map(a => ({ stats: a } as Omit<Creature, "id">));
-	}
-	catch {
-		data = null;
-	}
-	if (!data)
+	const inputData = req.body.data as Statblock[];
+	if (!Array.isArray(inputData) || !validateStatblockInput(inputData))
 		return res.status(400).json({ error: "Failed to parse creature data." });
+	const data = inputData.map(a => ({ stats: a } as Omit<Creature, "id">));
 	const now = new Date(Date.now());
 	// Make sure all fields are present in all creatures
 	const ignoredCreatures = [] as { creature: string; error: string }[];
@@ -342,9 +321,7 @@ app.get("/api/bestiary/:bestiaryid/editors/add/:userid", requireUser, async (req
 	const _id = req.params.bestiaryid;
 	if (!_id)
 		return res.status(400).json({ error: "Bestiary id not valid." });
-	const currentUser = req.body.user;
-	if (!currentUser)
-		return res.status(404).json({ error: "Couldn't find current user." });
+	const currentUser = req.user!;
 
 	const result = await bestiaryCollections.addEditor(_id, currentUser.id, req.params.userid);
 	if (result.ok) {
@@ -365,9 +342,7 @@ app.get("/api/bestiary/:bestiaryid/editors/remove/:userid", requireUser, async (
 	const _id = req.params.bestiaryid;
 	if (!_id)
 		return res.status(400).json({ error: "Bestiary id not valid." });
-	const currentUser = req.body.user;
-	if (!currentUser)
-		return res.status(404).json({ error: "Couldn't find current user." });
+	const currentUser = req.user!;
 
 	const result = await bestiaryCollections.removeEditor(_id, currentUser.id, req.params.userid);
 	if (result.ok) {
@@ -392,9 +367,7 @@ app.get("/api/bestiary/:id/bookmark/toggle", requireUser, async (req, res) => {
 	const bestiary = await getBestiary(_id);
 	if (!bestiary)
 		return res.status(404).json({ error: "Couldn't find bestiary." });
-	const user = req.body.user;
-	if (!user)
-		return res.status(404).json({ error: "Couldn't find current user." });
+	const user = req.user!;
 	// Permissions
 	if ((await checkBestiaryPermission(bestiary, user)) === "none")
 		return res.status(401).json({ error: "You don't have permission to view this bestiary." });
@@ -427,9 +400,7 @@ app.get("/api/bestiary/:id/bookmark/get", requireUser, async (req, res) => {
 	const bestiary = await getBestiary(_id);
 	if (!bestiary)
 		return res.status(404).json({ error: "Couldn't find bestiary." });
-	const user = req.body.user;
-	if (!user)
-		return res.status(404).json({ error: "Couldn't find current user." });
+	const user = req.user!;
 	// Permissions
 	if ((await checkBestiaryPermission(bestiary, user)) === "none")
 		return res.status(401).json({ error: "You don't have permission to view this bestiary." });

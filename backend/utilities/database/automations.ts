@@ -2,22 +2,19 @@ import type { Id } from "~/shared";
 import type { AutomationCollectionCreateInput, AutomationCollectionUpdateInput, AutomationCreateInput, AutomationUpdateInput } from "~/shared/src/prisma-types";
 import { log } from "@/utilities/logger";
 import { getPrismaClient } from ".";
+import { withDatabaseFallback } from "./operations";
 
 type CreateAutomationData = Pick<AutomationCreateInput, "name" | "description" | "automation">;
 
 // Automation functions
 export async function getAutomation(id: Id) {
-	try {
+	return await withDatabaseFallback(async () => {
 		log.log("database", `Reading automation with the id ${id}.`);
 		return (await getPrismaClient().automation.findUnique({ where: { id } }));
-	}
-	catch (err) {
-		log.log("critical", err);
-		return null;
-	}
+	}, null);
 }
 export async function createAutomation(data: CreateAutomationData, collectionId: Id) {
-	try {
+	return await withDatabaseFallback(async () => {
 		log.log("database", `Creating new automation`);
 		return await getPrismaClient().automation.create({
 			data: {
@@ -26,49 +23,33 @@ export async function createAutomation(data: CreateAutomationData, collectionId:
 				collection: { connect: { id: collectionId } }
 			}
 		});
-	}
-	catch (err) {
-		log.log("critical", err);
-		return null;
-	}
+	}, null);
 }
 export async function updateAutomation(data: AutomationUpdateInput, id: Id) {
-	try {
+	return await withDatabaseFallback(async () => {
 		data.lastUpdated = new Date(Date.now());
 		log.log("database", `Updating automation with id ${id}`);
 		return (await getPrismaClient().automation.update({ where: { id }, data })).id;
-	}
-	catch (err) {
-		log.log("critical", err);
-		return null;
-	}
+	}, null);
 }
 export async function deleteAutomation(id: Id) {
-	try {
+	return await withDatabaseFallback(async () => {
 		log.log("database", `Deleting automation with the id ${id}.`);
 		await getPrismaClient().automation.delete({ where: { id } });
 		return true;
-	}
-	catch (err) {
-		log.log("critical", err);
-		return false;
-	}
+	}, false);
 }
 
 export async function getAutomationsByCollectionIds(collectionIds: Id[]) {
-	try {
+	return await withDatabaseFallback(async () => {
 		if (!collectionIds.length)
 			return [];
 		return await getPrismaClient().automation.findMany({ where: { collectionId: { in: collectionIds } } });
-	}
-	catch (err) {
-		log.log("critical", err);
-		return [];
-	}
+	}, []);
 }
 
 export async function getAutomationCollection(id: Id) {
-	try {
+	return await withDatabaseFallback(async () => {
 		return await getPrismaClient().automationCollection.findUnique({
 			where: { id },
 			include: {
@@ -76,21 +57,13 @@ export async function getAutomationCollection(id: Id) {
 				automations: true
 			}
 		});
-	}
-	catch (err) {
-		log.log("critical", err);
-		return null;
-	}
+	}, null);
 }
 
 export async function getAutomationCollectionsByOwner(ownerId: Id) {
-	try {
+	return await withDatabaseFallback(async () => {
 		return await getPrismaClient().automationCollection.findMany({ where: { ownerId } });
-	}
-	catch (err) {
-		log.log("critical", err);
-		return [];
-	}
+	}, []);
 }
 
 export async function getPublicAutomationCollectionsByOwner(ownerId: Id) {
@@ -128,16 +101,12 @@ export async function getAutomationCollectionsByUser(userId: Id) {
 }
 
 export async function createAutomationCollection(data: AutomationCollectionCreateInput) {
-	try {
+	return await withDatabaseFallback(async () => {
 		return await getPrismaClient().automationCollection.create({
 			data,
 			include: { editors: { select: { userId: true } } }
 		});
-	}
-	catch (err) {
-		log.log("critical", err);
-		return null;
-	}
+	}, null);
 }
 
 export async function updateAutomationCollection(data: AutomationCollectionUpdateInput, id: Id) {

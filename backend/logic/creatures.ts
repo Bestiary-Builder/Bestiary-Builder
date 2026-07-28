@@ -18,7 +18,7 @@ export async function checkCreaturePermission(creature: Creature, user: User | n
 
 // Get info
 app.get("/api/creature/:id", possibleUser, async (req, res) => {
-	const user = req.body.user;
+	const user = req.user;
 	const _id = req.params.id;
 	if (!_id)
 		return res.status(400).json({ error: "Creature id not valid." });
@@ -38,7 +38,7 @@ app.get("/api/creature/:id", possibleUser, async (req, res) => {
 	}
 });
 app.get("/api/bestiary/:id/creatures", possibleUser, async (req, res) => {
-	const user = req.body.user;
+	const user = req.user;
 	const bestiaryId = req.params.id;
 	const bestiary = bestiaryId ? await getBestiary(bestiaryId) : null;
 	if (bestiary) {
@@ -64,9 +64,7 @@ app.post("/api/creature/add", requireUser, async (req, res) => {
 		return res.status(400).json({ error: "Creature data not found." });
 	if (!validateCreatureInput(data.stats, res))
 		return;
-	const user = req.body.user;
-	if (!user)
-		return res.status(404).json({ error: "Couldn't find current user." });
+	const user = req.user!;
 
 	// Get bestiary
 	const bestiary = await getBestiary(data.bestiaryId);
@@ -121,10 +119,8 @@ app.post("/api/creature/:id/update", requireUser, async (req, res) => {
 			return res.status(400).json({ error: "Invalid bestiary id." });
 		data.id = _id;
 	}
-	const user = req.body.user;
-	if (!user)
-		return res.status(404).json({ error: "Couldn't find current user." });
-		// Get bestiary
+	const user = req.user!;
+	// Get bestiary
 	const bestiary = await getBestiary(data.bestiaryId);
 	if (!bestiary)
 		return res.status(404).json({ error: "Bestiary not found" });
@@ -135,7 +131,7 @@ app.post("/api/creature/:id/update", requireUser, async (req, res) => {
 	// Check permissions
 	if (!await canEditBestiary(bestiary, user))
 		return res.status(401).json({ error: "You don't have permission to update this creature." });
-		// Update creature
+	// Update creature
 	const updatedId = await updateCreature(data, _id);
 	if (updatedId) {
 		log.info(`Updated creature with the id ${_id}`);
@@ -152,17 +148,15 @@ app.get("/api/creature/:id/delete", requireUser, async (req, res) => {
 	const _id = req.params.id;
 	if (!_id)
 		return res.status(400).json({ error: "Creature id not valid." });
-	const user = req.body.user;
-	if (!user)
-		return res.status(404).json({ error: "Couldn't find current user." });
-		// Permissions
+	const user = req.user!;
+	// Permissions
 	const creature = await getCreature(_id);
 	if (!creature)
 		return res.status(404).json({ error: "Couldn't find creature with that id." });
 	const bestiary = await getBestiary(creature.bestiaryId);
 	if (!bestiary || !await canEditBestiary(bestiary, user))
 		return res.status(401).json({ error: "You don't have permission to delete this creature." });
-		// Remove from db
+	// Remove from db
 	const status = await deleteCreature(_id);
 	if (status) {
 		log.info(`Deleted creature with the id ${_id}`);
@@ -175,9 +169,7 @@ app.get("/api/creature/:id/delete", requireUser, async (req, res) => {
 
 // Update creature order
 app.post("/api/bestiary/:id/creatures/order", requireUser, async (req, res) => {
-	const user = req.body.user;
-	if (!user)
-		return res.status(404).json({ error: "Couldn't find current user." });
+	const user = req.user!;
 	const bestiaryId = req.params.id;
 	const bestiary = bestiaryId ? await getBestiary(bestiaryId) : null;
 	if (!bestiary)

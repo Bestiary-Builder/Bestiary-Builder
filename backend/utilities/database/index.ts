@@ -1,9 +1,10 @@
 import type { GlobalStats } from "~/shared";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { log } from "@/utilities/logger";
+import { PrismaClient } from "~/shared/src/prisma-types";
+import { withDatabaseFallback } from "./operations";
 
 // Connect to database
-import { PrismaClient } from "~/shared/src/prisma-types";
 
 const adapter = new PrismaPg({
 	connectionString: process.env.DATABASE_URL!,
@@ -39,18 +40,14 @@ export function isDatabaseConnected(): boolean {
 
 // Global stats
 export async function getGlobalStats(): Promise<GlobalStats | null> {
-	try {
+	return await withDatabaseFallback(async () => {
 		const prisma = getPrismaClient();
 		return {
 			creatures: await prisma.creature.count(),
 			bestiaries: await prisma.bestiary.count(),
 			users: await prisma.user.count()
 		};
-	}
-	catch (err) {
-		log.log("critical", err);
-		return null;
-	}
+	}, null);
 }
 
 // Export other functions

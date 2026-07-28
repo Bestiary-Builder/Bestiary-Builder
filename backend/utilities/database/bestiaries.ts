@@ -3,6 +3,7 @@ import type { BestiaryCreateInput, BestiaryUpdateInput } from "~/shared/src/pris
 import { v4 as uuid } from "uuid";
 import { log } from "@/utilities/logger";
 import { getPrismaClient } from ".";
+import { withDatabaseFallback } from "./operations";
 
 const defaultIncludes = {
 	creatures: {
@@ -21,28 +22,20 @@ const defaultIncludes = {
 export async function getBestiary(id: Id, includeCreatures = false) {
 	if (!id)
 		return null;
-	try {
+	return await withDatabaseFallback(async () => {
 		log.log("database", `Reading bestiary with the id ${id}.`);
 		return await getPrismaClient().bestiary.findUnique({ where: { id }, include: includeCreatures ? { ...defaultIncludes, creatures: includeCreatures } : defaultIncludes });
-	}
-	catch (err) {
-		log.log("critical", err);
-		return null;
-	}
+	}, null);
 }
 export async function updateBestiary(data: BestiaryUpdateInput, id: Id) {
-	try {
+	return await withDatabaseFallback(async () => {
 		data.lastUpdated = new Date(Date.now());
 		log.log("database", `Updating bestiary with id ${id}`);
 		return (await getPrismaClient().bestiary.update({ where: { id }, data })).id;
-	}
-	catch (err) {
-		log.log("critical", err);
-		return null;
-	}
+	}, null);
 }
 export async function createBestiary(data: Omit<BestiaryCreateInput, "id" | "owner">, owner: User) {
-	try {
+	return await withDatabaseFallback(async () => {
 		data.lastUpdated = new Date(Date.now());
 		const id = uuid().replaceAll("-", "");
 		log.log("database", `Creating bestiary`);
@@ -50,18 +43,14 @@ export async function createBestiary(data: Omit<BestiaryCreateInput, "id" | "own
 		// Get next sorted index
 		const sortedIndex = ((await prisma.user.findUnique({ where: { id: owner.id }, select: { ordered: { orderBy: { index: "desc" }, take: 1 } } }))?.ordered[0]?.index ?? -1) + 1;
 		return (await prisma.bestiary.create({ data: { ...data, id, owner: { connect: { id: owner.id } }, orderedBy: { create: { user: { connect: { id: owner.id } }, index: sortedIndex } } } })).id;
-	}
-	catch (err) {
-		log.log("critical", err);
-		return null;
-	}
+	}, null);
 }
 export async function incrementBestiaryViewCount(id: Id) {
 	log.log("database", `Incrementing viewcount of bestiary with the id ${id}.`);
 	await getPrismaClient().bestiary.update({ where: { id }, data: { viewCount: { increment: 1 } } });
 }
 export async function deleteBestiary(bestiaryId: Id) {
-	try {
+	return await withDatabaseFallback(async () => {
 		log.log("database", `Deleting bestiary with the id ${bestiaryId}.`);
 		return await getPrismaClient().$transaction(async () => {
 			const bestiary = await getBestiary(bestiaryId);
@@ -70,15 +59,11 @@ export async function deleteBestiary(bestiaryId: Id) {
 			await getPrismaClient().bestiary.delete({ where: { id: bestiaryId } });
 			return true;
 		});
-	}
-	catch (err) {
-		log.log("critical", err);
-		return false;
-	}
+	}, false);
 }
 
 export async function getBestiariesByUser(userId: string) {
-	try {
+	return await withDatabaseFallback(async () => {
 		return await getPrismaClient().bestiary.findMany({
 			where: {
 				OR: [
@@ -88,41 +73,29 @@ export async function getBestiariesByUser(userId: string) {
 			},
 			include: { ...defaultIncludes, orderedBy: { where: { userId } } },
 		});
-	}
-	catch (err) {
-		log.log("critical", err);
-		return [];
-	}
+	}, []);
 }
 
 export async function getBestiariesByOwner(userId: string) {
-	try {
+	return await withDatabaseFallback(async () => {
 		return await getPrismaClient().bestiary.findMany({
 			where: { ownerId: userId },
 			include: defaultIncludes
 		});
-	}
-	catch (err) {
-		log.log("critical", err);
-		return [];
-	}
+	}, []);
 }
 
 export async function getPublicBestiariesByOwner(userId: string) {
-	try {
+	return await withDatabaseFallback(async () => {
 		return await getPrismaClient().bestiary.findMany({
 			where: { ownerId: userId, status: "public" },
 			include: defaultIncludes
 		});
-	}
-	catch (err) {
-		log.log("critical", err);
-		return [];
-	}
+	}, []);
 }
 
 export async function getBookmarkedBestiariesForUser(userId: string) {
-	try {
+	return await withDatabaseFallback(async () => {
 		const bookmarkIds = await getBestiaryBookmarkIdsForUser(userId);
 		if (!bookmarkIds.length)
 			return [];
@@ -136,104 +109,72 @@ export async function getBookmarkedBestiariesForUser(userId: string) {
 			},
 			include: defaultIncludes
 		});
-	}
-	catch (err) {
-		log.log("critical", err);
-		return [];
-	}
+	}, []);
 }
 
 export async function getBestiaryBookmarkIdsForUser(userId: string) {
-	try {
+	return await withDatabaseFallback(async () => {
 		const bookmarks = await getPrismaClient().userBestiaryBookmark.findMany({
 			where: { userId },
 			select: { bestiaryId: true }
 		});
 		return bookmarks.map(b => b.bestiaryId);
-	}
-	catch (err) {
-		log.log("critical", err);
-		return [];
-	}
+	}, []);
 }
 
 export async function addBestiaryEditor(bestiaryId: Id, userId: string) {
-	try {
+	return await withDatabaseFallback(async () => {
 		await getPrismaClient().bestiaryEditor.upsert({
 			where: { bestiaryId_userId: { bestiaryId, userId } },
 			update: {},
 			create: { bestiaryId, userId }
 		});
 		return true;
-	}
-	catch (err) {
-		log.log("critical", err);
-		return false;
-	}
+	}, false);
 }
 
 export async function removeBestiaryEditor(bestiaryId: Id, userId: string) {
-	try {
+	return await withDatabaseFallback(async () => {
 		await getPrismaClient().bestiaryEditor.deleteMany({
 			where: { bestiaryId, userId }
 		});
 		return true;
-	}
-	catch (err) {
-		log.log("critical", err);
-		return false;
-	}
+	}, false);
 }
 
 export async function getBestiaryEditorIds(bestiaryId: Id) {
-	try {
+	return await withDatabaseFallback(async () => {
 		const editors = await getPrismaClient().bestiaryEditor.findMany({
 			where: { bestiaryId },
 			select: { userId: true }
 		});
 		return editors.map(e => e.userId);
-	}
-	catch (err) {
-		log.log("critical", err);
-		return [];
-	}
+	}, []);
 }
 
 export async function isBestiaryEditor(bestiaryId: Id, userId: string) {
-	try {
+	return await withDatabaseFallback(async () => {
 		const count = await getPrismaClient().bestiaryEditor.count({
 			where: { bestiaryId, userId }
 		});
 		return count > 0;
-	}
-	catch (err) {
-		log.log("critical", err);
-		return false;
-	}
+	}, false);
 }
 
 export async function getBestiaryCreatureIds(bestiaryId: Id) {
-	try {
+	return await withDatabaseFallback(async () => {
 		const creatures = await getPrismaClient().creature.findMany({
 			where: { bestiaryId },
 			select: { id: true }
 		});
 		return creatures.map(c => c.id);
-	}
-	catch (err) {
-		log.log("critical", err);
-		return [];
-	}
+	}, []);
 }
 
 export async function getBestiaryCreatureCount(bestiaryId: Id) {
-	try {
+	return await withDatabaseFallback(async () => {
 		return await getPrismaClient().creature.count({
 			where: { bestiaryId }
 		});
-	}
-	catch (err) {
-		log.log("critical", err);
-		return 0;
-	}
+	}, 0);
 }

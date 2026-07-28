@@ -51,9 +51,7 @@ function validateAutomationCollectionInput(input: Partial<AutomationCollection> 
 
 // Automation collections
 app.post("/api/automation-collection/add", requireUser, async (req, res) => {
-	const user = req.body.user;
-	if (!user)
-		return res.status(404).json({ error: "Couldn't find current user." });
+	const user = req.user!;
 	const input = validateAutomationCollectionInput(req.body.data as Partial<AutomationCollection> | undefined);
 	if ("error" in input)
 		return res.status(400).json(input);
@@ -68,21 +66,19 @@ app.post("/api/automation-collection/add", requireUser, async (req, res) => {
 });
 
 app.get("/api/my-automation-collections", requireUser, async (req, res) => {
-	const user = req.body.user;
-	if (!user)
-		return res.status(404).json({ error: "Couldn't find current user." });
+	const user = req.user!;
 	return res.json(await automationCollections.getForUser(user.id));
 });
 
 app.get("/api/user/:userid/automation-collections", possibleUser, async (req, res) => {
-	const user = req.body.user;
+	const user = req.user;
 	if (user?.id === req.params.userid)
 		return res.json(await getAutomationCollectionsByOwner(user.id));
 	return res.json(await getPublicAutomationCollectionsByOwner(req.params.userid));
 });
 
 app.get("/api/automation-collection/:id", possibleUser, async (req, res) => {
-	const authorization = await automationCollections.authorize(req.params.id, req.body.user?.id ?? null, "view");
+	const authorization = await automationCollections.authorize(req.params.id, req.user?.id ?? null, "view");
 	if (!authorization.ok) {
 		if (authorization.reason === "collection-not-found")
 			return res.status(404).json({ error: "Automation collection not found." });
@@ -92,9 +88,7 @@ app.get("/api/automation-collection/:id", possibleUser, async (req, res) => {
 });
 
 app.post("/api/automation-collection/:id/update", requireUser, async (req, res) => {
-	const user = req.body.user;
-	if (!user)
-		return res.status(404).json({ error: "Couldn't find current user." });
+	const user = req.user!;
 	const authorization = await automationCollections.authorize(req.params.id, user.id, "edit");
 	if (!authorization.ok) {
 		if (authorization.reason === "collection-not-found")
@@ -114,9 +108,7 @@ app.post("/api/automation-collection/:id/update", requireUser, async (req, res) 
 });
 
 app.post("/api/automation-collection/:id/delete", requireUser, async (req, res) => {
-	const user = req.body.user;
-	if (!user)
-		return res.status(404).json({ error: "Couldn't find current user." });
+	const user = req.user!;
 	const result = await automationCollections.deleteCollection(req.params.id, user.id);
 	if (result.ok)
 		return res.json({});
@@ -128,9 +120,7 @@ app.post("/api/automation-collection/:id/delete", requireUser, async (req, res) 
 });
 
 app.post("/api/automation-collection/:collectionid/editors/add/:userid", requireUser, async (req, res) => {
-	const user = req.body.user;
-	if (!user)
-		return res.status(404).json({ error: "Couldn't find current user." });
+	const user = req.user!;
 	const result = await automationCollections.addEditor(req.params.collectionid, user.id, req.params.userid);
 	if (result.ok)
 		return res.json({});
@@ -145,9 +135,7 @@ app.post("/api/automation-collection/:collectionid/editors/add/:userid", require
 });
 
 app.post("/api/automation-collection/:collectionid/editors/remove/:userid", requireUser, async (req, res) => {
-	const user = req.body.user;
-	if (!user)
-		return res.status(404).json({ error: "Couldn't find current user." });
+	const user = req.user!;
 	const result = await automationCollections.removeEditor(req.params.collectionid, user.id, req.params.userid);
 	if (result.ok)
 		return res.json({});
