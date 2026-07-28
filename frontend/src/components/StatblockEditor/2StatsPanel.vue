@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import SimpleNumberInput from "../FormInputs/SimpleNumberInput.vue";
-import LabelledComponent from "../FormInputs/LabelledComponent.vue";
-import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
-import { statFullName } from "~/shared";
 import type { Statblock } from "~/shared";
-import { store } from "@/utils/store";
 import { $toast } from "@/utils/app/toast";
+import { store } from "@/utils/store";
+import { statFullName } from "~/shared";
+import LabelledComponent from "../FormInputs/LabelledComponent.vue";
+import SimpleNumberInput from "../FormInputs/SimpleNumberInput.vue";
+import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
 
 const { data } = defineProps<{ data: Statblock }>();
 

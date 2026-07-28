@@ -100,7 +100,7 @@ export const deepKeys = ["effects", "hit", "miss", "fail", "success", "onTrue", 
 
 type activation_types = {
 	[id in keyof Features]: number;
-};;
+}; ;
 export const activation_type: activation_types = {
 	features: 2,
 	actions: 1,

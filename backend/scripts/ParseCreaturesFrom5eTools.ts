@@ -1,8 +1,8 @@
+import type { Statblock } from "../../shared";
 import { writeFile } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseFrom5eTools } from "../logic/5eTools";
-import type { Statblock } from "../../shared";
 import data from "./input/5eToolsSRDCreatures2014.json";
 
 const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file

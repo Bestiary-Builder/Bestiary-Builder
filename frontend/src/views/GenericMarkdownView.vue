@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { useRoute } from "vue-router";
-import { nextTick, onMounted, ref, watch } from "vue";
-
 import markdownit from "markdown-it";
 import anchor from "markdown-it-anchor";
+
 import markdownItAttrs from "markdown-it-attrs";
+import { nextTick, onMounted, ref, watch } from "vue";
+import { useRoute } from "vue-router";
 import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 
 import { prefersReducedMotion } from "@/utils/utils";

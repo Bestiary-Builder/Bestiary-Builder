@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { useRouter } from "vue-router";
-import { onMounted, ref } from "vue";
-import Modal from "@/components/Global/Modal.vue";
-import BestiaryList from "@/components/Bestiary/BestiaryList.vue";
-import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
-import { $toast } from "@/utils/app/toast";
 import type { BestiaryExtended } from "~/shared";
-import { useFetch } from "@/utils/utils";
-import { $loading } from "@/utils/app/loading";
+import { onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
+import BestiaryList from "@/components/Bestiary/BestiaryList.vue";
 import ButtonIcon from "@/components/Global/ButtonIcon.vue";
+import Modal from "@/components/Global/Modal.vue";
+import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import { getUmami } from "@/utils/app/analytics";
+import { $loading } from "@/utils/app/loading";
+import { $toast } from "@/utils/app/toast";
+import { useFetch } from "@/utils/utils";
 
 const router = useRouter();
 

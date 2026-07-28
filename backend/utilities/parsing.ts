@@ -1,6 +1,7 @@
 /* eslint-disable regexp/no-misleading-capturing-group */
 /* eslint-disable regexp/no-super-linear-backtracking */
-import { type FeatureEntity, parseDescIntoAutomation } from "~/shared";
+import type { FeatureEntity } from "~/shared";
+import { parseDescIntoAutomation } from "~/shared";
 
 export function abilityParser(fData: any, activationType: number): [FeatureEntity[], string[]] {
 	const output = [] as FeatureEntity[];

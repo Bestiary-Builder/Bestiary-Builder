@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { useRouter } from "vue-router";
+import type { CreatureWithStats, Features, Statblock } from "~/shared";
 import { inject } from "vue";
+import { useRouter } from "vue-router";
 import Draggable from "vuedraggable";
-import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
+import { $toast } from "@/utils/app/toast";
+import { newFeatureGenerator } from "@/utils/constants";
+import { store } from "@/utils/store";
 import LabelledNumberInput from "../FormInputs/LabelledNumberInput.vue";
 import ButtonIcon from "../Global/ButtonIcon.vue";
+import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
 import { getDraggableKey } from "./utils";
-import type { CreatureWithStats, Features, Statblock } from "~/shared";
-import { newFeatureGenerator } from "@/utils/constants";
-import { $toast } from "@/utils/app/toast";
-import { store } from "@/utils/store";
 
 const { data, rawInfo } = defineProps<{ data: Statblock; rawInfo: CreatureWithStats | null }>();
 const $router = useRouter();

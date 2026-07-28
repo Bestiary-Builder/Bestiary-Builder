@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { type Ref, inject, onMounted, ref } from "vue";
+import type { Ref } from "vue";
+import type { Spell } from "~/shared";
+import { inject, onMounted, ref } from "vue";
+import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
+import { useFetch } from "@/utils/utils";
 import IntExpression from "./shared/IntExpression.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
-import { useFetch } from "@/utils/utils";
-import type { Spell } from "~/shared";
 
 const currentEffect = inject<Ref<Spell>>("currentEffect");
 

@@ -1,7 +1,7 @@
-import { getPrismaClient } from ".";
-import { log } from "@/utilities/logger";
 import type { Id } from "~/shared";
 import type { AutomationCollectionCreateInput, AutomationCreateInput, AutomationUpdateInput } from "~/shared/src/prisma-types";
+import { log } from "@/utilities/logger";
+import { getPrismaClient } from ".";
 
 type CreateAutomationData = Pick<AutomationCreateInput, "name" | "description" | "automation">;
 

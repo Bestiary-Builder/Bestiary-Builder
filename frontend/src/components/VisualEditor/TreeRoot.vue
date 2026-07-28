@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { type Ref, inject } from "vue";
-import { Icon } from "@iconify/vue";
-import TreeNode from "./TreeNode.vue";
-import EffectAdder from "./EffectAdder.vue";
+import type { Ref } from "vue";
 import type { AttackModel, EffectWithTarget } from "~/shared";
+import { Icon } from "@iconify/vue";
+import { inject } from "vue";
 import { store } from "@/utils/store";
+import EffectAdder from "./EffectAdder.vue";
+import TreeNode from "./TreeNode.vue";
 
 const { data, depth = 0, parentType = "root", rootType = "root", context = ["root"], noListAttack = false } = defineProps<{ data: AttackModel | AttackModel[]; depth?: number; parentType?: string; rootType?: "root" | "button" | "attack"; context?: string[]; noListAttack?: boolean }>();
 
@@ -36,7 +37,7 @@ const setAutomationEmpty = () => {
 	if (automation)
 		automation.value = null;
 };
-const currentEffect = inject<Ref<EffectWithTarget | AttackModel >>("currentEffect");
+const currentEffect = inject<Ref<EffectWithTarget | AttackModel>>("currentEffect");
 const currentContext = inject<Ref<string[]>>("currentContext");
 </script>
 

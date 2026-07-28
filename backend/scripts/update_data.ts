@@ -1,7 +1,7 @@
-import "dotenv/config";
+import type { Creature, Statblock } from "../../shared";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Prisma, PrismaClient } from "../../shared/src/prisma-types";
-import type { Creature, Statblock } from "../../shared";
+import "dotenv/config";
 
 const adapter = new PrismaPg({
 	connectionString: process.env.DATABASE_URL!,

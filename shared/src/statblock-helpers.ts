@@ -1,5 +1,5 @@
-import YAML from "yaml";
 import type { AttackModel, CasterSpells, FeatureEntity, InnateSpells, SenseEntity, SpeedEntity, SpellSlotList, Stat, Statblock } from "./types";
+import YAML from "yaml";
 
 export const SKILLS_BY_STAT = {
 	str: ["athletics", "strength"],

@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import type { User } from "~/shared";
 import { computed, onMounted, ref } from "vue";
 import Loading from "vue-loading-overlay";
-import { SupporterStatus, type User } from "~/shared";
 import { useFetch } from "@/utils/utils";
+import { SupporterStatus } from "~/shared";
 import "vue-loading-overlay/dist/css/index.css";
 
 const { id } = defineProps<{ id: string }>();

@@ -1,14 +1,14 @@
 /// <reference types="vitest" />
 
-import { URL, fileURLToPath } from "node:url";
-import svgLoader from "vite-svg-loader";
-
-import { defineConfig } from "vite";
+import { fileURLToPath, URL } from "node:url";
 import vue from "@vitejs/plugin-vue";
+
+import FontAwesome from "unplugin-vue-fontawesome/vite";
+import { defineConfig } from "vite";
 import Pages from "vite-plugin-pages";
 import generateSitemap from "vite-plugin-pages-sitemap";
-import FontAwesome from "unplugin-vue-fontawesome/vite";
 import rawloader from "vite-raw-plugin";
+import svgLoader from "vite-svg-loader";
 // @ts-expect-error Magic
 import { routes } from "../shared/";
 

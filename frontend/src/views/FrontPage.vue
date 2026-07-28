@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import type { GlobalStats } from "~/shared";
 import { onBeforeMount, ref } from "vue";
 import dataFile from "@/assets/documents/home.md";
 import Markdown from "@/components/Global/Markdown.vue";
 import { useFetch } from "@/utils/utils";
-import type { GlobalStats } from "~/shared";
 
 const stats = ref<null | GlobalStats>(null);
 onBeforeMount(async () => {
@@ -74,9 +74,7 @@ onBeforeMount(async () => {
 		h1 {
 			font-size: 12vw;
 			text-transform: uppercase;
-			font-family:
-				"Bebas Neue", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
-				"Helvetica Neue", sans-serif;
+			font-family: "Bebas Neue", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 			letter-spacing: 3px;
 		}
 	}

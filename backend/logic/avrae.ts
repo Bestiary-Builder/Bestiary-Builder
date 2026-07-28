@@ -1,7 +1,8 @@
+import type { InnateSpellsEntity, SkillsEntity, SpellCasting, Stat, Statblock } from "~/shared";
 import { app } from "@/utilities/constants";
-import { log } from "@/utilities/logger";
 import { getBestiary, getCreaturesByBestiary, incrementBestiaryViewCount } from "@/utilities/database";
-import { type InnateSpellsEntity, SKILLS_BY_STAT, type SkillsEntity, type SpellCasting, type Stat, type Statblock, crAsString, displayCasterCasting, displayInnateCasting, displaySpeedOrSenses, hpCalc, ppCalc, spellAttackBonus, spellDc, statCalc } from "~/shared";
+import { log } from "@/utilities/logger";
+import { crAsString, displayCasterCasting, displayInnateCasting, displaySpeedOrSenses, hpCalc, ppCalc, SKILLS_BY_STAT, spellAttackBonus, spellDc, statCalc } from "~/shared";
 
 // Export data
 app.get("/api/public/bestiary/:id", (req, res) => res.redirect(`/api/export/bestiary/${req.params.id}`));

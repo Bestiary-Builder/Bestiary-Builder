@@ -1,11 +1,11 @@
-import fetch from "node-fetch";
+import type { Response } from "express";
 
+import type { Statblock } from "~/shared";
+import fetch from "node-fetch";
 // Validate input
 import { createCheckers } from "ts-interface-checker";
-import type { Response } from "express";
 import { app } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
-import type { Statblock } from "~/shared";
 import { interfaceValidation, typeInterface } from "~/shared";
 
 app.post("/api/validate/automation", async (req, res) => {

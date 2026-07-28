@@ -1,9 +1,10 @@
-import "dotenv/config";
 import type { ObjectId } from "mongodb";
-import { MongoClient } from "mongodb";
+import type { AutomationCreateManyInput } from "../../shared/src/prisma-types";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { MongoClient } from "mongodb";
+import { BestiaryStatus, PrismaClient, SupporterStatus } from "../../shared/src/prisma-types";
 import { generateUserSecret } from "../utilities/constants";
-import { type AutomationCreateManyInput, BestiaryStatus, PrismaClient, SupporterStatus } from "../../shared/src/prisma-types";
+import "dotenv/config";
 
 /**
  * Standalone migration script:

@@ -1,10 +1,11 @@
-import { possibleUser } from "./login";
+import type { FeatureEntity, SaveEntity, Stat, Statblock } from "~/shared";
+import { app } from "@/utilities/constants";
+import { getBestiary, getCreature, getCreaturesByBestiary, incrementBestiaryViewCount } from "@/utilities/database";
+import { log } from "@/utilities/logger";
+import { capitalizeFirstLetter, displayCasterCasting, displayInnateCasting, displaySpeedOrSenses, hpCalc, ppCalc, SKILLS_BY_STAT, statCalc } from "~/shared";
 import { checkBestiaryPermission } from "./bestiaries";
 import { checkCreaturePermission } from "./creatures";
-import { app } from "@/utilities/constants";
-import { log } from "@/utilities/logger";
-import { getBestiary, getCreature, getCreaturesByBestiary, incrementBestiaryViewCount } from "@/utilities/database";
-import { type FeatureEntity, SKILLS_BY_STAT, type SaveEntity, type Stat, type Statblock, capitalizeFirstLetter, displayCasterCasting, displayInnateCasting, displaySpeedOrSenses, hpCalc, ppCalc, statCalc } from "~/shared";
+import { possibleUser } from "./login";
 
 app.get("/api/homebrewery/export/bestiary/:id", possibleUser, async (req, res) => {
 	try {
@@ -116,7 +117,7 @@ function formatSaves(creature: Statblock): string | undefined {
 			continue;
 
 		const mod = statCalc(saveName, creature) + creature.core.proficiencyBonus;
-		const value = saveInfo.override != null ? saveInfo.override : mod;
+		const value = saveInfo.override ?? mod;
 		output.push(`${capitalizeFirstLetter(saveName.toString())} ${value >= 0 ? "+" : "-"}${value}`);
 	}
 	return output.length > 0 ? output.join(", ") : undefined;

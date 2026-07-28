@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { type Ref, computed, inject } from "vue";
+import type { Ref } from "vue";
+import type { AttackInteraction, AttackModel, ButtonInteraction, EffectWithTarget, Features } from "~/shared";
 import { Icon } from "@iconify/vue";
-import { useRoute } from "vue-router";
 import { useWindowSize } from "@vueuse/core";
+import { computed, inject } from "vue";
+import { useRoute } from "vue-router";
+import { $toast } from "@/utils/app/toast";
 import { store } from "../../utils/store";
 import { activation_type, defaultNodes, displayNames } from "./util";
-import type { AttackInteraction, AttackModel, ButtonInteraction, EffectWithTarget, Features } from "~/shared";
-import { $toast } from "@/utils/app/toast";
 
 const props = defineProps<{ context: string[]; name?: string }>();
 const $route = useRoute();

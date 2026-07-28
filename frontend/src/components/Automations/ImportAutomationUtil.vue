@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import type { FeatureEntity, Id } from "~/shared";
 import { onMounted, ref } from "vue";
-import LabelledComponent from "../FormInputs/LabelledComponent.vue";
 import { $toast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
-import type { FeatureEntity, Id } from "~/shared";
+import LabelledComponent from "../FormInputs/LabelledComponent.vue";
 
 const emit = defineEmits<{
 	(e: "loadFeature", feature: FeatureEntity, apiPath: AutomationTypes): void;

@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import { computed, onMounted, ref } from "vue";
-import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
-import { useFetch } from "@/utils/utils";
 import type { AutomationDocumentation } from "~/shared";
-
+import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
+import { computed, onMounted, ref } from "vue";
 import Markdown from "@/components/Global/Markdown.vue";
+
+import { useFetch } from "@/utils/utils";
 
 const { nodeType } = defineProps<{ nodeType: string | null }>();
 

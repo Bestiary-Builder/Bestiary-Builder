@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from "vue";
-import { refDebounced } from "@vueuse/core";
-import { $toast } from "../utils/app/toast";
-import BestiaryList from "@/components/Bestiary/BestiaryList.vue";
 import type { BestiaryExtended, BestiaryWithCount } from "~/shared";
-import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
-import { useFetch } from "@/utils/utils";
-import { store } from "@/utils/store";
-import { $loading } from "@/utils/app/loading";
+import { refDebounced } from "@vueuse/core";
+import { onMounted, ref, watch } from "vue";
+import BestiaryList from "@/components/Bestiary/BestiaryList.vue";
 import ButtonIcon from "@/components/Global/ButtonIcon.vue";
+import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import { getUmami } from "@/utils/app/analytics";
+import { $loading } from "@/utils/app/loading";
+import { store } from "@/utils/store";
+import { useFetch } from "@/utils/utils";
+import { $toast } from "../utils/app/toast";
 
 onMounted(async () => {
 	const loader = $loading.show();
@@ -60,8 +60,8 @@ const getBookmarkedBestiaries = async () => {
 	}
 };
 
-watch(selectedPage, () => searchBestiaries());
-watch(selectedTags, () => searchBestiaries());
+watch(selectedPage, async () => searchBestiaries());
+watch(selectedTags, async () => searchBestiaries());
 watch(viewMode, async (newValue) => {
 	if (newValue !== "Bookmarked") {
 		const loader = $loading.show();
@@ -74,7 +74,7 @@ watch(viewMode, async (newValue) => {
 		loader.hide();
 	}
 });
-watch(debouncedSearch, () => searchBestiaries());
+watch(debouncedSearch, async () => searchBestiaries());
 </script>
 
 <template>

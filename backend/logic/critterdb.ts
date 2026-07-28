@@ -1,12 +1,12 @@
+import type { CasterSpells, InnateSpellsEntity, SenseEntity, SkillsEntity, SpeedEntity, SpellCasting, SpellSlotList, Stat, Statblock } from "~/shared";
 import fetch from "node-fetch";
-import { spellListFlattened } from "./staticData";
 import { app } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
 
-// Parsing
-import { type CasterSpells, type InnateSpellsEntity, type SenseEntity, type SkillsEntity, type SpeedEntity, type SpellCasting, type SpellSlotList, type Stat, type Statblock, capitalizeFirstLetter, defaultStatblock } from "~/shared";
 import { abilityParser } from "@/utilities/parsing";
-import { SKILLS_BY_STAT } from "~/shared";
+// Parsing
+import { capitalizeFirstLetter, defaultStatblock, SKILLS_BY_STAT } from "~/shared";
+import { spellListFlattened } from "./staticData";
 
 app.get("/api/critterdb/:id/:published", async (req, res) => {
 	try {
@@ -160,7 +160,7 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: string]
 				}
 				else if (s.toLowerCase().includes("blind")) {
 					name = "Blindsight";
-					isBlind = !!(data.stats.senses ?? []).find((str: string) => str.includes("blind beyond this radius"));
+					isBlind = data.stats.senses ?? [].some((str: string) => str.includes("blind beyond this radius"));
 				}
 				else if (s.toLowerCase().includes("true")) {
 					name = "Truesight";
@@ -538,7 +538,7 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: string]
 		log.log("info", true);
 
 		for (const a of data.stats.actions) {
-			if (a.name.toLowerCase().includes("innate spellcasting") || (a.name.toLowerCase().includes("spellcasting") && !a.description.match(/(\d+)[stndrh]{2}-level/)) || (a.name.toLowerCase().includes("spellcasting") && a.description.toLowerCase().includes("casts one of the following spells"))) {
+			if (a.name.toLowerCase().includes("innate spellcasting") || (a.name.toLowerCase().includes("spellcasting") && !/\d+[stndrh]{2}-level/.test(a.description)) || (a.name.toLowerCase().includes("spellcasting") && a.description.toLowerCase().includes("casts one of the following spells"))) {
 				sData = a.description;
 				isPsionics = a.name.toLowerCase().includes("psionics");
 				displayAsAction = true;
@@ -547,7 +547,7 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: string]
 
 		if (!sData) {
 			for (const a of data.stats.additionalAbilities) {
-				if (a.name.toLowerCase().includes("innate spellcasting") || (a.name.toLowerCase().includes("spellcasting") && !a.description.match(/(\d+)[stndrh]{2}-level/)) || (a.name.toLowerCase().includes("spellcasting") && a.description.toLowerCase().includes("casts one of the following spells"))) {
+				if (a.name.toLowerCase().includes("innate spellcasting") || (a.name.toLowerCase().includes("spellcasting") && !/\d+[stndrh]{2}-level/.test(a.description)) || (a.name.toLowerCase().includes("spellcasting") && a.description.toLowerCase().includes("casts one of the following spells"))) {
 					sData = a.description;
 					isPsionics = a.name.toLowerCase().includes("psionics");
 					if ((a.name.toLowerCase().includes("spellcasting") && a.description.toLowerCase().includes("casts one of the following spells"))) {

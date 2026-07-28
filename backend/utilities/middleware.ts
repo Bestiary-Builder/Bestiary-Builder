@@ -1,13 +1,13 @@
 // Setup express settings
 import type { NextFunction, Request, Response } from "express";
-import express from "express";
-import helmet from "helmet";
-import rateLimit from "express-rate-limit";
-import cors from "cors";
 import compression from "compression";
 import cookieParser from "cookie-parser";
-import { log } from "./logger";
+import cors from "cors";
+import express from "express";
+import rateLimit from "express-rate-limit";
+import helmet from "helmet";
 import { app, isProduction } from "./constants";
+import { log } from "./logger";
 
 // Function to run on all requests
 app.use(async (req, res, next) => {

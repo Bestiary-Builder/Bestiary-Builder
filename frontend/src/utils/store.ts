@@ -1,8 +1,8 @@
-import { reactive, watch } from "vue";
-import { useWindowSize } from "@vueuse/core";
-import { useFetch } from "./utils";
-import { getUmami } from "./app/analytics";
 import type { User } from "~/shared";
+import { useWindowSize } from "@vueuse/core";
+import { reactive, watch } from "vue";
+import { getUmami } from "./app/analytics";
+import { useFetch } from "./utils";
 
 const user = useFetch<User>("/api/user").then(async (result) => {
 	if (result.success) {
@@ -44,8 +44,11 @@ watch(width, () => {
 });
 
 export const store = reactive({
+	// eslint-disable-next-line antfu/no-top-level-await
 	user: await user,
+	// eslint-disable-next-line antfu/no-top-level-await
 	tags: await tags,
+	// eslint-disable-next-line antfu/no-top-level-await
 	limits: await asyncLimits,
 	isMobile: width.value < 900,
 });

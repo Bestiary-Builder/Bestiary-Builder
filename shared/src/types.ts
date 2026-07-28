@@ -3,11 +3,8 @@ import type { Statblock } from "./build-types";
 
 export type Id = string;
 
-// Built types
-export * from "./build-types";
-
 // Database types
-export { SupporterStatus, BestiaryStatus } from "../prisma/enums";
+export { BestiaryStatus, SupporterStatus } from "../prisma/enums";
 export type User = Omit<Prisma.UserModel, "secret">;
 export type Bestiary = Prisma.BestiaryModel;
 export type BestiaryEditor = Prisma.BestiaryEditorModel;
@@ -34,6 +31,9 @@ export interface AutomationDocumentationEntity {
 export interface AutomationDocumentation { [key: string]: AutomationDocumentationEntity }
 
 export type AutomationWithType = Omit<Automation, "automation"> & { automation: null | Record<string, unknown> };
+
+// Built types
+export * from "./build-types";
 
 // Frontend types
 export const defaultStatblock: Statblock = {

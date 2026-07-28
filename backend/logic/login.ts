@@ -1,9 +1,9 @@
-import fetch from "node-fetch";
-import jwt from "jsonwebtoken";
 import type { NextFunction, Request, Response } from "express";
+import jwt from "jsonwebtoken";
+import fetch from "node-fetch";
 import { app, isProduction } from "@/utilities/constants";
-import { log } from "@/utilities/logger";
 import { getUserFromSecret, updateUser } from "@/utilities/database";
+import { log } from "@/utilities/logger";
 
 app.head("/api/login", async (req, res) => {
 	return res.sendStatus(200);
@@ -68,7 +68,7 @@ app.get("/api/login", async (req, res) => {
 			const token = jwt.sign({ id: secret }, process.env.JWTKEY ?? "key", {
 				expiresIn: "7d"
 			});
-			res.cookie("userToken", token, { expires: new Date(new Date().getTime() + 60 * 60 * 1000 * 24 * 7), sameSite: "strict", secure: true, httpOnly: true });
+			res.cookie("userToken", token, { expires: new Date(Date.now() + 60 * 60 * 1000 * 24 * 7), sameSite: "strict", secure: true, httpOnly: true });
 			log.info(`User with the id ${userResult.id} logged in`);
 			// Get route cooklie
 			const route = req.cookies.route ?? "/";

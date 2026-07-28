@@ -1,15 +1,15 @@
+import type { Automation, BestiaryStatus, Id, Statblock, User } from "~/shared";
 // Express app
 import crypto from "node:crypto";
-import express from "express";
 
 // Secrets:
 
-// Import badwords
-import "./badwords";
+import express from "express";
 
 // Limits
 import l from "@/staticData/limits.json";
-import type { Automation, BestiaryStatus, Id, Statblock, User } from "~/shared";
+// Import badwords
+import "./badwords";
 
 export const app = express();
 

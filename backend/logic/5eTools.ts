@@ -1,9 +1,10 @@
+import type { CasterSpells, InnateSpellsList, SenseEntity, SkillsEntity, SpeedEntity, SpellSlotList, Stat, Statblock } from "~/shared";
 import splitOnFirst from "split-on-first";
-import { spellListFlattened } from "./staticData";
-import { type CasterSpells, type InnateSpellsList, SKILLS_BY_STAT, type SenseEntity, type SkillsEntity, type SpeedEntity, type SpellSlotList, type Stat, type Statblock, capitalizeFirstLetter, defaultStatblock, getXPbyCR } from "~/shared";
-import { abilityParser, markdownReplacer } from "@/utilities/parsing";
 import { app } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
+import { abilityParser, markdownReplacer } from "@/utilities/parsing";
+import { capitalizeFirstLetter, defaultStatblock, getXPbyCR, SKILLS_BY_STAT } from "~/shared";
+import { spellListFlattened } from "./staticData";
 
 app.post("/api/5etools-import", async (req, res) => {
 	try {
@@ -109,7 +110,7 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 				}
 				else if (s.toLowerCase().includes("blind")) {
 					name = "Blindsight";
-					isBlind = !!(data.senses ?? []).find((str: string) => str.includes("blind beyond this radius"));
+					isBlind = data.senses ?? [].some((str: string) => str.includes("blind beyond this radius"));
 				}
 				else if (s.toLowerCase().includes("true")) {
 					name = "Truesight";

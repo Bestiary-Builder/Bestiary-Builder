@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { store } from "@/utils/store";
-import { useFetch } from "@/utils/utils";
-import { $loading } from "@/utils/app/loading";
 import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import { getUmami } from "@/utils/app/analytics";
+import { $loading } from "@/utils/app/loading";
+import { store } from "@/utils/store";
+import { useFetch } from "@/utils/utils";
 
 const status = ref(0);
 const errorMsg = ref("");

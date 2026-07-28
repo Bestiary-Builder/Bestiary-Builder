@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { RouterLink } from "vue-router";
-import { computed } from "vue";
-import Draggable from "vuedraggable";
-import ButtonIcon from "../Global/ButtonIcon.vue";
-import UserBanner from "@/components/Bestiary/UserBanner.vue";
-import StatusIcon from "@/components/Bestiary/StatusIcon.vue";
 import type { BestiaryExtended } from "~/shared";
+import { computed } from "vue";
+import { RouterLink } from "vue-router";
+import Draggable from "vuedraggable";
+import StatusIcon from "@/components/Bestiary/StatusIcon.vue";
+import UserBanner from "@/components/Bestiary/UserBanner.vue";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
+import ButtonIcon from "../Global/ButtonIcon.vue";
 
 const props = defineProps<{ personal: boolean; bestiaries: BestiaryExtended[] }>();
 

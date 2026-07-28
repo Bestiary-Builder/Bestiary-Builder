@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { type Ref, inject } from "vue";
+import type { Ref } from "vue";
+import type { AttackInteraction } from "~/shared";
+import { inject } from "vue";
+import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
-import type { AttackInteraction } from "~/shared";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 
 const currentEffect = inject<Ref<AttackInteraction>>("currentEffect");
 useDataCleanup(currentEffect, ["defaultAttackBonus", "defaultCastingMod", "defaultDC"], { attack: ["activation_type", "criton", "extra_crit_damage", "phrase", "proper", "thumb", "verb"] });

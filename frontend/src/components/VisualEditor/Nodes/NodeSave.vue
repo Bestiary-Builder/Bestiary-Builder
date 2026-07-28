@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { type Ref, inject, watch } from "vue";
-import SectionHeader from "./shared/SectionHeader.vue";
-import { useDataCleanup } from "./shared/utils";
-import IntExpression from "./shared/IntExpression.vue";
+import type { Ref } from "vue";
+import type { Save } from "~/shared";
+import { inject, watch } from "vue";
 import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import { fullStatNames } from "@/utils/constants";
-import type { Save } from "~/shared";
+import IntExpression from "./shared/IntExpression.vue";
+import SectionHeader from "./shared/SectionHeader.vue";
+import { useDataCleanup } from "./shared/utils";
 
 const currentEffect = inject<Ref<Save>>("currentEffect");
 

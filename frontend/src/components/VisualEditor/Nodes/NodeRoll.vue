@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { type Ref, inject, onBeforeUnmount, watch } from "vue";
+import type { Ref } from "vue";
+import type { Roll } from "~/shared";
+import { inject, onBeforeUnmount, watch } from "vue";
+import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
+import AnnotatedString from "./shared/AnnotatedString.vue";
 import HigherLevels from "./shared/HigherLevels.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
-import AnnotatedString from "./shared/AnnotatedString.vue";
 import { useDataCleanup } from "./shared/utils";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
-import type { Roll } from "~/shared";
 
 const currentEffect = inject<Ref<Roll>>("currentEffect");
 

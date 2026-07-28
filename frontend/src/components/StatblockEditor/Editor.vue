@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { shallowRef, useTemplateRef } from "vue";
-import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
 import type * as Monaco from "monaco-editor";
+import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
 import { useResizeObserver } from "@vueuse/core";
+import { shallowRef, useTemplateRef } from "vue";
 import ButtonIcon from "../Global/ButtonIcon.vue";
 
 const { height = 250 } = defineProps<{ height?: number }>();
@@ -140,8 +140,8 @@ function toggleMarkdown(
 	);
 
 	const hasMarkers
-	= before === marker
-		&& after === marker;
+		= before === marker
+			&& after === marker;
 
 	if (hasMarkers) {
 		// Remove markers

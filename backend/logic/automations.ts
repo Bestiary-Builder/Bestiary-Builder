@@ -1,10 +1,11 @@
-import { requireUser } from "./login";
-import { app, checkAutomationLimits } from "@/utilities/constants";
-import { log } from "@/utilities/logger";
-import { createAutomation, createAutomationCollection, deleteAutomation, getAutomation, getAutomationCollection, getAutomationCollectionsByOwner, getAutomationsByCollectionIds, updateAutomation } from "@/utilities/database";
 import type { Automation, AutomationCollection, Id } from "~/shared";
-import { type AutomationCreateInput, Prisma } from "~/shared/src/prisma-types";
+import type { AutomationCreateInput } from "~/shared/src/prisma-types";
 import { checkBadwords } from "@/utilities/badwords";
+import { app, checkAutomationLimits } from "@/utilities/constants";
+import { createAutomation, createAutomationCollection, deleteAutomation, getAutomation, getAutomationCollection, getAutomationCollectionsByOwner, getAutomationsByCollectionIds, updateAutomation } from "@/utilities/database";
+import { log } from "@/utilities/logger";
+import { Prisma } from "~/shared/src/prisma-types";
+import { requireUser } from "./login";
 
 async function canAccessAutomation(automation: Automation, userId: Id) {
 	const collection = await getAutomationCollection(automation.collectionId);

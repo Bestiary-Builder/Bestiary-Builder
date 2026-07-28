@@ -1,12 +1,12 @@
-import { possibleUser, requireUser } from "./login";
-import { checkBestiaryPermission } from "./bestiaries";
-import { validateCreatureInput } from "./validation";
-import { app, checkCreatureAmountLimit, checkCreatureLimits, limits } from "@/utilities/constants";
-import { log } from "@/utilities/logger";
-import { createCreature, deleteCreature, getBestiary, getBestiaryCreatureCount, getCreature, getCreaturesByBestiary, getPrismaClient, updateCreature } from "@/utilities/database";
 import type { Creature, Statblock, User } from "~/shared";
-import { defaultStatblock } from "~/shared";
 import { checkBadwords } from "@/utilities/badwords";
+import { app, checkCreatureAmountLimit, checkCreatureLimits, limits } from "@/utilities/constants";
+import { createCreature, deleteCreature, getBestiary, getBestiaryCreatureCount, getCreature, getCreaturesByBestiary, getPrismaClient, updateCreature } from "@/utilities/database";
+import { log } from "@/utilities/logger";
+import { defaultStatblock } from "~/shared";
+import { checkBestiaryPermission } from "./bestiaries";
+import { possibleUser, requireUser } from "./login";
+import { validateCreatureInput } from "./validation";
 
 // Check creature permissions
 export async function checkCreaturePermission(creature: Creature, user: User | null) {

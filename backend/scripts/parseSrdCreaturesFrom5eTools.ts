@@ -1,11 +1,11 @@
+import type { Features } from "../../shared";
 // this script imports a list of 5etools creatures into Bestiary Builder data.
 // It will attempt to add SRD automation from Avrae to the creature, matching by name
 // Use export5eToolsData.js to get bulk data from 5e.tools.
 import { writeFile } from "node:fs";
 import path from "node:path";
-import features from "../staticData/2014/SRDAttacks2014.json";
 import { parseFrom5eTools } from "../logic/5eTools";
-import type { Features } from "../../shared";
+import features from "../staticData/2014/SRDAttacks2014.json";
 import data from "./input/5eToolsSRDCreatures2014.json";
 
 export const activationTypeToDataKey: Record<number, keyof Features> = {

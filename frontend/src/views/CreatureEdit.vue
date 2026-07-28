@@ -1,20 +1,15 @@
 <script setup lang="ts">
+import type { BestiaryExtended, CreatureWithStats, Statblock } from "~/shared";
+import { Shimmer } from "@shimmer-from-structure/vue";
+import html2canvas from "html2canvas";
 import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
-import html2canvas from "html2canvas";
-import { Shimmer } from "@shimmer-from-structure/vue";
-import { $toast, htmlToast } from "@/utils/app/toast";
-import Modal from "@/components/Global/Modal.vue";
-import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
-import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
-import type { BestiaryExtended, CreatureWithStats, Statblock } from "~/shared";
-import { defaultStatblock } from "~/shared";
-import { useFetch } from "@/utils/utils";
-import { store } from "@/utils/store";
-import { $loading } from "@/utils/app/loading";
 import CopyManager from "@/components/Bestiary/CopyManager.vue";
+import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import ButtonIcon from "@/components/Global/ButtonIcon.vue";
+import Modal from "@/components/Global/Modal.vue";
+import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
+import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
 import DescriptionPanel from "@/components/StatblockEditor/0DescriptionPanel.vue";
 import CorePanel from "@/components/StatblockEditor/1CorePanel.vue";
 import StatsPanel from "@/components/StatblockEditor/2StatsPanel.vue";
@@ -22,6 +17,11 @@ import DefensesPanel from "@/components/StatblockEditor/3DefensesPanel.vue";
 import FeaturesPanel from "@/components/StatblockEditor/4FeaturesPanel.vue";
 import SpellcastingPanel from "@/components/StatblockEditor/5SpellcastingPanel.vue";
 import { getUmami } from "@/utils/app/analytics";
+import { $loading } from "@/utils/app/loading";
+import { $toast, htmlToast } from "@/utils/app/toast";
+import { store } from "@/utils/store";
+import { useFetch } from "@/utils/utils";
+import { defaultStatblock } from "~/shared";
 
 const $route = useRoute();
 const $router = useRouter();
@@ -168,7 +168,7 @@ const import5etools = async () => {
 		$toast.success(`Successfully imported ${data.value.description.name}`);
 		getUmami()?.track("Import creature from 5eTools");
 	}
-	catch (e) {
+	catch {
 		$toast.error("Failed to import this creature");
 	}
 };

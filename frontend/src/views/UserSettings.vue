@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import { reactive, ref } from "vue";
+import type { Bestiary, Statblock } from "~/shared";
 import { useLocalStorage } from "@vueuse/core";
+import { reactive, ref } from "vue";
+import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
+import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
+import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
+import SectionHeader from "@/components/VisualEditor/Nodes/shared/SectionHeader.vue";
+import { getUmami } from "@/utils/app/analytics";
+import { $toast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { sendToLogin, useFetch } from "@/utils/utils";
-import { type Bestiary, type Statblock, SupporterStatus } from "~/shared";
-import { $toast } from "@/utils/app/toast";
-import SectionHeader from "@/components/VisualEditor/Nodes/shared/SectionHeader.vue";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
-import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
-import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
-import { getUmami } from "@/utils/app/analytics";
+import { SupporterStatus } from "~/shared";
 
 const logoutClick = async () => {
 	const { success, error } = await useFetch("/api/logout");

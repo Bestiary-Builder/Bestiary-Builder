@@ -1,12 +1,13 @@
 <script setup lang="ts">
+import type { Statblock } from "~/shared";
 import { watch } from "vue";
+import { alignments, creatureTypes, sizes } from "@/utils/constants";
+import { store } from "@/utils/store";
+import { getXPbyCR } from "~/shared";
+import CRInput from "../FormInputs/CRInput.vue";
 import LabelledComponent from "../FormInputs/LabelledComponent.vue";
 import LabelledNumberInput from "../FormInputs/LabelledNumberInput.vue";
-import CRInput from "../FormInputs/CRInput.vue";
 import Editor from "./Editor.vue";
-import { type Statblock, getXPbyCR } from "~/shared";
-import { store } from "@/utils/store";
-import { alignments, creatureTypes, sizes } from "@/utils/constants";
 
 const { data } = defineProps<{ data: Statblock }>();
 

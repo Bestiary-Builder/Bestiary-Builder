@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { computed, onMounted } from "vue";
+import type { SaveEntity, SkillsEntity, Stat, Statblock } from "~/shared";
+import type { StatblockDesign } from "~/shared/prisma/enums";
+import { Document } from "@tiptap/extension-document";
 import { Markdown, MarkdownManager } from "@tiptap/markdown";
 import StarterKit from "@tiptap/starter-kit";
 import { generateHTML } from "@tiptap/vue-3";
-import { Document } from "@tiptap/extension-document";
 import { marked } from "marked";
-import HangingList from "../StatblockEditor/HangingList";
-import type { SaveEntity, SkillsEntity, Stat, Statblock } from "~/shared";
-import { SKILLS_BY_STAT, capitalizeFirstLetter, crAsString, displayCasterCasting, displayInnateCasting, displaySpeedOrSenses, hpCalc, ppCalc, signedNumber, statCalc } from "~/shared";
+import { computed, onMounted } from "vue";
 import { featureGenerator, resistanceGenerator, stats } from "@/utils/constants";
 import { store } from "@/utils/store";
-import type { StatblockDesign } from "~/shared/prisma/enums";
+import { capitalizeFirstLetter, crAsString, displayCasterCasting, displayInnateCasting, displaySpeedOrSenses, hpCalc, ppCalc, signedNumber, SKILLS_BY_STAT, statCalc } from "~/shared";
+import HangingList from "../StatblockEditor/HangingList";
 
 const { data, statblockDesign = null, is2024 = null } = defineProps<{ data: Statblock; statblockDesign?: StatblockDesign; is2024?: boolean }>();
 
@@ -185,7 +185,7 @@ const manager = new MarkdownManager({
 	extensions,
 });
 
-const render = (str: string, inline?: boolean) => {
+const render = async (str: string, inline?: boolean) => {
 	try {
 		let markdown = str
 			.replaceAll("&emsp;", "\u2003")
@@ -195,7 +195,7 @@ const render = (str: string, inline?: boolean) => {
 			markdown = markdown.replaceAll(/(?<!\n)\n(?!\n)/g, "\n\n");
 
 		if (inline)
-			return marked.parseInline(markdown);
+			return await marked.parseInline(markdown);
 		const json = manager.parse(markdown);
 		return generateHTML(json, extensions);
 	}

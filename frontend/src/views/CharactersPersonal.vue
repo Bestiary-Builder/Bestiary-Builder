@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { useLocalStorage } from "@vueuse/core";
 import { onMounted, ref } from "vue";
+import CharacterTile from "@/components/Characters/CharacterTile.vue";
+import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import ButtonIcon from "@/components/Global/ButtonIcon.vue";
 import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
+import { getUmami } from "@/utils/app/analytics";
 import { $toast } from "@/utils/app/toast";
 import { useFetch } from "@/utils/utils";
-import { getUmami } from "@/utils/app/analytics";
-import CharacterTile from "@/components/Characters/CharacterTile.vue";
 
 const AvraeToken = useLocalStorage("AvraeToken", "");
 

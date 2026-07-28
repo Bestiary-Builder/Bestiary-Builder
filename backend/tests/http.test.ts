@@ -1,7 +1,7 @@
 import { expect, it } from "vitest";
 
-import "../server";
 import { defaultStatblock } from "~/shared";
+import "../server";
 
 const baseURL = `http://localhost:${process.env.port ?? "5000"}`;
 

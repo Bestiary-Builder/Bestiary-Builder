@@ -14,6 +14,11 @@ export default antfu(
 			tsconfigPath: ["tsconfig.json", "tsconfig.app.json", "tsconfig.node.json"],
 			filesTypeAware: ["**\/*.{ts,vue}"],
 		},
+		languageOptions: {
+			parserOptions: {
+				projectService: true,
+			},
+		},
 		// stylistic eslint plugin
 		stylistic: {
 			indent: "tab", // 4, or 'tab'
@@ -45,7 +50,8 @@ export default antfu(
 			"no-throw-literal": "off",
 			"ts/only-throw-error": "off",
 			"ts/no-throw-literal": "off",
-			"ts/no-misused-promises": "off"
+			"ts/no-misused-promises": "off",
+			"ts/strict-boolean-expressions": "off"
 		},
 	},
 );

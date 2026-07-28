@@ -1,7 +1,7 @@
-import { getPrismaClient } from ".";
-import { log } from "@/utilities/logger";
 import type { Id } from "~/shared";
 import type { Creature, CreatureCreateInput, CreatureCreateManyInput } from "~/shared/src/prisma-types";
+import { log } from "@/utilities/logger";
+import { getPrismaClient } from ".";
 
 // Creature functions
 export async function getCreature(id: Id) {

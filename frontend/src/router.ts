@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory } from "vue-router";
-import { $toast } from "./utils/app/toast";
-import { store } from "./utils/store";
+import fileRoutes from "~pages";
+import { sendToLogin } from "@/utils/utils";
 // @ts-expect-error Comes in from vite-plugin-pages
 
-import fileRoutes from "~pages";
 import { routes as sharedRoutes } from "~/shared";
-import { sendToLogin } from "@/utils/utils";
+import { $toast } from "./utils/app/toast";
+import { store } from "./utils/store";
 
 const routes = sharedRoutes.routes.map((route) => {
 	return {

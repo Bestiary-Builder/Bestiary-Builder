@@ -1,5 +1,7 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 
+import { faDiscord, faGithub, faPatreon } from "@fortawesome/free-brands-svg-icons";
+import { faClipboard, faImage } from "@fortawesome/free-regular-svg-icons";
 import {
 	fa1,
 	fa2,
@@ -47,8 +49,6 @@ import {
 	faWandSparkles,
 	faXmark
 } from "@fortawesome/free-solid-svg-icons";
-import { faDiscord, faGithub, faPatreon } from "@fortawesome/free-brands-svg-icons";
-import { faClipboard, faImage } from "@fortawesome/free-regular-svg-icons";
 
 library.add(
 	faArrowRightFromBracket,

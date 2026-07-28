@@ -1,17 +1,15 @@
-import { createCheckers } from "ts-interface-checker";
-import { possibleUser, requireUser } from "./login";
-import { colors, publicLog } from "./discord";
-import { app, checkBestiaryLimits, checkCreatureAmountLimit, checkCreatureLimits, limits } from "@/utilities/constants";
-import { log } from "@/utilities/logger";
-import { addBestiaryEditor, addBookmark, createBestiary, createCreatures, deleteBestiary, getBestiariesByOwner, getBestiariesByUser, getBestiary, getBestiaryCreatureCount, getPrismaClient, getPublicBestiariesByOwner, getUser, incrementBestiaryViewCount, isBestiaryBookmarked, isBestiaryEditor, removeBestiaryEditor, removeBookmark, updateBestiary } from "@/utilities/database";
-import { type Statblock, type User, defaultStatblock } from "~/shared";
+import type { Statblock, User } from "~/shared";
 import type { Bestiary, BestiaryCreateInput, BestiaryStatus, Creature } from "~/shared/src/prisma-types";
-
+import { createCheckers } from "ts-interface-checker";
 import tags from "@/staticData/tags.json";
-
-// Validate inputs
-import { typeInterface } from "~/shared";
 import { checkBadwords } from "@/utilities/badwords";
+import { app, checkBestiaryLimits, checkCreatureAmountLimit, checkCreatureLimits, limits } from "@/utilities/constants";
+import { addBestiaryEditor, addBookmark, createBestiary, createCreatures, deleteBestiary, getBestiariesByOwner, getBestiariesByUser, getBestiary, getBestiaryCreatureCount, getPrismaClient, getPublicBestiariesByOwner, getUser, incrementBestiaryViewCount, isBestiaryBookmarked, isBestiaryEditor, removeBestiaryEditor, removeBookmark, updateBestiary } from "@/utilities/database";
+import { log } from "@/utilities/logger";
+import { defaultStatblock, typeInterface } from "~/shared";
+
+import { colors, publicLog } from "./discord";
+import { possibleUser, requireUser } from "./login";
 
 // Permission checks
 export async function checkBestiaryPermission(bestiary: Bestiary, user: User | null): Promise<"none" | "view" | "owner" | "editor"> {

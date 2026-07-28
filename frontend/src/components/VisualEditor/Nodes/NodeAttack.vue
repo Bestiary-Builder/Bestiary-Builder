@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { type Ref, inject, onUnmounted, ref, watch } from "vue";
+import type { Ref } from "vue";
+import type { Attack } from "~/shared";
+import { inject, onUnmounted, ref, watch } from "vue";
+import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import IntExpression from "./shared/IntExpression.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
-import type { Attack } from "~/shared";
 
 const currentEffect = inject<Ref<Attack>>("currentEffect");
 const _currentContext = inject<Ref<string[]>>("currentContext");

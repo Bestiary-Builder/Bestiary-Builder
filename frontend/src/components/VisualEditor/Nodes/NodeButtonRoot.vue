@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { type Ref, inject, ref, watch } from "vue";
+import type { Ref } from "vue";
+import type { ButtonInteraction } from "~/shared";
+import { inject, ref, watch } from "vue";
+import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
+import IntExpression from "./shared/IntExpression.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
-import IntExpression from "./shared/IntExpression.vue";
-import type { ButtonInteraction } from "~/shared";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 
 const currentEffect = inject<Ref<ButtonInteraction>>("currentEffect");
 

@@ -1,8 +1,8 @@
-import { requireUser } from "./login";
-import { app } from "@/utilities/constants";
-import { log } from "@/utilities/logger";
-import { getBookmarkedBestiariesForUser, getPrismaClient, getUser, resetUserCache } from "@/utilities/database";
 import type { User } from "~/shared";
+import { app } from "@/utilities/constants";
+import { getBookmarkedBestiariesForUser, getPrismaClient, getUser, resetUserCache } from "@/utilities/database";
+import { log } from "@/utilities/logger";
+import { requireUser } from "./login";
 
 app.get("/api/user/bookmarks", requireUser, async (req, res) => {
 	try {

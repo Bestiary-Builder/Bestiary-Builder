@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { nextTick, onMounted, onUnmounted, ref, useId, watch } from "vue";
 import { useFocusTrap } from "@vueuse/integrations/useFocusTrap";
+import { nextTick, onMounted, onUnmounted, ref, useId, watch } from "vue";
 
 const { show, fullScreen = false } = defineProps<{ show: boolean; fullScreen?: boolean }>();
 

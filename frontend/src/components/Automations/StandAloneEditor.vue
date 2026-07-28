@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, shallowRef, watch } from "vue";
+import type { AttackModel, AutomationDocumentation, AutomationWithType, FeatureEntity } from "~/shared";
 import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
+import { computed, onMounted, onUnmounted, ref, shallowRef, watch } from "vue";
 import YAML from "yaml";
-import { useParityHelper } from "./useParityHelpers";
 import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import Markdown from "@/components/Global/Markdown.vue";
-import { useFetch } from "@/utils/utils";
 import { $toast, htmlToast } from "@/utils/app/toast";
-import type { AttackModel, AutomationDocumentation, AutomationWithType, FeatureEntity } from "~/shared";
 import { store } from "@/utils/store";
+import { useFetch } from "@/utils/utils";
+import { useParityHelper } from "./useParityHelpers";
 
 const props = withDefaults(defineProps<{ data: AutomationWithType; creatureName?: string }>(), { creatureName: "$NAME$" });
 
@@ -102,7 +102,7 @@ const getContext = () => {
 		const char = textToTraverse.charAt(i);
 		buffer = char + buffer;
 		if (buffer.startsWith("type:")) {
-			type = textToTraverse.slice(i).match(/type['"]?:\s*['"]?(\w+)['"]?/)?.[1] || "";
+			type = textToTraverse.slice(i).match(/type['"]?:\s*['"]?(\w+)['"]?/)?.[1] ?? "";
 			break;
 		}
 	}

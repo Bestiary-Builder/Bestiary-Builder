@@ -1,22 +1,22 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import NodeText from "./Nodes/NodeText.vue";
-import NodeVariable from "./Nodes/NodeVariable.vue";
-import NodeTarget from "./Nodes/NodeTarget.vue";
-import NodeRemoveIEffect from "./Nodes/NodeRemoveIEffect.vue";
-import NodeSave from "./Nodes/NodeSave.vue";
-import NodeAttack from "./Nodes/NodeAttack.vue";
-import NodeDamage from "./Nodes/NodeDamage.vue";
-import NodeCondition from "./Nodes/NodeCondition.vue";
-import NodeTempHP from "./Nodes/NodeTempHP.vue";
-import NodeRoll from "./Nodes/NodeRoll.vue";
-import NodeUseCounter from "./Nodes/NodeUseCounter.vue";
-import NodeSpell from "./Nodes/NodeSpell.vue";
 import NodeIEffect from "./Nodes/IEffect2/NodeIEffect.vue";
-import NodeRoot from "./Nodes/NodeRoot.vue";
+import NodeAttack from "./Nodes/NodeAttack.vue";
 import NodeButtonRoot from "./Nodes/NodeButtonRoot.vue";
-import NodeIAttackRoot from "./Nodes/NodeIAttackRoot.vue";
 import NodeCheck from "./Nodes/NodeCheck.vue";
+import NodeCondition from "./Nodes/NodeCondition.vue";
+import NodeDamage from "./Nodes/NodeDamage.vue";
+import NodeIAttackRoot from "./Nodes/NodeIAttackRoot.vue";
+import NodeRemoveIEffect from "./Nodes/NodeRemoveIEffect.vue";
+import NodeRoll from "./Nodes/NodeRoll.vue";
+import NodeRoot from "./Nodes/NodeRoot.vue";
+import NodeSave from "./Nodes/NodeSave.vue";
+import NodeSpell from "./Nodes/NodeSpell.vue";
+import NodeTarget from "./Nodes/NodeTarget.vue";
+import NodeTempHP from "./Nodes/NodeTempHP.vue";
+import NodeText from "./Nodes/NodeText.vue";
+import NodeUseCounter from "./Nodes/NodeUseCounter.vue";
+import NodeVariable from "./Nodes/NodeVariable.vue";
 
 const props = defineProps<{ node: string }>();
 

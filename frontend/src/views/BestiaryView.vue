@@ -1,27 +1,27 @@
 <script setup lang="ts">
+import type { BestiaryExtended, CreatureWithStats, Statblock, User } from "~/shared";
+import { Shimmer } from "@shimmer-from-structure/vue";
+import { refDebounced, useLocalStorage } from "@vueuse/core";
 import { onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
-import { refDebounced, useLocalStorage } from "@vueuse/core";
 import Draggable from "vuedraggable";
-import { Shimmer } from "@shimmer-from-structure/vue";
-import UserBanner from "@/components/Bestiary/UserBanner.vue";
-import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
-import StatusIcon from "@/components/Bestiary/StatusIcon.vue";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
-import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
-import Markdown from "@/components/Global/Markdown.vue";
-import ButtonIcon from "@/components/Global/ButtonIcon.vue";
-import { defaultStatblock } from "~/shared";
-import type { BestiaryExtended, CreatureWithStats, Statblock, User } from "~/shared";
-import { useFetch } from "@/utils/utils";
-import { $toast } from "@/utils/app/toast";
-import { store } from "@/utils/store";
-import { creatureTypes } from "@/utils/constants";
-import { $loading } from "@/utils/app/loading";
 import CopyManager from "@/components/Bestiary/CopyManager.vue";
 import CreatureListItem from "@/components/Bestiary/CreatureListItem.vue";
+import StatusIcon from "@/components/Bestiary/StatusIcon.vue";
+import UserBanner from "@/components/Bestiary/UserBanner.vue";
 import CRInput from "@/components/FormInputs/CRInput.vue";
+import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
+import ButtonIcon from "@/components/Global/ButtonIcon.vue";
+import Markdown from "@/components/Global/Markdown.vue";
+import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
+import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
 import { getUmami } from "@/utils/app/analytics";
+import { $loading } from "@/utils/app/loading";
+import { $toast } from "@/utils/app/toast";
+import { creatureTypes } from "@/utils/constants";
+import { store } from "@/utils/store";
+import { useFetch } from "@/utils/utils";
+import { defaultStatblock } from "~/shared";
 
 const route = useRoute();
 
@@ -277,7 +277,7 @@ async function getBestiary() {
 	if (store.user) {
 		await useFetch<{ state: boolean }>(`/api/bestiary/${bestiary.value.id.toString()}/bookmark/get`).then(async (bookmarkResult) => {
 			if (bookmarkResult.success) {
-				bookmarked.value = (bookmarkResult.data as { state: boolean }).state;
+				bookmarked.value = (bookmarkResult.data).state;
 			}
 			else {
 				bookmarked.value = false;

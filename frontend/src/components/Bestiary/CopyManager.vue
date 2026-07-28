@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import { useLocalStorage } from "@vueuse/core";
-import { store } from "@/utils/store";
 import type { CreatureWithStats, Statblock } from "~/shared";
+import { useLocalStorage } from "@vueuse/core";
 import { $toast } from "@/utils/app/toast";
+import { store } from "@/utils/store";
 
 const props = withDefaults(
-	defineProps<{ noImportAll?: boolean; mayImport: boolean; currentCreature?:
+	defineProps<{ noImportAll?: boolean; mayImport?: boolean; currentCreature?:
 		CopiedCreature | undefined; canCopyCurrentBestiary?: boolean; }>(),
 	{ noImportAll: false, mayImport: false, currentCreature: undefined, canCopyCurrentBestiary: false	}
 );

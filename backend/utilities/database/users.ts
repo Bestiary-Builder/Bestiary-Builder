@@ -1,7 +1,7 @@
-import { getPrismaClient } from ".";
-import { log } from "@/utilities/logger";
 import type { Id, User } from "~/shared";
 import { generateUserSecret } from "@/utilities/constants";
+import { log } from "@/utilities/logger";
+import { getPrismaClient } from ".";
 
 // User cache
 const userCache = {} as { [key: string]: User };

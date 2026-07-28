@@ -1,12 +1,12 @@
 <script setup lang="ts">
+import type { AttackModel, ButtonInteraction, EffectWithTarget } from "~/shared";
 import { computed, provide, ref } from "vue";
-import TreeRoot from "./TreeRoot.vue";
-import NodeHelper from "./NodeHelper.vue";
 import EffectAdder from "./EffectAdder.vue";
+import NodeHelper from "./NodeHelper.vue";
 import AutomationDocumentation from "./Nodes/shared/AutomationDocumentation.vue";
 import EffectAsRaw from "./Nodes/shared/EffectAsRaw.vue";
 import SectionHeader from "./Nodes/shared/SectionHeader.vue";
-import type { AttackModel, ButtonInteraction, EffectWithTarget } from "~/shared";
+import TreeRoot from "./TreeRoot.vue";
 
 const { name, noListAttack = true } = defineProps<{ name: string; noListAttack?: boolean }>();
 const currentEffect = ref<EffectWithTarget | AttackModel | ButtonInteraction | null>(null);

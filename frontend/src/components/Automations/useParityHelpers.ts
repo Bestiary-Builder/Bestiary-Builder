@@ -1,6 +1,7 @@
-import { type MaybeRefOrGetter, computed, toValue } from "vue";
-import YAML from "yaml";
+import type { MaybeRefOrGetter } from "vue";
 import type { AttackModel } from "~/shared";
+import { computed, toValue } from "vue";
+import YAML from "yaml";
 
 export const useParityHelper = (featureDescription: MaybeRefOrGetter<string>, automationString: MaybeRefOrGetter<string>, automation: MaybeRefOrGetter<AttackModel | AttackModel[] | null>) => {
 	const updateFeatureDescFromAutomationDesc = () => {
@@ -13,7 +14,7 @@ export const useParityHelper = (featureDescription: MaybeRefOrGetter<string>, au
 		}
 		if (Array.isArray(auto))
 			return;
-		for (const field of auto?.automation?.reverse() || []) {
+		for (const field of auto?.automation?.reverse() ?? []) {
 			if (field.type === "text") {
 				featureDescription = field.text;
 				return;
@@ -32,7 +33,7 @@ export const useParityHelper = (featureDescription: MaybeRefOrGetter<string>, au
 		if (Array.isArray(auto))
 			return;
 		try {
-			for (const field of auto?.automation?.reverse() || []) {
+			for (const field of auto?.automation?.reverse() ?? []) {
 				if (field.type === "text") {
 					field.text = featureDescription;
 					auto.automation.reverse();
@@ -56,7 +57,7 @@ export const useParityHelper = (featureDescription: MaybeRefOrGetter<string>, au
 			return false;
 		if (automation || !auto || auto?.automation?.length === 0)
 			return false;
-		for (const field of auto?.automation?.reverse() || []) {
+		for (const field of auto?.automation?.reverse() ?? []) {
 			if (field?.type === "text")
 				return field.text;
 		}

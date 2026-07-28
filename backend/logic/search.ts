@@ -1,13 +1,13 @@
-import { createCheckers } from "ts-interface-checker";
 import type { Response } from "express";
-import { getGlobalStats, getPrismaClient } from "@/utilities/database";
-import { Prisma } from "~/shared/prisma/client";
 import type { BestiaryWithCount, SearchOptions } from "~/shared";
+import { createCheckers } from "ts-interface-checker";
 import { app } from "@/utilities/constants";
+import { getGlobalStats, getPrismaClient } from "@/utilities/database";
 import { log } from "@/utilities/logger";
-
 // Validate input
 import { interfaceValidation, typeInterface } from "~/shared";
+
+import { Prisma } from "~/shared/prisma/client";
 
 const amountPerPage = 12;
 

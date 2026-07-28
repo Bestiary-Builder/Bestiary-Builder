@@ -30,7 +30,7 @@ export async function useFetch<Type>(url: string, method: "GET" | "POST" = "GET"
 						data: body
 					})
 				: undefined
-		}).then(response => handleApiResponse<Type>(response));
+		}).then(async response => handleApiResponse<Type>(response));
 		return result;
 	}
 	catch {

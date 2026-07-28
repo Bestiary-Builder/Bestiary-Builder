@@ -1,20 +1,20 @@
 <script setup lang="ts">
+import type { BestiaryExtended, CreatureWithStats } from "~/shared";
+import { Shimmer } from "@shimmer-from-structure/vue";
+import html2canvas from "html2canvas";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
-import html2canvas from "html2canvas";
-import { Shimmer } from "@shimmer-from-structure/vue";
-import { $toast } from "@/utils/app/toast";
-import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
-import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
-import type { BestiaryExtended, CreatureWithStats } from "~/shared";
-import { defaultStatblock } from "~/shared";
-import { useFetch } from "@/utils/utils";
-import { store } from "@/utils/store";
-import { $loading } from "@/utils/app/loading";
 import CopyManager from "@/components/Bestiary/CopyManager.vue";
+import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import ButtonIcon from "@/components/Global/ButtonIcon.vue";
+import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
+import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
 import { getUmami } from "@/utils/app/analytics";
+import { $loading } from "@/utils/app/loading";
+import { $toast } from "@/utils/app/toast";
+import { store } from "@/utils/store";
+import { useFetch } from "@/utils/utils";
+import { defaultStatblock } from "~/shared";
 
 const $route = useRoute();
 

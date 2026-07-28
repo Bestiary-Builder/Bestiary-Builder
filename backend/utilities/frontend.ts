@@ -1,10 +1,11 @@
+import type { Request } from "express";
 import fs from "node:fs";
 import path from "node:path";
-import express, { type Request } from "express";
-import { log } from "./logger";
-import { app } from "./constants";
-import { routes } from "~/shared";
+import express from "express";
 import { getBestiary, getUser, isDatabaseConnected } from "@/utilities/database";
+import { routes } from "~/shared";
+import { app } from "./constants";
+import { log } from "./logger";
 
 export async function getFrontendHtml(route: routes.Route, req: Request) {
 	// Get information

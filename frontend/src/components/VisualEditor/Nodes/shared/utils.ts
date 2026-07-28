@@ -1,5 +1,6 @@
-import { type Ref, watch } from "vue";
+import type { Ref } from "vue";
 import type { AttackInteraction, AttackModel, ButtonInteraction, EffectWithTarget } from "~/shared";
+import { watch } from "vue";
 
 // type NestedData<T> = {
 // 	[K in keyof T]?: T[K] extends object ? Array<keyof T[K]> : never;
@@ -41,8 +42,9 @@ export const useDataCleanup = <T extends EffectWithTarget | AttackModel | Button
 
 							!!data.value[property][nestedProperty] === false
 							|| data.value[property][nestedProperty] === "0"
-						)
+						) {
 							delete data.value[property][nestedProperty];
+						}
 					});
 				}
 			}

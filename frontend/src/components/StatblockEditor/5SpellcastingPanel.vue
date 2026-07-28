@@ -1,14 +1,15 @@
 <script setup lang="ts">
+import type { CreatureWithStats, Statblock } from "~/shared";
 import { computed, onMounted, ref, watch } from "vue";
-import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
-import LabelledNumberInput from "../FormInputs/LabelledNumberInput.vue";
-import Modal from "../Global/Modal.vue";
-import LabelledComponent from "../FormInputs/LabelledComponent.vue";
-import { type CreatureWithStats, type Statblock, defaultStatblock, getSpellSlots } from "~/shared";
-import { classLevels, classes, stats } from "@/utils/constants";
 import { $toast } from "@/utils/app/toast";
+import { classes, classLevels, stats } from "@/utils/constants";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
+import { defaultStatblock, getSpellSlots } from "~/shared";
+import LabelledComponent from "../FormInputs/LabelledComponent.vue";
+import LabelledNumberInput from "../FormInputs/LabelledNumberInput.vue";
+import Modal from "../Global/Modal.vue";
+import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
 
 const { data, rawInfo } = defineProps<{ data: Statblock; rawInfo: CreatureWithStats | null }>();
 

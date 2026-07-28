@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { type Ref, computed, inject, ref } from "vue";
+import type { Ref } from "vue";
+import type { AttackInteraction, AttackModel, ButtonInteraction, EffectKey, EffectWithTarget, IEffect, Target } from "~/shared";
 import { Icon } from "@iconify/vue";
-import TreeRoot from "./TreeRoot.vue";
+import { computed, inject, ref } from "vue";
+import { capitalizeFirstLetter } from "~/shared";
 import EffectAdder from "./EffectAdder.vue";
 import NodeHeader from "./Nodes/shared/NodeHeader.vue";
+import TreeRoot from "./TreeRoot.vue";
 import { deepKeys } from "./util";
-import { type AttackInteraction, type AttackModel, type ButtonInteraction, type EffectKey, type EffectWithTarget, type IEffect, type Target, capitalizeFirstLetter } from "~/shared";
 
 const props = defineProps<{ data: EffectWithTarget; depth: number; parentType: string; context: string[] }>();
 

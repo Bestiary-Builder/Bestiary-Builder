@@ -1,21 +1,22 @@
 <script setup lang="ts">
-import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
-import { computed, nextTick, onMounted, onUnmounted, provide, ref, shallowRef, useTemplateRef, watch } from "vue";
-import YAML from "yaml";
+import type { AttackModel, AutomationDocumentation, BestiaryExtended, CreatureWithStats, FeatureEntity, Features, Statblock } from "~/shared";
 import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
 import { useLocalStorage } from "@vueuse/core";
+import { computed, nextTick, onMounted, onUnmounted, provide, ref, shallowRef, useTemplateRef, watch } from "vue";
+import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
+import YAML from "yaml";
+import ImportAutomationUtil from "@/components/Automations/ImportAutomationUtil.vue";
+import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
+import ButtonIcon from "@/components/Global/ButtonIcon.vue";
+import Markdown from "@/components/Global/Markdown.vue";
 import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
-import { type AttackModel, type AutomationDocumentation, type BestiaryExtended, type CreatureWithStats, type FeatureEntity, type Features, type Statblock, parseDescIntoAutomation } from "~/shared";
+import Editor from "@/components/StatblockEditor/Editor.vue";
+import VisualEditor from "@/components/VisualEditor/VisualEditor.vue";
 import { $loading } from "@/utils/app/loading";
-import { useFetch } from "@/utils/utils";
 import { $toast, htmlToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
-import Markdown from "@/components/Global/Markdown.vue";
-import VisualEditor from "@/components/VisualEditor/VisualEditor.vue";
-import ImportAutomationUtil from "@/components/Automations/ImportAutomationUtil.vue";
-import ButtonIcon from "@/components/Global/ButtonIcon.vue";
-import Editor from "@/components/StatblockEditor/Editor.vue";
+import { useFetch } from "@/utils/utils";
+import { parseDescIntoAutomation } from "~/shared";
 
 const $router = useRouter();
 const $route = useRoute();

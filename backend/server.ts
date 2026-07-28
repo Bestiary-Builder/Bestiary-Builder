@@ -1,23 +1,23 @@
 import http from "node:http";
-import "@/utilities/env";
-// Logging
-import discord from "./logic/discord";
-import { log } from "@/utilities/logger";
 // App
 import { app } from "@/utilities/constants";
+// Setup database connection
+import { startConnection } from "@/utilities/database";
+import { getFrontendHtml } from "@/utilities/frontend";
+import { log } from "@/utilities/logger";
+
+// Import frontend stuff
+import { routes } from "~/shared";
+
+// Logging
+import discord from "./logic/discord";
+import "@/utilities/env";
 
 // Import middleware
 import "@/utilities/middleware";
 
-// Import frontend stuff
-import { routes } from "~/shared";
-import { getFrontendHtml } from "@/utilities/frontend";
-
 // Import logic files
 import "./logic";
-
-// Setup database connection
-import { startConnection } from "@/utilities/database";
 
 startConnection();
 

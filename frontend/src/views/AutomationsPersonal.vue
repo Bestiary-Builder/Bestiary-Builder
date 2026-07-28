@@ -1,18 +1,18 @@
 <script setup lang="ts">
+import type { AttackModel, AutomationWithType, Id } from "~/shared";
 import { onMounted, onUnmounted, ref, watch } from "vue";
 import { onBeforeRouteLeave } from "vue-router";
-import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
-import { useFetch } from "@/utils/utils";
-import { $toast } from "@/utils/app/toast";
-import type { AttackModel, AutomationWithType, Id } from "~/shared";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
-import Modal from "@/components/Global/Modal.vue";
-import { store } from "@/utils/store";
-import { $loading } from "@/utils/app/loading";
-import StandAloneEditor from "@/components/Automations/StandAloneEditor.vue";
 import ImportAutomationUtil from "@/components/Automations/ImportAutomationUtil.vue";
+import StandAloneEditor from "@/components/Automations/StandAloneEditor.vue";
+import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import ButtonIcon from "@/components/Global/ButtonIcon.vue";
+import Modal from "@/components/Global/Modal.vue";
+import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import { getUmami } from "@/utils/app/analytics";
+import { $loading } from "@/utils/app/loading";
+import { $toast } from "@/utils/app/toast";
+import { store } from "@/utils/store";
+import { useFetch } from "@/utils/utils";
 
 const data = ref<AutomationWithType[]>([]);
 let initialData = "";

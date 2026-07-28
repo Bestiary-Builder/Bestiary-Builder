@@ -1,17 +1,17 @@
 <script setup lang="ts">
+import type { FeatureEntity } from "~/shared";
 import { useLocalStorage } from "@vueuse/core";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
+import ImportAutomationUtil
+	from "@/components/Automations/ImportAutomationUtil.vue";
+import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import ButtonIcon from "@/components/Global/ButtonIcon.vue";
 import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
+import VisualEditor from "@/components/VisualEditor/VisualEditor.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { $toast } from "@/utils/app/toast";
 import { useFetch } from "@/utils/utils";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
-import VisualEditor from "@/components/VisualEditor/VisualEditor.vue";
-import type { FeatureEntity } from "~/shared";
-import ImportAutomationUtil
-	from "@/components/Automations/ImportAutomationUtil.vue";
 
 const character = ref();
 const AvraeToken = useLocalStorage("AvraeToken", "");

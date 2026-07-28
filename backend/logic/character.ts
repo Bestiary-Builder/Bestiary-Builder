@@ -1,8 +1,8 @@
 import fetch from "node-fetch";
-import { requireUser } from "./login";
 import { app } from "@/utilities/constants";
-import "@/utilities/env";
 import { log } from "@/utilities/logger";
+import { requireUser } from "./login";
+import "@/utilities/env";
 
 const API = "https://api.avrae.io/characters";
 const HEADERS = {

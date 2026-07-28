@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { type Ref, computed, inject } from "vue";
-import { useDataCleanup } from "../shared/utils";
-import SectionHeader from "../shared/SectionHeader.vue";
-import IntExpression from "../shared/IntExpression.vue";
-import AnnotatedString from "../shared/AnnotatedString.vue";
-import { PASSIVE_EFFECTS, type PassiveEffectDef } from "./passiveEffect";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
+import type { Ref } from "vue";
+import type { PassiveEffectDef } from "./passiveEffect";
 import type { IEffect } from "~/shared";
+import { computed, inject } from "vue";
+import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
+import AnnotatedString from "../shared/AnnotatedString.vue";
+import IntExpression from "../shared/IntExpression.vue";
+import SectionHeader from "../shared/SectionHeader.vue";
+import { useDataCleanup } from "../shared/utils";
+import { PASSIVE_EFFECTS } from "./passiveEffect";
 
 const currentEffect = inject<Ref<IEffect>>("currentEffect");
 

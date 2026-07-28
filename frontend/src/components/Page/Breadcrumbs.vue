@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, watchEffect } from "vue";
-import { isClient } from "@vueuse/shared";
 import { useElementSize, useShare } from "@vueuse/core";
+import { isClient } from "@vueuse/shared";
+import { ref, watchEffect } from "vue";
 import { $toast } from "@/utils/app/toast";
 
 const { isLessWide = false, routes } = defineProps<{ routes: links; isLessWide?: boolean }>();

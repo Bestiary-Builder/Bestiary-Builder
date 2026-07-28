@@ -1,28 +1,29 @@
+import type { Component } from "vue";
+
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+
+// monaco editor
+import { loader } from "@guolao/vue-monaco-editor";
+// Floating vue
+import FloatingVue from "floating-vue";
+// Vue
+import { createApp } from "vue";
+
+// Vue-select
+import vSelect from "vue-select";
+import App from "@/App.vue";
+import router from "@/router";
 // Style sheet
 import "@/assets/styles/main.less";
 
-// Vue
-import { type Component, createApp, } from "vue";
-
-// Floating vue
-import FloatingVue from "floating-vue";
 import "floating-vue/dist/style.css";
 
 // Font awesome
 import "@/utils/app/fontawesome";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-// Vue-select
-import vSelect from "vue-select";
+
 import "vue-select/dist/vue-select.css";
-
-// monaco editor
-import { loader } from "@guolao/vue-monaco-editor";
-
 // Analytics
 import "./utils/app/analytics";
-
-import router from "@/router";
-import App from "@/App.vue";
 
 export const app = createApp(App as Component<any>);
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { type PropType, computed, ref, useTemplateRef, watch } from "vue";
+import type { PropType } from "vue";
+import { computed, ref, useTemplateRef, watch } from "vue";
 
 const props = defineProps({
 	isClearable: {
@@ -43,8 +44,9 @@ watch(() => props.modelValue, (newValue, oldValue) => {
 		!(Number.isNaN(newValue) && typeof oldValue === "undefined")
 		// Avoid infinite loop
 		&& newValue !== value.value
-	)
+	) {
 		setValue(newValue);
+	}
 }, { immediate: true });
 
 const increasable = computed(() => {

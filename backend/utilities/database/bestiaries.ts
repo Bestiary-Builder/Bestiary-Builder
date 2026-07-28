@@ -1,8 +1,8 @@
-import { v4 as uuid } from "uuid";
-import { getPrismaClient } from ".";
-import { log } from "@/utilities/logger";
-import type { BestiaryCreateInput, BestiaryUpdateInput } from "~/shared/src/prisma-types";
 import type { Id, User } from "~/shared";
+import type { BestiaryCreateInput, BestiaryUpdateInput } from "~/shared/src/prisma-types";
+import { v4 as uuid } from "uuid";
+import { log } from "@/utilities/logger";
+import { getPrismaClient } from ".";
 
 const defaultIncludes = {
 	creatures: {

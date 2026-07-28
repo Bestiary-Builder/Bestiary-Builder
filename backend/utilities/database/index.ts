@@ -1,6 +1,6 @@
+import type { GlobalStats } from "~/shared";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { log } from "@/utilities/logger";
-import type { GlobalStats } from "~/shared";
 
 // Connect to database
 import { PrismaClient } from "~/shared/src/prisma-types";

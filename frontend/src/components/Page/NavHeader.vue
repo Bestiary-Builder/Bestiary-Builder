@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { RouterLink } from "vue-router";
-import { ref, watchEffect } from "vue";
 import { onClickOutside, useElementSize } from "@vueuse/core";
-import { sendToLogin } from "@/utils/utils";
+import { ref, watchEffect } from "vue";
+import { RouterLink } from "vue-router";
 import { store } from "@/utils/store";
+import { sendToLogin } from "@/utils/utils";
 
 const isExpanded = ref(false);
 const navbar = ref<HTMLDivElement | null>(null);

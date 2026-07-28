@@ -1,15 +1,15 @@
 <script setup lang="ts">
+import type { Statblock } from "~/shared";
 import Draggable from "vuedraggable";
+import { $toast } from "@/utils/app/toast";
+import { languages } from "@/utils/constants";
+import { store } from "@/utils/store";
 import LabelledComponent from "../FormInputs/LabelledComponent.vue";
 import LabelledNumberInput from "../FormInputs/LabelledNumberInput.vue";
 import SimpleNumberInput from "../FormInputs/SimpleNumberInput.vue";
-import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
 import ButtonIcon from "../Global/ButtonIcon.vue";
+import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
 import { getDraggableKey } from "./utils";
-import type { Statblock } from "~/shared";
-import { languages } from "@/utils/constants";
-import { $toast } from "@/utils/app/toast";
-import { store } from "@/utils/store";
 
 const { data } = defineProps<{ data: Statblock }>();
 const addNewSpeed = (newSpeedName: string) => {
