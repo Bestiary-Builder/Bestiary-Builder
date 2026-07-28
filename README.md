@@ -14,7 +14,7 @@ To start editing the project follow these simple steps:
 
 1. Fork the repository, to have your own editing location. See: [GitHub Docs - Fork a repo](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo)
 2. Clone your newly created fork. See: [GitHub Docs - Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository)
-3. Install npm dependencies. (Run "npm i" in the backend frontend, and shared folder)
+3. Install npm dependencies. (Run "npm i" in the project root)
 4. Setup outside resources
     - Discord OAuth application:
         - Go [here](https://discord.com/developers/applications) and create a new application.
@@ -27,7 +27,7 @@ To start editing the project follow these simple steps:
 	- Run `docker compose up -d` in the project folder
 	- *(or start a PosgreSQL database in any other way)*
 	- In the backend folder run `npx prisma migrate dev` to create all the sql tables.
-7. Rename ".env.template" in the backend folder to ".env", and change it's values to your own environment
+7. Duplicate and rename ".env.template" in the backend folder to ".env", and change it's values to your own environment
     - "frontendPath" should stay unchanged. (Unless you moved the folder around)
     - "clientId" should be changed to your Discord OAuth application id.
     - "clientSecret" should be changed to your Discord OAuth application secret.
@@ -35,7 +35,7 @@ To start editing the project follow these simple steps:
     - "JWTKEY" should be any string and can be left as is for development.
 8. Launch the local site.
     - In VSCode/VSCodium simply press F5 to start the already created launch tasks.
-    - For other code editors, start the backend by running "npm run dev" in the backend folder, and build the frontend by running "npm run build" in the frontend folder. And to start
+    - For other code editors, start both the backend and the frontend by running "npm run dev" in the project root.
 9. Check that everything is working as it should.
 
 ## Made by

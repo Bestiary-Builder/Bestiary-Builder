@@ -1,8 +1,6 @@
 {
-	"name": "bestiary-builder",
+	"name": "frontend",
 	"type": "module",
-	"version": "2.0.0",
-	"private": true,
 	"scripts": {
 		"dev": "run-p prebuild && vite",
 		"build": "run-p type-check build-only",

@@ -1,23 +1,17 @@
 {
-	"name": "server",
+	"name": "backend",
 	"type": "module",
-	"version": "1.0.0",
-	"private": true,
-	"description": "",
-	"author": "Stevnbak",
-	"license": "MPL-2.0",
 	"main": "server.ts",
 	"engines": {
 		"node": ">=21.4.0"
 	},
 	"scripts": {
 		"generate": "prisma generate",
-		"dev": "npx prisma generate && npx nodemon",
-		"prebuild": "npx prisma generate && cd ../shared && npm install && npx ts-interface-builder ./src/build-types.ts",
-		"build": "bun build --target=bun --sourcemap --outdir ../build --outfile server.js server.ts",
+		"dev": "npm run generate && npx nodemon",
 		"test": "vitest run",
 		"lint": "eslint .",
-		"lint:fix": "eslint . --fix"
+		"lint:fix": "eslint . --fix",
+		"type-check": "tsc --noEmit -p tsconfig.json"
 	},
 	"dependencies": {
 		"@prisma/adapter-pg": "^7.7.0",
@@ -60,7 +54,6 @@
 		"eslint": "8.57.0",
 		"nodemon": "^3.1.10",
 		"prisma-json-types-generator": "^5.1.0",
-		"ts-interface-builder": "^0.3.3",
 		"tsx": "^4.19.3",
 		"typescript": "^6.0.3",
 		"vitest": "^3.1.2"

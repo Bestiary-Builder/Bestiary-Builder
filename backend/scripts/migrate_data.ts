@@ -2,17 +2,17 @@ import "dotenv/config";
 import type { ObjectId } from "mongodb";
 import { MongoClient } from "mongodb";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { generateUserSecret } from "./utilities/constants";
-import { BestiaryStatus, PrismaClient, SupporterStatus, type AutomationCreateManyInput } from "~/shared/src/prisma-types";
+import { generateUserSecret } from "../utilities/constants";
+import { type AutomationCreateManyInput, BestiaryStatus, PrismaClient, SupporterStatus } from "../../shared/src/prisma-types";
 
 /**
  * Standalone migration script:
  * MongoDB -> PostgreSQL (via Prisma)
  *
  * Required env vars:
- * - MongoDB                 (Mongo connection URI)
- * - MongoDB_DBName          (Mongo database name, default: bestiarybuilder)
- * - DATABASE_URL            (PostgreSQL URL used by Prisma)
+ * - MongoDB				 (Mongo connection URI)
+ * - MongoDB_DBName		  (Mongo database name, default: bestiarybuilder)
+ * - DATABASE_URL			(PostgreSQL URL used by Prisma)
  *
  * Run:
  *   npx tsx migrate_data.ts
@@ -94,8 +94,8 @@ function toSupporterStatus(supporter: number | undefined): SupporterStatus {
 }
 
 async function main() {
-    console.log("Migration is disabled...");
-    return;
+	console.log("Migration is disabled...");
+	return;
 
 	const mongoUri = requireEnv("MongoDB");
 	const mongoDbName = process.env.MongoDB_DBName || "bestiarybuilder";
@@ -140,30 +140,31 @@ async function main() {
 		prisma.user.deleteMany(),
 	]);
 
-    console.log("Migrating users...");
-    await prisma.user.createMany({
-        data: users.map(u => ({
-            id: u._id,
-            username: u.username ?? "",
-            avatar: u.avatar ?? "",
-            email: u.email ?? "",
-            verified: Boolean(u.verified),
-            globalName: u.global_name ?? "",
-            bannerColor: u.banner_color ?? "",
-            supporter: toSupporterStatus(u.supporter ?? 0),
-            joinedAt: new Date(u.joinedAt ?? Date.now()),
-            secret: u.secret ?? generateUserSecret(),
-        }))
-    });
+	console.log("Migrating users...");
+	await prisma.user.createMany({
+		data: users.map(u => ({
+			id: u._id,
+			username: u.username ?? "",
+			avatar: u.avatar ?? "",
+			email: u.email ?? "",
+			verified: Boolean(u.verified),
+			globalName: u.global_name ?? "",
+			bannerColor: u.banner_color ?? "",
+			supporter: toSupporterStatus(u.supporter ?? 0),
+			joinedAt: new Date(u.joinedAt ?? Date.now()),
+			secret: u.secret ?? generateUserSecret(),
+		}))
+	});
 
-    console.log("Migrating bestiaries...");
-    await prisma.bestiary.createMany({
-        data: bestiaries.filter(b => {
-            if (userIds.has(b.owner)) return true;
-            console.warn(`Skipping bestiary ${b._id.toHexString()} because owner ${b.owner} does not exist`);
-            return false;
-        }).map(b => ({
-            id: b._id.toHexString(),
+	console.log("Migrating bestiaries...");
+	await prisma.bestiary.createMany({
+		data: bestiaries.filter((b) => {
+			if (userIds.has(b.owner))
+				return true;
+			console.warn(`Skipping bestiary ${b._id.toHexString()} because owner ${b.owner} does not exist`);
+			return false;
+		}).map(b => ({
+			id: b._id.toHexString(),
 			name: b.name ?? "",
 			ownerId: b.owner,
 			status: toStatus(b.status),
@@ -172,77 +173,78 @@ async function main() {
 			viewCount: b.viewCount ?? 0,
 			bookmarks: b.bookmarks ?? 0,
 			lastUpdated: new Date(b.lastUpdated ?? Date.now()),
-        }))
-	})
+		}))
+	});
 
-    console.log("Migrating bestiary editors...");
-    await prisma.bestiaryEditor.createMany({
-        data: bestiaries.filter(b => bestiaryIds.has(b._id.toHexString())).flatMap(b => b.editors?.filter(editorId => {
-            if (!userIds.has(editorId)) {
-                console.warn(`Skipping editor ${editorId} for bestiary ${b._id.toHexString()} because user does not exist`);
-                return false;
-            }
-            return true;
-        }).map(editorId => ({
-            bestiaryId: b._id.toHexString(),
-            userId: editorId
-        })) ?? [])
-    });
+	console.log("Migrating bestiary editors...");
+	await prisma.bestiaryEditor.createMany({
+		data: bestiaries.filter(b => bestiaryIds.has(b._id.toHexString())).flatMap(b => b.editors?.filter((editorId) => {
+			if (!userIds.has(editorId)) {
+				console.warn(`Skipping editor ${editorId} for bestiary ${b._id.toHexString()} because user does not exist`);
+				return false;
+			}
+			return true;
+		}).map(editorId => ({
+			bestiaryId: b._id.toHexString(),
+			userId: editorId
+		})) ?? [])
+	});
 
-    console.log("Migrating automations...");
-    const validAutomationOwners = [...new Set(automations.filter(a => userIds.has(a.owner)).map(a => a.owner))];
-    await prisma.automationCollection.createMany({
-        data: validAutomationOwners.map(ownerId => ({
-            id: `default-${ownerId}`,
-            name: "My Automations",
-            ownerId,
-            lastUpdated: new Date(),
-        }))
-    });
-    await prisma.automation.createMany({
-        data: automations.filter(a => userIds.has(a.owner)).map(a => ({
-            id: a._id.toHexString(),
-            name: a.name ?? "",
-            description: a.description ?? "",
-            collectionId: `default-${a.owner}`,
-            lastUpdated: new Date(a.lastUpdated ?? Date.now()),
-            automation: (a.automation ?? undefined) as unknown as AutomationCreateManyInput["automation"],
-        }))
-    });
+	console.log("Migrating automations...");
+	const validAutomationOwners = [...new Set(automations.filter(a => userIds.has(a.owner)).map(a => a.owner))];
+	await prisma.automationCollection.createMany({
+		data: validAutomationOwners.map(ownerId => ({
+			id: `default-${ownerId}`,
+			name: "My Automations",
+			ownerId,
+			lastUpdated: new Date(),
+		}))
+	});
+	await prisma.automation.createMany({
+		data: automations.filter(a => userIds.has(a.owner)).map(a => ({
+			id: a._id.toHexString(),
+			name: a.name ?? "",
+			description: a.description ?? "",
+			collectionId: `default-${a.owner}`,
+			lastUpdated: new Date(a.lastUpdated ?? Date.now()),
+			automation: (a.automation ?? undefined) as unknown as AutomationCreateManyInput["automation"],
+		}))
+	});
 
 	console.log("Migrating bookmarks...");
 	// In MongoDB, User.bookmarks stores bestiary ids.
 	// We normalize into UserBestiaryBookmark join rows.
-    await prisma.userBestiaryBookmark.createMany({
-        data: users.filter(u => Array.isArray(u.bookmarks)).flatMap(
-            u => {
-                const bookmarks = u.bookmarks?.map(bId => bId.toHexString()) ?? [];
+	await prisma.userBestiaryBookmark.createMany({
+		data: users.filter(u => Array.isArray(u.bookmarks)).flatMap(
+			(u) => {
+				const bookmarks = u.bookmarks?.map(bId => bId.toHexString()) ?? [];
 
-                return bookmarks.filter((bId, pos) => bookmarks.indexOf(bId) === pos).filter(bId => bestiaryIds.has(bId)).map(bId => ({
-                    userId: String(u._id),
-                    bestiaryId: bId
-                }));
-            }
-        )
-    })
+				return bookmarks.filter((bId, pos) => bookmarks.indexOf(bId) === pos).filter(bId => bestiaryIds.has(bId)).map(bId => ({
+					userId: String(u._id),
+					bestiaryId: bId
+				}));
+			}
+		)
+	});
 
-    console.log("Migrating creatures...");
-    const pageSize = 10000;
-    let page = 1;
-    while (creatures.length > (page - 1) * pageSize) {
-        await prisma.creature.createMany({
-            data: creatures.slice((page - 1) * pageSize, page * pageSize).filter(c => bestiaryIds.has(c.bestiary.toHexString())).map(c =>
-                ({
-                    id: c._id.toHexString(),
-                    bestiaryId: c.bestiary?.toHexString?.() ?? "",
-                    lastUpdated: new Date(c.lastUpdated ?? Date.now()),
-                    stats: JSON.parse(JSON.stringify(c.stats ?? {}).replaceAll("\\u0000", "")),
-                })
-            )
-        });
-        console.log(`\t${page * pageSize}/${creatures.length} migrated...`);
-        page++;
-    }
+	console.log("Migrating creatures...");
+	const pageSize = 10000;
+	let page = 1;
+	while (creatures.length > (page - 1) * pageSize) {
+		await prisma.creature.createMany({
+			data: creatures.slice((page - 1) * pageSize, page * pageSize).filter(c => bestiaryIds.has(c.bestiary.toHexString())).map(c =>
+				({
+					id: c._id.toHexString(),
+					bestiaryId: c.bestiary?.toHexString?.() ?? "",
+					lastUpdated: new Date(c.lastUpdated ?? Date.now()),
+					stats: JSON.parse(JSON.stringify(c.stats ?? {}).replaceAll("\\u0000", "")),
+					index: 0
+				})
+			)
+		});
+		console.log(`\t${page * pageSize}/${creatures.length} migrated...`);
+		page++;
+	}
 
 	console.log("Migration complete ✅");
 

@@ -15,6 +15,8 @@
 		"outDir": "../build/backend",
 		"sourceMap": false,
 		"esModuleInterop": true,
-		"skipLibCheck": true
-	}
+		"skipLibCheck": true,
+	},
+	"exclude": [ "scripts/*" ],
+	"include": [ "**/*.ts" ]
 }

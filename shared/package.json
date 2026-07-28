@@ -1,13 +1,17 @@
 {
+	"name": "shared",
 	"type": "module",
 	"scripts": {
+		"build-types": "npx ts-interface-builder ./src/build-types.ts",
 		"lint": "eslint .",
-		"lint:fix": "eslint . --fix"
+		"lint:fix": "eslint . --fix",
+		"type-check": "tsc --noEmit -p tsconfig.json --composite false"
 	},
 	"dependencies": {
 		"@prisma/client": "^7.7.0",
 		"bson": "^6.7.0",
 		"ts-interface-checker": "^1.0.2",
+		"ts-interface-builder": "^0.3.3",
 		"yaml": "^2.4.2"
 	},
 	"devDependencies": {

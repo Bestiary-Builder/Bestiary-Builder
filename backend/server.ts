@@ -2,7 +2,6 @@ import http from "node:http";
 import "@/utilities/env";
 // Logging
 import discord from "./logic/discord";
-import { doTheThing } from "./scripts/ParseCreaturesFrom5eTools";
 import { log } from "@/utilities/logger";
 // App
 import { app } from "@/utilities/constants";
