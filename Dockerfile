@@ -21,18 +21,20 @@ COPY . .
 
 # Build app
 
+## Install dependencies
+RUN bun install --production
+
 ## Generate prisma types
-RUN cd backend && bun install && bun run generate
+RUN cd backend && bun run generate
 
 ## Build shared type interface
-RUN cd shared && bun install --production && bunx ts-interface-builder ./src/build-types.ts
+RUN cd shared && bun run build-types
 
 ## Build backend
-RUN cd backend && bun build server.ts --compile --sourcemap --outfile ../build/server
+RUN cd backend && bun build src/server.ts --compile --sourcemap --outfile ../build/server
 
 ## Build frontend
-
-RUN cd frontend && bun install && bunx vite build
+RUN cd frontend && bun run build-only
 
 FROM base AS release
 
