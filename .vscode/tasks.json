@@ -3,13 +3,52 @@
 	"tasks": [
 		{
 			"label": "debug",
+			"type": "shell",
 			"group": "test",
+			"dependsOrder": "sequence",
+			"dependsOn": ["debug-backend", "debug-frontend"]
+		},
+		{
+			"label": "debug-frontend",
 			"type": "shell",
 			"options": {
-				"cwd": "${workspaceFolder}"
+				"cwd": "${workspaceFolder}/frontend"
 			},
 			"command": "npm run dev",
 			"isBackground": true,
+			"group": "test",
+			"problemMatcher": [
+				{
+					"pattern": [
+						{
+							"regexp": ".",
+							"file": 1,
+							"line": 1,
+							"column": 1,
+							"message": 1
+						}
+					],
+					"background": {
+						"activeOnStart": true,
+						"beginsPattern": {
+							"regexp": "."
+						},
+						"endsPattern": {
+							"regexp": "."
+						}
+					}
+				}
+			]
+		},
+		{
+			"label": "debug-backend",
+			"type": "shell",
+			"options": {
+				"cwd": "${workspaceFolder}/backend"
+			},
+			"command": "npm run dev",
+			"isBackground": true,
+			"group": "test",
 			"problemMatcher": [
 				{
 					"pattern": [
