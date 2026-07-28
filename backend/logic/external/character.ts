@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
 import { app } from "@/utilities/constants";
-import { requireUser } from "./login";
+import { requireUser } from "../main/login";
 import "@/utilities/env";
 
 const API = "https://api.avrae.io/characters";

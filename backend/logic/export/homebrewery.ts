@@ -3,9 +3,9 @@ import { app } from "@/utilities/constants";
 import { getBestiary, getCreature, getCreaturesByBestiary, incrementBestiaryViewCount } from "@/utilities/database";
 import { log } from "@/utilities/logger";
 import { capitalizeFirstLetter, displaySpeedOrSenses, hpCalc, ppCalc, SKILLS_BY_STAT, statCalc } from "~/shared";
-import { checkBestiaryPermission } from "./bestiaries";
-import { checkCreaturePermission } from "./creatures";
-import { possibleUser } from "./login";
+import { checkBestiaryPermission } from "../collections/bestiaries";
+import { checkCreaturePermission } from "../creatures/creatures";
+import { possibleUser } from "../main/login";
 import { getSpellcastingFeatures } from "./spellcastingFeatures";
 
 app.get("/api/homebrewery/export/bestiary/:id", possibleUser, async (req, res) => {

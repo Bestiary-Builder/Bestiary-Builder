@@ -4,8 +4,8 @@ import type { BestiaryStatus } from "~/shared/src/prisma-types";
 import { checkBadwords } from "@/utilities/badwords";
 import { app, limits } from "@/utilities/constants";
 import { addAutomationCollectionEditor, createAutomationCollection, deleteAutomationCollection, getAutomationCollection, getAutomationCollectionsByOwner, getAutomationCollectionsByUser, getPublicAutomationCollectionsByOwner, removeAutomationCollectionEditor, updateAutomationCollection } from "@/utilities/database";
+import { possibleUser, requireUser } from "../main/login";
 import { createCollectionService } from "./collections";
-import { possibleUser, requireUser } from "./login";
 
 export type AutomationCollectionWithEditors = AutomationCollection & CollectionWithEditors;
 type AutomationCollectionForUser = AutomationCollectionWithEditors & { automations: Automation[] };

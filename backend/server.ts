@@ -7,11 +7,9 @@ import { getFrontendHtml } from "@/utilities/frontend";
 import { log } from "@/utilities/logger";
 import { errorHandler } from "@/utilities/middleware";
 
-// Import frontend stuff
 import { routes } from "~/shared";
 
-// Logging
-import discord from "./logic/discord";
+import discord from "./logic/external/discord";
 
 // Import logic files
 import "./logic";

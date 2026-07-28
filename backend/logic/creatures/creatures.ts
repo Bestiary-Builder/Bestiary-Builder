@@ -2,10 +2,10 @@ import type { Creature, User } from "~/shared";
 import { app, checkCreatureAmountLimit } from "@/utilities/constants";
 import { createCreature, deleteCreature, getBestiary, getBestiaryCreatureCount, getCreature, getCreaturesByBestiary, getPrismaClient, updateCreature } from "@/utilities/database";
 import { log } from "@/utilities/logger";
-import { canEditBestiary, checkBestiaryPermission } from "./bestiaries";
+import { canEditBestiary, checkBestiaryPermission } from "../collections/bestiaries";
+import { validateCreatureInput } from "../external/validation";
+import { possibleUser, requireUser } from "../main/login";
 import { prepareCreatureStats } from "./creaturePreparation";
-import { possibleUser, requireUser } from "./login";
-import { validateCreatureInput } from "./validation";
 
 // Check creature permissions
 export async function checkCreaturePermission(creature: Creature, user: User | null) {

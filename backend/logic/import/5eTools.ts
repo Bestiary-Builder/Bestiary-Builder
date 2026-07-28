@@ -3,7 +3,7 @@ import splitOnFirst from "split-on-first";
 import { app } from "@/utilities/constants";
 import { abilityParser, buildSpeedEntries, detectCastingClass, markdownReplacer, parseSenses } from "@/utilities/parsing";
 import { capitalizeFirstLetter, defaultStatblock, getXPbyCR, SKILLS_BY_STAT } from "~/shared";
-import { spellListFlattened } from "./staticData";
+import { spellListFlattened } from "../creatures/staticData";
 
 function parseSavingThrow(mod: any, abilityScore: number, proficiencyBonus: number) {
 	if (!mod)

@@ -7,11 +7,11 @@ import { app, checkBestiaryLimits, checkCreatureAmountLimit, limits } from "@/ut
 import { addBestiaryEditor, addBookmark, createBestiary, createCreatures, deleteBestiary, getBestiariesByOwner, getBestiariesByUser, getBestiary, getBestiaryCreatureCount, getPrismaClient, getPublicBestiariesByOwner, incrementBestiaryViewCount, isBestiaryBookmarked, removeBestiaryEditor, removeBookmark, updateBestiary } from "@/utilities/database";
 import { log } from "@/utilities/logger";
 
+import { prepareCreatureStats } from "../creatures/creaturePreparation";
+import { colors, publicLog } from "../external/discord";
+import { StatblockChecker } from "../external/validation";
+import { possibleUser, requireUser } from "../main/login";
 import { createCollectionService } from "./collections";
-import { prepareCreatureStats } from "./creaturePreparation";
-import { colors, publicLog } from "./discord";
-import { possibleUser, requireUser } from "./login";
-import { StatblockChecker } from "./validation";
 
 type BestiaryWithEditors = Bestiary & CollectionWithEditors;
 type BestiaryForUser = BestiaryWithEditors & { creatures: { id: Id }[]; orderedBy: { index: number }[] };

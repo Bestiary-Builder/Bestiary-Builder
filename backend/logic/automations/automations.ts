@@ -5,8 +5,8 @@ import { app, checkAutomationLimits } from "@/utilities/constants";
 import { createAutomation, deleteAutomation, getAutomation, updateAutomation } from "@/utilities/database";
 import { log } from "@/utilities/logger";
 import { Prisma } from "~/shared/src/prisma-types";
-import { automationCollections, getOrCreateDefaultAutomationCollection } from "./automationCollections";
-import { possibleUser, requireUser } from "./login";
+import { automationCollections, getOrCreateDefaultAutomationCollection } from "../collections/automationCollections";
+import { possibleUser, requireUser } from "../main/login";
 
 async function canViewAutomation(automation: Automation, userId: Id | null) {
 	return (await automationCollections.authorize(automation.collectionId, userId, "view")).ok;

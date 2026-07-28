@@ -6,7 +6,7 @@ import { log } from "@/utilities/logger";
 
 import { Prisma } from "~/shared/prisma/client";
 
-import { SearchOptionsChecker, validateInput } from "./validation";
+import { SearchOptionsChecker, validateInput } from "../external/validation";
 
 const amountPerPage = 12;
 

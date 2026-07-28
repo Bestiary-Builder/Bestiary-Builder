@@ -6,7 +6,7 @@ import { log } from "@/utilities/logger";
 import { abilityParser, buildSpeedEntries, detectCastingClass, parseSenses } from "@/utilities/parsing";
 // Parsing
 import { capitalizeFirstLetter, defaultStatblock, SKILLS_BY_STAT } from "~/shared";
-import { spellListFlattened } from "./staticData";
+import { spellListFlattened } from "../creatures/staticData";
 
 app.get("/api/critterdb/:id/:published", async (req, res) => {
 	const id = req.params.id;
