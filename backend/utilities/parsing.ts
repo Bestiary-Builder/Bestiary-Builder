@@ -1,6 +1,6 @@
 /* eslint-disable regexp/no-misleading-capturing-group */
 /* eslint-disable regexp/no-super-linear-backtracking */
-import type { FeatureEntity } from "~/shared";
+import type { CasterSpells, FeatureEntity, SenseEntity, SpeedEntity } from "~/shared";
 import { parseDescIntoAutomation } from "~/shared";
 
 export function abilityParser(fData: any, activationType: number): [FeatureEntity[], string[]] {
@@ -25,6 +25,56 @@ export function abilityParser(fData: any, activationType: number): [FeatureEntit
 		});
 	}
 	return [output, notices];
+}
+
+export function parseSenses(senses: string[] = []): SenseEntity[] {
+	const output: SenseEntity[] = [];
+	for (const sense of senses) {
+		const value = Number.parseInt(sense.replace(/[a-z]/gi, ""));
+		let name = "";
+		let isBlind = false;
+
+		if (sense.toLowerCase().includes("dark")) {
+			name = "Darkvision";
+		}
+		else if (sense.toLowerCase().includes("blind")) {
+			name = "Blindsight";
+			isBlind = senses.some(value => value.includes("blind beyond this radius"));
+		}
+		else if (sense.toLowerCase().includes("true")) {
+			name = "Truesight";
+		}
+		else if (sense.toLowerCase().includes("tremor")) {
+			name = "Tremorsense";
+		}
+
+		if (name)
+			output.push({ name, value, unit: "ft", comment: isBlind ? "blind beyond this radius" : "" });
+	}
+	return output;
+}
+
+export function buildSpeedEntries(speeds: { walk?: number; fly?: number; climb?: number; swim?: number; burrow?: number; hover?: boolean }): SpeedEntity[] {
+	const output: SpeedEntity[] = [];
+	for (const [name, value] of Object.entries(speeds)) {
+		if (name === "hover" || typeof value !== "number" || !value)
+			continue;
+		output.push({
+			name: name[0].toUpperCase() + name.slice(1),
+			value,
+			comment: name === "fly" && speeds.hover ? "hover" : "",
+			unit: "ft"
+		});
+	}
+	return output;
+}
+
+export function detectCastingClass(text: string): CasterSpells["castingClass"] {
+	for (const casterClass of ["Wizard", "Ranger", "Sorcerer", "Bard", "Druid", "Artificer", "Cleric", "Warlock", "Paladin"] as const) {
+		if (text.toLowerCase().includes(casterClass.toLowerCase()))
+			return casterClass;
+	}
+	return null;
 }
 
 export function descParser(dData: any) {

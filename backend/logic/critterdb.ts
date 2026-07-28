@@ -1,9 +1,9 @@
-import type { CasterSpells, InnateSpellsEntity, SenseEntity, SkillsEntity, SpeedEntity, SpellCasting, SpellSlotList, Stat, Statblock } from "~/shared";
+import type { CasterSpells, InnateSpellsEntity, SkillsEntity, SpellCasting, SpellSlotList, Stat, Statblock } from "~/shared";
 import fetch from "node-fetch";
 import { app } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
 
-import { abilityParser } from "@/utilities/parsing";
+import { abilityParser, buildSpeedEntries, detectCastingClass, parseSenses } from "@/utilities/parsing";
 // Parsing
 import { capitalizeFirstLetter, defaultStatblock, SKILLS_BY_STAT } from "~/shared";
 import { spellListFlattened } from "./staticData";
@@ -148,40 +148,8 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: string]
 		race: data.stats.race,
 		size: data.stats.size,
 		languages: data.stats.languages,
-		senses: (() => {
-			const output: SenseEntity[] = [];
-			for (const s of data.stats.senses ?? []) {
-				const value = Number.parseInt(s.replace(/[a-z]/gi, ""));
-				let name = "";
-				let isBlind = false;
-
-				if (s.toLowerCase().includes("dark")) {
-					name = "Darkvision";
-				}
-				else if (s.toLowerCase().includes("blind")) {
-					name = "Blindsight";
-					isBlind = data.stats.senses ?? [].some((str: string) => str.includes("blind beyond this radius"));
-				}
-				else if (s.toLowerCase().includes("true")) {
-					name = "Truesight";
-				}
-				else if (s.toLowerCase().includes("tremor")) {
-					name = "Tremorsense";
-				}
-
-				if (name) {
-					output.push({
-						name,
-						value,
-						unit: "ft",
-						comment: isBlind ? "blind beyond this radius" : ""
-					});
-				}
-			}
-			return output;
-		})(),
+		senses: parseSenses(data.stats.senses),
 		speed: (() => {
-			const output: SpeedEntity[] = [];
 			const fly = Number.parseInt((data?.stats.speed.match(/fly\s*(\d+)\s*ft\.?/i) || [])[1]) || 0;
 			const isHover = data?.stats?.speed.toLowerCase().includes("hover");
 			const swim = Number.parseInt((data?.stats.speed.match(/swim\s*(\d+)\s*ft\.?/i) || [])[1]) || 0;
@@ -189,47 +157,7 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: string]
 			const climb = Number.parseInt((data?.stats.speed.match(/climb\s*(\d+)\s*ft\.?/i) || [])[1]) || 0;
 			const walk = Number.parseInt((data?.stats.speed.match(/^(\d+)\s*ft\.?/i) || [])[1]) || 0;
 
-			if (walk) {
-				output.push({
-					name: "Walk",
-					value: walk,
-					comment: "",
-					unit: "ft"
-				});
-			}
-			if (fly) {
-				output.push({
-					name: "Fly",
-					value: fly,
-					comment: isHover ? "hover" : "",
-					unit: "ft"
-				});
-			}
-			if (climb) {
-				output.push({
-					name: "Climb",
-					value: climb,
-					comment: "",
-					unit: "ft"
-				});
-			}
-			if (swim) {
-				output.push({
-					name: "Swim",
-					value: swim,
-					comment: "",
-					unit: "ft"
-				});
-			}
-			if (burrow) {
-				output.push({
-					name: "Burrow",
-					value: burrow,
-					comment: "",
-					unit: "ft"
-				});
-			}
-			return output;
+			return buildSpeedEntries({ walk, fly, climb, swim, burrow, hover: isHover });
 		})()
 	};
 
@@ -461,25 +389,7 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: string]
 			return defaultStatblock.spellcasting.casterSpells;
 		casterLevel = Number.parseInt(casterLevel[1]);
 
-		let casterClass: null | CasterSpells["castingClass"] = null;
-		if (sData.toLowerCase().includes("wizard"))
-			casterClass = "Wizard";
-		else if (sData.toLowerCase().includes("sorcerer"))
-			casterClass = "Sorcerer";
-		else if (sData.toLowerCase().includes("bard"))
-			casterClass = "Bard";
-		else if (sData.toLowerCase().includes("druid"))
-			casterClass = "Druid";
-		else if (sData.toLowerCase().includes("artificer"))
-			casterClass = "Artificer";
-		else if (sData.toLowerCase().includes("cleric"))
-			casterClass = "Cleric";
-		else if (sData.toLowerCase().includes("warlock"))
-			casterClass = "Warlock";
-		else if (sData.toLowerCase().includes("paladin"))
-			casterClass = "Paladin";
-		else if (sData.toLowerCase().includes("ranger"))
-			casterClass = "Ranger";
+		const casterClass = detectCastingClass(sData);
 
 		let defaultAbility: Stat | null = null;
 		switch (casterClass) {

@@ -1,8 +1,8 @@
-import type { CasterSpells, InnateSpellsList, SenseEntity, SkillsEntity, SpeedEntity, SpellSlotList, Stat, Statblock } from "~/shared";
+import type { CasterSpells, InnateSpellsList, SkillsEntity, SpellSlotList, Stat, Statblock } from "~/shared";
 import splitOnFirst from "split-on-first";
 import { app } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
-import { abilityParser, markdownReplacer } from "@/utilities/parsing";
+import { abilityParser, buildSpeedEntries, detectCastingClass, markdownReplacer, parseSenses } from "@/utilities/parsing";
 import { capitalizeFirstLetter, defaultStatblock, getXPbyCR, SKILLS_BY_STAT } from "~/shared";
 import { spellListFlattened } from "./staticData";
 
@@ -162,40 +162,8 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 				return [];
 			return data?.languages.filter((l: string) => !l.includes("telepathy"));
 		})(),
-		senses: (() => {
-			const output: SenseEntity[] = [];
-			for (const s of data.senses ?? []) {
-				const value = Number.parseInt(s.replace(/[a-z]/gi, ""));
-				let name = "";
-				let isBlind = false;
-
-				if (s.toLowerCase().includes("dark")) {
-					name = "Darkvision";
-				}
-				else if (s.toLowerCase().includes("blind")) {
-					name = "Blindsight";
-					isBlind = data.senses ?? [].some((str: string) => str.includes("blind beyond this radius"));
-				}
-				else if (s.toLowerCase().includes("true")) {
-					name = "Truesight";
-				}
-				else if (s.toLowerCase().includes("tremor")) {
-					name = "Tremorsense";
-				}
-
-				if (name) {
-					output.push({
-						name,
-						value,
-						unit: "ft",
-						comment: isBlind ? "blind beyond this radius" : ""
-					});
-				}
-			}
-			return output;
-		})(),
+		senses: parseSenses(data.senses),
 		speed: (() => {
-			const output: SpeedEntity[] = [];
 			const fly = Number.parseInt(data?.speed?.fly) || data?.speed?.fly?.number || 0;
 			const isHover = data?.speed?.canHover || false;
 			const swim = Number.parseInt(data?.speed?.swim) || data?.speed?.swim?.number || 0;
@@ -203,47 +171,7 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 			const climb = Number.parseInt(data?.speed?.climb) || data?.speed?.climb?.number || 0;
 			const walk = Number.parseInt(data?.speed?.walk) || data?.speed?.walk?.number || 0;
 
-			if (walk) {
-				output.push({
-					name: "Walk",
-					value: walk,
-					comment: "",
-					unit: "ft"
-				});
-			}
-			if (fly) {
-				output.push({
-					name: "Fly",
-					value: fly,
-					comment: isHover ? "hover" : "",
-					unit: "ft"
-				});
-			}
-			if (climb) {
-				output.push({
-					name: "Climb",
-					value: climb,
-					comment: "",
-					unit: "ft"
-				});
-			}
-			if (swim) {
-				output.push({
-					name: "Swim",
-					value: swim,
-					comment: "",
-					unit: "ft"
-				});
-			}
-			if (burrow) {
-				output.push({
-					name: "Burrow",
-					value: burrow,
-					comment: "",
-					unit: "ft"
-				});
-			}
-			return output;
+			return buildSpeedEntries({ walk, fly, climb, swim, burrow, hover: isHover });
 		})()
 	};
 
@@ -467,28 +395,7 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 				if (!casterSpellcasting || !casterSpellcasting.headerEntries)
 					return null;
 
-				const text = casterSpellcasting.headerEntries[0];
-
-				if (text.toLowerCase().includes("wizard"))
-					return "Wizard";
-				if (text.toLowerCase().includes("ranger"))
-					return "Ranger";
-				if (text.toLowerCase().includes("sorcerer"))
-					return "Sorcerer";
-				if (text.toLowerCase().includes("bard"))
-					return "Bard";
-				if (text.toLowerCase().includes("druid"))
-					return "Druid";
-				if (text.toLowerCase().includes("artificer"))
-					return "Artificer";
-				if (text.toLowerCase().includes("cleric"))
-					return "Cleric";
-				if (text.toLowerCase().includes("warlock"))
-					return "Warlock";
-				if (text.toLowerCase().includes("paladin"))
-					return "Paladin";
-
-				return null;
+				return detectCastingClass(casterSpellcasting.headerEntries[0]);
 			})(),
 			spellList: (() => {
 				const output = [[], [], [], [], [], [], [], [], [], []] as CasterSpells["spellList"];
