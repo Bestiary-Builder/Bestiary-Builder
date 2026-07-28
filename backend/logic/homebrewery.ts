@@ -9,7 +9,7 @@ import { possibleUser } from "./login";
 
 app.get("/api/homebrewery/export/bestiary/:id", possibleUser, async (req, res) => {
 	const bestiaryId = req.params.id;
-	const user = req.body.user;
+	const user = req.user;
 
 	if (!bestiaryId)
 		return res.status(400).json({ error: "Bestiary id not valid." });
@@ -47,7 +47,7 @@ app.get("/api/homebrewery/export/bestiary/:id", possibleUser, async (req, res) =
 
 app.get("/api/homebrewery/export/creature/:id", possibleUser, async (req, res) => {
 	const creatureID = req.params.id;
-	const user = req.body.user;
+	const user = req.user;
 
 	if (!creatureID)
 		return res.status(400).json({ error: "Creature id not valid." });

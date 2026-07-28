@@ -5,25 +5,16 @@ import { log } from "@/utilities/logger";
 import { requireUser } from "./login";
 
 app.get("/api/user/bookmarks", requireUser, async (req, res) => {
-	const user = req.body.user;
-	if (user) {
-		const allBestiaries = await getBookmarkedBestiariesForUser(user.id);
-		log.info(`Retrieved all bookmarked bestiaries from the user with the id ${user.id}`);
-		return res.json(allBestiaries);
-	}
-	else {
-		return res.status(401).json({ error: "Not logged in." });
-	}
+	const user = req.user!;
+	const allBestiaries = await getBookmarkedBestiariesForUser(user.id);
+	log.info(`Retrieved all bookmarked bestiaries from the user with the id ${user.id}`);
+	return res.json(allBestiaries);
 });
 
 app.get("/api/user", requireUser, async (req, res) => {
-	const userData = req.body.user as Omit<User, "secret"> & { secret?: string };
-	if (userData) {
-		delete userData.secret;
-		log.info(`Retrieved user with the id ${userData.id}`);
-		return res.json(userData);
-	}
-	else { return res.status(404).json({ error: "User not found." }); }
+	const user = req.user!;
+	log.info(`Retrieved user with the id ${user.id}`);
+	return res.json(user);
 });
 app.get("/api/user/:id", async (req, res) => {
 	const userData = (await getUser(req.params.id)) as User;
@@ -45,24 +36,19 @@ app.get("/api/user/:id", async (req, res) => {
 });
 
 app.post("/api/user/updatePreferences", requireUser, async (req, res) => {
-	const user = req.body.user;
+	const user = req.user!;
 	const newSettings = req.body.data;
 	const data = { ...user, ...newSettings };
-	if (user) {
-		log.info(`Updating user setting for ${user.id}`);
+	log.info(`Updating user setting for ${user.id}`);
 
-		if (!newSettings)
-			return res.status(404);
+	if (!newSettings)
+		return res.status(404);
 
-		const updatedUser = await getPrismaClient().user.update({
-			where: { id: data.id },
-			data: newSettings,
-			omit: { secret: true }
-		});
-		resetUserCache(updatedUser.id);
-		return res.json({ data: updatedUser, success: true, error: null });
-	}
-	else {
-		return res.status(401).json({ error: "Not logged in." });
-	}
+	const updatedUser = await getPrismaClient().user.update({
+		where: { id: data.id },
+		data: newSettings,
+		omit: { secret: true }
+	});
+	resetUserCache(updatedUser.id);
+	return res.json({ data: updatedUser, success: true, error: null });
 });

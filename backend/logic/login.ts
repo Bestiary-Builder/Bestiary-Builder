@@ -1,9 +1,16 @@
 import type { NextFunction, Request, Response } from "express";
+import type { User } from "~/shared";
 import jwt from "jsonwebtoken";
 import fetch from "node-fetch";
 import { app, isProduction } from "@/utilities/constants";
 import { getUserFromSecret, updateUser } from "@/utilities/database";
 import { log } from "@/utilities/logger";
+
+declare module "express-serve-static-core" {
+	interface Request {
+		user: User | null;
+	}
+}
 
 app.head("/api/login", async (req, res) => {
 	return res.sendStatus(200);
@@ -87,16 +94,29 @@ app.get("/api/logout", async (req, res) => {
 	res.clearCookie("userToken");
 	return res.json({});
 });
-export const requireUser = async (req: Request, res: Response, next: NextFunction) => {
+
+async function resolveRequestUser(req: Request) {
 	const token = req.cookies.userToken;
 	if (!token)
-		return res.status(401).json({ error: "Not logged in." });
+		return { hasToken: false, user: null };
+
+	const decoded = jwt.verify(token, process.env.JWTKEY ?? "key") as { id: string };
+	const user = await getUserFromSecret(decoded.id);
+	if (!user)
+		return { hasToken: true, user: null };
+
+	const { secret: _secret, ...resolvedUser } = user as User & { secret: string };
+	return { hasToken: true, user: resolvedUser };
+}
+
+export const requireUser = async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const decoded = jwt.verify(token, process.env.JWTKEY ?? "key") as { id: string };
-		const user = await getUserFromSecret(decoded.id);
+		const { hasToken, user } = await resolveRequestUser(req);
+		if (!hasToken)
+			return res.status(401).json({ error: "Not logged in." });
 		if (!user)
 			return res.status(401).send({ error: "User token doesn't correspond to any user." });
-		req.body.user = user;
+		req.user = user;
 	}
 	catch {
 		return res.status(401).send({ error: "Invalid user token." });
@@ -104,15 +124,11 @@ export const requireUser = async (req: Request, res: Response, next: NextFunctio
 	return next();
 };
 export const possibleUser = async (req: Request, res: Response, next: NextFunction) => {
-	const token = req.cookies.userToken;
-	req.body.user = null;
-	if (token) {
-		try {
-			const decoded = jwt.verify(token, process.env.JWTKEY ?? "key") as { id: string };
-			const user = await getUserFromSecret(decoded.id);
-			req.body.user = user;
-		}
-		catch {}
+	req.user = null;
+	try {
+		const { user } = await resolveRequestUser(req);
+		req.user = user;
 	}
+	catch {}
 	return next();
 };
