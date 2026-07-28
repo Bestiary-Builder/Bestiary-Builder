@@ -42,45 +42,44 @@ function buildWhereSql(searchTerm: string | null, tags: string[]) {
 }
 
 app.post("/api/search", async (req, res) => {
-	try {
-		// Parse search inputs
-		const input = req.body.data as Partial<SearchOptions> | null;
-		const searchOptions: SearchOptions = {
-			...{
-				search: ".",
-				page: 0,
-				mode: "popular",
-				tags: []
-			},
-			...(input ?? {})
-		};
+	// Parse search inputs
+	const input = req.body.data as Partial<SearchOptions> | null;
+	const searchOptions: SearchOptions = {
+		...{
+			search: ".",
+			page: 0,
+			mode: "popular",
+			tags: []
+		},
+		...(input ?? {})
+	};
 
-		if (!validateSearchInput(searchOptions, res))
-			return;
-		if (searchOptions.page < 0)
-			return res.status(400).json({ error: "Page out of bounds" });
+	if (!validateSearchInput(searchOptions, res))
+		return;
+	if (searchOptions.page < 0)
+		return res.status(400).json({ error: "Page out of bounds" });
 
-		const searchTerm = normalizeSearchTerm(searchOptions.search);
-		const tags = searchOptions.tags ?? [];
-		const whereSql = buildWhereSql(searchTerm, tags);
+	const searchTerm = normalizeSearchTerm(searchOptions.search);
+	const tags = searchOptions.tags ?? [];
+	const whereSql = buildWhereSql(searchTerm, tags);
 
-		const prisma = getPrismaClient();
+	const prisma = getPrismaClient();
 
-		const totalCountRows = await prisma.$queryRaw<{ count: number }[]>(Prisma.sql`
+	const totalCountRows = await prisma.$queryRaw<{ count: number }[]>(Prisma.sql`
 			SELECT COUNT(*)::int AS count
 			FROM "Bestiaries"
 			WHERE ${whereSql}
 		`);
 
-		const totalCount = totalCountRows[0]?.count ?? 0;
-		const pageAmount = Math.max(1, Math.ceil(totalCount / amountPerPage));
+	const totalCount = totalCountRows[0]?.count ?? 0;
+	const pageAmount = Math.max(1, Math.ceil(totalCount / amountPerPage));
 
-		const offset = searchOptions.page * amountPerPage;
-		const orderBy = searchOptions.mode === "popular"
-			? Prisma.sql`ORDER BY ("bookmarks" * 10 + "viewCount") DESC, "lastUpdated" DESC, "name" ASC`
-			: Prisma.sql`ORDER BY "lastUpdated" DESC, "name" ASC`;
+	const offset = searchOptions.page * amountPerPage;
+	const orderBy = searchOptions.mode === "popular"
+		? Prisma.sql`ORDER BY ("bookmarks" * 10 + "viewCount") DESC, "lastUpdated" DESC, "name" ASC`
+		: Prisma.sql`ORDER BY "lastUpdated" DESC, "name" ASC`;
 
-		const results = await prisma.$queryRaw<BestiaryWithCount[]>(Prisma.sql`
+	const results = await prisma.$queryRaw<BestiaryWithCount[]>(Prisma.sql`
 			SELECT
 				"id",
 				"name",
@@ -98,18 +97,13 @@ app.post("/api/search", async (req, res) => {
 			LIMIT ${amountPerPage} OFFSET ${offset}
 		`);
 
-		const output = {
-			results,
-			pageAmount
-		};
+	const output = {
+		results,
+		pageAmount
+	};
 
-		log.info(`Search completed with ${output.pageAmount} pages`);
-		return res.json(output);
-	}
-	catch (err) {
-		log.log("critical", err);
-		return res.status(500).json({ error: "Unknown server error occured, please try again." });
-	}
+	log.info(`Search completed with ${output.pageAmount} pages`);
+	return res.json(output);
 });
 
 const { SearchOptions: SearchChecker } = createCheckers(typeInterface);

@@ -88,43 +88,31 @@ app.get("/api/logout", async (req, res) => {
 	return res.json({});
 });
 export const requireUser = async (req: Request, res: Response, next: NextFunction) => {
+	const token = req.cookies.userToken;
+	if (!token)
+		return res.status(401).json({ error: "Not logged in." });
 	try {
-		const token = req.cookies.userToken;
-		if (!token)
-			return res.status(401).json({ error: "Not logged in." });
+		const decoded = jwt.verify(token, process.env.JWTKEY ?? "key") as { id: string };
+		const user = await getUserFromSecret(decoded.id);
+		if (!user)
+			return res.status(401).send({ error: "User token doesn't correspond to any user." });
+		req.body.user = user;
+	}
+	catch {
+		return res.status(401).send({ error: "Invalid user token." });
+	}
+	return next();
+};
+export const possibleUser = async (req: Request, res: Response, next: NextFunction) => {
+	const token = req.cookies.userToken;
+	req.body.user = null;
+	if (token) {
 		try {
 			const decoded = jwt.verify(token, process.env.JWTKEY ?? "key") as { id: string };
 			const user = await getUserFromSecret(decoded.id);
-			if (!user)
-				return res.status(401).send({ error: "User token doesn't correspond to any user." });
 			req.body.user = user;
 		}
-		catch {
-			return res.status(401).send({ error: "Invalid user token." });
-		}
-		return next();
+		catch {}
 	}
-	catch (err) {
-		log.log("critical", err);
-		return res.status(500).json({ error: "Unknown server error occured, please try again." });
-	}
-};
-export const possibleUser = async (req: Request, res: Response, next: NextFunction) => {
-	try {
-		const token = req.cookies.userToken;
-		req.body.user = null;
-		if (token) {
-			try {
-				const decoded = jwt.verify(token, process.env.JWTKEY ?? "key") as { id: string };
-				const user = await getUserFromSecret(decoded.id);
-				req.body.user = user;
-			}
-			catch {}
-		}
-		return next();
-	}
-	catch (err) {
-		log.log("critical", err);
-		return res.status(500).json({ error: "Unknown server error occured, please try again." });
-	}
+	return next();
 };

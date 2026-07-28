@@ -60,11 +60,12 @@ app.use(cors());
 app.use(compression());
 
 // Error handling
-function errorHandler(err: Error, req: Request, res: Response, _next: NextFunction) {
+export function errorHandler(err: Error, req: Request, res: Response, _next: NextFunction) {
 	log.log("critical", err);
-	res.status(500).json({ error: "An unknown error occured." });
+	if (req.path.startsWith("/api"))
+		return res.status(500).json({ error: "Unknown server error occured, please try again." });
+	return res.status(500).send("Internal Server Error");
 }
-app.use(errorHandler);
 process.on("unhandledRejection", (err, origin) => {
 	log.log("critical", `Unhandled rejection: ${err}; From: ${origin} `);
 });

@@ -5,7 +5,6 @@ import fetch from "node-fetch";
 // Validate input
 import { createCheckers } from "ts-interface-checker";
 import { app } from "@/utilities/constants";
-import { log } from "@/utilities/logger";
 import { interfaceValidation, typeInterface } from "~/shared";
 
 app.post("/api/validate/automation", async (req, res) => {
@@ -36,18 +35,12 @@ export function validateCreatureInput(input: Statblock, res: Response) {
 }
 
 app.post("/api/validate/creature", async (req, res) => {
-	try {
-		// Get input
-		const data = req.body.data as Statblock;
-		if (!data)
-			return res.status(400).json({ error: "Creature data not found." });
-		// Validate input
-		if (!validateCreatureInput(data, res))
-			return;
-		return res.json({ valid: true });
-	}
-	catch (err) {
-		log.log("critical", err);
-		return res.status(500).json({ error: "Unknown server error occured, please try again." });
-	}
+	// Get input
+	const data = req.body.data as Statblock;
+	if (!data)
+		return res.status(400).json({ error: "Creature data not found." });
+	// Validate input
+	if (!validateCreatureInput(data, res))
+		return;
+	return res.json({ valid: true });
 });

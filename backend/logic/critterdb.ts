@@ -9,44 +9,32 @@ import { capitalizeFirstLetter, defaultStatblock, SKILLS_BY_STAT } from "~/share
 import { spellListFlattened } from "./staticData";
 
 app.get("/api/critterdb/:id/:published", async (req, res) => {
-	try {
-		const id = req.params.id;
-		const published = req.params.published.toLowerCase() === "true";
-		const result = await fromCritterdb(id, published);
-		if (!result)
-			return res.status(500).json({ error: "Failed to fetch info from critterdb.com. Are you sure the link is right?" });
-		else
-			return res.json(result);
-	}
-	catch (err) {
-		log.log("critical", err);
-		return res.status(500).json({ error: "Unknown server error occured, please try again." });
-	}
+	const id = req.params.id;
+	const published = req.params.published.toLowerCase() === "true";
+	const result = await fromCritterdb(id, published);
+	if (!result)
+		return res.status(500).json({ error: "Failed to fetch info from critterdb.com. Are you sure the link is right?" });
+	else
+		return res.json(result);
 });
 
 app.get("/api/critterdbcreature/:id", async (req, res) => {
-	try {
-		const id = req.params.id;
+	const id = req.params.id;
 
-		await fetch(`https://critterdb.com/api/creatures/${id}`).then(async (resp) => {
-			try {
-				const raw = (await resp.json()) as any;
-				const result = parseFromCritterDB(raw);
-				if (!result)
-					return res.status(500).json({ error: "Failed to fetch info from critterdb.com. Are you sure the link is right?" });
-				else
-					return res.json(result[0]);
-			}
-			catch {
-				log.error(`CritterDB | Error importing creature from critterDB. Id: "${id}"`);
+	await fetch(`https://critterdb.com/api/creatures/${id}`).then(async (resp) => {
+		try {
+			const raw = (await resp.json()) as any;
+			const result = parseFromCritterDB(raw);
+			if (!result)
 				return res.status(500).json({ error: "Failed to fetch info from critterdb.com. Are you sure the link is right?" });
-			}
-		});
-	}
-	catch (err) {
-		log.log("critical", err);
-		return res.status(500).json({ error: "Unknown server error occured, please try again." });
-	}
+			else
+				return res.json(result[0]);
+		}
+		catch {
+			log.error(`CritterDB | Error importing creature from critterDB. Id: "${id}"`);
+			return res.status(500).json({ error: "Failed to fetch info from critterdb.com. Are you sure the link is right?" });
+		}
+	});
 });
 
 async function fromCritterdb(url: string, published: boolean): Promise<{ data: { creatures: Statblock[]; name: string; description: string }; failedCreatures: string[] } | null> {

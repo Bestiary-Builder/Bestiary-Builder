@@ -1,6 +1,5 @@
 import fetch from "node-fetch";
 import { app } from "@/utilities/constants";
-import { log } from "@/utilities/logger";
 import { requireUser } from "./login";
 import "@/utilities/env";
 
@@ -11,23 +10,17 @@ const HEADERS = {
 };
 
 app.get("/api/character/list", requireUser, async (req, res) => {
-	try {
-		const result = await fetch(`${API}/meta`, {
-			method: "GET",
-			headers: {
-				"Content-Type": "application/json",
-				"Authorization": req.headers["avrae-token"] || ""
-			}
-		}).then(response => response.json());
-		if (result?.error)
-			return res.status(500).json({ error: result.error });
-		else
-			return res.json(result);
-	}
-	catch (err) {
-		log.log("critical", err);
-		return res.status(500).json({ error: "Unknown server error occured, please try again." });
-	}
+	const result = await fetch(`${API}/meta`, {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json",
+			"Authorization": req.headers["avrae-token"] || ""
+		}
+	}).then(response => response.json());
+	if (result?.error)
+		return res.status(500).json({ error: result.error });
+	else
+		return res.json(result);
 });
 
 app.post("/api/character/:upstream/attacks/add/", requireUser, async (req, res) => {
@@ -36,30 +29,24 @@ app.post("/api/character/:upstream/attacks/add/", requireUser, async (req, res) 
 
 	if (!upstream)
 		return res.status(400).json({ error: "No character ID given." });
-	try {
-		const currentAttacks = await fetch(`${API}/${upstream}/attacks`, {
-			method: "GET",
-			headers: {
-				"Content-Type": "application/json",
-				"Authorization": req.headers["avrae-token"] || ""
-			}
-		}).then(response => response.json());
-		if (currentAttacks?.error)
-			return res.status(500).json({ error: currentAttacks.error });
+	const currentAttacks = await fetch(`${API}/${upstream}/attacks`, {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json",
+			"Authorization": req.headers["avrae-token"] || ""
+		}
+	}).then(response => response.json());
+	if (currentAttacks?.error)
+		return res.status(500).json({ error: currentAttacks.error });
 
-		const putAttacks = await fetch(`${API}/${upstream}/attacks`, {
-			method: "PUT",
-			headers: HEADERS,
-			body: JSON.stringify(currentAttacks.concat(automationList))
-		}).then(response => response.json());
-		if (putAttacks?.error)
-			return res.status(500).json({ error: putAttacks.error });
-		return res.json(putAttacks);
-	}
-	catch (err) {
-		log.log("critical", err);
-		return res.status(500).json({ error: "Unknown server error occured, please try again." });
-	}
+	const putAttacks = await fetch(`${API}/${upstream}/attacks`, {
+		method: "PUT",
+		headers: HEADERS,
+		body: JSON.stringify(currentAttacks.concat(automationList))
+	}).then(response => response.json());
+	if (putAttacks?.error)
+		return res.status(500).json({ error: putAttacks.error });
+	return res.json(putAttacks);
 });
 
 app.post("/api/character/:upstream/attacks/set/", requireUser, async (req, res) => {
@@ -68,18 +55,12 @@ app.post("/api/character/:upstream/attacks/set/", requireUser, async (req, res) 
 
 	if (!upstream)
 		return res.status(400).json({ error: "No character ID given." });
-	try {
-		const putAttacks = await fetch(`${API}/${upstream}/attacks`, {
-			method: "PUT",
-			headers: HEADERS,
-			body: JSON.stringify(automationList)
-		}).then(response => response.json());
-		if (putAttacks?.error)
-			return res.status(500).json({ error: putAttacks.error });
-		return res.json(putAttacks);
-	}
-	catch (err) {
-		log.log("critical", err);
-		return res.status(500).json({ error: "Unknown server error occured, please try again." });
-	}
+	const putAttacks = await fetch(`${API}/${upstream}/attacks`, {
+		method: "PUT",
+		headers: HEADERS,
+		body: JSON.stringify(automationList)
+	}).then(response => response.json());
+	if (putAttacks?.error)
+		return res.status(500).json({ error: putAttacks.error });
+	return res.json(putAttacks);
 });

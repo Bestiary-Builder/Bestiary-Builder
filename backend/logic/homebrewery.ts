@@ -8,84 +8,72 @@ import { checkCreaturePermission } from "./creatures";
 import { possibleUser } from "./login";
 
 app.get("/api/homebrewery/export/bestiary/:id", possibleUser, async (req, res) => {
-	try {
-		const bestiaryId = req.params.id;
-		const user = req.body.user;
+	const bestiaryId = req.params.id;
+	const user = req.body.user;
 
-		if (!bestiaryId)
-			return res.status(400).json({ error: "Bestiary id not valid." });
+	if (!bestiaryId)
+		return res.status(400).json({ error: "Bestiary id not valid." });
 
-		const bestiary = bestiaryId ? await getBestiary(bestiaryId) : null;
+	const bestiary = bestiaryId ? await getBestiary(bestiaryId) : null;
 
-		if (!bestiary)
-			return res.status(404).json({ error: "No bestiary with that id found." });
+	if (!bestiary)
+		return res.status(404).json({ error: "No bestiary with that id found." });
 
-		if (await checkBestiaryPermission(bestiary, user) === "none")
-			return res.status(401).json({ error: "You don't have access to this bestiary." });
+	if (await checkBestiaryPermission(bestiary, user) === "none")
+		return res.status(401).json({ error: "You don't have access to this bestiary." });
 
-		incrementBestiaryViewCount(bestiaryId);
-		const creatures: string[] = [];
-		const creatureRecords = await getCreaturesByBestiary(bestiaryId);
+	incrementBestiaryViewCount(bestiaryId);
+	const creatures: string[] = [];
+	const creatureRecords = await getCreaturesByBestiary(bestiaryId);
 
-		for (const creature of creatureRecords) {
-			if (!creature.stats)
-				continue;
-
-			const stats = creature.stats;
-
-			try {
-				const creature_markdown = getCreatureMarkdown(stats);
-				creatures.push(creature_markdown);
-			}
-			catch (err) {
-				log.log("critical", err);
-				return res.status(500).json({ error: `Error exporting ${stats.description.name}. Please contact the developers of Bestiary Builder, not Avrae.` });
-			}
-		}
-
-		return res.json({ metadata: creatures.join("\n") });
-	}
-	catch (err) {
-		log.log("critical", err);
-		return res.status(500).json({ error: "Unknown server error occured, please try again." });
-	}
-});
-
-app.get("/api/homebrewery/export/creature/:id", possibleUser, async (req, res) => {
-	try {
-		const creatureID = req.params.id;
-		const user = req.body.user;
-
-		if (!creatureID)
-			return res.status(400).json({ error: "Creature id not valid." });
-
-		const creature = await getCreature(creatureID);
-
-		if (!creature)
-			return res.status(404).json({ error: "No creature with that id found." });
-
-		const permissionLevel = await checkCreaturePermission(creature, user);
-
-		if (!permissionLevel)
-			return res.status(401).json({ error: "You don't have permission to view this creature." });
-
+	for (const creature of creatureRecords) {
 		if (!creature.stats)
-			return res.status(500).json({ error: "Creature stats not found." });
+			continue;
 
 		const stats = creature.stats;
 
 		try {
 			const creature_markdown = getCreatureMarkdown(stats);
-			return res.json({ metadata: creature_markdown });
+			creatures.push(creature_markdown);
 		}
 		catch (err) {
 			log.log("critical", err);
 			return res.status(500).json({ error: `Error exporting ${stats.description.name}. Please contact the developers of Bestiary Builder, not Avrae.` });
 		}
 	}
+
+	return res.json({ metadata: creatures.join("\n") });
+});
+
+app.get("/api/homebrewery/export/creature/:id", possibleUser, async (req, res) => {
+	const creatureID = req.params.id;
+	const user = req.body.user;
+
+	if (!creatureID)
+		return res.status(400).json({ error: "Creature id not valid." });
+
+	const creature = await getCreature(creatureID);
+
+	if (!creature)
+		return res.status(404).json({ error: "No creature with that id found." });
+
+	const permissionLevel = await checkCreaturePermission(creature, user);
+
+	if (!permissionLevel)
+		return res.status(401).json({ error: "You don't have permission to view this creature." });
+
+	if (!creature.stats)
+		return res.status(500).json({ error: "Creature stats not found." });
+
+	const stats = creature.stats;
+
+	try {
+		const creature_markdown = getCreatureMarkdown(stats);
+		return res.json({ metadata: creature_markdown });
+	}
 	catch (err) {
 		log.log("critical", err);
-		return res.status(500).json({ error: "Unknown server error occured, please try again." });
+		return res.status(500).json({ error: `Error exporting ${stats.description.name}. Please contact the developers of Bestiary Builder, not Avrae.` });
 	}
 });
 

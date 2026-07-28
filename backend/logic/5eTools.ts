@@ -1,7 +1,6 @@
 import type { CasterSpells, InnateSpellsList, SkillsEntity, SpellSlotList, Stat, Statblock } from "~/shared";
 import splitOnFirst from "split-on-first";
 import { app } from "@/utilities/constants";
-import { log } from "@/utilities/logger";
 import { abilityParser, buildSpeedEntries, detectCastingClass, markdownReplacer, parseSenses } from "@/utilities/parsing";
 import { capitalizeFirstLetter, defaultStatblock, getXPbyCR, SKILLS_BY_STAT } from "~/shared";
 import { spellListFlattened } from "./staticData";
@@ -71,24 +70,18 @@ function parseDamageTypes(values: any, type: "immune" | "resist" | "vulnerable")
 }
 
 app.post("/api/5etools-import", async (req, res) => {
-	try {
-		const { data: input } = req.body;
-		const [data, notices] = parseFrom5eTools(input);
-		const oldStats = { ...data };
-		const newData = {} as Statblock;
-		for (const key in defaultStatblock) {
-			// @ts-expect-error untyped
-			newData[key] = { ...defaultStatblock[key], ...oldStats[key] };
-		}
-		return res.json({
-			stats: newData,
-			notices
-		});
+	const { data: input } = req.body;
+	const [data, notices] = parseFrom5eTools(input);
+	const oldStats = { ...data };
+	const newData = {} as Statblock;
+	for (const key in defaultStatblock) {
+		// @ts-expect-error untyped
+		newData[key] = { ...defaultStatblock[key], ...oldStats[key] };
 	}
-	catch (err) {
-		log.log("critical", err);
-		return res.status(500).json({ error: "Unknown server error occured, please try again." });
-	}
+	return res.json({
+		stats: newData,
+		notices
+	});
 });
 
 export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string[] }] {
