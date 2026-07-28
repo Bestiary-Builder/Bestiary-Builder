@@ -15,6 +15,11 @@ const defaultIncludes = {
 		select: {
 			userId: true
 		}
+	},
+	_count: {
+		select: {
+			bookmarkedBy: true
+		}
 	}
 };
 
@@ -83,6 +88,24 @@ export async function getBestiariesByOwner(userId: string) {
 			include: defaultIncludes
 		});
 	}, []);
+}
+
+export async function getOwnedBestiaryIds(userId: Id) {
+	return await withDatabaseFallback(async () => {
+		const bestiaries = await getPrismaClient().bestiary.findMany({ where: { ownerId: userId }, select: { id: true } });
+		return bestiaries.map(bestiary => bestiary.id);
+	}, []);
+}
+
+export async function updateUserBestiaryIndexes(userId: Id, items: { id: Id; index: number }[]) {
+	return await withDatabaseFallback(async () => {
+		await getPrismaClient().$transaction(items.map(item => getPrismaClient().userBestiaryOrder.upsert({
+			where: { userId_bestiaryId: { userId, bestiaryId: item.id } },
+			update: { index: item.index },
+			create: { userId, bestiaryId: item.id, index: item.index }
+		})));
+		return true;
+	}, false);
 }
 
 export async function getPublicBestiariesByOwner(userId: string) {
@@ -165,10 +188,21 @@ export async function getBestiaryCreatureIds(bestiaryId: Id) {
 	return await withDatabaseFallback(async () => {
 		const creatures = await getPrismaClient().creature.findMany({
 			where: { bestiaryId },
-			select: { id: true }
+			select: { id: true },
+			orderBy: [{ index: "asc" }, { lastUpdated: "asc" }, { id: "asc" }]
 		});
 		return creatures.map(c => c.id);
 	}, []);
+}
+
+export async function updateBestiaryCreatureIndexes(items: { id: Id; index: number }[]) {
+	return await withDatabaseFallback(async () => {
+		await getPrismaClient().$transaction(items.map(item => getPrismaClient().creature.update({
+			where: { id: item.id },
+			data: { index: item.index }
+		})));
+		return true;
+	}, false);
 }
 
 export async function getBestiaryCreatureCount(bestiaryId: Id) {

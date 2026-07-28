@@ -2,7 +2,7 @@ import type { Creature, User } from "~/shared";
 import { app, checkCreatureAmountLimit } from "@/utilities/constants";
 import { createCreature, deleteCreature, getBestiary, getBestiaryCreatureCount, getCreature, getCreaturesByBestiary, getPrismaClient, updateCreature } from "@/utilities/database";
 import { log } from "@/utilities/logger";
-import { canEditBestiary, checkBestiaryPermission } from "../collections/bestiaries";
+import { bestiaryCollections, canEditBestiary, checkBestiaryPermission } from "../collections/bestiaries";
 import { validateCreatureInput } from "../external/validation";
 import { possibleUser, requireUser } from "../main/login";
 import { prepareCreatureStats } from "./creaturePreparation";
@@ -171,34 +171,21 @@ app.get("/api/creature/:id/delete", requireUser, async (req, res) => {
 app.post("/api/bestiary/:id/creatures/order", requireUser, async (req, res) => {
 	const user = req.user!;
 	const bestiaryId = req.params.id;
-	const bestiary = bestiaryId ? await getBestiary(bestiaryId) : null;
-	if (!bestiary)
-		return res.status(404).json({ error: "No bestiary with that id found." });
-	if (!await canEditBestiary(bestiary, user))
-		return res.status(401).json({ error: "You don't have permission to reorder creatures in this bestiary." });
-
-	const prisma = getPrismaClient();
-
 	const creatureIds = req.body.data;
 	if (!creatureIds || !Array.isArray(creatureIds))
 		return res.status(400).json({ error: "Invalid creature id array." });
-
-	// Get creatures from bestiary
-	const bestiaryCreatures = (await prisma.creature.findMany({ where: { bestiaryId: bestiary.id }, select: { id: true } })).map(c => c.id);
-
-	// Check that user owns all bestiarie
-	if (creatureIds.some(id => !bestiaryCreatures.includes(id)))
-		return res.status(403).json({ error: "Specified creatures are not part of this bestiary." });
-
-	// Set index for each bestiary, and any unspecified gets set last
-	const result = await prisma.$transaction(bestiaryCreatures.map((creatureId) => {
-		let index = creatureIds.indexOf(creatureId);
-		if (index < 0)
-			index = creatureIds.length + 1;
-		return prisma.creature.update(({ where: { id: creatureId }, data: { index } }));
-	}));
-
-	if (result.length === bestiaryCreatures.length)
+	if (!bestiaryId)
+		return res.status(400).json({ error: "Bestiary id not valid." });
+	const result = await bestiaryCollections.reorderItems(bestiaryId, user.id, creatureIds);
+	if (result.ok)
 		return res.status(200).json({});
-	throw new Error("Failed to update creature order.");
+	if (result.reason === "collection-not-found")
+		return res.status(404).json({ error: "No bestiary with that id found." });
+	if (result.reason === "forbidden")
+		return res.status(401).json({ error: "You don't have permission to reorder creatures in this bestiary." });
+	if (result.reason === "items-not-in-collection")
+		return res.status(403).json({ error: "Specified creatures are not part of this bestiary." });
+	if (result.reason === "duplicate-items")
+		return res.status(400).json({ error: "Creature ids must be unique." });
+	return res.status(500).json({ error: "Failed to update creature order." });
 });

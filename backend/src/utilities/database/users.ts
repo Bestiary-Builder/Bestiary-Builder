@@ -58,22 +58,14 @@ export async function updateUser(data: { id: string; username: string; avatar: s
 export async function addBookmark(userId: string, bestiaryId: Id) {
 	return await withDatabaseFallback(async () => {
 		log.log("database", `Adding bookmark to user ${userId}.`);
-		const prisma = getPrismaClient();
-		await prisma.$transaction([
-			prisma.userBestiaryBookmark.create({ data: { userId, bestiaryId } }),
-			prisma.bestiary.update({ where: { id: bestiaryId }, data: { bookmarks: { increment: 1 } } })
-		]);
+		await getPrismaClient().userBestiaryBookmark.create({ data: { userId, bestiaryId } });
 		return true;
 	}, false);
 }
 export async function removeBookmark(userId: string, bestiaryId: Id) {
 	return await withDatabaseFallback(async () => {
 		log.log("database", `Removing bookmark from user ${userId}.`);
-		const prisma = getPrismaClient();
-		await prisma.$transaction([
-			prisma.userBestiaryBookmark.delete({ where: { userId_bestiaryId: { userId, bestiaryId } } }),
-			prisma.bestiary.update({ where: { id: bestiaryId }, data: { bookmarks: { decrement: 1 } } })
-		]);
+		await getPrismaClient().userBestiaryBookmark.delete({ where: { userId_bestiaryId: { userId, bestiaryId } } });
 		return true;
 	}, false);
 }

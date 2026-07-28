@@ -1,10 +1,16 @@
 import type { Id } from "~/shared";
-import type { AutomationCollectionCreateInput, AutomationCollectionUpdateInput, AutomationCreateInput, AutomationUpdateInput } from "~/shared/src/prisma-types";
+import type { AutomationCollectionCreateInput, AutomationCollectionUpdateInput, AutomationCreateInput, AutomationOrderByWithRelationInput, AutomationUpdateInput } from "~/shared/src/prisma-types";
 import { log } from "@/utilities/logger";
 import { getPrismaClient } from ".";
 import { withDatabaseFallback } from "./operations";
 
 type CreateAutomationData = Pick<AutomationCreateInput, "name" | "description" | "automation">;
+const automationOrder: AutomationOrderByWithRelationInput[] = [{ index: "asc" }, { lastUpdated: "asc" }, { id: "asc" }];
+const collectionIncludes = {
+	editors: { select: { userId: true } },
+	automations: { orderBy: automationOrder },
+	_count: { select: { bookmarkedBy: true } }
+};
 
 // Automation functions
 export async function getAutomation(id: Id) {
@@ -16,10 +22,17 @@ export async function getAutomation(id: Id) {
 export async function createAutomation(data: CreateAutomationData, collectionId: Id) {
 	return await withDatabaseFallback(async () => {
 		log.log("database", `Creating new automation`);
-		return await getPrismaClient().automation.create({
+		const prisma = getPrismaClient();
+		const index = ((await prisma.automation.findFirst({
+			where: { collectionId },
+			select: { index: true },
+			orderBy: { index: "desc" }
+		}))?.index ?? -1) + 1;
+		return await prisma.automation.create({
 			data: {
 				...data,
 				lastUpdated: new Date(),
+				index,
 				collection: { connect: { id: collectionId } }
 			}
 		});
@@ -44,43 +57,63 @@ export async function getAutomationsByCollectionIds(collectionIds: Id[]) {
 	return await withDatabaseFallback(async () => {
 		if (!collectionIds.length)
 			return [];
-		return await getPrismaClient().automation.findMany({ where: { collectionId: { in: collectionIds } } });
+		return await getPrismaClient().automation.findMany({ where: { collectionId: { in: collectionIds } }, orderBy: automationOrder });
 	}, []);
+}
+
+export async function getAutomationsByCollection(collectionId: Id) {
+	return await withDatabaseFallback(async () => {
+		return await getPrismaClient().automation.findMany({ where: { collectionId }, orderBy: automationOrder });
+	}, []);
+}
+
+export async function getAutomationIds(collectionId: Id) {
+	return await withDatabaseFallback(async () => {
+		const automations = await getPrismaClient().automation.findMany({
+			where: { collectionId },
+			select: { id: true },
+			orderBy: automationOrder
+		});
+		return automations.map(automation => automation.id);
+	}, []);
+}
+
+export async function updateAutomationIndexes(items: { id: Id; index: number }[]) {
+	return await withDatabaseFallback(async () => {
+		await getPrismaClient().$transaction(items.map(item => getPrismaClient().automation.update({
+			where: { id: item.id },
+			data: { index: item.index }
+		})));
+		return true;
+	}, false);
 }
 
 export async function getAutomationCollection(id: Id) {
 	return await withDatabaseFallback(async () => {
 		return await getPrismaClient().automationCollection.findUnique({
 			where: { id },
-			include: {
-				editors: { select: { userId: true } },
-				automations: true
-			}
+			include: collectionIncludes
 		});
 	}, null);
 }
 
 export async function getAutomationCollectionsByOwner(ownerId: Id) {
 	return await withDatabaseFallback(async () => {
-		return await getPrismaClient().automationCollection.findMany({ where: { ownerId } });
+		return await getPrismaClient().automationCollection.findMany({ where: { ownerId }, include: collectionIncludes });
 	}, []);
 }
 
 export async function getPublicAutomationCollectionsByOwner(ownerId: Id) {
-	try {
+	return await withDatabaseFallback(async () => {
 		return await getPrismaClient().automationCollection.findMany({
 			where: { ownerId, status: "public" },
-			include: { automations: true }
+			include: collectionIncludes
 		});
-	}
-	catch (err) {
-		log.log("critical", err);
-		return [];
-	}
+	}, []);
 }
 
 export async function getAutomationCollectionsByUser(userId: Id) {
-	try {
+	return await withDatabaseFallback(async () => {
 		return await getPrismaClient().automationCollection.findMany({
 			where: {
 				OR: [
@@ -88,30 +121,47 @@ export async function getAutomationCollectionsByUser(userId: Id) {
 					{ editors: { some: { userId } } }
 				]
 			},
-			include: {
-				editors: { select: { userId: true } },
-				automations: true
-			}
+			include: { ...collectionIncludes, orderedBy: { where: { userId } } }
 		});
-	}
-	catch (err) {
-		log.log("critical", err);
-		return [];
-	}
+	}, []);
 }
 
-export async function createAutomationCollection(data: AutomationCollectionCreateInput) {
+export async function createAutomationCollection(data: AutomationCollectionCreateInput, ownerId: Id) {
 	return await withDatabaseFallback(async () => {
-		return await getPrismaClient().automationCollection.create({
-			data,
-			include: { editors: { select: { userId: true } } }
+		const prisma = getPrismaClient();
+		const index = ((await prisma.userAutomationCollectionOrder.findFirst({
+			where: { userId: ownerId },
+			select: { index: true },
+			orderBy: { index: "desc" }
+		}))?.index ?? -1) + 1;
+		return await prisma.automationCollection.create({
+			data: { ...data, orderedBy: { create: { userId: ownerId, index } } },
+			include: collectionIncludes
 		});
 	}, null);
 }
 
+export async function getOwnedAutomationCollectionIds(userId: Id) {
+	return await withDatabaseFallback(async () => {
+		const collections = await getPrismaClient().automationCollection.findMany({ where: { ownerId: userId }, select: { id: true } });
+		return collections.map(collection => collection.id);
+	}, []);
+}
+
+export async function updateUserAutomationCollectionIndexes(userId: Id, items: { id: Id; index: number }[]) {
+	return await withDatabaseFallback(async () => {
+		await getPrismaClient().$transaction(items.map(item => getPrismaClient().userAutomationCollectionOrder.upsert({
+			where: { userId_collectionId: { userId, collectionId: item.id } },
+			update: { index: item.index },
+			create: { userId, collectionId: item.id, index: item.index }
+		})));
+		return true;
+	}, false);
+}
+
 export async function updateAutomationCollection(data: AutomationCollectionUpdateInput, id: Id) {
 	try {
-		return await getPrismaClient().automationCollection.update({ where: { id }, data });
+		return await getPrismaClient().automationCollection.update({ where: { id }, data, include: collectionIncludes });
 	}
 	catch (err) {
 		log.log("critical", err);
@@ -154,4 +204,49 @@ export async function removeAutomationCollectionEditor(collectionId: Id, userId:
 		log.log("critical", err);
 		return false;
 	}
+}
+
+export async function incrementAutomationCollectionViewCount(collectionId: Id) {
+	await getPrismaClient().automationCollection.update({ where: { id: collectionId }, data: { viewCount: { increment: 1 } } });
+}
+
+export async function getAutomationCollectionAutomationCount(collectionId: Id) {
+	return await withDatabaseFallback(async () => {
+		return await getPrismaClient().automation.count({ where: { collectionId } });
+	}, 0);
+}
+
+export async function addAutomationCollectionBookmark(userId: Id, collectionId: Id) {
+	return await withDatabaseFallback(async () => {
+		await getPrismaClient().userAutomationCollectionBookmark.create({ data: { userId, collectionId } });
+		return true;
+	}, false);
+}
+
+export async function removeAutomationCollectionBookmark(userId: Id, collectionId: Id) {
+	return await withDatabaseFallback(async () => {
+		await getPrismaClient().userAutomationCollectionBookmark.delete({ where: { userId_collectionId: { userId, collectionId } } });
+		return true;
+	}, false);
+}
+
+export async function isAutomationCollectionBookmarked(userId: Id, collectionId: Id) {
+	return await withDatabaseFallback(async () => {
+		return Boolean(await getPrismaClient().userAutomationCollectionBookmark.findUnique({ where: { userId_collectionId: { userId, collectionId } } }));
+	}, false);
+}
+
+export async function getBookmarkedAutomationCollectionsForUser(userId: Id) {
+	return await withDatabaseFallback(async () => {
+		const bookmarks = await getPrismaClient().userAutomationCollectionBookmark.findMany({ where: { userId }, select: { collectionId: true } });
+		if (!bookmarks.length)
+			return [];
+		return await getPrismaClient().automationCollection.findMany({
+			where: {
+				id: { in: bookmarks.map(bookmark => bookmark.collectionId) },
+				OR: [{ ownerId: userId }, { status: { not: "private" } }]
+			},
+			include: collectionIncludes
+		});
+	}, []);
 }

@@ -33,12 +33,14 @@ model User {
   SRDVersion             SRDVersion      @default(SRD_2024)
 
   // Lists
-  bestiaries                  Bestiary[]                   @relation("BestiaryOwner")
-  automationCollections       AutomationCollection[]
-  editedAutomationCollections AutomationCollectionEditor[]
-  editedIn                    BestiaryEditor[]
-  bookmarks                   UserBestiaryBookmark[]
-  ordered                     UserBestiaryOrder[]
+  bestiaries                    Bestiary[]                         @relation("BestiaryOwner")
+  automationCollections         AutomationCollection[]
+  editedAutomationCollections   AutomationCollectionEditor[]
+  editedIn                      BestiaryEditor[]
+  bookmarks                     UserBestiaryBookmark[]
+  automationCollectionBookmarks UserAutomationCollectionBookmark[]
+  ordered                       UserBestiaryOrder[]
+  orderedAutomationCollections  UserAutomationCollectionOrder[]
 
   @@map("Users")
 }
@@ -51,7 +53,6 @@ model Bestiary {
   description String
   tags        String[]
   viewCount   Int            @default(0)
-  bookmarks   Int            @default(0)
   lastUpdated DateTime       @updatedAt
 
   owner        User                   @relation("BestiaryOwner", fields: [ownerId], references: [id], onDelete: Cascade)
@@ -87,6 +88,7 @@ model Automation {
   description  String
   collectionId String
   lastUpdated  DateTime @default(now())
+  index        Int
 
   /// [DbAutomation]
   automation Json?
@@ -101,12 +103,17 @@ model AutomationCollection {
   id          String         @id @default(cuid())
   name        String
   ownerId     String         @map("owner")
-  status      BestiaryStatus @default(private)
+  status      BestiaryStatus
+  description String
+  tags        String[]
+  viewCount   Int            @default(0)
   lastUpdated DateTime       @updatedAt
 
-  owner       User                         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  automations Automation[]
-  editors     AutomationCollectionEditor[]
+  owner        User                               @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  automations  Automation[]
+  editors      AutomationCollectionEditor[]
+  bookmarkedBy UserAutomationCollectionBookmark[]
+  orderedBy    UserAutomationCollectionOrder[]
 
   @@index([ownerId])
   @@index([status])
@@ -152,6 +159,20 @@ model UserBestiaryBookmark {
   @@map("UserBestiaryBookmarks")
 }
 
+model UserAutomationCollectionBookmark {
+  userId       String
+  collectionId String
+  createdAt    DateTime @default(now())
+
+  user       User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  collection AutomationCollection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+
+  @@id([userId, collectionId])
+  @@index([userId])
+  @@index([collectionId])
+  @@map("UserAutomationCollectionBookmarks")
+}
+
 model UserBestiaryOrder {
   userId     String
   bestiaryId String
@@ -164,6 +185,20 @@ model UserBestiaryOrder {
   @@id([userId, bestiaryId])
   @@index([userId])
   @@map("UserBestiaryOrders")
+}
+
+model UserAutomationCollectionOrder {
+  userId       String
+  collectionId String
+
+  index Int
+
+  user       User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  collection AutomationCollection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+
+  @@id([userId, collectionId])
+  @@index([userId])
+  @@map("UserAutomationCollectionOrders")
 }
 
 enum BestiaryStatus {

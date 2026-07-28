@@ -135,6 +135,7 @@ async function main() {
 		prisma.bestiaryEditor.deleteMany(),
 		prisma.automationCollectionEditor.deleteMany(),
 		prisma.userBestiaryBookmark.deleteMany(),
+		prisma.userAutomationCollectionBookmark.deleteMany(),
 		prisma.creature.deleteMany(),
 		prisma.automation.deleteMany(),
 		prisma.automationCollection.deleteMany(),
@@ -173,7 +174,6 @@ async function main() {
 			description: b.description ?? "",
 			tags: Array.isArray(b.tags) ? b.tags : [],
 			viewCount: b.viewCount ?? 0,
-			bookmarks: b.bookmarks ?? 0,
 			lastUpdated: new Date(b.lastUpdated ?? Date.now()),
 		}))
 	});
@@ -200,6 +200,9 @@ async function main() {
 			name: "My Automations",
 			ownerId,
 			status: "private",
+			description: "",
+			tags: [],
+			viewCount: 0,
 			lastUpdated: new Date(),
 		}))
 	});
@@ -210,6 +213,7 @@ async function main() {
 			description: a.description ?? "",
 			collectionId: `default-${a.owner}`,
 			lastUpdated: new Date(a.lastUpdated ?? Date.now()),
+			index: 0,
 			automation: (a.automation ?? undefined) as unknown as AutomationCreateManyInput["automation"],
 		}))
 	});

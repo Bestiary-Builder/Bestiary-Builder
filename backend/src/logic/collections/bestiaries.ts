@@ -4,7 +4,7 @@ import type { Bestiary, BestiaryCreateInput, BestiaryStatus, Creature } from "~/
 import tags from "@/staticData/tags.json";
 import { checkBadwords } from "@/utilities/badwords";
 import { app, checkBestiaryLimits, checkCreatureAmountLimit, limits } from "@/utilities/constants";
-import { addBestiaryEditor, addBookmark, createBestiary, createCreatures, deleteBestiary, getBestiariesByOwner, getBestiariesByUser, getBestiary, getBestiaryCreatureCount, getPrismaClient, getPublicBestiariesByOwner, incrementBestiaryViewCount, isBestiaryBookmarked, removeBestiaryEditor, removeBookmark, updateBestiary } from "@/utilities/database";
+import { addBestiaryEditor, addBookmark, createBestiary, createCreatures, deleteBestiary, getBestiariesByOwner, getBestiariesByUser, getBestiary, getBestiaryCreatureCount, getBestiaryCreatureIds, getOwnedBestiaryIds, getPrismaClient, getPublicBestiariesByOwner, incrementBestiaryViewCount, isBestiaryBookmarked, removeBestiaryEditor, removeBookmark, updateBestiary, updateBestiaryCreatureIndexes, updateUserBestiaryIndexes } from "@/utilities/database";
 import { log } from "@/utilities/logger";
 
 import { prepareCreatureStats } from "../creatures/creaturePreparation";
@@ -13,15 +13,23 @@ import { StatblockChecker } from "../external/validation";
 import { possibleUser, requireUser } from "../main/login";
 import { createCollectionService } from "./collections";
 
-type BestiaryWithEditors = Bestiary & CollectionWithEditors;
+type BestiaryWithEditors = Bestiary & CollectionWithEditors & { _count: { bookmarkedBy: number } };
 type BestiaryForUser = BestiaryWithEditors & { creatures: { id: Id }[]; orderedBy: { index: number }[] };
 
-const bestiaryCollections = createCollectionService<BestiaryWithEditors, BestiaryForUser>({
+export const bestiaryCollections = createCollectionService<BestiaryWithEditors, BestiaryForUser>({
 	getById: getBestiary,
 	getForUser: getBestiariesByUser,
+	getOwnedCollectionIds: getOwnedBestiaryIds,
+	updateUserCollectionIndexes: updateUserBestiaryIndexes,
 	addEditor: addBestiaryEditor,
 	removeEditor: removeBestiaryEditor,
-	delete: deleteBestiary
+	delete: deleteBestiary,
+	incrementViewCount: incrementBestiaryViewCount,
+	getItemIds: getBestiaryCreatureIds,
+	updateItemIndexes: updateBestiaryCreatureIndexes,
+	isBookmarked: isBestiaryBookmarked,
+	addBookmark,
+	removeBookmark
 });
 
 export async function checkBestiaryPermission(bestiary: BestiaryWithEditors, user: User | null) {
@@ -46,7 +54,7 @@ app.get("/api/bestiary/:id", possibleUser, async (req, res) => {
 	if (permissionLevel !== "none") {
 		// Increment view count
 		if (req.cookies.lastViewed !== _id.toString()) {
-			incrementBestiaryViewCount(_id);
+			await bestiaryCollections.incrementViewCount(_id);
 			res.cookie("lastViewed", _id.toString(), {
 				httpOnly: true,
 				sameSite: "strict",
@@ -188,7 +196,6 @@ app.post("/api/bestiary/add", requireUser, async (req, res) => {
 		return res.status(400).json({ error: "Bestiary data not found." });
 	const data: Omit<BestiaryCreateInput, "id" | "owner"> & BestiaryData = {
 		viewCount: 0,
-		bookmarks: 0,
 		...normalizeBestiaryData(req.body.data as Partial<Bestiary>)
 	};
 	const validationError = validateBestiaryData(data, 0);
@@ -226,30 +233,14 @@ app.post("/api/my-bestiaries/order", requireUser, async (req, res) => {
 	if (!bestiaryIds || !Array.isArray(bestiaryIds))
 		return res.status(400).json({ error: "Invalid bestiary id array." });
 
-	const prisma = getPrismaClient();
-
-	// Get user owned bestiaries
-	const userBestiaries = await prisma.bestiary.findMany({ where: { ownerId: user.id } });
-
-	// Check that user owns all bestiarie
-	if (bestiaryIds.some(id => !userBestiaries.some(i => i.id === id)))
-		return res.status(403).json({ error: "You do not have access to the specified bestiaries." });
-
-	// Set sortedIndex for each bestiary, and any unspecified gets set last
-	const result = await prisma.$transaction([...userBestiaries.map((bestiary) => {
-		let index = bestiaryIds.indexOf(bestiary.id);
-		if (index < 0)
-			index = bestiaryIds.length + 1;
-		return prisma.userBestiaryOrder.upsert({
-			where: { userId_bestiaryId: { userId: user.id, bestiaryId: bestiary.id } },
-			update: { index: bestiaryIds.indexOf(bestiary.id) ?? (bestiaryIds.length + 1) },
-			create: { index: bestiaryIds.indexOf(bestiary.id) ?? (bestiaryIds.length + 1), user: { connect: { id: user.id } }, bestiary: { connect: { id: bestiary.id } } }
-		});
-	}), prisma.userBestiaryOrder.deleteMany({ where: { userId: user.id, bestiaryId: { notIn: bestiaryIds } } })]);
-
-	if (result.length - 1 === userBestiaries.length)
+	const result = await bestiaryCollections.reorderForUser(user.id, bestiaryIds);
+	if (result.ok)
 		return res.status(200).json({});
-	throw new Error("Failed to update bestiary order.");
+	if (result.reason === "collections-not-owned")
+		return res.status(403).json({ error: "You do not have access to the specified bestiaries." });
+	if (result.reason === "duplicate-collections")
+		return res.status(400).json({ error: "Bestiary ids must be unique." });
+	return res.status(500).json({ error: "Failed to update bestiary order." });
 });
 
 // Add many creatures
@@ -364,53 +355,28 @@ app.get("/api/bestiary/:id/bookmark/toggle", requireUser, async (req, res) => {
 	const _id = req.params.id;
 	if (!_id)
 		return res.status(400).json({ error: "Bestiary id not valid." });
-	const bestiary = await getBestiary(_id);
-	if (!bestiary)
-		return res.status(404).json({ error: "Couldn't find bestiary." });
 	const user = req.user!;
-	// Permissions
-	if ((await checkBestiaryPermission(bestiary, user)) === "none")
+	const result = await bestiaryCollections.toggleBookmark(_id, user.id);
+	if (result.ok)
+		return res.json({ state: result.state });
+	if (result.reason === "collection-not-found")
+		return res.status(404).json({ error: "Couldn't find bestiary." });
+	if (result.reason === "forbidden")
 		return res.status(401).json({ error: "You don't have permission to view this bestiary." });
-
-	// Already bookmarked?
-	let status;
-	let newState;
-	const isBookmarked = await isBestiaryBookmarked(user.id, _id);
-	if (isBookmarked) {
-		status = await removeBookmark(user.id, _id);
-		newState = false;
-		log.info(`Removed bestiary with the id ${_id} from the bookmarks of user with the id ${user.id}`);
-	}
-	else {
-		status = await addBookmark(user.id, _id);
-		newState = true;
-		log.info(`Added bestiary with the id ${_id} to the bookmarks of user with the id ${user.id}`);
-	}
-	// Bookmark
-	if (status)
-		return res.json({ state: newState });
-	else
-		return res.status(500).json({ error: "Server failed to toggle bookmark, please try again." });
+	return res.status(500).json({ error: "Server failed to toggle bookmark, please try again." });
 });
 app.get("/api/bestiary/:id/bookmark/get", requireUser, async (req, res) => {
 	// Get input
 	const _id = req.params.id;
 	if (!_id)
 		return res.status(400).json({ error: "Bestiary id not valid." });
-	const bestiary = await getBestiary(_id);
-	if (!bestiary)
-		return res.status(404).json({ error: "Couldn't find bestiary." });
 	const user = req.user!;
-	// Permissions
-	if ((await checkBestiaryPermission(bestiary, user)) === "none")
-		return res.status(401).json({ error: "You don't have permission to view this bestiary." });
-
-	// Already bookmarked
-	const isBookmarked = await isBestiaryBookmarked(user.id, _id);
-	if (isBookmarked)
-		return res.json({ state: true });
-	else
-		return res.json({ state: false });
+	const result = await bestiaryCollections.getBookmarkState(_id, user.id);
+	if (result.ok)
+		return res.json({ state: result.state });
+	if (result.reason === "collection-not-found")
+		return res.status(404).json({ error: "Couldn't find bestiary." });
+	return res.status(401).json({ error: "You don't have permission to view this bestiary." });
 });
 
 function validateStatblockInput(input: Statblock[]) {

@@ -1,6 +1,6 @@
 import type { User } from "~/shared";
 import { app } from "@/utilities/constants";
-import { getBookmarkedBestiariesForUser, getPrismaClient, getUser, resetUserCache } from "@/utilities/database";
+import { getBookmarkedAutomationCollectionsForUser, getBookmarkedBestiariesForUser, getPrismaClient, getUser, resetUserCache } from "@/utilities/database";
 import { log } from "@/utilities/logger";
 import { requireUser } from "./login";
 
@@ -9,6 +9,13 @@ app.get("/api/user/bookmarks", requireUser, async (req, res) => {
 	const allBestiaries = await getBookmarkedBestiariesForUser(user.id);
 	log.info(`Retrieved all bookmarked bestiaries from the user with the id ${user.id}`);
 	return res.json(allBestiaries);
+});
+
+app.get("/api/user/automation-bookmarks", requireUser, async (req, res) => {
+	const user = req.user!;
+	const collections = await getBookmarkedAutomationCollectionsForUser(user.id);
+	log.info(`Retrieved all bookmarked automation collections from the user with the id ${user.id}`);
+	return res.json(collections);
 });
 
 app.get("/api/user", requireUser, async (req, res) => {
