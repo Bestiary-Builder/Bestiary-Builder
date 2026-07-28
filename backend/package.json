@@ -1,7 +1,7 @@
 {
 	"name": "backend",
 	"type": "module",
-	"main": "server.ts",
+	"main": "src/server.ts",
 	"engines": {
 		"node": ">=21.4.0"
 	},
