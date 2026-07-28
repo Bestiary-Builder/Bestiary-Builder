@@ -6,6 +6,70 @@ import { abilityParser, markdownReplacer } from "@/utilities/parsing";
 import { capitalizeFirstLetter, defaultStatblock, getXPbyCR, SKILLS_BY_STAT } from "~/shared";
 import { spellListFlattened } from "./staticData";
 
+function parseSavingThrow(mod: any, abilityScore: number, proficiencyBonus: number) {
+	if (!mod)
+		return { isProficient: false, override: null, adv: null };
+
+	const saveBonus = proficiencyBonus + (Math.floor(abilityScore / 2) - 5);
+	if (mod === saveBonus)
+		return { isProficient: true, override: null, adv: null };
+	if (mod !== saveBonus)
+		return { isProficient: false, override: Number.parseInt(mod.toString()), adv: null };
+
+	return { isProficient: false, override: null, adv: null };
+}
+
+function parseDamageTypes(values: any, type: "immune" | "resist" | "vulnerable") {
+	const output: string[] = [];
+
+	if (!values)
+		return output;
+
+	for (const value of values) {
+		if (typeof value === "string") {
+			output.push(capitalizeFirstLetter(value));
+			continue;
+		}
+
+		const damageTypes = value[type];
+		let modifier = "";
+		if (value.note) {
+			if (value.note.includes("from magic weapons"))
+				modifier += "Magical ";
+			if (value.note.includes("from silvered weapons"))
+				modifier += "Silvered ";
+			if (value.note.includes("from adamantine weapons"))
+				modifier += "Adamantine ";
+
+			if (value.note.includes("from nonmagical attacks"))
+				modifier += "Nonmagical ";
+			if (value.note.includes("from nonsilvered attacks"))
+				modifier += "Nonsilvered ";
+			if (value.note.includes("from nonadamantine attacks"))
+				modifier += "Nonadamantine ";
+
+			if (value.note.includes("that aren't magical"))
+				modifier += "Nonmagical ";
+			if (value.note.includes("that aren't silvered"))
+				modifier += "Nonsilvered ";
+			if (value.note.includes("that aren't adamantine"))
+				modifier += "Nonadamantine ";
+
+			if (value.note.includes("not made with magical"))
+				modifier += "Nonmagical ";
+			if (value.note.includes("not made with silvered"))
+				modifier += "Nonsilvered ";
+			if (value.note.includes("not made with adamantine"))
+				modifier += "Nonadamantine ";
+		}
+
+		for (const damageType of damageTypes || [])
+			output.push(`${modifier}${capitalizeFirstLetter(damageType)}`);
+	}
+
+	return output;
+}
+
 app.post("/api/5etools-import", async (req, res) => {
 	try {
 		const { data: input } = req.body;
@@ -193,85 +257,12 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 			cha: data.cha
 		},
 		saves: {
-			str: (() => {
-				const mod = data?.save?.str ?? null;
-
-				if (!mod)
-					return { isProficient: false, override: null, adv: null };
-
-				const saveBonus = outputData.core.proficiencyBonus + (Math.floor(data.str / 2) - 5);
-				if (mod === saveBonus)
-					return { isProficient: true, override: null, adv: null };
-				if (mod !== saveBonus)
-					return { isProficient: false, override: Number.parseInt(mod.toString()), adv: null };
-
-				return { isProficient: false, override: null, adv: null };
-			})(),
-			dex: (() => {
-				const mod = Number.parseInt(data?.save?.dex) ?? null;
-				if (!mod)
-					return { isProficient: false, override: null, adv: null };
-
-				const saveBonus = outputData.core.proficiencyBonus + (Math.floor(data.dex / 2) - 5);
-				if (mod === saveBonus)
-					return { isProficient: true, override: null, adv: null };
-				if (mod !== saveBonus)
-					return { isProficient: false, override: Number.parseInt(mod.toString()), adv: null };
-
-				return { isProficient: false, override: null, adv: null };
-			})(),
-			con: (() => {
-				const mod = Number.parseInt(data?.save?.con) ?? null;
-				if (!mod)
-					return { isProficient: false, override: null, adv: null };
-
-				const saveBonus = outputData.core.proficiencyBonus + (Math.floor(data.con / 2) - 5);
-				if (mod === saveBonus)
-					return { isProficient: true, override: null, adv: null };
-				if (mod !== saveBonus)
-					return { isProficient: false, override: Number.parseInt(mod.toString()), adv: null };
-
-				return { isProficient: false, override: null, adv: null };
-			})(),
-			int: (() => {
-				const mod = Number.parseInt(data?.save?.int) ?? null;
-				if (!mod)
-					return { isProficient: false, override: null, adv: null };
-
-				const saveBonus = outputData.core.proficiencyBonus + (Math.floor(data.int / 2) - 5);
-				if (mod === saveBonus)
-					return { isProficient: true, override: null, adv: null };
-				if (mod !== saveBonus)
-					return { isProficient: false, override: Number.parseInt(mod.toString()), adv: null };
-
-				return { isProficient: false, override: null, adv: null };
-			})(),
-			wis: (() => {
-				const mod = Number.parseInt(data?.save?.wis) ?? null;
-				if (!mod)
-					return { isProficient: false, override: null, adv: null };
-
-				const saveBonus = outputData.core.proficiencyBonus + (Math.floor(data.wis / 2) - 5);
-				if (mod === saveBonus)
-					return { isProficient: true, override: null, adv: null };
-				if (mod !== saveBonus)
-					return { isProficient: false, override: Number.parseInt(mod.toString()), adv: null };
-
-				return { isProficient: false, override: null, adv: null };
-			})(),
-			cha: (() => {
-				const mod = Number.parseInt(data?.save?.cha) ?? null;
-				if (!mod)
-					return { isProficient: false, override: null, adv: null };
-
-				const saveBonus = outputData.core.proficiencyBonus + (Math.floor(data.cha / 2) - 5);
-				if (mod === saveBonus)
-					return { isProficient: true, override: null, adv: null };
-				if (mod !== saveBonus)
-					return { isProficient: false, override: Number.parseInt(mod.toString()), adv: null };
-
-				return { isProficient: false, override: null, adv: null };
-			})()
+			str: parseSavingThrow(data?.save?.str ?? null, data.str, outputData.core.proficiencyBonus),
+			dex: parseSavingThrow(Number.parseInt(data?.save?.dex) ?? null, data.dex, outputData.core.proficiencyBonus),
+			con: parseSavingThrow(Number.parseInt(data?.save?.con) ?? null, data.con, outputData.core.proficiencyBonus),
+			int: parseSavingThrow(Number.parseInt(data?.save?.int) ?? null, data.int, outputData.core.proficiencyBonus),
+			wis: parseSavingThrow(Number.parseInt(data?.save?.wis) ?? null, data.wis, outputData.core.proficiencyBonus),
+			cha: parseSavingThrow(Number.parseInt(data?.save?.cha) ?? null, data.cha, outputData.core.proficiencyBonus)
 		},
 		skills: (() => {
 			if (!data.skill)
@@ -332,150 +323,9 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 					return "";
 			})()
 		},
-		immunities: (() => {
-			const output: string[] = [];
-
-			if (!data.immune)
-				return [];
-
-			for (const v of data?.immune) {
-				if (typeof v == "string") {
-					output.push(capitalizeFirstLetter(v));
-				}
-				else {
-					const types = v.immune;
-					let modifier = "";
-					if (v.note) {
-						if (v.note.includes("from magic weapons"))
-							modifier += "Magical ";
-						if (v.note.includes("from silvered weapons"))
-							modifier += "Silvered ";
-						if (v.note.includes("from adamantine weapons"))
-							modifier += "Adamantine ";
-
-						if (v.note.includes("from nonmagical attacks"))
-							modifier += "Nonmagical ";
-						if (v.note.includes("from nonsilvered attacks"))
-							modifier += "Nonsilvered ";
-						if (v.note.includes("from nonadamantine attacks"))
-							modifier += "Nonadamantine ";
-
-						if (v.note.includes("that aren't magical"))
-							modifier += "Nonmagical ";
-						if (v.note.includes("that aren't silvered"))
-							modifier += "Nonsilvered ";
-						if (v.note.includes("that aren't adamantine"))
-							modifier += "Nonadamantine ";
-
-						if (v.note.includes("not made with magical"))
-							modifier += "Nonmagical ";
-						if (v.note.includes("not made with silvered"))
-							modifier += "Nonsilvered ";
-						if (v.note.includes("not made with adamantine"))
-							modifier += "Nonadamantine ";
-					}
-					if (types) {
-						for (const t of types)
-							output.push(`${modifier}${capitalizeFirstLetter(t)}`);
-					}
-				}
-			}
-			return output;
-		})(),
-		resistances: (() => {
-			const output: string[] = [];
-
-			if (!data.resist)
-				return [];
-			for (const v of data?.resist) {
-				if (typeof v == "string") {
-					output.push(capitalizeFirstLetter(v));
-				}
-				else {
-					const types = v.resist;
-					let modifier = "";
-					if (v.note) {
-						if (v.note.includes("from magic weapons"))
-							modifier += "Magical ";
-						if (v.note.includes("from silvered weapons"))
-							modifier += "Silvered ";
-						if (v.note.includes("from adamantine weapons"))
-							modifier += "Adamantine ";
-
-						if (v.note.includes("from nonmagical attacks"))
-							modifier += "Nonmagical ";
-						if (v.note.includes("from nonsilvered attacks"))
-							modifier += "Nonsilvered ";
-						if (v.note.includes("from nonadamantine attacks"))
-							modifier += "Nonadamantine ";
-
-						if (v.note.includes("that aren't magical"))
-							modifier += "Nonmagical ";
-						if (v.note.includes("that aren't silvered"))
-							modifier += "Nonsilvered ";
-						if (v.note.includes("that aren't adamantine"))
-							modifier += "Nonadamantine ";
-
-						if (v.note.includes("not made with magical"))
-							modifier += "Nonmagical ";
-						if (v.note.includes("not made with silvered"))
-							modifier += "Nonsilvered ";
-						if (v.note.includes("not made with adamantine"))
-							modifier += "Nonadamantine ";
-					}
-					for (const t of types || [])
-						output.push(`${modifier}${capitalizeFirstLetter(t)}`);
-				}
-			}
-			return output;
-		})(),
-		vulnerabilities: (() => {
-			const output: string[] = [];
-
-			if (!data.vulnerable)
-				return [];
-			for (const v of data?.vulnerable) {
-				if (typeof v == "string") {
-					output.push(capitalizeFirstLetter(v));
-				}
-				else {
-					const types = v.vulnerable;
-					let modifier = "";
-					if (v.note) {
-						if (v.note.includes("from magic weapons"))
-							modifier += "Magical ";
-						if (v.note.includes("from silvered weapons"))
-							modifier += "Silvered ";
-						if (v.note.includes("from adamantine weapons"))
-							modifier += "Adamantine ";
-
-						if (v.note.includes("from nonmagical attacks"))
-							modifier += "Nonmagical ";
-						if (v.note.includes("from nonsilvered attacks"))
-							modifier += "Nonsilvered ";
-						if (v.note.includes("from nonadamantine attacks"))
-							modifier += "Nonadamantine ";
-
-						if (v.note.includes("that aren't magical"))
-							modifier += "Nonmagical ";
-						if (v.note.includes("that aren't silvered"))
-							modifier += "Nonsilvered ";
-						if (v.note.includes("that aren't adamantine"))
-							modifier += "Nonadamantine ";
-
-						if (v.note.includes("not made with magical"))
-							modifier += "Nonmagical ";
-						if (v.note.includes("not made with silvered"))
-							modifier += "Nonsilvered ";
-						if (v.note.includes("not made with adamantine"))
-							modifier += "Nonadamantine ";
-					}
-					for (const t of types || [])
-						output.push(`${modifier}${capitalizeFirstLetter(t)}`);
-				}
-			}
-			return output;
-		})(),
+		immunities: parseDamageTypes(data.immune, "immune"),
+		resistances: parseDamageTypes(data.resist, "resist"),
+		vulnerabilities: parseDamageTypes(data.vulnerable, "vulnerable"),
 		conditionImmunities: (() => {
 			const output: string[] = [];
 			for (const x of data?.conditionImmune || []) {
@@ -489,35 +339,50 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 		})()
 	};
 
+	let innateSpellcasting: any = [];
+	let casterSpellcasting: any = [];
+	let innateSpellcastingAbility = null;
+	let hasInnateSpellcastingAbility = false;
+	let isPsionicSpellcasting = false;
+	// Existing fields use the last innate record except for the ability, which uses the first.
+	for (const spellcasting of data?.spellcasting ?? []) {
+		const isInnate = (spellcasting.name.includes("Innate Spellcasting") || ((spellcasting?.will || []).length > 0 || (Object.keys(spellcasting?.daily || {}) || []).length > 0)) && !((spellcasting?.hidden || []).length > 0);
+		if (isInnate) {
+			innateSpellcasting = spellcasting;
+			if (!hasInnateSpellcastingAbility) {
+				innateSpellcastingAbility = spellcasting.ability;
+				hasInnateSpellcastingAbility = true;
+			}
+		}
+		if (spellcasting.name.includes("Spellcasting") && !spellcasting.name.includes("Innate"))
+			casterSpellcasting = spellcasting;
+		if (spellcasting.name.includes("Innate Spellcasting (Psionics)"))
+			isPsionicSpellcasting = true;
+	}
+
 	outputData.spellcasting = {
 		innateSpells: {
 			spellList: (() => {
-				let sData = [];
 				const output = {
 					0: [],
 					1: [],
 					2: [],
 					3: []
 				} as InnateSpellsList;
-				for (const t of data?.spellcasting ?? []) {
-					if ((t.name.includes("Innate Spellcasting") || ((t?.will || []).length > 0 || (Object.keys(t?.daily || {}) || []).length > 0)) && !((t?.hidden || []).length > 0))
-						sData = t;
-				}
-
-				if (!sData)
+				if (!innateSpellcasting)
 					return output;
 
-				if (sData.will) {
-					if (!sData.daily)
-						sData.daily = { "0e": sData.will };
-					else sData.daily["0e"] = sData.will;
+				if (innateSpellcasting.will) {
+					if (!innateSpellcasting.daily)
+						innateSpellcasting.daily = { "0e": innateSpellcasting.will };
+					else innateSpellcasting.daily["0e"] = innateSpellcasting.will;
 				}
 
-				if (sData.daily) {
-					for (const l in sData.daily) {
+				if (innateSpellcasting.daily) {
+					for (const l in innateSpellcasting.daily) {
 						const level = Number.parseInt(l.replace("e", ""));
 						if (level >= 0 && level < 4) {
-							for (const sp of sData.daily[l]) {
+							for (const sp of innateSpellcasting.daily[l]) {
 								let t = sp.replace("{@spell ", "").replace(/\|([^\s}]*)/, "");
 								t = splitOnFirst(t, "}");
 								if (t) {
@@ -533,65 +398,41 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 				return output;
 			})(),
 			spellDcOverride: (() => {
-				let sData = [];
-				for (const t of data?.spellcasting ?? []) {
-					if ((t.name.includes("Innate Spellcasting") || ((t?.will || []).length > 0 || (Object.keys(t?.daily || {}) || []).length > 0)) && !((t?.hidden || []).length > 0))
-						sData = t;
-				}
-
-				if (!sData || !sData.headerEntries)
+				if (!innateSpellcasting || !innateSpellcasting.headerEntries)
 					return null;
 
-				const match = sData.headerEntries[0].match(/\{@dc\s+(\d+)\}/);
+				const match = innateSpellcasting.headerEntries[0].match(/\{@dc\s+(\d+)\}/);
 				const dc = match ? Number.parseInt(match[1]) : null;
 				if (!dc)
 					return null;
-				if (dc !== 8 + outputData.core.proficiencyBonus + (Math.floor(data[sData.ability] / 2) - 5))
+				if (dc !== 8 + outputData.core.proficiencyBonus + (Math.floor(data[innateSpellcasting.ability] / 2) - 5))
 					return dc;
 				return null;
 			})(),
 			spellBonusOverride: (() => {
-				let sData = [];
-				for (const t of data?.spellcasting ?? []) {
-					if ((t.name.includes("Innate Spellcasting") || ((t?.will || []).length > 0 || (Object.keys(t?.daily || {}) || []).length > 0)) && !((t?.hidden || []).length > 0))
-						sData = t;
-				}
-
-				if (!sData || !sData.headerEntries)
+				if (!innateSpellcasting || !innateSpellcasting.headerEntries)
 					return null;
 
-				const match = sData.headerEntries[0].match(/\{@hit\s+(\d+)\}/);
+				const match = innateSpellcasting.headerEntries[0].match(/\{@hit\s+(\d+)\}/);
 				const hit = match ? Number.parseInt(match[1]) : null;
 				if (!hit)
 					return null;
 
-				if (hit !== outputData.core.proficiencyBonus + (Math.floor(data[sData.ability] / 2) - 5))
+				if (hit !== outputData.core.proficiencyBonus + (Math.floor(data[innateSpellcasting.ability] / 2) - 5))
 					return hit;
 				return null;
 			})(),
 			displayAsAction: (() => {
-				let sData = [];
-				for (const t of data?.spellcasting ?? []) {
-					if ((t.name.includes("Innate Spellcasting") || ((t?.will || []).length > 0 || (Object.keys(t?.daily || {}) || []).length > 0)) && !((t?.hidden || []).length > 0))
-						sData = t;
-				}
-
-				if (!sData || !sData.displayAs)
+				if (!innateSpellcasting || !innateSpellcasting.displayAs)
 					return false;
-				return sData?.displayAs === "action";
+				return innateSpellcasting?.displayAs === "action";
 			})(),
 			noComponentsOfType: (() => {
-				let sData = [];
-				for (const t of data?.spellcasting ?? []) {
-					if ((t.name.includes("Innate Spellcasting") || ((t?.will || []).length > 0 || (Object.keys(t?.daily || {}) || []).length > 0)) && !((t?.hidden || []).length > 0))
-						sData = t;
-				}
-
 				// this is the default
-				if (!sData || !sData.headerEntries)
+				if (!innateSpellcasting || !innateSpellcasting.headerEntries)
 					return ["Material", "Verbal", "Somatic"];
 
-				const text = sData.headerEntries[0];
+				const text = innateSpellcasting.headerEntries[0];
 				if (text.includes("requiring no components") || text.includes("requiring no spell components"))
 					return ["Material", "Somatic", "Verbal"];
 				if (text.includes("requiring only verbal"))
@@ -608,51 +449,25 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 					return ["Verbal"];
 				return ["Material", "Somatic", "Verbal"];
 			})(),
-			spellCastingAbility: (() => {
-				for (const t of data?.spellcasting ?? []) {
-					if ((t.name.includes("Innate Spellcasting") || ((t?.will || []).length > 0 || (Object.keys(t?.daily || {}) || []).length > 0)) && !((t?.hidden || []).length > 0))
-						return t.ability;
-				}
-
-				return null;
-			})(),
-			isPsionics: (() => {
-				for (const t of data?.spellcasting ?? []) {
-					if (t.name.includes("Innate Spellcasting (Psionics)"))
-						return true;
-				}
-
-				return false;
-			})(),
+			spellCastingAbility: innateSpellcastingAbility,
+			isPsionics: isPsionicSpellcasting,
 			customDescription: ""
 		},
 		casterSpells: {
 			casterLevel: (() => {
-				let sData = [];
-				for (const t of data?.spellcasting ?? []) {
-					if (t.name.includes("Spellcasting") && !t.name.includes("Innate"))
-						sData = t;
-				}
-
-				if (!sData || !sData.headerEntries)
+				if (!casterSpellcasting || !casterSpellcasting.headerEntries)
 					return null;
 
 				const regex = /\b(\w+-level)\b/;
-				const match = sData.headerEntries[0].match(regex);
+				const match = casterSpellcasting.headerEntries[0].match(regex);
 
 				return match ? Math.max(0, Math.min(20, Number.parseInt(match[1].replace("-level", "").replace("st", "").replace("nd", "").replace("rd", "").replace("th", "")))) : null;
 			})(),
 			castingClass: (() => {
-				let sData = [];
-				for (const t of data?.spellcasting ?? []) {
-					if (t.name.includes("Spellcasting") && !t.name.includes("Innate"))
-						sData = t;
-				}
-
-				if (!sData || !sData.headerEntries)
+				if (!casterSpellcasting || !casterSpellcasting.headerEntries)
 					return null;
 
-				const text = sData.headerEntries[0];
+				const text = casterSpellcasting.headerEntries[0];
 
 				if (text.toLowerCase().includes("wizard"))
 					return "Wizard";
@@ -678,17 +493,11 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 			spellList: (() => {
 				const output = [[], [], [], [], [], [], [], [], [], []] as CasterSpells["spellList"];
 
-				let sData = [];
-				for (const t of data?.spellcasting ?? []) {
-					if (t.name.includes("Spellcasting") && !t.name.includes("Innate"))
-						sData = t;
-				}
-
-				if (!sData.spells)
+				if (!casterSpellcasting.spells)
 					return output;
 
-				for (const l in sData.spells) {
-					for (const sp of sData.spells[l].spells) {
+				for (const l in casterSpellcasting.spells) {
+					for (const sp of casterSpellcasting.spells[l].spells) {
 						let t = sp.replace("{@spell ", "");
 						t = t.split("}");
 						if (t)
@@ -699,72 +508,45 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 				return output;
 			})(),
 			spellSlotList: (() => {
-				let sData = [];
 				const output = {} as SpellSlotList;
-				for (const t of data?.spellcasting ?? []) {
-					if (t.name.includes("Spellcasting") && !t.name.includes("Innate"))
-						sData = t;
-				}
 
-				if (!sData.spells)
+				if (!casterSpellcasting.spells)
 					return output;
 
-				for (const l in sData.spells) {
+				for (const l in casterSpellcasting.spells) {
 					if (Number.parseInt(l) === 0)
 						continue;
-					output[Number.parseInt(l)] = sData.spells[l].slots ?? 0;
+					output[Number.parseInt(l)] = casterSpellcasting.spells[l].slots ?? 0;
 				}
 				return output;
 			})(),
 			spellBonusOverride: (() => {
-				let sData = [];
-				for (const t of data?.spellcasting ?? []) {
-					if (t.name.includes("Spellcasting") && !t.name.includes("Innate"))
-						sData = t;
-				}
-
-				if (!sData || !sData.headerEntries)
+				if (!casterSpellcasting || !casterSpellcasting.headerEntries)
 					return null;
 
-				const match = sData.headerEntries[0].match(/\{@hit\s+(\d+)\}/);
+				const match = casterSpellcasting.headerEntries[0].match(/\{@hit\s+(\d+)\}/);
 				const hit = match ? Number.parseInt(match[1]) : null;
 				if (!hit)
 					return null;
 
-				if (hit !== outputData.core.proficiencyBonus + (Math.floor(data[sData.ability] / 2) - 5))
+				if (hit !== outputData.core.proficiencyBonus + (Math.floor(data[casterSpellcasting.ability] / 2) - 5))
 					return hit;
 				return null;
 			})(),
 			spellDcOverride: (() => {
-				let sData = [];
-				for (const t of data?.spellcasting ?? []) {
-					if (t.name.includes("Spellcasting") && !t.name.includes("Innate"))
-						sData = t;
-				}
-
-				if (!sData || !sData.headerEntries)
+				if (!casterSpellcasting || !casterSpellcasting.headerEntries)
 					return null;
 
-				const match = sData.headerEntries[0].match(/\{@dc\s+(\d+)\}/);
+				const match = casterSpellcasting.headerEntries[0].match(/\{@dc\s+(\d+)\}/);
 				const dc = match ? Number.parseInt(match[1]) : null;
 				if (!dc)
 					return null;
-				if (dc !== 8 + outputData.core.proficiencyBonus + (Math.floor(data[sData.ability] / 2) - 5))
+				if (dc !== 8 + outputData.core.proficiencyBonus + (Math.floor(data[casterSpellcasting.ability] / 2) - 5))
 					return dc;
 				return null;
 			})(),
 			spellCastingAbilityOverride: null,
-			spellCastingAbility: (() => {
-				let sData = [];
-				for (const t of data?.spellcasting ?? []) {
-					if (t.name.includes("Spellcasting") && !t.name.includes("Innate"))
-						sData = t;
-				}
-
-				if (!sData.ability)
-					return null;
-				return sData.ability;
-			})(),
+			spellCastingAbility: casterSpellcasting.ability || null,
 			displayAsAction: false,
 			customDescription: ""
 		}
