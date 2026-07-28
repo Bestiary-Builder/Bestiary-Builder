@@ -54,6 +54,10 @@ app.get("/api/login", async (req, res) => {
 			global_name?: string;
 		};
 		if (userResult) {
+			// Check if email is present
+			if (!userResult.email) {
+				return res.redirect(`/user?loginError=${encodeURIComponent("No email connected to your discord account.")}`);
+			}
 			// Update user
 			const secret = await updateUser({
 				id: userResult.id,
@@ -64,6 +68,9 @@ app.get("/api/login", async (req, res) => {
 				bannerColor: userResult.banner_color ?? "",
 				globalName: userResult.global_name ?? userResult.username
 			});
+			if (secret === null) {
+				return res.redirect(`/user?loginError=${encodeURIComponent("Error occured when creating user.")}`);
+			}
 			// Create JWT token
 			const token = jwt.sign({ id: secret }, process.env.JWTKEY ?? "key", {
 				expiresIn: "7d"
