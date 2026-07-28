@@ -1,27 +1,35 @@
-import type { Statblock, User } from "~/shared";
+import type { CollectionWithEditors } from "./collections";
+import type { Id, Statblock, User } from "~/shared";
 import type { Bestiary, BestiaryCreateInput, BestiaryStatus, Creature } from "~/shared/src/prisma-types";
 import { createCheckers } from "ts-interface-checker";
 import tags from "@/staticData/tags.json";
 import { checkBadwords } from "@/utilities/badwords";
 import { app, checkBestiaryLimits, checkCreatureAmountLimit, checkCreatureLimits, limits } from "@/utilities/constants";
-import { addBestiaryEditor, addBookmark, createBestiary, createCreatures, deleteBestiary, getBestiariesByOwner, getBestiariesByUser, getBestiary, getBestiaryCreatureCount, getPrismaClient, getPublicBestiariesByOwner, getUser, incrementBestiaryViewCount, isBestiaryBookmarked, isBestiaryEditor, removeBestiaryEditor, removeBookmark, updateBestiary } from "@/utilities/database";
+import { addBestiaryEditor, addBookmark, createBestiary, createCreatures, deleteBestiary, getBestiariesByOwner, getBestiariesByUser, getBestiary, getBestiaryCreatureCount, getPrismaClient, getPublicBestiariesByOwner, incrementBestiaryViewCount, isBestiaryBookmarked, removeBestiaryEditor, removeBookmark, updateBestiary } from "@/utilities/database";
 import { log } from "@/utilities/logger";
 import { defaultStatblock, typeInterface } from "~/shared";
 
+import { createCollectionService } from "./collections";
 import { colors, publicLog } from "./discord";
 import { possibleUser, requireUser } from "./login";
 
-// Permission checks
-export async function checkBestiaryPermission(bestiary: Bestiary, user: User | null): Promise<"none" | "view" | "owner" | "editor"> {
-	if (user) {
-		if (bestiary.ownerId === user.id)
-			return "owner";
-		else if (await isBestiaryEditor(bestiary.id, user.id))
-			return "editor";
-	}
-	if (bestiary.status !== "private")
-		return "view";
-	else return "none";
+type BestiaryWithEditors = Bestiary & CollectionWithEditors;
+type BestiaryForUser = BestiaryWithEditors & { creatures: { id: Id }[]; orderedBy: { index: number }[] };
+
+const bestiaryCollections = createCollectionService<BestiaryWithEditors, BestiaryForUser>({
+	getById: getBestiary,
+	getForUser: getBestiariesByUser,
+	addEditor: addBestiaryEditor,
+	removeEditor: removeBestiaryEditor,
+	delete: deleteBestiary
+});
+
+export async function checkBestiaryPermission(bestiary: BestiaryWithEditors, user: User | null) {
+	return bestiaryCollections.getPermission(bestiary, user?.id ?? null);
+}
+
+export async function canEditBestiary(bestiary: BestiaryWithEditors, user: User | null) {
+	return bestiaryCollections.canPerform("edit", await checkBestiaryPermission(bestiary, user));
 }
 
 // Get info
@@ -67,7 +75,7 @@ app.get("/api/my-bestiaries", requireUser, async (req, res) => {
 		const user = req.body.user;
 		if (!user)
 			return res.status(404).json({ error: "Couldn't find user" });
-		const allBestiaries = await getBestiariesByUser(user.id);
+		const allBestiaries = await bestiaryCollections.getForUser(user.id);
 		log.info(`Retrieved all bestiaries from the current user with the id ${user.id}`);
 		return res.json(allBestiaries.sort((a, b) => (a.orderedBy[0]?.index ?? allBestiaries.length) - (b.orderedBy[0]?.index ?? allBestiaries.length)).map((bestiary) => {
 			const b = bestiary as Omit<typeof bestiary, "orderedBy"> & { orderedBy?: unknown };
@@ -157,12 +165,14 @@ app.post("/api/bestiary/:id/update", requireUser, async (req, res) => {
 				return res.status(400).json({ error: "A bestiary must have a non default name." });
 		}
 		// Update bestiary
-		const bestiary = await getBestiary(id);
-		if (!bestiary)
-			return res.status(404).json({ error: "No bestiary with that id found." });
-		const permissionLevel = await checkBestiaryPermission(bestiary, user);
-		if (permissionLevel === "none" || permissionLevel === "view")
+		const authorization = await bestiaryCollections.authorize(id, user.id, "edit");
+		if (!authorization.ok) {
+			if (authorization.reason === "collection-not-found")
+				return res.status(404).json({ error: "No bestiary with that id found." });
 			return res.status(401).json({ error: "You don't have permission to update this bestiary." });
+		}
+		const bestiary = authorization.collection;
+		const permissionLevel = authorization.permission;
 		// Limit to properties that are editable:
 		const update: Omit<UpdateData, "status"> & { status?: BestiaryStatus } = {
 			name: data.name,
@@ -250,20 +260,16 @@ app.get("/api/bestiary/:id/delete", requireUser, async (req, res) => {
 		if (!user)
 			return res.status(404).json({ error: "Couldn't find current user." });
 		// Permissions
-		const bestiary = await getBestiary(_id);
-		if (!bestiary)
-			return res.status(404).json({ error: "Couldn't find bestiary." });
-		if ((await checkBestiaryPermission(bestiary, user)) !== "owner")
-			return res.status(401).json({ error: "You don't have permission to delete this bestiary." });
-		// Remove from db
-		const status = await deleteBestiary(_id);
-		if (status) {
+		const result = await bestiaryCollections.deleteCollection(_id, user.id);
+		if (result.ok) {
 			log.info(`Deleted bestiary with the id ${_id}`);
-			res.json({});
+			return res.json({});
 		}
-		else {
-			res.status(500).json({ error: "Failed to delete creature." });
-		}
+		if (result.reason === "collection-not-found")
+			return res.status(404).json({ error: "Couldn't find bestiary." });
+		if (result.reason === "forbidden")
+			return res.status(401).json({ error: "You don't have permission to delete this bestiary." });
+		return res.status(500).json({ error: "Failed to delete bestiary." });
 	}
 	catch (err) {
 		log.log("critical", err);
@@ -328,8 +334,7 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 		const user = req.body.user;
 		if (!user)
 			return res.status(404).json({ error: "Couldn't find current user." });
-		const bestiaryPermissionLevel = await checkBestiaryPermission(bestiary, user);
-		if (["none", "view"].includes(bestiaryPermissionLevel))
+		if (!await canEditBestiary(bestiary, user))
 			return res.status(401).json({ error: "You don't have permission to add creatures to this bestiary." });
 		// Get creature input
 		let data;
@@ -456,23 +461,19 @@ app.get("/api/bestiary/:bestiaryid/editors/add/:userid", requireUser, async (req
 		if (!currentUser)
 			return res.status(404).json({ error: "Couldn't find current user." });
 
-		const bestiary = await getBestiary(_id);
-		if (!bestiary)
-			return res.status(404).json({ error: "Bestiary with that id not found." });
-		const newEditor = await getUser(req.params.userid);
-		if (!newEditor)
-			return res.status(404).json({ error: "No user with that id found." });
-		// Permission check
-		if ((await checkBestiaryPermission(bestiary, currentUser)) !== "owner")
-			return res.status(401).json({ error: "You don't have permission to add editors to this bestiary." });
-		// Already an editor?
-		if (await isBestiaryEditor(bestiary.id, newEditor!.id))
-			return res.json({ error: "User is already an editor." });
-
-		// Add editor
-		await addBestiaryEditor(_id, newEditor.id);
-		log.info(`Added user with the id ${newEditor.id} as editor of bestiary with the id ${bestiary.id}`);
-		return res.json({});
+		const result = await bestiaryCollections.addEditor(_id, currentUser.id, req.params.userid);
+		if (result.ok) {
+			log.info(`Added user with the id ${req.params.userid} as editor of bestiary with the id ${_id}`);
+			return res.json({});
+		}
+		switch (result.reason) {
+			case "collection-not-found": return res.status(404).json({ error: "Bestiary with that id not found." });
+			case "forbidden": return res.status(401).json({ error: "You don't have permission to add editors to this bestiary." });
+			case "user-not-found": return res.status(404).json({ error: "No user with that id found." });
+			case "owner-as-editor": return res.status(400).json({ error: "The bestiary owner cannot be added as an editor." });
+			case "already-editor": return res.status(409).json({ error: "User is already an editor." });
+			default: return res.status(500).json({ error: "Failed to add bestiary editor." });
+		}
 	}
 	catch (err) {
 		log.log("critical", err);
@@ -489,23 +490,18 @@ app.get("/api/bestiary/:bestiaryid/editors/remove/:userid", requireUser, async (
 		if (!currentUser)
 			return res.status(404).json({ error: "Couldn't find current user." });
 
-		const bestiary = await getBestiary(_id);
-		if (!bestiary)
-			return res.status(404).json({ error: "Bestiary with that id not found." });
-		const newEditor = await getUser(req.params.userid);
-		if (!newEditor)
-			return res.status(404).json({ error: "No user with that id found." });
-		// Permission check
-		if ((await checkBestiaryPermission(bestiary, currentUser)) !== "owner")
-			return res.status(401).json({ error: "You don't have permission to add editors to this bestiary." });
-		// Already an editor?
-		if (!await isBestiaryEditor(bestiary.id, newEditor!.id))
-			return res.json({ error: "User is not an editor." });
-
-		// Remove editor
-		await removeBestiaryEditor(_id, newEditor.id);
-		log.info(`Removed user with the id ${newEditor.id} as editor of bestiary with the id ${bestiary.id}`);
-		return res.json({});
+		const result = await bestiaryCollections.removeEditor(_id, currentUser.id, req.params.userid);
+		if (result.ok) {
+			log.info(`Removed user with the id ${req.params.userid} as editor of bestiary with the id ${_id}`);
+			return res.json({});
+		}
+		switch (result.reason) {
+			case "collection-not-found": return res.status(404).json({ error: "Bestiary with that id not found." });
+			case "forbidden": return res.status(401).json({ error: "You don't have permission to remove editors from this bestiary." });
+			case "user-not-found": return res.status(404).json({ error: "No user with that id found." });
+			case "not-editor": return res.status(404).json({ error: "User is not an editor." });
+			default: return res.status(500).json({ error: "Failed to remove bestiary editor." });
+		}
 	}
 	catch (err) {
 		log.log("critical", err);

@@ -199,6 +199,7 @@ async function main() {
 			id: `default-${ownerId}`,
 			name: "My Automations",
 			ownerId,
+			status: "private",
 			lastUpdated: new Date(),
 		}))
 	});

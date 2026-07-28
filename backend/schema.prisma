@@ -98,16 +98,18 @@ model Automation {
 }
 
 model AutomationCollection {
-  id          String   @id @default(cuid())
+  id          String         @id @default(cuid())
   name        String
-  ownerId     String   @map("owner")
-  lastUpdated DateTime @updatedAt
+  ownerId     String         @map("owner")
+  status      BestiaryStatus @default(private)
+  lastUpdated DateTime       @updatedAt
 
   owner       User                         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   automations Automation[]
   editors     AutomationCollectionEditor[]
 
   @@index([ownerId])
+  @@index([status])
   @@map("AutomationCollections")
 }
 

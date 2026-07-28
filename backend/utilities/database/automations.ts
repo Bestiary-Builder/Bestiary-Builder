@@ -71,7 +71,10 @@ export async function getAutomationCollection(id: Id) {
 	try {
 		return await getPrismaClient().automationCollection.findUnique({
 			where: { id },
-			include: { editors: { select: { userId: true } } }
+			include: {
+				editors: { select: { userId: true } },
+				automations: true
+			}
 		});
 	}
 	catch (err) {
@@ -83,6 +86,19 @@ export async function getAutomationCollection(id: Id) {
 export async function getAutomationCollectionsByOwner(ownerId: Id) {
 	try {
 		return await getPrismaClient().automationCollection.findMany({ where: { ownerId } });
+	}
+	catch (err) {
+		log.log("critical", err);
+		return [];
+	}
+}
+
+export async function getPublicAutomationCollectionsByOwner(ownerId: Id) {
+	try {
+		return await getPrismaClient().automationCollection.findMany({
+			where: { ownerId, status: "public" },
+			include: { automations: true }
+		});
 	}
 	catch (err) {
 		log.log("critical", err);
