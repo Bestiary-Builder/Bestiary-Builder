@@ -33,10 +33,11 @@ model User {
   SRDVersion             SRDVersion      @default(SRD_2024)
 
   // Lists
-  bestiaries Bestiary[]             @relation("BestiaryOwner")
-  editedIn   BestiaryEditor[]
-  bookmarks  UserBestiaryBookmark[]
-  ordered    UserBestiaryOrder[]
+  bestiaries            Bestiary[]             @relation("BestiaryOwner")
+  automationCollections AutomationCollection[]
+  editedIn              BestiaryEditor[]
+  bookmarks             UserBestiaryBookmark[]
+  ordered               UserBestiaryOrder[]
 
   @@map("Users")
 }
@@ -80,17 +81,32 @@ model Creature {
 }
 
 model Automation {
-  id          String   @id @default(cuid())
-  name        String
-  description String
-  owner       String
-  lastUpdated DateTime @default(now())
+  id           String   @id @default(cuid())
+  name         String
+  description  String
+  collectionId String
+  lastUpdated  DateTime @default(now())
 
   /// [DbAutomation]
   automation Json?
 
-  @@index([owner])
+  collection AutomationCollection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+
+  @@index([collectionId])
   @@map("Automations")
+}
+
+model AutomationCollection {
+  id          String   @id @default(cuid())
+  name        String
+  ownerId     String   @map("owner")
+  lastUpdated DateTime @updatedAt
+
+  owner       User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  automations Automation[]
+
+  @@index([ownerId])
+  @@map("AutomationCollections")
 }
 
 model BestiaryEditor {

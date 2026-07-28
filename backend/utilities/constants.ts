@@ -34,7 +34,7 @@ export function checkCreatureLimits(stats?: Statblock) {
 		return "No statblock provided.";
 	return checkLimits(stats.description);
 }
-export function checkAutomationLimits(automation: Automation) {
+export function checkAutomationLimits(automation: Pick<Automation, "name" | "description">) {
 	return checkLimits(automation);
 }
 function checkLimits(data: { name: string; description: string }) {

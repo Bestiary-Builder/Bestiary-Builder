@@ -1,7 +1,9 @@
 import { getPrismaClient } from ".";
 import { log } from "@/utilities/logger";
 import type { Id } from "~/shared";
-import type { AutomationCreateInput, AutomationUpdateInput } from "~/shared/src/prisma-types";
+import type { AutomationCollectionCreateInput, AutomationCreateInput, AutomationUpdateInput } from "~/shared/src/prisma-types";
+
+type CreateAutomationData = Pick<AutomationCreateInput, "name" | "description" | "automation">;
 
 // Automation functions
 export async function getAutomation(id: Id) {
@@ -14,11 +16,16 @@ export async function getAutomation(id: Id) {
 		return null;
 	}
 }
-export async function createAutomation(data: AutomationCreateInput) {
+export async function createAutomation(data: CreateAutomationData, collectionId: Id) {
 	try {
-		data.lastUpdated = new Date(Date.now());
 		log.log("database", `Creating new automation`);
-		return (await getPrismaClient().automation.create({ data })).id;
+		return await getPrismaClient().automation.create({
+			data: {
+				...data,
+				lastUpdated: new Date(),
+				collection: { connect: { id: collectionId } }
+			}
+		});
 	}
 	catch (err) {
 		log.log("critical", err);
@@ -39,13 +46,8 @@ export async function updateAutomation(data: AutomationUpdateInput, id: Id) {
 export async function deleteAutomation(id: Id) {
 	try {
 		log.log("database", `Deleting automation with the id ${id}.`);
-		return await getPrismaClient().$transaction(async () => {
-			const automation = await getAutomation(id);
-			if (!automation)
-				return false;
-			await getPrismaClient().automation.delete({ where: { id } });
-			return true;
-		});
+		await getPrismaClient().automation.delete({ where: { id } });
+		return true;
 	}
 	catch (err) {
 		log.log("critical", err);
@@ -53,12 +55,44 @@ export async function deleteAutomation(id: Id) {
 	}
 }
 
-export async function getAutomationsByOwner(ownerId: string) {
+export async function getAutomationsByCollectionIds(collectionIds: Id[]) {
 	try {
-		return await getPrismaClient().automation.findMany({ where: { owner: ownerId } });
+		if (!collectionIds.length)
+			return [];
+		return await getPrismaClient().automation.findMany({ where: { collectionId: { in: collectionIds } } });
 	}
 	catch (err) {
 		log.log("critical", err);
 		return [];
+	}
+}
+
+export async function getAutomationCollection(id: Id) {
+	try {
+		return await getPrismaClient().automationCollection.findUnique({ where: { id } });
+	}
+	catch (err) {
+		log.log("critical", err);
+		return null;
+	}
+}
+
+export async function getAutomationCollectionsByOwner(ownerId: Id) {
+	try {
+		return await getPrismaClient().automationCollection.findMany({ where: { ownerId } });
+	}
+	catch (err) {
+		log.log("critical", err);
+		return [];
+	}
+}
+
+export async function createAutomationCollection(data: AutomationCollectionCreateInput) {
+	try {
+		return await getPrismaClient().automationCollection.upsert({ where: { id: data.id }, update: data, create: data });
+	}
+	catch (err) {
+		log.log("critical", err);
+		return null;
 	}
 }

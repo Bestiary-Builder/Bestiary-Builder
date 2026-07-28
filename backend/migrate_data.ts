@@ -3,7 +3,7 @@ import type { ObjectId } from "mongodb";
 import { MongoClient } from "mongodb";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { generateUserSecret } from "./utilities/constants";
-import { BestiaryStatus, PrismaClient, SupporterStatus } from "~/shared/src/prisma-types";
+import { BestiaryStatus, PrismaClient, SupporterStatus, type AutomationCreateManyInput } from "~/shared/src/prisma-types";
 
 /**
  * Standalone migration script:
@@ -135,6 +135,7 @@ async function main() {
 		prisma.userBestiaryBookmark.deleteMany(),
 		prisma.creature.deleteMany(),
 		prisma.automation.deleteMany(),
+		prisma.automationCollection.deleteMany(),
 		prisma.bestiary.deleteMany(),
 		prisma.user.deleteMany(),
 	]);
@@ -189,14 +190,23 @@ async function main() {
     });
 
     console.log("Migrating automations...");
+    const validAutomationOwners = [...new Set(automations.filter(a => userIds.has(a.owner)).map(a => a.owner))];
+    await prisma.automationCollection.createMany({
+        data: validAutomationOwners.map(ownerId => ({
+            id: `default-${ownerId}`,
+            name: "My Automations",
+            ownerId,
+            lastUpdated: new Date(),
+        }))
+    });
     await prisma.automation.createMany({
         data: automations.filter(a => userIds.has(a.owner)).map(a => ({
             id: a._id.toHexString(),
             name: a.name ?? "",
             description: a.description ?? "",
-            owner: a.owner,
+            collectionId: `default-${a.owner}`,
             lastUpdated: new Date(a.lastUpdated ?? Date.now()),
-            automation: (a.automation ?? undefined) as object | undefined,
+            automation: (a.automation ?? undefined) as unknown as AutomationCreateManyInput["automation"],
         }))
     });
 

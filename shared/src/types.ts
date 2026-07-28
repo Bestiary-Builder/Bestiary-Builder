@@ -14,6 +14,7 @@ export type BestiaryEditor = Prisma.BestiaryEditorModel;
 export type UserBestiaryBookmark = Prisma.UserBestiaryBookmarkModel;
 export type Creature = Prisma.CreatureModel;
 export type Automation = Prisma.AutomationModel;
+export type AutomationCollection = Prisma.AutomationCollectionModel;
 
 export type CreatureWithStats = Omit<Creature, "stats"> & { stats: Statblock };
 export type BestiaryExtended = Bestiary & { creatures: { id: Id }[]; editors: { userId: Id }[] };
