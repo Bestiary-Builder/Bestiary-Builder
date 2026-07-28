@@ -33,11 +33,12 @@ model User {
   SRDVersion             SRDVersion      @default(SRD_2024)
 
   // Lists
-  bestiaries            Bestiary[]             @relation("BestiaryOwner")
-  automationCollections AutomationCollection[]
-  editedIn              BestiaryEditor[]
-  bookmarks             UserBestiaryBookmark[]
-  ordered               UserBestiaryOrder[]
+  bestiaries                  Bestiary[]                   @relation("BestiaryOwner")
+  automationCollections       AutomationCollection[]
+  editedAutomationCollections AutomationCollectionEditor[]
+  editedIn                    BestiaryEditor[]
+  bookmarks                   UserBestiaryBookmark[]
+  ordered                     UserBestiaryOrder[]
 
   @@map("Users")
 }
@@ -97,16 +98,32 @@ model Automation {
 }
 
 model AutomationCollection {
-  id          String   @id @default(cuid())
+  id          String         @id @default(cuid())
   name        String
-  ownerId     String   @map("owner")
-  lastUpdated DateTime @updatedAt
+  ownerId     String         @map("owner")
+  status      BestiaryStatus @default(private)
+  lastUpdated DateTime       @updatedAt
 
-  owner       User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  owner       User                         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   automations Automation[]
+  editors     AutomationCollectionEditor[]
 
   @@index([ownerId])
+  @@index([status])
   @@map("AutomationCollections")
+}
+
+model AutomationCollectionEditor {
+  collectionId String
+  userId       String
+
+  collection AutomationCollection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  user       User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([collectionId, userId])
+  @@index([userId])
+  @@index([collectionId])
+  @@map("AutomationCollectionEditors")
 }
 
 model BestiaryEditor {

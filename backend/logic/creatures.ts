@@ -4,21 +4,17 @@ import { app, checkCreatureAmountLimit, checkCreatureLimits, limits } from "@/ut
 import { createCreature, deleteCreature, getBestiary, getBestiaryCreatureCount, getCreature, getCreaturesByBestiary, getPrismaClient, updateCreature } from "@/utilities/database";
 import { log } from "@/utilities/logger";
 import { defaultStatblock } from "~/shared";
-import { checkBestiaryPermission } from "./bestiaries";
+import { canEditBestiary, checkBestiaryPermission } from "./bestiaries";
 import { possibleUser, requireUser } from "./login";
 import { validateCreatureInput } from "./validation";
 
 // Check creature permissions
 export async function checkCreaturePermission(creature: Creature, user: User | null) {
-	if (!user)
-		return false;
 	const bestiary = await getBestiary(creature.bestiaryId);
 	if (!bestiary)
 		return false;
 	const bestiaryPermissionLevel = await checkBestiaryPermission(bestiary, user);
-	if (bestiaryPermissionLevel === "none")
-		return false;
-	else return true;
+	return bestiaryPermissionLevel !== "none";
 }
 
 // Get info
@@ -142,8 +138,8 @@ app.post("/api/creature/add", requireUser, async (req, res) => {
 				return res.status(400).json({ error: `Creature description ${descError}` });
 		}
 		// Check permissions
-		if (["none", "view"].includes(await checkBestiaryPermission(bestiary, user)))
-			return res.status(401).json({ error: "You don't have permission to add creature to this bestiary." });
+		if (!await canEditBestiary(bestiary, user))
+			return res.status(401).json({ error: "You don't have permission to add creatures to this bestiary." });
 		// Check amount of creatures:
 		const count = await getBestiaryCreatureCount(bestiary.id);
 		const amountError = checkCreatureAmountLimit(count);
@@ -251,7 +247,7 @@ app.post("/api/creature/:id/update", requireUser, async (req, res) => {
 				return res.status(400).json({ error: `Creature description ${descError}` });
 		}
 		// Check permissions
-		if (["none", "view"].includes(await checkBestiaryPermission(bestiary, user)))
+		if (!await canEditBestiary(bestiary, user))
 			return res.status(401).json({ error: "You don't have permission to update this creature." });
 		// Update creature
 		const updatedId = await updateCreature(data, _id);
@@ -283,7 +279,8 @@ app.get("/api/creature/:id/delete", requireUser, async (req, res) => {
 		const creature = await getCreature(_id);
 		if (!creature)
 			return res.status(404).json({ error: "Couldn't find creature with that id." });
-		if (!(await checkCreaturePermission(creature, user)))
+		const bestiary = await getBestiary(creature.bestiaryId);
+		if (!bestiary || !await canEditBestiary(bestiary, user))
 			return res.status(401).json({ error: "You don't have permission to delete this creature." });
 		// Remove from db
 		const status = await deleteCreature(_id);
@@ -311,6 +308,8 @@ app.post("/api/bestiary/:id/creatures/order", requireUser, async (req, res) => {
 		const bestiary = bestiaryId ? await getBestiary(bestiaryId) : null;
 		if (!bestiary)
 			return res.status(404).json({ error: "No bestiary with that id found." });
+		if (!await canEditBestiary(bestiary, user))
+			return res.status(401).json({ error: "You don't have permission to reorder creatures in this bestiary." });
 
 		const prisma = getPrismaClient();
 

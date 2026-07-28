@@ -12,10 +12,12 @@ export type UserBestiaryBookmark = Prisma.UserBestiaryBookmarkModel;
 export type Creature = Prisma.CreatureModel;
 export type Automation = Prisma.AutomationModel;
 export type AutomationCollection = Prisma.AutomationCollectionModel;
+export type AutomationCollectionEditor = Prisma.AutomationCollectionEditorModel;
 
 export type CreatureWithStats = Omit<Creature, "stats"> & { stats: Statblock };
 export type BestiaryExtended = Bestiary & { creatures: { id: Id }[]; editors: { userId: Id }[] };
 export type BestiaryWithCount = Bestiary & { creatureCount: number };
+export type AutomationCollectionExtended = AutomationCollection & { automations: Automation[]; editors: { userId: Id }[] };
 
 export class GlobalStats {
 	constructor(public bestiaries: number, public creatures: number, public users: number) {}

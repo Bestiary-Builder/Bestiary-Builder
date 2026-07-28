@@ -133,6 +133,7 @@ async function main() {
 	console.log("Clearing target PostgreSQL tables...");
 	await prisma.$transaction([
 		prisma.bestiaryEditor.deleteMany(),
+		prisma.automationCollectionEditor.deleteMany(),
 		prisma.userBestiaryBookmark.deleteMany(),
 		prisma.creature.deleteMany(),
 		prisma.automation.deleteMany(),
@@ -198,6 +199,7 @@ async function main() {
 			id: `default-${ownerId}`,
 			name: "My Automations",
 			ownerId,
+			status: "private",
 			lastUpdated: new Date(),
 		}))
 	});
