@@ -2,7 +2,8 @@ import type { InnateSpellsEntity, SkillsEntity, SpellCasting, Stat, Statblock } 
 import { app } from "@/utilities/constants";
 import { getBestiary, getCreaturesByBestiary, incrementBestiaryViewCount } from "@/utilities/database";
 import { log } from "@/utilities/logger";
-import { crAsString, displayCasterCasting, displayInnateCasting, displaySpeedOrSenses, hpCalc, ppCalc, SKILLS_BY_STAT, spellAttackBonus, spellDc, statCalc } from "~/shared";
+import { crAsString, displaySpeedOrSenses, hpCalc, ppCalc, SKILLS_BY_STAT, spellAttackBonus, spellDc, statCalc } from "~/shared";
+import { getSpellcastingFeatures } from "./spellcastingFeatures";
 
 // Export data
 app.get("/api/public/bestiary/:id", (req, res) => res.redirect(`/api/export/bestiary/${req.params.id}`));
@@ -155,6 +156,7 @@ export function getCreatureData(creature: Statblock) {
 		innate_sab: spellAttackBonus(true, creature),
 		innate_mod: statCalc(spellcastInnateObj.spellCastingAbility, creature)
 	};
+	const { traits, actions } = getSpellcastingFeatures(creature);
 
 	// Saves/stats
 	const saves = {} as { [key: string]: unknown };
@@ -221,8 +223,8 @@ export function getCreatureData(creature: Statblock) {
 		immunities: creature.defenses.immunities,
 		vulnerabilities: creature.defenses.vulnerabilities,
 		condition_immune: creature.defenses.conditionImmunities,
-		traits: creature.features.features,
-		actions: creature.features.actions,
+		traits,
+		actions,
 		bonus_actions: creature.features.bonus,
 		reactions: creature.features.reactions,
 		legactions: creature.features.legendary,
@@ -234,25 +236,5 @@ export function getCreatureData(creature: Statblock) {
 		passiveperc: ppCalc(creature)
 	};
 
-	const caster = creature.spellcasting.casterSpells;
-
-	if (caster.casterLevel && caster.castingClass && caster.spellList.flat().length > 0 && Object.keys(caster.spellSlotList ?? {}).length > 0) {
-		creatureData.traits.push({
-			name: "Spellcasting",
-			description: displayCasterCasting(creature),
-			automation: null
-		});
-	}
-
-	const innateCaster = creature.spellcasting.innateSpells;
-	if (innateCaster.spellCastingAbility && (innateCaster.spellList[0].length > 0 || innateCaster.spellList[1].length > 0 || innateCaster.spellList[2].length > 0 || innateCaster.spellList[3].length > 0)) {
-		const featureName = `Innate Spellcasting${innateCaster.isPsionics ? " (Psionics)" : ""}`;
-
-		creatureData[innateCaster.displayAsAction ? "actions" : "traits"].push({
-			name: featureName,
-			description: displayInnateCasting(creature),
-			automation: null
-		});
-	}
 	return creatureData;
 }

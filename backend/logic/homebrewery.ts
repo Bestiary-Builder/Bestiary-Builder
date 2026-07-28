@@ -2,10 +2,11 @@ import type { FeatureEntity, SaveEntity, Stat, Statblock } from "~/shared";
 import { app } from "@/utilities/constants";
 import { getBestiary, getCreature, getCreaturesByBestiary, incrementBestiaryViewCount } from "@/utilities/database";
 import { log } from "@/utilities/logger";
-import { capitalizeFirstLetter, displayCasterCasting, displayInnateCasting, displaySpeedOrSenses, hpCalc, ppCalc, SKILLS_BY_STAT, statCalc } from "~/shared";
+import { capitalizeFirstLetter, displaySpeedOrSenses, hpCalc, ppCalc, SKILLS_BY_STAT, statCalc } from "~/shared";
 import { checkBestiaryPermission } from "./bestiaries";
 import { checkCreaturePermission } from "./creatures";
 import { possibleUser } from "./login";
+import { getSpellcastingFeatures } from "./spellcastingFeatures";
 
 app.get("/api/homebrewery/export/bestiary/:id", possibleUser, async (req, res) => {
 	const bestiaryId = req.params.id;
@@ -178,35 +179,10 @@ export function getCreatureMarkdown(creature: Statblock) {
 	].filter(x => x !== null).join("\n");
 
 	// Pre-fetching actions
-	const actions = creature.features.actions;
-
-	// Traits
-	const traits = creature.features.features;
-	const caster = creature.spellcasting.casterSpells;
-	const innateCaster = creature.spellcasting.innateSpells;
-
-	if (caster.casterLevel && caster.castingClass && caster.spellList.flat().length > 0 && Object.keys(caster.spellSlotList ?? {}).length > 0) {
-		traits.push({
-			name: "Spellcasting",
-			description: displayCasterCasting(creature).replaceAll("\n", "\n\n"),
-			automation: null
-		});
-	}
-
-	if (innateCaster.spellCastingAbility && (innateCaster.spellList[0].length > 0 || innateCaster.spellList[1].length > 0 || innateCaster.spellList[2].length > 0 || innateCaster.spellList[3].length > 0)) {
-		const featureName = `Innate Spellcasting${innateCaster.isPsionics ? " (Psionics)" : ""}`;
-
-		const feat = {
-			name: featureName,
-			description: displayInnateCasting(creature, true).replaceAll("\n", "\n\n"),
-			automation: null
-		};
-
-		if (innateCaster.displayAsAction)
-			actions.push(feat);
-		else
-			traits.push(feat);
-	}
+	const { traits, actions } = getSpellcastingFeatures(creature, {
+		separateParagraphs: true,
+		innateDisplayV2024: true
+	});
 
 	const traitStr = traits.map(t => `***${t.name}.*** ${t.description}`).join("\n:\n");
 
