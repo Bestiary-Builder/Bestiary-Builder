@@ -6,7 +6,14 @@ import { log } from "@/utilities/logger";
 app.post("/api/5etools-import", async (req, res) => {
 	try {
 		const { data: input } = req.body;
-		const [data, notices] = parseFrom5eTools(input);
+		let data, notices;
+		try {
+			[data, notices] = parseFrom5eTools(input);
+		}
+		catch (err) {
+			log.log("error", err);
+			return res.status(400).json({ error: "Invalid input data." });
+		}
 		const oldStats = { ...data };
 		const newData = {} as Statblock;
 		for (const key in defaultStatblock) {
