@@ -1,0 +1,88 @@
+// Badwords check function
+// Bad-words filter
+import BadWordsNext from "bad-words-next";
+import ar from "@/src/staticData/badwordsData/ar.json";
+import ch from "@/src/staticData/badwordsData/ch.json";
+import cs from "@/src/staticData/badwordsData/cs.json";
+import da from "@/src/staticData/badwordsData/da.json";
+import de from "@/src/staticData/badwordsData/de.json";
+import de_2 from "@/src/staticData/badwordsData/de_2.json";
+import en from "@/src/staticData/badwordsData/en.json";
+import en_2 from "@/src/staticData/badwordsData/en_2.json";
+import eo from "@/src/staticData/badwordsData/eo.json";
+import es from "@/src/staticData/badwordsData/es.json";
+import escopy from "@/src/staticData/badwordsData/es copy.json";
+import fa from "@/src/staticData/badwordsData/fa.json";
+import fi from "@/src/staticData/badwordsData/fi.json";
+import fil from "@/src/staticData/badwordsData/fil.json";
+import frCAusdcaqc from "@/src/staticData/badwordsData/fr-CA-u-sd-caqc.json";
+import fr from "@/src/staticData/badwordsData/fr.json";
+import fr_2 from "@/src/staticData/badwordsData/fr_2.json";
+import hi from "@/src/staticData/badwordsData/hi.json";
+import hu from "@/src/staticData/badwordsData/hu.json";
+import it from "@/src/staticData/badwordsData/it.json";
+import ja from "@/src/staticData/badwordsData/ja.json";
+import kab from "@/src/staticData/badwordsData/kab.json";
+import ko from "@/src/staticData/badwordsData/ko.json";
+import nl from "@/src/staticData/badwordsData/nl.json";
+import no from "@/src/staticData/badwordsData/no.json";
+import pl from "@/src/staticData/badwordsData/pl.json";
+import pl_2 from "@/src/staticData/badwordsData/pl_2.json";
+import pt from "@/src/staticData/badwordsData/pt.json";
+import ru from "@/src/staticData/badwordsData/ru.json";
+import ru_2 from "@/src/staticData/badwordsData/ru_2.json";
+import ru_lat from "@/src/staticData/badwordsData/ru_lat.json";
+import sv from "@/src/staticData/badwordsData/sv.json";
+import th from "@/src/staticData/badwordsData/th.json";
+import tlh from "@/src/staticData/badwordsData/tlh.json";
+import tr from "@/src/staticData/badwordsData/tr.json";
+import ua from "@/src/staticData/badwordsData/ua.json";
+import zh from "@/src/staticData/badwordsData/zh.json";
+
+export const badwords = new BadWordsNext({ placeholder: "", specialChars: /[\d!@#$%^&*()[\];:'",.?\-_=+~`|]|the|el|la/ });
+export function checkBadwords(value: string): string | undefined {
+	const usedBadwords: string[] = [];
+	badwords.filter(value, (badword) => {
+		usedBadwords.push(badword);
+	});
+	if (usedBadwords.length > 0)
+		return `includes blocked words or phrases. Remove the badwords or make the bestiary private. Matched: ${usedBadwords.join(", ")}. If you think this was a mistake, please file a bug report.`;
+	else return undefined;
+}
+badwords.add(ar);
+badwords.add(ch);
+badwords.add(cs);
+badwords.add(da);
+badwords.add(de_2);
+badwords.add(de);
+badwords.add(en_2);
+badwords.add(en);
+badwords.add(eo);
+badwords.add(escopy);
+badwords.add(es);
+badwords.add(fa);
+badwords.add(fi);
+badwords.add(fil);
+badwords.add(fr_2);
+badwords.add(frCAusdcaqc);
+badwords.add(fr);
+badwords.add(hi);
+badwords.add(hu);
+badwords.add(it);
+badwords.add(ja);
+badwords.add(kab);
+badwords.add(ko);
+badwords.add(nl);
+badwords.add(no);
+badwords.add(pl_2);
+badwords.add(pl);
+badwords.add(pt);
+badwords.add(ru_2);
+badwords.add(ru_lat);
+badwords.add(ru);
+badwords.add(sv);
+badwords.add(th);
+badwords.add(tlh);
+badwords.add(tr);
+badwords.add(ua);
+badwords.add(zh);

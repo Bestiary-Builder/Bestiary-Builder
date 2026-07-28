@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { getPublishedBestiaryCreatures } from "@/logic/import/critterdb";
+import { getPublishedBestiaryCreatures } from "@/src/logic/import/critterdb";
 
 it("critterDB export to be unchanged", async () => {
 	// Test https://critterdb.com/#/publishedbestiary/view/5acb0aa187653a455731b890 to be identical as before.
