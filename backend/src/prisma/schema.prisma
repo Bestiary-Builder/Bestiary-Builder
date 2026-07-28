@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client"
-  output   = "../shared/prisma"
+  output   = "../../../shared/prisma"
 }
 
 generator json {
