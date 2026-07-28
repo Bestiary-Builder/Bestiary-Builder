@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AvraeIcon from "@/../public/Avrae_Logo.svg";
+import AvraeIcon from "@/assets/svg/Avrae_Logo.svg"
 
 const { icon, inverted = false, label } = defineProps<{ icon: string; inverted?: boolean; label: string; noscale?: boolean }>();
 </script>

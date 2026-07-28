@@ -46,7 +46,7 @@ else:
 response = requests.get(
     f"https://api.avrae.io/customizations/gvars/{GVAR_ID}",
     headers={
-        "Authorization": os.getenv("AVRAE_TOKEN")
+        "Authorization": os.getenv("SCRIPT_AVRAE_TOKEN")
     },
 )
 response.raise_for_status()

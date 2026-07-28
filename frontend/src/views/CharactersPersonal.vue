@@ -2,33 +2,16 @@
 import { useLocalStorage } from "@vueuse/core";
 import { onMounted, ref } from "vue";
 import CharacterTile from "@/components/Characters/CharacterTile.vue";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
-import ButtonIcon from "@/components/Global/ButtonIcon.vue";
 import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
-import { getUmami } from "@/utils/app/analytics";
-import { $toast } from "@/utils/app/toast";
-import { useFetch } from "@/utils/utils";
+import { getAvraeCharacters, type AvraeCharacter } from "@/components/Characters/utils";
 
 const AvraeToken = useLocalStorage("AvraeToken", "");
 
-const characters = ref<Array<any>>([]);
-const getAvraeCharacters = async () => {
-	const toasterId = $toast.loading("Getting character data from Avrae...");
-	const { success, data, error } = await useFetch("/api/character/list");
-	if (success) {
-		$toast.success("Loaded Avrae Characters", { id: toasterId });
-		getUmami()?.track("Loaded Avrae Characters");
-		characters.value = (data as any[]).sort((x, y) => {
-			return (x.active === y.active) ? 0 : x.active ? -1 : 1;
-		});
-	}
-	else {
-		$toast.error(error);
-	}
-};
+const characters = ref<AvraeCharacter[] | null>(null);
+
 onMounted(async () => {
 	if (AvraeToken)
-		await getAvraeCharacters();
+		characters.value = await getAvraeCharacters();
 });
 </script>
 
@@ -41,16 +24,11 @@ onMounted(async () => {
 				isCurrent: true
 			}
 		]"
-	>
-		<ButtonIcon icon="avrae" label="avrae" />
-	</Breadcrumbs>
+	/>
 	<div v-if="!AvraeToken" class="content">
-		<LabelledComponent title="Avrae Token">
-			<div class="preview-container">
-				<input v-model="AvraeToken" type="text">
-			</div>
-			<small> Instructions go here. </small>
-		</LabelledComponent>
+		This page allows you to edit the attacks of your Avrae characters using the BB editor.
+		<br><br>
+		No Avrae Token Set. Please see <RouterLink to="/user#avrae-token" style="color: orangered"> your user settings</RouterLink> for how to enable this.
 	</div>
 	<div v-else class="content">
 		<div class="tile-container">
@@ -62,25 +40,25 @@ onMounted(async () => {
 <style lang="less" scoped>
 .tile-container {
 	display: grid;
-	grid-template-columns: 1fr 1fr 1fr 1fr;
-	gap: 1.5em;
+	grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+	gap: 1em;
 }
 
 @media screen and (max-width: 1600px) {
 	.tile-container {
-		grid-template-columns: 1fr 1fr 1fr;
+		grid-template-columns: 1fr 1fr 1fr 1fr;
 	}
 }
 
 @media screen and (max-width: 1200px) {
 	.tile-container {
-		grid-template-columns: 1fr 1fr;
+		grid-template-columns: 1fr 1fr 1fr;
 	}
 }
 
 @media screen and (max-width: 800px) {
 	.tile-container {
-		grid-template-columns: 1fr;
+		grid-template-columns: 1fr 1fr;
 	}
 }
 </style>

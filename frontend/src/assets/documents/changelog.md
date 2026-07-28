@@ -13,6 +13,7 @@ _???, 2026_
 - Added the ability to import a single creature from CritterDB.
 - Added the ability to import a single creature from BB on the Bestiary page.
 - Added a rich text editor for major text fields like description.
+- Added the ability to edit the attacks of Avrae Characters on BB.
 - Improved the statblock editor by modernizing many interfaces.
 - Improved code quality and maintainability.
 - Minor fields like ac source and senses now support markdown formatting, i.e. can be made italic or bold etc.

@@ -1,14 +1,10 @@
 import fetch from "node-fetch";
+import { requireUser } from "./login";
 import { app } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
-import { requireUser } from "./login";
 import "@/utilities/env";
 
 const API = "https://api.avrae.io/characters";
-const HEADERS = {
-	"Content-Type": "application/json",
-	"Authorization": process.env.AVRAE_TOKEN || ""
-};
 
 app.get("/api/character/list", requireUser, async (req, res) => {
 	try {
@@ -49,7 +45,10 @@ app.post("/api/character/:upstream/attacks/add/", requireUser, async (req, res) 
 
 		const putAttacks = await fetch(`${API}/${upstream}/attacks`, {
 			method: "PUT",
-			headers: HEADERS,
+			headers: {
+				"Content-Type": "application/json",
+				"Authorization": req.headers["avrae-token"] || ""
+			},
 			body: JSON.stringify(currentAttacks.concat(automationList))
 		}).then(response => response.json());
 		if (putAttacks?.error)
@@ -71,7 +70,10 @@ app.post("/api/character/:upstream/attacks/set/", requireUser, async (req, res) 
 	try {
 		const putAttacks = await fetch(`${API}/${upstream}/attacks`, {
 			method: "PUT",
-			headers: HEADERS,
+			headers: {
+				"Content-Type": "application/json",
+				"Authorization": req.headers["avrae-token"] || ""
+			},
 			body: JSON.stringify(automationList)
 		}).then(response => response.json());
 		if (putAttacks?.error)
@@ -82,4 +84,18 @@ app.post("/api/character/:upstream/attacks/set/", requireUser, async (req, res) 
 		log.log("critical", err);
 		return res.status(500).json({ error: "Unknown server error occured, please try again." });
 	}
+});
+
+app.post("/api/character/makeattackgvar", async (req, res) => {
+	const automationList = req.body.data;
+	if (!automationList)
+		return res.status(400).json({ error: "No automation given." });
+
+	const makeGvar = await fetch(`${API}/customizations/gvars`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			"Authorization": process.env.DUMMY_AVRAE_TOKEN || ""
+		},
+	});
 });

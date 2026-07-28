@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { Icon } from "@iconify/vue";
 import { computed } from "vue";
+import type { AvraeCharacter } from "./utils";
 
-const { character } = defineProps<{ character: any }>();
+const { character } = defineProps<{ character: AvraeCharacter }>();
 
 const image = computed(() => {
 	if (character.overrides.image && (!character.overrides.image.includes("discordapp.com")))
@@ -11,6 +12,19 @@ const image = computed(() => {
 		return character.image;
 	return "";
 });
+
+const getUpstreamURL = (upstream: string) => {
+    if (upstream.startsWith('dicecloud-')) {
+      return `https://v1.dicecloud.com/character/${upstream.slice(10)}`;
+    } else if (upstream.startsWith('google-')) {
+      return `https://docs.google.com/spreadsheets/d/${upstream.slice(7)}`;
+    } else if (upstream.startsWith('beyond-')) {
+      return `https://ddb.ac/characters/${upstream.slice(7)}`;
+    } else if (upstream.startsWith('dicecloudv2-')) {
+      return `https://dicecloud.com/character/${upstream.slice(12)}`;
+    }
+    return '';
+  }
 </script>
 
 <template>
@@ -22,22 +36,17 @@ const image = computed(() => {
 			<img class="tile-image" :src="image">
 		</div>
 		<div class="tile-footer">
-			<span> LVL {{ character.levels.total_level }} </span>
 			<RouterLink :to="`/characters/${character.upstream}`">
-				edit attacks
+				<Icon inline icon="material-symbols:swords"/>Attacks 
 			</RouterLink>
-			<span> {{ character.overrides.attacks.length }}
-				<Icon icon="material-symbols:swords" color="orangered" inline width="1em" />
-			</span>
+			<a :href="getUpstreamURL(character.upstream)" target="_blank">Sheet<Icon inline icon="uil:book-open"/></a>
 		</div>
 	</div>
 </template>
 
 <style lang="less" scoped>
-@import "@/assets/styles/mixins.less";
-
 .content-tile {
-	aspect-ratio: 1 / 1;
+	aspect-ratio: 1 / 1.5;
 	background: var(--color-surface-1);
 	color: #cbcbcb;
 	padding: 1rem;
@@ -56,6 +65,7 @@ const image = computed(() => {
 		text-wrap: nowrap;
 		overflow: hidden;
 		color: white;
+		font-size: 0.75rem;
 	}
 
 	.tile-content {
@@ -68,24 +78,6 @@ const image = computed(() => {
 		&.tile-has-image {
 			position: relative;
 			overflow-y: hidden;
-			.description,
-			.tags {
-				position: absolute;
-				width: 90%;
-				height: 100%;
-				left: 5%;
-				top: 500px;
-				display: inline;
-				z-index: 1;
-				transition: top 300ms ease-out;
-			}
-
-			.tags {
-				overflow: hidden;
-				text-wrap: nowrap;
-				text-overflow: ellipsis;
-			}
-
 			.tile-image {
 				width: 100%;
 				height: 100%;
@@ -98,21 +90,21 @@ const image = computed(() => {
 
 	.tile-footer {
 		display: grid;
-		grid-template-columns: 1fr 1fr 1fr;
-		text-align: center;
+		grid-template-columns: 1fr 1fr;
 
-		& span:first-of-type {
+		font-size: 1rem;
+
+		& a:first-of-type {
 			text-align: left;
 		}
 
-		& span:last-of-type {
+		& a:last-of-type {
 			text-align: right;
 		}
+		a > svg {
+			translate: 0 3px;
+		}
 	}
-}
-
-.content-tile {
-	.scale-on-hover(1.05);
 }
 
 .content-tile:hover {

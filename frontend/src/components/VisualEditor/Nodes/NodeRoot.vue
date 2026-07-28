@@ -10,7 +10,7 @@ const currentEffect = inject<Ref<AttackModel>>("currentEffect");
 
 useDataCleanup(currentEffect, ["thumb", "verb", "proper", "phrase", "criton", "extra_crit_damage", "activation_type", "list_display_override"]);
 
-const setName = inject<any>("setActionName");
+const setName = inject<false | Function>("setActionName");
 </script>
 
 <template>
@@ -19,7 +19,7 @@ const setName = inject<any>("setActionName");
 		<div class="two-wide">
 			<LabelledComponent title="Attack Name*" for="name">
 				<input id="name" v-model="currentEffect.name" type="text" :class="{ required: (currentEffect.name ?? '').length === 0 }">
-				<small style="font-size: x-small; cursor: pointer" role="button" @click="setName(currentEffect.name)"> <i>Click here to set the name of the statblock feature to this name.</i> </small>
+				<small v-if="setName" style="font-size: x-small; cursor: pointer" role="button" @click="setName(currentEffect.name)"> <i>Click here to set the name of the statblock feature to this name.</i> </small>
 			</LabelledComponent>
 			<LabelledComponent title="Thumbnail URL" for="thumb">
 				<input id="thumb" v-model="currentEffect.thumb" type="text">

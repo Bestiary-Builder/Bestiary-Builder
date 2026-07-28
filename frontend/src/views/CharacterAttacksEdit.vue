@@ -1,42 +1,34 @@
 <script setup lang="ts">
-import type { FeatureEntity } from "~/shared";
+import type { AttackModel, FeatureEntity } from "~/shared";
 import { useLocalStorage } from "@vueuse/core";
-import { onMounted, ref } from "vue";
+import { onMounted, provide, ref } from "vue";
 import { useRoute } from "vue-router";
 import ImportAutomationUtil
-	from "@/components/Automations/ImportAutomationUtil.vue";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
+from "@/components/Automations/ImportAutomationUtil.vue";
 import ButtonIcon from "@/components/Global/ButtonIcon.vue";
 import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import VisualEditor from "@/components/VisualEditor/VisualEditor.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { $toast } from "@/utils/app/toast";
 import { useFetch } from "@/utils/utils";
+import { store } from "@/utils/store";
+import { type AvraeCharacter, getAvraeCharacterByUpstream } from "@/components/Characters/utils";
 
-const character = ref();
+
+const character = ref<AvraeCharacter | null>(null);
 const AvraeToken = useLocalStorage("AvraeToken", "");
 const $route = useRoute();
 
-const getAvraeCharacters = async () => {
-	const toasterId = $toast.loading("Getting character data from Avrae...");
-	const { success, data, error } = await useFetch("/api/character/list");
-	if (success) {
-		getUmami()?.track("Loaded Avrae Characters");
-		character.value = (data as any[]).find(char => char.upstream === $route.params.upstream);
-		$toast.dismiss(toasterId);
-	}
-	else {
-		$toast.error(error, { id: toasterId });
-	}
-};
+
 onMounted(async () => {
 	if (AvraeToken)
-		await getAvraeCharacters();
+		character.value  = await getAvraeCharacterByUpstream($route.params.upstream as string)
 });
 
 const activeAttackIndex = ref<number>(-1);
 
 const saveAttacks = async () => {
+	if (!character.value) return;
 	const attacks = character.value.overrides.attacks;
 	if (!attacks) {
 		$toast.info("No attacks.");
@@ -55,19 +47,38 @@ const saveAttacks = async () => {
 	}
 };
 
-const loadFeature = async (feature: FeatureEntity) => {
-	if (!character.value.overrides.attacks)
-		character.value.overrides.attacks = 0;
+const addAttack = () => {
+	if (!character.value) return;
+	character.value.overrides.attacks.push({ _v: 2, name: 'New attack', automation: [] }); 
+	activeAttackIndex.value = character.value.overrides.attacks.length - 1
+}
 
-	if (Array.isArray(feature.automation)) {
-		$toast.info("cannot import cause array");
+const loadFeature = async (feature: FeatureEntity) => {
+	if (!character.value) return;
+
+	if (!character.value.overrides.attacks)
+		character.value.overrides.attacks = [];
+
+	if (feature.automation === null) {
+		$toast.error("Cannot import a feature with empty automation.")
 		return;
 	}
+	if (Array.isArray(feature.automation)) {
+		$toast.info("Features with multiple automations will import as seperate automations");
+		for (const auto of feature.automation) {
+			character.value.overrides.attacks.push(auto);
+		}
+	} else {
+		character.value.overrides.attacks.push(feature.automation);
+	}
 
-	character.value.overrides.attacks.push(feature.automation);
 	activeAttackIndex.value = character.value.overrides.attacks.length - 1;
 	$toast.success(`Successfully loaded ${feature.name}!`);
 };
+
+provide("setActionName", false);
+provide("setActionDescription", false);
+
 </script>
 
 <template>
@@ -86,24 +97,15 @@ const loadFeature = async (feature: FeatureEntity) => {
 		]"
 	>
 		<ButtonIcon icon="save" label="Save attacks" inverted @click="saveAttacks" />
-		<ButtonIcon icon="plus" label="Add attack" @click="character.overrides.attacks.push({ _v: 2, name: 'New attack', automation: null }); activeAttackIndex = character.overrides.attacks.length - 1" />
+		<ButtonIcon icon="plus" label="Add attack" @click="addAttack" />
 		<ImportAutomationUtil @load-feature="(feature : FeatureEntity) => loadFeature(feature)" />
 	</Breadcrumbs>
 	<div v-if="!AvraeToken" class="content">
-		<LabelledComponent title="Avrae Token">
-			<div class="preview-container">
-				<input v-model="AvraeToken" type="text">
-			</div>
-			<small> Instructions go here. </small>
-		</LabelledComponent>
+		No Avrae Connection made. Please see <RouterLink to="/user-settings#avrae-token" style="color: orangered"> your user settings</RouterLink> for how to enable this.
 	</div>
 	<div v-else-if="character" class="content">
-		<div>
-			<div class="info-container">
-				<b> {{ character.name }}</b>
-				<span> Level {{ character.levels.total_level }}</span>
-			</div>
-			<select v-model="activeAttackIndex" style="margin-top: .5rem;">
+		<div class="selected-container">
+			<select v-model="activeAttackIndex" style="width: 250px;">
 				<option :value="-1">
 					No attack selected
 				</option>
@@ -111,13 +113,20 @@ const loadFeature = async (feature: FeatureEntity) => {
 					{{ attack.name }}
 				</option>
 			</select>
+			<VDropdown :distance="6" :positioning-disabled="store.isMobile">
+				<ButtonIcon icon="eraser" label="Delete currently selected attack" />
+				<template #popper>
+					<div class="v-popper__custom-menu">
+						<span> Are you sure you want to delete {{character.overrides.attacks[activeAttackIndex].name}}? </span>
+						<button v-close-popper class="btn danger" @click="character.overrides.attacks.splice(activeAttackIndex, 1); activeAttackIndex = -1">
+							Confirm
+						</button>
+					</div>
+				</template>
+			</VDropdown>
 		</div>
-		<button v-if="activeAttackIndex > -1" class="btn danger" style="margin-top: .5rem" @click="character.overrides.attacks.splice(activeAttackIndex, 1); activeAttackIndex = -1">
-			Remove attack
-		</button>
 		<div style="margin-top: 2rem;">
 			<VisualEditor v-if="activeAttackIndex !== -1" v-model="character.overrides.attacks[activeAttackIndex]" name="New Attack" no-list-attack />
-			<p> No attack selected.</p>
 		</div>
 	</div>
 </template>
@@ -125,9 +134,10 @@ const loadFeature = async (feature: FeatureEntity) => {
 <style scoped lang="less">
 @import url("@/assets/styles/mixins.less");
 
-.info-container {
+.selected-container {
 	display: flex;
-	gap: 0.5rem;
-	flex-direction: column;
+	button {
+		translate: 0 4px;
+	}
 }
 </style>

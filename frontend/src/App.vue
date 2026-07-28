@@ -7,7 +7,7 @@ import "vue-sonner/style.css";
 </script>
 
 <template>
-	<Toaster position="top-left" theme="dark" rich-colors />
+	<Toaster position="top-left" theme="dark" rich-colors :expand="true"/>
 
 	<div id="modal" />
 	<NavHeader />
