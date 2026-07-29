@@ -26,7 +26,7 @@
 			}
 		},
 		"url": "target",
-		"ts": "{\n    type: \"target\";\n    target: \"all\" | \"each\" | int | \"self\" | \"parent\" | \"children\";\n    effects: Effect[];\n    sortBy?: \"hp_asc\" | \"hp_desc\";\n    }"
+		"ts": "{\n    type: \"target\";\n    target: \"all\" | \"each\" | int | \"self\" | \"parent\" | \"children\";\n    effects: Effect[];\n    sortBy?: \"hp_asc\" | \"hp_desc\";\n}"
 	},
 	"attack": {
 		"desc": "An Attack effect makes an attack roll against a targeted creature. It must be inside a Target effect.",

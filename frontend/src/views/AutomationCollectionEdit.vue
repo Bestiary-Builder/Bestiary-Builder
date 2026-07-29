@@ -21,7 +21,7 @@ let initialData = "";
 // get our data
 onMounted(async () => {
     const loader = $loading.show();
-    const { success, data, error} = await useFetch<AutomationCollectionExtended>(`/api/automation-collections/${$route.params.id}`)
+    const { success, data, error} = await useFetch<AutomationCollectionExtended>(`/api/automation-collection/${$route.params.id}`)
 
     if (success) {
         collection.value = data
@@ -30,7 +30,7 @@ onMounted(async () => {
 		$toast.error(error);
 	}
 
-    await getMyAutomations();
+    await getAutomations();
     loader.hide();
 });
 
@@ -38,14 +38,15 @@ const selectedAutomation = ref<AutomationWithType | null>(null);
 
 const newAutomationName = ref<string>("New Automation");
 const addAutomation = async (name: string, automation: null | AttackModel | AttackModel[], shouldNotify = true) => {
+    if (!collection.value) return;
     if (name === "New Automation") {
         $toast.warning("Automation must have a non-default name!");
         return;
     }
     const loader = $loading.show();
-    const { success, error } = await useFetch<AutomationWithType>(`/api/automation/add`, "POST", { name, automation });
+    const { success, error } = await useFetch<AutomationWithType>(`/api/automation/add`, "POST", { name, automation, collectionId: collection.value.id });
     if (success) {
-        await getMyAutomations();
+        await getAutomations();
         newAutomationName.value = "New Automation";
         if (shouldNotify)
             $toast.success(`Successfully added automation: ${name}`);
@@ -64,15 +65,16 @@ const deleteAutomation = async (_id: Id) => {
     if (success) {
         $toast.success("Successfully deleted the automation!");
         getUmami()?.track("Delete automation");
-        await getMyAutomations();
+        await getAutomations();
         selectedAutomation.value = null;
     }
     else { $toast.error(error); }
     loader.hide();
 };
 
-const getMyAutomations = async () => {
-    const { success, data: rData, error } = await useFetch<AutomationWithType[]>(`/api/my-automations`);
+const getAutomations = async () => {
+    if (!collection.value) return;
+    const { success, data: rData, error } = await useFetch<AutomationWithType[]>(`/api/automation-collection/${collection.value.id}/automations`);
     if (success)
         data.value = rData;
     else $toast.error(error);

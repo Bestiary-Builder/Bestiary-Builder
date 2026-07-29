@@ -81,7 +81,7 @@ function validateAutomationCollectionData(data: AutomationCollectionData, automa
 }
 
 // Automation collections
-app.post("/api/automation-collections/add", requireUser, async (req, res) => {
+app.post("/api/automation-collection/add", requireUser, async (req, res) => {
 	const user = req.user!;
 	const input = normalizeAutomationCollectionData(req.body.data as Partial<AutomationCollection>);
 	const validationError = validateAutomationCollectionData(input, 0);
@@ -99,7 +99,7 @@ app.post("/api/automation-collections/add", requireUser, async (req, res) => {
 	return res.status(201).json(collection);
 });
 
-app.get("/api/automation-collections/personal", requireUser, async (req, res) => {
+app.get("/api/automation-collection/personal", requireUser, async (req, res) => {
 	const user = req.user!;
 	const collections = await automationCollections.getForUser(user.id);
 	return res.json(collections.sort((a, b) => (a.orderedBy[0]?.index ?? collections.length) - (b.orderedBy[0]?.index ?? collections.length)).map((collection) => {
@@ -109,7 +109,7 @@ app.get("/api/automation-collections/personal", requireUser, async (req, res) =>
 	}));
 });
 
-app.post("/api/my-automation-collections/order", requireUser, async (req, res) => {
+app.post("/api/my-automation-collection/order", requireUser, async (req, res) => {
 	const collectionIds = req.body.data;
 	if (!collectionIds || !Array.isArray(collectionIds))
 		return res.status(400).json({ error: "Invalid automation collection id array." });
@@ -123,14 +123,14 @@ app.post("/api/my-automation-collections/order", requireUser, async (req, res) =
 	return res.status(500).json({ error: "Failed to update automation collection order." });
 });
 
-app.get("/api/automation-collections/user/:userid", possibleUser, async (req, res) => {
+app.get("/api/automation-collection/user/:userid", possibleUser, async (req, res) => {
 	const user = req.user;
 	if (user?.id === req.params.userid)
 		return res.json((await getAutomationCollectionsByOwner(user.id)));
 	return res.json((await getPublicAutomationCollectionsByOwner(req.params.userid)));
 });
 
-app.get("/api/automation-collections/:id", possibleUser, async (req, res) => {
+app.get("/api/automation-collection/:id", possibleUser, async (req, res) => {
 	const authorization = await automationCollections.authorize(req.params.id, req.user?.id ?? null, "view");
 	if (!authorization.ok) {
 		if (authorization.reason === "collection-not-found")
@@ -149,7 +149,7 @@ app.get("/api/automation-collections/:id", possibleUser, async (req, res) => {
 	return res.json(authorization.collection);
 });
 
-app.post("/api/automation-collections/:id/update", requireUser, async (req, res) => {
+app.post("/api/automation-collection/:id/update", requireUser, async (req, res) => {
 	const user = req.user!;
 	const authorization = await automationCollections.authorize(req.params.id, user.id, "edit");
 	if (!authorization.ok) {
@@ -173,7 +173,7 @@ app.post("/api/automation-collections/:id/update", requireUser, async (req, res)
 	return res.json(collection);
 });
 
-app.post("/api/automation-collections/:id/delete", requireUser, async (req, res) => {
+app.post("/api/automation-collection/:id/delete", requireUser, async (req, res) => {
 	const user = req.user!;
 	const result = await automationCollections.deleteCollection(req.params.id, user.id);
 	if (result.ok)
@@ -214,7 +214,7 @@ app.post("/api/automation-collection/:id/automations/order", requireUser, async 
 });
 
 
-app.post("/api/automation-collections/:collectionid/editors/add/:userid", requireUser, async (req, res) => {
+app.post("/api/automation-collection/:collectionid/editors/add/:userid", requireUser, async (req, res) => {
 	const user = req.user!;
 	const result = await automationCollections.addEditor(req.params.collectionid, user.id, req.params.userid);
 	if (result.ok)
@@ -229,7 +229,7 @@ app.post("/api/automation-collections/:collectionid/editors/add/:userid", requir
 	}
 });
 
-app.post("/api/automation-collections/:collectionid/editors/remove/:userid", requireUser, async (req, res) => {
+app.post("/api/automation-collection/:collectionid/editors/remove/:userid", requireUser, async (req, res) => {
 	const user = req.user!;
 	const result = await automationCollections.removeEditor(req.params.collectionid, user.id, req.params.userid);
 	if (result.ok)

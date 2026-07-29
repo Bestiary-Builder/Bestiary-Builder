@@ -16,7 +16,7 @@ import Draggable from "vuedraggable";
 const $router = useRouter()
 const automationCollections = ref<AutomationCollectionExtended[]>()
 const getMyCollections = async () => {
-    const { success, data, error } = await useFetch<AutomationCollectionExtended[]>(`/api/automation-collections/personal`);
+    const { success, data, error } = await useFetch<AutomationCollectionExtended[]>(`/api/automation-collection/personal`);
     if (success)
         automationCollections.value = data;
     else $toast.error(error);
@@ -36,7 +36,7 @@ const resetCreateInput = () => {
     createOptions.status = "unlisted"
 }
 const createAutomationCollection = async () => {
-    const { success, data, error } = await useFetch<AutomationCollectionExtended>("/api/automation-collections/add", "POST", toValue(createOptions));
+    const { success, data, error } = await useFetch<AutomationCollectionExtended>("/api/automation-collection/add", "POST", toValue(createOptions));
 
     if (success) {
 		$toast.success("Created automation collection");

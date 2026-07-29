@@ -9,6 +9,7 @@ import { $toast, htmlToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { useParityHelper } from "./useParityHelpers";
+import { defaultNodes } from "../VisualEditor/util";
 
 const props = withDefaults(defineProps<{ data: AutomationWithType; creatureName?: string }>(), { creatureName: "$NAME$" });
 
@@ -65,54 +66,13 @@ const saveAutomation = async () => {
 };
 
 // Documentation context by mouse location
-const currentContext = ref("");
-
 const editorRef = shallowRef();
 const handleMount = (editor: any) => (editorRef.value = editor);
-const cursorPosition = ref(0);
 
-const ourInterval = setInterval(() => {
-	cursorPosition.value = editorRef.value?.getModel().getOffsetAt(editorRef.value?.getPosition());
-}, 1000);
-
-onUnmounted(() => {
-	clearInterval(ourInterval);
-});
-
-watch(cursorPosition, () => getContext());
-
-const getContext = () => {
-	const textToTraverse = automationString.value;
-	let buffer = "";
-	let type = "";
-	let startingPosition = cursorPosition.value;
-
-	// if the user has their cursor on the word type, it would begin the buffer in that word and would not be able to detect it.
-	// Therefore before we start we check if the immediate vicinity of our cursor includes type:. if it does, start 6 characters later so we can properly extract the type.
-	// clamp slices to string min and max, to be sure it doesn't go out of range
-	const closeVicinity = textToTraverse.slice(Math.max(startingPosition - 6, 0), Math.min(startingPosition + 6, textToTraverse.length));
-	if (closeVicinity.includes("type:"))
-		startingPosition += 6;
-
-	// from our position in the string we go backwards until we find the first type: string.
-	// Then we get our first word after that type:
-	// Works both with yaml or json string
-	// Assumes that type: is always at the beginning of a node, and that a user does not have type: in a text field
-	for (let i = startingPosition; i--; i < textToTraverse.length) {
-		const char = textToTraverse.charAt(i);
-		buffer = char + buffer;
-		if (buffer.startsWith("type:")) {
-			type = textToTraverse.slice(i).match(/type['"]?:\s*['"]?(\w+)['"]?/)?.[1] ?? "";
-			break;
-		}
-	}
-
-	currentContext.value = type;
-};
 
 // Documentation helpers
 const docu = ref<AutomationDocumentation>({});
-
+const selectedDocu = ref("")
 onMounted(async () => {
 	const { success, data } = await useFetch<AutomationDocumentation>("/api/automationDocumentation");
 	if (success)
@@ -120,77 +80,11 @@ onMounted(async () => {
 });
 
 const currentDocu = computed(() => {
-	return docu.value[currentContext.value];
+	if (!selectedDocu.value) return;
+	return docu.value[selectedDocu.value];
 });
 
 const { updateAutomationDescFromFeatureDesc, updateFeatureDescFromAutomationDesc, showDescriptionButtons } = useParityHelper(() => props.data.description, () => automationString.value, () => props.data.automation as AttackModel | AttackModel[] | null);
-// Description parity helpers
-// const updateFeatureDescFromAutomationDesc = () => {
-// 	let auto;
-// 	try {
-// 		auto = YAML.parse(automationString.value);
-// 	}
-// 	catch {
-// 		return;
-// 	}
-// 	if (Array.isArray(auto))
-// 		return;
-// 	for (const field of auto?.automation?.reverse() || []) {
-// 		if (field.type === "text") {
-// 			props.data.description = field.text;
-// 			return;
-// 		}
-// 	}
-// };
-
-// const updateAutomationDescFromFeatureDesc = () => {
-// 	let auto;
-// 	try {
-// 		auto = YAML.parse(automationString.value);
-// 	}
-// 	catch {
-// 		return;
-// 	}
-// 	if (Array.isArray(auto))
-// 		return;
-// 	for (const field of auto?.automation?.reverse() || []) {
-// 		if (field.type === "text") {
-// 			field.text = props.data.description;
-// 			auto.automation.reverse();
-// 			automationString.value = YAML.stringify(auto);
-// 			return;
-// 		}
-// 	}
-// };
-
-// const getAutomationDescription = (): string | boolean => {
-// 	let auto;
-// 	try {
-// 		auto = YAML.parse(automationString.value);
-// 	}
-// 	catch {
-// 		return false;
-// 	}
-// 	if (Array.isArray(auto))
-// 		return false;
-// 	if (!props.data.automation || !auto || auto?.automation?.length === 0)
-// 		return false;
-// 	for (const field of auto?.automation?.reverse() || []) {
-// 		if (field?.type === "text")
-// 			return field.text;
-// 	}
-// 	return "";
-// };
-
-// const showDescriptionButtons = computed(() => {
-// 	const desc = props.data.description;
-// 	const autoDesc = getAutomationDescription();
-// 	if (Array.isArray(props.data.automation) || !desc || !autoDesc)
-// 		return false;
-// 	if (desc !== autoDesc)
-// 		return true;
-// 	return false;
-// });
 
 // utils
 const copyAutomation = async () => {
@@ -276,11 +170,19 @@ const validateYaml = () => {
 				<VueMonacoEditor v-model:value="automationString" theme="vs-dark" :options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false }" height="750px" language="yaml" @mount="handleMount" />
 			</div>
 		</div>
-		<div class="two-wide uneven">
-			<div />
+		<div class="documentation-container">
+			<h3> Documentation</h3>
+			<p> Select documentation to view:</p>
+			<div>
+				<select class="ghost" v-model="selectedDocu">
+					<option v-for="key of Object.keys(defaultNodes)">
+						{{ key }}
+					</option>
+				</select>
+			</div>
 			<div v-if="currentDocu" class="docs">
 				<hr>
-				<h3>Documentation: {{ currentContext }}</h3>
+				<h3>Documentation: {{ selectedDocu }}</h3>
 				<Markdown class="small" :text="currentDocu.desc" />
 
 				<div>
@@ -439,5 +341,12 @@ a {
 
 .docs a {
 	color: orangered;
+}
+
+.documentation-container {
+	margin-top: 1rem;
+	display: flex;
+	flex-direction: column;
+	gap: .5rem;
 }
 </style>

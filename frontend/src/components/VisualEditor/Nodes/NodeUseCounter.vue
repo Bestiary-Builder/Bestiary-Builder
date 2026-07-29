@@ -10,7 +10,7 @@ import { useDataCleanup } from "./shared/utils";
 
 const currentEffect = inject<Ref<Counter>>("currentEffect");
 
-const counterType = ref("cc");
+const counterType = ref<"cc" | "abi" | "ss">("cc");
 
 watch(counterType, (newValue: string) => {
 	if (newValue === "cc")
@@ -20,6 +20,17 @@ watch(counterType, (newValue: string) => {
 	else if (newValue === "abi")
 		currentEffect!.value.counter = { id: 0, typeId: 0 };
 });
+
+onMounted(() => {
+	const counter = currentEffect?.value.counter
+	if (typeof(counter) === "string") {
+		counterType.value = "cc"
+	} else if (typeof(counter) === "object" && Object.hasOwn(counter, "slot")) {
+		counterType.value = "ss"
+	} else if (typeof(counter) === "object" && Object.hasOwn(counter, "id") && Object.hasOwn(counter, "typeId")) {
+		counterType.value = "abi"
+	}
+})
 
 if (!Object.hasOwn(currentEffect!.value, "errorBehaviour"))
 	currentEffect!.value.errorBehaviour = "warn";
@@ -72,7 +83,7 @@ useDataCleanup(currentEffect, ["allowOverflow", "fixedValue"]);
 				<v-select v-model="currentEffect.counter" :options="limitedUse" label="name" input-id="text" :reduce="(x : any) => ({ id: x.id, typeId: x.typeId })" />
 			</LabelledComponent>
 			<span v-else> Something went wrong with this node. Please delete it and recreate the counter node.</span>
-			<LabelledComponent v-if="counterType !== 'abi'" title="Amount" for="amount">
+			<LabelledComponent title="Amount" for="amount">
 				<div class="input-wrapper">
 					<input id="amount" v-model="currentEffect.amount" type="text"><IntExpression />
 				</div>
