@@ -464,3 +464,14 @@ blockquote:has(p img[src="/Beholder.webp"]) ~ p {
 	--normal-border: hsl(223, 43%, 17%);
 	--normal-text: hsl(216, 87%, 65%);
 }
+
+
+.tile-container {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+	grid-gap: 1rem;
+	& > a{
+		text-decoration: none;
+	}
+}
+

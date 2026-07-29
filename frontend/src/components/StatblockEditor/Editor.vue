@@ -52,6 +52,12 @@ function handleMount(
 			toggleMarkdown(editor, "__");
 		}
 	);
+
+	setTimeout(() => {
+		if (wrapper.value?.clientWidth !== editorTemplate.value?.width)
+			editorRef.value?.layout({ width: wrapper.value?.clientWidth || 600, height: wrapper.value?.clientHeight || height });
+	}, 1000);
+
 }
 
 let decorationIds: string[] = [];
@@ -141,7 +147,7 @@ function toggleMarkdown(
 
 	const hasMarkers
 		= before === marker
-			&& after === marker;
+		&& after === marker;
 
 	if (hasMarkers) {
 		// Remove markers
@@ -150,11 +156,11 @@ function toggleMarkdown(
 				range: {
 					startLineNumber: selection.startLineNumber,
 					startColumn:
-			selection.startColumn - marker.length,
+						selection.startColumn - marker.length,
 
 					endLineNumber: selection.endLineNumber,
 					endColumn:
-			selection.endColumn + marker.length,
+						selection.endColumn + marker.length,
 				},
 				text: selectedText,
 			},
@@ -164,11 +170,11 @@ function toggleMarkdown(
 		editor.setSelection({
 			startLineNumber: selection.startLineNumber,
 			startColumn:
-		selection.startColumn - marker.length,
+				selection.startColumn - marker.length,
 
 			endLineNumber: selection.endLineNumber,
 			endColumn:
-		selection.endColumn - marker.length,
+				selection.endColumn - marker.length,
 		});
 	}
 	else {
@@ -184,11 +190,11 @@ function toggleMarkdown(
 		editor.setSelection({
 			startLineNumber: selection.startLineNumber,
 			startColumn:
-		selection.startColumn + marker.length,
+				selection.startColumn + marker.length,
 
 			endLineNumber: selection.endLineNumber,
 			endColumn:
-		selection.endColumn + marker.length,
+				selection.endColumn + marker.length,
 		});
 	}
 
@@ -483,10 +489,10 @@ useResizeObserver(document.body, () => {
 });
 
 const wrapper = useTemplateRef("wrapper");
-const editor = useTemplateRef("editor");
+const editorTemplate = useTemplateRef("editor");
 
 setTimeout(() => {
-	if (wrapper.value?.clientWidth !== editor.value?.width)
+	if (wrapper.value?.clientWidth !== editorTemplate.value?.width)
 		editorRef.value?.layout({ width: wrapper.value?.clientWidth || 600, height: wrapper.value?.clientHeight || height });
 }, 1000);
 </script>
@@ -507,11 +513,9 @@ setTimeout(() => {
 			<ButtonIcon icon="4" label="Heading 4" noscale @click="toggleHeading(editorRef!, 4)" />
 		</div>
 		<div class="editor-container" :style="`height: ${height}px`">
-			<VueMonacoEditor
-				ref="editor" v-model:value="model"
-				theme="vs-dark"
-				:options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false, lineNumbers: 'off' }" class="description-editor" height="100%" width="100%" language="markdown" @mount="handleMount"
-			/>
+			<VueMonacoEditor ref="editor" v-model:value="model" theme="vs-dark"
+				:options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false, lineNumbers: 'off' }"
+				class="description-editor" height="100%" language="markdown" @mount="handleMount" />
 		</div>
 	</div>
 </template>
@@ -532,13 +536,11 @@ setTimeout(() => {
 	min-height: 100px;
 }
 
-.description-editor {
-}
+.description-editor {}
 </style>
 
 <style lang="less">
 .monaco-wrapper-thing {
-	max-width: min(100%, 50vw);
 
 	.monaco-editor {
 		min-height: 100px;
@@ -572,6 +574,7 @@ setTimeout(() => {
 }
 
 @media screen and (max-width: 1200px) {
+
 	.monaco-wrapper-thing,
 	.monaco-editor,
 	.editor-container {
@@ -579,7 +582,7 @@ setTimeout(() => {
 	}
 }
 
-.editor-container > div {
+.editor-container>div {
 	height: 100% !important;
 	min-height: 100px;
 }

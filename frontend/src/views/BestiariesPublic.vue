@@ -2,7 +2,6 @@
 import type { BestiaryExtended, BestiaryWithCount } from "~/shared";
 import { refDebounced } from "@vueuse/core";
 import { onMounted, ref, watch } from "vue";
-import BestiaryList from "@/components/Bestiary/BestiaryList.vue";
 import ButtonIcon from "@/components/Global/ButtonIcon.vue";
 import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import { getUmami } from "@/utils/app/analytics";
@@ -10,6 +9,7 @@ import { $loading } from "@/utils/app/loading";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { $toast } from "../utils/app/toast";
+import CollectionTile from "@/components/Global/CollectionTile.vue";
 
 onMounted(async () => {
 	const loader = $loading.show();
@@ -114,7 +114,11 @@ watch(debouncedSearch, async () => searchBestiaries());
 		</VDropdown>
 	</Breadcrumbs>
 	<div class="content">
-		<BestiaryList v-if="bestiaries && bestiaries.length > 0" :personal="false" :bestiaries />
+		<div class="tile-container" v-if="bestiaries.length > 0">
+			<RouterLink v-for="bestiary of bestiaries" :to="`/bestiary/view/${bestiary.id}`">
+				<CollectionTile :data="bestiary"v-for="bestiary of bestiaries" />
+			</RouterLink>
+		</div>
 		<div v-else class="zero-found">
 			<span v-if="viewMode !== 'Bookmarked'"> Did not find any Bestiaries with that name or tags.</span>
 			<span v-else>You do not have any bookmarked bestiaries. View a Bestiary and click on the ⭐ icon to bookmark it.</span>

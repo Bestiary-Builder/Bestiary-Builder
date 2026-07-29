@@ -1,7 +1,7 @@
 import type { CollectionWithEditors } from "./collections";
 import type { Id, Statblock, User } from "~/shared";
 import type { Bestiary, BestiaryCreateInput, BestiaryStatus, Creature } from "~/shared/src/prisma-types";
-import tags from "@/staticData/tags.json";
+import bestiaryTags from "@/staticData/bestiaryTags.json";
 import { checkBadwords } from "@/utilities/badwords";
 import { app, checkBestiaryLimits, checkCreatureAmountLimit, limits } from "@/utilities/constants";
 import { addBestiaryEditor, addBookmark, createBestiary, createCreatures, deleteBestiary, getBestiariesByOwner, getBestiariesByUser, getBestiary, getBestiaryCreatureCount, getBestiaryCreatureIds, getOwnedBestiaryIds, getPrismaClient, getPublicBestiariesByOwner, incrementBestiaryViewCount, isBestiaryBookmarked, removeBestiaryEditor, removeBookmark, updateBestiary, updateBestiaryCreatureIndexes, updateUserBestiaryIndexes } from "@/utilities/database";
@@ -111,7 +111,7 @@ function normalizeBestiaryData<T extends Partial<Bestiary>>(input: T): T & Besti
 		status: "private",
 		description: "",
 		...input,
-		tags: (input.tags ?? []).filter(t => tags.includes(t))
+		tags: (input.tags ?? []).filter(t => bestiaryTags.includes(t))
 	};
 }
 

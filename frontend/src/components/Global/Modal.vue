@@ -84,13 +84,13 @@ onUnmounted(() => {
 	z-index: 1000;
 	overscroll-behavior: none;
 	overflow: hidden;
-
 }
 
 .modal__content {
 	position: relative;
 	//width: 80%;
 	max-width: 80%;
+	min-width: 40%;
 	padding: 2rem;
 	max-height: 80%;
 	background-color: var(--color-surface-1);

@@ -1,7 +1,7 @@
 import type { CollectionWithEditors } from "./collections";
 import type { Automation, AutomationCollection, Id } from "~/shared";
 import type { BestiaryStatus } from "~/shared/src/prisma-types";
-import tags from "@/staticData/tags.json";
+import automationTags from "@/staticData/automationTags.json";
 import { checkBadwords } from "@/utilities/badwords";
 import { app, checkBestiaryLimits } from "@/utilities/constants";
 import { addAutomationCollectionBookmark, addAutomationCollectionEditor, createAutomationCollection, deleteAutomationCollection, getAutomationCollection, getAutomationCollectionAutomationCount, getAutomationCollectionsByOwner, getAutomationCollectionsByUser, getAutomationIds, getAutomationsByCollection, getOwnedAutomationCollectionIds, getPublicAutomationCollectionsByOwner, incrementAutomationCollectionViewCount, isAutomationCollectionBookmarked, removeAutomationCollectionBookmark, removeAutomationCollectionEditor, updateAutomationCollection, updateAutomationIndexes, updateUserAutomationCollectionIndexes } from "@/utilities/database";
@@ -56,7 +56,7 @@ function normalizeAutomationCollectionData(input: Partial<AutomationCollection>)
 		description: "",
 		status: "private",
 		...input,
-		tags: (input.tags ?? []).filter(tag => tags.includes(tag))
+		tags: (input.tags ?? []).filter(tag => automationTags.includes(tag))
 	};
 }
 
@@ -109,7 +109,7 @@ app.get("/api/automation-collection/personal", requireUser, async (req, res) => 
 	}));
 });
 
-app.post("/api/my-automation-collection/order", requireUser, async (req, res) => {
+app.post("/api/automation-collection/order", requireUser, async (req, res) => {
 	const collectionIds = req.body.data;
 	if (!collectionIds || !Array.isArray(collectionIds))
 		return res.status(400).json({ error: "Invalid automation collection id array." });

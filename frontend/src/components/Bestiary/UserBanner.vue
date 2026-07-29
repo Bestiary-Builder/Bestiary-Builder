@@ -24,6 +24,7 @@ const isLoading = computed(() => {
 	<div class="container">
 		<div v-if="user" class="user">
 			<img class="img" alt="" :src="user.avatar ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` : 'https://cdn.discordapp.com/embed/avatars/0.png'">
+			by
 			<span v-if="user.id === '303857638171607040' || user.id === '307900989455859723'" v-tooltip="'This user is a developer of Bestiary Builder'" class="developer"> {{ user.username }} </span>
 			<span v-else-if="user.supporter === SupporterStatus.none">{{ user.username }}</span>
 			<span v-else-if="user.supporter === SupporterStatus.wirmling" v-tooltip="'This user is a Wyrmling Patreon Supporter!'" class="supporter-tier-1"> {{ user.username }} </span>
@@ -38,6 +39,7 @@ const isLoading = computed(() => {
 <style scoped lang="less">
 .container {
 	white-space: nowrap;
+	display: inline-block;
 }
 .user {
 	display: flex;
@@ -45,9 +47,11 @@ const isLoading = computed(() => {
 
 	gap: 0.3rem;
 	.img {
-		height: 1.5rem;
+		display: inline;
+		height: 0.5em;
 		border-radius: 50%;
-		scale: 1.1;
+		scale: 2.5;
+		padding: 0 .5em;
 	}
 }
 

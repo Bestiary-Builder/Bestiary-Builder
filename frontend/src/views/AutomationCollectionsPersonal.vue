@@ -10,8 +10,8 @@ import { getUmami } from '@/utils/app/analytics';
 import Modal from '@/components/Global/Modal.vue';
 import LabelledComponent from '@/components/FormInputs/LabelledComponent.vue';
 import { store } from '@/utils/store';
-import AutomationCollectionTile from '@/components/Automations/AutomationCollectionTile.vue';
 import Draggable from "vuedraggable";
+import CollectionTile from '@/components/Global/CollectionTile.vue';
 
 const $router = useRouter()
 const automationCollections = ref<AutomationCollectionExtended[]>()
@@ -65,19 +65,16 @@ onMounted(async () => {
 })
 
 const deleteAutomationCollection = async (id: AutomationCollectionExtended["id"]) => {
-    const { success, data, error } = await useFetch<AutomationCollectionExtended>(`/api/automation-collections/${id}/delete`, "POST");
+    const { success, error } = await useFetch<AutomationCollectionExtended>(`/api/automation-collection/${id}/delete`, "POST");
 
     if (success) {
 		$toast.success("Successfully deleted automation collection");
-		void getUmami()?.track("Delete automation collection");
-
-		// await $router.push(`/bestiary/edit/${data.id.toString()}`);
+		getUmami()?.track("Delete automation collection");
+        await getMyCollections()
 	}
 	else {
 		$toast.error(error);
 	}
-
-    await getMyCollections()
 }
 
 const getDraggableKey = (item: any) => {
@@ -87,7 +84,7 @@ const getDraggableKey = (item: any) => {
 const saveOrder = async () => {
     if (!automationCollections.value) return
 	const orderIds = automationCollections.value.map(coll => coll.id);
-	// await useFetch("/api/my-bestiaries/order", "POST", orderIds);
+	await useFetch("/api/automation-collection/order", "POST", orderIds);
 };
 
 </script>
@@ -109,11 +106,12 @@ const saveOrder = async () => {
     <div class="content">
         <Draggable :key="Math.random()" :list="automationCollections" :animation="150" :item-key="getDraggableKey" class="tile-container" :handle=" store.isMobile ? '.handle' : ''"  @change="saveOrder">
 			<template #item="{ element, idx }">
-			    <AutomationCollectionTile :key="idx" :collection="element" @delete-collection="(id) => deleteAutomationCollection(id)"/>
+                <RouterLink :to="`/automations/edit/${element.id}`">
+                    <CollectionTile :data="element" :key="idx" @delete-collection-item="(id) => deleteAutomationCollection(id)"/>
+                </RouterLink>
 			</template>
 		</Draggable>
     </div>
-
 	<Modal :show="showCreateModal" @close="showCreateModal = false">
 		<template #header>
 			Create new automation collection
@@ -154,30 +152,6 @@ const saveOrder = async () => {
 </template>
 
 <style lang="less" scoped>
-.tile-container {
-	display: grid;
-	grid-template-columns: 1fr 1fr 1fr 1fr ;
-	gap: 1em;
-}
-
-@media screen and (max-width: 1600px) {
-	.tile-container {
-		grid-template-columns: 1fr 1fr 1fr;
-	}
-}
-
-@media screen and (max-width: 1200px) {
-	.tile-container {
-		grid-template-columns: 1fr 1fr;
-	}
-}
-
-@media screen and (max-width: 800px) {
-	.tile-container {
-		grid-template-columns: 1fr;
-	}
-}
-
 .modal-desc {
     display: flex;
     flex-direction: column;

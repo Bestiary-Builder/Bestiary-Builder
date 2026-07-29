@@ -8,7 +8,9 @@ import limits from "@/staticData/limits.json";
 import basicExamples from "@/staticData/shared/basicExamples.json";
 import spells from "@/staticData/shared/spells.json";
 import tOF from "@/staticData/shared/textOnlyFeatures.json";
-import tags from "@/staticData/tags.json";
+import bestiaryTags from "@/staticData/bestiaryTags.json";
+import automationTags from "@/staticData/automationTags.json";
+
 import { app } from "@/utilities/constants";
 
 // Basic example attacks
@@ -123,7 +125,10 @@ app.get("/api/gamedata/limiteduse", async (req, res) => {
 });
 // json files
 app.get("/api/tags", async (req, res) => {
-	res.json(tags);
+	res.json(bestiaryTags);
+});
+app.get("/api/automationTags", async (req, res) => {
+	res.json(automationTags);
 });
 app.get("/api/limits", async (req, res) => {
 	res.json(limits);

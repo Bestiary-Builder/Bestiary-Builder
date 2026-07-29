@@ -37,6 +37,12 @@ const tags = useFetch<string[]>("/api/tags").then(async (result) => {
 	else return null;
 });
 
+const automationTags = useFetch<string[]>("/api/automationTags").then(async (result) => {
+	if (result.success)
+		return result.data;
+	else return null;
+});
+
 const { width } = useWindowSize();
 
 watch(width, () => {
@@ -44,11 +50,9 @@ watch(width, () => {
 });
 
 export const store = reactive({
-	// eslint-disable-next-line antfu/no-top-level-await
 	user: await user,
-	// eslint-disable-next-line antfu/no-top-level-await
 	tags: await tags,
-	// eslint-disable-next-line antfu/no-top-level-await
+	automationTags: await automationTags,
 	limits: await asyncLimits,
 	isMobile: width.value < 900,
 });

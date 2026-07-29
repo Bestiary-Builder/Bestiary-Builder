@@ -17,15 +17,13 @@ onMounted(async () => {
 </script>
 
 <template>
-	<Breadcrumbs
-		:routes="[
-			{
-				path: '',
-				text: 'Characters',
-				isCurrent: true
-			}
-		]"
-	/>
+	<Breadcrumbs :routes="[
+		{
+			path: '',
+			text: 'Characters',
+			isCurrent: true
+		}
+	]" />
 	<div v-if="!AvraeToken" class="content">
 		This page allows you to edit the attacks of your Avrae characters using the BB editor.
 		<br><br>
@@ -34,34 +32,20 @@ onMounted(async () => {
 		</RouterLink> for how to enable this.
 	</div>
 	<div v-else class="content">
-		<div class="tile-container">
+		<div class="character-container">
 			<CharacterTile v-for="char, idx of characters" :key="idx" :character="char" />
 		</div>
 	</div>
 </template>
 
 <style lang="less" scoped>
-.tile-container {
+.character-container {
 	display: grid;
-	grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-	gap: 1em;
-}
+	grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
+	grid-gap: 1rem;
 
-@media screen and (max-width: 1600px) {
-	.tile-container {
-		grid-template-columns: 1fr 1fr 1fr 1fr;
-	}
-}
-
-@media screen and (max-width: 1200px) {
-	.tile-container {
-		grid-template-columns: 1fr 1fr 1fr;
-	}
-}
-
-@media screen and (max-width: 800px) {
-	.tile-container {
-		grid-template-columns: 1fr 1fr;
+	&>a {
+		text-decoration: none;
 	}
 }
 </style>

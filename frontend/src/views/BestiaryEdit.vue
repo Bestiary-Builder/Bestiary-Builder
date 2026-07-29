@@ -24,6 +24,7 @@ import { creatureTypes } from "@/utils/constants";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { defaultStatblock } from "~/shared";
+import Editor from "@/components/StatblockEditor/Editor.vue";
 
 const $route = useRoute();
 const $router = useRouter();
@@ -111,7 +112,6 @@ const sortCreatures = () => {
 const saveOrder = async () => {
 	if (creatures.value && bestiary.value) {
 		const orderIds = creatures.value.map(creature => creature.id);
-
 		await useFetch(`/api/bestiary/${bestiary.value.id}/creatures/order`, "POST", orderIds);
 	}
 };
@@ -863,9 +863,8 @@ const getDraggableKey = (item: any) => {
 				<LabelledComponent title="Bestiary name" for="bestiaryname">
 					<input id="bestiaryname" v-model="bestiary.name" type="text" :minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength">
 				</LabelledComponent>
-				<LabelledComponent title="Description" for="description">
-					<p>Supports markdown</p>
-					<textarea id="description" v-model="bestiary.description" :maxlength="store.limits?.descriptionLength" />
+				<LabelledComponent title="Description">
+                    <Editor v-model="bestiary.description" />
 				</LabelledComponent>
 				<div v-if="isOwner" class="two-wide">
 					<LabelledComponent title="Status" for="status">

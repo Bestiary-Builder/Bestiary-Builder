@@ -34,7 +34,7 @@ export interface AutomationDocumentationEntity {
 }
 export interface AutomationDocumentation { [key: string]: AutomationDocumentationEntity }
 
-export type AutomationWithType = Omit<Automation, "automation"> & { automation: null | Record<string, unknown> };
+export type AutomationWithType = Omit<Automation, "automation"> & { automation: null | AttackModel | AttackModel[] };
 
 // Built types
 export * from "./build-types";
