@@ -1,5 +1,3 @@
-import "umami";
-
 if (import.meta.env.MODE === "production") {
 	const script = document.createElement("script");
 	script.defer = true;

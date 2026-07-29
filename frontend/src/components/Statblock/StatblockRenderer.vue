@@ -185,7 +185,7 @@ const manager = new MarkdownManager({
 	extensions,
 });
 
-const render = async (str: string, inline?: boolean) => {
+const render = (str: string, inline?: boolean) => {
 	try {
 		let markdown = str
 			.replaceAll("&emsp;", "\u2003")
@@ -195,7 +195,7 @@ const render = async (str: string, inline?: boolean) => {
 			markdown = markdown.replaceAll(/(?<!\n)\n(?!\n)/g, "\n\n");
 
 		if (inline)
-			return await marked.parseInline(markdown);
+			return marked.parseInline(markdown);
 		const json = manager.parse(markdown);
 		return generateHTML(json, extensions);
 	}
