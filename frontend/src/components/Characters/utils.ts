@@ -20,7 +20,7 @@ export const getAvraeCharacters = async () => {
 	const { success, data, error } = await useFetch<AvraeCharacter[]>("/api/character/list");
 	if (success && data) {
 		$toast.success("Loaded Avrae Characters", { id: toasterId });
-		getUmami()?.track("Loaded Avrae Characters");
+		void getUmami()?.track("Loaded Avrae Characters");
 		return data.sort((x, y) => {
 			return (x.active === y.active) ? 0 : x.active ? -1 : 1;
 		});

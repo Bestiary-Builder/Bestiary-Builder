@@ -1,3 +1,5 @@
+import "umami";
+
 if (import.meta.env.MODE === "production") {
 	const script = document.createElement("script");
 	script.defer = true;
@@ -7,27 +9,4 @@ if (import.meta.env.MODE === "production") {
 	document.head.appendChild(script);
 }
 
-export class Umami {
-	// Tracks the current page
-	public track(): void;
-	// Custom payload
-	public track(payload: object): void;
-	// Custom event
-	public track(event_name: string): void;
-	// Custom event with data
-	public track(event_name: string, data: object): void;
-	// eslint-disable-next-line  unused-imports/no-unused-vars
-	public track(a?: unknown, b?: unknown): void {}
-
-	// Assign ID to current session
-	public identify(unique_id: string): void;
-	// Session data
-	public identify(unique_id: string, data: object): void;
-	// Session data without ID
-	public identify(data: object): void;
-	// eslint-disable-next-line  unused-imports/no-unused-vars
-	public identify(a?: unknown, b?: unknown): void { }
-}
-
-// @ts-expect-error Umami object exists on the window property if in production
-export const getUmami = () => window.umami as Umami | undefined;
+export const getUmami = () => window.umami as umami.umami | undefined;

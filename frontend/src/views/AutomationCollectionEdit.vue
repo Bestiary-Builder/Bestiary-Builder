@@ -51,10 +51,12 @@ const addAutomation = async (name: string, automation: null | AttackModel | Atta
         if (shouldNotify)
             $toast.success(`Successfully added automation: ${name}`);
         selectedAutomation.value = data.value[data.value.length - 1];
-        getUmami()?.track("Add automation");
+        void getUmami()?.track("Add automation");
     }
     else {
-        $toast.error(error);
+		$toast.error(error);
+		if (error.includes("includes blocked words or phrases"))
+			void getUmami()?.track("Blocked words", { error });
     }
     loader.hide();
 };
@@ -64,7 +66,7 @@ const deleteAutomation = async (_id: Id) => {
     const { success, error } = await useFetch(`/api/automation/${_id.toString()}/delete`);
     if (success) {
         $toast.success("Successfully deleted the automation!");
-        getUmami()?.track("Delete automation");
+        void getUmami()?.track("Delete automation");
         await getAutomations();
         selectedAutomation.value = null;
     }
@@ -134,7 +136,7 @@ const getAvraeCharacters = async () => {
     const { success, data, error } = await useFetch("/api/character/list");
     if (success) {
         $toast.success("Loaded Avrae Characters", { id: toasterId });
-        getUmami()?.track("Loaded Avrae Characters");
+        void getUmami()?.track("Loaded Avrae Characters");
         characters.value = data as any[];
     }
     else {
@@ -161,7 +163,7 @@ watch(selectedCharacter, async () => {
 
     if (success) {
         $toast.success(`Successfully imported ${selectedAutomation.value.name} to ${selectedCharacter.value.name}`, { id: toasterId });
-        getUmami()?.track("Imported Attack to Avrae");
+        void getUmami()?.track("Imported Attack to Avrae");
     }
     else {
         $toast.error(error);

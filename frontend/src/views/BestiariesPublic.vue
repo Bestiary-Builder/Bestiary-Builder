@@ -38,7 +38,7 @@ const searchBestiaries = async () => {
 	if (success) {
 		bestiaries.value = data.results.map(bestiary => ({ ...bestiary, creatures: Array(bestiary.creatureCount), editors: [] }));
 		totalPages.value = data.pageAmount;
-		getUmami()?.track("Search bestiary", searchData);
+		void getUmami()?.track("Search bestiary", searchData);
 	}
 	else {
 		bestiaries.value = [];
@@ -52,7 +52,7 @@ const getBookmarkedBestiaries = async () => {
 	const { success, data, error } = await useFetch<BestiaryExtended[]>(`/api/user/bookmarks`);
 	if (success) {
 		bestiaries.value = data;
-		getUmami()?.track("View bookmarked bestiaries");
+		void getUmami()?.track("View bookmarked bestiaries");
 	}
 	else {
 		bestiaries.value = [];

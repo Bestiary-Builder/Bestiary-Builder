@@ -48,7 +48,7 @@ const exportStatblock = async () => {
 	const text = JSON.stringify(data.value, null, 2);
 	await navigator.clipboard.writeText(text);
 	$toast.info("Exported this statblock to your clipboard.");
-	getUmami()?.track("Export statblock to clipboard");
+	void getUmami()?.track("Export statblock to clipboard");
 };
 
 const exportHomebrery = async () => {
@@ -60,7 +60,7 @@ const exportHomebrery = async () => {
 		if (success) {
 			await navigator.clipboard.writeText(resultData.metadata);
 			$toast.info("Exported this statblock markdown to your clipboard");
-			getUmami()?.track("Export statblock to homebrewery");
+			void getUmami()?.track("Export statblock to homebrewery");
 		}
 		else {
 			$toast.error(error);
@@ -92,7 +92,7 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 	el.classList.remove("toPrint");
 	el.style = "";
 	loader.hide();
-	getUmami()?.track("Export statblock to image");
+	void getUmami()?.track("Export statblock to image");
 };
 </script>
 

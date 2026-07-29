@@ -40,7 +40,7 @@ const saveAttacks = async () => {
 
 	if (success) {
 		$toast.success(`Successfully updated your attacks`, { id: toasterId });
-		getUmami()?.track("Imported Attack to Avrae");
+		void getUmami()?.track("Imported Attack to Avrae");
 	}
 	else {
 		$toast.error(error, { id: toasterId });

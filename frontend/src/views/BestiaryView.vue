@@ -183,7 +183,7 @@ async function exportHomebrewery() {
 		if (success) {
 			await navigator.clipboard.writeText(resultData.metadata);
 			$toast.info("Exported this bestiary markdown to your clipboard");
-			getUmami()?.track("Export bestiary to homebrewery");
+			void getUmami()?.track("Export bestiary to homebrewery");
 		}
 		else {
 			$toast.error(error);
@@ -234,7 +234,7 @@ async function exportBestiary(asFile: boolean) {
 			)
 		);
 		$toast.info("Exported this bestiary to your clipboard.");
-		getUmami()?.track("Export bestiary to clipboard");
+		void getUmami()?.track("Export bestiary to clipboard");
 	}
 }
 
@@ -299,11 +299,11 @@ async function toggleBookmark() {
 		bookmarked.value = data.state;
 		if (bookmarked.value) {
 			$toast.success("Successfully bookmarked this bestiary!");
-			getUmami()?.track("Bookmark bestiary");
+			void getUmami()?.track("Bookmark bestiary");
 		}
 		else {
 			$toast.success("Successfully unbookmarked this bestiary!");
-			getUmami()?.track("Unbookmark bestiary");
+			void getUmami()?.track("Unbookmark bestiary");
 		}
 	}
 	else {
@@ -325,7 +325,7 @@ const copyCurrentBestiary = () => {
 
 	copiedCreatures.value = copiedCreatures.value.concat(toAdd);
 	$toast.success("Successfully copied current Bestiary");
-	getUmami()?.track("Copy bestiary");
+	void getUmami()?.track("Copy bestiary");
 };
 
 // draggable stuff

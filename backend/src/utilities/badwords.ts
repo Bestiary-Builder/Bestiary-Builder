@@ -1,4 +1,3 @@
-// Badwords check function
 // Bad-words filter
 import BadWordsNext from "bad-words-next";
 import en from "@/staticData/badwordsData/en.json";
@@ -6,6 +5,10 @@ import en_2 from "@/staticData/badwordsData/en_2.json";
 import { log } from "./logger";
 
 export const badwords = new BadWordsNext({ placeholder: "", specialChars: /[\d!@#$%^&*()[\];:'",.?\-_=+~`|]|the|el|la/ });
+badwords.add(en_2);
+badwords.add(en);
+
+// Badwords check function
 export function checkBadwords(value: string): string | undefined {
 	const usedBadwords: string[] = [];
 	badwords.filter(value, (badword) => {
@@ -17,5 +20,3 @@ export function checkBadwords(value: string): string | undefined {
 	}
 	return undefined;
 }
-badwords.add(en_2);
-badwords.add(en);

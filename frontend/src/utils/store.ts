@@ -6,7 +6,7 @@ import { useFetch } from "./utils";
 
 const user = useFetch<User>("/api/user").then(async (result) => {
 	if (result.success) {
-		getUmami()?.identify(result.data.id, {
+		void getUmami()?.identify(result.data.id, {
 			supporter: result.data.supporter,
 			verified: result.data.verified
 		});

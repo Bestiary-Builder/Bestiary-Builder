@@ -34,7 +34,7 @@ const saveSettings = async () => {
 	const { success, data } = await useFetch("/api/user/updatePreferences", "POST", preferences);
 	if (success) {
 		store.user = (data as any).data;
-		getUmami()?.track("Update preferences", preferences);
+		void getUmami()?.track("Update preferences", preferences);
 		$toast.success("Successfully saved your preferences");
 	}
 };

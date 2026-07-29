@@ -53,7 +53,7 @@ const createBestiary = async () => {
 	const { success, data, error } = await useFetch<BestiaryExtended>("/api/bestiary/add", "POST", toValue(createOptions));
 	if (success) {
 		$toast.success("Created bestiary");
-		getUmami()?.track("Add bestiary");
+		void getUmami()?.track("Add bestiary");
 		await router.push(`/bestiary/edit/${data.id.toString()}`);
 	}
 	else {
@@ -74,7 +74,7 @@ const deleteBestiary = async (bestiary: BestiaryExtended | null) => {
 	const { success, error } = await useFetch(`/api/bestiary/${bestiary.id.toString()}/delete`);
 	if (success) {
 		$toast.success("Deleted bestiary succesfully");
-		getUmami()?.track("Delete bestiary");
+		void getUmami()?.track("Delete bestiary");
 		showDeleteModal.value = false;
 	}
 	else {
@@ -168,7 +168,7 @@ const openDeleteModal = (bestiary: BestiaryExtended) => {
         </button>
 		</template>
 	</Modal>
-	
+
 </template>
 
 <style scoped>

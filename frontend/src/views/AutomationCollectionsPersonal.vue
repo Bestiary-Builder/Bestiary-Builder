@@ -40,13 +40,15 @@ const createAutomationCollection = async () => {
 
     if (success) {
 		$toast.success("Created automation collection");
-		getUmami()?.track("Add automation collection");
+		void getUmami()?.track("Add automation collection");
         showCreateModal.value = false
         resetCreateInput()
 		// await $router.push(`/bestiary/edit/${data.id.toString()}`);
 	}
 	else {
 		$toast.error(error);
+		if (error.includes("includes blocked words or phrases"))
+			void getUmami()?.track("Blocked words", { error });
 	}
 
     await getMyCollections()
@@ -67,7 +69,7 @@ const deleteAutomationCollection = async (id: AutomationCollectionExtended["id"]
 
     if (success) {
 		$toast.success("Successfully deleted automation collection");
-		getUmami()?.track("Delete automation collection");
+		void getUmami()?.track("Delete automation collection");
 
 		// await $router.push(`/bestiary/edit/${data.id.toString()}`);
 	}

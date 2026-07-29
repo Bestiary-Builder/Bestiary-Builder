@@ -10,6 +10,7 @@ import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { useParityHelper } from "./useParityHelpers";
 import { defaultNodes } from "../VisualEditor/util";
+import { getUmami } from "@/utils/app/analytics";
 
 const props = withDefaults(defineProps<{ data: AutomationWithType; creatureName?: string }>(), { creatureName: "$NAME$" });
 
@@ -56,6 +57,8 @@ const saveAutomation = async () => {
 
 	if (!success) {
 		$toast.error(error);
+		if (error.includes("includes blocked words or phrases"))
+			void getUmami()?.track("Blocked words", { error });
 		return;
 	}
 	else {

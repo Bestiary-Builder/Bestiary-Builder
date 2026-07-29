@@ -15,7 +15,7 @@ useFetch("/api/unsubscribe")
 	.then((result) => {
 		if (result.success) {
 			status.value = 1;
-			getUmami()?.track("Unsubscribe email", { id: store.user?.id });
+			void getUmami()?.track("Unsubscribe email", { id: store.user?.id });
 			if (store.user)
 				store.user.unsubscribedFromEmails = false;
 		}
