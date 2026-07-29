@@ -9,9 +9,6 @@ import l from "@/staticData/limits.json";
 // Secrets:
 import "@/utilities/env";
 
-// Import badwords
-import "./badwords";
-
 export const app = express();
 
 // Is production

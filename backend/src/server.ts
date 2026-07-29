@@ -14,6 +14,9 @@ import discord from "./logic/external/discord";
 // Import logic files
 import "./logic";
 
+// Import badwords
+import "./utilities/badwords";
+
 startConnection();
 
 // API 404
