@@ -27,7 +27,6 @@
 		"@tiptap/pm": "^3.27.3",
 		"@tiptap/starter-kit": "^3.27.3",
 		"@tiptap/vue-3": "^3.27.3",
-		"@types/umami": "^2.10.1",
 		"@vueuse/core": "^10.7.1",
 		"@vueuse/integrations": "^10.7.1",
 		"floating-vue": "^2.0.0-beta.24",

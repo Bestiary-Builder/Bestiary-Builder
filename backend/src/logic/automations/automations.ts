@@ -35,7 +35,6 @@ function prepareAutomationInput(input: Partial<Automation>, defaultName: string)
 	const descriptionError = checkBadwords(data.description);
 	if (descriptionError)
 		return { error: `Automation description ${descriptionError}` };
-
 	return {
 		data,
 		automationData: data.automation === null

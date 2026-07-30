@@ -51,6 +51,7 @@ model Bestiary {
   ownerId     String         @map("owner")
   status      BestiaryStatus
   description String
+  image       String         @default("")
   tags        String[]
   viewCount   Int            @default(0)
   lastUpdated DateTime       @updatedAt
@@ -105,6 +106,7 @@ model AutomationCollection {
   ownerId     String         @map("owner")
   status      BestiaryStatus
   description String
+  image       String         @default("")
   tags        String[]
   viewCount   Int            @default(0)
   lastUpdated DateTime       @updatedAt

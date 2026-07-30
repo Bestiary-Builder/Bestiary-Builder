@@ -3,7 +3,7 @@ import type { Automation, AutomationCollection, Id } from "~/shared";
 import type { BestiaryStatus } from "~/shared/src/prisma-types";
 import automationTags from "@/staticData/automationTags.json";
 import { checkBadwords } from "@/utilities/badwords";
-import { app, checkBestiaryLimits } from "@/utilities/constants";
+import { app, checkBestiaryLimits, checkImageUrl } from "@/utilities/constants";
 import { addAutomationCollectionBookmark, addAutomationCollectionEditor, createAutomationCollection, deleteAutomationCollection, getAutomationCollection, getAutomationCollectionAutomationCount, getAutomationCollectionsByOwner, getAutomationCollectionsByUser, getAutomationIds, getAutomationsByCollection, getOwnedAutomationCollectionIds, getPublicAutomationCollectionsByOwner, incrementAutomationCollectionViewCount, isAutomationCollectionBookmarked, removeAutomationCollectionBookmark, removeAutomationCollectionEditor, updateAutomationCollection, updateAutomationIndexes, updateUserAutomationCollectionIndexes } from "@/utilities/database";
 import { possibleUser, requireUser } from "../main/login";
 import { createCollectionService } from "./collections";
@@ -37,6 +37,7 @@ export async function getOrCreateDefaultAutomationCollection(ownerId: Id) {
 		name: "My Automations",
 		status: "private",
 		description: "",
+		image: "",
 		tags: [],
 		owner: { connect: { id: ownerId } }
 	}, ownerId);
@@ -46,6 +47,7 @@ export async function getOrCreateDefaultAutomationCollection(ownerId: Id) {
 interface AutomationCollectionData {
 	name: string;
 	description: string;
+	image: string;
 	status: BestiaryStatus;
 	tags: string[];
 }
@@ -54,6 +56,7 @@ function normalizeAutomationCollectionData(input: Partial<AutomationCollection>)
 	return {
 		name: "",
 		description: "",
+		image: "",
 		status: "private",
 		...input,
 		tags: (input.tags ?? []).filter(tag => automationTags.includes(tag))
@@ -64,6 +67,9 @@ function validateAutomationCollectionData(data: AutomationCollectionData, automa
 	const limitError = checkBestiaryLimits(data);
 	if (limitError)
 		return limitError;
+	const imageError = checkImageUrl(data.image);
+	if (imageError)
+		return imageError;
 	if (data.status !== "private") {
 		const nameError = checkBadwords(data.name);
 		if (nameError)
@@ -90,6 +96,7 @@ app.post("/api/automation-collection/add", requireUser, async (req, res) => {
 	const collection = await createAutomationCollection({
 		name: input.name,
 		description: input.description,
+		image: input.image,
 		status: input.status,
 		tags: input.tags,
 		owner: { connect: { id: user.id } }
@@ -165,6 +172,7 @@ app.post("/api/automation-collection/:id/update", requireUser, async (req, res) 
 	const collection = await updateAutomationCollection({
 		name: input.name,
 		description: input.description,
+		image: input.image,
 		tags: input.tags,
 		...(authorization.permission === "owner" ? { status: input.status } : {})
 	}, authorization.collection.id);
@@ -212,7 +220,6 @@ app.post("/api/automation-collection/:id/automations/order", requireUser, async 
 		return res.status(400).json({ error: "Automation ids must be unique." });
 	return res.status(500).json({ error: "Failed to update automation order." });
 });
-
 
 app.post("/api/automation-collection/:collectionid/editors/add/:userid", requireUser, async (req, res) => {
 	const user = req.user!;

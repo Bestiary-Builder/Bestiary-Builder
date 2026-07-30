@@ -35,6 +35,17 @@ export function checkCreatureLimits(stats?: Statblock) {
 export function checkAutomationLimits(automation: Pick<Automation, "name" | "description">) {
 	return checkLimits(automation);
 }
+export function checkImageUrl(image: string) {
+	if (!image)
+		return;
+	try {
+		if (new URL(image).protocol !== "https:")
+			return "Image url must use HTTPS.";
+	}
+	catch {
+		return "Invalid image url.";
+	}
+}
 function checkLimits(data: { name: string; description: string }) {
 	if (data.name.length > limits.nameLength)
 		return `Name exceeds the character limit of ${limits.nameLength} characters.`;

@@ -3,7 +3,7 @@ import type { Id, Statblock, User } from "~/shared";
 import type { Bestiary, BestiaryCreateInput, BestiaryStatus, Creature } from "~/shared/src/prisma-types";
 import bestiaryTags from "@/staticData/bestiaryTags.json";
 import { checkBadwords } from "@/utilities/badwords";
-import { app, checkBestiaryLimits, checkCreatureAmountLimit, limits } from "@/utilities/constants";
+import { app, checkBestiaryLimits, checkCreatureAmountLimit, checkImageUrl, limits } from "@/utilities/constants";
 import { addBestiaryEditor, addBookmark, createBestiary, createCreatures, deleteBestiary, getBestiariesByOwner, getBestiariesByUser, getBestiary, getBestiaryCreatureCount, getBestiaryCreatureIds, getOwnedBestiaryIds, getPrismaClient, getPublicBestiariesByOwner, incrementBestiaryViewCount, isBestiaryBookmarked, removeBestiaryEditor, removeBookmark, updateBestiary, updateBestiaryCreatureIndexes, updateUserBestiaryIndexes } from "@/utilities/database";
 import { log } from "@/utilities/logger";
 
@@ -101,6 +101,7 @@ app.get("/api/user/:userid/bestiaries", possibleUser, async (req, res) => {
 interface BestiaryData {
 	name: string;
 	description: string;
+	image: string;
 	status: BestiaryStatus;
 	tags: string[];
 }
@@ -110,6 +111,7 @@ function normalizeBestiaryData<T extends Partial<Bestiary>>(input: T): T & Besti
 		name: "",
 		status: "private",
 		description: "",
+		image: "",
 		...input,
 		tags: (input.tags ?? []).filter(t => bestiaryTags.includes(t))
 	};
@@ -122,6 +124,9 @@ function validateBestiaryData(data: BestiaryData, creatureCount: number) {
 	const amountError = checkCreatureAmountLimit(creatureCount);
 	if (amountError)
 		return amountError;
+	const imageError = checkImageUrl(data.image);
+	if (imageError)
+		return imageError;
 	if (data.status !== "private") {
 		const nameError = checkBadwords(data.name);
 		if (nameError)
@@ -150,6 +155,7 @@ app.post("/api/bestiary/:id/update", requireUser, async (req, res) => {
 	interface UpdateData {
 		name: string;
 		description: string;
+		image: string;
 		status: "public" | "private" | "unlisted";
 		tags: string[];
 	};
@@ -174,6 +180,7 @@ app.post("/api/bestiary/:id/update", requireUser, async (req, res) => {
 	const update: Omit<UpdateData, "status"> & { status?: BestiaryStatus } = {
 		name: data.name,
 		description: data.description,
+		image: data.image,
 		status: data.status,
 		tags: data.tags
 	};
