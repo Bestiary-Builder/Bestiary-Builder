@@ -26,6 +26,7 @@ import { defaultStatblock } from "~/shared";
 const $route = useRoute();
 const $router = useRouter();
 
+const tab = ref<number>(typeof ($route.query?.pane) === 'string' ? Number.parseInt($route.query.pane) : 1)
 const data = ref<Statblock>(defaultStatblock);
 const rawInfo = ref<CreatureWithStats | null>(null);
 
@@ -109,12 +110,12 @@ provide("saveStatblock", saveStatblock);
 // end of lifecycle
 const madeChanges = ref(false);
 
-const unwatch = watch(() => data.value,	() => {
+const unwatch = watch(() => data.value, () => {
 	if (rawInfo.value == null)
 		return;
 	madeChanges.value = true;
 	unwatch();
-},	{ deep: true });
+}, { deep: true });
 
 onBeforeRouteUpdate(() => {
 	// just in case the user manages to navigate to a page that also uses StatblockEditorView
@@ -289,78 +290,41 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 	loader.hide();
 	void getUmami()?.track("Export statblock to image");
 };
-
-// Tabs
-const slideIndex = ref(1);
-onMounted(async () => {
-	if (typeof ($route.query.pane) == "string") {
-		slideIndex.value = Math.max(0, Math.min(6, Math.abs(Number.parseInt($route.query.pane))));
-		await $router.replace({ query: undefined });
-	}
-});
-const moveSlide = (event: KeyboardEvent) => {
-	const currentSlide = slideIndex.value;
-	let moveToSlide = 0;
-	switch (event.key) {
-		case "ArrowLeft":
-			if (currentSlide === 1)
-				moveToSlide = 6;
-			else moveToSlide = currentSlide - 1;
-			break;
-
-		case "ArrowRight":
-			if (currentSlide === 6)
-				moveToSlide = 1;
-			else moveToSlide = currentSlide + 1;
-			break;
-
-		case "Home":
-			moveToSlide = 1;
-			break;
-
-		case "End":
-			moveToSlide = 6;
-			break;
-	}
-
-	if (moveToSlide) {
-		event.stopPropagation();
-		event.preventDefault();
-		slideIndex.value = moveToSlide;
-	}
-};
 </script>
 
 <template>
 	<div>
-		<Breadcrumbs
-			v-if="bestiary && (data.description.name || data.description.name === '')"
-			:routes="[
-				{
-					path: '/bestiaries/personal',
-					text: 'My Bestiaries',
-					isCurrent: false
-				},
-				{
-					path: `/bestiary/edit/${bestiary?.id}`,
-					text: bestiary?.name,
-					isCurrent: false
-				},
-				{
-					path: '',
-					text: data?.description.name || 'Unnamed Creature',
-					isCurrent: true
-				}
-			]"
-		>
-			<ButtonIcon v-if="madeChanges && (isOwner || isEditor)" icon="save" label="Save creature" inverted @click="saveStatblock()" />
+		<Breadcrumbs v-if="bestiary && (data.description.name || data.description.name === '')" :routes="[
+			{
+				path: '/bestiaries/personal',
+				text: 'My Bestiaries',
+				isCurrent: false
+			},
+			{
+				path: `/bestiary/edit/${bestiary?.id}`,
+				text: bestiary?.name,
+				isCurrent: false
+			},
+			{
+				path: '',
+				text: data?.description.name || 'Unnamed Creature',
+				isCurrent: true
+			}
+		]">
+			<ButtonIcon v-if="madeChanges && (isOwner || isEditor)" icon="save" label="Save creature" inverted
+				@click="saveStatblock()" />
 			<template v-if="!isOwner && !isEditor">
-				<ButtonIcon v-if="!shouldShowEditor" icon="eye" label="Toggle editor for debugging purposes" @click="shouldShowEditor = !shouldShowEditor" />
-				<ButtonIcon v-else icon="eye-slash" label="Toggle editor for debugging purposes" @click="shouldShowEditor = !shouldShowEditor" />
+				<ButtonIcon v-if="!shouldShowEditor" icon="eye" label="Toggle editor for debugging purposes"
+					@click="shouldShowEditor = !shouldShowEditor" />
+				<ButtonIcon v-else icon="eye-slash" label="Toggle editor for debugging purposes"
+					@click="shouldShowEditor = !shouldShowEditor" />
 			</template>
 
-			<CopyManager v-if="rawInfo" no-import-all :may-import="isOwner || isEditor" :current-creature="{ ...rawInfo, bestiaryName: bestiary.name }" @import-creature="(creature) => importCreature(creature)" />
-			<ButtonIcon v-if="isOwner || isEditor" icon="arrow-right-to-bracket" label="Import statblock" @click="showImportModal = true" />
+			<CopyManager v-if="rawInfo" no-import-all :may-import="isOwner || isEditor"
+				:current-creature="{ ...rawInfo, bestiaryName: bestiary.name }"
+				@import-creature="(creature) => importCreature(creature)" />
+			<ButtonIcon v-if="isOwner || isEditor" icon="arrow-right-to-bracket" label="Import statblock"
+				@click="showImportModal = true" />
 
 			<VDropdown :distance="6" :positioning-disabled="store.isMobile">
 				<ButtonIcon icon="arrow-right-from-bracket" label="Export statblock" />
@@ -393,39 +357,54 @@ const moveSlide = (event: KeyboardEvent) => {
 			</VDropdown>
 		</Breadcrumbs>
 		<div class="content more-wide" :class="{ 'is-statblock-only': !shouldShowEditor }">
-			<div v-show="shouldShowEditor" class="content-container__inner editor">
-				<div class="editor-nav" role="tablist" aria-label="Statblock editor tabs">
-					<button id="tab-1" :class="{ 'active-slide': slideIndex === 1 }" class="editor-nav__tab" role="tab" aria-controls="tabpanel-1" @click="slideIndex = 1" @keydown="moveSlide">
-						Description
-					</button>
-					<button id="tab-2" :class="{ 'active-slide': slideIndex === 2 }" class="editor-nav__tab" role="tab" aria-controls="tabpanel-2" @click="slideIndex = 2" @keydown="moveSlide">
-						Core
-					</button>
-					<button id="tab-3" :class="{ 'active-slide': slideIndex === 3 }" class="editor-nav__tab" role="tab" aria-controls="tabpanel-3" @click="slideIndex = 3" @keydown="moveSlide">
-						Stats
-					</button>
-					<button id="tab-4" :class="{ 'active-slide': slideIndex === 4 }" class="editor-nav__tab" role="tab" aria-controls="tabpanel-4" @click="slideIndex = 4" @keydown="moveSlide">
-						Defenses
-					</button>
-					<button id="tab-5" :class="{ 'active-slide': slideIndex === 5 }" class="editor-nav__tab" role="tab" aria-controls="tabpanel-5" @click="slideIndex = 5" @keydown="moveSlide">
-						Features
-					</button>
-					<button id="tab-6" :class="{ 'active-slide': slideIndex === 6 }" class="editor-nav__tab" role="tab" aria-controls="tabpanel-6" @click="slideIndex = 6" @keydown="moveSlide">
-						Spells
-					</button>
-				</div>
-
-				<Shimmer :loading="rawInfo === null" :template-props="{ data: defaultStatblock }" shimmer-color="orangered" class="editor-content">
-					<DescriptionPanel v-if="slideIndex === 1" :data="data" />
-					<CorePanel v-if="slideIndex === 2" :data="data" />
-					<StatsPanel v-if="slideIndex === 3" :data="data" />
-					<DefensesPanel v-if="slideIndex === 4" :data="data" />
-					<FeaturesPanel v-if="slideIndex === 5" :data="data" :raw-info="rawInfo" />
-					<SpellcastingPanel v-if="slideIndex === 6" :data="data" :raw-info="rawInfo" />
-				</Shimmer>
-			</div>
+			<v-sheet elevation="2" color="surface-1">
+				<v-tabs v-model="tab" color="primary" grow style="background-color: rgba(33,33,33,1)">
+					<v-tab :value="1">Description</v-tab>
+					<v-tab :value="2">Core</v-tab>
+					<v-tab :value="3">Stats</v-tab>
+					<v-tab :value="4">Defenses</v-tab>
+					<v-tab :value="5">Features</v-tab>
+					<v-tab :value="6">Spells</v-tab>
+				</v-tabs>
+				<v-divider></v-divider>
+				<v-sheet color="surface-1">
+					<v-tabs-window v-model="tab" class="editor-content">
+						<v-tabs-window-item :value="1">
+							<v-sheet color="surface-1" class="pa-4">
+								<DescriptionPanel :data="data" />
+							</v-sheet>
+						</v-tabs-window-item>
+						<v-tabs-window-item :value="2" >
+							<v-sheet color="surface-1" class="pa-4">
+								<CorePanel :data="data" />
+							</v-sheet>
+						</v-tabs-window-item>
+						<v-tabs-window-item :value="3" >
+							<v-sheet color="surface-1"class="pa-4">
+								<StatsPanel :data="data" />
+							</v-sheet color="surface-1">
+						</v-tabs-window-item>
+						<v-tabs-window-item :value="4">
+							<v-sheet color="surface-1" class="pa-4">
+								<DefensesPanel :data="data" />
+							</v-sheet>
+						</v-tabs-window-item>
+						<v-tabs-window-item :value="5">
+							<v-sheet color="surface-1" class="pa-4">
+								<FeaturesPanel :data="data" :raw-info="rawInfo" />
+							</v-sheet>
+						</v-tabs-window-item>
+						<v-tabs-window-item :value="6">
+							<v-sheet color="surface-1" class="pa-4">
+								<SpellcastingPanel :data="data" :raw-info="rawInfo" />
+							</v-sheet>
+						</v-tabs-window-item>
+					</v-tabs-window>
+				</v-sheet>
+			</v-sheet>
 			<div class="content-container__inner">
-				<Shimmer :loading="rawInfo === null" :template-props="{ data: defaultStatblock }" shimmer-color="orangered">
+				<Shimmer :loading="rawInfo === null" :template-props="{ data: defaultStatblock }"
+					shimmer-color="orangered">
 					<StatblockRenderer id="statblock" :data="data || defaultStatblock" />
 				</Shimmer>
 			</div>
@@ -437,7 +416,8 @@ const moveSlide = (event: KeyboardEvent) => {
 			</template>
 			<template #body>
 				<LabelledComponent title="Bestiary Builder JSON" for="bestiarybuilderjson">
-					<p>Insert the JSON as text gotten from clicking export on another creature within Bestiary Builder.</p>
+					<p>Insert the JSON as text gotten from clicking export on another creature within Bestiary Builder.
+					</p>
 					<div class="two-wide">
 						<input id="bestiarybuilderjson" v-model="bestiaryBuilderJson" type="text">
 						<button class="btn confirm" @click="importBestiaryBuilder">
@@ -447,7 +427,8 @@ const moveSlide = (event: KeyboardEvent) => {
 				</LabelledComponent>
 				<hr>
 				<LabelledComponent title="5e Tools JSON" for="toolsjson">
-					<p>Insert 5e.tools JSON as text into this field, gotten from clicking export on 5e.tools and copying the JSON.</p>
+					<p>Insert 5e.tools JSON as text into this field, gotten from clicking export on 5e.tools and copying
+						the JSON.</p>
 					<div class="two-wide">
 						<input id="toolsjson" v-model="toolsjson" type="text">
 						<button class="btn confirm" @click.prevent="import5etools">
@@ -470,7 +451,8 @@ const moveSlide = (event: KeyboardEvent) => {
 					<p class="warning">
 						<b>Please note the following for this import:</b>
 					</p>
-					<p>Some features may not have automation as they should, aka description only features, but some might not have imported correctly or are missing certain parts. It is recommended to review.</p>
+					<p>Some features may not have automation as they should, aka description only features, but some
+						might not have imported correctly or are missing certain parts. It is recommended to review.</p>
 					<div v-for="(type, index) in notices" :key="index">
 						<h3 v-if="type.length > 0">
 							{{ index }}
@@ -496,11 +478,13 @@ const moveSlide = (event: KeyboardEvent) => {
 
 .content.is-statblock-only {
 	grid-template-columns: 1fr;
+
 	.content-container__inner {
 		width: 60%;
 		margin: auto;
 	}
 }
+
 @media screen and (max-width: 1200px) {
 	.content {
 		grid-template-columns: 1fr;
@@ -514,48 +498,6 @@ const moveSlide = (event: KeyboardEvent) => {
 
 .content-container__inner:first-of-type {
 	background-color: var(--color-surface-1);
-}
-
-.editor-nav {
-	display: grid;
-	grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
-	text-align: center;
-	height: fit-content;
-	margin: 0 1px;
-	background-color: rgb(48, 47, 47);
-	&__tab {
-		padding: 0.4rem 1rem;
-		cursor: pointer;
-		transition: 0.3s ease-in-out;
-		transition-property: color background-color;
-		background-color: unset;
-		border: unset;
-		border-bottom: 1px solid grey;
-		color: rgb(201, 201, 201);
-
-		&:hover {
-			background-color: var(--color-surface-0);
-			color: white;
-		}
-
-		&.active-slide {
-			border-bottom-color: orangered;
-			border-bottom-width: 1px;
-			color: white;
-			position: relative;
-			transition: all 0.3s ease;
-
-			&::before {
-				position: absolute;
-				bottom: 0;
-				left: 0;
-				width: 100%;
-				height: 2px;
-				background-color: orangered;
-				content: "";
-			}
-		}
-	}
 }
 </style>
 

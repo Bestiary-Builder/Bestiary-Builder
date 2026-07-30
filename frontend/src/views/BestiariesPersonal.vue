@@ -118,13 +118,17 @@ const getDraggableKey = (item: any) => {
 				<v-card title="Create new bestiary">
 					<v-sheet class="pa-4" max-width="1800" rounded="lg" width="100%">
 						<v-form>
-							<v-text-field v-model="createOptions.name" label="Name"
-								:maxlength="store.limits?.nameLength" :minLength="store.limits?.nameMin"
-								:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]"
-								class="mb-4" />
+							<div class="grid-two">
+								<v-text-field v-model="createOptions.name" label="Name"
+									:maxlength="store.limits?.nameLength" :minLength="store.limits?.nameMin"
+									:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]"
+									class="mb-4" />
+								<v-text-field v-model="createOptions.image" label="Image" class="mb-4" />
+							</div>
+
 							<v-textarea v-model="createOptions.description" :maxLength="store.limits?.descriptionLength"
 								:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]" label="Description"
-								class="mb-4" hint="Supports Markdown" persistent-hint/>
+								class="mb-4" hint="Supports Markdown" persistent-hint />
 							<div class="grid-two" counter>
 								<div>
 									<v-select label="Status" v-model="createOptions.status"

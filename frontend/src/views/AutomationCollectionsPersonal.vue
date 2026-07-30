@@ -27,7 +27,9 @@ const showCreateModal = ref(false)
 const createOptions = reactive({
     name: "",
     description: "",
-    status: "unlisted"
+    status: "unlisted",
+    image: "",
+    tags: []
 })
 
 const resetCreateInput = () => {

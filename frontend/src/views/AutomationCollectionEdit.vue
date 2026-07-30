@@ -207,7 +207,8 @@ const settingOptions = ref({
     name: "",
     description: "",
     tags: [] as string[],
-    status: ""
+    status: "",
+    image: ""
 })
 
 const setSettingInputs = () => {
@@ -216,7 +217,8 @@ const setSettingInputs = () => {
         name: toValue(collection.value.name),
         description: toValue(collection.value.description),
         tags: toValue(collection.value.tags),
-        status: toValue(collection.value.status)
+        status: toValue(collection.value.status),
+        image: toValue(collection.value.image)
     }
 }
 

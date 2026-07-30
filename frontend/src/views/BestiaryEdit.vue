@@ -657,10 +657,15 @@ const getDraggableKey = (item: any) => {
 					<v-card title="Edit bestiary">
 						<v-sheet class="pa-4" max-width="1800" rounded="lg" width="100%">
 							<v-form>
-								<v-text-field v-model="bestiary.name" label="Name" :maxlength="store.limits?.nameLength"
-									:minLength="store.limits?.nameMin"
-									:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]"
-									class="mb-4" />
+								<div class="grid-two">
+									<v-text-field v-model="bestiary.name" label="Name"
+										:maxlength="store.limits?.nameLength" :minLength="store.limits?.nameMin"
+										:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]"
+										class="mb-4" />
+									<v-text-field v-model="bestiary.image" label="Image" class="mb-4" />
+								</div>
+
+
 								<v-textarea v-model="bestiary.description" :maxLength="store.limits?.descriptionLength"
 									:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]"
 									label="Description" class="mb-4" hint="Supports Markdown" persistent-hint counter />

@@ -8,6 +8,7 @@ import CRInput from "../FormInputs/CRInput.vue";
 import LabelledComponent from "../FormInputs/LabelledComponent.vue";
 import LabelledNumberInput from "../FormInputs/LabelledNumberInput.vue";
 import Editor from "./Editor.vue";
+import { useRules } from "vuetify/labs/rules";
 
 const { data } = defineProps<{ data: Statblock }>();
 
@@ -15,49 +16,29 @@ watch(() => data.description.cr, () => {
 	data.core.proficiencyBonus = Math.max(2, Math.min(9, Math.floor((data.description.cr + 3) / 4)) + 1);
 	data.description.xp = getXPbyCR(data.description.cr);
 });
+
+const rules = useRules()
+const imageUrlPattern = /^https?:\/\/.+\.(?:png|jpe?g|webp|gif|apng)(?:\?.*)?$/i
+const imageRules = [
+	rules.pattern(
+		imageUrlPattern,
+		'Enter a valid image URL https and one of (.png, .jpg, .jpeg, .webp, .gif, or .apng)'
+	),
+]
 </script>
 
 <template>
-	<div
-		id="tabpanel-1" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0"
-		aria-labelledby="tab-1"
-	>
-		<div class="editor-field__container three-wide">
-			<LabelledComponent title="Creature name" for="creaturename">
-				<input
-					id="creaturename" v-model="data.description.name" type="text"
-					:maxlength="store.limits?.nameLength"
-				>
-			</LabelledComponent>
-
-			<LabelledComponent title="Image URL" for="imageurl">
-				<div style="display: flex; gap: .3rem;">
-					<input
-						id="imageurl" v-model="data.description.image" type="text"
-						:pattern="store.limits?.imageFormats ? `(https:\/\/)(.+)(\\.${store.limits?.imageFormats.join('|\\.')})` : ''"
-					>
-					<VDropdown :distance="6" :positioning-disabled="store.isMobile">
-						<button v-tooltip="'Preview image'" aria-label="Preview image" class="preview-icon">
-							<font-awesome-icon :icon="['fas', 'eye']" />
-						</button>
-						<template #popper>
-							<div class="v-popper__custom-menu">
-								<img :src="data.description.image" style="width: 200px; height: auto">
-							</div>
-						</template>
-					</VDropdown>
-				</div>
-			</LabelledComponent>
-			<LabelledComponent title="Proper noun" for="propernoun">
-				<span>
-					<input id="propernoun" v-model="data.description.isProperNoun" type="checkbox">
-					<label for="propernoun" style="word-wrap: anywhere;">
-						<small>
-							Toggles display as "{{ data.description.name }}" instead of "the {{ data.description.name }}"?
-						</small>
-					</label>
-				</span>
-			</LabelledComponent>
+	<div id="tabpanel-1" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0"
+		aria-labelledby="tab-1">
+		<div class="editor-field__container two-wide">
+			<div>
+				<v-text-field v-model="data.description.name" label="Name" :maxlength="store.limits?.nameLength"
+					:minLength="store.limits?.nameMin"
+					:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]" />
+			</div>
+			<div>
+				<v-text-field v-model="data.description.image" label="Image URL" :rules="imageRules" />
+			</div>
 		</div>
 
 		<div class="editor-field__container one-wide">
@@ -66,43 +47,28 @@ watch(() => data.description.cr, () => {
 			</LabelledComponent>
 		</div>
 		<div class="editor-field__container three-wide">
-			<LabelledComponent title="Size" takes-custom-text-input for="size">
-				<v-select
-					v-model="data.core.size" :options="sizes" :taggable="true" :push-tags="true"
-					input-id="size"
-				/>
-			</LabelledComponent>
-			<LabelledComponent title="Race" takes-custom-text-input for="race">
-				<v-select
-					v-model="data.core.race" :options="creatureTypes" :taggable="true" :push-tags="true"
-					input-id="race"
-				/>
-			</LabelledComponent>
-			<LabelledComponent title="Alignment" takes-custom-text-input for="alignment">
-				<v-select
-					v-model="data.description.alignment" :options="alignments" :taggable="true" :push-tags="true"
-					input-id="alignment"
-				/>
-			</LabelledComponent>
+			<v-combobox v-model="data.core.size" :items="sizes" label="Size"/>
+			<v-combobox v-model="data.core.race" :items="creatureTypes" label="Type" />
+			<v-combobox v-model="data.description.alignment" :items="alignments" label="Alignment" />
 		</div>
 		<div class="editor-field__container three-wide">
-			<CRInput v-model="data.description.cr" title="Challenge Rating" />
-			<LabelledNumberInput
-				v-model="data.core.proficiencyBonus" :min="0" title="Proficiency Bonus" :step="1"
-				label-id="proficiencyBonus"
-			/>
-			<LabelledNumberInput
-				v-model="data.description.xp" :min="0" :step="1" title="Experience Points"
-				label-id="experience"
-			/>
+			<CRInput v-model="data.description.cr" label="Challenge Rating" />
+			<v-number-input v-model="data.core.proficiencyBonus" label="Proficiency Bonus" />
+			<v-number-input v-model="data.description.xp" label="XP" />
 		</div>
 		<div class="editor-field__container three-wide">
-			<LabelledComponent title="Environment" for="environment">
-				<input id="environment" v-model="data.description.environment" type="text">
-			</LabelledComponent>
-			<LabelledComponent title="Faction" for="faction">
-				<input id="faction" v-model="data.description.faction" type="text">
-			</LabelledComponent>
+			<div>
+				<v-text-field v-model="data.description.environment" label="Environment" />
+			</div>
+			<div>
+				<v-text-field v-model="data.description.faction" label="Faction" />
+			</div>
+			<v-container class="d-flex flex-column flex-column align-start pa-0">
+				<v-checkbox label="Proper noun" v-model="data.description.isProperNoun" color="primary"
+					density="compact" hide-details />
+				<small> Toggles display as "{{ data.description.name }}" instead of "the
+					{{ data.description.name }}"</small>
+			</v-container>
 		</div>
 	</div>
 </template>

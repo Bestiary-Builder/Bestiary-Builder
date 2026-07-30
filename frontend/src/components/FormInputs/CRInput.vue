@@ -1,62 +1,53 @@
 <script setup lang="ts">
-import LabelledComponent from "./LabelledComponent.vue";
+import { computed } from 'vue'
 
-const { title } = defineProps<{ title: string }>();
-const model = defineModel<number>();
+const model = defineModel<number | null>()
+const { label } = defineProps<{ label: string }>()
 
-const changeCR = (isIncrease: boolean) => {
-	if (!model.value)
-		model.value = 0;
+const values = [
+	0.125,
+	0.25,
+	0.5,
+	...Array.from({ length: 30 }, (_, i) => i + 1),
+]
 
-	if (model.value === 0 && isIncrease) {
-		model.value = 0.125;
-	}
-	else if (model.value === 0.125 && isIncrease) {
-		model.value = 0.25;
-	}
-	else if (model.value === 0.25 && isIncrease) {
-		model.value = 0.5;
-	}
-	else if (model.value === 0.5 && isIncrease) {
-		model.value = 1;
-	}
-	else if (model.value === 0.125 && !isIncrease) {
-		model.value = 0;
-	}
-	else if (model.value === 0.25 && !isIncrease) {
-		model.value = 0.125;
-	}
-	else if (model.value === 0.5 && !isIncrease) {
-		model.value = 0.25;
-	}
-	else if (model.value === 1 && !isIncrease) {
-		model.value = 0.5;
-	}
-	else {
-		if (isIncrease)
-			model.value = Math.min(30, model.value + 1);
-		else
-			model.value = Math.max(0, model.value - 1);
-	}
-};
+const labels: Record<number, string> = {
+	0.125: '1/8',
+	0.25: '1/4',
+	0.5: '1/2',
+}
+
+function formatValue(value: number) {
+	return labels[value] ?? String(value)
+}
+
+const internalValue = computed<number | string | null>({
+	// @ts-ignore
+	get() {
+		return model.value
+	},
+	set(value: any) {
+		if (value === null || value === '') {
+			model.value = null
+			return
+		}
+
+		const number = Number(value)
+
+		model.value =
+			Number.isFinite(number) && number >= 0
+				? number
+				: null
+	},
+})
+
+const rules = [
+	(value: unknown) =>
+		value === null || Number(value) >= 0 || 'Must be zero or greater',
+]
 </script>
 
 <template>
-	<LabelledComponent :title="title">
-		<div class="quantity">
-			<input id="challengerating" v-model="model" type="number" min="0" max="30" inputmode="numeric">
-			<div class="quantity-nav">
-				<div class="quantity-button quantity-up" aria-label="Increase CR" @click="changeCR(true)">
-					+
-				</div>
-				<div class="quantity-button quantity-down" aria-label="Decrease CR" @click="changeCR(false)">
-					-
-				</div>
-			</div>
-		</div>
-	</LabelledComponent>
+	<v-combobox v-model="internalValue" :items="values" :item-title="formatValue" :rules="rules" 
+		type="number" :label />
 </template>
-
-<style scoped>
-@import url("./styles/number-input.less");
-</style>

@@ -4,8 +4,6 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 // monaco editor
 import { loader } from "@guolao/vue-monaco-editor";
-// Floating vue
-import FloatingVue from "floating-vue";
 // Vue
 import { createApp } from "vue";
 
@@ -33,32 +31,61 @@ import { createRulesPlugin } from 'vuetify/labs/rules'
 
 // Components
 const vuetify = createVuetify({
-  components: components,
-  directives,
-  defaults: {
-	VTextField: {
-		autocomplete: "off",
-		variant: "solo-filled"
-	},
-	VTextarea: {
-		variant: "solo-filled",
-		autocomplete: "off"
-	},
-	VSelect: {
-		variant: "solo-filled"
-	},
-	VBtn: {
-		variant: "tonal"
-	},
-	VCardActions: {
+	components: components,
+	directives,
+	defaults: {
+		VTextField: {
+			autocomplete: "off",
+			variant: "solo-filled"
+		},
+		VTextarea: {
+			variant: "solo-filled",
+			autocomplete: "off"
+		},
+		VSelect: {
+			variant: "solo-filled"
+		},
 		VBtn: {
 			variant: "tonal"
+		},
+		VCardActions: {
+			VBtn: {
+				variant: "tonal"
+			}
+		},
+		VTabsWindowItem: {
+			VTextField: {
+				variant: "outlined"
+			},
+			VSelect: {
+				variant: "outlined"
+			},
+			VCombobox: {
+				variant: "outlined"
+			},
+			VNumberInput: {
+				variant: "outlined"
+			}
+		},
+		VCheckbox: {
+			color: "primary"
+		},
+		VNumberInput: {
+			controlVariant: "stacked"
+		}
+	},
+	theme: {
+		defaultTheme: "dark",
+		themes: {
+			dark: {
+				dark: true,
+				colors: {
+					primary: '#ff4500',
+					'surface-1': "#3b3736"
+				},
+			},
 		}
 	}
-  },
-  theme: {
-	defaultTheme: "dark"
-  }
 })
 
 export const app = createApp(App as Component<any>);
@@ -76,7 +103,7 @@ loader.config({
 
 // error handling
 if (import.meta.env.MODE === "production")
-	import("./utils/app/error").then().catch(() => {});
+	import("./utils/app/error").then().catch(() => { });
 
 // Finally, mount our app.
 app.mount("body");

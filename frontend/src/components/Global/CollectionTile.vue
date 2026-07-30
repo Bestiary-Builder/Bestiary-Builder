@@ -13,13 +13,6 @@ defineEmits<{
     (e: "deleteCollectionItem", collectionId: string): void;
 }>();
 
-const collectionImage = computed(() => {
-    const description = data.description;
-    const match = description.match(/!\[.*?\]\((.*?)\)/);
-    const firstImageUrl = (match || [])[1];
-    return firstImageUrl
-});
-
 const firstLetters = computed(() => {
     const firstLetters = data.name
         .replace(/[^a-zA-Z0-9\s]/g, '')
@@ -60,7 +53,7 @@ const lastUpdated = computed(() => {
     <div class="collection-container">
         <div class="collection">
             <div class="image-container">
-                <img :src="collectionImage" v-if="collectionImage" class="image" />
+                <img :src="data.image" v-if="data.image" class="image" />
                 <div v-else class="image">
                     {{ firstLetters }}
                 </div>
