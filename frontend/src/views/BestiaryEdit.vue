@@ -620,7 +620,7 @@ const getDraggableKey = (item: any) => {
 				<template #activator="{ props }">
 					<ButtonIcon icon="plus" label="Create creature" inverted v-bind="props" />
 				</template>
-				<v-card min-width="300" class="text-center pb-2" title="Create creature">
+				<v-card min-width="300" class="text-center pa-4" title="Create creature">
 					<v-card-actions class="d-flex flex-column align-center justify-center">
 						<v-btn @click="createCreature()" size="x-large">
 							From scratch
@@ -854,7 +854,7 @@ const getDraggableKey = (item: any) => {
 							<template #activator="{ props }">
 								<v-btn v-bind="props" variant="plain" :ripple="false"> Add creature </v-btn>
 							</template>
-							<v-card min-width="300" class="text-center pb-2" title="Create creature">
+							<v-card min-width="300" class="text-center pa-4" title="Create creature">
 								<v-card-actions class="d-flex flex-column align-center justify-center">
 									<v-btn @click="createCreature()" size="x-large">
 										From scratch
