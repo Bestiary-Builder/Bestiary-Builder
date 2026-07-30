@@ -44,8 +44,8 @@ onUnmounted(() => {
 <template>
 	<Teleport to="#modal">
 		<Transition name="modal">
-			<div v-show="show" ref="target" class="modal__bg" :class="{ 'open-modal': show }" @click="$emit('close')">
-				<div :class="{ fullscreen: fullScreen }" class="modal__content" role="dialog" aria-modal="true" :aria-labelledby="`dialog${id}_label`" @click.stop>
+			<div v-show="show" ref="target" class="modal__bg" :class="{ 'open-modal': show }">
+				<div :class="{ fullscreen: fullScreen }" class="modal__content" role="dialog" aria-modal="true" :aria-labelledby="`dialog${id}_label`">
 					<div class="modal__header">
 						<h2 :id="`dialog${id}_label`">
 							<slot name="header" />

@@ -8,7 +8,7 @@ const API = "https://api.avrae.io/characters";
 
 app.get("/api/character/list", requireUser, async (req, res) => {
 	try {
-		const result = await fetch(`${API}/meta`, {
+		const result = await fetch(`${API}`, {
 			method: "GET",
 			headers: {
 				"Content-Type": "application/json",

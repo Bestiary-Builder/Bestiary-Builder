@@ -2,12 +2,15 @@
 import type { CreatureWithStats, Statblock } from "~/shared";
 import { useLocalStorage } from "@vueuse/core";
 import { $toast } from "@/utils/app/toast";
-import { store } from "@/utils/store";
+import DropdownMenu from "../Global/DropdownMenu.vue";
+import ButtonIcon from "../Global/ButtonIcon.vue";
 
 const props = withDefaults(
-	defineProps<{ noImportAll?: boolean; mayImport?: boolean; currentCreature?:
-		CopiedCreature | undefined; canCopyCurrentBestiary?: boolean; }>(),
-	{ noImportAll: false, mayImport: false, currentCreature: undefined, canCopyCurrentBestiary: false	}
+	defineProps<{
+		noImportAll?: boolean; mayImport?: boolean; currentCreature?:
+			CopiedCreature | undefined; canCopyCurrentBestiary?: boolean;
+	}>(),
+	{ noImportAll: false, mayImport: false, currentCreature: undefined, canCopyCurrentBestiary: false }
 );
 
 const emit = defineEmits<{
@@ -38,16 +41,13 @@ const importManyCreatures = () => {
 </script>
 
 <template>
-	<VDropdown :distance="6" placement="bottom" :positioning-disabled="store.isMobile">
-		<button v-tooltip="'Copy creatures'" aria-label="Copy creatures" @click.stop.prevent>
-			<font-awesome-icon :icon="['fas', 'copy']" />
-			<div class="notice-dot">
-				{{ copiedCreatures.length }}
-			</div>
-		</button>
-		<template #popper>
-			<div class="v-popper__custom-menu with-table">
-				<table v-if="copiedCreatures.length > 0" class="list-table">
+	<DropdownMenu>
+		<template #activator="{ props }">
+			<ButtonIcon icon="copy" label="Delete creature" v-bind="props" no-tooltip />
+		</template>
+		<v-card min-width="500" class="text-center pa-4 d-flex justify-center flex-column">
+			<v-card-text>
+				<table v-if="copiedCreatures.length > 0" class="list-table mx-auto">
 					<thead>
 						<tr>
 							<th> Creature </th>
@@ -64,7 +64,8 @@ const importManyCreatures = () => {
 								<p> {{ creature.bestiaryName }} (CR {{ creature.stats.description.cr }})</p>
 							</th>
 							<td v-if="mayImport">
-								<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" @click="importCreature(creature)" />
+								<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']"
+									@click="importCreature(creature)" />
 							</td>
 							<td> <font-awesome-icon :icon="['fas', 'trash']" @click="deleteCreature(idx)" /></td>
 						</tr>
@@ -85,24 +86,24 @@ const importManyCreatures = () => {
 						</tr>
 					</tbody>
 				</table>
-
-				<div class="copy-manager-buttons">
-					<button v-if="copiedCreatures.length > 0" class="btn danger-hover" @click="clearCreatures()">
-						Clear list <font-awesome-icon :icon="['fas', 'trash']" />
-					</button>
-					<button v-if="mayImport && copiedCreatures.length > 0 && !props.noImportAll" class="btn" @click="importManyCreatures">
-						Import all <font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']" />
-					</button>
-					<button v-if="currentCreature" class="btn" @click="copiedCreatures.push(currentCreature)">
-						Copy current creature <font-awesome-icon :icon="['fas', 'copy']" />
-					</button>
-					<button v-if="canCopyCurrentBestiary" class="btn" @click="emit('copyCurrentBestiary')">
-						Copy current bestiary <font-awesome-icon :icon="['fas', 'copy']" />
-					</button>
-				</div>
-			</div>
-		</template>
-	</VDropdown>
+			</v-card-text>
+			<v-card-actions class="text-center">
+				<v-btn v-if="copiedCreatures.length > 0" @click="clearCreatures()" size="small">
+					Clear list 
+				</v-btn>
+				<v-btn v-if="mayImport && copiedCreatures.length > 0 && !props.noImportAll"
+					@click="importManyCreatures" size="small">
+					Import all 
+				</v-btn>
+				<v-btn v-if="currentCreature"  @click="copiedCreatures.push(currentCreature)" size="small">
+					Copy current creature 
+				</v-btn>
+				<v-btn v-if="canCopyCurrentBestiary" @click="emit('copyCurrentBestiary')" size="small">
+					Copy current bestiary 
+				</v-btn>
+			</v-card-actions>
+		</v-card>
+	</DropdownMenu>
 </template>
 
 <style lang="less" scoped>
@@ -126,11 +127,9 @@ const importManyCreatures = () => {
 	margin: 0 auto 0;
 	padding: 0.5rem 0.5rem 0;
 	padding-bottom: 0;
-	min-width: 300px;
 	border-collapse: collapse;
 	max-height: 50vh;
 	overflow: scroll;
-	display: block;
 	align-self: center;
 
 	td,
@@ -138,6 +137,7 @@ const importManyCreatures = () => {
 		padding: 2px 1rem;
 		border-radius: 1px;
 	}
+
 	thead {
 		color: grey;
 		text-transform: uppercase;
@@ -160,6 +160,7 @@ const importManyCreatures = () => {
 				font-size: smaller;
 			}
 		}
+
 		td {
 			text-align: center;
 			border: 1px solid grey;
@@ -172,8 +173,7 @@ const importManyCreatures = () => {
 
 	caption {
 		margin-bottom: 0.5rem;
-		font-size: 1.3rem;
-		min-width: 300px;
+		font-size: 1rem;
 	}
 }
 

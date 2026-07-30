@@ -24,8 +24,10 @@ import { creatureTypes } from "@/utils/constants";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { defaultStatblock } from "~/shared";
-import Editor from "@/components/StatblockEditor/Editor.vue";
+import { useRules } from 'vuetify/labs/rules'
+import DropdownMenu from "@/components/Global/DropdownMenu.vue";
 
+const rules = useRules()
 const $route = useRoute();
 const $router = useRouter();
 const searchText = ref("");
@@ -62,7 +64,6 @@ const searchOptions = ref({
 
 const sortMode = useLocalStorage("sortModeForBestiaries", "Alphabetically");
 const isExpanded = ref(false);
-const showEditorModal = ref(false);
 const showImportModal = ref(false);
 const srdCreatures = ref<string[]>([]);
 
@@ -256,6 +257,9 @@ async function exportBestiary(asFile: boolean) {
 
 async function importBestiaryFromCritterDB() {
 	let link = critterDbId.value.trim();
+	if (link.length === 0) {
+		$toast.error("No critterDB link given.")
+	}
 	const isPublic = link.includes("publishedbestiary");
 	try {
 		const url = new URL(link);
@@ -264,7 +268,8 @@ async function importBestiaryFromCritterDB() {
 			return;
 		}
 	}
-	catch {
+	catch (e) {
+		$toast.error("Something went wrong...")
 		return;
 	}
 
@@ -315,11 +320,15 @@ async function importBestiaryFromCritterDB() {
 async function importCreaturesFromBestiaryBuilder() {
 	let creaturesToImport;
 	const loader = $loading.show();
+	if (bestiaryBuilderJson.value.length === 0) {
+		$toast.error("No JSON given.");
+		loader.hide();
+		return;
+	}
 	try {
 		creaturesToImport = JSON.parse(bestiaryBuilderJson.value);
 	}
 	catch (e) {
-		console.error(e);
 		$toast.error("Something is wrong with the format of your JSON");
 		loader.hide();
 		return;
@@ -426,7 +435,8 @@ async function deleteCreature(id: string) {
 	loader.hide();
 }
 
-async function importSrdCreature(creature: string) {
+async function importSrdCreature(creature: string | null) {
+	if (!creature) return;
 	const { success, data, error } = await useFetch<Statblock>(`/api/srd-creatures/${store.user?.SRDVersion === "SRD_2024" ? "2024" : "2014"}/${encodeURIComponent(creature)}`);
 
 	if (success) {
@@ -437,53 +447,6 @@ async function importSrdCreature(creature: string) {
 	else {
 		$toast.error(error || "");
 	}
-}
-
-function withPopper(dropdownList: any, component: any, { width }: { width: any }) {
-	/**
-	 * We need to explicitly define the dropdown width since
-	 * it is usually inherited from the parent with CSS.
-	 */
-	dropdownList.style.width = width;
-
-	/**
-	 * Here we position the dropdownList relative to the $refs.toggle Element.
-	 *
-	 * The 'offset' modifier aligns the dropdown so that the $refs.toggle and
-	 * the dropdownList overlap by 1 pixel.
-	 *
-	 * The 'toggleClass' modifier adds a 'drop-up' class to the Vue Select
-	 * wrapper so that we can set some styles for when the dropdown is placed
-	 * above.
-	 */
-	const popper = createPopper(component.$refs.toggle, dropdownList, {
-		placement: "top",
-		modifiers: [
-			{
-				name: "offset",
-				options: {
-					offset: [0, -1],
-				},
-			},
-			{
-				name: "toggleClass",
-				enabled: true,
-				phase: "write",
-				fn({ state }) {
-					component.$el.classList.toggle(
-						"drop-up",
-						state.placement === "top"
-					);
-				},
-			},
-		],
-	});
-
-	/**
-	 * To prevent memory leaks Popper needs to be destroyed.
-	 * If you return function, it will be called just before dropdown is removed from DOM.
-	 */
-	return () => popper.destroy();
 }
 
 async function addEditor() {
@@ -586,7 +549,6 @@ async function updateBestiary() {
 	if (success) {
 		$toast.success("Saved bestiary");
 		savedBestiary.value = bestiary.value;
-		showEditorModal.value = false;
 	}
 	else {
 		$toast.error(error);
@@ -642,110 +604,219 @@ const getDraggableKey = (item: any) => {
 
 <template>
 	<div>
-		<Breadcrumbs
-			v-if="bestiary"
-			:routes="[
-				{
-					path: isOwner || isEditor ? '/bestiaries/personal' : '/bestiaries/public',
-					text: isOwner || isEditor ? 'My Bestiaries' : 'Bestiaries',
-					isCurrent: false
-				},
-				{
-					path: '',
-					text: bestiary?.name,
-					isCurrent: true
-				}
-			]"
-		>
-			<VDropdown v-if="isOwner || isEditor" :distance="6" placement="top" :positioning-disabled="store.isMobile">
-				<ButtonIcon icon="plus" label="Create creature" inverted />
-
-				<template #popper>
-					<div class="v-popper__custom-menu">
-						<LabelledComponent title="From Scratch" for="fromScratch">
-							<button id="fromScratch" v-close-popper class="btn" @click.stop="createCreature()">
-								From scratch
-							</button>
-						</LabelledComponent>
-						<LabelledComponent title="From SRD Creature" for="fromSrd">
-							<v-select ref="toggle" :options="srdCreatures" input-id="fromSrd" placeholder="Select SRD creature" style="min-width: 300px" append-to-body :calculate-position="withPopper" @option:selected="(selected : string) => (importSrdCreature(selected))" />
-						</LabelledComponent>
-					</div>
+		<Breadcrumbs v-if="bestiary" :routes="[
+			{
+				path: isOwner || isEditor ? '/bestiaries/personal' : '/bestiaries/public',
+				text: isOwner || isEditor ? 'My Bestiaries' : 'Bestiaries',
+				isCurrent: false
+			},
+			{
+				path: '',
+				text: bestiary?.name,
+				isCurrent: true
+			}
+		]">
+			<DropdownMenu v-if="isEditor || isOwner">
+				<template #activator="{ props }">
+					<ButtonIcon icon="plus" label="Create creature" inverted v-bind="props" />
 				</template>
-			</VDropdown>
+				<v-card min-width="300" class="text-center pb-2" title="Create creature">
+					<v-card-actions class="d-flex flex-column align-center justify-center">
+						<v-btn @click="createCreature()" size="x-large">
+							From scratch
+						</v-btn>
+						<div class="d-flex align-center my-4 w-100">
+							<v-divider class="flex-grow-1" />
+							<span class="mx-4 text-medium-emphasis">OR</span>
+							<v-divider class="flex-grow-1" />
+						</div>
 
-			<CopyManager :may-import="isOwner || isEditor" :current-creatures="creatures || []" can-copy-current-bestiary @import-creature="(creature) => createCreature(creature, true, false)" @import-all-creatures="createManyCreatures" @copy-current-bestiary="copyCurrentBestiary" />
+						<v-autocomplete :items="srdCreatures" label="Select SRD creature" width="400"
+							@update:model-value="item => importSrdCreature(item)">
+							<template #item="{ props, item }">
+								<v-list-item v-bind="props" density="compact" style="min-height: 28px">
+									{{ (item as any).title }}
+								</v-list-item>
+							</template>
+						</v-autocomplete>
+					</v-card-actions>
+				</v-card>
+			</DropdownMenu>
 
-			<ButtonIcon v-if="false" icon="thumbtack" label="Unpin currently pinned creature" style="rotate: 45deg" @click="lastClickedCreature = null" />
-			<ButtonIcon v-if="isOwner" icon="pen-to-square" label="Edit bestiary" @click="showEditorModal = true" />
 
-			<VDropdown :distance="6" :positioning-disabled="store.isMobile">
-				<ButtonIcon icon="tag" label="Filter bestiary" />
+			<CopyManager :may-import="isOwner || isEditor" :current-creatures="creatures || []"
+				can-copy-current-bestiary @import-creature="(creature) => createCreature(creature, true, false)"
+				@import-all-creatures="createManyCreatures" @copy-current-bestiary="copyCurrentBestiary" />
 
-				<template #popper>
-					<div class="v-popper__custom-menu">
-						<LabelledComponent title="Sort creatures" for="sortcreatures">
-							<select id="sortcreatures" v-model="sortMode" name="Sort bestiary by attribute">
-								<option>Custom</option>
-								<option>Alphabetically</option>
-								<option>CR Ascending</option>
-								<option>CR Descending</option>
-								<option>Creature Type</option>
-							</select>
-						</LabelledComponent>
-						<LabelledComponent title="Filter" for="searchtext">
-							<input id="searchtext" v-model="searchText" type="text" placeholder="Search by name...">
-						</LabelledComponent>
-						<LabelledComponent title="Creature type" for="creatureType">
-							<div style="min-width: 300px">
-								<v-select v-model="searchOptions.tags" placeholder="Search by creature type" multiple :options="creatureTypes" input-id="creaturetype" :taggable="true" />
-							</div>
-						</LabelledComponent>
-						<div class="two-wide">
+			<v-dialog max-width="950" v-if="isOwner">
+				<template v-slot:activator="{ props: activatorProps }">
+					<ButtonIcon icon="gear" label="Edit bestiary" v-bind="activatorProps" />
+				</template>
+
+				<template v-slot:default="{ isActive }">
+					<v-card title="Edit bestiary">
+						<v-sheet class="pa-4" max-width="1800" rounded="lg" width="100%">
+							<v-form>
+								<v-text-field v-model="bestiary.name" label="Name" :maxlength="store.limits?.nameLength"
+									:minLength="store.limits?.nameMin"
+									:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]"
+									class="mb-4" />
+								<v-textarea v-model="bestiary.description" :maxLength="store.limits?.descriptionLength"
+									:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]"
+									label="Description" class="mb-4" hint="Supports Markdown" persistent-hint counter />
+								<div class="grid-two">
+									<div>
+										<v-select label="Status" v-model="bestiary.status"
+											:items="[{ value: 'private', title: 'Private' }, { value: 'unlisted', title: 'Unlisted' }, { value: 'public', title: 'Public' }]" />
+									</div>
+									<v-select multiple :items="store.tags || []" v-model="bestiary.tags" label="Tags"
+										chips closable-chips />
+								</div>
+
+								<div class="editor-block">
+									<h3 style="margin-bottom: .5rem">Editors</h3>
+									<small>
+										Editors can add, edit, and remove creatures. <br>
+										Editors cannot edit the Bestiary itself. <br>
+										Editors cannot add other editors. The owner can remove editors at any time.
+									</small>
+									<div class="editor-container" style="margin-top: .5rem">
+										<div v-for="editor in editors" :key="editor.id" class="editor-list">
+											<p>
+												<UserBanner :id="editor.id" />
+												<span v-if="isOwner" role="button" class="delete-creature"
+													@click="removeEditor(editor.id)"> <span>🗑️</span> </span>
+											</p>
+										</div>
+									</div>
+									<LabelledComponent title="Add editor" for="addeditor" style="margin-top: .5rem">
+										<div class="grid-two">
+											<v-text-field v-model="editorToAdd" inputmode="numeric"
+												label="Discord user ID"
+												:rules="[rules.integer('This must be a numeric Discord User ID.')]"
+												pattern="[0-9]*" />
+											<v-btn @click="addEditor()" class="mz-auto">
+												Add
+											</v-btn>
+										</div>
+									</LabelledComponent>
+								</div>
+								<p v-if="showWarning" class="warning">
+									By changing the bestiary status to public I confirm that I am the copyright holder
+									of the content
+									within, or that I have permission from the copyright holder to share this content. I
+									hereby agree to
+									the <RouterLink to="../content-policy">
+										Content Policy
+									</RouterLink> and agree to
+									be fully liable for the content within. I affirm that the content does not include
+									any official
+									non-free D&D content. Bestiaries that breach these terms may have their status
+									changed to private or
+									be outright removed, and may result in a ban if the content breaches our content
+									policy.
+								</p>
+							</v-form>
+						</v-sheet>
+						<v-card-actions>
+							<v-spacer></v-spacer>
+							<v-btn text="Save changes" @click="updateBestiary" color="green" size="large" />
+							<v-btn text="Cancel" @click="isActive.value = false" size="large" />
+						</v-card-actions>
+					</v-card>
+				</template>
+			</v-dialog>
+			<DropdownMenu>
+				<template #activator="{ props }">
+					<ButtonIcon icon="tag" label="Search bestiary" v-bind="props" />
+				</template>
+				<v-card min-width="300" class="text-center pb-2 pa-4" title="Search bestiary">
+					<v-card-actions class="d-flex flex-column align-center justify-center" min-width="200">
+						<v-select
+							:items="['Custom', 'Alphabetically', 'CR Ascending', 'CR Descending', 'Creature Type']"
+							label="Bestiary sort type" v-model="sortMode" width="100%" />
+						<div class="grid-two">
+							<v-text-field v-model="searchText" label="Name" width="200" />
+							<v-select :items="creatureTypes" label="Creature type" v-model="searchOptions.tags" multiple
+								chips closable-chips width="200" />
 							<CRInput v-model="searchOptions.minCr" title="Minimum CR" />
 							<CRInput v-model="searchOptions.maxCr" title="Maximum CR" />
+							<v-text-field v-model="searchFaction" label="Faction" width="200" />
+							<v-text-field v-model="searchEnv" label="Environment" width="200" />
+
 						</div>
-						<span v-if="searchOptions.minCr > searchOptions.maxCr" class="warning" style="text-align: center"> Min is bigger than max </span>
-						<LabelledComponent title="Environment" for="environment">
-							<input id="environment" v-model="searchEnv" type="text" placeholder="Search by name...">
-						</LabelledComponent>
-						<LabelledComponent title="Faction" for="faction">
-							<input id="faction" v-model="searchFaction" type="text" placeholder="Search by name...">
-						</LabelledComponent>
-					</div>
+
+					</v-card-actions>
+				</v-card>
+			</DropdownMenu>
+
+			<v-dialog max-width="750" v-if="isOwner">
+				<template v-slot:activator="{ props: activatorProps }">
+					<ButtonIcon icon="arrow-right-to-bracket" label="Import bestiary" v-bind="activatorProps" />
 				</template>
-			</VDropdown>
 
-			<ButtonIcon v-if="isOwner" icon="arrow-right-to-bracket" label="Import bestiary" @click="showImportModal = true" />
+				<template v-slot:default="{ isActive }">
+					<v-card title="Import bestiary">
+						<v-sheet class="pa-4" max-width="1800" rounded="lg" width="100%">
+							<div class="grid-two">
+								<v-text-field label="CritterDB Bestiary link" v-model="critterDbId"
+									hint="Make sure the Bestiary is public or has link-sharing enabled"
+									persistent-hint />
+								<v-text-field label="Bestiary Builder JSON" v-model="bestiaryBuilderJson"
+									hint="JSON as text gotten from clicking export elsewhere on BB" persistent-hint />
+								<v-btn @click="importBestiaryFromCritterDB()" size="large">Import CritterDB</v-btn>
+								<v-btn @click="importCreaturesFromBestiaryBuilder()" size="large">Import BB</v-btn>
+							</div>
+						</v-sheet>
+						<v-card-actions>
+							<v-spacer></v-spacer>
+							<v-btn text="Cancel" @click="isActive.value = false" size="large" />
+						</v-card-actions>
+						<v-sheet v-if="JSON.stringify(notices) !== '{}'">
+							<p class="warning">
+								<b>Please note the following for this import:</b>
+							</p>
+							<div v-for="(notice, creature) in notices" :key="creature">
+								<h3>
+									{{ creature }}
+								</h3>
+								<p>
+									{{ notice }}
+								</p>
+							</div>
+						</v-sheet>
+					</v-card>
+				</template>
+			</v-dialog>
 
-			<VDropdown :distance="6" :positioning-disabled="store.isMobile">
-				<ButtonIcon icon="arrow-right-from-bracket" label="Export bestiary" />
-
-				<template #popper>
-					<div class="v-popper__custom-menu">
-						<span>
-							Export this Bestiary
-						</span>
-						<button v-close-popper class="btn confirm" @click="exportBestiary(false)">
+			<DropdownMenu>
+				<template #activator="{ props }">
+					<ButtonIcon icon="arrow-right-from-bracket" label="Export bestiary" v-bind="props" />
+				</template>
+				<v-card min-width="300" class="text-center pb-2 pa-4" title="Export bestiary">
+					<v-card-actions class="d-flex flex-column align-center justify-center" min-width="200">
+						<v-btn @click="exportBestiary(false)" class="w-100" color="green" size="large">
 							Clipboard
-						</button>
-						<button v-close-popper class="btn confirm" @click="exportBestiary(true)">
+						</v-btn>
+						<v-btn @click="exportBestiary(true)" class="w-100" color="green" size="large">
 							File
-						</button>
-						<button v-close-popper class="btn confirm" @click="exportHomebrewery()">
+						</v-btn>
+						<v-btn @click="exportHomebrewery()" class="w-100" color="green" size="large">
 							Homebrewery
-						</button>
-					</div>
-				</template>
-			</VDropdown>
+						</v-btn>
+					</v-card-actions>
+				</v-card>
+			</DropdownMenu>
 		</Breadcrumbs>
 		<div class="content">
 			<div v-if="bestiary" class="bestiary">
 				<div class="left-side-container">
 					<div class="content-tile header-tile">
 						<h2>{{ bestiary.name ? bestiary.name : "..." }}</h2>
-						<Markdown class="description" :class="{ expanded: isExpanded }" :text="bestiary.description || 'No description set.'" tag="p" />
-						<button v-if="bestiary.description.length > 0" v-tooltip="'Expand description'" class="expand-btn" aria-label="Expand description" @click="isExpanded = !isExpanded">
+						<Markdown class="description" :class="{ expanded: isExpanded }"
+							:text="bestiary.description || 'No description set.'" tag="p" />
+						<button v-if="bestiary.description.length > 0" v-tooltip="'Expand description'"
+							class="expand-btn" aria-label="Expand description" @click="isExpanded = !isExpanded">
 							{{ isExpanded ? "▲" : "▼" }}
 						</button>
 						<hr>
@@ -755,51 +826,67 @@ const getDraggableKey = (item: any) => {
 								<StatusIcon :icon="bestiary.status" />
 							</div>
 							<div>{{ bestiary.creatures.length }}<font-awesome-icon :icon="['fas', 'skull']" /></div>
-							<div v-if="!isOwner" role="button" aria-label="Toggle bookmark status" class="bookmark" @click.prevent="toggleBookmark">
-								<span v-if="bookmarked" v-tooltip="'Unbookmark this bestiary'" class="bookmark-enabled"><font-awesome-icon :icon="['fas', 'star']" /></span>
-								<span v-else v-tooltip="'Bookmark this bestiary'" class="bookmark-disabled"><font-awesome-icon :icon="['fas', 'star']" /></span>
+							<div v-if="!isOwner" role="button" aria-label="Toggle bookmark status" class="bookmark"
+								@click.prevent="toggleBookmark">
+								<span v-if="bookmarked" v-tooltip="'Unbookmark this bestiary'"
+									class="bookmark-enabled"><font-awesome-icon :icon="['fas', 'star']" /></span>
+								<span v-else v-tooltip="'Bookmark this bestiary'"
+									class="bookmark-disabled"><font-awesome-icon :icon="['fas', 'star']" /></span>
 							</div>
 						</div>
 					</div>
 					<Shimmer :loading="loading" shimmer-color="orangered">
-						<Draggable :list="sortCreatures() || Array(0).fill({ stats: defaultStatblock })" :animation="500" class="tile-container list-tiles" :item-key="getDraggableKey" :disabled="sortMode !== 'Custom'" @change="saveOrder">
-							<template #item=" { element }">
-								<CreatureListItem
-									v-if="filterCreature(element)"
-									:id="element.id" :data="element.stats"
+						<Draggable :list="sortCreatures() || Array(0).fill({ stats: defaultStatblock })"
+							:animation="500" class="tile-container list-tiles" :item-key="getDraggableKey"
+							:disabled="sortMode !== 'Custom'" @change="saveOrder">
+							<template #item="{ element }">
+								<CreatureListItem v-if="filterCreature(element)" :id="element.id" :data="element.stats"
 									:can-edit="isOwner || isEditor" @mouseover="lastHoveredCreature = element.stats"
 									@delete-creature="(id) => deleteCreature(id)"
 									@pin-creature="lastClickedCreature = element.stats"
-									@copy-creature="copiedCreatures.push({ ...element, bestiaryName: bestiary.name })"
-								/>
+									@copy-creature="copiedCreatures.push({ ...element, bestiaryName: bestiary.name })" />
 							</template>
 						</Draggable>
 					</Shimmer>
 
 					<div v-if="isOwner || isEditor" class="create-tile">
-						<VDropdown v-if="isOwner || isEditor" :distance="6" placement="top" :positioning-disabled="store.isMobile">
-							<span role="button" class="create-text">Add Creature</span>
-							<template #popper>
-								<div class="v-popper__custom-menu">
-									<LabelledComponent title="From Scratch" for="fromScratch">
-										<button id="fromScratch" v-close-popper class="btn" @click.stop="createCreature()">
-											From scratch
-										</button>
-									</LabelledComponent>
-									<LabelledComponent title="From SRD Creature" for="fromSrd">
-										<v-select :options="srdCreatures" input-id="fromSrd" placeholder="Select SRD creature" style="min-width: 300px" append-to-body :calculate-position="withPopper" @option:selected="(selected : string) => (importSrdCreature(selected))" />
-									</LabelledComponent>
-								</div>
+						<DropdownMenu>
+							<template #activator="{ props }">
+								<v-btn v-bind="props" variant="plain" :ripple="false"> Add creature </v-btn>
 							</template>
-						</VDropdown>
+							<v-card min-width="300" class="text-center pb-2" title="Create creature">
+								<v-card-actions class="d-flex flex-column align-center justify-center">
+									<v-btn @click="createCreature()" size="x-large">
+										From scratch
+									</v-btn>
+									<div class="d-flex align-center my-4 w-100">
+										<v-divider class="flex-grow-1" />
+										<span class="mx-4 text-medium-emphasis">OR</span>
+										<v-divider class="flex-grow-1" />
+									</div>
+
+									<v-autocomplete :items="srdCreatures" label="Select SRD creature" width="400"
+										@update:model-value="item => importSrdCreature(item)">
+										<template #item="{ props, item }">
+											<v-list-item v-bind="props" density="compact" style="min-height: 28px">
+												{{ (item as any).title }}
+											</v-list-item>
+										</template>
+									</v-autocomplete>
+								</v-card-actions>
+							</v-card>
+						</DropdownMenu>
 					</div>
 				</div>
 				<div v-if="creatures && lastHoveredCreature" class="statblock-container">
 					<span v-if="false && lastClickedCreature" class="pin-notice">
-						<span class="unpin-button" role="button" aria-label="unpin currently pinned creature" @click="lastClickedCreature = null"><b>unpin</b></span>📌
+						<span class="unpin-button" role="button" aria-label="unpin currently pinned creature"
+							@click="lastClickedCreature = null"><b>unpin</b></span>📌
 					</span>
 					<Transition name="fade" mode="out-in">
-						<StatblockRenderer :key="lastClickedCreature?.description.name || lastHoveredCreature.description.name" :data="lastClickedCreature || lastHoveredCreature" />
+						<StatblockRenderer
+							:key="lastClickedCreature?.description.name || lastHoveredCreature.description.name"
+							:data="lastClickedCreature || lastHoveredCreature" />
 					</Transition>
 				</div>
 				<div v-else class="statblock-container">
@@ -828,9 +915,11 @@ const getDraggableKey = (item: any) => {
 				<hr>
 
 				<LabelledComponent title="Bestiary Builder JSON" for="bestiaryjson">
-					<p>Insert the JSON as text gotten from clicking export on another bestiary within Bestiary Builder.</p>
+					<p>Insert the JSON as text gotten from clicking export on another bestiary within Bestiary Builder.
+					</p>
 					<div class="flow-horizontally">
-						<input id="bestiaryjson" v-model="bestiaryBuilderJson" type="text" placeholder="Bestiary builder JSON">
+						<input id="bestiaryjson" v-model="bestiaryBuilderJson" type="text"
+							placeholder="Bestiary builder JSON">
 						<button class="btn confirm" @click.prevent="importCreaturesFromBestiaryBuilder">
 							Import
 						</button>
@@ -854,65 +943,6 @@ const getDraggableKey = (item: any) => {
 				</div>
 			</template>
 		</Modal>
-
-		<Modal v-if="bestiary && isOwner" :show="showEditorModal" @close="showEditorModal = false">
-			<template #header>
-				Edit Bestiary
-			</template>
-			<template #body>
-				<LabelledComponent title="Bestiary name" for="bestiaryname">
-					<input id="bestiaryname" v-model="bestiary.name" type="text" :minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength">
-				</LabelledComponent>
-				<LabelledComponent title="Description">
-                    <Editor v-model="bestiary.description" />
-				</LabelledComponent>
-				<div v-if="isOwner" class="two-wide">
-					<LabelledComponent title="Status" for="status">
-						<v-select v-model="bestiary.status" :options="['public', 'unlisted', 'private']" input-id="status" />
-					</LabelledComponent>
-					<LabelledComponent title="Tags" for="tags">
-						<v-select v-model="bestiary.tags" placeholder="Select Tags" multiple :options="store.tags" input-id="tags" />
-					</LabelledComponent>
-				</div>
-				<div class="editor-block">
-					<h3 style="margin-bottom: .5rem">Editors</h3>
-					<small v-if="isOwner" >
-						Editors can add, edit, and remove creatures. <br>
-						They can edit the name of the bestiary and its description. <br>
-						Editors cannot change the status of the bestiary or delete the bestiary. <br>
-						Editors cannot add other editors. The owner can remove editors at any time.
-					</small>
-					<div class="editor-container" style="margin-top: .5rem">
-						<div v-for="editor in editors" :key="editor.id" class="editor-list">
-							<p>
-								<UserBanner :id="editor.id" />
-								<span v-if="isOwner" role="button" class="delete-creature" @click="removeEditor(editor.id)"> <span>🗑️</span> </span>
-							</p>
-						</div>
-					</div>
-					<LabelledComponent title="Add editor" for="addeditor" style="margin-top: .5rem">
-						<div class="button-container">
-							<input id="addeditor" v-model="editorToAdd" type="text" inputmode="numeric" placeholder="Discord user ID">
-							<button class="btn" @click="addEditor()">
-								Add
-							</button>
-						</div>
-					</LabelledComponent>
-				</div>
-				<p v-if="showWarning" class="warning">
-					By changing the bestiary status to public I confirm that I am the copyright holder of the content within, or that I have permission from the copyright holder to share this content. I hereby agree to the <RouterLink to="../content-policy">
-						Content Policy
-					</RouterLink> and agree to
-					be fully liable for the content within. I affirm that the content does not include any official non-free D&D content. Bestiaries that breach these terms may have their status changed to private or be outright removed, and may result in a ban if the content breaches our content
-					policy.
-				</p>
-			</template>
-			<template #footer>
-				<button class="btn confirm" @click.prevent="updateBestiary">
-					Save changes
-				</button>
-			</template>
-		</Modal>
 	</div>
 </template>
 
@@ -925,6 +955,7 @@ const getDraggableKey = (item: any) => {
 	flex-direction: column;
 	gap: 0.3rem;
 	margin: 0.5rem 0;
+
 	label {
 		font-weight: bold;
 		text-decoration: underline;
@@ -953,6 +984,7 @@ const getDraggableKey = (item: any) => {
 	overflow-x: clip;
 	padding: 0rem;
 	margin-top: 1rem;
+
 	.content-tile {
 		height: fit-content !important;
 		background: var(--color-surface-1);
@@ -970,6 +1002,7 @@ const getDraggableKey = (item: any) => {
 		h3 {
 			font-size: 1.5rem;
 		}
+
 		&.creature-tile {
 			display: flex;
 			flex-direction: row;
@@ -977,11 +1010,13 @@ const getDraggableKey = (item: any) => {
 			justify-content: space-between;
 
 			.left-side {
+
 				span,
 				p {
 					font-style: italic;
 					font-size: 0.85rem;
 				}
+
 				.cr {
 					color: orangered;
 					width: 3rem;
@@ -1016,6 +1051,7 @@ const getDraggableKey = (item: any) => {
 
 				button {
 					.scale-on-hover(1.2);
+
 					&:hover {
 						overflow: visible;
 					}
@@ -1033,6 +1069,7 @@ const getDraggableKey = (item: any) => {
 	padding-top: 1rem;
 	text-align: center;
 	text-decoration: underline;
+
 	span {
 		cursor: pointer;
 	}
@@ -1041,11 +1078,14 @@ const getDraggableKey = (item: any) => {
 @media screen and (max-width: 842px) {
 	.list-tiles {
 		max-height: 40vh;
+
 		.content-tile {
 			padding: 0.5rem;
+
 			h3 {
 				font-size: 1rem;
 			}
+
 			&.creature-tile {
 				.left-side span {
 					font-size: 0.6rem;
@@ -1076,6 +1116,7 @@ const getDraggableKey = (item: any) => {
 	margin: 0 0rem 1rem;
 	padding: 1rem;
 	border-radius: 2px;
+
 	h2 {
 		text-align: center;
 		text-wrap: nowrap;
@@ -1090,6 +1131,7 @@ const getDraggableKey = (item: any) => {
 		color: rgb(205, 205, 205);
 		overflow-y: hidden;
 		overflow-wrap: anywhere;
+
 		&.expanded {
 			max-height: unset;
 		}
@@ -1099,6 +1141,7 @@ const getDraggableKey = (item: any) => {
 		-webkit-mask-image: linear-gradient(180deg, #000 80%, transparent);
 		mask-image: linear-gradient(180deg, #000 80%, transparent);
 	}
+
 	.footer {
 		display: grid;
 		grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -1109,17 +1152,21 @@ const getDraggableKey = (item: any) => {
 		&.three-wide {
 			grid-template-columns: 1fr 1fr 1fr;
 		}
+
 		div {
 			text-align: center;
 		}
+
 		div:first-of-type {
 			text-align: left;
 		}
+
 		div:last-of-type {
 			text-align: right;
 		}
 	}
 }
+
 @media screen and (max-width: 842px) {
 	.header-tile {
 		padding: 0.5rem;
@@ -1138,6 +1185,7 @@ const getDraggableKey = (item: any) => {
 		}
 	}
 }
+
 .bestiary {
 	display: grid;
 	gap: 2rem;
@@ -1153,6 +1201,7 @@ const getDraggableKey = (item: any) => {
 			scale: 1;
 		}
 	}
+
 	.bestiary {
 		grid-template-columns: 1fr;
 	}
@@ -1182,6 +1231,7 @@ const getDraggableKey = (item: any) => {
 		background-color: var(--color-surface-0);
 	}
 }
+
 .no-creature-text {
 	font-size: 1.3rem;
 	text-align: center;
@@ -1242,20 +1292,10 @@ const getDraggableKey = (item: any) => {
 .editor-block {
 	margin-top: 1rem;
 
-	h3 {
-		font-size: 1.5rem;
-		border-bottom: 1px solid orangered;
-	}
-
 	.editor-list p {
 		display: flex;
 		gap: 1rem;
 		margin: 1rem 0;
-	}
-
-	.button-container {
-		display: flex;
-		gap: 1rem;
 	}
 }
 

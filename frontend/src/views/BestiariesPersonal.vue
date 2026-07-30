@@ -10,9 +10,11 @@ import { $loading } from "@/utils/app/loading";
 import { $toast } from "@/utils/app/toast";
 import { useFetch } from "@/utils/utils";
 import { store } from "@/utils/store";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import CollectionTile from "@/components/Global/CollectionTile.vue";
 import Draggable from "vuedraggable";
+import { useRules } from 'vuetify/labs/rules'
+
+const rules = useRules()
 
 const router = useRouter();
 
@@ -40,13 +42,17 @@ const showCreateModal = ref(false)
 const createOptions = reactive({
 	name: "",
 	description: "",
-	status: "unlisted"
+	status: "unlisted",
+	tags: [],
+	image: ""
 })
 
 const resetCreateInput = () => {
 	createOptions.name = ""
 	createOptions.description = ""
-	createOptions.status = "unlisted"
+	createOptions.status = "unlisted",
+		createOptions.tags = []
+	createOptions.image = ""
 }
 
 const createBestiary = async () => {
@@ -60,7 +66,6 @@ const createBestiary = async () => {
 	else {
 		$toast.error(error);
 	}
-	await getBestiaries();
 };
 
 const cancelCreate = () => {
@@ -85,7 +90,7 @@ const deleteBestiary = async (id: BestiaryExtended["id"]) => {
 };
 
 const saveOrder = async () => {
-    if (!bestiaries.value) return
+	if (!bestiaries.value) return
 	const orderIds = bestiaries.value.map(coll => coll.id);
 	await useFetch("/api/my-bestiaries/order", "POST", orderIds);
 };
@@ -93,7 +98,6 @@ const saveOrder = async () => {
 const getDraggableKey = (item: any) => {
 	return item;
 };
-
 </script>
 
 <template>
@@ -104,7 +108,42 @@ const getDraggableKey = (item: any) => {
 			isCurrent: true
 		}
 	]">
-		<ButtonIcon icon="plus" label="Create bestiary!" inverted @click="showCreateModal = true" />
+		<!-- <ButtonIcon icon="plus" label="Create new bestiary" inverted @click="showCreateModal = true" /> -->
+		<v-dialog max-width="750">
+			<template v-slot:activator="{ props: activatorProps }">
+				<ButtonIcon icon="plus" label="Create new bestiary" inverted v-bind="activatorProps" />
+			</template>
+
+			<template v-slot:default="{ isActive }">
+				<v-card title="Create new bestiary">
+					<v-sheet class="pa-4" max-width="1800" rounded="lg" width="100%">
+						<v-form>
+							<v-text-field v-model="createOptions.name" label="Name"
+								:maxlength="store.limits?.nameLength" :minLength="store.limits?.nameMin"
+								:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]"
+								class="mb-4" />
+							<v-textarea v-model="createOptions.description" :maxLength="store.limits?.descriptionLength"
+								:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]" label="Description"
+								class="mb-4" hint="Supports Markdown" persistent-hint/>
+							<div class="grid-two" counter>
+								<div>
+									<v-select label="Status" v-model="createOptions.status"
+										:items="[{ value: 'private', title: 'Private' }, { value: 'unlisted', title: 'Unlisted' }, { value: 'public', title: 'Public' }]" />
+								</div>
+								<v-select multiple :items="store.tags || []" v-model="createOptions.tags" label="Tags"
+									chips closable-chips />
+							</div>
+						</v-form>
+					</v-sheet>
+					<v-card-actions>
+						<v-spacer></v-spacer>
+						<v-btn text="Create" @click="createBestiary" color="green" size="large" />
+						<v-btn text="Close" @click="isActive.value = false; resetCreateInput()" size="large" />
+					</v-card-actions>
+				</v-card>
+			</template>
+		</v-dialog>
+
 	</Breadcrumbs>
 	<div class="content">
 		<Draggable :key="Math.random()" :list="bestiaries" :animation="150" :item-key="getDraggableKey"
@@ -123,33 +162,28 @@ const getDraggableKey = (item: any) => {
 		</div>
 	</div>
 
+
 	<Modal :show="showCreateModal" @close="showCreateModal = false">
 		<template #header>
 			Create new bestiary
 		</template>
 		<template #body>
 			<div class="modal-desc">
-				<LabelledComponent title="Name">
-					<input type="text" :maxlength="store.limits?.nameLength" :minlength="store.limits?.nameMin"
-						v-model="createOptions.name" />
-				</LabelledComponent>
-				<LabelledComponent title="Description">
-					<input type="text" :maxlength="store.limits?.descriptionLength"
-						v-model="createOptions.description" />
-				</LabelledComponent>
-				<LabelledComponent title="Status">
-					<select v-model="createOptions.status">
-						<option value="private">
-							Private
-						</option>
-						<option value="unlisted">
-							Unlisted
-						</option>
-						<option value="public">
-							Public
-						</option>
-					</select>
-				</LabelledComponent>
+				<v-form>
+					<v-text-field v-model="createOptions.name" label="Name" :maxlength="store.limits?.nameLength"
+						:minLength="store.limits?.nameMin"
+						:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]" />
+					<v-textarea v-model="createOptions.description" :maxLength="store.limits?.descriptionLength"
+						:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]" label="Description" />
+					<div class="grid-two">
+						{{ createOptions.status }}
+						<v-select label="Status" v-model="createOptions.status"
+							:items="['Private', 'Unlisted', 'Public']"></v-select>
+						<v-select multiple :items="store.tags || []" v-model="createOptions.tags" label="Tags" chips
+							closable-chips />
+					</div>
+				</v-form>
+
 			</div>
 		</template>
 		<template #footer>
@@ -161,10 +195,6 @@ const getDraggableKey = (item: any) => {
 			</button>
 		</template>
 	</Modal>
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
 </template>
 
 <style scoped>

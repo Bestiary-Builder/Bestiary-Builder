@@ -9,6 +9,7 @@ import Pages from "vite-plugin-pages";
 import generateSitemap from "vite-plugin-pages-sitemap";
 import rawloader from "vite-raw-plugin";
 import svgLoader from "vite-svg-loader";
+
 // @ts-expect-error Magic
 import { routes } from "../shared/";
 

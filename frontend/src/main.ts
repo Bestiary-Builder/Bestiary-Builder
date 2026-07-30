@@ -10,7 +10,6 @@ import FloatingVue from "floating-vue";
 import { createApp } from "vue";
 
 // Vue-select
-import vSelect from "vue-select";
 import App from "@/App.vue";
 import router from "@/router";
 // Style sheet
@@ -21,16 +20,54 @@ import "floating-vue/dist/style.css";
 // Font awesome
 import "@/utils/app/fontawesome";
 
-import "vue-select/dist/vue-select.css";
 // Analytics
 import "./utils/app/analytics";
+
+import 'vuetify/styles'
+import { createVuetify } from 'vuetify'
+import * as directives from 'vuetify/directives'
+import * as components from 'vuetify/components'
+
+import '@mdi/font/css/materialdesignicons.css'
+import { createRulesPlugin } from 'vuetify/labs/rules'
+
+// Components
+const vuetify = createVuetify({
+  components: components,
+  directives,
+  defaults: {
+	VTextField: {
+		autocomplete: "off",
+		variant: "solo-filled"
+	},
+	VTextarea: {
+		variant: "solo-filled",
+		autocomplete: "off"
+	},
+	VSelect: {
+		variant: "solo-filled"
+	},
+	VBtn: {
+		variant: "tonal"
+	},
+	VCardActions: {
+		VBtn: {
+			variant: "tonal"
+		}
+	}
+  },
+  theme: {
+	defaultTheme: "dark"
+  }
+})
 
 export const app = createApp(App as Component<any>);
 
 app.use(router);
-app.use(FloatingVue);
+app.use(vuetify)
+// app.use(FloatingVue);
+app.use(createRulesPlugin({}, vuetify.locale))
 app.component("font-awesome-icon", FontAwesomeIcon);
-app.component("v-select", vSelect);
 loader.config({
 	paths: {
 		vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.43.0/min/vs"

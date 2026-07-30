@@ -134,24 +134,7 @@ body {
 	}
 }
 
-/* Box sizing rules */
-*,
-*::before,
-*::after {
-	box-sizing: border-box;
-}
-
-/* Remove default margin */
-body,
-h1,
-h2,
-h3,
-h4,
-p,
-figure,
-blockquote,
-dl,
-dd {
+h1, h2, h3, h4, p {
 	margin: 0;
 }
 
@@ -173,6 +156,9 @@ body {
 	line-height: 1.25;
 }
 
+b {
+	font-weight: bold;
+}
 /* A elements that don't have a class get default styles */
 a:not([class]) {
 	text-decoration-skip-ink: auto;
@@ -207,4 +193,10 @@ select {
 		transition-duration: 0.01ms !important;
 		scroll-behavior: auto !important;
 	}
+}
+
+.grid-two {
+	grid-template-columns: 1fr 1fr;
+	gap: 1rem;
+	display: grid;
 }

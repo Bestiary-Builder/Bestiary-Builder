@@ -71,12 +71,13 @@ const lastUpdated = computed(() => {
                 <span>
                     <UserBanner :id="data.ownerId" /> • {{ lastUpdated }}
                 </span>
-                <ul class="tag-container" v-if="data.tags.length > 0">
-                    <li v-for="tag of data.tags.sort()">
-                        {{ tag }}
-                    </li>
-                </ul>
-                <p v-if="data.description" class="description"> {{ data.description }}</p>
+                    <v-chip-group v-if="data.tags.length">
+                        <v-chip v-for="tag in [...data.tags].sort()" :key="tag" size="small" variant="tonal">
+                            {{ tag }}
+                        </v-chip>
+                    </v-chip-group>
+
+                <p v-if="data.description" class="description mt-1 mb-1"> {{ data.description }}</p>
                 <div class="collection-footer">
                     <div>
                         <b>{{ data.viewCount }} views </b>
@@ -90,7 +91,8 @@ const lastUpdated = computed(() => {
                         <Icon icon="fa7-solid:dragon" inline />
                     </span>
                     <div class="info-buttons">
-                        <font-awesome-icon :icon="['fa', 'grip-vertical']" class="handle" width="20px"/>
+                        <font-awesome-icon :icon="['fa', 'grip-vertical']" class="handle" width="20px"
+                            v-if="store.isMobile" />
                         <StatusIcon :icon="data.status" />
                         <VDropdown :distance="6" :positioning-disabled="store.isMobile"
                             v-if="store.user?.id === data.ownerId" @click.stop.prevent>
@@ -118,12 +120,15 @@ const lastUpdated = computed(() => {
     font-family: "Scala Sans Offc";
     src: url("../Statblock/styles/ScalaSans.woff2") format("woff2");
 }
+
 .collection-container {
     transition: scale ease-in-out .2s;
+
     &:hover {
         scale: 1.02
     }
 }
+
 .collection {
     border-radius: .5rem;
     background-color: var(--color-surface-0);
@@ -159,30 +164,12 @@ const lastUpdated = computed(() => {
             font-size: 20px;
         }
 
-        .tag-container {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-            margin-top: .5rem;
-
-            li {
-                display: inline-block;
-                font-size: smaller;
-                background-color: var(--color-surface-1);
-                padding: .5rem;
-                border-radius: 16px;
-                margin-right: .5rem;
-                font-weight: bold;
-            }
-        }
-
         .description {
             display: -webkit-box;
             -webkit-box-orient: vertical;
             -webkit-line-clamp: 3;
             line-clamp: 3;
             overflow: hidden;
-            margin: .5rem 0;
             font-size: smaller;
         }
 
@@ -195,11 +182,12 @@ const lastUpdated = computed(() => {
                 grid-auto-columns: 1fr;
                 display: grid;
                 gap: .25rem;
+
                 button,
                 svg {
                     color: unset;
                     padding: 0;
-                    
+
                 }
             }
         }

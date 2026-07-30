@@ -137,7 +137,7 @@ export const alignments = [
 
 export const sizes = ["Tiny", "Small", "Medium", "Large", "Huge", "Gargantuan"] as const;
 
-export const creatureTypes = ["Aberration", "Beast", "Celestial", "Construct", "Dragon", "Elemental", "Fey", "Fiend", "Giant", "Humanoid", "Monstrosity", "Ooze", "Plant", "Undead"] as const;
+export const creatureTypes = ["Aberration", "Beast", "Celestial", "Construct", "Dragon", "Elemental", "Fey", "Fiend", "Giant", "Humanoid", "Monstrosity", "Ooze", "Plant", "Undead"] as const as string[];
 
 export const classes = ["Artificer", "Bard", "Cleric", "Druid", "Paladin", "Ranger", "Sorcerer", "Warlock", "Wizard"] as const;
 

@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import AvraeIcon from "@/assets/svg/Avrae_Logo.svg";
 
-const { icon, inverted = false, label } = defineProps<{ icon: string; inverted?: boolean; label: string; noscale?: boolean }>();
+const { icon, inverted = false, label, noTooltip = false } = defineProps<{ icon: string; inverted?: boolean; label: string; noscale?: boolean, noTooltip?: boolean }>();
 </script>
 
 <template>
-	<button v-tooltip="label" :class="{ inverted, noscale }" :aria-label="label">
+	<button v-tooltip="noTooltip ? null : label" :class="{ inverted, noscale }" :aria-label="label">
 		<font-awesome-icon v-if="icon !== 'avrae'" :icon="['fas', icon]" />
 		<AvraeIcon v-if="icon === 'avrae'" class="avrae" />
 	</button>

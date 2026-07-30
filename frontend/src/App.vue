@@ -7,14 +7,16 @@ import "vue-sonner/style.css";
 </script>
 
 <template>
-	<Toaster position="bottom-left" theme="dark" rich-colors :expand="true" />
+	<v-app>
+		<Toaster position="bottom-left" theme="dark" rich-colors :expand="true" />
 
-	<div id="modal" />
-	<NavHeader />
-	<main>
-		<RouterView />
-	</main>
-	<footer>
-		<Footer />
-	</footer>
+		<div id="modal" />
+		<NavHeader />
+		<main>
+			<RouterView />
+		</main>
+		<footer>
+			<Footer />
+		</footer>
+	</v-app>
 </template>
