@@ -206,7 +206,7 @@ const render = (str: string, inline?: boolean) => {
 </script>
 
 <template>
-	<div class="stat-block" :class="[v2024 ? 'v2024' : '', design]" data-shimmer-no-children>
+	<div class="stat-block" :class="[v2024 ? 'v2024' : '', design]">
 		<div class="stat-block__row">
 			<h1 class="stat-block__name-container">
 				{{ data.description.name }}

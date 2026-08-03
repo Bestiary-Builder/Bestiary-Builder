@@ -22,7 +22,7 @@ const $route = useRoute();
 onMounted(async () => {
 	if (AvraeToken)
 		character.value = await getAvraeCharacterByUpstream($route.params.upstream as string);
-	console.log(character.value)
+	console.log(character.value);
 });
 
 const activeAttackIndex = ref<number>(-1);

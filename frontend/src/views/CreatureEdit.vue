@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import type { BestiaryExtended, CreatureWithStats, Statblock } from "~/shared";
-import { Shimmer } from "@shimmer-from-structure/vue";
 import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
 import CopyCreature from "@/components/Bestiary/CopyCreature.vue";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
+import ExportCreature from "@/components/Bestiary/ExportCreature.vue";
 import ButtonIcon from "@/components/Global/ButtonIcon.vue";
-import Modal from "@/components/Global/Modal.vue";
 import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
 import DescriptionPanel from "@/components/StatblockEditor/0DescriptionPanel.vue";
@@ -21,12 +19,11 @@ import { $toast, htmlToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { defaultStatblock } from "~/shared";
-import ExportCreature from "@/components/Bestiary/ExportCreature.vue";
 
 const $route = useRoute();
 const $router = useRouter();
 
-const tab = ref<number>(typeof ($route.query?.pane) === 'string' ? Number.parseInt($route.query.pane) : 1)
+const tab = ref<number>(typeof ($route.query?.pane) === "string" ? Number.parseInt($route.query.pane) : 1);
 const data = ref<Statblock>(defaultStatblock);
 const rawInfo = ref<CreatureWithStats | null>(null);
 
@@ -151,9 +148,9 @@ watch(() => data.value.description.name, () => {
 }, { immediate: true });
 
 // import
-const importText = ref("")
-type ImportTypes = '' | 'CritterDB Creature link' | 'Bestiary Builder JSON' | '5e Tools JSON'
-const importType = ref<ImportTypes>("")
+const importText = ref("");
+type ImportTypes = "" | "CritterDB Creature link" | "Bestiary Builder JSON" | "5e Tools JSON";
+const importType = ref<ImportTypes>("");
 const notices = ref<{ [key: string]: string[] }>({});
 
 const import5etools = async () => {
@@ -233,10 +230,13 @@ const importCritterDB = async () => {
 };
 
 const importCreatureFromUserInput = async () => {
-	if (importType.value === '5e Tools JSON') import5etools()
-	if (importType.value === 'Bestiary Builder JSON') await importBestiaryBuilder()
-	if (importType.value === 'CritterDB Creature link') await importCritterDB()
-}
+	if (importType.value === "5e Tools JSON")
+		import5etools();
+	if (importType.value === "Bestiary Builder JSON")
+		await importBestiaryBuilder();
+	if (importType.value === "CritterDB Creature link")
+		await importCritterDB();
+};
 
 // import from CopyManager
 const importCreature = async (creature: Statblock) => {
@@ -248,7 +248,7 @@ const importCreature = async (creature: Statblock) => {
 
 <template>
 	<div>
-		<Breadcrumbs v-if="bestiary && (data.description.name || data.description.name === '')" :routes="[
+		<Breadcrumbs :routes="[
 			{
 				path: '/bestiaries/personal',
 				text: 'My Bestiaries',
@@ -256,12 +256,12 @@ const importCreature = async (creature: Statblock) => {
 			},
 			{
 				path: `/bestiary/edit/${bestiary?.id}`,
-				text: bestiary?.name,
+				text: bestiary?.name || 'Bestiary',
 				isCurrent: false
 			},
 			{
 				path: '',
-				text: data?.description.name || 'Unnamed Creature',
+				text: data?.description.name || 'Creature',
 				isCurrent: true
 			}
 		]">
@@ -275,37 +275,38 @@ const importCreature = async (creature: Statblock) => {
 			</template>
 
 			<CopyCreature v-if="rawInfo" no-import-all :may-import="isOwner || isEditor"
-				:current-creature="{ ...rawInfo, bestiaryName: bestiary.name }"
+				:current-creature="{ ...rawInfo, bestiaryName: bestiary?.name || '' }"
 				@import-creature="(creature) => importCreature(creature)" />
 
-
-			<v-dialog width="600" v-if="isOwner || isEditor">
-				<template v-slot:activator="{ props: activatorProps }">
+			<v-dialog v-if="isOwner || isEditor" width="600">
+				<template #activator="{ props: activatorProps }">
 					<ButtonIcon icon="arrow-right-to-bracket" label="Import Creature" v-bind="activatorProps" />
 				</template>
 
-				<template v-slot:default="{ isActive }">
-
+				<template #default="{ isActive }">
 					<v-card class="text-center pb-2 pa-4" title="Import Creature">
 						<v-card-actions class="d-flex flex-column align-center justify-center" min-width="200">
-							<v-select label="Choose import type"
+							<v-select v-model="importType" label="Choose import type"
 								:items="['Bestiary Builder JSON', '5e Tools JSON', 'CritterDB Creature link']"
-								v-model="importType" class="w-100" />
-							<v-text-field
+								class="w-100" />
+							<v-text-field v-if="importType" v-model="importText"
 								:label="importType === 'CritterDB Creature link' ? 'Import link' : 'Import data'"
-								v-model="importText" class="w-100" v-if="importType" />
+								class="w-100" />
 							<v-spacer v-else />
-							<v-btn v-if="importText" class="w-100" color="green"
-								@click="importCreatureFromUserInput">Import</v-btn>
+							<v-btn v-if="importText" class="w-100" color="green" @click="importCreatureFromUserInput">
+								Import
+							</v-btn>
 							<v-spacer v-else />
 							<div v-if="JSON.stringify(notices) !== '{}'" class="pa-0 text-left">
 								<p class="warning">
 									<b>Please note the following for this import:</b>
 								</p>
-								<p>Some features may not have automation as they should, aka description only features,
+								<p>
+									Some features may not have automation as they should, aka description only features,
 									but some
 									might not have imported correctly or are missing certain parts. It is recommended to
-									review.</p>
+									review.
+								</p>
 								<div v-for="(type, index) in notices" :key="index">
 									<h3 v-if="type.length > 0">
 										{{ index }}
@@ -330,14 +331,26 @@ const importCreature = async (creature: Statblock) => {
 		<div class="content more-wide" :class="{ 'is-statblock-only': !shouldShowEditor }">
 			<v-sheet elevation="2" color="surface-1">
 				<v-tabs v-model="tab" color="primary" grow style="background-color: rgba(33,33,33,1)">
-					<v-tab :value="1">Description</v-tab>
-					<v-tab :value="2">Core</v-tab>
-					<v-tab :value="3">Stats</v-tab>
-					<v-tab :value="4">Defenses</v-tab>
-					<v-tab :value="5">Features</v-tab>
-					<v-tab :value="6">Spells</v-tab>
+					<v-tab :value="1">
+						Description
+					</v-tab>
+					<v-tab :value="2">
+						Core
+					</v-tab>
+					<v-tab :value="3">
+						Stats
+					</v-tab>
+					<v-tab :value="4">
+						Defenses
+					</v-tab>
+					<v-tab :value="5">
+						Features
+					</v-tab>
+					<v-tab :value="6">
+						Spells
+					</v-tab>
 				</v-tabs>
-				<v-divider></v-divider>
+				<v-divider />
 				<v-sheet color="surface-1">
 					<v-tabs-window v-model="tab" class="editor-content">
 						<v-tabs-window-item :value="1">
@@ -374,10 +387,9 @@ const importCreature = async (creature: Statblock) => {
 				</v-sheet>
 			</v-sheet>
 			<div class="content-container__inner">
-				<Shimmer :loading="rawInfo === null" :template-props="{ data: defaultStatblock }"
-					shimmer-color="orangered">
-					<StatblockRenderer id="statblock" :data="data || defaultStatblock" />
-				</Shimmer>
+				<v-skeleton-loader type="heading, divider, text, text, sentences, heading, text"
+					v-if="rawInfo === null" />
+				<StatblockRenderer v-else id="statblock" :data="data" />
 			</div>
 		</div>
 	</div>
@@ -395,7 +407,6 @@ const importCreature = async (creature: Statblock) => {
 		grid-template-columns: 1fr;
 	}
 }
-
 </style>
 
 <style lang="less">

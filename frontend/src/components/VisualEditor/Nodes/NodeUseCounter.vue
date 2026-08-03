@@ -22,15 +22,17 @@ watch(counterType, (newValue: string) => {
 });
 
 onMounted(() => {
-	const counter = currentEffect?.value.counter
-	if (typeof(counter) === "string") {
-		counterType.value = "cc"
-	} else if (typeof(counter) === "object" && Object.hasOwn(counter, "slot")) {
-		counterType.value = "ss"
-	} else if (typeof(counter) === "object" && Object.hasOwn(counter, "id") && Object.hasOwn(counter, "typeId")) {
-		counterType.value = "abi"
+	const counter = currentEffect?.value.counter;
+	if (typeof (counter) === "string") {
+		counterType.value = "cc";
 	}
-})
+	else if (typeof (counter) === "object" && Object.hasOwn(counter, "slot")) {
+		counterType.value = "ss";
+	}
+	else if (typeof (counter) === "object" && Object.hasOwn(counter, "id") && Object.hasOwn(counter, "typeId")) {
+		counterType.value = "abi";
+	}
+});
 
 if (!Object.hasOwn(currentEffect!.value, "errorBehaviour"))
 	currentEffect!.value.errorBehaviour = "warn";

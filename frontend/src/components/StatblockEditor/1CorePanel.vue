@@ -1,22 +1,20 @@
 <script setup lang="ts">
 import type { Statblock } from "~/shared";
+import { ref } from "vue";
 import Draggable from "vuedraggable";
 import { $toast } from "@/utils/app/toast";
 import { languages } from "@/utils/constants";
 import { store } from "@/utils/store";
-import LabelledComponent from "../FormInputs/LabelledComponent.vue";
-import LabelledNumberInput from "../FormInputs/LabelledNumberInput.vue";
 import SimpleNumberInput from "../FormInputs/SimpleNumberInput.vue";
 import ButtonIcon from "../Global/ButtonIcon.vue";
 import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
 import { getDraggableKey } from "./utils";
-import { ref } from "vue";
 
 const { data } = defineProps<{ data: Statblock }>();
 
-const newSpeed = ref('')
+const newSpeed = ref("");
 const addNewSpeed = (newSpeedName: string) => {
-	console.log(true)
+	console.log(true);
 	if (!newSpeedName) {
 		$toast.error("No speed chosen.");
 		return;
@@ -41,8 +39,10 @@ const addNewSense = (newSenseName: string) => {
 </script>
 
 <template>
-	<div id="tabpanel-2" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0"
-		aria-labelledby="tab-2">
+	<div
+		id="tabpanel-2" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0"
+		aria-labelledby="tab-2"
+	>
 		<SectionHeader title="Speed" />
 		<table v-if="data.core.speed.length > 0" class="list-table quiet">
 			<thead>
@@ -59,8 +59,10 @@ const addNewSense = (newSenseName: string) => {
 					</td>
 				</tr>
 			</thead>
-			<Draggable :list="data.core.speed" group="speed" :item-key="getDraggableKey" :animation="150" tag="tbody"
-				class=".handle">
+			<Draggable
+				:list="data.core.speed" group="speed" :item-key="getDraggableKey" :animation="150" tag="tbody"
+				class=".handle"
+			>
 				<template #item="{ element, idx }">
 					<tr>
 						<td>
@@ -98,8 +100,10 @@ const addNewSense = (newSenseName: string) => {
 										</div>
 									</template>
 								</VDropdown>
-								<ButtonIcon icon="eraser" label="Remove this speed"
-									@click="data.core.speed.splice(idx, 1)" />
+								<ButtonIcon
+									icon="eraser" label="Remove this speed"
+									@click="data.core.speed.splice(idx, 1)"
+								/>
 							</div>
 						</td>
 					</tr>
@@ -107,8 +111,10 @@ const addNewSense = (newSenseName: string) => {
 			</Draggable>
 		</table>
 		<div class="two-wide">
-			<v-combobox :items="['Walk', 'Swim', 'Fly', 'Climb', 'Burrow']" label="Select speed to add"
-				@submit="addNewSpeed(newSpeed)" v-model="newSpeed" />
+			<v-combobox
+				v-model="newSpeed" :items="['Walk', 'Swim', 'Fly', 'Climb', 'Burrow']"
+				label="Select speed to add" @submit="addNewSpeed(newSpeed)"
+			/>
 		</div>
 
 		<SectionHeader title="Senses" />
@@ -127,8 +133,10 @@ const addNewSense = (newSenseName: string) => {
 					</td>
 				</tr>
 			</thead>
-			<Draggable :list="data.core.senses" group="senses" :item-key="getDraggableKey" :animation="150" tag="tbody"
-				class=".handle">
+			<Draggable
+				:list="data.core.senses" group="senses" :item-key="getDraggableKey" :animation="150" tag="tbody"
+				class=".handle"
+			>
 				<template #item="{ element, idx }">
 					<tr>
 						<td>
@@ -162,13 +170,17 @@ const addNewSense = (newSenseName: string) => {
 									<template #popper>
 										<div class="v-popper__custom-menu">
 											Set (comment) for this sense
-											<input v-model="element.comment" type="text" placeholder="comment"
-												style="width: 100%; padding: 6px; height: unset">
+											<input
+												v-model="element.comment" type="text" placeholder="comment"
+												style="width: 100%; padding: 6px; height: unset"
+											>
 										</div>
 									</template>
 								</VDropdown>
-								<ButtonIcon icon="eraser" label="Remove this speed"
-									@click="data.core.senses.splice(idx, 1)" />
+								<ButtonIcon
+									icon="eraser" label="Remove this speed"
+									@click="data.core.senses.splice(idx, 1)"
+								/>
 							</div>
 						</td>
 					</tr>
@@ -177,20 +189,26 @@ const addNewSense = (newSenseName: string) => {
 		</table>
 		<div class=" grid-two" style="margin-bottom: 2rem;">
 			<div>
-				<v-combobox :items="['Darkvision', 'Blindsight', 'Truesight', 'Tremorsense']" label="Select sense to add"
-					@submit="(selected: string) => (addNewSense(selected))" />
+				<v-combobox
+					:items="['Darkvision', 'Blindsight', 'Truesight', 'Tremorsense']" label="Select sense to add"
+					@submit="(selected: string) => (addNewSense(selected))"
+				/>
 			</div>
 			<div>
-				<v-number-input v-model="data.misc.passivePerceptionOverride" label="Passive perception override"
-					clearable />
+				<v-number-input
+					v-model="data.misc.passivePerceptionOverride" label="Passive perception override"
+					clearable
+				/>
 			</div>
 		</div>
 
 		<SectionHeader title="Miscellaneous" />
 		<div class="grid-two">
 			<div>
-				<v-combobox v-model="data.core.languages" multiple chips closable-chips label="Languages"
-					:items="languages" />
+				<v-combobox
+					v-model="data.core.languages" multiple chips closable-chips label="Languages"
+					:items="languages"
+				/>
 			</div>
 			<div>
 				<v-number-input v-model="data.misc.telepathy" label="Telepathy" :min="0" :step="5" />

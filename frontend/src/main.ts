@@ -7,31 +7,31 @@ import { loader } from "@guolao/vue-monaco-editor";
 // Vue
 import { createApp } from "vue";
 
+import { createVuetify } from "vuetify";
+import * as components from "vuetify/components";
+import * as directives from "vuetify/directives";
+
+import { createRulesPlugin } from "vuetify/labs/rules";
+
 // Vue-select
 import App from "@/App.vue";
+
 import router from "@/router";
+
 // Style sheet
 import "@/assets/styles/main.less";
-
 import "floating-vue/dist/style.css";
-
 // Font awesome
 import "@/utils/app/fontawesome";
-
 // Analytics
 import "./utils/app/analytics";
 
-import 'vuetify/styles'
-import { createVuetify } from 'vuetify'
-import * as directives from 'vuetify/directives'
-import * as components from 'vuetify/components'
-
-import '@mdi/font/css/materialdesignicons.css'
-import { createRulesPlugin } from 'vuetify/labs/rules'
+import "vuetify/styles";
+import "@mdi/font/css/materialdesignicons.css";
 
 // Components
 const vuetify = createVuetify({
-	components: components,
+	components,
 	directives,
 	defaults: {
 		VTextField: {
@@ -80,20 +80,20 @@ const vuetify = createVuetify({
 			dark: {
 				dark: true,
 				colors: {
-					primary: '#ff4500',
-					'surface-1': "#3b3736"
+					"primary": "#ff4500",
+					"surface-1": "#3b3736"
 				},
 			},
 		}
 	}
-})
+});
 
 export const app = createApp(App as Component<any>);
 
 app.use(router);
-app.use(vuetify)
+app.use(vuetify);
 // app.use(FloatingVue);
-app.use(createRulesPlugin({}, vuetify.locale))
+app.use(createRulesPlugin({}, vuetify.locale));
 app.component("font-awesome-icon", FontAwesomeIcon);
 loader.config({
 	paths: {

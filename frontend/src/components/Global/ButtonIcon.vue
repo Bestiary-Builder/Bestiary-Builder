@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AvraeIcon from "@/assets/svg/Avrae_Logo.svg";
 
-const { icon, inverted = false, label, noTooltip = false } = defineProps<{ icon: string; inverted?: boolean; label: string; noscale?: boolean, noTooltip?: boolean }>();
+const { icon, inverted = false, label, noTooltip = false } = defineProps<{ icon: string; inverted?: boolean; label: string; noscale?: boolean; noTooltip?: boolean }>();
 </script>
 
 <template>

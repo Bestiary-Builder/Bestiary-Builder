@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import type { Statblock } from "~/shared";
 import { watch } from "vue";
+import { useRules } from "vuetify/labs/rules";
 import { alignments, creatureTypes, sizes } from "@/utils/constants";
 import { store } from "@/utils/store";
 import { getXPbyCR } from "~/shared";
 import CRInput from "../FormInputs/CRInput.vue";
 import LabelledComponent from "../FormInputs/LabelledComponent.vue";
-import LabelledNumberInput from "../FormInputs/LabelledNumberInput.vue";
 import Editor from "./Editor.vue";
-import { useRules } from "vuetify/labs/rules";
 
 const { data } = defineProps<{ data: Statblock }>();
 
@@ -17,24 +16,28 @@ watch(() => data.description.cr, () => {
 	data.description.xp = getXPbyCR(data.description.cr);
 });
 
-const rules = useRules()
-const imageUrlPattern = /^https?:\/\/.+\.(?:png|jpe?g|webp|gif|apng)(?:\?.*)?$/i
+const rules = useRules();
+const imageUrlPattern = /^https?:\/\/.+\.(?:png|jpe?g|webp|gif|apng)(?:\?.*)?$/i;
 const imageRules = [
 	rules.pattern(
 		imageUrlPattern,
-		'Enter a valid image URL https and one of (.png, .jpg, .jpeg, .webp, .gif, or .apng)'
+		"Enter a valid image URL https and one of (.png, .jpg, .jpeg, .webp, .gif, or .apng)"
 	),
-]
+];
 </script>
 
 <template>
-	<div id="tabpanel-1" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0"
-		aria-labelledby="tab-1">
+	<div
+		id="tabpanel-1" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0"
+		aria-labelledby="tab-1"
+	>
 		<div class="editor-field__container two-wide">
 			<div>
-				<v-text-field v-model="data.description.name" label="Name" :maxlength="store.limits?.nameLength"
-					:minLength="store.limits?.nameMin"
-					:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]" />
+				<v-text-field
+					v-model="data.description.name" label="Name" :maxlength="store.limits?.nameLength"
+					:min-length="store.limits?.nameMin"
+					:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]"
+				/>
 			</div>
 			<div>
 				<v-text-field v-model="data.description.image" label="Image URL" :rules="imageRules" />
@@ -47,7 +50,7 @@ const imageRules = [
 			</LabelledComponent>
 		</div>
 		<div class="editor-field__container three-wide">
-			<v-combobox v-model="data.core.size" :items="sizes" label="Size"/>
+			<v-combobox v-model="data.core.size" :items="sizes" label="Size" />
 			<v-combobox v-model="data.core.race" :items="creatureTypes" label="Type" />
 			<v-combobox v-model="data.description.alignment" :items="alignments" label="Alignment" />
 		</div>
@@ -64,8 +67,10 @@ const imageRules = [
 				<v-text-field v-model="data.description.faction" label="Faction" />
 			</div>
 			<v-container class="d-flex flex-column flex-column align-start pa-0">
-				<v-checkbox label="Proper noun" v-model="data.description.isProperNoun" color="primary"
-					density="compact" hide-details />
+				<v-checkbox
+					v-model="data.description.isProperNoun" label="Proper noun" color="primary"
+					density="compact" hide-details
+				/>
 				<small> Toggles display as "{{ data.description.name }}" instead of "the
 					{{ data.description.name }}"</small>
 			</v-container>

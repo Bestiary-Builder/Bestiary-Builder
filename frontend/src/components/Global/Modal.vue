@@ -75,7 +75,7 @@ onUnmounted(() => {
 	height: 100%;
 
 	background-color: rgba(0, 0, 0, 0.5);
-	backdrop-filter: blur(.5px);
+	backdrop-filter: blur(0.5px);
 
 	display: flex;
 	justify-content: center;
@@ -94,7 +94,7 @@ onUnmounted(() => {
 	padding: 2rem;
 	max-height: 80%;
 	background-color: var(--color-surface-1);
-	border-radius: .2rem;
+	border-radius: 0.2rem;
 	overflow-y: scroll;
 	overscroll-behavior: contain;
 	box-shadow:

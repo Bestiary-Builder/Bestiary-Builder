@@ -17,13 +17,15 @@ onMounted(async () => {
 </script>
 
 <template>
-	<Breadcrumbs :routes="[
-		{
-			path: '',
-			text: 'Characters',
-			isCurrent: true
-		}
-	]" />
+	<Breadcrumbs
+		:routes="[
+			{
+				path: '',
+				text: 'Characters',
+				isCurrent: true
+			}
+		]"
+	/>
 	<div v-if="!AvraeToken" class="content">
 		This page allows you to edit the attacks of your Avrae characters using the BB editor.
 		<br><br>
@@ -44,7 +46,7 @@ onMounted(async () => {
 	grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
 	grid-gap: 1rem;
 
-	&>a {
+	& > a {
 		text-decoration: none;
 	}
 }

@@ -12,6 +12,7 @@ import {
 	faBars,
 	faBold,
 	faCircleInfo,
+	faCircleNodes,
 	faCode,
 	faComment,
 	faCopy,
@@ -20,6 +21,7 @@ import {
 	faEraser,
 	faEye,
 	faEyeSlash,
+	faGear,
 	faGripVertical,
 	faHeading,
 	faHourglass,
@@ -47,9 +49,7 @@ import {
 	faUnderline,
 	faUserLock,
 	faWandSparkles,
-	faXmark,
-	faCircleNodes,
-	faGear
+	faXmark
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(

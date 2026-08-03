@@ -2,13 +2,16 @@
 import type { CreatureWithStats, Statblock } from "~/shared";
 import { useLocalStorage } from "@vueuse/core";
 import { $toast } from "@/utils/app/toast";
-import DropdownMenu from "../Global/DropdownMenu.vue";
 import ButtonIcon from "../Global/ButtonIcon.vue";
+import DropdownMenu from "../Global/DropdownMenu.vue";
 
 const props = withDefaults(
 	defineProps<{
-		noImportAll?: boolean; mayImport?: boolean; currentCreature?:
-			CopiedCreature | undefined; canCopyCurrentBestiary?: boolean;
+		noImportAll?: boolean;
+		mayImport?: boolean;
+		currentCreature?:
+			CopiedCreature | undefined;
+		canCopyCurrentBestiary?: boolean;
 	}>(),
 	{ noImportAll: false, mayImport: false, currentCreature: undefined, canCopyCurrentBestiary: false }
 );
@@ -64,8 +67,10 @@ const importManyCreatures = () => {
 								<p> {{ creature.bestiaryName }} (CR {{ creature.stats.description.cr }})</p>
 							</th>
 							<td v-if="mayImport">
-								<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']"
-									@click="importCreature(creature)" />
+								<font-awesome-icon
+									:icon="['fas', 'arrow-right-to-bracket']"
+									@click="importCreature(creature)"
+								/>
 							</td>
 							<td> <font-awesome-icon :icon="['fas', 'trash']" @click="deleteCreature(idx)" /></td>
 						</tr>
@@ -88,18 +93,20 @@ const importManyCreatures = () => {
 				</table>
 			</v-card-text>
 			<v-card-actions class="text-center">
-				<v-btn v-if="copiedCreatures.length > 0" @click="clearCreatures()" size="small">
-					Clear list 
+				<v-btn v-if="copiedCreatures.length > 0" size="small" @click="clearCreatures()">
+					Clear list
 				</v-btn>
-				<v-btn v-if="mayImport && copiedCreatures.length > 0 && !props.noImportAll"
-					@click="importManyCreatures" size="small">
-					Import all 
+				<v-btn
+					v-if="mayImport && copiedCreatures.length > 0 && !props.noImportAll"
+					size="small" @click="importManyCreatures"
+				>
+					Import all
 				</v-btn>
-				<v-btn v-if="currentCreature"  @click="copiedCreatures.push(currentCreature)" size="small">
-					Copy current creature 
+				<v-btn v-if="currentCreature" size="small" @click="copiedCreatures.push(currentCreature)">
+					Copy current creature
 				</v-btn>
-				<v-btn v-if="canCopyCurrentBestiary" @click="emit('copyCurrentBestiary')" size="small">
-					Copy current bestiary 
+				<v-btn v-if="canCopyCurrentBestiary" size="small" @click="emit('copyCurrentBestiary')">
+					Copy current bestiary
 				</v-btn>
 			</v-card-actions>
 		</v-card>

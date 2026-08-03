@@ -7,8 +7,10 @@ const { data } = defineProps<{ data: Statblock }>();
 </script>
 
 <template>
-	<div id="tabpanel-4" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0"
-		aria-labelledby="tab-4">
+	<div
+		id="tabpanel-4" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0"
+		aria-labelledby="tab-4"
+	>
 		<div class="editor-field__container three-wide">
 			<v-number-input v-model="data.defenses.hp.numOfHitDie" label="Hit Die Number" :min="0" />
 			<v-number-input v-model="data.defenses.hp.sizeOfHitDie" label="Hit Die Size" :min="1" :step="2" />
@@ -22,20 +24,28 @@ const { data } = defineProps<{ data: Statblock }>();
 		<SectionHeader title="Resistances" />
 		<div class="editor-field__container two-wide">
 			<div>
-				<v-select v-model="data.defenses.vulnerabilities" label="Vulnerabilities" multiple chips closable-chips
-					:items="resistanceList" />
+				<v-select
+					v-model="data.defenses.vulnerabilities" label="Vulnerabilities" multiple chips closable-chips
+					:items="resistanceList"
+				/>
 			</div>
 			<div>
-				<v-select v-model="data.defenses.resistances" label="Resistances" multiple chips closable-chips
-					:items="resistanceList" />
+				<v-select
+					v-model="data.defenses.resistances" label="Resistances" multiple chips closable-chips
+					:items="resistanceList"
+				/>
 			</div>
 			<div>
-				<v-select v-model="data.defenses.immunities" label="Immunities" multiple chips closable-chips
-					:items="resistanceList" />
+				<v-select
+					v-model="data.defenses.immunities" label="Immunities" multiple chips closable-chips
+					:items="resistanceList"
+				/>
 			</div>
 			<div>
-				<v-select v-model="data.defenses.conditionImmunities" label="Condition Immunities" multiple chips closable-chips
-					:items="conditionList" />
+				<v-select
+					v-model="data.defenses.conditionImmunities" label="Condition Immunities" multiple chips closable-chips
+					:items="conditionList"
+				/>
 			</div>
 		</div>
 	</div>

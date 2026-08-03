@@ -57,7 +57,6 @@ function handleMount(
 		if (wrapper.value?.clientWidth !== editorTemplate.value?.width)
 			editorRef.value?.layout({ width: wrapper.value?.clientWidth || 600, height: wrapper.value?.clientHeight || height });
 	}, 1000);
-
 }
 
 let decorationIds: string[] = [];
@@ -147,7 +146,7 @@ function toggleMarkdown(
 
 	const hasMarkers
 		= before === marker
-		&& after === marker;
+			&& after === marker;
 
 	if (hasMarkers) {
 		// Remove markers
@@ -513,9 +512,11 @@ setTimeout(() => {
 			<ButtonIcon icon="4" label="Heading 4" noscale @click="toggleHeading(editorRef!, 4)" />
 		</div>
 		<div class="editor-container" :style="`height: ${height}px`">
-			<VueMonacoEditor ref="editor" v-model:value="model" theme="vs-dark"
+			<VueMonacoEditor
+				ref="editor" v-model:value="model" theme="vs-dark"
 				:options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false, lineNumbers: 'off' }"
-				class="description-editor" height="100%" language="markdown" @mount="handleMount" />
+				class="description-editor" height="100%" language="markdown" @mount="handleMount"
+			/>
 		</div>
 	</div>
 </template>
@@ -536,12 +537,12 @@ setTimeout(() => {
 	min-height: 100px;
 }
 
-.description-editor {}
+.description-editor {
+}
 </style>
 
 <style lang="less">
 .monaco-wrapper-thing {
-
 	.monaco-editor {
 		min-height: 100px;
 		height: 100%;
@@ -574,7 +575,6 @@ setTimeout(() => {
 }
 
 @media screen and (max-width: 1200px) {
-
 	.monaco-wrapper-thing,
 	.monaco-editor,
 	.editor-container {
@@ -582,7 +582,7 @@ setTimeout(() => {
 	}
 }
 
-.editor-container>div {
+.editor-container > div {
 	height: 100% !important;
 	min-height: 100px;
 }

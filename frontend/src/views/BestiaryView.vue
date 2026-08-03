@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { BestiaryExtended, CreatureWithStats, Statblock, User } from "~/shared";
-import { Shimmer } from "@shimmer-from-structure/vue";
 import { refDebounced, useLocalStorage } from "@vueuse/core";
 import { onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
@@ -336,23 +335,22 @@ const getDraggableKey = (item: any) => {
 
 <template>
 	<div>
-		<Breadcrumbs
-			v-if="bestiary"
-			:routes="[
-				{
-					path: isOwner || isEditor ? '../my-bestiaries/' : '../bestiaries',
-					text: isOwner || isEditor ? 'My Bestiaries' : 'Bestiaries',
-					isCurrent: false
-				},
-				{
-					path: '',
-					text: bestiary?.name,
-					isCurrent: true
-				}
-			]"
-		>
-			<CopyCreature :may-import="false" :current-creatures="creatures || []" can-copy-current-bestiary @copy-current-bestiary="copyCurrentBestiary" />
-			<ButtonIcon v-if="false" icon="thumbtack" label="Unpin currently pinned creature" style="rotate: 45deg" @click="lastClickedCreature = null" />
+		<Breadcrumbs v-if="bestiary" :routes="[
+			{
+				path: isOwner || isEditor ? '/bestiaries/personal' : '/bestiaries',
+				text: isOwner || isEditor ? 'My Bestiaries' : 'Bestiaries',
+				isCurrent: false
+			},
+			{
+				path: '',
+				text: bestiary?.name,
+				isCurrent: true
+			}
+		]">
+			<CopyCreature :may-import="false" :current-creatures="creatures || []" can-copy-current-bestiary
+				@copy-current-bestiary="copyCurrentBestiary" />
+			<ButtonIcon v-if="false" icon="thumbtack" label="Unpin currently pinned creature" style="rotate: 45deg"
+				@click="lastClickedCreature = null" />
 			<VDropdown :distance="6" :positioning-disabled="store.isMobile">
 				<ButtonIcon icon="tag" label="Filter bestiary" />
 
@@ -372,14 +370,16 @@ const getDraggableKey = (item: any) => {
 						</LabelledComponent>
 						<LabelledComponent title="Creature type" for="creatureType">
 							<div style="min-width: 300px">
-								<v-select v-model="searchOptions.tags" placeholder="Search by creature type" multiple :options="creatureTypes" input-id="creaturetype" :taggable="true" />
+								<v-select v-model="searchOptions.tags" placeholder="Search by creature type" multiple
+									:options="creatureTypes" input-id="creaturetype" :taggable="true" />
 							</div>
 						</LabelledComponent>
 						<div class="two-wide">
 							<CRInput v-model="searchOptions.minCr" label="Minimum CR" />
 							<CRInput v-model="searchOptions.maxCr" label="Maximum CR" />
 						</div>
-						<span v-if="searchOptions.minCr > searchOptions.maxCr" class="warning" style="text-align: center"> Min is bigger than max </span>
+						<span v-if="searchOptions.minCr > searchOptions.maxCr" class="warning"
+							style="text-align: center"> Min is bigger than max </span>
 						<LabelledComponent title="Environment" for="environment">
 							<input id="environment" v-model="searchEnv" type="text" placeholder="Search by name...">
 						</LabelledComponent>
@@ -415,8 +415,10 @@ const getDraggableKey = (item: any) => {
 				<div class="left-side-container">
 					<div class="content-tile header-tile">
 						<h2>{{ bestiary.name ? bestiary.name : "..." }}</h2>
-						<Markdown class="description" :class="{ expanded: isExpanded }" :text="bestiary.description || 'No description set.'" tag="p" />
-						<button v-if="bestiary.description.length > 0" v-tooltip="'Expand description'" class="expand-btn" aria-label="Expand description" @click="isExpanded = !isExpanded">
+						<Markdown class="description" :class="{ expanded: isExpanded }"
+							:text="bestiary.description || 'No description set.'" tag="p" />
+						<button v-if="bestiary.description.length > 0" v-tooltip="'Expand description'"
+							class="expand-btn" aria-label="Expand description" @click="isExpanded = !isExpanded">
 							{{ isExpanded ? "▲" : "▼" }}
 						</button>
 						<hr>
@@ -426,33 +428,36 @@ const getDraggableKey = (item: any) => {
 								<StatusIcon :icon="bestiary.status" />
 							</div>
 							<div>{{ bestiary.creatures.length }}<font-awesome-icon :icon="['fas', 'skull']" /></div>
-							<div role="button" aria-label="Toggle bookmark status" class="bookmark" @click.prevent="toggleBookmark">
-								<span v-if="bookmarked" v-tooltip="'Unbookmark this bestiary'" class="bookmark-enabled"><font-awesome-icon :icon="['fas', 'star']" /></span>
-								<span v-else v-tooltip="'Bookmark this bestiary'" class="bookmark-disabled"><font-awesome-icon :icon="['fas', 'star']" /></span>
+							<div role="button" aria-label="Toggle bookmark status" class="bookmark"
+								@click.prevent="toggleBookmark">
+								<span v-if="bookmarked" v-tooltip="'Unbookmark this bestiary'"
+									class="bookmark-enabled"><font-awesome-icon :icon="['fas', 'star']" /></span>
+								<span v-else v-tooltip="'Bookmark this bestiary'"
+									class="bookmark-disabled"><font-awesome-icon :icon="['fas', 'star']" /></span>
 							</div>
 						</div>
 					</div>
-					<Shimmer :loading="loading" shimmer-color="orangered">
-						<Draggable :list="sortCreatures() || Array(0).fill({ stats: defaultStatblock })" :animation="500" class="tile-container list-tiles" :item-key="getDraggableKey" :disabled="sortMode !== 'Custom'" @change="saveOrder">
-							<template #item=" { element }">
-								<CreatureListItem
-									v-if="filterCreature(element)"
-									:id="element.id" :data="element.stats"
-									:can-edit="false"
-									@mouseover="lastHoveredCreature = element.stats"
-									@pin-creature="lastClickedCreature = element.stats"
-									@copy-creature="copiedCreatures.push({ ...element, bestiaryName: bestiary.name })"
-								/>
-							</template>
-						</Draggable>
-					</Shimmer>
+					<v-skeleton-loader type="heading, text, text" v-if="creatures === null" />
+					<Draggable v-else :list="sortCreatures() || Array(0).fill({ stats: defaultStatblock })"
+						:animation="500" class="tile-container list-tiles" :item-key="getDraggableKey"
+						:disabled="sortMode !== 'Custom'" @change="saveOrder">
+						<template #item="{ element }">
+							<CreatureListItem v-if="filterCreature(element)" :id="element.id" :data="element.stats"
+								:can-edit="false" @mouseover="lastHoveredCreature = element.stats"
+								@pin-creature="lastClickedCreature = element.stats"
+								@copy-creature="copiedCreatures.push({ ...element, bestiaryName: bestiary.name })" />
+						</template>
+					</Draggable>
 				</div>
 				<div v-if="creatures && lastHoveredCreature" class="statblock-container">
 					<span v-if="false && lastClickedCreature" class="pin-notice">
-						<span class="unpin-button" role="button" aria-label="unpin currently pinned creature" @click="lastClickedCreature = null"><b>unpin</b></span>📌
+						<span class="unpin-button" role="button" aria-label="unpin currently pinned creature"
+							@click="lastClickedCreature = null"><b>unpin</b></span>📌
 					</span>
 					<Transition name="fade" mode="out-in">
-						<StatblockRenderer :key="lastClickedCreature?.description.name || lastHoveredCreature.description.name" :data="lastClickedCreature || lastHoveredCreature" />
+						<StatblockRenderer
+							:key="lastClickedCreature?.description.name || lastHoveredCreature.description.name"
+							:data="lastClickedCreature || lastHoveredCreature" />
 					</Transition>
 				</div>
 				<div v-else class="statblock-container">
@@ -474,6 +479,7 @@ const getDraggableKey = (item: any) => {
 	flex-direction: column;
 	gap: 0.3rem;
 	margin: 0.5rem 0;
+
 	label {
 		font-weight: bold;
 		text-decoration: underline;
@@ -502,6 +508,7 @@ const getDraggableKey = (item: any) => {
 	overflow-x: clip;
 	padding: 0rem;
 	margin-top: 1rem;
+
 	.content-tile {
 		height: fit-content !important;
 		background: var(--color-surface-1);
@@ -519,6 +526,7 @@ const getDraggableKey = (item: any) => {
 		h3 {
 			font-size: 1.5rem;
 		}
+
 		&.creature-tile {
 			display: flex;
 			flex-direction: row;
@@ -526,11 +534,13 @@ const getDraggableKey = (item: any) => {
 			justify-content: space-between;
 
 			.left-side {
+
 				span,
 				p {
 					font-style: italic;
 					font-size: 0.85rem;
 				}
+
 				.cr {
 					color: orangered;
 					width: 3rem;
@@ -565,6 +575,7 @@ const getDraggableKey = (item: any) => {
 
 				button {
 					.scale-on-hover(1.2);
+
 					&:hover {
 						overflow: visible;
 					}
@@ -581,11 +592,14 @@ const getDraggableKey = (item: any) => {
 @media screen and (max-width: 842px) {
 	.list-tiles {
 		max-height: 40vh;
+
 		.content-tile {
 			padding: 0.5rem;
+
 			h3 {
 				font-size: 1rem;
 			}
+
 			&.creature-tile {
 				.left-side span {
 					font-size: 0.6rem;
@@ -616,6 +630,7 @@ const getDraggableKey = (item: any) => {
 	margin: 0 0rem 1rem;
 	padding: 1rem;
 	border-radius: 2px;
+
 	h2 {
 		text-align: center;
 		text-wrap: nowrap;
@@ -630,6 +645,7 @@ const getDraggableKey = (item: any) => {
 		color: rgb(205, 205, 205);
 		overflow-y: hidden;
 		overflow-wrap: anywhere;
+
 		&.expanded {
 			max-height: unset;
 		}
@@ -639,6 +655,7 @@ const getDraggableKey = (item: any) => {
 		-webkit-mask-image: linear-gradient(180deg, #000 80%, transparent);
 		mask-image: linear-gradient(180deg, #000 80%, transparent);
 	}
+
 	.footer {
 		display: grid;
 		grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -649,17 +666,21 @@ const getDraggableKey = (item: any) => {
 		&.three-wide {
 			grid-template-columns: 1fr 1fr 1fr;
 		}
+
 		div {
 			text-align: center;
 		}
+
 		div:first-of-type {
 			text-align: left;
 		}
+
 		div:last-of-type {
 			text-align: right;
 		}
 	}
 }
+
 @media screen and (max-width: 842px) {
 	.header-tile {
 		padding: 0.5rem;
@@ -678,6 +699,7 @@ const getDraggableKey = (item: any) => {
 		}
 	}
 }
+
 .bestiary {
 	display: grid;
 	gap: 2rem;
@@ -693,6 +715,7 @@ const getDraggableKey = (item: any) => {
 			scale: 1;
 		}
 	}
+
 	.bestiary {
 		grid-template-columns: 1fr;
 	}
@@ -722,6 +745,7 @@ const getDraggableKey = (item: any) => {
 		background-color: var(--color-surface-0);
 	}
 }
+
 .no-creature-text {
 	font-size: 1.3rem;
 	text-align: center;

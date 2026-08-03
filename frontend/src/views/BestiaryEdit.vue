@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import type { Bestiary, BestiaryExtended, CreatureWithStats, Statblock, User } from "~/shared";
-import { createPopper } from "@popperjs/core";
-import { Shimmer } from "@shimmer-from-structure/vue";
 import { refDebounced, useLocalStorage } from "@vueuse/core";
 import { onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import Draggable from "vuedraggable";
+import { useRules } from "vuetify/labs/rules";
 import CopyCreature from "@/components/Bestiary/CopyCreature.vue";
 import CreatureListItem from "@/components/Bestiary/CreatureListItem.vue";
 import StatusIcon from "@/components/Bestiary/StatusIcon.vue";
@@ -13,6 +12,7 @@ import UserBanner from "@/components/Bestiary/UserBanner.vue";
 import CRInput from "@/components/FormInputs/CRInput.vue";
 import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import ButtonIcon from "@/components/Global/ButtonIcon.vue";
+import DropdownMenu from "@/components/Global/DropdownMenu.vue";
 import Markdown from "@/components/Global/Markdown.vue";
 import Modal from "@/components/Global/Modal.vue";
 import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
@@ -24,10 +24,8 @@ import { creatureTypes } from "@/utils/constants";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { defaultStatblock } from "~/shared";
-import { useRules } from 'vuetify/labs/rules'
-import DropdownMenu from "@/components/Global/DropdownMenu.vue";
 
-const rules = useRules()
+const rules = useRules();
 const $route = useRoute();
 const $router = useRouter();
 const searchText = ref("");
@@ -149,13 +147,9 @@ watch(debouncedFaction, () => {
 	searchOptions.value.faction = searchFaction.value;
 });
 const initialLoading = ref(true);
-const loading = ref(true);
 onMounted(async () => {
-	// const loader = $loading.show();
 	await getBestiary().then(() => {
-		// loader.hide();
 	});
-	loading.value = false;
 	if (bestiary.value?.name)
 		document.title = `${bestiary.value?.name.substring(0, 16)} | Bestiary Builder`;
 
@@ -258,7 +252,7 @@ async function exportBestiary(asFile: boolean) {
 async function importBestiaryFromCritterDB() {
 	let link = critterDbId.value.trim();
 	if (link.length === 0) {
-		$toast.error("No critterDB link given.")
+		$toast.error("No critterDB link given.");
 	}
 	const isPublic = link.includes("publishedbestiary");
 	try {
@@ -269,7 +263,7 @@ async function importBestiaryFromCritterDB() {
 		}
 	}
 	catch (e) {
-		$toast.error("Something went wrong...")
+		$toast.error("Something went wrong...");
 		return;
 	}
 
@@ -436,7 +430,8 @@ async function deleteCreature(id: string) {
 }
 
 async function importSrdCreature(creature: string | null) {
-	if (!creature) return;
+	if (!creature)
+		return;
 	const { success, data, error } = await useFetch<Statblock>(`/api/srd-creatures/${store.user?.SRDVersion === "SRD_2024" ? "2024" : "2014"}/${encodeURIComponent(creature)}`);
 
 	if (success) {
@@ -622,7 +617,7 @@ const getDraggableKey = (item: any) => {
 				</template>
 				<v-card min-width="300" class="text-center pa-4" title="Create creature">
 					<v-card-actions class="d-flex flex-column align-center justify-center">
-						<v-btn @click="createCreature()" size="x-large">
+						<v-btn size="x-large" @click="createCreature()">
 							From scratch
 						</v-btn>
 						<div class="d-flex align-center my-4 w-100">
@@ -643,43 +638,43 @@ const getDraggableKey = (item: any) => {
 				</v-card>
 			</DropdownMenu>
 
-
 			<CopyCreature :may-import="isOwner || isEditor" :current-creatures="creatures || []"
 				can-copy-current-bestiary @import-creature="(creature) => createCreature(creature, true, false)"
 				@import-all-creatures="createManyCreatures" @copy-current-bestiary="copyCurrentBestiary" />
 
-			<v-dialog max-width="950" v-if="isOwner">
-				<template v-slot:activator="{ props: activatorProps }">
+			<v-dialog v-if="isOwner" max-width="950">
+				<template #activator="{ props: activatorProps }">
 					<ButtonIcon icon="gear" label="Edit bestiary" v-bind="activatorProps" />
 				</template>
 
-				<template v-slot:default="{ isActive }">
+				<template #default="{ isActive }">
 					<v-card title="Edit bestiary">
 						<v-sheet class="pa-4" max-width="1800" rounded="lg" width="100%">
 							<v-form>
 								<div class="grid-two">
 									<v-text-field v-model="bestiary.name" label="Name"
-										:maxlength="store.limits?.nameLength" :minLength="store.limits?.nameMin"
+										:maxlength="store.limits?.nameLength" :min-length="store.limits?.nameMin"
 										:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]"
 										class="mb-4" />
 									<v-text-field v-model="bestiary.image" label="Image" class="mb-4" />
 								</div>
 
-
-								<v-textarea v-model="bestiary.description" :maxLength="store.limits?.descriptionLength"
+								<v-textarea v-model="bestiary.description" :max-length="store.limits?.descriptionLength"
 									:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]"
 									label="Description" class="mb-4" hint="Supports Markdown" persistent-hint counter />
 								<div class="grid-two">
 									<div>
-										<v-select label="Status" v-model="bestiary.status"
+										<v-select v-model="bestiary.status" label="Status"
 											:items="[{ value: 'private', title: 'Private' }, { value: 'unlisted', title: 'Unlisted' }, { value: 'public', title: 'Public' }]" />
 									</div>
-									<v-select multiple :items="store.tags || []" v-model="bestiary.tags" label="Tags"
+									<v-select v-model="bestiary.tags" multiple :items="store.tags || []" label="Tags"
 										chips closable-chips />
 								</div>
 
 								<div class="editor-block">
-									<h3 style="margin-bottom: .5rem">Editors</h3>
+									<h3 style="margin-bottom: .5rem">
+										Editors
+									</h3>
 									<small>
 										Editors can add, edit, and remove creatures. <br>
 										Editors cannot edit the Bestiary itself. <br>
@@ -700,7 +695,7 @@ const getDraggableKey = (item: any) => {
 												label="Discord user ID"
 												:rules="[rules.integer('This must be a numeric Discord User ID.')]"
 												pattern="[0-9]*" />
-											<v-btn @click="addEditor()" class="mz-auto">
+											<v-btn class="mz-auto" @click="addEditor()">
 												Add
 											</v-btn>
 										</div>
@@ -724,9 +719,9 @@ const getDraggableKey = (item: any) => {
 							</v-form>
 						</v-sheet>
 						<v-card-actions>
-							<v-spacer></v-spacer>
-							<v-btn text="Save changes" @click="updateBestiary" color="green" size="large" />
-							<v-btn text="Cancel" @click="isActive.value = false" size="large" />
+							<v-spacer />
+							<v-btn text="Save changes" color="green" size="large" @click="updateBestiary" />
+							<v-btn text="Cancel" size="large" @click="isActive.value = false" />
 						</v-card-actions>
 					</v-card>
 				</template>
@@ -737,45 +732,47 @@ const getDraggableKey = (item: any) => {
 				</template>
 				<v-card min-width="300" class="text-center pb-2 pa-4" title="Search bestiary">
 					<v-card-actions class="d-flex flex-column align-center justify-center" min-width="200">
-						<v-select
+						<v-select v-model="sortMode"
 							:items="['Custom', 'Alphabetically', 'CR Ascending', 'CR Descending', 'Creature Type']"
-							label="Bestiary sort type" v-model="sortMode" width="100%" />
+							label="Bestiary sort type" width="100%" />
 						<div class="grid-two">
 							<v-text-field v-model="searchText" label="Name" width="200" />
-							<v-select :items="creatureTypes" label="Creature type" v-model="searchOptions.tags" multiple
+							<v-select v-model="searchOptions.tags" :items="creatureTypes" label="Creature type" multiple
 								chips closable-chips width="200" />
 							<CRInput v-model="searchOptions.minCr" label="Minimum CR" />
 							<CRInput v-model="searchOptions.maxCr" label="Maximum CR" />
 							<v-text-field v-model="searchFaction" label="Faction" width="200" />
 							<v-text-field v-model="searchEnv" label="Environment" width="200" />
-
 						</div>
-
 					</v-card-actions>
 				</v-card>
 			</DropdownMenu>
 
-			<v-dialog max-width="750" v-if="isOwner">
-				<template v-slot:activator="{ props: activatorProps }">
+			<v-dialog v-if="isOwner" max-width="750">
+				<template #activator="{ props: activatorProps }">
 					<ButtonIcon icon="arrow-right-to-bracket" label="Import bestiary" v-bind="activatorProps" />
 				</template>
 
-				<template v-slot:default="{ isActive }">
+				<template #default="{ isActive }">
 					<v-card title="Import bestiary">
 						<v-sheet class="pa-4" max-width="1800" rounded="lg" width="100%">
 							<div class="grid-two">
-								<v-text-field label="CritterDB Bestiary link" v-model="critterDbId"
+								<v-text-field v-model="critterDbId" label="CritterDB Bestiary link"
 									hint="Make sure the Bestiary is public or has link-sharing enabled"
 									persistent-hint />
-								<v-text-field label="Bestiary Builder JSON" v-model="bestiaryBuilderJson"
+								<v-text-field v-model="bestiaryBuilderJson" label="Bestiary Builder JSON"
 									hint="JSON as text gotten from clicking export elsewhere on BB" persistent-hint />
-								<v-btn @click="importBestiaryFromCritterDB()" size="large">Import CritterDB</v-btn>
-								<v-btn @click="importCreaturesFromBestiaryBuilder()" size="large">Import BB</v-btn>
+								<v-btn size="large" @click="importBestiaryFromCritterDB()">
+									Import CritterDB
+								</v-btn>
+								<v-btn size="large" @click="importCreaturesFromBestiaryBuilder()">
+									Import BB
+								</v-btn>
 							</div>
 						</v-sheet>
 						<v-card-actions>
-							<v-spacer></v-spacer>
-							<v-btn text="Cancel" @click="isActive.value = false" size="large" />
+							<v-spacer />
+							<v-btn text="Cancel" size="large" @click="isActive.value = false" />
 						</v-card-actions>
 						<v-sheet v-if="JSON.stringify(notices) !== '{}'">
 							<p class="warning">
@@ -800,13 +797,13 @@ const getDraggableKey = (item: any) => {
 				</template>
 				<v-card min-width="300" class="text-center pb-2 pa-4" title="Export bestiary">
 					<v-card-actions class="d-flex flex-column align-center justify-center" min-width="200">
-						<v-btn @click="exportBestiary(false)" class="w-100" color="green" size="large">
+						<v-btn class="w-100" color="green" size="large" @click="exportBestiary(false)">
 							Clipboard
 						</v-btn>
-						<v-btn @click="exportBestiary(true)" class="w-100" color="green" size="large">
+						<v-btn class="w-100" color="green" size="large" @click="exportBestiary(true)">
 							File
 						</v-btn>
-						<v-btn @click="exportHomebrewery()" class="w-100" color="green" size="large">
+						<v-btn class="w-100" color="green" size="large" @click="exportHomebrewery()">
 							Homebrewery
 						</v-btn>
 					</v-card-actions>
@@ -840,28 +837,29 @@ const getDraggableKey = (item: any) => {
 							</div>
 						</div>
 					</div>
-					<Shimmer :loading="loading" shimmer-color="orangered">
-						<Draggable :list="sortCreatures() || Array(0).fill({ stats: defaultStatblock })"
-							:animation="500" class="tile-container list-tiles" :item-key="getDraggableKey"
-							:disabled="sortMode !== 'Custom'" @change="saveOrder">
-							<template #item="{ element }">
-								<CreatureListItem v-if="filterCreature(element)" :id="element.id" :data="element.stats"
-									:can-edit="isOwner || isEditor" @mouseover="lastHoveredCreature = element.stats"
-									@delete-creature="(id) => deleteCreature(id)"
-									@pin-creature="lastClickedCreature = element.stats"
-									@copy-creature="copiedCreatures.push({ ...element, bestiaryName: bestiary.name })" />
-							</template>
-						</Draggable>
-					</Shimmer>
+					<v-skeleton-loader type="heading, text, text" v-if="creatures === null" />
+					<Draggable v-else :list="sortCreatures() || Array(0).fill({ stats: defaultStatblock })"
+						:animation="500" class="tile-container list-tiles" :item-key="getDraggableKey"
+						:disabled="sortMode !== 'Custom'" @change="saveOrder">
+						<template #item="{ element }">
+							<CreatureListItem v-if="filterCreature(element)" :id="element.id" :data="element.stats"
+								:can-edit="isOwner || isEditor" @mouseover="lastHoveredCreature = element.stats"
+								@delete-creature="(id) => deleteCreature(id)"
+								@pin-creature="lastClickedCreature = element.stats"
+								@copy-creature="copiedCreatures.push({ ...element, bestiaryName: bestiary.name })" />
+						</template>
+					</Draggable>
 
 					<div v-if="isOwner || isEditor" class="create-tile">
 						<DropdownMenu>
 							<template #activator="{ props }">
-								<v-btn v-bind="props" variant="plain" :ripple="false"> Add creature </v-btn>
+								<v-btn v-bind="props" variant="plain" :ripple="false">
+									Add creature
+								</v-btn>
 							</template>
 							<v-card min-width="300" class="text-center pa-4" title="Create creature">
 								<v-card-actions class="d-flex flex-column align-center justify-center">
-									<v-btn @click="createCreature()" size="x-large">
+									<v-btn size="x-large" @click="createCreature()">
 										From scratch
 									</v-btn>
 									<div class="d-flex align-center my-4 w-100">
@@ -920,7 +918,8 @@ const getDraggableKey = (item: any) => {
 				<hr>
 
 				<LabelledComponent title="Bestiary Builder JSON" for="bestiaryjson">
-					<p>Insert the JSON as text gotten from clicking export on another bestiary within Bestiary Builder.
+					<p>
+						Insert the JSON as text gotten from clicking export on another bestiary within Bestiary Builder.
 					</p>
 					<div class="flow-horizontally">
 						<input id="bestiaryjson" v-model="bestiaryBuilderJson" type="text"

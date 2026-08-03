@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import type { AutomationWithType, FeatureEntity } from "~/shared";
 import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
-import {  onMounted, ref, shallowRef, watch } from "vue";
+import { onMounted, ref, shallowRef, watch } from "vue";
 import YAML from "yaml";
 import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
+import { getUmami } from "@/utils/app/analytics";
 import { $toast, htmlToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
-import { getUmami } from "@/utils/app/analytics";
 
 const props = withDefaults(defineProps<{ data: AutomationWithType; creatureName?: string }>(), { creatureName: "$NAME$" });
 
@@ -133,7 +133,6 @@ const validateYaml = () => {
 				<VueMonacoEditor v-model:value="automationString" theme="vs-dark" :options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false }" height="750px" language="yaml" @mount="handleMount" />
 			</div>
 		</div>
-
 	</div>
 </template>
 

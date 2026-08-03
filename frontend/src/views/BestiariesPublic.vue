@@ -3,13 +3,13 @@ import type { BestiaryExtended, BestiaryWithCount } from "~/shared";
 import { refDebounced } from "@vueuse/core";
 import { onMounted, ref, watch } from "vue";
 import ButtonIcon from "@/components/Global/ButtonIcon.vue";
+import CollectionTile from "@/components/Global/CollectionTile.vue";
 import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { $loading } from "@/utils/app/loading";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { $toast } from "../utils/app/toast";
-import CollectionTile from "@/components/Global/CollectionTile.vue";
 
 onMounted(async () => {
 	const loader = $loading.show();
@@ -114,9 +114,9 @@ watch(debouncedSearch, async () => searchBestiaries());
 		</VDropdown>
 	</Breadcrumbs>
 	<div class="content">
-		<div class="tile-container" v-if="bestiaries.length > 0">
-			<RouterLink v-for="bestiary, idx of bestiaries" :to="`/bestiary/view/${bestiary.id}`" :key="idx">
-				<CollectionTile :data="bestiary"/>
+		<div v-if="bestiaries.length > 0" class="tile-container">
+			<RouterLink v-for="bestiary, idx of bestiaries" :key="idx" :to="`/bestiary/view/${bestiary.id}`">
+				<CollectionTile :data="bestiary" />
 			</RouterLink>
 		</div>
 		<div v-else class="zero-found">

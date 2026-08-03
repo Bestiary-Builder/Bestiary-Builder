@@ -5,12 +5,10 @@ import { useRouter } from "vue-router";
 import Draggable from "vuedraggable";
 import { $toast } from "@/utils/app/toast";
 import { newFeatureGenerator } from "@/utils/constants";
-import { store } from "@/utils/store";
-import LabelledNumberInput from "../FormInputs/LabelledNumberInput.vue";
 import ButtonIcon from "../Global/ButtonIcon.vue";
+import DropdownMenu from "../Global/DropdownMenu.vue";
 import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
 import { getDraggableKey } from "./utils";
-import DropdownMenu from "../Global/DropdownMenu.vue";
 
 const { data, rawInfo } = defineProps<{ data: Statblock; rawInfo: CreatureWithStats | null }>();
 const $router = useRouter();
@@ -37,8 +35,10 @@ const createNewFeature = (type: keyof Features) => {
 </script>
 
 <template>
-	<div id="tabpanel-5" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0"
-		aria-labelledby="tab-5">
+	<div
+		id="tabpanel-5" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0"
+		aria-labelledby="tab-5"
+	>
 		<div v-for="(descText, fType) in newFeatureGenerator" :key="fType">
 			<SectionHeader :title="`${descText.replace('New ', '').replace('Feature', 'Trait')}s`" />
 
@@ -54,8 +54,10 @@ const createNewFeature = (type: keyof Features) => {
 						</td>
 					</tr>
 				</thead>
-				<Draggable :list="data.features[fType]" group="features" :item-key="getDraggableKey" :animation="150"
-					tag="tbody" class=".handle">
+				<Draggable
+					:list="data.features[fType]" group="features" :item-key="getDraggableKey" :animation="150"
+					tag="tbody" class=".handle"
+				>
 					<template #item="{ element, index }">
 						<tr>
 							<td>
@@ -64,10 +66,14 @@ const createNewFeature = (type: keyof Features) => {
 							<th> {{ element.name }}</th>
 							<td class="edit-buttons">
 								<div>
-									<ButtonIcon icon="edit" label="Edit this feature"
-										@click="openFeature(`${rawInfo?.id}/${fType}/${index}`)" />
-									<ButtonIcon icon="eraser" label="Delete this feature"
-										@click="deleteFeature(fType, index)" />
+									<ButtonIcon
+										icon="edit" label="Edit this feature"
+										@click="openFeature(`${rawInfo?.id}/${fType}/${index}`)"
+									/>
+									<ButtonIcon
+										icon="eraser" label="Delete this feature"
+										@click="deleteFeature(fType, index)"
+									/>
 								</div>
 							</td>
 						</tr>
@@ -94,8 +100,10 @@ const createNewFeature = (type: keyof Features) => {
 									<template #activator="{ props }">
 										<ButtonIcon icon="edit" label="Set custom header for this feature section" v-bind="props" />
 									</template>
-									<v-card min-width="300" class="text-center pb-2 pa-4"
-										subtitle="Set custom header for this feature section">
+									<v-card
+										min-width="300" class="text-center pb-2 pa-4"
+										subtitle="Set custom header for this feature section"
+									>
 										<v-card-actions>
 											<v-textarea v-model="data.misc.featureHeaderTexts[fType]" />
 										</v-card-actions>
@@ -113,8 +121,10 @@ const createNewFeature = (type: keyof Features) => {
 									<template #activator="{ props }">
 										<ButtonIcon icon="edit" label="Legendary actions per round" v-bind="props" />
 									</template>
-									<v-card min-width="300" class="text-center pb-2 pa-4"
-										subtitle="Set legendary actions per round">
+									<v-card
+										min-width="300" class="text-center pb-2 pa-4"
+										subtitle="Set legendary actions per round"
+									>
 										<v-card-actions>
 											<v-number-input v-model="data.misc.legActionsPerRound" :min="0" />
 										</v-card-actions>

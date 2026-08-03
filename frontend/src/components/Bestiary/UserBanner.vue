@@ -51,7 +51,7 @@ const isLoading = computed(() => {
 		height: 0.5em;
 		border-radius: 50%;
 		scale: 2.5;
-		padding: 0 .5em;
+		padding: 0 0.5em;
 	}
 }
 

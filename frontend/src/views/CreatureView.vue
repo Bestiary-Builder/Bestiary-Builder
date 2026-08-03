@@ -1,16 +1,14 @@
 <script setup lang="ts">
 import type { BestiaryExtended, CreatureWithStats } from "~/shared";
-import { Shimmer } from "@shimmer-from-structure/vue";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import CopyCreature from "@/components/Bestiary/CopyCreature.vue";
+import ExportCreature from "@/components/Bestiary/ExportCreature.vue";
 import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
 import { $toast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
-import { defaultStatblock } from "~/shared";
-import ExportCreature from "@/components/Bestiary/ExportCreature.vue";
 
 const $route = useRoute();
 
@@ -62,9 +60,9 @@ onMounted(async () => {
 		</Breadcrumbs>
 		<div class="content">
 			<div class="content-container__inner">
-				<Shimmer :loading="data === null" :template-props="{ data: defaultStatblock }" shimmer-color="orangered">
-					<StatblockRenderer id="statblock" :data="data?.stats || defaultStatblock" />
-				</Shimmer>
+				<v-skeleton-loader type="heading, divider, text, text, sentences, heading, text"
+					v-if="data === null" />
+				<StatblockRenderer v-else id="statblock" :data="data.stats" />
 			</div>
 		</div>
 	</div>
