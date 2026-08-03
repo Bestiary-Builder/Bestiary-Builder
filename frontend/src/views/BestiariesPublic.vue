@@ -115,8 +115,8 @@ watch(debouncedSearch, async () => searchBestiaries());
 	</Breadcrumbs>
 	<div class="content">
 		<div class="tile-container" v-if="bestiaries.length > 0">
-			<RouterLink v-for="bestiary of bestiaries" :to="`/bestiary/view/${bestiary.id}`">
-				<CollectionTile :data="bestiary"v-for="bestiary of bestiaries" />
+			<RouterLink v-for="bestiary, idx of bestiaries" :to="`/bestiary/view/${bestiary.id}`" :key="idx">
+				<CollectionTile :data="bestiary"/>
 			</RouterLink>
 		</div>
 		<div v-else class="zero-found">

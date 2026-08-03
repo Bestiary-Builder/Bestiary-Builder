@@ -10,6 +10,7 @@ import LabelledNumberInput from "../FormInputs/LabelledNumberInput.vue";
 import ButtonIcon from "../Global/ButtonIcon.vue";
 import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
 import { getDraggableKey } from "./utils";
+import DropdownMenu from "../Global/DropdownMenu.vue";
 
 const { data, rawInfo } = defineProps<{ data: Statblock; rawInfo: CreatureWithStats | null }>();
 const $router = useRouter();
@@ -36,7 +37,8 @@ const createNewFeature = (type: keyof Features) => {
 </script>
 
 <template>
-	<div id="tabpanel-5" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-5">
+	<div id="tabpanel-5" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0"
+		aria-labelledby="tab-5">
 		<div v-for="(descText, fType) in newFeatureGenerator" :key="fType">
 			<SectionHeader :title="`${descText.replace('New ', '').replace('Feature', 'Trait')}s`" />
 
@@ -52,7 +54,8 @@ const createNewFeature = (type: keyof Features) => {
 						</td>
 					</tr>
 				</thead>
-				<Draggable :list="data.features[fType]" group="features" :item-key="getDraggableKey" :animation="150" tag="tbody" class=".handle">
+				<Draggable :list="data.features[fType]" group="features" :item-key="getDraggableKey" :animation="150"
+					tag="tbody" class=".handle">
 					<template #item="{ element, index }">
 						<tr>
 							<td>
@@ -61,8 +64,10 @@ const createNewFeature = (type: keyof Features) => {
 							<th> {{ element.name }}</th>
 							<td class="edit-buttons">
 								<div>
-									<ButtonIcon icon="edit" label="Edit this feature" @click="openFeature(`${rawInfo?.id}/${fType}/${index}`)" />
-									<ButtonIcon icon="eraser" label="Delete this feature" @click="deleteFeature(fType, index)" />
+									<ButtonIcon icon="edit" label="Edit this feature"
+										@click="openFeature(`${rawInfo?.id}/${fType}/${index}`)" />
+									<ButtonIcon icon="eraser" label="Delete this feature"
+										@click="deleteFeature(fType, index)" />
 								</div>
 							</td>
 						</tr>
@@ -85,15 +90,17 @@ const createNewFeature = (type: keyof Features) => {
 								Edit feature header description
 							</th>
 							<td class="edit-buttons">
-								<VDropdown :distance="6" :positioning-disabled="store.isMobile">
-									<ButtonIcon icon="edit" label="Edit feature header" />
-									<template #popper>
-										<div class="v-popper__custom-menu">
-											<span style="color: lightgray"> You can set text to show at<br> the top of each section here.</span>
-											<textarea :id="fType" v-model="data.misc.featureHeaderTexts[fType]" style="min-width: 300px" />
-										</div>
+								<DropdownMenu>
+									<template #activator="{ props }">
+										<ButtonIcon icon="edit" label="Set custom header for this feature section" v-bind="props" />
 									</template>
-								</VDropdown>
+									<v-card min-width="300" class="text-center pb-2 pa-4"
+										subtitle="Set custom header for this feature section">
+										<v-card-actions>
+											<v-textarea v-model="data.misc.featureHeaderTexts[fType]" />
+										</v-card-actions>
+									</v-card>
+								</DropdownMenu>
 							</td>
 						</tr>
 						<tr v-if="fType === 'legendary' && data.features[fType].length > 0" class="table-footer">
@@ -102,15 +109,17 @@ const createNewFeature = (type: keyof Features) => {
 								Legendary actions per round
 							</th>
 							<td>
-								<VDropdown :distance="6" :positioning-disabled="store.isMobile">
-									<ButtonIcon icon="edit" label="Edit legendary actions per round" />
-
-									<template #popper>
-										<div class="v-popper__custom-menu">
-											<LabelledNumberInput v-model="data.misc.legActionsPerRound" title="Legendary actions per round" :step="1" :min="0" />
-										</div>
+								<DropdownMenu>
+									<template #activator="{ props }">
+										<ButtonIcon icon="edit" label="Legendary actions per round" v-bind="props" />
 									</template>
-								</VDropdown>
+									<v-card min-width="300" class="text-center pb-2 pa-4"
+										subtitle="Set legendary actions per round">
+										<v-card-actions>
+											<v-number-input v-model="data.misc.legActionsPerRound" :min="0" />
+										</v-card-actions>
+									</v-card>
+								</DropdownMenu>
 							</td>
 						</tr>
 					</template>

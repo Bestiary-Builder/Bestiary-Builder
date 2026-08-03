@@ -108,7 +108,6 @@ const getDraggableKey = (item: any) => {
 			isCurrent: true
 		}
 	]">
-		<!-- <ButtonIcon icon="plus" label="Create new bestiary" inverted @click="showCreateModal = true" /> -->
 		<v-dialog max-width="750">
 			<template v-slot:activator="{ props: activatorProps }">
 				<ButtonIcon icon="plus" label="Create new bestiary" inverted v-bind="activatorProps" />

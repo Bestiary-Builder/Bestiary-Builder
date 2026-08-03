@@ -15,13 +15,15 @@ _???, 2026_
 - Added a rich text editor for major text fields like description.
 - Added the ability to edit the attacks of Avrae Characters on BB.
 - Improved UI of many page components with Vuetify -> increased accessibility, hints, and mobile support.
+- Added modal dialogs for creating new collections
 - Improved the statblock editor by modernizing many interfaces.
 - Improved code quality and maintainability.
 - Minor fields like ac source and senses now support markdown formatting, i.e. can be made italic or bold etc.
 - Added 2024 SRD Creature and Actions.
 - Added a user setting to choose between 2024 and 2014 SRD options.
 - Added more image export options: 1 column, 2 column, 2 column extra wide
-- Updated the available default spells to choose from when editing spellcasting on a creature.
+- Updated the available default spells to choose from when editing spellcasting on a creature to all currently published spells.
+
 ### Fixes
 - Improved the accuracy of the 2014 SRD Creatures and Actions data.
 - Fixed class based spellcasting to hit not having a + on positive values.

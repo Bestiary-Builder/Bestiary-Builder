@@ -109,26 +109,6 @@ provide("setActionDescription", false);
 		</RouterLink> for how to enable this.
 	</div>
 	<div v-else-if="character" class="content">
-		      <v-autocomplete
-        label="Autocomplete"
-        :items="[
-    { type: 'subheader', title: 'Group 1' },
-    { title: 'Item 1.1', value: 11 },
-    { title: 'Item 1.2', value: 12 },
-    { title: 'Item 1.3', value: 13 },
-    { title: 'Item 1.4', value: 14 },
-    { type: 'divider', text: 'or' },
-    { type: 'subheader', title: 'Group 2' },
-    { title: 'Item 2.1', value: 21 },
-    { title: 'Item 2.2', value: 22 },
-    { title: 'Item 2.3', value: 23 },
-  ]"
-        variant="outlined"
-        multiple
-        chips
-        closable-chips
-      ></v-autocomplete>
-
 		<div class="selected-container">
 			<select v-model="activeAttackIndex" style="width: 250px;">
 				<option :value="-1">

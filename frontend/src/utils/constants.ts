@@ -56,7 +56,7 @@ export const resistanceList = [
 	"Nonmagical Nonsilvered Bludgeoning",
 	"Nonmagical Nonsilvered Piercing",
 	"Nonmagical Nonsilvered Slashing"
-] as const;
+] as const as string[];
 
 export const conditionList = [
 	"Blinded",
@@ -75,7 +75,7 @@ export const conditionList = [
 	"Restrained",
 	"Stunned",
 	"Unconscious"
-] as const;
+] as const as string[];
 
 export const languages = [
 	"All",
@@ -105,7 +105,7 @@ export const languages = [
 	"Thieves' Cant",
 	"Undercommon",
 	"Understands the languages of its creator but can't speak"
-] as const;
+] as const as string[];
 
 export const alignments = [
 	"Unaligned",
@@ -133,12 +133,12 @@ export const alignments = [
 	"Typically Lawful Evil",
 	"Typically Neutral Evil",
 	"Typically Chaotic Evil"
-] as const;
+] as const as string[];
 
-export const sizes = ["Tiny", "Small", "Medium", "Large", "Huge", "Gargantuan"] as const;
+export const sizes = ["Tiny", "Small", "Medium", "Large", "Huge", "Gargantuan"] as const as string[];
 
 export const creatureTypes = ["Aberration", "Beast", "Celestial", "Construct", "Dragon", "Elemental", "Fey", "Fiend", "Giant", "Humanoid", "Monstrosity", "Ooze", "Plant", "Undead"] as const as string[];
 
-export const classes = ["Artificer", "Bard", "Cleric", "Druid", "Paladin", "Ranger", "Sorcerer", "Warlock", "Wizard"] as const;
+export const classes = ["Artificer", "Bard", "Cleric", "Druid", "Paladin", "Ranger", "Sorcerer", "Warlock", "Wizard"] as const as string[];
 
-export const classLevels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20] as const;
+export const classLevels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20] as const as number[];

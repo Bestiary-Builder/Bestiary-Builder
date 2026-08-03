@@ -5,7 +5,7 @@ import { refDebounced, useLocalStorage } from "@vueuse/core";
 import { onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import Draggable from "vuedraggable";
-import CopyManager from "@/components/Bestiary/CopyManager.vue";
+import CopyCreature from "@/components/Bestiary/CopyCreature.vue";
 import CreatureListItem from "@/components/Bestiary/CreatureListItem.vue";
 import StatusIcon from "@/components/Bestiary/StatusIcon.vue";
 import UserBanner from "@/components/Bestiary/UserBanner.vue";
@@ -351,7 +351,7 @@ const getDraggableKey = (item: any) => {
 				}
 			]"
 		>
-			<CopyManager :may-import="false" :current-creatures="creatures || []" can-copy-current-bestiary @copy-current-bestiary="copyCurrentBestiary" />
+			<CopyCreature :may-import="false" :current-creatures="creatures || []" can-copy-current-bestiary @copy-current-bestiary="copyCurrentBestiary" />
 			<ButtonIcon v-if="false" icon="thumbtack" label="Unpin currently pinned creature" style="rotate: 45deg" @click="lastClickedCreature = null" />
 			<VDropdown :distance="6" :positioning-disabled="store.isMobile">
 				<ButtonIcon icon="tag" label="Filter bestiary" />
@@ -376,8 +376,8 @@ const getDraggableKey = (item: any) => {
 							</div>
 						</LabelledComponent>
 						<div class="two-wide">
-							<CRInput v-model="searchOptions.minCr" title="Minimum CR" />
-							<CRInput v-model="searchOptions.maxCr" title="Maximum CR" />
+							<CRInput v-model="searchOptions.minCr" label="Minimum CR" />
+							<CRInput v-model="searchOptions.maxCr" label="Maximum CR" />
 						</div>
 						<span v-if="searchOptions.minCr > searchOptions.maxCr" class="warning" style="text-align: center"> Min is bigger than max </span>
 						<LabelledComponent title="Environment" for="environment">

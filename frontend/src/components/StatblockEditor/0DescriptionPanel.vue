@@ -41,7 +41,7 @@ const imageRules = [
 			</div>
 		</div>
 
-		<div class="editor-field__container one-wide">
+		<div class="editor-field__container one-wide pb-4">
 			<LabelledComponent v-if="data" title="Description" for="description">
 				<Editor v-model="data.description.description" />
 			</LabelledComponent>

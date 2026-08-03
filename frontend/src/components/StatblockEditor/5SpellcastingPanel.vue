@@ -10,6 +10,7 @@ import LabelledComponent from "../FormInputs/LabelledComponent.vue";
 import LabelledNumberInput from "../FormInputs/LabelledNumberInput.vue";
 import Modal from "../Global/Modal.vue";
 import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
+import { useRules } from "vuetify/labs/rules";
 
 const { data, rawInfo } = defineProps<{ data: Statblock; rawInfo: CreatureWithStats | null }>();
 
@@ -112,29 +113,47 @@ const addNewDaily = () => {
 };
 
 const showSpellSlotModal = ref(false);
+
+const rules = useRules()
 </script>
 
 <template>
-	<div id="tabpanel-6" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0" aria-labelledby="tab-6">
-		<SectionHeader title="Innate Spellcasting" />
+	<div id="tabpanel-6" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0"
+		aria-labelledby="tab-6">
+		<SectionHeader title="Daily Spells" />
 		<div class="editor-field__container three-wide">
-			<LabelledComponent title="Casting ability" for="castingability">
-				<v-select v-model="data.spellcasting.innateSpells.spellCastingAbility" :options="stats" input-id="castingability" />
-			</LabelledComponent>
-			<LabelledComponent title="Not these components" for="notthesecomponents">
-				<v-select v-model="data.spellcasting.innateSpells.noComponentsOfType" :options="['Material', 'Verbal', 'Somatic']" multiple :deselect-from-dropdown="true" :close-on-select="false" input-id="notthesecomponents" />
-			</LabelledComponent>
-			<LabelledComponent title="Display as action?" for="displayasaction">
-				<span> <input id="displayasaction" v-model="data.spellcasting.innateSpells.displayAsAction" type="checkbox"> <label for="displayasaction"><small>Toggles display as action</small></label> </span>
-			</LabelledComponent>
+			<div>
+				<v-select v-model="data.spellcasting.innateSpells.spellCastingAbility" :items="stats"
+					label="Casting ability" input-id="castingability" />
+			</div>
+
+			<div>
+				<v-select v-model="data.spellcasting.innateSpells.noComponentsOfType"
+					:items="['Material', 'Verbal', 'Somatic']" multiple chips closable-chips
+					label="Not these components" />
+			</div>
+			<div>
+				<v-checkbox label="Display as Action" v-model="data.spellcasting.innateSpells.displayAsAction"
+					color="primary" density="compact" hide-details />
+				<v-checkbox label="Display as Psionics" v-model="data.spellcasting.innateSpells.isPsionics"
+					color="primary" density="compact" hide-details />
+			</div>
 		</div>
 		<div class="editor-field__container two-wide">
 			<TransitionGroup name="list">
 				<template v-for="_, times in data.spellcasting.innateSpells.spellList" :key="times">
-					<LabelledComponent :title="times === '0' ? 'At will' : `${times}/day`" takes-custom-text-input :for="`innateSpellTimes${times}`">
+					<LabelledComponent :title="times === '0' ? 'At will' : `${times}/day`" takes-custom-text-input
+						:for="`innateSpellTimes${times}`">
 						<div :class="{ 'select-with-delete': parseInt(times.toString()) > 3 }">
-							<v-select v-model="data.spellcasting.innateSpells.spellList[times]" :reduce="(sp : any) => ({ spell: sp.spell ?? sp, comment: sp.comment ?? '' })" width="100%" label="spell" :options="spellListFlattened" multiple :deselect-from-dropdown="true" :close-on-select="false" :input-id="`innateSpellTimes${times}`" :taggable="true" :push-tags="true" />
-							<font-awesome-icon v-if="parseInt(times.toString()) > 3" v-tooltip="'Delete this daily amount'" :icon="['fas', 'trash']" class="delete-button button-icon" @click="delete data.spellcasting.innateSpells.spellList[times]" />
+							<v-select v-model="data.spellcasting.innateSpells.spellList[times]"
+								:reduce="(sp: any) => ({ spell: sp.spell ?? sp, comment: sp.comment ?? '' })"
+								width="100%" label="spell" :items="spellListFlattened" multiple
+								:deselect-from-dropdown="true" :close-on-select="false"
+								:input-id="`innateSpellTimes${times}`" :taggable="true" :push-tags="true" />
+							<font-awesome-icon v-if="parseInt(times.toString()) > 3"
+								v-tooltip="'Delete this daily amount'" :icon="['fas', 'trash']"
+								class="delete-button button-icon"
+								@click="delete data.spellcasting.innateSpells.spellList[times]" />
 						</div>
 					</LabelledComponent>
 				</template>
@@ -143,57 +162,97 @@ const showSpellSlotModal = ref(false);
 
 		<div class="editor-field__container three-wide">
 			<LabelledComponent title="Add daily amount" for="innateSpellDailyAmount">
-				<LabelledNumberInput v-model="newDailyAmount" title="" :min="4" :step="1" :is-clearable="true" label-id="innateSpellDailyAmount" />
+				<LabelledNumberInput v-model="newDailyAmount" title="" :min="4" :step="1" :is-clearable="true"
+					label-id="innateSpellDailyAmount" />
 				<button class="btn" @click="addNewDaily()">
 					Add
 				</button>
 			</LabelledComponent>
-
-			<LabelledComponent title="Is psionics?" for="ispsionics">
-				<span> <input id="ispsionics" v-model="data.spellcasting.innateSpells.isPsionics" type="checkbox"> <label for="ispsionics"><small>Toggles display as psionics</small></label>  </span>
-			</LabelledComponent>
-
 			<LabelledComponent title="Edit specific spells" for="editspells">
 				<button id="editspells" class="btn" @click="showSpellModal = true">
 					Edit cast level/add comment
 				</button>
 			</LabelledComponent>
 			<LabelledComponent title="Description override" for="innateDescription">
-				<textarea id="innateDescription" v-model="data.spellcasting.innateSpells.customDescription" rows="2" :maxlength="store.limits?.descriptionLength" />
+				<textarea id="innateDescription" v-model="data.spellcasting.innateSpells.customDescription" rows="2"
+					:maxlength="store.limits?.descriptionLength" />
 			</LabelledComponent>
-
-			<LabelledNumberInput v-model="data.spellcasting.innateSpells.spellDcOverride" title="DC override" :step="1" :is-clearable="true" label-id="innateSpellDcOverride" />
-			<LabelledNumberInput v-model="data.spellcasting.innateSpells.spellBonusOverride" title="Attack bonus override" :step="1" :is-clearable="true" label-id="innateSpellBonusOverride" />
+			<div>
+				<v-number-input v-model="data.spellcasting.innateSpells.spellDcOverride" label="DC Override"
+					clearable />
+			</div>
+			<div>
+				<v-number-input v-model="data.spellcasting.innateSpells.spellBonusOverride"
+					label="Attack Bonus Override" clearable />
+			</div>
 		</div>
 
 		<SectionHeader title="Class Spellcasting" />
 		<div class="editor-field__container two-wide">
-			<LabelledComponent title="Class" for="castingClass">
-				<v-select v-model="data.spellcasting.casterSpells.castingClass" :options="classes" input-id="castingClass" />
-			</LabelledComponent>
-			<LabelledComponent title="Class level" for="classLevel">
-				<v-select v-model="data.spellcasting.casterSpells.casterLevel" :options="classLevels" input-id="classLevel" />
-			</LabelledComponent>
-
-			<LabelledNumberInput v-model="data.spellcasting.casterSpells.spellDcOverride" title="DC override" :step="1" :is-clearable="true" label-id="spellDcOverride" />
-			<LabelledNumberInput v-model="data.spellcasting.casterSpells.spellBonusOverride" title="Attack bonus override" :step="1" label-id="spellBonusOverride" />
-			<LabelledComponent title="Description override" for="casterDescription">
-				<textarea id="casterDescription" v-model="data.spellcasting.casterSpells.customDescription" rows="2" :maxlength="store.limits?.descriptionLength" />
-			</LabelledComponent>
-
-			<LabelledComponent title="Edit spell slots" for="editspellslots">
-				<button id="editspellslots" class="btn" @click="showSpellSlotModal = true">
-					Edit spell slot amount
-				</button>
-			</LabelledComponent>
+			<div>
+				<v-select v-model="data.spellcasting.casterSpells.castingClass" :items="classes" label="Class" />
+			</div>
+			<div>
+				<v-select v-model="data.spellcasting.casterSpells.casterLevel" :items="classLevels"
+					label="Caster level" />
+			</div>
 		</div>
-		<div v-if="data.spellcasting.casterSpells.castingClass" class="editor-field__container two-wide">
-			<LabelledComponent v-if="!['Ranger', 'Paladin'].includes(data.spellcasting.casterSpells.castingClass)" title="Cantrips" takes-custom-text-input for="cantrips">
-				<v-select v-model="data.spellcasting.casterSpells.spellList[0]" :options="spellList![0]" multiple :deselect-from-dropdown="true" :close-on-select="false" :taggable="true" :push-tags="true" input-id="cantrips" />
-			</LabelledComponent>
-			<LabelledComponent v-for="level in spellLevelList" :key="level" :title="`Level ${level}`" takes-custom-text-input :for="`spellLevel${level}`">
-				<v-select v-model="data.spellcasting.casterSpells.spellList[level]" :options="getSpellsByLevel(level)" multiple :deselect-from-dropdown="true" :close-on-select="false" :taggable="true" :push-tags="true" :title="`Level ${level}`" :input-id="`spellLevel${level}`" />
-			</LabelledComponent>
+		<v-container v-if="data.spellcasting.casterSpells.castingClass" class="pa-0">
+			<v-row>
+				<v-col cols="6">
+					<v-combobox v-model="data.spellcasting.casterSpells.spellList[0]" :items="spellList![0]" multiple
+						chips closable-chips label="Cantrips"
+						v-if="!['Ranger', 'Paladin'].includes(data.spellcasting.casterSpells.castingClass)"
+						hint="Allows custom spells" />
+				</v-col>
+				<v-col v-for="level in spellLevelList" :key="level" cols="6">
+					<v-combobox v-model="data.spellcasting.casterSpells.spellList[level]"
+						:items="getSpellsByLevel(level)" multiple chips closable-chips :label="`Level ${level} spells`"
+						hint="Allows custom spells" />
+				</v-col>
+			</v-row>
+		</v-container>
+		<div class="grid-two">
+			<v-dialog max-width="950">
+				<template v-slot:activator="{ props: activatorProps }">
+					<v-btn v-bind="activatorProps"> Customize defaults </v-btn>
+				</template>
+
+				<template v-slot:default="{ isActive }">
+					<v-card title="Customize class spellcasting defaults"
+						subtitle="The options here allow you to customize the defaults inferred from the statblock and default rules">
+						<v-sheet class="pa-4">
+							<v-container  class="pa-0">
+								<v-row>
+									<v-col>
+										<v-number-input v-model="data.spellcasting.casterSpells.spellDcOverride"
+											label="DC Override" clearable />
+									</v-col>
+									<v-col>
+										<v-number-input v-model="data.spellcasting.casterSpells.spellBonusOverride"
+											label="Attack Bonus Override" clearable />
+									</v-col>
+								</v-row>
+							</v-container>
+							<div>
+								<v-textarea label="Description override"
+									v-model="data.spellcasting.casterSpells.customDescription" />
+							</div>
+							<v-container class="pa-0" v-if="data.spellcasting.casterSpells.spellSlotList">
+								<v-row gap="16">
+									<v-col cols="4" v-for="x in 9" :key="x">
+										<v-number-input :label="`Level ${x} slots number`" :min="0"
+											v-model="data.spellcasting.casterSpells.spellSlotList[x]" />
+									</v-col>
+								</v-row>
+							</v-container>
+						</v-sheet>
+						<v-card-actions>
+							<v-btn @click="isActive.value = false"> Close </v-btn>
+						</v-card-actions>
+					</v-card>
+				</template>
+			</v-dialog>
 		</div>
 	</div>
 
@@ -206,8 +265,10 @@ const showSpellSlotModal = ref(false);
 			<div class="two-wide">
 				<template v-for="times in data.spellcasting.innateSpells.spellList" :key="times">
 					<template v-if="times.length > 0">
-						<LabelledComponent v-for="(spell, index) in times" :key="index" :title="spell.spell" :for="`editSpell${spell.spell}`">
-							<input :id="`editSpell${spell.spell}`" v-model="spell.comment" type="text" placeholder="comment">
+						<LabelledComponent v-for="(spell, index) in times" :key="index" :title="spell.spell"
+							:for="`editSpell${spell.spell}`">
+							<input :id="`editSpell${spell.spell}`" v-model="spell.comment" type="text"
+								placeholder="comment">
 						</LabelledComponent>
 					</template>
 				</template>
@@ -220,10 +281,12 @@ const showSpellSlotModal = ref(false);
 			Edit Spell Slot Amount
 		</template>
 		<template #body>
-			<p>You can use this to edit how many spell slots a creature has. <br> Note that changing a creature's spellcasting level or class will reset this. </p>
+			<p>You can use this to edit how many spell slots a creature has. <br> Note that changing a creature's
+				spellcasting level or class will reset this. </p>
 			<div v-if="data.spellcasting.casterSpells.spellSlotList" class="two-wide">
 				<template v-for="x in 9" :key="x">
-					<LabelledNumberInput v-model="data.spellcasting.casterSpells.spellSlotList[x]" :title="`Level ${x}`" :min="0" :max="9" :step="1" :label-id="`editSpellSlot${x}`" />
+					<LabelledNumberInput v-model="data.spellcasting.casterSpells.spellSlotList[x]" :title="`Level ${x}`"
+						:min="0" :max="9" :step="1" :label-id="`editSpellSlot${x}`" />
 				</template>
 			</div>
 		</template>

@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import type { BestiaryExtended, CreatureWithStats, Statblock } from "~/shared";
 import { Shimmer } from "@shimmer-from-structure/vue";
-import html2canvas from "html2canvas";
 import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
-import CopyManager from "@/components/Bestiary/CopyManager.vue";
+import CopyCreature from "@/components/Bestiary/CopyCreature.vue";
 import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import ButtonIcon from "@/components/Global/ButtonIcon.vue";
 import Modal from "@/components/Global/Modal.vue";
@@ -22,6 +21,7 @@ import { $toast, htmlToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { defaultStatblock } from "~/shared";
+import ExportCreature from "@/components/Bestiary/ExportCreature.vue";
 
 const $route = useRoute();
 const $router = useRouter();
@@ -151,23 +151,24 @@ watch(() => data.value.description.name, () => {
 }, { immediate: true });
 
 // import
-const showImportModal = ref(false);
+const importText = ref("")
+type ImportTypes = '' | 'CritterDB Creature link' | 'Bestiary Builder JSON' | '5e Tools JSON'
+const importType = ref<ImportTypes>("")
 const notices = ref<{ [key: string]: string[] }>({});
-const toolsjson = ref("");
 
 const import5etools = async () => {
-	if (toolsjson.value.startsWith("___")) {
+	if (importText.value.startsWith("___")) {
 		$toast.error("You copied the markdown code, not the JSON.");
 		return;
 	}
 	try {
-		const json = JSON.parse(toolsjson.value);
+		const json = JSON.parse(importText.value);
 		const { success, data: cData, error } = await useFetch<{ stats: Statblock; notices: { [key: string]: string[] } }>("/api/5etools-import", "POST", json);
 		if (!success)
 			throw error;
 		data.value = cData?.stats;
 		notices.value = cData?.notices;
-		toolsjson.value = "";
+		importText.value = "";
 		$toast.success(`Successfully imported ${data.value.description.name}`);
 		void getUmami()?.track("Import creature from 5eTools");
 	}
@@ -176,10 +177,9 @@ const import5etools = async () => {
 	}
 };
 
-const bestiaryBuilderJson = ref("");
 const importBestiaryBuilder = async () => {
 	try {
-		let creature = JSON.parse(bestiaryBuilderJson.value);
+		let creature = JSON.parse(importText.value);
 		if (Array.isArray(creature))
 			creature = creature[0];
 		// Validate input
@@ -188,7 +188,7 @@ const importBestiaryBuilder = async () => {
 		if (success) {
 			data.value = creature;
 			notices.value = {};
-			bestiaryBuilderJson.value = "";
+			importText.value = "";
 			$toast.success(`Successfully imported ${data.value.description.name}`);
 			void getUmami()?.track("Import creature from BestiaryBuilder");
 		}
@@ -197,7 +197,6 @@ const importBestiaryBuilder = async () => {
 				duration: 0
 			});
 		}
-		showImportModal.value = false;
 	}
 	catch (e) {
 		console.error(e);
@@ -205,9 +204,8 @@ const importBestiaryBuilder = async () => {
 	}
 };
 
-const critterLink = ref("");
 const importCritterDB = async () => {
-	let link = critterLink.value.trim();
+	let link = importText.value.trim();
 	try {
 		const url = new URL(link);
 		if (url.hostname !== "critterdb.com" && !url.hostname.endsWith(".critterdb.com")) {
@@ -230,65 +228,21 @@ const importCritterDB = async () => {
 	}
 
 	data.value = cData as Statblock;
-	showImportModal.value = false;
 	$toast.success(`Successfully imported ${data.value.description.name}`);
 	void getUmami()?.track("Import creature from CritterDB");
 };
 
+const importCreatureFromUserInput = async () => {
+	if (importType.value === '5e Tools JSON') import5etools()
+	if (importType.value === 'Bestiary Builder JSON') await importBestiaryBuilder()
+	if (importType.value === 'CritterDB Creature link') await importCritterDB()
+}
+
+// import from CopyManager
 const importCreature = async (creature: Statblock) => {
 	data.value = creature;
 	await saveStatblock(false);
 	$toast.success(`Successfully imported ${data.value.description.name}`);
-};
-
-// export
-const exportStatblock = async () => {
-	const text = JSON.stringify(data.value, null, 2);
-	await navigator.clipboard.writeText(text);
-	$toast.info("Exported this statblock to your clipboard.");
-	void getUmami()?.track("Export statblock to clipboard");
-};
-
-const exportHomebrery = async () => {
-	try {
-		const { success, data: resultData, error } = await useFetch<{ metadata: string }>(
-			`/api/homebrewery/export/creature/${$route.params.id.toString()}`,
-			"GET"
-		);
-		if (success) {
-			await navigator.clipboard.writeText(resultData.metadata);
-			$toast.info("Exported this statblock markdown to your clipboard");
-			void getUmami()?.track("Export statblock to homebrewery");
-		}
-		else {
-			$toast.error(error);
-		}
-	}
-	catch (err) {
-		$toast.error(err as string);
-	}
-};
-
-const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
-	const loader = $loading.show();
-	const el = document.getElementById("statblock");
-	if (!el)
-		return;
-
-	el.style = `width: ${type === "2x1 wide" ? "1200" : "800"}px; column-count: ${type === "1x1" ? "1" : "2"};`;
-	el.classList.add("toPrint");
-
-	const canvas = await html2canvas(el, { scale: 2 });
-	const image = canvas.toDataURL("image/jpeg");
-	const link = document.createElement("a");
-
-	link.download = `${data.value.description.name} from BestiaryBuilder (${type}).jpg`;
-	link.href = image;
-	link.click();
-	el.classList.remove("toPrint");
-	el.style = "";
-	loader.hide();
-	void getUmami()?.track("Export statblock to image");
 };
 </script>
 
@@ -320,41 +274,58 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 					@click="shouldShowEditor = !shouldShowEditor" />
 			</template>
 
-			<CopyManager v-if="rawInfo" no-import-all :may-import="isOwner || isEditor"
+			<CopyCreature v-if="rawInfo" no-import-all :may-import="isOwner || isEditor"
 				:current-creature="{ ...rawInfo, bestiaryName: bestiary.name }"
 				@import-creature="(creature) => importCreature(creature)" />
-			<ButtonIcon v-if="isOwner || isEditor" icon="arrow-right-to-bracket" label="Import statblock"
-				@click="showImportModal = true" />
 
-			<VDropdown :distance="6" :positioning-disabled="store.isMobile">
-				<ButtonIcon icon="arrow-right-from-bracket" label="Export statblock" />
-				<template #popper>
-					<div class="v-popper__custom-menu">
-						<span>
-							Export this creature
-						</span>
-						<button v-close-popper class="btn confirm" @click="exportStatblock">
-							JSON
-						</button>
-						<button v-close-popper class="btn confirm" @click="exportHomebrery">
-							Homebrewery
-						</button>
-						<LabelledComponent title="Image export options">
-							<div style="display: flex;flex-direction: column;gap: 1rem;">
-								<button v-close-popper class="btn confirm" @click="exportToImage('2x1')">
-									2 columns (Recommended)
-								</button>
-								<button v-close-popper class="btn confirm" @click="exportToImage('1x1')">
-									1 column
-								</button>
-								<button v-close-popper class="btn confirm" @click="exportToImage('2x1 wide')">
-									2 columns extra wide
-								</button>
-							</div>
-						</LabelledComponent>
-					</div>
+
+			<v-dialog width="600" v-if="isOwner || isEditor">
+				<template v-slot:activator="{ props: activatorProps }">
+					<ButtonIcon icon="arrow-right-to-bracket" label="Import Creature" v-bind="activatorProps" />
 				</template>
-			</VDropdown>
+
+				<template v-slot:default="{ isActive }">
+
+					<v-card class="text-center pb-2 pa-4" title="Import Creature">
+						<v-card-actions class="d-flex flex-column align-center justify-center" min-width="200">
+							<v-select label="Choose import type"
+								:items="['Bestiary Builder JSON', '5e Tools JSON', 'CritterDB Creature link']"
+								v-model="importType" class="w-100" />
+							<v-text-field
+								:label="importType === 'CritterDB Creature link' ? 'Import link' : 'Import data'"
+								v-model="importText" class="w-100" v-if="importType" />
+							<v-spacer v-else />
+							<v-btn v-if="importText" class="w-100" color="green"
+								@click="importCreatureFromUserInput">Import</v-btn>
+							<v-spacer v-else />
+							<div v-if="JSON.stringify(notices) !== '{}'" class="pa-0 text-left">
+								<p class="warning">
+									<b>Please note the following for this import:</b>
+								</p>
+								<p>Some features may not have automation as they should, aka description only features,
+									but some
+									might not have imported correctly or are missing certain parts. It is recommended to
+									review.</p>
+								<div v-for="(type, index) in notices" :key="index">
+									<h3 v-if="type.length > 0">
+										{{ index }}
+									</h3>
+									<ul v-if="type.length > 0">
+										<li v-for="(notice, indexInner) in type" :key="indexInner">
+											{{ notice }}
+										</li>
+									</ul>
+								</div>
+							</div>
+						</v-card-actions>
+						<v-card-actions>
+							<v-btn text="Cancel" @click="isActive.value = false; importType = ''; importText = ''" />
+						</v-card-actions>
+					</v-card>
+				</template>
+			</v-dialog>
+
+			<ExportCreature :data="data" />
 		</Breadcrumbs>
 		<div class="content more-wide" :class="{ 'is-statblock-only': !shouldShowEditor }">
 			<v-sheet elevation="2" color="surface-1">
@@ -374,13 +345,13 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 								<DescriptionPanel :data="data" />
 							</v-sheet>
 						</v-tabs-window-item>
-						<v-tabs-window-item :value="2" >
+						<v-tabs-window-item :value="2">
 							<v-sheet color="surface-1" class="pa-4">
 								<CorePanel :data="data" />
 							</v-sheet>
 						</v-tabs-window-item>
-						<v-tabs-window-item :value="3" >
-							<v-sheet color="surface-1"class="pa-4">
+						<v-tabs-window-item :value="3">
+							<v-sheet color="surface-1" class="pa-4">
 								<StatsPanel :data="data" />
 							</v-sheet color="surface-1">
 						</v-tabs-window-item>
@@ -409,63 +380,6 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 				</Shimmer>
 			</div>
 		</div>
-
-		<Modal :show="showImportModal" @close="showImportModal = false">
-			<template #header>
-				Import Creatures
-			</template>
-			<template #body>
-				<LabelledComponent title="Bestiary Builder JSON" for="bestiarybuilderjson">
-					<p>Insert the JSON as text gotten from clicking export on another creature within Bestiary Builder.
-					</p>
-					<div class="two-wide">
-						<input id="bestiarybuilderjson" v-model="bestiaryBuilderJson" type="text">
-						<button class="btn confirm" @click="importBestiaryBuilder">
-							Import
-						</button>
-					</div>
-				</LabelledComponent>
-				<hr>
-				<LabelledComponent title="5e Tools JSON" for="toolsjson">
-					<p>Insert 5e.tools JSON as text into this field, gotten from clicking export on 5e.tools and copying
-						the JSON.</p>
-					<div class="two-wide">
-						<input id="toolsjson" v-model="toolsjson" type="text">
-						<button class="btn confirm" @click.prevent="import5etools">
-							Import
-						</button>
-					</div>
-				</LabelledComponent>
-				<hr>
-				<LabelledComponent title="CritterDB JSON" for="critterjson">
-					<p>Insert a CritterDB link to a single creature here.</p>
-					<div class="two-wide">
-						<input id="critterjson" v-model="critterLink" type="text">
-						<button class="btn confirm" @click.prevent="importCritterDB">
-							Import
-						</button>
-					</div>
-				</LabelledComponent>
-
-				<div v-if="JSON.stringify(notices) !== '{}'">
-					<p class="warning">
-						<b>Please note the following for this import:</b>
-					</p>
-					<p>Some features may not have automation as they should, aka description only features, but some
-						might not have imported correctly or are missing certain parts. It is recommended to review.</p>
-					<div v-for="(type, index) in notices" :key="index">
-						<h3 v-if="type.length > 0">
-							{{ index }}
-						</h3>
-						<ul v-if="type.length > 0">
-							<li v-for="(notice, indexInner) in type" :key="indexInner">
-								{{ notice }}
-							</li>
-						</ul>
-					</div>
-				</div>
-			</template>
-		</Modal>
 	</div>
 </template>
 
@@ -476,29 +390,12 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 	grid-template-columns: 1fr 1fr;
 }
 
-.content.is-statblock-only {
-	grid-template-columns: 1fr;
-
-	.content-container__inner {
-		width: 60%;
-		margin: auto;
-	}
-}
-
 @media screen and (max-width: 1200px) {
 	.content {
 		grid-template-columns: 1fr;
-
-		&.is-statblock-only .content-container__inner {
-			width: 100%;
-			margin: unset;
-		}
 	}
 }
 
-.content-container__inner:first-of-type {
-	background-color: var(--color-surface-1);
-}
 </style>
 
 <style lang="less">

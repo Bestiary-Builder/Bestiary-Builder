@@ -6,7 +6,7 @@ import { refDebounced, useLocalStorage } from "@vueuse/core";
 import { onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import Draggable from "vuedraggable";
-import CopyManager from "@/components/Bestiary/CopyManager.vue";
+import CopyCreature from "@/components/Bestiary/CopyCreature.vue";
 import CreatureListItem from "@/components/Bestiary/CreatureListItem.vue";
 import StatusIcon from "@/components/Bestiary/StatusIcon.vue";
 import UserBanner from "@/components/Bestiary/UserBanner.vue";
@@ -644,7 +644,7 @@ const getDraggableKey = (item: any) => {
 			</DropdownMenu>
 
 
-			<CopyManager :may-import="isOwner || isEditor" :current-creatures="creatures || []"
+			<CopyCreature :may-import="isOwner || isEditor" :current-creatures="creatures || []"
 				can-copy-current-bestiary @import-creature="(creature) => createCreature(creature, true, false)"
 				@import-all-creatures="createManyCreatures" @copy-current-bestiary="copyCurrentBestiary" />
 
@@ -744,8 +744,8 @@ const getDraggableKey = (item: any) => {
 							<v-text-field v-model="searchText" label="Name" width="200" />
 							<v-select :items="creatureTypes" label="Creature type" v-model="searchOptions.tags" multiple
 								chips closable-chips width="200" />
-							<CRInput v-model="searchOptions.minCr" title="Minimum CR" />
-							<CRInput v-model="searchOptions.maxCr" title="Maximum CR" />
+							<CRInput v-model="searchOptions.minCr" label="Minimum CR" />
+							<CRInput v-model="searchOptions.maxCr" label="Maximum CR" />
 							<v-text-field v-model="searchFaction" label="Faction" width="200" />
 							<v-text-field v-model="searchEnv" label="Environment" width="200" />
 
