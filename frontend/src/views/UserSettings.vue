@@ -11,6 +11,8 @@ import { $toast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { sendToLogin, useFetch } from "@/utils/utils";
 import { SupporterStatus } from "~/shared";
+import DropdownMenu from "@/components/Global/DropdownMenu.vue";
+import ButtonIcon from "@/components/Global/ButtonIcon.vue";
 
 const logoutClick = async () => {
 	const { success, error } = await useFetch("/api/logout");
@@ -285,15 +287,13 @@ const AvraeToken = useLocalStorage("AvraeToken", "");
 </script>
 
 <template>
-	<Breadcrumbs
-		:routes="[
-			{
-				path: '',
-				text: 'User',
-				isCurrent: true
-			}
-		]" :is-less-wide="true"
-	/>
+	<Breadcrumbs :routes="[
+		{
+			path: '',
+			text: 'User',
+			isCurrent: true
+		}
+	]" :is-less-wide="true" />
 	<div class="content less-wide">
 		<div v-if="!store.user">
 			<p> You are not logged in. Login with Discord to begin.</p>
@@ -304,13 +304,17 @@ const AvraeToken = useLocalStorage("AvraeToken", "");
 		<div v-else>
 			<div class="list">
 				<p> You are logged in to Bestiary Builder with Discord as <b> {{ store.user.username }} </b>.</p>
-				<p> You have been a user of Bestiary Builder since <b>{{ store.user.joinedAt ? new Date(store.user.joinedAt).toDateString() : "Not Found" }}</b>.</p>
+				<p> You have been a user of Bestiary Builder since <b>{{ store.user.joinedAt ? new
+					Date(store.user.joinedAt).toDateString() : "Not Found" }}</b>.</p>
 				<p> You have created <b>{{ bestiaryCount }}</b> bestiaries since then.</p>
 				<p v-if="store.user.supporter === SupporterStatus.none">
 					If you enjoy using our site, consider supporting us on Patreon!
-					As a Patreon, you will have several benefits and your support will help Bestiary Builder stay online.
+					As a Patreon, you will have several benefits and your support will help Bestiary Builder stay
+					online.
 				</p>
-				<span v-if="!(store.user.supporter === SupporterStatus.wirmling || store.user.supporter === SupporterStatus.greatwyrm)" class="center">
+				<span
+					v-if="!(store.user.supporter === SupporterStatus.wirmling || store.user.supporter === SupporterStatus.greatwyrm)"
+					class="center">
 					<a href="https://www.patreon.com/join/BestiaryBuilder" class="patreon">
 						<font-awesome-icon icon="fa-brands fa-patreon" />
 						<span> Become a patreon </span>
@@ -321,15 +325,14 @@ const AvraeToken = useLocalStorage("AvraeToken", "");
 					If you cannot see your name display change on the website yet, make sure to join our discord.
 				</p>
 				<p v-if="store.user.supporter === SupporterStatus.greatwyrm">
-					You support us on Patreon as a <b> Greatwyrm </b> Tier supporter. Thank you so much for your support!
+					You support us on Patreon as a <b> Greatwyrm </b> Tier supporter. Thank you so much for your
+					support!
 					If you cannot see your name display change on the website yet, make sure to join our discord.
 				</p>
 			</div>
 
 			<div class="preferences-container">
-				<SectionHeader
-					title="User Preferences"
-				/>
+				<SectionHeader title="User Preferences" />
 				<div class="preferences">
 					<LabelledComponent title="Statblock Layout">
 						<div class="preview-container">
@@ -341,19 +344,22 @@ const AvraeToken = useLocalStorage("AvraeToken", "");
 									2014 (5e2014)
 								</option>
 							</select>
-							<VDropdown :positioning-disabled="store.isMobile">
-								<button v-tooltip="'Preview statblock'" aria-label="Preview statblock" class="btn-icon" style="color: orangered">
-									<font-awesome-icon :icon="['fas', 'eye']" />
-								</button>
-								<template #popper>
-									<div class="v-popper__custom-menu">
-										<StatblockRenderer :data="creatureData" :statblock-design="preferences.statblockDesign" :is2024="preferences.statblockLayout === 'SL_2024' " style="max-width: 650px" />
-									</div>
+							<DropdownMenu>
+								<template #activator="{ props }">
+									<ButtonIcon icon="eye" label="Preview statblock style" v-bind="props" />
 								</template>
-							</VDropdown>
+								<v-card min-width="300" class="pa-4">
+									<StatblockRenderer :data="creatureData"
+										:statblock-design="preferences.statblockDesign"
+										:is2024="preferences.statblockLayout === 'SL_2024'" style="max-width: 650px" />
+								</v-card>
+							</DropdownMenu>
 						</div>
 						<small>
-							Set statblock layout - this impacts where some aspects of the statblocks are located, whether stats and saves are displayed as table, and whether some words are capitalized according to the 2014 or 2024 format.
+							Set statblock layout - this impacts where some aspects of the statblocks are located,
+							whether stats and saves are
+							displayed as table, and whether some words are capitalized according to the 2014 or 2024
+							format.
 						</small>
 					</LabelledComponent>
 
@@ -373,16 +379,17 @@ const AvraeToken = useLocalStorage("AvraeToken", "");
 									Monster Manual (Compact)
 								</option>
 							</select>
-							<VDropdown :positioning-disabled="store.isMobile">
-								<button v-tooltip="'Preview statblock'" aria-label="Preview statblock" class="btn-icon" style="color: orangered">
-									<font-awesome-icon :icon="['fas', 'eye']" />
-								</button>
-								<template #popper>
-									<div class="v-popper__custom-menu">
-										<StatblockRenderer :data="creatureData" :statblock-design="preferences.statblockDesign" :is2024="preferences.statblockLayout === 'SL_2024' " style="max-width: 650px" />
-									</div>
+
+							<DropdownMenu>
+								<template #activator="{ props }">
+									<ButtonIcon icon="eye" label="Preview statblock style" v-bind="props" />
 								</template>
-							</VDropdown>
+								<v-card min-width="300" class="pa-4">
+									<StatblockRenderer :data="creatureData"
+										:statblock-design="preferences.statblockDesign"
+										:is2024="preferences.statblockLayout === 'SL_2024'" style="max-width: 650px" />
+								</v-card>
+							</DropdownMenu>
 						</div>
 						<small>
 							Change the visual design of the statblock. This changes its appearance only.
@@ -399,7 +406,11 @@ const AvraeToken = useLocalStorage("AvraeToken", "");
 							</option>
 						</select>
 						<small>
-							Set the default for which editor you want to edit automation with by default. Visual allows you to edit automation in a complete editor. Code allows you to edit YAML directly - this is for experienced Avrae coders. <br>You can always switch which editor to use when editing a feature directly.
+							Set the default for which editor you want to edit automation with by default. Visual allows
+							you to edit
+							automation in a complete editor. Code allows you to edit YAML directly - this is for
+							experienced Avrae coders.
+							<br>You can always switch which editor to use when editing a feature directly.
 						</small>
 					</LabelledComponent>
 
@@ -413,18 +424,23 @@ const AvraeToken = useLocalStorage("AvraeToken", "");
 							</option>
 						</select>
 						<small>
-							Set whether creating Creatures and Features from the SRD should use the 2024 or 2014 list of options.
+							Set whether creating Creatures and Features from the SRD should use the 2024 or 2014 list of
+							options.
 						</small>
 					</LabelledComponent>
 					<LabelledComponent title="Avrae Token">
 						<div id="avrae-token" class="preview-container">
 							<input v-model="AvraeToken" type="text">
 						</div>
-						<small> With this setting you can edit character attacks and import attacks to characters directly within BB. </small>
+						<small> With this setting you can edit character attacks and import attacks to characters
+							directly within BB.
+						</small>
 						<small> To get the Token:
 							<ol>
 								<li>
-									Log in on the <a href="https://avrae.io/dashboard/characters" style="color: orangered"> Avrae Dashboard </a>
+									Log in on the <a href="https://avrae.io/dashboard/characters"
+										style="color: orangered"> Avrae Dashboard
+									</a>
 								</li>
 								<li>
 									Open developer console (CTRL-SHIFT-I or Right click -> Inspect)
@@ -436,7 +452,8 @@ const AvraeToken = useLocalStorage("AvraeToken", "");
 									Choose Local Storage (https://avrae.io)
 								</li>
 								<li>
-									Copy the entire value of the <code> avrae-token key and paste it into the field above. </code>
+									Copy the entire value of the
+									<code> avrae-token key and paste it into the field above. </code>
 								</li>
 							</ol>
 						</small>
@@ -461,6 +478,7 @@ const AvraeToken = useLocalStorage("AvraeToken", "");
 		margin-top: 1rem;
 		color: orangered;
 	}
+
 	.center {
 		display: flex;
 		justify-content: center;
@@ -499,6 +517,7 @@ const AvraeToken = useLocalStorage("AvraeToken", "");
 				flex-direction: column;
 				gap: 0.6rem;
 			}
+
 			select {
 				width: 300px;
 			}
@@ -512,7 +531,7 @@ const AvraeToken = useLocalStorage("AvraeToken", "");
 				flex-direction: row;
 				gap: 0.5rem;
 
-				& > div {
+				&>div {
 					margin: auto 0;
 				}
 			}

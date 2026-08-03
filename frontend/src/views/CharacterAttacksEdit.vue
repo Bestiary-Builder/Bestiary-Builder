@@ -14,6 +14,7 @@ import { getUmami } from "@/utils/app/analytics";
 import { $toast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
+import DropdownMenu from "@/components/Global/DropdownMenu.vue";
 
 const character = ref<AvraeCharacter | null>(null);
 const AvraeToken = useLocalStorage("AvraeToken", "");
@@ -85,23 +86,21 @@ provide("setActionDescription", false);
 </script>
 
 <template>
-	<Breadcrumbs
-		:routes="[
-			{
-				path: '/characters',
-				text: 'My Characters',
-				isCurrent: false
-			},
-			{
-				path: '',
-				text: character ? character.name : '',
-				isCurrent: true
-			}
-		]"
-	>
+	<Breadcrumbs :routes="[
+		{
+			path: '/characters',
+			text: 'My Characters',
+			isCurrent: false
+		},
+		{
+			path: '',
+			text: character ? character.name : '',
+			isCurrent: true
+		}
+	]">
 		<ButtonIcon icon="save" label="Save attacks" inverted @click="saveAttacks" />
 		<ButtonIcon icon="plus" label="Add attack" @click="addAttack" />
-		<ImportAutomationUtil @load-feature="(feature : FeatureEntity) => loadFeature(feature)" />
+		<ImportAutomationUtil @load-feature="(feature: FeatureEntity) => loadFeature(feature)" />
 	</Breadcrumbs>
 	<div v-if="!AvraeToken" class="content">
 		No Avrae Connection made. Please see <RouterLink to="/user-settings#avrae-token" style="color: orangered">
@@ -118,20 +117,26 @@ provide("setActionDescription", false);
 					{{ attack.name }}
 				</option>
 			</select>
-			<VDropdown :distance="6" :positioning-disabled="store.isMobile">
-				<ButtonIcon icon="eraser" label="Delete currently selected attack" />
-				<template #popper>
-					<div class="v-popper__custom-menu">
-						<span> Are you sure you want to delete {{ character.overrides.attacks[activeAttackIndex].name }}? </span>
-						<button v-close-popper class="btn danger" @click="character.overrides.attacks.splice(activeAttackIndex, 1); activeAttackIndex = -1">
-							Confirm
-						</button>
-					</div>
+			<DropdownMenu v-if="activeAttackIndex > -1">
+				<template #activator="{ props }">
+					<ButtonIcon icon="eraser" label="Delete currently selected attack" v-bind="props" no-tooltip />
 				</template>
-			</VDropdown>
+				<v-card min-width="300" class="text-center pb-2">
+					<v-card-text>
+						Are you sure you want to delete <br>{{ character.overrides.attacks[activeAttackIndex].name }}?
+					</v-card-text>
+					<v-card-actions>
+						<v-btn size="large" color="red" class="mx-auto"
+							@click="character.overrides.attacks.splice(activeAttackIndex, 1); activeAttackIndex = -1">
+							Confirm
+						</v-btn>
+					</v-card-actions>
+				</v-card>
+			</DropdownMenu>
 		</div>
 		<div style="margin-top: 2rem;">
-			<VisualEditor v-if="activeAttackIndex !== -1" v-model="character.overrides.attacks[activeAttackIndex]" name="New Attack" no-list-attack />
+			<VisualEditor v-if="activeAttackIndex !== -1" v-model="character.overrides.attacks[activeAttackIndex]"
+				name="New Attack" no-list-attack />
 		</div>
 	</div>
 </template>
@@ -141,6 +146,7 @@ provide("setActionDescription", false);
 
 .selected-container {
 	display: flex;
+
 	button {
 		translate: 0 4px;
 	}
