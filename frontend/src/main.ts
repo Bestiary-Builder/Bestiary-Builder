@@ -1,7 +1,8 @@
 import type { Component } from "vue";
 
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-
+import DropdownMenu from "./components/Global/DropdownMenu.vue";
+import Breadcrumbs from "./components/Page/Breadcrumbs.vue";
 // monaco editor
 import { loader } from "@guolao/vue-monaco-editor";
 // Vue
@@ -20,7 +21,6 @@ import router from "@/router";
 
 // Style sheet
 import "@/assets/styles/main.less";
-import "floating-vue/dist/style.css";
 // Font awesome
 import "@/utils/app/fontawesome";
 // Analytics
@@ -30,9 +30,6 @@ import "vuetify/styles";
 import "@mdi/font/css/materialdesignicons.css";
 import iconifyAdapter from './utils/app/icon';
 
-
-
-// Components
 const vuetify = createVuetify({
 	components,
 	directives,
@@ -105,9 +102,10 @@ export const app = createApp(App as Component<any>);
 
 app.use(router);
 app.use(vuetify);
-// app.use(FloatingVue);
 app.use(createRulesPlugin({}, vuetify.locale));
 app.component("font-awesome-icon", FontAwesomeIcon);
+app.component("DropdownMenu", DropdownMenu)
+app.component("Breadcrumbs", Breadcrumbs)
 loader.config({
 	paths: {
 		vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.43.0/min/vs"

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { $loading } from "@/utils/app/loading";
 import { store } from "@/utils/store";
@@ -33,16 +32,13 @@ useFetch("/api/unsubscribe")
 </script>
 
 <template>
-	<Breadcrumbs
-		:routes="[
-			{
-				path: '',
-				text: 'Unsubscribe from emails',
-				isCurrent: true,
-			},
-		]"
-		:is-less-wide="true"
-	/>
+	<Breadcrumbs :routes="[
+		{
+			path: '',
+			text: 'Unsubscribe from emails',
+			isCurrent: true,
+		},
+	]" :is-less-wide="true" />
 	<div class="content less-wide center">
 		<div>
 			<h3 v-if="status === 1">
@@ -59,6 +55,7 @@ useFetch("/api/unsubscribe")
 .content {
 	min-height: 80vh;
 	padding: 2rem 10vw;
+
 	div {
 		display: flex;
 		flex-direction: column;

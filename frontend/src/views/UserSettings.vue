@@ -2,7 +2,6 @@
 import type { Bestiary, Statblock } from "~/shared";
 import { useLocalStorage } from "@vueuse/core";
 import { reactive, ref } from "vue";
-import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
 import SectionHeader from "@/components/VisualEditor/Nodes/shared/SectionHeader.vue";
 import { getUmami } from "@/utils/app/analytics";
@@ -10,7 +9,6 @@ import { $toast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { sendToLogin, useFetch } from "@/utils/utils";
 import { SupporterStatus } from "~/shared";
-import DropdownMenu from "@/components/Global/DropdownMenu.vue";
 
 const logoutClick = async () => {
 	const { success, error } = await useFetch("/api/logout");
@@ -338,7 +336,7 @@ const srdOptions = [
 					v-if="!(store.user.supporter === SupporterStatus.wirmling || store.user.supporter === SupporterStatus.greatwyrm)"
 					class="center">
 					<a href="https://www.patreon.com/join/BestiaryBuilder" class="patreon">
-						<font-awesome-icon icon="fa-brands fa-patreon" />
+						<v-icon icon="mdi:patreon" size="small" />
 						<span> Become a patreon </span>
 					</a>
 				</span>

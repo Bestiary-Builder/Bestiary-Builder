@@ -7,7 +7,6 @@ import YAML from "yaml";
 import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import Markdown from "@/components/Global/Markdown.vue";
 import Modal from "@/components/Global/Modal.vue";
-import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import Editor from "@/components/StatblockEditor/Editor.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { $loading } from "@/utils/app/loading";

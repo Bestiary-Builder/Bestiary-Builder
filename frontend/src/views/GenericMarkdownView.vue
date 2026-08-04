@@ -5,7 +5,6 @@ import anchor from "markdown-it-anchor";
 import markdownItAttrs from "markdown-it-attrs";
 import { nextTick, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
-import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 
 import { prefersReducedMotion } from "@/utils/utils";
 
@@ -41,22 +40,19 @@ watch(
 				const y = el.getBoundingClientRect().y - 50 - yOffset + window.scrollY;
 				window.scrollTo({ top: y, behavior: prefersReducedMotion.matches ? "auto" : "smooth" });
 			}
-		}).catch(() => {});
+		}).catch(() => { });
 	},
 	{ immediate: true }
 );
 </script>
 
 <template>
-	<Breadcrumbs
-		:routes="[
-			{
-				path: '',
-				text: $route.name as string ?? 'Name not found',
-				isCurrent: true
-			}
-		]"
-		:is-less-wide="true"
-	/>
+	<Breadcrumbs :routes="[
+		{
+			path: '',
+			text: $route.name as string ?? 'Name not found',
+			isCurrent: true
+		}
+	]" :is-less-wide="true" />
 	<div class="content markdown less-wide" v-html="md.render(dataFile)" />
 </template>

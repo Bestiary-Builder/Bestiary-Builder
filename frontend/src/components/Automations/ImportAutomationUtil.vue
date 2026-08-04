@@ -4,7 +4,6 @@ import { onMounted, ref } from "vue";
 import { $toast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
-import DropdownMenu from "../Global/DropdownMenu.vue";
 
 const emit = defineEmits<{
 	(e: "loadFeature", feature: FeatureEntity, apiPath: AutomationTypes): void;
@@ -76,7 +75,7 @@ console.log(loadedAutomation.value.myAutomation)
 		<template #activator="{ props }">
 			<v-icon-btn icon="mdi:database" text="Import Action" size="24" v-bind="props" />
 		</template>
-		<v-card max-width="500" class="text-center pb-2">
+		<v-card width="500" mi class="text-center pb-2">
 			<v-card-text>
 
 				<v-autocomplete :items="loadedAutomation.srdFeatures" label="Import SRD Feature"

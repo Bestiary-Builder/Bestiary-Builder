@@ -30,10 +30,8 @@ const updateOpen = (value: boolean) => {
 </script>
 
 <template>
-	<v-menu
-		v-if="!smAndDown" :model-value="isOpen" v-bind="menuProps" location="bottom center" origin="top center"
-		offset="0 -50%" :close-on-content-click="false" @update:model-value="updateOpen"
-	>
+	<v-menu v-if="!smAndDown" :model-value="isOpen" v-bind="menuProps" location="bottom center" origin="top center"
+		:scrim="true" offset="0 -50%" :close-on-content-click="false" @update:model-value="updateOpen">
 		<template #activator="{ props: activatorProps }">
 			<slot name="activator" v-bind="{ props: activatorProps }" />
 		</template>

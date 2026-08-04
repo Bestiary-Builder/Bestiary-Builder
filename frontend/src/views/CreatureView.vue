@@ -4,7 +4,6 @@ import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import CopyCreature from "@/components/Bestiary/CopyCreature.vue";
 import ExportCreature from "@/components/Bestiary/ExportCreature.vue";
-import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
 import { $toast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
@@ -40,28 +39,25 @@ onMounted(async () => {
 
 <template>
 	<div>
-		<Breadcrumbs
-			v-if="bestiary && (data?.stats.description.name || data?.stats.description.name === '')"
-			:routes="[
-				{
-					path: `/bestiary/view/${bestiary?.id}`,
-					text: bestiary?.name,
-					isCurrent: false
-				},
-				{
-					path: '',
-					text: data?.stats.description.name || 'Unnamed Creature',
-					isCurrent: true
-				}
-			]"
-		>
-			<CopyCreature v-if="data" no-import-all :may-import="false" :current-creature="{ ...data, bestiaryName: bestiary.name }" />
+		<Breadcrumbs v-if="bestiary && (data?.stats.description.name || data?.stats.description.name === '')" :routes="[
+			{
+				path: `/bestiary/view/${bestiary?.id}`,
+				text: bestiary?.name,
+				isCurrent: false
+			},
+			{
+				path: '',
+				text: data?.stats.description.name || 'Unnamed Creature',
+				isCurrent: true
+			}
+		]">
+			<CopyCreature v-if="data" no-import-all :may-import="false"
+				:current-creature="{ ...data, bestiaryName: bestiary.name }" />
 			<ExportCreature :data="data.stats" />
 		</Breadcrumbs>
 		<div class="content">
 			<div class="content-container__inner">
-				<v-skeleton-loader type="heading, divider, text, text, sentences, heading, text"
-					v-if="data === null" />
+				<v-skeleton-loader type="heading, divider, text, text, sentences, heading, text" v-if="data === null" />
 				<StatblockRenderer v-else id="statblock" :data="data.stats" />
 			</div>
 		</div>
@@ -73,6 +69,7 @@ onMounted(async () => {
 	display: grid;
 	gap: 2rem;
 	grid-template-columns: 1fr;
+
 	.content-container__inner {
 		width: 60%;
 		margin: 0 auto;

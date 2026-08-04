@@ -2,7 +2,6 @@
 import type { CreatureWithStats, Statblock } from "~/shared";
 import { useLocalStorage } from "@vueuse/core";
 import { $toast } from "@/utils/app/toast";
-import DropdownMenu from "../Global/DropdownMenu.vue";
 
 const props = withDefaults(
 	defineProps<{

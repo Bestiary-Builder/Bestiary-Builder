@@ -8,7 +8,6 @@ import YAML from "yaml";
 import ImportAutomationUtil from "@/components/Automations/ImportAutomationUtil.vue";
 import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import Markdown from "@/components/Global/Markdown.vue";
-import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import Editor from "@/components/StatblockEditor/Editor.vue";
 import VisualEditor from "@/components/VisualEditor/VisualEditor.vue";
 import { $loading } from "@/utils/app/loading";

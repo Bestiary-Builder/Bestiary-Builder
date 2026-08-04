@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { Statblock } from "~/shared";
 import { crAsString } from "~/shared";
-import DropdownMenu from "../Global/DropdownMenu.vue";
 
 const { data, canEdit, id } = defineProps<{ data: Statblock; canEdit: boolean; id: string }>();
 const emit = defineEmits<{
@@ -45,7 +44,7 @@ const emit = defineEmits<{
 
 			<RouterLink class="creature" :to="`/creature/${canEdit ? 'edit' : 'view'}/${id}`"
 				:aria-label="`${canEdit ? 'Edit' : 'View'} creature`" size="24">
-				<v-icon-btn icon="fa7-regular:pen-to-square" v-if="canEdit" size="24" />
+				<v-icon-btn icon="mdi:pencil" v-if="canEdit" size="24" />
 				<v-icon-btn icon="mdi:eye" v-else />
 			</RouterLink>
 		</div>

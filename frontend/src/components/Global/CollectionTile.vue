@@ -4,7 +4,6 @@ import { computed } from "vue";
 import { store } from "@/utils/store.js";
 import StatusIcon from "../Bestiary/StatusIcon.vue";
 import UserBanner from "../Bestiary/UserBanner.vue";
-import DropdownMenu from "./DropdownMenu.vue";
 
 const { data } = defineProps<{ data: AutomationCollectionExtended | BestiaryExtended }>();
 

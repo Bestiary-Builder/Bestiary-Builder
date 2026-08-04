@@ -3,13 +3,11 @@ import type { BestiaryExtended, BestiaryWithCount } from "~/shared";
 import { refDebounced } from "@vueuse/core";
 import { onMounted, ref, watch } from "vue";
 import CollectionTile from "@/components/Global/CollectionTile.vue";
-import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { $loading } from "@/utils/app/loading";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { $toast } from "../utils/app/toast";
-import DropdownMenu from "@/components/Global/DropdownMenu.vue";
 
 onMounted(async () => {
 	const loader = $loading.show();

@@ -7,12 +7,10 @@ import { useRoute } from "vue-router";
 import ImportAutomationUtil
 	from "@/components/Automations/ImportAutomationUtil.vue";
 import { getAvraeCharacterByUpstream } from "@/components/Characters/utils";
-import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import VisualEditor from "@/components/VisualEditor/VisualEditor.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { $toast } from "@/utils/app/toast";
 import { useFetch } from "@/utils/utils";
-import DropdownMenu from "@/components/Global/DropdownMenu.vue";
 
 const character = ref<AvraeCharacter | null>(null);
 const AvraeToken = useLocalStorage("AvraeToken", "");

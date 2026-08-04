@@ -10,7 +10,6 @@ import StatusIcon from "@/components/Bestiary/StatusIcon.vue";
 import UserBanner from "@/components/Bestiary/UserBanner.vue";
 import CRInput from "@/components/FormInputs/CRInput.vue";
 import Markdown from "@/components/Global/Markdown.vue";
-import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { $loading } from "@/utils/app/loading";

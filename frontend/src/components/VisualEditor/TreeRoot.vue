@@ -3,7 +3,6 @@ import type { Ref } from "vue";
 import type { AttackModel, EffectWithTarget } from "~/shared";
 import { Icon } from "@iconify/vue";
 import { inject } from "vue";
-import { store } from "@/utils/store";
 import EffectAdder from "./EffectAdder.vue";
 import TreeNode from "./TreeNode.vue";
 
@@ -45,69 +44,87 @@ const currentContext = inject<Ref<string[]>>("currentContext");
 	<section :class="{ container: rootType === 'root' }">
 		<template v-if="Array.isArray(data)">
 			<template v-for="auto, index in data" :key="index">
-				<p v-if="rootType === 'root'" class="add root tree-row" @click="currentEffect = data[index]; currentContext = [index.toString(), ...context]">
-					<Icon :icon="JSON.stringify(currentContext) === JSON.stringify([index.toString(), ...context]) ? 'material-symbols:asterisk' : 'material-symbols:swords'" :inline="true" width="1em" :color="JSON.stringify(currentContext) === JSON.stringify([index.toString(), ...context]) ? 'var(--color-success)' : 'grey'" />
+				<p v-if="rootType === 'root'" class="add root tree-row"
+					@click="currentEffect = data[index]; currentContext = [index.toString(), ...context]">
+					<Icon
+						:icon="JSON.stringify(currentContext) === JSON.stringify([index.toString(), ...context]) ? 'material-symbols:asterisk' : 'material-symbols:swords'"
+						:inline="true" width="1em"
+						:color="JSON.stringify(currentContext) === JSON.stringify([index.toString(), ...context]) ? 'var(--color-success)' : 'grey'" />
 					{{ auto.name }}
 					<span class="tree-buttons" @click.stop>
-						<VDropdown :distance="6" :positioning-disabled="store.isMobile" class="delete-attack-button">
-							<span>
-								<Icon icon="fa7-solid:eraser" inline width=".75em" role="button" class="trigger" color="grey" />
-							</span>
-
-							<template #popper>
-								<div class="v-popper__custom-menu">
-									<span> Are you sure you want to delete <br>{{ auto.name }}? </span>
-									<button v-close-popper class="btn danger" @click="deleteListAttack(index)">
-										Confirm
-									</button>
-								</div>
+						<DropdownMenu>
+							<template #activator="{ props }">
+								<Icon icon="fa7-solid:eraser" inline width=".75em" role="button" class="trigger"
+									color="grey" v-bind="props" />
 							</template>
-						</VDropdown>
+							<v-card min-width="300" class="text-center pb-2">
+								<v-card-text>
+									Are you sure you want to delete <br><b>{{ auto.name }}</b>?
+								</v-card-text>
+								<v-card-actions>
+									<v-btn color="red" size="large" @click="deleteListAttack(index)" class="mx-auto">
+										Confirm
+									</v-btn>
+								</v-card-actions>
+							</v-card>
+						</DropdownMenu>
 					</span>
 				</p>
 				<TransitionGroup name="fade">
 					<div v-for="(node, idx) in auto.automation ?? []" :key="(node as any)">
-						<TreeNode :data="node" :depth="depth" :parent-type="parentType" :context="[index.toString(), ...context, idx.toString()]" />
+						<TreeNode :data="node" :depth="depth" :parent-type="parentType"
+							:context="[index.toString(), ...context, idx.toString()]" />
 					</div>
 				</TransitionGroup>
 				<p :style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`">
 					<EffectAdder :context="[index.toString(), ...context]" />
 				</p>
 			</template>
-			<p v-if="rootType === 'root'" :style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`" class="add" @click="addListAttack()">
+			<p v-if="rootType === 'root'"
+				:style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`" class="add"
+				@click="addListAttack()">
 				Add Attack to this feature
 			</p>
 		</template>
 		<template v-else>
-			<p v-if="rootType === 'root'" class="add root tree-row" @click="currentEffect = data; currentContext = [...context]">
-				<Icon :icon="JSON.stringify(currentContext) === JSON.stringify(context) ? 'material-symbols:asterisk' : 'material-symbols:swords'" :inline="true" width="1em" :color="JSON.stringify(currentContext) === JSON.stringify(context) ? 'var(--color-success)' : 'grey'" />
+			<p v-if="rootType === 'root'" class="add root tree-row"
+				@click="currentEffect = data; currentContext = [...context]">
+				<Icon
+					:icon="JSON.stringify(currentContext) === JSON.stringify(context) ? 'material-symbols:asterisk' : 'material-symbols:swords'"
+					:inline="true" width="1em"
+					:color="JSON.stringify(currentContext) === JSON.stringify(context) ? 'var(--color-success)' : 'grey'" />
 				{{ data.name }}
 				<span class="tree-buttons" @click.stop>
-					<VDropdown :distance="6" :positioning-disabled="store.isMobile" class="delete-attack-button">
-						<span>
-							<Icon icon="fa7-solid:eraser" inline width=".75em" role="button" class="trigger" color="grey" />
-						</span>
-
-						<template #popper>
-							<div class="v-popper__custom-menu">
-								<span> Are you sure you want to delete <br>{{ data.name }}? </span>
-								<button v-close-popper class="btn danger" @click="setAutomationEmpty">
-									Confirm
-								</button>
-							</div>
+					<DropdownMenu>
+						<template #activator="{ props }">
+							<Icon icon="fa7-solid:eraser" inline width=".75em" role="button" class="trigger"
+								color="grey" v-bind="props" />
 						</template>
-					</VDropdown>
+						<v-card min-width="300" class="text-center pb-2">
+							<v-card-text>
+								Are you sure you want to delete <br><b>{{ data.name }}</b>?
+							</v-card-text>
+							<v-card-actions>
+								<v-btn color="red" size="large" @click="setAutomationEmpty" class="mx-auto">
+									Confirm
+								</v-btn>
+							</v-card-actions>
+						</v-card>
+					</DropdownMenu>
 				</span>
 			</p>
 			<TransitionGroup name="fade">
 				<div v-for="(node, idx) in data.automation ?? []" :key="(node as any)">
-					<TreeNode :data="node" :depth="depth" :parent-type="parentType" :context="[...context, idx.toString()]" />
+					<TreeNode :data="node" :depth="depth" :parent-type="parentType"
+						:context="[...context, idx.toString()]" />
 				</div>
 			</TransitionGroup>
 			<p :style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`">
 				<EffectAdder :context="context" />
 			</p>
-			<p v-if="!noListAttack && rootType === 'root'" :style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`" class="add" @click="makeListAttack()">
+			<p v-if="!noListAttack && rootType === 'root'"
+				:style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`" class="add"
+				@click="makeListAttack()">
 				Add Attack to this feature
 			</p>
 		</template>
@@ -115,16 +132,15 @@ const currentContext = inject<Ref<string[]>>("currentContext");
 </template>
 
 <style scoped lang="less">
-div:not(.delete-attack-button, .v-popper__custom-menu) {
-	background: repeating-linear-gradient(
-		to right,
-		grey,
-		grey 1px,
-		var(--color-surface-0) 1px,
-		var(--color-surface-0) 15px
-	);
+div:not(.delete-attack-button, .v-card, .v-card-text, .v-card-actions) {
+	background: repeating-linear-gradient(to right,
+			grey,
+			grey 1px,
+			var(--color-surface-0) 1px,
+			var(--color-surface-0) 15px);
 	background-position: -9px;
 }
+
 p,
 div:not(.delete-attack-button) {
 	font-size: 14px;

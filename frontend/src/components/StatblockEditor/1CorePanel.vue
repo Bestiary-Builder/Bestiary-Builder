@@ -4,7 +4,6 @@ import { ref } from "vue";
 import Draggable from "vuedraggable";
 import { $toast } from "@/utils/app/toast";
 import { languages } from "@/utils/constants";
-import { store } from "@/utils/store";
 import SimpleNumberInput from "../FormInputs/SimpleNumberInput.vue";
 import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
 import { getDraggableKey } from "./utils";
@@ -69,32 +68,33 @@ const addNewSense = (newSenseName: string) => {
 						</td>
 						<td class="edit-buttons">
 							<div>
-								<VDropdown :distance="6" :positioning-disabled="store.isMobile">
-									<v-icon-btn icon="mdi:ruler" text="Set unit for this speed" size="20" />
-
-									<template #popper>
-										<div class="v-popper__custom-menu">
-											Set unit for this speed
-											<select v-model="element.unit" class="ghost" title="Select speed unit">
-												<option>ft</option>
-												<option>m</option>
-												<option>km</option>
-												<option>mi</option>
-												<option>none</option>
-											</select>
-										</div>
+								<DropdownMenu>
+									<template #activator="{ props }">
+										<v-icon-btn icon="mdi:ruler" text="Set unit for this speed" size="20"
+											v-bind="props" />
 									</template>
-								</VDropdown>
-								<VDropdown :distance="6" :positioning-disabled="store.isMobile">
-									<v-icon-btn icon="mdi:comment" text="Set comment for this speed" size="20" />
-
-									<template #popper>
-										<div class="v-popper__custom-menu">
-											Set (comment) for this speed
-											<input v-model="element.comment" type="text" placeholder="comment">
-										</div>
+									<v-card min-width="300" class="text-center pb-2" title="Set unit for this speed">
+										<select v-model="element.unit" class="ghost" title="Select speed unit">
+											<option>ft</option>
+											<option>m</option>
+											<option>km</option>
+											<option>mi</option>
+											<option>none</option>
+										</select>
+									</v-card>
+								</DropdownMenu>
+								<DropdownMenu>
+									<template #activator="{ props }">
+										<v-icon-btn icon="mdi:comment" text="Set comment for this speed" size="20"
+											v-bind="props" />
 									</template>
-								</VDropdown>
+									<v-card min-width="300" class="text-center pb-2"
+										title="Set (comment) for this speed">
+										<v-card-actions>
+											<v-text-field v-model="element.comment" type="text" label="comment" />
+										</v-card-actions>
+									</v-card>
+								</DropdownMenu>
 								<v-icon-btn icon="mdi:delete" text="Remove this speed" size="20"
 									@click="data.core.speed.splice(idx, 1)" />
 							</div>
@@ -103,7 +103,7 @@ const addNewSense = (newSenseName: string) => {
 				</template>
 			</Draggable>
 		</table>
-		<div class="two-wide">
+		<div class="two-wide mt-4">
 			<v-combobox v-model="newSpeed" :items="['Walk', 'Swim', 'Fly', 'Climb', 'Burrow']"
 				label="Select speed to add" @submit="addNewSpeed(newSpeed)" />
 		</div>
@@ -137,31 +137,33 @@ const addNewSense = (newSenseName: string) => {
 						</td>
 						<td class="edit-buttons">
 							<div>
-								<VDropdown :distance="6" :positioning-disabled="store.isMobile">
-									<v-icon-btn icon="mdi:ruler" text="Set unit for this sense" size="20" />
-									<template #popper>
-										<div class="v-popper__custom-menu">
-											Set unit for this sense
-											<select v-model="element.unit" class="ghost" title="Select sense unit">
-												<option>ft</option>
-												<option>m</option>
-												<option>km</option>
-												<option>mi</option>
-												<option>none</option>
-											</select>
-										</div>
+								<DropdownMenu>
+									<template #activator="{ props }">
+										<v-icon-btn icon="mdi:ruler" text="Set unit for this speed" size="20"
+											v-bind="props" />
 									</template>
-								</VDropdown>
-								<VDropdown :distance="6" :positioning-disabled="store.isMobile">
-									<v-icon-btn icon="mdi:comment" text="Set comment for this sense" size="20" />
-
-									<template #popper>
-										<div class="v-popper__custom-menu">
-											Set (comment) for this sense
+									<v-card min-width="300" class="text-center pb-2" title="Set unit for this sense">
+										<select v-model="element.unit" class="ghost" title="Select sense unit">
+											<option>ft</option>
+											<option>m</option>
+											<option>km</option>
+											<option>mi</option>
+											<option>none</option>
+										</select>
+									</v-card>
+								</DropdownMenu>
+								<DropdownMenu>
+									<template #activator="{ props }">
+										<v-icon-btn icon="mdi:comment" text="Set comment for this sense" size="20"
+											v-bind="props" />
+									</template>
+									<v-card min-width="300" class="text-center pb-2"
+										title="Set (comment) for this sense">
+										<v-card-actions>
 											<v-text-field v-model="element.comment" type="text" label="comment" />
-										</div>
-									</template>
-								</VDropdown>
+										</v-card-actions>
+									</v-card>
+								</DropdownMenu>
 								<v-icon-btn icon="mdi:delete" text="Remove this sense" size="20"
 									@click="data.core.senses.splice(idx, 1)" />
 							</div>
@@ -170,7 +172,7 @@ const addNewSense = (newSenseName: string) => {
 				</template>
 			</Draggable>
 		</table>
-		<div class=" grid-two" style="margin-bottom: 2rem;">
+		<div class=" grid-two mt-4">
 			<div>
 				<v-combobox :items="['Darkvision', 'Blindsight', 'Truesight', 'Tremorsense']"
 					label="Select sense to add" @submit="(selected: string) => (addNewSense(selected))" />

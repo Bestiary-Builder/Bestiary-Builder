@@ -8,7 +8,7 @@ import EffectAsRaw from "./Nodes/shared/EffectAsRaw.vue";
 import SectionHeader from "./Nodes/shared/SectionHeader.vue";
 import TreeRoot from "./TreeRoot.vue";
 
-const { name, noListAttack = true } = defineProps<{ name: string; noListAttack?: boolean }>();
+const { name, noListAttack = false } = defineProps<{ name: string; noListAttack?: boolean }>();
 const currentEffect = ref<EffectWithTarget | AttackModel | ButtonInteraction | null>(null);
 const currentContext = ref<string[]>([]);
 provide("currentEffect", currentEffect);

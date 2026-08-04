@@ -4,7 +4,6 @@ import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
 import CopyCreature from "@/components/Bestiary/CopyCreature.vue";
 import ExportCreature from "@/components/Bestiary/ExportCreature.vue";
-import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
 import DescriptionPanel from "@/components/StatblockEditor/0DescriptionPanel.vue";
 import CorePanel from "@/components/StatblockEditor/1CorePanel.vue";

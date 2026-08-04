@@ -5,7 +5,6 @@ import { useRouter } from "vue-router";
 import Draggable from "vuedraggable";
 import { useRules } from "vuetify/labs/rules";
 import CollectionTile from "@/components/Global/CollectionTile.vue";
-import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { $loading } from "@/utils/app/loading";
 import { $toast } from "@/utils/app/toast";

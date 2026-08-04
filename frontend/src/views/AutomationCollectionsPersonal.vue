@@ -4,7 +4,6 @@ import { onMounted, reactive, ref, toValue } from "vue";
 import { useRouter } from "vue-router";
 import Draggable from "vuedraggable";
 import CollectionTile from "@/components/Global/CollectionTile.vue";
-import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { $toast } from "@/utils/app/toast";
 import { store } from "@/utils/store";

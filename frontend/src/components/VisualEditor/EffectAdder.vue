@@ -2,11 +2,9 @@
 import type { Ref } from "vue";
 import type { AttackInteraction, AttackModel, ButtonInteraction, EffectWithTarget, Features } from "~/shared";
 import { Icon } from "@iconify/vue";
-import { useWindowSize } from "@vueuse/core";
 import { computed, inject } from "vue";
 import { useRoute } from "vue-router";
 import { $toast } from "@/utils/app/toast";
-import { store } from "../../utils/store";
 import { activation_type, defaultNodes, displayNames } from "./util";
 
 const props = defineProps<{ context: string[]; name?: string }>();
@@ -122,30 +120,37 @@ const addAndSelect = async (node: string, pasteCopied = false) => {
 };
 
 const copiedEffect = inject<Ref<EffectWithTarget | null>>("copiedEffect");
-const { width } = useWindowSize();
 </script>
 
 <template>
-	<VDropdown v-if="displayNames" :distance="6" :positioning-disabled="store.isMobile" :placement="width < 1200 ? 'bottom-start' : 'left'" container="#effectAdderContainer">
-		<div role="button" class="container">
-			<span class="icon"><Icon icon="material-symbols:add-circle" width="1em" color="orangered" /></span><span>{{ automation === null ? 'Create Automation' : 'Add Effect' }}</span>
-		</div>
-		<template #popper>
-			<div class="v-popper__custom-menu">
-				<span style="color: lightgrey"> Choose an Effect to add:</span>
-				<div class="two-wide">
-					<button v-for="node in availableNodes" :key="node" v-close-popper class="btn" @click="addAndSelect(node)">
-						<Icon :icon="displayNames![node]?.icon" :inline="true" width="1em" />
-						{{ displayNames[node]?.label }}
-					</button>
-					<button v-if="copiedEffect" class="btn" @click="addAndSelect('', true)">
-						<Icon icon="ooui:copy-ltr" width="1em" />
-						Paste Cut/Copied Effect
-					</button>
-				</div>
+	<DropdownMenu v-if="displayNames" location="end center" origin="start center" offset="10% 0%">
+		<template #activator="{ props }">
+			<div role="button" class="container" v-bind="props">
+				<span class="icon">
+					<Icon icon="material-symbols:add-circle" width="1em" color="orangered" />
+				</span><span>{{ automation === null ? 'Create Automation' : 'Add Effect' }}</span>
 			</div>
 		</template>
-	</VDropdown>
+		<v-card max-width="800" title="Choose an effect to add." class="pa-4">
+			<v-card-actions>
+				<v-row>
+					<v-col v-for="node in availableNodes" :key="node" cols="6">
+						<v-btn :key="node" @click="addAndSelect(node)" :prepend-icon="displayNames![node]?.icon"
+							size="large">
+							{{ displayNames[node]?.label }}
+						</v-btn>
+
+					</v-col>
+					<v-col cols="6">
+						<v-btn v-if="copiedEffect"" @click=" addAndSelect('', true)" prepend-icon="ooui:copy-ltr"
+							size="large">
+							Paste Cut/Copied Effect
+						</v-btn>
+					</v-col>
+				</v-row>
+			</v-card-actions>
+		</v-card>
+	</DropdownMenu>
 </template>
 
 <style scoped lang="less">

@@ -5,7 +5,6 @@ import { useRouter } from "vue-router";
 import Draggable from "vuedraggable";
 import { $toast } from "@/utils/app/toast";
 import { newFeatureGenerator } from "@/utils/constants";
-import DropdownMenu from "../Global/DropdownMenu.vue";
 import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
 import { getDraggableKey } from "./utils";
 
