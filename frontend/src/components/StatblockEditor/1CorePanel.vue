@@ -60,7 +60,7 @@ const addNewSense = (newSenseName: string) => {
 				<template #item="{ element, idx }">
 					<tr>
 						<td>
-							<font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle" />
+							<v-icon icon="material-symbols:drag-indicator" class="handle" size="24" />
 						</td>
 						<th> {{ element.name }}</th>
 						<td>
@@ -129,7 +129,7 @@ const addNewSense = (newSenseName: string) => {
 				<template #item="{ element, idx }">
 					<tr>
 						<td>
-							<span><font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle" /> </span>
+							<v-icon icon="material-symbols:drag-indicator" class="handle" size="24" />
 						</td>
 						<th> {{ element.name }}</th>
 						<td>

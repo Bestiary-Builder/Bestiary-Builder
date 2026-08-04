@@ -45,13 +45,14 @@ onUnmounted(() => {
 	<Teleport to="#modal">
 		<Transition name="modal">
 			<div v-show="show" ref="target" class="modal__bg" :class="{ 'open-modal': show }">
-				<div :class="{ fullscreen: fullScreen }" class="modal__content" role="dialog" aria-modal="true" :aria-labelledby="`dialog${id}_label`">
+				<div :class="{ fullscreen: fullScreen }" class="modal__content" role="dialog" aria-modal="true"
+					:aria-labelledby="`dialog${id}_label`">
 					<div class="modal__header">
 						<h2 :id="`dialog${id}_label`">
 							<slot name="header" />
 						</h2>
 						<button class="modal__close-button" @click="emit('close')">
-							<font-awesome-icon icon="fa-solid fa-xmark" title="Close Modal" />
+							<v-icon icon="heroicons:x-mark-16-solid" text="Close Modal" />
 						</button>
 					</div>
 					<div class="modal__body">
@@ -129,6 +130,7 @@ onUnmounted(() => {
 	border: none;
 	cursor: pointer;
 	transition: color 0.3s ease;
+
 	&:hover {
 		color: orangered;
 	}

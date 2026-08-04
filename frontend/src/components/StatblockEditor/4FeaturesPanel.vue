@@ -55,7 +55,7 @@ const createNewFeature = (type: keyof Features) => {
 					<template #item="{ element, index }">
 						<tr>
 							<td>
-								<span><font-awesome-icon :icon="['fas', 'grip-vertical']" class="handle" /> </span>
+								<v-icon icon="material-symbols:drag-indicator" class="handle" size="24" />
 							</td>
 							<th> {{ element.name }}</th>
 							<td class="edit-buttons">

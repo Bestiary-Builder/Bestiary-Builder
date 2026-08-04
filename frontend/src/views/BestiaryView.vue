@@ -399,16 +399,16 @@ const getDraggableKey = (item: any) => {
 						<hr>
 						<div class="footer">
 							<UserBanner :id="bestiary.ownerId" />
-							<div v-tooltip.left="bestiary.status">
+							<div v-tooltip="bestiary.status">
 								<StatusIcon :icon="bestiary.status" />
 							</div>
-							<div>{{ bestiary.creatures.length }}<font-awesome-icon :icon="['fas', 'skull']" /></div>
+							<div>{{ bestiary.creatures.length }}<v-icon icon="mdi:paw" size="20" /></div>
 							<div role="button" aria-label="Toggle bookmark status" class="bookmark"
 								@click.prevent="toggleBookmark">
 								<span v-if="bookmarked" v-tooltip="'Unbookmark this bestiary'"
-									class="bookmark-enabled"><font-awesome-icon :icon="['fas', 'star']" /></span>
-								<span v-else v-tooltip="'Bookmark this bestiary'"
-									class="bookmark-disabled"><font-awesome-icon :icon="['fas', 'star']" /></span>
+									class="bookmark-enabled"><v-icon size="20" icon="mdi-star" /></span>
+								<span v-else v-tooltip="'Bookmark this bestiary'" class="bookmark-disabled"><v-icon
+										size="20" icon="mdi-star" /></span>
 							</div>
 						</div>
 					</div>
@@ -806,11 +806,5 @@ const getDraggableKey = (item: any) => {
 .editor-container {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
-}
-
-.v-select.drop-up.vs--open {
-	border-radius: 0 0 4px 4px;
-	border-top-color: transparent;
-	border-bottom: 1px solid var(--vs-border-color);
 }
 </style>

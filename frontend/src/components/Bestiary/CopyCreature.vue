@@ -65,10 +65,11 @@ const importManyCreatures = () => {
 								<p> {{ creature.bestiaryName }} (CR {{ creature.stats.description.cr }})</p>
 							</th>
 							<td v-if="mayImport">
-								<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']"
-									@click="importCreature(creature)" />
+								<v-icon-btn icon="mdi:import" size="20" @click="importCreature(creature)"
+									text="Import creature" />
 							</td>
-							<td> <font-awesome-icon :icon="['fas', 'trash']" @click="deleteCreature(idx)" /></td>
+							<td> <v-icon-btn icon="mdi:delete" size="20" @click="deleteCreature(idx)"
+									text="Delete creature from list" /></td>
 						</tr>
 					</tbody>
 					<caption align="top">

@@ -1,6 +1,5 @@
 import type { Component } from "vue";
 
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import DropdownMenu from "./components/Global/DropdownMenu.vue";
 import Breadcrumbs from "./components/Page/Breadcrumbs.vue";
 // monaco editor
@@ -21,8 +20,6 @@ import router from "@/router";
 
 // Style sheet
 import "@/assets/styles/main.less";
-// Font awesome
-import "@/utils/app/fontawesome";
 // Analytics
 import "./utils/app/analytics";
 
@@ -103,7 +100,6 @@ export const app = createApp(App as Component<any>);
 app.use(router);
 app.use(vuetify);
 app.use(createRulesPlugin({}, vuetify.locale));
-app.component("font-awesome-icon", FontAwesomeIcon);
 app.component("DropdownMenu", DropdownMenu)
 app.component("Breadcrumbs", Breadcrumbs)
 loader.config({

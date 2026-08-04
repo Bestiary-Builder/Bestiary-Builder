@@ -127,16 +127,20 @@ function clear() {
 	<LabelledComponent :title="title" :for="labelId">
 		<slot />
 		<div class="quantity">
-			<input :id="labelId" ref="input" :value="isNaN(value) ? '' : value" type="number" :name="title" :min="min" :max="max" :step="step" inputmode="numeric" @change="change">
+			<input :id="labelId" ref="input" :value="isNaN(value) ? '' : value" type="number" :name="title" :min="min"
+				:max="max" :step="step" inputmode="numeric" @change="change">
 			<div class="quantity-nav">
-				<div class="quantity-button quantity-up" :aria-label="`Increase ${title} by ${step}`" @click.prevent="increase">
+				<div class="quantity-button quantity-up" :aria-label="`Increase ${title} by ${step}`"
+					@click.prevent="increase">
 					+
 				</div>
-				<div class="quantity-button quantity-down" :aria-label="`Decrease ${title} by ${step}`" @click.prevent="decrease">
+				<div class="quantity-button quantity-down" :aria-label="`Decrease ${title} by ${step}`"
+					@click.prevent="decrease">
 					-
 				</div>
 			</div>
-			<span v-if="isClearable" class="delete-button" :aria-label="`Clear override of ${title}`" @click="clear"><font-awesome-icon :icon="['fas', 'trash']" /></span>
+			<span v-if="isClearable" class="delete-button" :aria-label="`Clear override of ${title}`"
+				@click="clear"><v-icon icon="mdi:delete" size="20" /> /></span>
 		</div>
 	</LabelledComponent>
 </template>

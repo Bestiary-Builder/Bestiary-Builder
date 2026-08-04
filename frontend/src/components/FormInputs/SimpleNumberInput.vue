@@ -123,16 +123,13 @@ function clear() {
 
 <template>
 	<div class="simple-quantity" :class="{ clearable: isClearable }">
-		<div class="simple-quantity-button" :aria-label="`Decrease ${label}`" @click.prevent="decrease">
-			<font-awesome-icon :icon="['fas', 'minus']" />
-		</div>
-		<input :id="labelId" ref="input" :value="isNaN(value) ? '' : value" type="number" :name="label" :min="min" :max="max" inputmode="numeric" @change="change">
-		<div class="simple-quantity-button" :aria-label="`Increase ${label}`" @click.prevent="increase">
-			<font-awesome-icon :icon="['fas', 'plus']" />
-		</div>
-		<div v-if="isClearable" class="simple-quantity-button">
-			<font-awesome-icon :icon="['fas', 'eraser']" @click="clear" />
-		</div>
+		<v-icon-btn icon="mdi:minus" :text="`Decrease ${label}`" @click.prevent="decrease" size="small" color="white"
+			variant="plain" />
+		<input :id="labelId" ref="input" :value="isNaN(value) ? '' : value" type="number" :name="label" :min="min"
+			:max="max" inputmode="numeric" @change="change">
+		<v-icon-btn icon="mdi:plus" :text="`Increase ${label}`" @click.prevent="increase" size="small" color="white"
+			variant="plain" />
+		<v-icon-btn icon="mdi:delete" text="clear" @click="clear" v-if="isClearable" />
 	</div>
 </template>
 
@@ -140,9 +137,13 @@ function clear() {
 .simple-quantity {
 	display: inline-grid;
 	grid-template-columns: 1fr 2fr 1fr;
-	gap: 0.5rem;
+
 	&.clearable {
 		grid-template-columns: 1fr 2fr 1fr 1fr;
+	}
+
+	button {
+		margin: auto 0;
 	}
 }
 
@@ -170,11 +171,5 @@ input[type="number"]::-webkit-outer-spin-button {
 input[type="number"] {
 	-moz-appearance: textfield;
 	appearance: textfield;
-}
-
-.simple-quantity-button {
-	margin: auto;
-	font-size: 0.8em;
-	width: 0.8rem;
 }
 </style>

@@ -89,7 +89,7 @@ const lastUpdated = computed(() => {
 						<v-icon icon="mdi:paw" size="20" />
 					</span>
 					<div class="info-buttons">
-						<v-icon icon="mdi:drag" v-if="store.isMobile" class="handle" size="20" />
+						<v-icon icon="material-symbols:drag-indicator" v-if="store.isMobile" class="handle" size="20" />
 						<StatusIcon :icon="data.status" />
 
 						<DropdownMenu v-if="store.user?.id === data.ownerId">
