@@ -843,7 +843,7 @@ const getDraggableKey = (item: any) => {
 								:can-edit="isOwner || isEditor" @mouseover="lastHoveredCreature = element.stats"
 								@delete-creature="(id) => deleteCreature(id)"
 								@pin-creature="lastClickedCreature = element.stats"
-								@copy-creature="copiedCreatures.push({ ...element, bestiaryName: bestiary.name })" />
+								@copy-creature="copiedCreatures.push({ ...element, bestiaryName: bestiary.name }); $toast.info('Copied Successfully!')" />
 						</template>
 					</Draggable>
 

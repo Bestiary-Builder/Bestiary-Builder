@@ -420,20 +420,21 @@ const getDraggableKey = (item: any) => {
 							<CreatureListItem v-if="filterCreature(element)" :id="element.id" :data="element.stats"
 								:can-edit="false" @mouseover="lastHoveredCreature = element.stats"
 								@pin-creature="lastClickedCreature = element.stats"
-								@copy-creature="copiedCreatures.push({ ...element, bestiaryName: bestiary.name })" />
+								@copy-creature="copiedCreatures.push({ ...element, bestiaryName: bestiary.name }); $toast.info('Copied Successfully!')"" />
 						</template>
-					</Draggable>
-				</div>
-				<div v-if="creatures && lastHoveredCreature" class="statblock-container">
-					<span v-if="false && lastClickedCreature" class="pin-notice">
-						<span class="unpin-button" role="button" aria-label="unpin currently pinned creature"
-							@click="lastClickedCreature = null"><b>unpin</b></span>📌
-					</span>
-					<Transition name="fade" mode="out-in">
-						<StatblockRenderer
-							:key="lastClickedCreature?.description.name || lastHoveredCreature.description.name"
-							:data="lastClickedCreature || lastHoveredCreature" />
-					</Transition>
+			</Draggable>
+		</div>
+		<div v-if="creatures && lastHoveredCreature" class="statblock-container">
+								<span v-if="false && lastClickedCreature" class="pin-notice">
+									<span class="unpin-button" role="button"
+										aria-label="unpin currently pinned creature"
+										@click="lastClickedCreature = null"><b>unpin</b></span>📌
+								</span>
+								<Transition name="fade" mode="out-in">
+									<StatblockRenderer
+										:key="lastClickedCreature?.description.name || lastHoveredCreature.description.name"
+										:data="lastClickedCreature || lastHoveredCreature" />
+								</Transition>
 				</div>
 				<div v-else class="statblock-container">
 					<div class="no-creature-text">
