@@ -28,6 +28,9 @@ import "./utils/app/analytics";
 
 import "vuetify/styles";
 import "@mdi/font/css/materialdesignicons.css";
+import iconifyAdapter from './utils/app/icon';
+
+
 
 // Components
 const vuetify = createVuetify({
@@ -47,6 +50,10 @@ const vuetify = createVuetify({
 		},
 		VBtn: {
 			variant: "tonal"
+		},
+		VIconBtn: {
+			variant: "text",
+			color: "primary"
 		},
 		VCardActions: {
 			VBtn: {
@@ -85,7 +92,13 @@ const vuetify = createVuetify({
 				},
 			},
 		}
-	}
+	},
+	icons: {
+		defaultSet: 'iconify',
+		sets: {
+			iconify: iconifyAdapter,
+		},
+	},
 });
 
 export const app = createApp(App as Component<any>);

@@ -3,12 +3,19 @@
 	"compilerOptions": {
 		"composite": true,
 		"target": "esnext",
-		"lib": ["dom", "es2022"],
+		"lib": [
+			"dom",
+			"es2022"
+		],
 		"rootDir": "..",
 		"module": "esnext",
 		"paths": {
-			"@/*": ["./src/*"],
-			"~/*": ["../*"]
+			"@/*": [
+				"./src/*"
+			],
+			"~/*": [
+				"../*"
+			]
 		},
 		"types": [
 			"markdown-it"
@@ -16,6 +23,19 @@
 		"noEmit": false,
 		"allowSyntheticDefaultImports": true
 	},
-	"include": ["env.d.ts", "src/**/*", "src/**/*.vue", "src/**/*.ts", "src/**/*.tsx", "src/**/*.js", "src/**/*.json", "../shared/**/*", "../shared/test.ts"],
-	"exclude": ["src/**/__tests__/*"]
+	"include": [
+		"env.d.ts",
+		"src/**/*",
+		"src/**/*.vue",
+		"src/**/*.ts",
+		"src/**/*.tsx",
+		"src/**/*.js",
+		"src/**/*.json",
+		"../shared/**/*",
+		"../shared/test.ts",
+		"unocss.config.js"
+	],
+	"exclude": [
+		"src/**/__tests__/*"
+	]
 }

@@ -161,6 +161,7 @@ const calculatePassiveInitiative = () => {
 };
 
 onMounted(async () => {
+	console.log(design)
 	if (design === "Odyssey")
 		await import("./styles/odyssey/odyssey.css");
 
@@ -219,8 +220,7 @@ const render = (str: string, inline?: boolean) => {
 			<div>
 				<div>
 					<b> {{ v2024 ? 'AC ' : 'Armor Class ' }} </b><span>{{ data.defenses.ac.ac }}</span><span
-						v-if="data.defenses.ac.acSource" v-html="render(`(${data.defenses.ac.acSource})`, true)"
-					/>
+						v-if="data.defenses.ac.acSource" v-html="render(`(${data.defenses.ac.acSource})`, true)" />
 					<b v-if="v2024" style="padding-left: .45rem"> Initiative </b> <span v-if="v2024"> {{
 						signedNumber(calculatedInitiativeNumber()) }} ({{ calculatePassiveInitiative() }})</span>
 				</div>
@@ -291,21 +291,17 @@ const render = (str: string, inline?: boolean) => {
 		</div>
 		<div class="stat-block__row v2024-no-bottom-border">
 			<template v-if="!v2024">
-				<div
-					v-if="Object.values(data.abilities.saves).some((val) => (val.isProficient === true || val.override !== null))"
-					class="stat-block__save-container"
-				>
+				<div v-if="Object.values(data.abilities.saves).some((val) => (val.isProficient === true || val.override !== null))"
+					class="stat-block__save-container">
 					<b> Saving Throws </b>
 					<template v-for="stat in stats" :key="stat">
 						<span
-							v-if="data.abilities.saves[stat].override !== null || data.abilities.saves[stat].isProficient"
-						>
+							v-if="data.abilities.saves[stat].override !== null || data.abilities.saves[stat].isProficient">
 							{{ capitalizeFirstLetter(stat) }} {{
 								signedNumber(calculatedSaveNumber(data.abilities.saves[stat], stat)) }} </span>
 						<span
 							v-if="data.abilities.saves[stat].override !== null || data.abilities.saves[stat].isProficient"
-							class="ending-comma"
-						>, </span>
+							class="ending-comma">, </span>
 					</template>
 				</div>
 				<div v-if="showSkills" class="stat-block__skills-container">
@@ -334,10 +330,8 @@ const render = (str: string, inline?: boolean) => {
 					<b> Resistances </b>
 					<span v-html="render(alphaSort(data.defenses.resistances).join(', '), true)" />
 				</div>
-				<div
-					v-if="data.defenses.immunities.length > 0 || data.defenses.conditionImmunities.length > 0"
-					class="stat-block__res-container"
-				>
+				<div v-if="data.defenses.immunities.length > 0 || data.defenses.conditionImmunities.length > 0"
+					class="stat-block__res-container">
 					<b> Immunities </b>
 					<span v-html="render(alphaSort(data.defenses.immunities).join(', '), true)" />
 					<span v-if="data.defenses.immunities.length > 0 && data.defenses.conditionImmunities.length > 0">;
@@ -370,10 +364,8 @@ const render = (str: string, inline?: boolean) => {
 			</div>
 		</div>
 
-		<div
-			v-if="data.features.features.length > 0 || showCasterCasting || (showInnateCasting && !data.spellcasting.innateSpells.displayAsAction)"
-			id="yes" class="stat-block__row"
-		>
+		<div v-if="data.features.features.length > 0 || showCasterCasting || (showInnateCasting && !data.spellcasting.innateSpells.displayAsAction)"
+			id="yes" class="stat-block__row">
 			<div class="feature-container">
 				<h3 v-if="v2024" class="feature-container__title">
 					Traits
@@ -382,36 +374,28 @@ const render = (str: string, inline?: boolean) => {
 					<span v-html="render(data.misc.featureHeaderTexts.features)" />
 				</p>
 				<p v-for="(feature, index) in data.features.features" :key="index" class="feature-description">
-					<b> <i>{{ feature.name }}.</i><sup
-						v-if="feature.automation" v-tooltip="'Has Automation'"
-						class="feature-container__automation-icon"
-					>†</sup> </b>
+					<b> <i>{{ feature.name }}.</i><sup v-if="feature.automation" v-tooltip="'Has Automation'"
+							class="feature-container__automation-icon">†</sup> </b>
 					<span class="feature-container__desc" v-html="render(feature.description)" />
 				</p>
 
-				<p
-					v-if="showInnateCasting && !data.spellcasting.innateSpells.displayAsAction"
-					class="feature-description"
-				>
+				<p v-if="showInnateCasting && !data.spellcasting.innateSpells.displayAsAction"
+					class="feature-description">
 					<b><i>Innate Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics">
-						(Psionics)</span>.</i></b>
+								(Psionics)</span>.</i></b>
 					<span class="feature-container__desc" v-html="render(displayInnateCasting(data, v2024), true)" />
 				</p>
 
-				<p
-					v-if="showCasterCasting && data.spellcasting.casterSpells.castingClass && data.spellcasting.casterSpells.casterLevel && data.spellcasting.casterSpells.spellSlotList"
-					class="feature-description"
-				>
+				<p v-if="showCasterCasting && data.spellcasting.casterSpells.castingClass && data.spellcasting.casterSpells.casterLevel && data.spellcasting.casterSpells.spellSlotList"
+					class="feature-description">
 					<b><i>Spellcasting</i></b>
 					<span class="feature-container__desc" v-html="render(displayCasterCasting(data, v2024))" />
 				</p>
 			</div>
 		</div>
 
-		<div
-			v-if="data.features.actions.length > 0 || (showInnateCasting && data.spellcasting.innateSpells.displayAsAction)"
-			class="stat-block__row"
-		>
+		<div v-if="data.features.actions.length > 0 || (showInnateCasting && data.spellcasting.innateSpells.displayAsAction)"
+			class="stat-block__row">
 			<div class="feature-container">
 				<h3 class="feature-container__title">
 					Actions
@@ -420,17 +404,13 @@ const render = (str: string, inline?: boolean) => {
 					<span v-html="render(data.misc.featureHeaderTexts.actions)" />
 				</p>
 				<p v-for="(feature, index) in data.features.actions" :key="index" class="feature-description">
-					<b> <i>{{ feature.name }}.</i><sup
-						v-if="feature.automation" v-tooltip="'Has Automation'"
-						class="feature-container__automation-icon"
-					>†</sup></b>
+					<b> <i>{{ feature.name }}.</i><sup v-if="feature.automation" v-tooltip="'Has Automation'"
+							class="feature-container__automation-icon">†</sup></b>
 					<span class="feature-container__desc" v-html="render(feature.description)" />
 				</p>
 
-				<p
-					v-if="showInnateCasting && data.spellcasting.innateSpells.displayAsAction"
-					class="feature-description"
-				>
+				<p v-if="showInnateCasting && data.spellcasting.innateSpells.displayAsAction"
+					class="feature-description">
 					<b><i>Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics"> (Psionics)</span>.</i></b>
 					<span class="feature-container__desc" v-html="render(displayInnateCasting(data, v2024), true)" />
 				</p>
@@ -446,18 +426,15 @@ const render = (str: string, inline?: boolean) => {
 					</h3>
 					<p v-if="fType === 'legendary' && data.features.legendary.length > 0" class="feature-header">
 						<span
-							v-html="render(data.misc.featureHeaderTexts[fType].replace('$NUM$', data.misc.legActionsPerRound.toString()))"
-						/>
+							v-html="render(data.misc.featureHeaderTexts[fType].replace('$NUM$', data.misc.legActionsPerRound.toString()))" />
 					</p>
 					<p v-else-if="data.misc.featureHeaderTexts[fType]" class="feature-header">
 						<span v-html="render(data.misc.featureHeaderTexts[fType])" />
 					</p>
 					<p v-for="(feature, index) in data.features[fType]" :key="index" class="feature-description">
 						<b> <i> {{ feature.name }}.</i></b>
-						<sup
-							v-if="feature.automation" v-tooltip="'Has Automation'"
-							class="feature-container__automation-icon"
-						>†</sup>
+						<sup v-if="feature.automation" v-tooltip="'Has Automation'"
+							class="feature-container__automation-icon">†</sup>
 						<span class="feature-container__desc" v-html="render(feature.description)" />
 					</p>
 				</div>

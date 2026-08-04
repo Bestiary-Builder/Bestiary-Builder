@@ -2,7 +2,6 @@
 import type { Bestiary, Statblock } from "~/shared";
 import { useLocalStorage } from "@vueuse/core";
 import { reactive, ref } from "vue";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
 import SectionHeader from "@/components/VisualEditor/Nodes/shared/SectionHeader.vue";
@@ -12,7 +11,6 @@ import { store } from "@/utils/store";
 import { sendToLogin, useFetch } from "@/utils/utils";
 import { SupporterStatus } from "~/shared";
 import DropdownMenu from "@/components/Global/DropdownMenu.vue";
-import ButtonIcon from "@/components/Global/ButtonIcon.vue";
 
 const logoutClick = async () => {
 	const { success, error } = await useFetch("/api/logout");
@@ -284,7 +282,30 @@ const creatureData = {
 } as Statblock;
 
 const AvraeToken = useLocalStorage("AvraeToken", "");
+
+const layoutOptions = [
+	{ title: '2024 (OneD&D / Default)', value: 'SL_2024' },
+	{ title: '2014 (5e2014)', value: 'SL_2014' },
+]
+
+const statblockDesignOptions = [
+	{ title: 'Bestiary Builder (Default)', value: 'BestiaryBuilder' },
+	{ title: 'Beyond', value: 'Beyond' },
+	{ title: 'Odyssey', value: 'Odyssey' },
+	{ title: 'Monster Manual (Compact)', value: 'MonsterManual' },
+]
+
+const preferredEditorOptions = [
+	{ title: 'Visual (Default)', value: 'Visual' },
+	{ title: 'Code', value: 'Code' },
+]
+
+const srdOptions = [
+	{ title: '2024 (Default)', value: 'SRD_2024' },
+	{ title: '2014', value: 'SRD_2014' },
+]
 </script>
+
 
 <template>
 	<Breadcrumbs :routes="[
@@ -297,9 +318,10 @@ const AvraeToken = useLocalStorage("AvraeToken", "");
 	<div class="content less-wide">
 		<div v-if="!store.user">
 			<p> You are not logged in. Login with Discord to begin.</p>
-			<button class="btn confirm" @click.prevent="sendToLogin($route.path)">
+			<v-btn color="green" size="large" @click.prevent="sendToLogin($route.path)" class="mt-4"
+				prepend-icon="ic:sharp-discord">
 				Login
-			</button>
+			</v-btn>
 		</div>
 		<div v-else>
 			<div class="list">
@@ -331,110 +353,82 @@ const AvraeToken = useLocalStorage("AvraeToken", "");
 				</p>
 			</div>
 
-			<div class="preferences-container">
+			<div class="preferences-container mt-4">
 				<SectionHeader title="User Preferences" />
-				<div class="preferences">
-					<LabelledComponent title="Statblock Layout">
-						<div class="preview-container">
-							<select v-model="preferences.statblockLayout">
-								<option value="SL_2024">
-									2024 (OneD&D / Default)
-								</option>
-								<option value="SL_2014">
-									2014 (5e2014)
-								</option>
-							</select>
-							<DropdownMenu>
-								<template #activator="{ props }">
-									<ButtonIcon icon="eye" label="Preview statblock style" v-bind="props" />
-								</template>
-								<v-card min-width="300" class="pa-4">
-									<StatblockRenderer :data="creatureData"
-										:statblock-design="preferences.statblockDesign"
-										:is2024="preferences.statblockLayout === 'SL_2024'" style="max-width: 650px" />
-								</v-card>
-							</DropdownMenu>
+				<div class="preferences mt-4">
+					<div class="setting-container">
+						<div>
+							<v-select label="Statblock Layout" v-model="preferences.statblockLayout"
+								:items="layoutOptions" variant="outlined" density="comfortable" width="400" />
 						</div>
-						<small>
-							Set statblock layout - this impacts where some aspects of the statblocks are located,
-							whether stats and saves are
-							displayed as table, and whether some words are capitalized according to the 2014 or 2024
-							format.
-						</small>
-					</LabelledComponent>
 
-					<LabelledComponent title="Statblock Design">
-						<div class="preview-container">
-							<select v-model="preferences.statblockDesign">
-								<option value="BestiaryBuilder">
-									Bestiary Builder (Default)
-								</option>
-								<option value="Beyond">
-									Beyond
-								</option>
-								<option value="Odyssey">
-									Odyssey
-								</option>
-								<option value="MonsterManual">
-									Monster Manual (Compact)
-								</option>
-							</select>
+						<v-icon-btn icon="mdi:information"
+							v-tooltip="'Set statblock layout to 2024 or 2014. This is appearance only.'" />
+						<DropdownMenu>
+							<template #activator="{ props }">
+								<v-icon-btn text="Preview statblock style" icon="mdi:eye" v-bind="props" />
+							</template>
+							<v-card min-width="300" class="pa-4">
+								<StatblockRenderer :data="creatureData" :statblock-design="preferences.statblockDesign"
+									:is2024="preferences.statblockLayout === 'SL_2024'" style="max-width: 650px" />
+							</v-card>
+						</DropdownMenu>
+					</div>
 
-							<DropdownMenu>
-								<template #activator="{ props }">
-									<ButtonIcon icon="eye" label="Preview statblock style" v-bind="props" />
-								</template>
-								<v-card min-width="300" class="pa-4">
-									<StatblockRenderer :data="creatureData"
-										:statblock-design="preferences.statblockDesign"
-										:is2024="preferences.statblockLayout === 'SL_2024'" style="max-width: 650px" />
-								</v-card>
-							</DropdownMenu>
+					<div class="setting-container">
+						<div>
+							<v-select v-model="preferences.statblockDesign" :items="statblockDesignOptions"
+								label="Statblock Design" variant="outlined" density="comfortable" width="400" />
 						</div>
-						<small>
-							Change the visual design of the statblock. This changes its appearance only.
-						</small>
-					</LabelledComponent>
+						<v-icon-btn icon="mdi:information"
+							v-tooltip="'Change the visual design of the statblock. This changes its appearance only.'"
+							title="Setting information" />
 
-					<LabelledComponent title="Automation Editor">
-						<select v-model="preferences.preferredEditor">
-							<option value="Visual">
-								Visual (Default)
-							</option>
-							<option value="Code">
-								Code
-							</option>
-						</select>
-						<small>
-							Set the default for which editor you want to edit automation with by default. Visual allows
-							you to edit
-							automation in a complete editor. Code allows you to edit YAML directly - this is for
-							experienced Avrae coders.
-							<br>You can always switch which editor to use when editing a feature directly.
-						</small>
-					</LabelledComponent>
+						<DropdownMenu>
+							<template #activator="{ props }">
+								<v-icon-btn text="Preview statblock style" icon="mdi:eye" v-bind="props" />
+							</template>
+							<v-card min-width="300" class="pa-4">
+								<StatblockRenderer :data="creatureData" :statblock-design="preferences.statblockDesign"
+									:is2024="preferences.statblockLayout === 'SL_2024'" style="max-width: 650px" />
+							</v-card>
+						</DropdownMenu>
+					</div>
 
-					<LabelledComponent title="SRD Version">
-						<select v-model="preferences.SRDVersion">
-							<option value="SRD_2024">
-								2024 (Default)
-							</option>
-							<option value="SRD_2014">
-								2014
-							</option>
-						</select>
-						<small>
-							Set whether creating Creatures and Features from the SRD should use the 2024 or 2014 list of
-							options.
-						</small>
-					</LabelledComponent>
-					<LabelledComponent title="Avrae Token">
-						<div id="avrae-token" class="preview-container">
-							<input v-model="AvraeToken" type="text">
+					<div class="setting-container">
+						<div>
+							<v-select v-model="preferences.preferredEditor" :items="preferredEditorOptions"
+								label="Preferred Editor" variant="outlined" density="comfortable" width="400" />
 						</div>
+
+						<v-icon-btn icon="mdi:information"
+							v-tooltip="'Set default automation editor to visual (button and layout) or code (YAML) editor.'" />
+					</div>
+
+					<div class="setting-container">
+						<div>
+							<v-select v-model="preferences.SRDVersion" :items="srdOptions" label="SRD Version"
+								variant="outlined" density="comfortable" width="400" />
+						</div>
+						<v-icon-btn icon="mdi:information"
+							v-tooltip="'Set whether creating Creatures and Features from the SRD should use the 2024 or 2014 list of options.'" />
+					</div>
+
+					<div>
+						<v-btn color="green" @click.prevent="saveSettings" size="large">
+							Save Preferences
+						</v-btn>
+					</div>
+
+					<SectionHeader title="Avrae Integration" />
+					<v-container class="pa-0">
 						<small> With this setting you can edit character attacks and import attacks to characters
-							directly within BB.
+							directly within BB. To enable it, set your Avrae Token below.BB does not store this token,
+							it is only saved in
+							your browser.
 						</small>
+						<v-text-field v-model="AvraeToken" label="Token" variant="outlined" class="mt-4" />
+
 						<small> To get the Token:
 							<ol>
 								<li>
@@ -457,17 +451,13 @@ const AvraeToken = useLocalStorage("AvraeToken", "");
 								</li>
 							</ol>
 						</small>
-					</LabelledComponent>
+					</v-container>
 				</div>
-
-				<button class="btn confirm" @click.prevent="saveSettings">
-					Save Preferences
-				</button>
 			</div>
-			<hr>
-			<button class="btn danger" @click.prevent="logoutClick">
+			<SectionHeader title="Log out" />
+			<v-btn color="red" @click.prevent="logoutClick" size="large">
 				Log out of Bestiary Builder
-			</button>
+			</v-btn>
 		</div>
 	</div>
 </template>
@@ -509,7 +499,7 @@ const AvraeToken = useLocalStorage("AvraeToken", "");
 		.preferences {
 			display: flex;
 			flex-direction: column;
-			gap: 1.5rem;
+			gap: 1rem;
 			padding: 0 0.5rem;
 
 			.container {
@@ -526,7 +516,7 @@ const AvraeToken = useLocalStorage("AvraeToken", "");
 				margin-left: 0;
 			}
 
-			.preview-container {
+			.setting-container {
 				display: flex;
 				flex-direction: row;
 				gap: 0.5rem;
