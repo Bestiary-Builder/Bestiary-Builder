@@ -11,7 +11,6 @@ import StatusIcon from "@/components/Bestiary/StatusIcon.vue";
 import UserBanner from "@/components/Bestiary/UserBanner.vue";
 import CRInput from "@/components/FormInputs/CRInput.vue";
 import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
-import ButtonIcon from "@/components/Global/ButtonIcon.vue";
 import DropdownMenu from "@/components/Global/DropdownMenu.vue";
 import Markdown from "@/components/Global/Markdown.vue";
 import Modal from "@/components/Global/Modal.vue";
@@ -613,7 +612,7 @@ const getDraggableKey = (item: any) => {
 		]">
 			<DropdownMenu v-if="isEditor || isOwner">
 				<template #activator="{ props }">
-					<ButtonIcon icon="plus" label="Create creature" inverted v-bind="props" />
+					<v-icon-btn text="Create creature" icon="mdi:plus" size="24" v-bind="props" class="inverted" />
 				</template>
 				<v-card min-width="300" class="text-center pa-4" title="Create creature">
 					<v-card-actions class="d-flex flex-column align-center justify-center">
@@ -643,8 +642,8 @@ const getDraggableKey = (item: any) => {
 				@import-all-creatures="createManyCreatures" @copy-current-bestiary="copyCurrentBestiary" />
 
 			<v-dialog v-if="isOwner" max-width="950">
-				<template #activator="{ props: activatorProps }">
-					<ButtonIcon icon="gear" label="Edit bestiary" v-bind="activatorProps" />
+				<template #activator="{ props }">
+					<v-icon-btn text="Edit bestiary" icon="mdi:cog" size="24" v-bind="props" />
 				</template>
 
 				<template #default="{ isActive }">
@@ -728,7 +727,7 @@ const getDraggableKey = (item: any) => {
 			</v-dialog>
 			<DropdownMenu>
 				<template #activator="{ props }">
-					<ButtonIcon icon="tag" label="Search bestiary" v-bind="props" />
+					<v-icon-btn text="Search creatures" icon="mdi:tag" size="24" v-bind="props" />
 				</template>
 				<v-card min-width="300" class="text-center pb-2 pa-4" title="Search bestiary">
 					<v-card-actions class="d-flex flex-column align-center justify-center" min-width="200">
@@ -749,8 +748,8 @@ const getDraggableKey = (item: any) => {
 			</DropdownMenu>
 
 			<v-dialog v-if="isOwner" max-width="750">
-				<template #activator="{ props: activatorProps }">
-					<ButtonIcon icon="arrow-right-to-bracket" label="Import bestiary" v-bind="activatorProps" />
+				<template #activator="{ props }">
+					<v-icon-btn text="Import automation" icon="mdi:import" size="24" v-bind="props" />
 				</template>
 
 				<template #default="{ isActive }">
@@ -793,7 +792,7 @@ const getDraggableKey = (item: any) => {
 
 			<DropdownMenu>
 				<template #activator="{ props }">
-					<ButtonIcon icon="arrow-right-from-bracket" label="Export bestiary" v-bind="props" />
+					<v-icon-btn text="Export Bestiary" icon="mdi:export" size="24" v-bind="props" />
 				</template>
 				<v-card min-width="300" class="text-center pb-2 pa-4" title="Export bestiary">
 					<v-card-actions class="d-flex flex-column align-center justify-center" min-width="200">

@@ -9,8 +9,6 @@ import CreatureListItem from "@/components/Bestiary/CreatureListItem.vue";
 import StatusIcon from "@/components/Bestiary/StatusIcon.vue";
 import UserBanner from "@/components/Bestiary/UserBanner.vue";
 import CRInput from "@/components/FormInputs/CRInput.vue";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
-import ButtonIcon from "@/components/Global/ButtonIcon.vue";
 import Markdown from "@/components/Global/Markdown.vue";
 import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
@@ -138,7 +136,6 @@ watch(debouncedEnv, () => {
 watch(debouncedFaction, () => {
 	searchOptions.value.faction = searchFaction.value;
 });
-const initialLoading = ref(true);
 const loading = ref(true);
 onMounted(async () => {
 	// const loader = $loading.show();
@@ -251,7 +248,6 @@ async function getBestiary() {
 	savedBestiary.value = bestiary.value;
 	isOwner.value = store.user?.id === bestiary.value.ownerId;
 	isEditor.value = (bestiary.value?.editors ?? []).map(e => e.userId).includes(store.user?.id ?? "");
-	initialLoading.value = false;
 	// Fetch creatures
 	await useFetch<CreatureWithStats[]>(`/api/bestiary/${bestiary.value.id.toString()}/creatures`).then(async (creatureResult) => {
 		if (creatureResult.success) {
@@ -349,66 +345,46 @@ const getDraggableKey = (item: any) => {
 		]">
 			<CopyCreature :may-import="false" :current-creatures="creatures || []" can-copy-current-bestiary
 				@copy-current-bestiary="copyCurrentBestiary" />
-			<ButtonIcon v-if="false" icon="thumbtack" label="Unpin currently pinned creature" style="rotate: 45deg"
-				@click="lastClickedCreature = null" />
-			<VDropdown :distance="6" :positioning-disabled="store.isMobile">
-				<ButtonIcon icon="tag" label="Filter bestiary" />
-
-				<template #popper>
-					<div class="v-popper__custom-menu">
-						<LabelledComponent title="Sort creatures" for="sortcreatures">
-							<select id="sortcreatures" v-model="sortMode" name="Sort bestiary by attribute">
-								<option>Custom</option>
-								<option>Alphabetically</option>
-								<option>CR Ascending</option>
-								<option>CR Descending</option>
-								<option>Creature Type</option>
-							</select>
-						</LabelledComponent>
-						<LabelledComponent title="Filter" for="searchtext">
-							<input id="searchtext" v-model="searchText" type="text" placeholder="Search by name...">
-						</LabelledComponent>
-						<LabelledComponent title="Creature type" for="creatureType">
-							<div style="min-width: 300px">
-								<v-select v-model="searchOptions.tags" placeholder="Search by creature type" multiple
-									:options="creatureTypes" input-id="creaturetype" :taggable="true" />
-							</div>
-						</LabelledComponent>
-						<div class="two-wide">
+			<DropdownMenu>
+				<template #activator="{ props }">
+					<v-icon-btn text="Search creatures" icon="mdi:tag" size="24" v-bind="props" />
+				</template>
+				<v-card min-width="300" class="text-center pb-2 pa-4" title="Search bestiary">
+					<v-card-actions class="d-flex flex-column align-center justify-center" min-width="200">
+						<v-select v-model="sortMode"
+							:items="['Custom', 'Alphabetically', 'CR Ascending', 'CR Descending', 'Creature Type']"
+							label="Bestiary sort type" width="100%" />
+						<div class="grid-two">
+							<v-text-field v-model="searchText" label="Name" width="200" />
+							<v-select v-model="searchOptions.tags" :items="creatureTypes" label="Creature type" multiple
+								chips closable-chips width="200" />
 							<CRInput v-model="searchOptions.minCr" label="Minimum CR" />
 							<CRInput v-model="searchOptions.maxCr" label="Maximum CR" />
+							<v-text-field v-model="searchFaction" label="Faction" width="200" />
+							<v-text-field v-model="searchEnv" label="Environment" width="200" />
 						</div>
-						<span v-if="searchOptions.minCr > searchOptions.maxCr" class="warning"
-							style="text-align: center"> Min is bigger than max </span>
-						<LabelledComponent title="Environment" for="environment">
-							<input id="environment" v-model="searchEnv" type="text" placeholder="Search by name...">
-						</LabelledComponent>
-						<LabelledComponent title="Faction" for="faction">
-							<input id="faction" v-model="searchFaction" type="text" placeholder="Search by name...">
-						</LabelledComponent>
-					</div>
-				</template>
-			</VDropdown>
+					</v-card-actions>
+				</v-card>
+			</DropdownMenu>
 
-			<VDropdown :distance="6" :positioning-disabled="store.isMobile">
-				<ButtonIcon icon="arrow-right-from-bracket" label="Export bestiary" />
-				<template #popper>
-					<div class="v-popper__custom-menu">
-						<span>
-							Export this Bestiary
-						</span>
-						<button v-close-popper class="btn confirm" @click="exportBestiary(false)">
-							Clipboard
-						</button>
-						<button v-close-popper class="btn confirm" @click="exportBestiary(true)">
-							File
-						</button>
-						<button v-close-popper class="btn confirm" @click="exportHomebrewery()">
-							Homebrewery
-						</button>
-					</div>
+			<DropdownMenu>
+				<template #activator="{ props }">
+					<v-icon-btn text="Export Bestiary" icon="mdi:export" size="24" v-bind="props" />
 				</template>
-			</VDropdown>
+				<v-card min-width="300" class="text-center pb-2 pa-4" title="Export bestiary">
+					<v-card-actions class="d-flex flex-column align-center justify-center" min-width="200">
+						<v-btn class="w-100" color="green" size="large" @click="exportBestiary(false)">
+							Clipboard
+						</v-btn>
+						<v-btn class="w-100" color="green" size="large" @click="exportBestiary(true)">
+							File
+						</v-btn>
+						<v-btn class="w-100" color="green" size="large" @click="exportHomebrewery()">
+							Homebrewery
+						</v-btn>
+					</v-card-actions>
+				</v-card>
+			</DropdownMenu>
 		</Breadcrumbs>
 		<div class="content">
 			<div v-if="bestiary" class="bestiary">

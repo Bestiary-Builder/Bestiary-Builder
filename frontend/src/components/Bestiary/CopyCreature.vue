@@ -2,7 +2,6 @@
 import type { CreatureWithStats, Statblock } from "~/shared";
 import { useLocalStorage } from "@vueuse/core";
 import { $toast } from "@/utils/app/toast";
-import ButtonIcon from "../Global/ButtonIcon.vue";
 import DropdownMenu from "../Global/DropdownMenu.vue";
 
 const props = withDefaults(
@@ -10,7 +9,7 @@ const props = withDefaults(
 		noImportAll?: boolean;
 		mayImport?: boolean;
 		currentCreature?:
-			CopiedCreature | undefined;
+		CopiedCreature | undefined;
 		canCopyCurrentBestiary?: boolean;
 	}>(),
 	{ noImportAll: false, mayImport: false, currentCreature: undefined, canCopyCurrentBestiary: false }
@@ -46,7 +45,7 @@ const importManyCreatures = () => {
 <template>
 	<DropdownMenu>
 		<template #activator="{ props }">
-			<ButtonIcon icon="copy" label="Delete creature" v-bind="props" no-tooltip />
+			<v-icon-btn icon="mdi:content-copy" v-bind="props" text="Manage copies" size="24" />
 		</template>
 		<v-card min-width="500" class="text-center pa-4 d-flex justify-center flex-column">
 			<v-card-text>
@@ -67,10 +66,8 @@ const importManyCreatures = () => {
 								<p> {{ creature.bestiaryName }} (CR {{ creature.stats.description.cr }})</p>
 							</th>
 							<td v-if="mayImport">
-								<font-awesome-icon
-									:icon="['fas', 'arrow-right-to-bracket']"
-									@click="importCreature(creature)"
-								/>
+								<font-awesome-icon :icon="['fas', 'arrow-right-to-bracket']"
+									@click="importCreature(creature)" />
 							</td>
 							<td> <font-awesome-icon :icon="['fas', 'trash']" @click="deleteCreature(idx)" /></td>
 						</tr>
@@ -96,10 +93,8 @@ const importManyCreatures = () => {
 				<v-btn v-if="copiedCreatures.length > 0" size="small" @click="clearCreatures()">
 					Clear list
 				</v-btn>
-				<v-btn
-					v-if="mayImport && copiedCreatures.length > 0 && !props.noImportAll"
-					size="small" @click="importManyCreatures"
-				>
+				<v-btn v-if="mayImport && copiedCreatures.length > 0 && !props.noImportAll" size="small"
+					@click="importManyCreatures">
 					Import all
 				</v-btn>
 				<v-btn v-if="currentCreature" size="small" @click="copiedCreatures.push(currentCreature)">

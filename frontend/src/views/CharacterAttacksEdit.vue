@@ -7,12 +7,10 @@ import { useRoute } from "vue-router";
 import ImportAutomationUtil
 	from "@/components/Automations/ImportAutomationUtil.vue";
 import { getAvraeCharacterByUpstream } from "@/components/Characters/utils";
-import ButtonIcon from "@/components/Global/ButtonIcon.vue";
 import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import VisualEditor from "@/components/VisualEditor/VisualEditor.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { $toast } from "@/utils/app/toast";
-import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import DropdownMenu from "@/components/Global/DropdownMenu.vue";
 
@@ -27,7 +25,7 @@ onMounted(async () => {
 });
 
 const activeAttackIndex = ref<number>(-1);
-
+const isSavingAttacks = ref(false)
 const saveAttacks = async () => {
 	if (!character.value)
 		return;
@@ -36,7 +34,7 @@ const saveAttacks = async () => {
 		$toast.info("No attacks.");
 		return;
 	}
-
+	isSavingAttacks.value = true
 	const toasterId = $toast.loading("Waiting on the Avrae API...");
 	const { success, error } = await useFetch(`/api/character/${character.value.upstream}/attacks/set`, "POST", attacks);
 
@@ -47,6 +45,8 @@ const saveAttacks = async () => {
 	else {
 		$toast.error(error, { id: toasterId });
 	}
+
+	isSavingAttacks.value = false
 };
 
 const addAttack = () => {
@@ -98,8 +98,9 @@ provide("setActionDescription", false);
 			isCurrent: true
 		}
 	]">
-		<ButtonIcon icon="save" label="Save attacks" inverted @click="saveAttacks" />
-		<ButtonIcon icon="plus" label="Add attack" @click="addAttack" />
+		<v-icon-btn icon="mdi:content-save" text="Save attacks" :class="{ inverted: !isSavingAttacks }"
+			@click="saveAttacks" size="24" :loading="isSavingAttacks" />
+		<v-icon-btn icon="mdi:plus" text="Add attack" @click="addAttack" size="24" />
 		<ImportAutomationUtil @load-feature="(feature: FeatureEntity) => loadFeature(feature)" />
 	</Breadcrumbs>
 	<div v-if="!AvraeToken" class="content">
@@ -119,7 +120,7 @@ provide("setActionDescription", false);
 			</select>
 			<DropdownMenu v-if="activeAttackIndex > -1">
 				<template #activator="{ props }">
-					<ButtonIcon icon="eraser" label="Delete currently selected attack" v-bind="props" no-tooltip />
+					<v-icon-btn icon="mdi:trash" text="Delete currently selected attack" v-bind="props" />
 				</template>
 				<v-card min-width="300" class="text-center pb-2">
 					<v-card-text>

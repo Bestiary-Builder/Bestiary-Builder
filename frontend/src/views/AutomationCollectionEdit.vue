@@ -5,7 +5,6 @@ import { onBeforeRouteLeave, useRoute } from "vue-router";
 import Draggable from "vuedraggable";
 import YAML from "yaml";
 import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
-import ButtonIcon from "@/components/Global/ButtonIcon.vue";
 import Markdown from "@/components/Global/Markdown.vue";
 import Modal from "@/components/Global/Modal.vue";
 import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
@@ -238,46 +237,22 @@ const updateCollection = async () => {
 </script>
 
 <template>
-	<Breadcrumbs
-		:routes="[
-			{
-				path: '/automations/personal',
-				text: 'My Automation',
-				isCurrent: false
-			},
-			{
-				path: '',
-				text: collection ? collection.name : 'Unknown name',
-				isCurrent: true
-			}
-		]"
-	>
-		<ButtonIcon icon="plus" label="Add attack" @click="showCreateModal = true" />
-		<!-- <ImportAutomationUtil @load-feature="(feature) => addAttack(feature.name, feature.automation)" /> -->
-		<!-- <VDropdown :distance="6" :positioning-disabled="store.isMobile">
-            <ButtonIcon icon="avrae" label="Import to Avrae Character" />
-            <template #popper>
-                <div class="v-popper__custom-menu" style="min-width: 200px">
-                    <button v-if="characters.length === 0" class="btn confirm" @click="getAvraeCharacters">
-                        Get Avrae Characters
-                    </button>
-                    <div v-else>
-                        <p> Choose Avrae Character <br> to import this feature to.<br></p>
-                        <select v-model="selectedCharacter" style="margin-top: 1rem;">
-                            <option v-for="char, idx of characters" :key="idx" :value="char">
-                                {{ char.name }}
-                            </option>
-                        </select>
-                    </div>
-                </div>
-            </template>
-</VDropdown> -->
-		<ButtonIcon icon="gear" label="Settings" @click="showSettingsModal = true" />
-		<ButtonIcon icon="arrow-right-to-bracket" label="Import a list of automation" @click="showImportModal = true" />
-		<ButtonIcon
-			icon="arrow-right-from-bracket" label="Export all automations to your clipboard"
-			@click="exportMyAutomations()"
-		/>
+	<Breadcrumbs :routes="[
+		{
+			path: '/automations/personal',
+			text: 'My Automation',
+			isCurrent: false
+		},
+		{
+			path: '',
+			text: collection ? collection.name : 'Unknown name',
+			isCurrent: true
+		}
+	]">
+		<v-icon-btn text="Add attack" @click="showCreateModal = true" icon="mdi:plus" size="24" />
+		<v-icon-btn text="Settings" @click="showSettingsModal = true" icon="mdi:cog" size="24" />
+		<v-icon-btn text="Import automation" @click="showImportModal = true" icon="mdi:import" size="24" />
+		<v-icon-btn text="Export automation" @click="exportMyAutomations()" icon="mdi:export" size="24" />
 	</Breadcrumbs>
 	<div v-if="collection" class="content less-wide">
 		<h1> {{ collection?.name }}</h1>
@@ -289,11 +264,9 @@ const updateCollection = async () => {
 
 		<Markdown :text="collection.description" />
 		<h2> Actions </h2>
-		<Draggable
-			:key="Math.random()" :list="data" group="bestiaries" :animation="150" :item-key="getDraggableKey"
+		<Draggable :key="Math.random()" :list="data" group="bestiaries" :animation="150" :item-key="getDraggableKey"
 			class="attack-container" :handle="store.isMobile ? '.handle' : ''" :disabled="!personal" tag="ol"
-			@change="saveOrder"
-		>
+			@change="saveOrder">
 			<template #item="{ element, index }">
 				<li class="attack-tile">
 					<h3>
@@ -340,16 +313,11 @@ const updateCollection = async () => {
 		<template #body>
 			<div class="modal-desc">
 				<LabelledComponent title="Name">
-					<input
-						v-model="createOptions.name" type="text" :maxlength="store.limits?.nameLength"
-						:minlength="store.limits?.nameMin"
-					>
+					<input v-model="createOptions.name" type="text" :maxlength="store.limits?.nameLength"
+						:minlength="store.limits?.nameMin">
 				</LabelledComponent>
 				<LabelledComponent title="Description">
-					<input
-						v-model="createOptions.description" type="text"
-						:maxlength="store.limits?.descriptionLength"
-					>
+					<input v-model="createOptions.description" type="text" :maxlength="store.limits?.descriptionLength">
 				</LabelledComponent>
 			</div>
 		</template>
@@ -370,10 +338,8 @@ const updateCollection = async () => {
 		<template #body>
 			<div class="modal-desc">
 				<LabelledComponent title="Name">
-					<input
-						v-model="settingOptions.name" type="text" :maxlength="store.limits?.nameLength"
-						:minlength="store.limits?.nameMin"
-					>
+					<input v-model="settingOptions.name" type="text" :maxlength="store.limits?.nameLength"
+						:minlength="store.limits?.nameMin">
 				</LabelledComponent>
 				<LabelledComponent title="Description">
 					<Editor v-model="settingOptions.description" />

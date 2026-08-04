@@ -2,7 +2,6 @@
 import type { BestiaryExtended, BestiaryWithCount } from "~/shared";
 import { refDebounced } from "@vueuse/core";
 import { onMounted, ref, watch } from "vue";
-import ButtonIcon from "@/components/Global/ButtonIcon.vue";
 import CollectionTile from "@/components/Global/CollectionTile.vue";
 import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import { getUmami } from "@/utils/app/analytics";
@@ -10,6 +9,7 @@ import { $loading } from "@/utils/app/loading";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { $toast } from "../utils/app/toast";
+import DropdownMenu from "@/components/Global/DropdownMenu.vue";
 
 onMounted(async () => {
 	const loader = $loading.show();
@@ -78,40 +78,34 @@ watch(debouncedSearch, async () => searchBestiaries());
 </script>
 
 <template>
-	<Breadcrumbs
-		:routes="[
-			{
-				path: '',
-				text: 'Public Bestiaries',
-				isCurrent: true
-			}
-		]"
-	>
-		<select v-model="viewMode" aria-label="Select public bestiary list mode" name="Select public bestiary list mode">
+	<Breadcrumbs :routes="[
+		{
+			path: '',
+			text: 'Public Bestiaries',
+			isCurrent: true
+		}
+	]">
+		<select v-model="viewMode" aria-label="Select public bestiary list mode"
+			name="Select public bestiary list mode">
 			<option>Recent</option>
 			<option>Popular</option>
 			<option>Bookmarked</option>
 		</select>
 
-		<VDropdown :distance="6" :positioning-disabled="store.isMobile">
-			<ButtonIcon icon="tag" label="Filter bestiaries" />
-			<template #popper>
-				<div class="v-popper__custom-menu" style="min-width: 200px">
-					<span><label for="tagsInput">Filter by tags</label></span>
-					<v-select v-model="selectedTags" placeholder="Select Tags" multiple :options="store.tags" input-id="tagsInput" />
-				</div>
+		<DropdownMenu>
+			<template #activator="{ props }">
+				<v-icon-btn icon="mdi:magnify" v-bind="props" text="Search bestiaries" size="24" />
 			</template>
-		</VDropdown>
+			<v-card min-width="300" class="text-center pb-2" title="Search bestiaries">
+				<v-spacer />
+				<v-card-text>
+					<v-text-field label="Search text" v-model="search" />
+					<v-select v-model="selectedTags" label="Select Tags" multiple :items="store.tags || []" chips
+						closable-chips />
+				</v-card-text>
+			</v-card>
+		</DropdownMenu>
 
-		<VDropdown :distance="6" :positioning-disabled="store.isMobile">
-			<ButtonIcon icon="magnifying-glass" label="Search bestiaries" />
-			<template #popper>
-				<div class="v-popper__custom-menu">
-					<span><label for="searchinput"> Search bestiaries by name or description</label></span>
-					<input id="searchinput" v-model="search" type="text" placeholder="Search by bestiary name or description">
-				</div>
-			</template>
-		</VDropdown>
 	</Breadcrumbs>
 	<div class="content">
 		<div v-if="bestiaries.length > 0" class="tile-container">
@@ -121,17 +115,20 @@ watch(debouncedSearch, async () => searchBestiaries());
 		</div>
 		<div v-else class="zero-found">
 			<span v-if="viewMode !== 'Bookmarked'"> Did not find any Bestiaries with that name or tags.</span>
-			<span v-else>You do not have any bookmarked bestiaries. View a Bestiary and click on the ⭐ icon to bookmark it.</span>
+			<span v-else>You do not have any bookmarked bestiaries. View a Bestiary and click on the ⭐ icon to bookmark
+				it.</span>
 		</div>
 	</div>
-	<div v-if="totalPages > 1" class="page-nav__container">
-		<button v-tooltip="'Decrease page number'" aria-label="Decrease page number" @click="selectedPage = Math.max(1, selectedPage - 1)">
+	<div v-if="totalPages > 0" class="page-nav__container">
+		<v-btn v-tooltip="'Decrease page number'" aria-label="Decrease page number"
+			@click="selectedPage = Math.max(1, selectedPage - 1)" variant="text">
 			-
-		</button>
+		</v-btn>
 		<span>{{ selectedPage }}/{{ totalPages }}</span>
-		<button v-tooltip="'Increase page number'" aria-label="Increase page number" @click="selectedPage = Math.min(totalPages, selectedPage + 1)">
+		<v-btn v-tooltip="'Increase page number'" aria-label="Increase page number"
+			@click="selectedPage = Math.min(totalPages, selectedPage + 1)" variant="text">
 			+
-		</button>
+		</v-btn>
 	</div>
 </template>
 
@@ -143,12 +140,5 @@ watch(debouncedSearch, async () => searchBestiaries());
 	align-items: center;
 	font-size: 1.3rem;
 	padding-top: 1rem;
-
-	button {
-		background-color: unset;
-		border: unset;
-		color: white;
-		cursor: pointer;
-	}
 }
 </style>

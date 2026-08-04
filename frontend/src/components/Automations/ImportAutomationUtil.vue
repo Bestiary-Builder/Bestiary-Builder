@@ -4,7 +4,7 @@ import { onMounted, ref } from "vue";
 import { $toast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
-import LabelledComponent from "../FormInputs/LabelledComponent.vue";
+import DropdownMenu from "../Global/DropdownMenu.vue";
 
 const emit = defineEmits<{
 	(e: "loadFeature", feature: FeatureEntity, apiPath: AutomationTypes): void;
@@ -51,6 +51,7 @@ onMounted(async () => {
 });
 
 const selectAndLoad = async (apiPath: AutomationTypes, name: string, _id: Id | null = null) => {
+	if (name === '') return;
 	const { success, data: iData, error } = await useFetch(`/api/${apiPath}/${encodeURIComponent(_id?.toString() ?? name)}`);
 	let feature: FeatureEntity | null = null;
 	if (!success) {
@@ -66,33 +67,52 @@ const selectAndLoad = async (apiPath: AutomationTypes, name: string, _id: Id | n
 
 	emit("loadFeature", feature, apiPath);
 };
+console.log(loadedAutomation.value.myAutomation)
 </script>
 
 <template>
-	<VDropdown :distance="6" :positioning-disabled="store.isMobile">
-		<button v-tooltip="'Import actions'" aria-label="Import actions">
-			<font-awesome-icon :icon="['fas', 'database']" />
-		</button>
-		<template #popper>
-			<div class="v-popper__custom-menu">
-				<div class="editor-field__container" style="min-width: 400px">
-					<LabelledComponent title="Import SRD feature" for="importsrdfeature">
-						<v-select :options="loadedAutomation.srdFeatures" input-id="importsrdfeature" @option:selected="(selected : string) => (selectAndLoad(`srd-features/${store.user?.SRDVersion === 'SRD_2024' ? '2024' : '2014'}`, selected)) " />
-					</LabelledComponent>
-				</div>
 
-				<div class="editor-field__container">
-					<LabelledComponent title="Import basic template" for="importbasicexample">
-						<v-select :options="loadedAutomation.basicExamples" input-id="importbasicexample" @option:selected="(selected : string) => (selectAndLoad('basic-example', selected))" />
-					</LabelledComponent>
-				</div>
-
-				<div v-if="true" class="editor-field__container">
-					<LabelledComponent title="Import custom automation" for="importcustomautomation">
-						<v-select :options="loadedAutomation.myAutomation" input-id="importcustomautomation" label="name" @option:selected="(selected : myAutomationSkeleton) => (selectAndLoad('automation', selected.name, selected.id))" />
-					</LabelledComponent>
-				</div>
-			</div>
+	<DropdownMenu>
+		<template #activator="{ props }">
+			<v-icon-btn icon="mdi:database" text="Import Action" size="24" v-bind="props" />
 		</template>
-	</VDropdown>
+		<v-card max-width="500" class="text-center pb-2">
+			<v-card-text>
+
+				<v-autocomplete :items="loadedAutomation.srdFeatures" label="Import SRD Feature"
+					@update:model-value="selected => (selectAndLoad(`srd-features/${store.user?.SRDVersion === 'SRD_2024' ? '2024' : '2014'}`, selected || ''))"
+					variant="solo-filled" class="w-100" clearable>
+					<template #item="{ props, item }">
+						<v-list-item v-bind="props" density="compact" style="min-height: 28px">
+							{{ (item as any).title }}
+						</v-list-item>
+					</template>
+				</v-autocomplete>
+
+				<v-autocomplete :items="loadedAutomation.basicExamples" label="Import basic Action"
+					@update:model-value="selected => (selectAndLoad('basic-example', selected || ''))"
+					variant="solo-filled">
+					<template #item="{ props, item }">
+						<v-list-item v-bind="props" density="compact" style="min-height: 28px">
+							{{ (item as any).title }}
+						</v-list-item>
+					</template>
+				</v-autocomplete>
+				<v-autocomplete :items="loadedAutomation.myAutomation" item-title="name" item-value="id"
+					label="Select an item" return-object
+					@update:model-value="(selected) => selected && selectAndLoad('automation', selected.name, selected.id)"
+					variant="solo-filled">
+					<template #item="{ props, item }">
+						<v-list-item v-bind="props" density="compact" style="min-height: 28px">
+							{{ (item as any).title }}
+						</v-list-item>
+					</template>
+				</v-autocomplete>
+				<!-- <v-select :items="loadedAutomation.myAutomation"
+					@option:selected="(selected: myAutomationSkeleton) => (selectAndLoad('automation', selected.name, selected.id))"
+					label="Import Custom Automation" /> -->
+			</v-card-text>
+
+		</v-card>
+	</DropdownMenu>
 </template>

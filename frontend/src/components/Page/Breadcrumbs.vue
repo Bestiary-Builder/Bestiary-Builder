@@ -35,7 +35,8 @@ watchEffect(() => {
 </script>
 
 <template>
-	<nav id="breadcrumb" ref="breadcrumbs" class="breadcrumbs__container" :class="{ 'less-wide': isLessWide }" aria-label="Header">
+	<nav id="breadcrumb" ref="breadcrumbs" class="breadcrumbs__container" :class="{ 'less-wide': isLessWide }"
+		aria-label="Header">
 		<ol class="breadcrumbs__links" aria-label="Breadcrumbs">
 			<li v-for="(route, index) in routes" :key="index">
 				<RouterLink v-if="!route.isCurrent" :to="route.path">
@@ -50,9 +51,7 @@ watchEffect(() => {
 
 		<div class="right-buttons">
 			<slot />
-			<button v-tooltip="'Share this page!'" aria-label="Share this page" @click="startShare">
-				<font-awesome-icon :icon="['fas', 'share-nodes']" />
-			</button>
+			<v-icon-btn text="Share this page" @click="startShare" icon="mdi:share" size="24" />
 		</div>
 	</nav>
 </template>
@@ -72,32 +71,16 @@ watchEffect(() => {
 	margin-top: var(--navbar-height);
 	flex-wrap: wrap;
 	z-index: 100;
+
 	.right-buttons {
 		display: flex;
 		gap: 1rem;
 
 		& button {
-			padding: 0;
-			border: unset;
-			background: unset;
-			position: relative;
-			cursor: pointer;
-			background: transparent;
-			border-radius: 50%;
-			padding: 0.3rem;
-			height: 1.5rem;
-			width: 1.5rem;
-			aspect-ratio: 1;
-			color: orangered;
-			transition: all ease 0.3s;
+			margin: auto 0;
 
 			svg {
-				scale: 1.1;
-				translate: 0 -2px;
-			}
-			&:not(.avrae):hover {
-				background-color: orangered;
-				color: var(--color-surface-0);
+				scale: 0.9
 			}
 
 			&.inverted {
@@ -112,6 +95,7 @@ watchEffect(() => {
 		}
 	}
 }
+
 @media screen and (max-width: 1080px) {
 	.breadcrumbs__container {
 		padding: 1rem 2vw;
@@ -152,6 +136,7 @@ watchEffect(() => {
 		font-size: 0.8rem;
 		display: flex;
 		align-items: center;
+
 		.current-page {
 			font-size: 0.8rem;
 		}

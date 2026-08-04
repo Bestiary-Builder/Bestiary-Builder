@@ -3,15 +3,13 @@ import type { AutomationCollectionExtended } from "~/shared";
 import { onMounted, reactive, ref, toValue } from "vue";
 import { useRouter } from "vue-router";
 import Draggable from "vuedraggable";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
-import ButtonIcon from "@/components/Global/ButtonIcon.vue";
 import CollectionTile from "@/components/Global/CollectionTile.vue";
-import Modal from "@/components/Global/Modal.vue";
 import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { $toast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
+import { useRules } from "vuetify/labs/rules";
 
 const $router = useRouter();
 const automationCollections = ref<AutomationCollectionExtended[]>();
@@ -36,6 +34,7 @@ const resetCreateInput = () => {
 	createOptions.name = "";
 	createOptions.description = "";
 	createOptions.status = "unlisted";
+	createOptions.tags = []
 };
 const createAutomationCollection = async () => {
 	const { success, data, error } = await useFetch<AutomationCollectionExtended>("/api/automation-collection/add", "POST", toValue(createOptions));
@@ -54,11 +53,6 @@ const createAutomationCollection = async () => {
 	}
 
 	await getMyCollections();
-};
-
-const cancelCreate = () => {
-	showCreateModal.value = false;
-	resetCreateInput();
 };
 
 onMounted(async () => {
@@ -88,66 +82,70 @@ const saveOrder = async () => {
 	const orderIds = automationCollections.value.map(coll => coll.id);
 	await useFetch("/api/automation-collection/order", "POST", orderIds);
 };
+
+const statusOptions = [
+	{ title: 'Private', value: 'private' },
+	{ title: 'Unlisted', value: 'unlisted' },
+	{ title: 'Public', value: 'public' },
+]
+
+const rules = useRules()
 </script>
 
 <template>
-	<Breadcrumbs
-		:routes="[
-			{
-				path: '',
-				text: 'My Automation Collections',
-				isCurrent: true
-			}
-		]"
-	>
-		<ButtonIcon icon="plus" label="Create bestiary!" inverted @click="showCreateModal = true" />
-		<ButtonIcon icon="arrow-right-from-bracket" label="Export all automations to your clipboard" />
+	<Breadcrumbs :routes="[
+		{
+			path: '',
+			text: 'My Automation Collections',
+			isCurrent: true
+		}
+	]">
+		<v-dialog max-width="500">
+			<template #activator="{ props: activatorProps }">
+				<v-icon-btn icon="mdi:plus" v-bind="activatorProps" size="24" />
+			</template>
+
+			<template #default="{ isActive }">
+				<v-card title="Create new automation collection">
+					<v-card-text>
+						<v-text-field v-model="createOptions.name" label="Name" :maxlength="store.limits?.nameLength"
+							:min-length="store.limits?.nameMin"
+							:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]" />
+						<v-textarea v-model="createOptions.description" :max-length="store.limits?.descriptionLength"
+							:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]" label="Description"
+							counter />
+						<div class="grid-two">
+							<div>
+								<v-select v-model="createOptions.status" label="Status" :items="statusOptions" />
+							</div>
+							<v-select v-model="createOptions.tags" multiple :items="store.automationTags || []"
+								label="Tags" chips closable-chips />
+						</div>
+					</v-card-text>
+					<v-card-actions>
+						<v-spacer />
+						<v-btn @click="resetCreateInput(); isActive.value = false">
+							Cancel
+						</v-btn>
+						<v-btn color="green" @click="createAutomationCollection">
+							Create
+						</v-btn>
+					</v-card-actions>
+				</v-card>
+			</template>
+		</v-dialog>
 	</Breadcrumbs>
 	<div class="content">
-		<Draggable :key="Math.random()" :list="automationCollections" :animation="150" :item-key="getDraggableKey" class="tile-container" :handle=" store.isMobile ? '.handle' : ''" @change="saveOrder">
+		<Draggable :key="Math.random()" :list="automationCollections" :animation="150" :item-key="getDraggableKey"
+			class="tile-container" :handle="store.isMobile ? '.handle' : ''" @change="saveOrder">
 			<template #item="{ element, idx }">
 				<RouterLink :to="`/automations/edit/${element.id}`">
-					<CollectionTile :key="idx" :data="element" @delete-collection-item="(id) => deleteAutomationCollection(id)" />
+					<CollectionTile :key="idx" :data="element"
+						@delete-collection-item="(id) => deleteAutomationCollection(id)" />
 				</RouterLink>
 			</template>
 		</Draggable>
 	</div>
-	<Modal :show="showCreateModal" @close="showCreateModal = false">
-		<template #header>
-			Create new automation collection
-		</template>
-		<template #body>
-			<p class="modal-desc">
-				<LabelledComponent title="Name">
-					<input v-model="createOptions.name" type="text" :maxlength="store.limits?.nameLength" :minlength="store.limits?.nameMin">
-				</LabelledComponent>
-				<LabelledComponent title="Description">
-					<input v-model="createOptions.description" type="text" :maxlength="store.limits?.descriptionLength" :minlength="store.limits?.nameMin">
-				</LabelledComponent>
-				<LabelledComponent title="Status">
-					<select v-model="createOptions.status">
-						<option value="private">
-							Private
-						</option>
-						<option value="unlisted">
-							Unlisted
-						</option>
-						<option value="public">
-							Public
-						</option>
-					</select>
-				</LabelledComponent>
-			</p>
-		</template>
-		<template #footer>
-			<button class="btn confirm" @click="createAutomationCollection">
-				Create
-			</button>
-			<button class="btn" @click="cancelCreate">
-				Cancel
-			</button>
-		</template>
-	</Modal>
 </template>
 
 <style lang="less" scoped>

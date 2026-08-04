@@ -5,7 +5,8 @@ const { icon } = defineProps<{ icon: Bestiary["status"] }>();
 </script>
 
 <template>
-	<font-awesome-icon v-if="icon === 'public'" v-tooltip="'This colletion is public.'" :icon="['fas', 'earth-europe']" />
-	<font-awesome-icon v-if="icon === 'unlisted'" v-tooltip="'This colletion is unlisted.'" :icon="['fas', 'link']" />
-	<font-awesome-icon v-if="icon === 'private'" v-tooltip="'This colletion is private.'" :icon="['fas', 'lock']" />
+	<v-icon v-if="icon === 'public'" icon="mdi:earth" size="20" />
+	<v-icon v-else-if="icon === 'unlisted'" icon="mdi:link" size="20" />
+	<v-icon v-else-if="icon === 'private'" icon="mdi:lock" size="20" />
+	<v-icon v-else icon="mdi:question" size="20" />
 </template>

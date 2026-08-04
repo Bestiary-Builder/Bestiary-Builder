@@ -4,7 +4,8 @@ defineProps<{ title: string }>();
 
 <template>
 	<div class="section-header">
-		<hr class="left"> <span> {{ title }}</span> <hr>
+		<hr class="left"> <span> {{ title }}</span>
+		<hr>
 	</div>
 </template>
 
@@ -14,6 +15,7 @@ defineProps<{ title: string }>();
 	grid-template-columns: 0.3fr auto 10fr;
 	margin: 0.5rem 0;
 	gap: 0.5rem;
+
 	span {
 		display: inline-block;
 		text-wrap: nowrap;
@@ -25,6 +27,7 @@ defineProps<{ title: string }>();
 		width: 100%;
 		height: 2px;
 		margin-top: 0.75rem;
+		border-color: darkgray;
 	}
 }
 

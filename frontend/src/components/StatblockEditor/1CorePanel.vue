@@ -6,7 +6,6 @@ import { $toast } from "@/utils/app/toast";
 import { languages } from "@/utils/constants";
 import { store } from "@/utils/store";
 import SimpleNumberInput from "../FormInputs/SimpleNumberInput.vue";
-import ButtonIcon from "../Global/ButtonIcon.vue";
 import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
 import { getDraggableKey } from "./utils";
 
@@ -39,10 +38,8 @@ const addNewSense = (newSenseName: string) => {
 </script>
 
 <template>
-	<div
-		id="tabpanel-2" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0"
-		aria-labelledby="tab-2"
-	>
+	<div id="tabpanel-2" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0"
+		aria-labelledby="tab-2">
 		<SectionHeader title="Speed" />
 		<table v-if="data.core.speed.length > 0" class="list-table quiet">
 			<thead>
@@ -59,10 +56,8 @@ const addNewSense = (newSenseName: string) => {
 					</td>
 				</tr>
 			</thead>
-			<Draggable
-				:list="data.core.speed" group="speed" :item-key="getDraggableKey" :animation="150" tag="tbody"
-				class=".handle"
-			>
+			<Draggable :list="data.core.speed" group="speed" :item-key="getDraggableKey" :animation="150" tag="tbody"
+				class=".handle">
 				<template #item="{ element, idx }">
 					<tr>
 						<td>
@@ -75,7 +70,7 @@ const addNewSense = (newSenseName: string) => {
 						<td class="edit-buttons">
 							<div>
 								<VDropdown :distance="6" :positioning-disabled="store.isMobile">
-									<ButtonIcon icon="ruler" label="Set unit for this speed" />
+									<v-icon-btn icon="mdi:ruler" text="Set unit for this speed" size="20" />
 
 									<template #popper>
 										<div class="v-popper__custom-menu">
@@ -91,7 +86,7 @@ const addNewSense = (newSenseName: string) => {
 									</template>
 								</VDropdown>
 								<VDropdown :distance="6" :positioning-disabled="store.isMobile">
-									<ButtonIcon icon="comment" label="Set comment for this speed" />
+									<v-icon-btn icon="mdi:comment" text="Set comment for this speed" size="20" />
 
 									<template #popper>
 										<div class="v-popper__custom-menu">
@@ -100,10 +95,8 @@ const addNewSense = (newSenseName: string) => {
 										</div>
 									</template>
 								</VDropdown>
-								<ButtonIcon
-									icon="eraser" label="Remove this speed"
-									@click="data.core.speed.splice(idx, 1)"
-								/>
+								<v-icon-btn icon="mdi:delete" text="Remove this speed" size="20"
+									@click="data.core.speed.splice(idx, 1)" />
 							</div>
 						</td>
 					</tr>
@@ -111,10 +104,8 @@ const addNewSense = (newSenseName: string) => {
 			</Draggable>
 		</table>
 		<div class="two-wide">
-			<v-combobox
-				v-model="newSpeed" :items="['Walk', 'Swim', 'Fly', 'Climb', 'Burrow']"
-				label="Select speed to add" @submit="addNewSpeed(newSpeed)"
-			/>
+			<v-combobox v-model="newSpeed" :items="['Walk', 'Swim', 'Fly', 'Climb', 'Burrow']"
+				label="Select speed to add" @submit="addNewSpeed(newSpeed)" />
 		</div>
 
 		<SectionHeader title="Senses" />
@@ -133,10 +124,8 @@ const addNewSense = (newSenseName: string) => {
 					</td>
 				</tr>
 			</thead>
-			<Draggable
-				:list="data.core.senses" group="senses" :item-key="getDraggableKey" :animation="150" tag="tbody"
-				class=".handle"
-			>
+			<Draggable :list="data.core.senses" group="senses" :item-key="getDraggableKey" :animation="150" tag="tbody"
+				class=".handle">
 				<template #item="{ element, idx }">
 					<tr>
 						<td>
@@ -149,12 +138,11 @@ const addNewSense = (newSenseName: string) => {
 						<td class="edit-buttons">
 							<div>
 								<VDropdown :distance="6" :positioning-disabled="store.isMobile">
-									<ButtonIcon icon="ruler" label="Set unit for this speed" />
-
+									<v-icon-btn icon="mdi:ruler" text="Set unit for this sense" size="20" />
 									<template #popper>
 										<div class="v-popper__custom-menu">
-											Set unit for this speed
-											<select v-model="element.unit" class="ghost" title="Select speed unit">
+											Set unit for this sense
+											<select v-model="element.unit" class="ghost" title="Select sense unit">
 												<option>ft</option>
 												<option>m</option>
 												<option>km</option>
@@ -165,22 +153,17 @@ const addNewSense = (newSenseName: string) => {
 									</template>
 								</VDropdown>
 								<VDropdown :distance="6" :positioning-disabled="store.isMobile">
-									<ButtonIcon icon="comment" label="Set comment for this sense" />
+									<v-icon-btn icon="mdi:comment" text="Set comment for this sense" size="20" />
 
 									<template #popper>
 										<div class="v-popper__custom-menu">
 											Set (comment) for this sense
-											<input
-												v-model="element.comment" type="text" placeholder="comment"
-												style="width: 100%; padding: 6px; height: unset"
-											>
+											<v-text-field v-model="element.comment" type="text" label="comment" />
 										</div>
 									</template>
 								</VDropdown>
-								<ButtonIcon
-									icon="eraser" label="Remove this speed"
-									@click="data.core.senses.splice(idx, 1)"
-								/>
+								<v-icon-btn icon="mdi:delete" text="Remove this sense" size="20"
+									@click="data.core.senses.splice(idx, 1)" />
 							</div>
 						</td>
 					</tr>
@@ -189,26 +172,20 @@ const addNewSense = (newSenseName: string) => {
 		</table>
 		<div class=" grid-two" style="margin-bottom: 2rem;">
 			<div>
-				<v-combobox
-					:items="['Darkvision', 'Blindsight', 'Truesight', 'Tremorsense']" label="Select sense to add"
-					@submit="(selected: string) => (addNewSense(selected))"
-				/>
+				<v-combobox :items="['Darkvision', 'Blindsight', 'Truesight', 'Tremorsense']"
+					label="Select sense to add" @submit="(selected: string) => (addNewSense(selected))" />
 			</div>
 			<div>
-				<v-number-input
-					v-model="data.misc.passivePerceptionOverride" label="Passive perception override"
-					clearable
-				/>
+				<v-number-input v-model="data.misc.passivePerceptionOverride" label="Passive perception override"
+					clearable />
 			</div>
 		</div>
 
 		<SectionHeader title="Miscellaneous" />
 		<div class="grid-two">
 			<div>
-				<v-combobox
-					v-model="data.core.languages" multiple chips closable-chips label="Languages"
-					:items="languages"
-				/>
+				<v-combobox v-model="data.core.languages" multiple chips closable-chips label="Languages"
+					:items="languages" />
 			</div>
 			<div>
 				<v-number-input v-model="data.misc.telepathy" label="Telepathy" :min="0" :step="5" />

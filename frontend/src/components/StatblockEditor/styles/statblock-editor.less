@@ -40,6 +40,7 @@
 			&.one-wide {
 				grid-template-columns: 1fr;
 			}
+
 			&.two-wide {
 				grid-template-columns: 1fr 1fr;
 			}
@@ -83,10 +84,12 @@
 		transform: scale(1);
 		opacity: 0;
 	}
+
 	50% {
 		transform: scale(1);
 		opacity: 0.5;
 	}
+
 	100% {
 		transform: scale(1);
 		opacity: 1;
@@ -142,6 +145,7 @@
 	opacity: 0;
 	translate: 0 10px;
 }
+
 .list-leave-to {
 	opacity: 0;
 	translate: 0 -10px;
@@ -166,6 +170,7 @@
 		scale: 1.1;
 		translate: 0 -2px;
 	}
+
 	&:hover {
 		color: var(--color-surface-0);
 	}
@@ -208,6 +213,7 @@
 				font-size: smaller;
 			}
 		}
+
 		td {
 			text-align: center;
 			border: 1px solid grey;
@@ -234,19 +240,22 @@
 	.edit-buttons {
 		width: 0;
 	}
-	.edit-buttons > div {
+
+	.edit-buttons>div {
 		width: 100%;
 		display: inline-flex;
 		flex-direction: row;
 		justify-content: center;
 		color: var(--color-base);
 		gap: 0.3rem;
+
 		a {
 			color: orangered;
 		}
 	}
 
-	.edit-buttons button {
+	.edit-buttons button svg {
+		scale: 0.8;
 	}
 
 	caption {
@@ -262,7 +271,7 @@
 	}
 }
 
-.list-table ~ .two-wide {
+.list-table~.two-wide {
 	margin-bottom: 2rem;
 }
 
@@ -270,6 +279,7 @@
 	table-layout: auto;
 	color: var(--color-base) !important;
 	margin-bottom: 2rem;
+
 	tbody th,
 	tbody td {
 		color: var(--color-base);
@@ -279,8 +289,9 @@
 		padding-left: 12px;
 	}
 
-	.edit-buttons > div {
+	.edit-buttons>div {
 		gap: 0.6rem;
+
 		button {
 			color: orangered;
 		}
@@ -289,6 +300,7 @@
 
 .list-table.quiet {
 	color: var(--color-base) !important;
+
 	tbody th,
 	tbody td {
 		color: var(--color-base);
@@ -299,10 +311,12 @@
 			color: gray;
 		}
 	}
+
 	.edit-buttons button {
 		color: var(--color-base);
 	}
 }
+
 @media screen and (max-width: 450px) {
 	.list-table {
 		font-size: small;

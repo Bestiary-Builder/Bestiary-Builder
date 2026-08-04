@@ -3,7 +3,6 @@ import type * as Monaco from "monaco-editor";
 import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
 import { useResizeObserver } from "@vueuse/core";
 import { shallowRef, useTemplateRef } from "vue";
-import ButtonIcon from "../Global/ButtonIcon.vue";
 
 const { height = 250 } = defineProps<{ height?: number }>();
 
@@ -25,12 +24,6 @@ function handleMount(
 	});
 
 	monaco.editor.setTheme("my-dark-theme");
-
-	updateDecorations(editor);
-
-	editor.onDidChangeModelContent(() => {
-		updateDecorations(editor);
-	});
 
 	editor.addCommand(
 		monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyB,
@@ -61,61 +54,6 @@ function handleMount(
 
 let decorationIds: string[] = [];
 
-function updateDecorations(editor: Monaco.editor.IStandaloneCodeEditor) {
-	const model = editor.getModel();
-
-	if (!model)
-		return;
-
-	const text = model.getValue();
-
-	const decorations = [];
-
-	const regex = /::.*::/g;
-
-	let match: RegExpExecArray | null;
-
-	// eslint-disable-next-line no-cond-assign
-	while ((match = regex.exec(text))) {
-		const start = model.getPositionAt(match.index + 2);
-		const end = model.getPositionAt(
-			match.index + match[0].length
-		);
-
-		decorations.push({
-			range: {
-				startLineNumber: start.lineNumber,
-				startColumn: start.column,
-
-				endLineNumber: end.lineNumber,
-				endColumn: end.column,
-			},
-
-			options: {
-				inlineClassName: "markdown-highlight",
-			},
-		});
-
-		const markerStart = model.getPositionAt(match.index);
-		const markerEnd = model.getPositionAt(match.index + 2);
-
-		decorations.push({
-			range: {
-				startLineNumber: markerStart.lineNumber,
-				startColumn: markerStart.column,
-				endLineNumber: markerEnd.lineNumber,
-				endColumn: markerEnd.column,
-			},
-			options: {
-				inlineClassName: "markdown-marker",
-			},
-		});
-	}
-	decorationIds = editor.deltaDecorations(
-		decorationIds,
-		decorations
-	);
-}
 
 function toggleMarkdown(
 	editor: Monaco.editor.IStandaloneCodeEditor,
@@ -146,7 +84,7 @@ function toggleMarkdown(
 
 	const hasMarkers
 		= before === marker
-			&& after === marker;
+		&& after === marker;
 
 	if (hasMarkers) {
 		// Remove markers
@@ -362,126 +300,6 @@ function toggleHeading(
 	);
 }
 
-function toggleInlineHighlight(
-	editor: Monaco.editor.IStandaloneCodeEditor
-) {
-	const model = editor.getModel();
-	const selection = editor.getSelection();
-
-	if (!model || !selection)
-		return;
-
-	const selectedText = model.getValueInRange(selection);
-
-	// Case 1: selected text
-	if (selectedText.length > 0) {
-		const startOffset = model.getOffsetAt(
-			selection.getStartPosition()
-		);
-
-		const endOffset = model.getOffsetAt(
-			selection.getEndPosition()
-		);
-
-		const fullText = model.getValue();
-
-		const before = fullText.slice(
-			startOffset - 2,
-			startOffset
-		);
-
-		const after = fullText.slice(
-			endOffset,
-			endOffset + 2
-		);
-
-		const isHighlighted = (before === "::" && after === "::");
-
-		if (isHighlighted) {
-			editor.executeEdits("toggle-highlight", [
-				{
-					range: {
-						startLineNumber: selection.startLineNumber,
-						startColumn: selection.startColumn - 2,
-						endLineNumber: selection.endLineNumber,
-						endColumn: selection.endColumn + 2,
-					},
-					text: selectedText,
-				},
-			]);
-
-			editor.setSelection({
-				startLineNumber: selection.startLineNumber,
-				startColumn: selection.startColumn - 2,
-				endLineNumber: selection.endLineNumber,
-				endColumn: selection.endColumn - 2,
-			});
-		}
-		else {
-			editor.executeEdits("toggle-highlight", [
-				{
-					range: selection,
-					text: `::${selectedText}::`,
-				},
-			]);
-
-			editor.setSelection({
-				startLineNumber: selection.startLineNumber,
-				startColumn: selection.startColumn + 2,
-				endLineNumber: selection.endLineNumber,
-				endColumn: selection.endColumn + 2,
-			});
-		}
-
-		editor.focus();
-		return;
-	}
-
-	// Case 2: no selection -> current line
-	const lineNumber = selection.startLineNumber;
-	const lineText = model.getLineContent(lineNumber);
-
-	const match = lineText.match(/^::(.*)::$/);
-
-	const range = {
-		startLineNumber: lineNumber,
-		startColumn: 1,
-		endLineNumber: lineNumber,
-		endColumn: model.getLineMaxColumn(lineNumber),
-	};
-
-	if (match) {
-		// Remove :: markers
-		editor.executeEdits("toggle-highlight", [
-			{
-				range,
-				text: match[1],
-			},
-		]);
-
-		editor.setPosition({
-			lineNumber,
-			column: match[1].length + 1,
-		});
-	}
-	else {
-		// Add :: markers
-		editor.executeEdits("toggle-highlight", [
-			{
-				range,
-				text: `::${lineText}::`,
-			},
-		]);
-
-		editor.setPosition({
-			lineNumber,
-			column: lineText.length + 3,
-		});
-	}
-
-	editor.focus();
-}
-
 useResizeObserver(document.body, () => {
 	if (editorRef.value)
 		editorRef.value.layout();
@@ -499,24 +317,22 @@ setTimeout(() => {
 <template>
 	<div ref="wrapper" class="monaco-wrapper-thing">
 		<div class="button-container">
-			<ButtonIcon icon="bold" label="Bold" noscale @click="toggleMarkdown(editorRef!, '**')" />
-			<ButtonIcon icon="italic" label="Italic" noscale @click="toggleMarkdown(editorRef!, '*')" />
-			<ButtonIcon icon="list" label="List" noscale @click="toggleLinePrefix(editorRef!, '* ')" />
-			<ButtonIcon icon="list-ol" label="Ordered list" noscale @click="toggleOrderedList(editorRef!)" />
-			<ButtonIcon icon="grip-vertical" label="Hanging list" noscale @click="toggleInlineHighlight(editorRef!)" />
+			<v-icon-btn size="20" icon="mdi:format-bold" text="Bold" @click="toggleMarkdown(editorRef!, '**')" />
+			<v-icon-btn size="20" icon="mdi:format-italic" text="Italic" @click="toggleMarkdown(editorRef!, '*')" />
+			<v-icon-btn size="20" icon="mdi:format-list-bulleted" text="List"
+				@click="toggleLinePrefix(editorRef!, '* ')" />
+			<v-icon-btn size="20" icon="mdi:format-list-numbered" text="Ordered list"
+				@click="toggleOrderedList(editorRef!)" />
 
-			<span style="margin-left: 1rem"> H </span>
-			<ButtonIcon icon="1" label="Heading 1" noscale @click="toggleHeading(editorRef!, 1)" />
-			<ButtonIcon icon="2" label="Heading 2" noscale @click="toggleHeading(editorRef!, 2)" />
-			<ButtonIcon icon="3" label="Heading 3" noscale @click="toggleHeading(editorRef!, 3)" />
-			<ButtonIcon icon="4" label="Heading 4" noscale @click="toggleHeading(editorRef!, 4)" />
+			<v-icon-btn size="20" icon="mdi:format-header-1" text="Heading 1" @click="toggleHeading(editorRef!, 1)" />
+			<v-icon-btn size="20" icon="mdi:format-header-2" text="Heading 2" @click="toggleHeading(editorRef!, 2)" />
+			<v-icon-btn size="20" icon="mdi:format-header-3" text="Heading 3" @click="toggleHeading(editorRef!, 3)" />
+			<v-icon-btn size="20" icon="mdi:format-header-4" text="Heading 4" @click="toggleHeading(editorRef!, 4)" />
 		</div>
 		<div class="editor-container" :style="`height: ${height}px`">
-			<VueMonacoEditor
-				ref="editor" v-model:value="model" theme="vs-dark"
+			<VueMonacoEditor ref="editor" v-model:value="model" theme="vs-dark"
 				:options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false, lineNumbers: 'off' }"
-				class="description-editor" height="100%" language="markdown" @mount="handleMount"
-			/>
+				class="description-editor" height="100%" language="markdown" @mount="handleMount" />
 		</div>
 	</div>
 </template>
@@ -524,20 +340,18 @@ setTimeout(() => {
 <style lang="less" scoped>
 .button-container {
 	display: flex;
-	gap: 0.2rem;
+	gap: 1rem;
 	background-color: #262525;
 	border-top-left-radius: 6px;
 	border-top-right-radius: 6px;
 	font-size: smaller;
+	padding: .4rem
 }
 
 .editor-container {
 	resize: vertical;
 	overflow: auto;
 	min-height: 100px;
-}
-
-.description-editor {
 }
 </style>
 
@@ -575,6 +389,7 @@ setTimeout(() => {
 }
 
 @media screen and (max-width: 1200px) {
+
 	.monaco-wrapper-thing,
 	.monaco-editor,
 	.editor-container {
@@ -582,7 +397,7 @@ setTimeout(() => {
 	}
 }
 
-.editor-container > div {
+.editor-container>div {
 	height: 100% !important;
 	min-height: 100px;
 }

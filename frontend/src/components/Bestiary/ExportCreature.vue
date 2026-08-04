@@ -6,7 +6,6 @@ import { getUmami } from "@/utils/app/analytics";
 import { $loading } from "@/utils/app/loading";
 import { $toast } from "@/utils/app/toast";
 import { useFetch } from "@/utils/utils";
-import ButtonIcon from "../Global/ButtonIcon.vue";
 
 const { data } = defineProps<{ data: Statblock }>();
 
@@ -92,8 +91,8 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 
 <template>
 	<v-dialog max-width="400">
-		<template #activator="{ props: activatorProps }">
-			<ButtonIcon icon="arrow-right-from-bracket" label="Export Creature" v-bind="activatorProps" />
+		<template #activator="{ props }">
+			<v-icon-btn icon="mdi:export" label="Export Creature" v-bind="props" size="24" />
 		</template>
 
 		<template #default="{ isActive }">

@@ -4,9 +4,7 @@ import { onMounted, reactive, ref, toValue } from "vue";
 import { useRouter } from "vue-router";
 import Draggable from "vuedraggable";
 import { useRules } from "vuetify/labs/rules";
-import ButtonIcon from "@/components/Global/ButtonIcon.vue";
 import CollectionTile from "@/components/Global/CollectionTile.vue";
-import Modal from "@/components/Global/Modal.vue";
 import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { $loading } from "@/utils/app/loading";
@@ -38,7 +36,6 @@ const getBestiaries = async () => {
 	}
 };
 
-const showCreateModal = ref(false);
 const createOptions = reactive({
 	name: "",
 	description: "",
@@ -51,7 +48,7 @@ const resetCreateInput = () => {
 	createOptions.name = "";
 	createOptions.description = "";
 	createOptions.status = "unlisted",
-	createOptions.tags = [];
+		createOptions.tags = [];
 	createOptions.image = "";
 };
 
@@ -66,11 +63,6 @@ const createBestiary = async () => {
 	else {
 		$toast.error(error);
 	}
-};
-
-const cancelCreate = () => {
-	showCreateModal.value = false;
-	resetCreateInput();
 };
 
 const deleteBestiary = async (id: BestiaryExtended["id"]) => {
@@ -102,18 +94,16 @@ const getDraggableKey = (item: any) => {
 </script>
 
 <template>
-	<Breadcrumbs
-		:routes="[
-			{
-				path: '',
-				text: 'My Bestiaries',
-				isCurrent: true
-			}
-		]"
-	>
+	<Breadcrumbs :routes="[
+		{
+			path: '',
+			text: 'My Bestiaries',
+			isCurrent: true
+		}
+	]">
 		<v-dialog max-width="750">
 			<template #activator="{ props: activatorProps }">
-				<ButtonIcon icon="plus" label="Create new bestiary" inverted v-bind="activatorProps" />
+				<v-icon-btn icon="mdi:plus" label="Create new bestiary" inverted v-bind="activatorProps" size="24" />
 			</template>
 
 			<template #default="{ isActive }">
@@ -121,31 +111,24 @@ const getDraggableKey = (item: any) => {
 					<v-sheet class="pa-4" max-width="1800" rounded="lg" width="100%">
 						<v-form>
 							<div class="grid-two">
-								<v-text-field
-									v-model="createOptions.name" label="Name"
+								<v-text-field v-model="createOptions.name" label="Name"
 									:maxlength="store.limits?.nameLength" :min-length="store.limits?.nameMin"
 									:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]"
-									class="mb-4"
-								/>
+									class="mb-4" />
 								<v-text-field v-model="createOptions.image" label="Image" class="mb-4" />
 							</div>
 
-							<v-textarea
-								v-model="createOptions.description" :max-length="store.limits?.descriptionLength"
+							<v-textarea v-model="createOptions.description"
+								:max-length="store.limits?.descriptionLength"
 								:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]" label="Description"
-								class="mb-4" hint="Supports Markdown" persistent-hint
-							/>
+								class="mb-4" hint="Supports Markdown" persistent-hint />
 							<div class="grid-two" counter>
 								<div>
-									<v-select
-										v-model="createOptions.status" label="Status"
-										:items="[{ value: 'private', title: 'Private' }, { value: 'unlisted', title: 'Unlisted' }, { value: 'public', title: 'Public' }]"
-									/>
+									<v-select v-model="createOptions.status" label="Status"
+										:items="[{ value: 'private', title: 'Private' }, { value: 'unlisted', title: 'Unlisted' }, { value: 'public', title: 'Public' }]" />
 								</div>
-								<v-select
-									v-model="createOptions.tags" multiple :items="store.tags || []" label="Tags"
-									chips closable-chips
-								/>
+								<v-select v-model="createOptions.tags" multiple :items="store.tags || []" label="Tags"
+									chips closable-chips />
 							</div>
 						</v-form>
 					</v-sheet>
@@ -159,10 +142,9 @@ const getDraggableKey = (item: any) => {
 		</v-dialog>
 	</Breadcrumbs>
 	<div class="content">
-		<Draggable
-			v-if="bestiaries" :key="Math.random()" :list="bestiaries" :animation="150"
-			:item-key="getDraggableKey" class="tile-container" :handle="store.isMobile ? '.handle' : ''" @change="saveOrder"
-		>
+		<Draggable v-if="bestiaries" :key="Math.random()" :list="bestiaries" :animation="150"
+			:item-key="getDraggableKey" class="tile-container" :handle="store.isMobile ? '.handle' : ''"
+			@change="saveOrder">
 			<template #item="{ element, idx }">
 				<RouterLink :to="`/bestiary/edit/${element.id}`">
 					<CollectionTile :key="idx" :data="element" @delete-collection-item="(id) => deleteBestiary(id)" />
@@ -171,51 +153,11 @@ const getDraggableKey = (item: any) => {
 		</Draggable>
 		<div v-else class="zero-found">
 			<span> You do not have any bestiaries. </span>
-			<button class="btn confirm" @click="createBestiary">
+			<v-btn class="btn confirm" @click="createBestiary">
 				Create a bestiary
-			</button>
+			</v-btn>
 		</div>
 	</div>
-
-	<Modal :show="showCreateModal" @close="showCreateModal = false">
-		<template #header>
-			Create new bestiary
-		</template>
-		<template #body>
-			<div class="modal-desc">
-				<v-form>
-					<v-text-field
-						v-model="createOptions.name" label="Name" :maxlength="store.limits?.nameLength"
-						:min-length="store.limits?.nameMin"
-						:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]"
-					/>
-					<v-textarea
-						v-model="createOptions.description" :max-length="store.limits?.descriptionLength"
-						:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]" label="Description"
-					/>
-					<div class="grid-two">
-						{{ createOptions.status }}
-						<v-select
-							v-model="createOptions.status" label="Status"
-							:items="['Private', 'Unlisted', 'Public']"
-						/>
-						<v-select
-							v-model="createOptions.tags" multiple :items="store.tags || []" label="Tags" chips
-							closable-chips
-						/>
-					</div>
-				</v-form>
-			</div>
-		</template>
-		<template #footer>
-			<button class="btn confirm" @click="createBestiary">
-				Create
-			</button>
-			<button class="btn" @click="cancelCreate">
-				Cancel
-			</button>
-		</template>
-	</Modal>
 </template>
 
 <style scoped>

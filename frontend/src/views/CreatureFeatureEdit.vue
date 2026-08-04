@@ -7,7 +7,6 @@ import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vu
 import YAML from "yaml";
 import ImportAutomationUtil from "@/components/Automations/ImportAutomationUtil.vue";
 import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
-import ButtonIcon from "@/components/Global/ButtonIcon.vue";
 import Markdown from "@/components/Global/Markdown.vue";
 import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import Editor from "@/components/StatblockEditor/Editor.vue";
@@ -70,12 +69,12 @@ const loadRawInfo = async () => {
 	}
 };
 
-const unwatch = watch(() => data.value,	() => {
+const unwatch = watch(() => data.value, () => {
 	if (rawInfo.value == null)
 		return;
 	madeChanges.value = true;
 	unwatch();
-},	{ deep: true });
+}, { deep: true });
 
 onBeforeRouteUpdate(() => {
 	if (isVisualEditor.value)
@@ -139,13 +138,14 @@ const validateAttack = async (automation: any): Promise<true | string> => {
 
 const isSaved = ref(false);
 
+const isSavingCreature = ref(false)
 const saveStatblock2 = async (shouldNotify: boolean): Promise<boolean> => {
 	if (!rawInfo.value || !data.value)
 		return false;
 
 	rawInfo.value.stats = data.value;
 	const toastId = shouldNotify ? $toast.loading("Validating...") : undefined;
-
+	isSavingCreature.value = true
 	try {
 		// Parse
 		if (!isVisualEditor.value) {
@@ -165,6 +165,7 @@ const saveStatblock2 = async (shouldNotify: boolean): Promise<boolean> => {
 				duration: 10000,
 			});
 		}
+		isSavingCreature.value = false
 		return false;
 	}
 	try {
@@ -173,6 +174,7 @@ const saveStatblock2 = async (shouldNotify: boolean): Promise<boolean> => {
 		if (validAutomation !== true) {
 			if (toastId)
 				$toast.error(htmlToast(validAutomation), { duration: 20000, id: toastId, dismissible: true });
+			isSavingCreature.value = false
 			return false;
 		}
 
@@ -193,7 +195,7 @@ const saveStatblock2 = async (shouldNotify: boolean): Promise<boolean> => {
 					duration: 10000,
 				});
 			}
-
+			isSavingCreature.value = false
 			return false;
 		}
 
@@ -211,7 +213,7 @@ const saveStatblock2 = async (shouldNotify: boolean): Promise<boolean> => {
 
 		if (toastId)
 			setTimeout(() => $toast.success("Saved action successfully.", { id: toastId }), 500);
-
+		isSavingCreature.value = false
 		return true;
 	}
 	catch (err) {
@@ -221,7 +223,7 @@ const saveStatblock2 = async (shouldNotify: boolean): Promise<boolean> => {
 				{ id: toastId }
 			);
 		}
-
+		isSavingCreature.value = false
 		return false;
 	}
 };
@@ -501,42 +503,49 @@ provide("setActionDescription", setDesc);
 </script>
 
 <template>
-	<Breadcrumbs
-		:routes="[
-			{
-				path: `/bestiary/edit/${rawInfo?.bestiaryId}`,
-				text: bestiary?.name || 'Unnamed Bestiary',
-				isCurrent: false
-			},
-			{
-				path: `/creature/edit/${$route.params.id}?pane=5`,
-				text: data?.description.name.substring(0, 30) || 'Unnamed Creature',
-				isCurrent: false
-			},
-			{
-				path: '',
-				text: data?.features[$route.params.type as keyof Features][$route.params.aid as any].name.substring(0, 30) || 'Action',
-				isCurrent: true
-			}
-		]"
-	>
-		<ButtonIcon v-if="isOwner || isEditor" icon="save" label="Save automation" inverted @click="saveStatblock2(true)" />
-		<ButtonIcon icon="wand-sparkles" label="Generate automation from description. May be incomplete or inaccurate. Only works for basic, to hit attacks." @click="generateAutomation" />
-		<ButtonIcon icon="rotate" label="Change editor" @click="changeEditor" />
+	<Breadcrumbs :routes="[
+		{
+			path: `/bestiary/edit/${rawInfo?.bestiaryId}`,
+			text: bestiary?.name || 'Unnamed Bestiary',
+			isCurrent: false
+		},
+		{
+			path: `/creature/edit/${$route.params.id}?pane=5`,
+			text: data?.description.name.substring(0, 30) || 'Unnamed Creature',
+			isCurrent: false
+		},
+		{
+			path: '',
+			text: data?.features[$route.params.type as keyof Features][$route.params.aid as any].name.substring(0, 30) || 'Action',
+			isCurrent: true
+		}
+	]">
+		<v-icon-btn v-if="madeChanges && (isOwner || isEditor)" icon="mdi:content-save" text="Save creature"
+			:class="{ inverted: !isSavingCreature }" @click="saveStatblock2(true)" size="24"
+			:loading="isSavingCreature" />
+		<v-icon-btn icon="fa7-solid:wand-sparkles"
+			text="Generate automation from description. May be incomplete or inaccurate. Only works for basic, to hit attacks."
+			@click="generateAutomation" size="24" />
+		<v-icon-btn size="24" icon="mdi:code-block-braces" text="Change editor" @click="changeEditor" />
 		<ImportAutomationUtil @load-feature="(feature, apiPath) => loadFeature(feature, apiPath)" />
-		<ButtonIcon v-if="data && store.isMobile" icon="trash" label="Clear automation" @click="data.features[type][aid].automation = {}" />
-		<ButtonIcon v-if="data && store.isMobile" icon="copy" label="Copy automation" @click="copyAutomation" />
+		<v-icon-btn v-if="data && store.isMobile" icon="mdi:delete" text="Clear automation"
+			@click="data.features[type][aid].automation = {}" size="24" />
+		<v-icon-btn v-if="data && store.isMobile" icon="mdi:content-copy" text="Copy automation" @click="copyAutomation"
+			size="24" />
 	</Breadcrumbs>
 	<div v-if="data" class="content">
 		<div class="editor-field__container two-wide uneven">
 			<div>
-				<LabelledComponent title="Feature name" for="featurename">
-					<input id="featurename" v-model="data.features[type][aid].name" type="text" placeholder="Enter name" :minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength">
+				<div>
+					<v-text-field v-model="data.features[type][aid].name" type="text" label="Feature name"
+						:minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength" variant="outlined" />
 					<span v-if="isVisualEditor">
 						<input v-model="parityOptions.updateName" type="checkbox" style="scale: .7; translate: 0 4px">
-						<small style="font-size: x-small;"> <i>Updates the name of the first action in the automation structure to this text while enabled.</i> </small>
+						<small style="font-size: x-small;"> <i>Updates the name of the first action in the automation
+								structure to this text while enabled.</i> </small>
 					</span>
-				</LabelledComponent>
+				</div>
+
 				<div style="margin-top: 1rem;">
 					<select v-model="toNavigateTo" class="ghost" placeholder="Open other attack">
 						<option :value="[-1, -1]" disabled selected>
@@ -551,13 +560,15 @@ provide("setActionDescription", setDesc);
 						</template>
 					</select>
 				</div>
-				<div v-if=" !isVisualEditor && showDescriptionButtons">
+				<div v-if="!isVisualEditor && showDescriptionButtons">
 					<b> Descriptions: </b>
 					<span style="color: var(--color-destructive)"> Don't match. </span>
-					<p style="text-decoration: underline; font-size: smaller; cursor: pointer;" @click="updateAutomationDescFromFeatureDesc">
+					<p style="text-decoration: underline; font-size: smaller; cursor: pointer;"
+						@click="updateAutomationDescFromFeatureDesc">
 						Update from feature
 					</p>
-					<p style="text-decoration: underline; font-size: smaller; cursor: pointer" @click="updateFeatureDescFromAutomationDesc">
+					<p style="text-decoration: underline; font-size: smaller; cursor: pointer"
+						@click="updateFeatureDescFromAutomationDesc">
 						Update from automation
 					</p>
 				</div>
@@ -567,16 +578,21 @@ provide("setActionDescription", setDesc);
 				<Editor v-model="data.features[type][aid].description" :height="100" />
 				<span v-if="isVisualEditor" class="sub-action">
 					<input v-model="parityOptions.updateDescription" type="checkbox">
-					<small> <i>Updates the last text node of the first action in the automation structure to this text while enabled.</i> </small>
+					<small> <i>Updates the last text node of the first action in the automation structure to this text
+							while
+							enabled.</i> </small>
 				</span>
 			</LabelledComponent>
 		</div>
 
 		<div v-if="!isVisualEditor" class="editor">
-			<VueMonacoEditor v-model:value="automationString" theme="vs-dark" :options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false }" height="500px" language="yaml" @mount="handleMount" />
+			<VueMonacoEditor v-model:value="automationString" theme="vs-dark"
+				:options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false }"
+				height="500px" language="yaml" @mount="handleMount" />
 		</div>
 		<div v-else style="margin-top: 2rem">
-			<VisualEditor ref="VisualEditorRef" v-model="data.features[type][aid].automation" :name="data.features[type][aid].name" />
+			<VisualEditor ref="VisualEditorRef" v-model="data.features[type][aid].automation"
+				:name="data.features[type][aid].name" />
 		</div>
 		<div v-if="!isVisualEditor">
 			<div v-if="currentDocu" class="docs">
@@ -587,15 +603,13 @@ provide("setActionDescription", setDesc);
 				<div>
 					<hr>
 					<h4>Overview</h4>
-					See full documentation <a :href="`https://avrae.readthedocs.io/en/stable/automation_ref.html#${currentDocu.url}`" target="_blank">here</a>.
-					<VueMonacoEditor
-						v-if="currentDocu?.ts"
-						:value="`// Values denoted with an ? are optional.\n${currentDocu.ts}`"
-						theme="vs-dark"
+					See full documentation <a
+						:href="`https://avrae.readthedocs.io/en/stable/automation_ref.html#${currentDocu.url}`"
+						target="_blank">here</a>.
+					<VueMonacoEditor v-if="currentDocu?.ts"
+						:value="`// Values denoted with an ? are optional.\n${currentDocu.ts}`" theme="vs-dark"
 						:options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, automaticLayout: true, readOnly: true, scrollBeyondLastLine: false }"
-						language="typescript"
-						height="200px"
-					/>
+						language="typescript" height="200px" />
 				</div>
 				<div v-if="currentDocu?.opt">
 					<hr>
@@ -645,6 +659,7 @@ a {
 
 .sub-action {
 	line-height: 0.7;
+
 	small {
 		font-size: x-small;
 	}

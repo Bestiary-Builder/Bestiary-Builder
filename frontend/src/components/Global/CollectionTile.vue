@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import type { AutomationCollectionExtended, BestiaryExtended } from "~/shared";
-import { Icon } from "@iconify/vue";
 import { computed } from "vue";
 import { store } from "@/utils/store.js";
 import StatusIcon from "../Bestiary/StatusIcon.vue";
 import UserBanner from "../Bestiary/UserBanner.vue";
-import ButtonIcon from "./ButtonIcon.vue";
+import DropdownMenu from "./DropdownMenu.vue";
 
 const { data } = defineProps<{ data: AutomationCollectionExtended | BestiaryExtended }>();
 
@@ -79,41 +78,40 @@ const lastUpdated = computed(() => {
 					{{ data.description }}
 				</p>
 				<div class="collection-footer">
-					<div>
+					<div class="d-flex justify-content align-items">
 						<b>{{ data.viewCount }} views </b>
 					</div>
-					<span v-if="'automations' in data" class="item-count">
+					<span v-if="'automations' in data" class="d-flex justify-content align-items">
 						<b>{{ data.automations.length }}</b>
-						<Icon icon="material-symbols:swords" inline />
+						<v-icon icon="mdi:sword-cross" size="20" />
 					</span>
-					<span v-if="'creatures' in data" class="item-count">
+					<span v-if="'creatures' in data" class="d-flex justify-content align-items">
 						<b>{{ data.creatures.length }} </b>
-						<Icon icon="fa7-solid:dragon" inline />
+						<v-icon icon="mdi:paw" size="20" />
 					</span>
 					<div class="info-buttons">
-						<font-awesome-icon
-							v-if="store.isMobile" :icon="['fa', 'grip-vertical']" class="handle"
-							width="20px"
-						/>
+						<v-icon icon="mdi:drag" v-if="store.isMobile" class="handle" size="20" />
 						<StatusIcon :icon="data.status" />
-						<VDropdown
-							v-if="store.user?.id === data.ownerId" :distance="6"
-							:positioning-disabled="store.isMobile" @click.stop.prevent
-						>
-							<ButtonIcon icon="trash" label="Delete collection" />
-							<template #popper>
-								<div class="v-popper__custom-menu">
-									<span> Are you sure you want to delete <b style="color: white">{{ data.name }}?</b>
-										<br> This action cannot be undone.</span>
-									<button
-										v-close-popper class="btn danger"
-										@click.stop.prevent="$emit('deleteCollectionItem', data.id)"
-									>
-										Confirm
-									</button>
-								</div>
+
+						<DropdownMenu v-if="store.user?.id === data.ownerId">
+							<template #activator="{ props }">
+								<v-icon-btn text="Delete Collection" size="20" color="currentColor" v-bind="props"
+									@click.stop.prevent="props.onClick?.($event)" icon="mdi:delete">
+								</v-icon-btn>
 							</template>
-						</VDropdown>
+							<v-card min-width="300" class="text-center pb-2">
+								<v-card-text>
+									Are you sure you want to delete <b>{{ data.name }}</b>?
+									<br> This action cannot be undone.
+								</v-card-text>
+								<v-card-actions>
+									<v-btn size="large" class="w-100" color="red"
+										@click.stop.prevent="$emit('deleteCollectionItem', data.id)">
+										Confirm
+									</v-btn>
+								</v-card-actions>
+							</v-card>
+						</DropdownMenu>
 					</div>
 				</div>
 			</div>
@@ -182,27 +180,15 @@ const lastUpdated = computed(() => {
 		.collection-footer {
 			display: flex;
 			justify-content: space-between;
+			margin-top: .5rem;
 
 			.info-buttons {
 				grid-auto-flow: column;
 				grid-auto-columns: 1fr;
 				display: grid;
 				gap: 0.25rem;
-
-				button,
-				svg {
-					color: unset;
-					padding: 0;
-				}
 			}
 		}
 	}
-}
-</style>
-
-<style>
-.item-count svg {
-	translate: 0 3px;
-	margin-left: 0.25rem;
 }
 </style>

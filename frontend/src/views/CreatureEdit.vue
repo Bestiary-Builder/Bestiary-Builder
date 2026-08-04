@@ -4,7 +4,6 @@ import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
 import CopyCreature from "@/components/Bestiary/CopyCreature.vue";
 import ExportCreature from "@/components/Bestiary/ExportCreature.vue";
-import ButtonIcon from "@/components/Global/ButtonIcon.vue";
 import Breadcrumbs from "@/components/Page/Breadcrumbs.vue";
 import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
 import DescriptionPanel from "@/components/StatblockEditor/0DescriptionPanel.vue";
@@ -14,7 +13,6 @@ import DefensesPanel from "@/components/StatblockEditor/3DefensesPanel.vue";
 import FeaturesPanel from "@/components/StatblockEditor/4FeaturesPanel.vue";
 import SpellcastingPanel from "@/components/StatblockEditor/5SpellcastingPanel.vue";
 import { getUmami } from "@/utils/app/analytics";
-import { $loading } from "@/utils/app/loading";
 import { $toast, htmlToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
@@ -69,12 +67,13 @@ const loadRawInfo = async () => {
 	}
 };
 
-// saving
+const isSavingStatblock = ref(false)
 const saveStatblock = async (shouldNotify = true): Promise<boolean> => {
 	if (!rawInfo.value)
 		return false;
 	rawInfo.value.stats = data.value;
-	const loader = $loading.show();
+	isSavingStatblock.value = true
+
 	// Send to backend
 	const { success, error } = await useFetch<CreatureWithStats>(`/api/creature/${rawInfo.value.id.toString()}/update`, "POST", rawInfo.value);
 	if (success) {
@@ -96,7 +95,7 @@ const saveStatblock = async (shouldNotify = true): Promise<boolean> => {
 		if (error.includes("includes blocked words or phrases"))
 			void getUmami()?.track("Blocked words", { error });
 	}
-	loader.hide();
+	isSavingStatblock.value = false
 	if (success)
 		return true;
 	return false;
@@ -265,22 +264,17 @@ const importCreature = async (creature: Statblock) => {
 				isCurrent: true
 			}
 		]">
-			<ButtonIcon v-if="madeChanges && (isOwner || isEditor)" icon="save" label="Save creature" inverted
-				@click="saveStatblock()" />
-			<template v-if="!isOwner && !isEditor">
-				<ButtonIcon v-if="!shouldShowEditor" icon="eye" label="Toggle editor for debugging purposes"
-					@click="shouldShowEditor = !shouldShowEditor" />
-				<ButtonIcon v-else icon="eye-slash" label="Toggle editor for debugging purposes"
-					@click="shouldShowEditor = !shouldShowEditor" />
-			</template>
+			<v-icon-btn v-if="madeChanges && (isOwner || isEditor)" icon="mdi:content-save" text="Save creature"
+				:class="{ inverted: !isSavingStatblock }" @click="saveStatblock()" size="24"
+				:loading="isSavingStatblock" />
 
 			<CopyCreature v-if="rawInfo" no-import-all :may-import="isOwner || isEditor"
 				:current-creature="{ ...rawInfo, bestiaryName: bestiary?.name || '' }"
 				@import-creature="(creature) => importCreature(creature)" />
 
 			<v-dialog v-if="isOwner || isEditor" width="600">
-				<template #activator="{ props: activatorProps }">
-					<ButtonIcon icon="arrow-right-to-bracket" label="Import Creature" v-bind="activatorProps" />
+				<template #activator="{ props }">
+					<v-icon-btn text="Import Creature" icon="mdi:import" size="24" v-bind="props" />
 				</template>
 
 				<template #default="{ isActive }">
@@ -290,7 +284,7 @@ const importCreature = async (creature: Statblock) => {
 								:items="['Bestiary Builder JSON', '5e Tools JSON', 'CritterDB Creature link']"
 								class="w-100" />
 							<v-text-field v-if="importType" v-model="importText"
-								:label="importType === 'CritterDB Creature link' ? 'Import link' : 'Import data'"
+								:label="importType === 'CritterDB Creature link' ? 'Link' : 'JSON data'"
 								class="w-100" />
 							<v-spacer v-else />
 							<v-btn v-if="importText" class="w-100" color="green" @click="importCreatureFromUserInput">

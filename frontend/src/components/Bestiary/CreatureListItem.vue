@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { Statblock } from "~/shared";
 import { crAsString } from "~/shared";
-import ButtonIcon from "../Global/ButtonIcon.vue";
 import DropdownMenu from "../Global/DropdownMenu.vue";
 
 const { data, canEdit, id } = defineProps<{ data: Statblock; canEdit: boolean; id: string }>();
@@ -26,18 +25,11 @@ const emit = defineEmits<{
 			</p>
 		</div>
 		<div class="right-side">
-			<button
-				v-tooltip="'Copy creature'" :aria-label="`Copy ${data.description.name}`"
-				@click="emit('copyCreature')"
-			>
-				<font-awesome-icon :icon="['fas', 'copy']" />
-			</button>
-			<!-- <button v-tooltip="'Pin creature'" @click="emit('pinCreature')">
-				<font-awesome-icon :icon="['fas', 'thumbtack']" />
-			</button> -->
+			<v-icon-btn :text="`Copy ${data.description.name}`" icon="mdi:content-copy" @click="emit('copyCreature')"
+				size="24" />
 			<DropdownMenu v-if="canEdit">
 				<template #activator="{ props }">
-					<ButtonIcon icon="trash" label="Delete creature" v-bind="props" no-tooltip />
+					<v-icon-btn text="Delete creature" icon="mdi:delete" v-bind="props" size="24" />
 				</template>
 				<v-card min-width="300" class="text-center pb-2">
 					<v-card-text>
@@ -50,19 +42,12 @@ const emit = defineEmits<{
 					</v-card-actions>
 				</v-card>
 			</DropdownMenu>
-			<button
-				v-tooltip="`${canEdit ? 'Edit' : 'View'} creature`"
-				:aria-label="`${canEdit ? 'Edit' : 'View'} ${data.description.name}`" class="edit-creature"
-				@click.stop="() => { }"
-			>
-				<RouterLink
-					class="creature" :to="`/creature/${canEdit ? 'edit' : 'view'}/${id}`"
-					:aria-label="`${canEdit ? 'Edit' : 'View'} creature`"
-				>
-					<font-awesome-icon v-if="canEdit" :icon="['fas', 'pen-to-square']" />
-					<font-awesome-icon v-else :icon="['fas', 'eye']" />
-				</RouterLink>
-			</button>
+
+			<RouterLink class="creature" :to="`/creature/${canEdit ? 'edit' : 'view'}/${id}`"
+				:aria-label="`${canEdit ? 'Edit' : 'View'} creature`" size="24">
+				<v-icon-btn icon="fa7-regular:pen-to-square" v-if="canEdit" size="24" />
+				<v-icon-btn icon="mdi:eye" v-else />
+			</RouterLink>
 		</div>
 	</div>
 </template>
