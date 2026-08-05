@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { CreatureWithStats, Statblock } from "~/shared";
+import type { CreatureWithStats, InnateSpellsEntity, Statblock } from "~/shared";
 import { computed, onMounted, ref, watch } from "vue";
 import { useRules } from "vuetify/labs/rules";
 import { $toast } from "@/utils/app/toast";
@@ -12,7 +12,7 @@ import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
 const { data, rawInfo } = defineProps<{ data: Statblock; rawInfo: CreatureWithStats | null }>();
 
 const spellList = ref<{ [key: number]: string[] }>();
-const spellListFlattened = ref<string[]>();
+const spellListFlattened = ref<InnateSpellsEntity[]>();
 onMounted(async () => {
 	const { success, data } = await useFetch<{ [key: number]: string[] }>(`/api/spells/all`);
 	if (success) {
@@ -21,7 +21,7 @@ onMounted(async () => {
 		for (const list of Object.values(spellList.value))
 			spellListFlattenedTemp = spellListFlattenedTemp.concat(list);
 		spellListFlattenedTemp.sort();
-		spellListFlattened.value = [...spellListFlattenedTemp];
+		spellListFlattened.value = [...spellListFlattenedTemp.map((sp) => ({ spell: sp, comment: '' }))];
 	}
 });
 
@@ -107,6 +107,17 @@ const addNewDaily = () => {
 		data.spellcasting.innateSpells.spellList[newDailyAmount.value] = [];
 	newDailyAmount.value = null;
 };
+
+const handleNewCustomInnateSpell = () => {
+	const spells = data.spellcasting.innateSpells.spellList
+	for (const times in spells) {
+		for (const idx in spells[times]) {
+			if (typeof (spells[times][idx]) === 'string') {
+				spells[times][idx] = { "spell": spells[times][idx], comment: '' }
+			}
+		}
+	}
+}
 </script>
 
 <template>
@@ -137,12 +148,11 @@ const addNewDaily = () => {
 					<LabelledComponent :title="times === '0' ? 'At will' : `${times}/day`" takes-custom-text-input
 						:for="`innateSpellTimes${times}`">
 						<div :class="{ 'select-with-delete': parseInt(times.toString()) > 3 }">
-							<v-select v-model="data.spellcasting.innateSpells.spellList[times]"
-								:reduce="(sp: any) => ({ spell: sp.spell ?? sp, comment: sp.comment ?? '' })"
-								:items="spellListFlattened" multiple chips closable-chips />
-							<v-icon v-if="parseInt(times.toString()) > 3" v-tooltip="'Delete this daily amount'"
-								icon="mdi:delete" class="delete-button button-icon"
-								@click="delete data.spellcasting.innateSpells.spellList[times]" />
+							<v-combobox v-model="data.spellcasting.innateSpells.spellList[times]" item-title="spell"
+								:items="spellListFlattened" multiple chips closable-chips return-object
+								hint="Supports custom spells" @update:modelValue="handleNewCustomInnateSpell" />
+							<v-icon-btn v-if="parseInt(times.toString()) > 3" v-tooltip="'Delete this daily amount'"
+								icon="mdi:delete" @click="delete data.spellcasting.innateSpells.spellList[times]" />
 						</div>
 					</LabelledComponent>
 				</template>
@@ -226,10 +236,9 @@ const addNewDaily = () => {
 		</div>
 		<v-container v-if="data.spellcasting.casterSpells.castingClass" class="pa-0">
 			<v-row>
-				<v-col cols="6">
-					<v-combobox v-if="!['Ranger', 'Paladin'].includes(data.spellcasting.casterSpells.castingClass)"
-						v-model="data.spellcasting.casterSpells.spellList[0]" :items="spellList![0]" multiple chips
-						closable-chips label="Cantrips" hint="Allows custom spells" />
+				<v-col cols="6" v-if="!['Ranger', 'Paladin'].includes(data.spellcasting.casterSpells.castingClass)">
+					<v-combobox v-model="data.spellcasting.casterSpells.spellList[0]" :items="spellList![0]" multiple
+						chips closable-chips label="Cantrips" hint="Allows custom spells" />
 				</v-col>
 				<v-col v-for="level in spellLevelList" :key="level" cols="6">
 					<v-combobox v-model="data.spellcasting.casterSpells.spellList[level]"
