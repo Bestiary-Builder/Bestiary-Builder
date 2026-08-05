@@ -46,14 +46,7 @@ function handleMount(
 		}
 	);
 
-	setTimeout(() => {
-		if (wrapper.value?.clientWidth !== editorTemplate.value?.width)
-			editorRef.value?.layout({ width: wrapper.value?.clientWidth || 600, height: wrapper.value?.clientHeight || height });
-	}, 1000);
 }
-
-let decorationIds: string[] = [];
-
 
 function toggleMarkdown(
 	editor: Monaco.editor.IStandaloneCodeEditor,
@@ -300,18 +293,6 @@ function toggleHeading(
 	);
 }
 
-useResizeObserver(document.body, () => {
-	if (editorRef.value)
-		editorRef.value.layout();
-});
-
-const wrapper = useTemplateRef("wrapper");
-const editorTemplate = useTemplateRef("editor");
-
-setTimeout(() => {
-	if (wrapper.value?.clientWidth !== editorTemplate.value?.width)
-		editorRef.value?.layout({ width: wrapper.value?.clientWidth || 600, height: wrapper.value?.clientHeight || height });
-}, 1000);
 </script>
 
 <template>
@@ -332,7 +313,7 @@ setTimeout(() => {
 		<div class="editor-container" :style="`height: ${height}px`">
 			<VueMonacoEditor ref="editor" v-model:value="model" theme="vs-dark"
 				:options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false, lineNumbers: 'off' }"
-				class="description-editor" height="100%" language="markdown" @mount="handleMount" />
+				class="description-editor" height="100%" width="100%" language="markdown" @mount="handleMount" />
 		</div>
 	</div>
 </template>
