@@ -3,7 +3,10 @@
         :timeout="toast.timeout" location="bottom left" :style="`bottom: ${offsetStyle(idx)}px`"
         @update:model-value="v => !v && removeToast(toast.id)" :loading="toast.loading"
         :prepend-icon="toast.prependIcon" class="bestiary-builder-snackbar">
-        {{ toast.text }}
+        <template v-if="!toast.isHtml">
+            {{ toast.text }}
+        </template>
+        <div v-else v-html="toast.text" />
         <template v-slot:actions v-if="toast.timeout < 0">
             <v-btn color="white" variant="text" icon="mdi-close" @click="removeToast(toast.id)"></v-btn>
         </template>

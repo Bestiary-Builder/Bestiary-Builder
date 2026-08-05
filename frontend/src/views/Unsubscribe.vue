@@ -1,14 +1,11 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { getUmami } from "@/utils/app/analytics";
-import { $loading } from "@/utils/app/loading";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 
 const status = ref(0);
 const errorMsg = ref("");
-
-const loader = $loading.show();
 
 useFetch("/api/unsubscribe")
 	.then((result) => {
@@ -22,7 +19,6 @@ useFetch("/api/unsubscribe")
 			status.value = 2;
 			errorMsg.value = result.error;
 		}
-		loader.hide();
 	})
 	.catch((err) => {
 		console.error(err);

@@ -47,7 +47,7 @@ const saveAutomation = async () => {
 			props.data.automation = parsed;
 		}
 		else {
-			addToast(error, { color: "error" });
+			addToast(error, { color: "error", timeout: -1, prependIcon: "mdi:alert-circle", isHtml: true });
 			return;
 		}
 	}

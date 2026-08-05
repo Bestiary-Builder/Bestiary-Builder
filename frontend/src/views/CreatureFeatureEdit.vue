@@ -10,7 +10,6 @@ import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import Markdown from "@/components/Global/Markdown.vue";
 import Editor from "@/components/StatblockEditor/Editor.vue";
 import VisualEditor from "@/components/VisualEditor/VisualEditor.vue";
-import { $loading } from "@/utils/app/loading";
 import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
@@ -24,11 +23,12 @@ const aid = $route.params.aid as any;
 const data = ref<Statblock>();
 const rawInfo = ref<CreatureWithStats | null>(null);
 
-const { addToast, updateToast } = useToast()
+const { addToast, updateToast, removeToast } = useToast()
 const visualEditorRef = useTemplateRef("VisualEditorRef");
+
 // load creature data
 onMounted(async () => {
-	const loader = $loading.show();
+	const toastId = addToast("Loading...", { loading: true })
 	const { success, data: cData, error } = await useFetch<CreatureWithStats>(`/api/creature/${$route.params.id.toString()}`);
 	if (success) {
 		data.value = (cData).stats;
@@ -38,13 +38,13 @@ onMounted(async () => {
 		await getBestiary();
 		automationString.value = YAML.stringify(data.value.features[type][aid].automation) ?? YAML.stringify(null);
 
-		loader.hide();
+		removeToast(toastId)
 	}
 	else {
 		addToast("Something went wrong", { color: "error" })
 		madeChanges.value = false;
 		await $router.push("/error");
-		loader.hide();
+		removeToast(toastId)
 	}
 });
 
@@ -159,7 +159,7 @@ const saveStatblock2 = async (shouldNotify: boolean): Promise<boolean> => {
 	catch (err) {
 		if (toastId) {
 			updateToast(toastId, {
-				text: `Error parsing automation YAML.${err instanceof Error ? err.message : "An unexpected error occurred."}`,
+				text: `Error parsing automation YAML. ${err instanceof Error ? err.message : "An unexpected error occurred."}`,
 				color: "error",
 				loading: false,
 				prependIcon: "mdi:alert-circle",
@@ -167,7 +167,7 @@ const saveStatblock2 = async (shouldNotify: boolean): Promise<boolean> => {
 			});
 		}
 		else {
-			addToast(`Error parsing automation YAML.${err instanceof Error ? err.message : "An unexpected error occurred."}`, {
+			addToast(`Error parsing automation YAML. ${err instanceof Error ? err.message : "An unexpected error occurred."}`, {
 				color: "error",
 				prependIcon: "mdi:alert-circle",
 				timeout: -1,
@@ -186,7 +186,8 @@ const saveStatblock2 = async (shouldNotify: boolean): Promise<boolean> => {
 					color: "error",
 					loading: false,
 					prependIcon: "mdi:alert-circle",
-					timeout: -1
+					timeout: -1,
+					isHtml: true
 				})
 			isSavingCreature.value = false
 			return false;

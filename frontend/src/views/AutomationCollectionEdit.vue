@@ -6,7 +6,6 @@ import Draggable from "vuedraggable";
 import YAML from "yaml";
 import Markdown from "@/components/Global/Markdown.vue";
 import { getUmami } from "@/utils/app/analytics";
-import { $loading } from "@/utils/app/loading";
 import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
@@ -19,7 +18,6 @@ const collection = ref<AutomationCollectionExtended | null>(null);
 let initialData = "";
 // get our data
 onMounted(async () => {
-	const loader = $loading.show();
 	const { success, data, error } = await useFetch<AutomationCollectionExtended>(`/api/automation-collection/${$route.params.id}`);
 
 	if (success) {
@@ -31,7 +29,6 @@ onMounted(async () => {
 	}
 
 	await getAutomations();
-	loader.hide();
 });
 
 const activeAttackIndex = ref(-1);
@@ -43,7 +40,6 @@ const addAttack = async (name: string, automation: null | AttackModel | AttackMo
 		addToast("Automation must have a non-default name!");
 		return;
 	}
-	const loader = $loading.show();
 	const { success, error } = await useFetch<AutomationWithType>(`/api/automation/add`, "POST", { name, automation, description, collectionId: collection.value.id });
 	if (success) {
 		await getAutomations();
@@ -57,12 +53,10 @@ const addAttack = async (name: string, automation: null | AttackModel | AttackMo
 		if (error.includes("includes blocked words or phrases"))
 			void getUmami()?.track("Blocked words", { error });
 	}
-	loader.hide();
 };
 
 const deleteAutomation = async () => {
 	const _id = data.value[activeAttackIndex.value].id;
-	const loader = $loading.show();
 	const { success, error } = await useFetch(`/api/automation/${_id.toString()}/delete`);
 	if (success) {
 		addToast("Successfully deleted the automation!");
@@ -74,7 +68,6 @@ const deleteAutomation = async () => {
 		addToast(error, { color: "error" });
 		;
 	}
-	loader.hide();
 };
 
 const getAutomations = async () => {

@@ -6,32 +6,30 @@ import Draggable from "vuedraggable";
 import { useRules } from "vuetify/labs/rules";
 import CollectionTile from "@/components/Global/CollectionTile.vue";
 import { getUmami } from "@/utils/app/analytics";
-import { $loading } from "@/utils/app/loading";
 import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 
 const rules = useRules();
 const router = useRouter();
-const { addToast } = useToast()
+const { addToast, updateToast, removeToast } = useToast()
 
 onMounted(async () => {
-	const loader = $loading.show();
 	await getBestiaries();
-
-	loader.hide();
 });
 
 const bestiaries = ref<BestiaryExtended[]>([]);
 
-const getBestiaries = async () => {
+const getBestiaries = async (shouldNotify = true) => {
+	const toastId = addToast("Loading...", { loading: true, show: shouldNotify })
 	const { success, data, error } = await useFetch(`/api/my-bestiaries`);
 	if (success) {
+		removeToast(toastId)
 		bestiaries.value = data as BestiaryExtended[];
 	}
 	else {
 		bestiaries.value = [];
-		addToast(error);
+		updateToast(toastId, { text: error, color: "error" });
 	}
 };
 
@@ -46,8 +44,8 @@ const createOptions = reactive({
 const resetCreateInput = () => {
 	createOptions.name = "";
 	createOptions.description = "";
-	createOptions.status = "unlisted",
-		createOptions.tags = [];
+	createOptions.status = "unlisted";
+	createOptions.tags = [];
 	createOptions.image = "";
 };
 
@@ -60,24 +58,22 @@ const createBestiary = async () => {
 		await router.push(`/bestiary/edit/${data.id.toString()}`);
 	}
 	else {
-		addToast(error);
+		addToast(error, { color: "error" });
 	}
 };
 
 const deleteBestiary = async (id: BestiaryExtended["id"]) => {
 	if (!id)
 		return;
-	const loader = $loading.show();
 	const { success, error } = await useFetch(`/api/bestiary/${id}/delete`);
 	if (success) {
 		addToast("Deleted bestiary succesfully", { color: "success" });
 		getUmami()?.track("Delete bestiary");
 	}
 	else {
-		addToast(error);
+		addToast(error, { color: "error" });
 	}
-	loader.hide();
-	await getBestiaries();
+	await getBestiaries(false);
 };
 
 const saveOrder = async () => {

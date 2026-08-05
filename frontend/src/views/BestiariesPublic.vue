@@ -4,18 +4,17 @@ import { refDebounced } from "@vueuse/core";
 import { onMounted, ref, watch } from "vue";
 import CollectionTile from "@/components/Global/CollectionTile.vue";
 import { getUmami } from "@/utils/app/analytics";
-import { $loading } from "@/utils/app/loading";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { useToast } from "../utils/app/toast";
 
 onMounted(async () => {
-	const loader = $loading.show();
+	const toastId = addToast("Loading...", { loading: true })
 	await searchBestiaries();
-	loader.hide();
+	removeToast(toastId)
 });
 
-const { addToast } = useToast()
+const { addToast, removeToast } = useToast()
 const bestiaries = ref<BestiaryExtended[]>([]);
 
 const selectedPage = ref(1);
@@ -63,14 +62,14 @@ watch(selectedPage, async () => searchBestiaries());
 watch(selectedTags, async () => searchBestiaries());
 watch(viewMode, async (newValue) => {
 	if (newValue !== "Bookmarked") {
-		const loader = $loading.show();
+		const toastId = addToast("Loading...", { loading: true })
 		await searchBestiaries();
-		loader.hide();
+		removeToast(toastId)
 	}
 	else {
-		const loader = $loading.show();
+		const toastId = addToast("Loading...", { loading: true })
 		await getBookmarkedBestiaries();
-		loader.hide();
+		removeToast(toastId)
 	}
 });
 watch(debouncedSearch, async () => searchBestiaries());

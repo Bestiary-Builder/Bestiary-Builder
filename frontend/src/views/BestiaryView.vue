@@ -12,7 +12,6 @@ import CRInput from "@/components/FormInputs/CRInput.vue";
 import Markdown from "@/components/Global/Markdown.vue";
 import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
 import { getUmami } from "@/utils/app/analytics";
-import { $loading } from "@/utils/app/loading";
 import { useToast } from "@/utils/app/toast";
 import { creatureTypes } from "@/utils/constants";
 import { store } from "@/utils/store";
@@ -20,7 +19,7 @@ import { useFetch } from "@/utils/utils";
 import { defaultStatblock } from "~/shared";
 
 const route = useRoute();
-const { addToast } = useToast();
+const { addToast, removeToast, updateToast } = useToast();
 const searchText = ref("");
 const debouncedSearch = refDebounced(searchText, 500);
 
@@ -139,10 +138,10 @@ watch(debouncedFaction, () => {
 });
 const loading = ref(true);
 onMounted(async () => {
-	// const loader = $loading.show();
-	await getBestiary().then(() => {
-		// loader.hide();
-	});
+	const toastId = addToast("Loading...", { loading: true })
+	await getBestiary()
+	removeToast(toastId)
+
 	loading.value = false;
 	if (bestiary.value?.name)
 		document.title = `${bestiary.value?.name.substring(0, 16)} | Bestiary Builder`;
@@ -169,7 +168,7 @@ function filterCreature(data: CreatureWithStats) {
 }
 
 async function exportHomebrewery() {
-	const loader = $loading.show();
+	const toastId = addToast("Exporting...", { loading: true })
 
 	try {
 		const { success, data: resultData, error } = await useFetch<{ metadata: string }>(
@@ -179,19 +178,15 @@ async function exportHomebrewery() {
 
 		if (success) {
 			await navigator.clipboard.writeText(resultData.metadata);
-			addToast("Exported this bestiary markdown to your clipboard");
+			updateToast(toastId, { text: "Exported this bestiary markdown to your clipboard" });
 			void getUmami()?.track("Export bestiary to homebrewery");
 		}
 		else {
-			addToast(error, { color: "error" });
-			;
+			updateToast(toastId, { text: error, color: "error" });
 		}
 	}
 	catch (err) {
 		addToast(err as string, { color: "error" });
-	}
-	finally {
-		loader.hide();
 	}
 }
 
@@ -291,7 +286,7 @@ async function getBestiary() {
 async function toggleBookmark() {
 	if (!bestiary.value)
 		return;
-	const loader = $loading.show();
+
 	const { success, data, error } = await useFetch<{ state: boolean }>(`/api/bestiary/${bestiary.value.id.toString()}/bookmark/toggle`);
 	if (success) {
 		bookmarked.value = data.state;
@@ -307,9 +302,7 @@ async function toggleBookmark() {
 	else {
 		bookmarked.value = false;
 		addToast(error, { color: "error" });
-		;
 	}
-	loader.hide();
 }
 
 type CopiedCreature = CreatureWithStats & { bestiaryName: string };

@@ -8,43 +8,45 @@ export interface ToastItem {
 	timeout: number,
 	show: boolean,
 	loading: boolean,
-	prependIcon: string
+	prependIcon: string,
+	isHtml: boolean
 }
 
-export type AddToastOptions = Partial<Omit<ToastItem, 'id' | 'text' | 'show'>>
+export type AddToastOptions = Partial<Omit<ToastItem, 'id' | 'text'>>
 export type UpdateToastPatch = Partial<Omit<ToastItem, 'id'>>
 
 const toasts: Ref<ToastItem[]> = ref([])
 let counter = 0
 
-export function useToast() {
-	function addToast(text: string, options: AddToastOptions = {}): number {
+export const useToast = () => {
+	const addToast = (text: string, options: AddToastOptions = {}): number => {
 		const id = ++counter
 		toasts.value.push({
 			id,
 			text,
 			color: options.color ?? '',
 			timeout: options.loading || false ? -1 : options.timeout ?? 2500,
-			show: true,
+			show: options.show || true,
 			loading: options.loading || false,
-			prependIcon: options.prependIcon || 'mdi:information'
+			prependIcon: options.prependIcon || 'mdi:information',
+			isHtml: false
 		})
 		return id
 	}
 
-	function updateToast(id: number, patch: UpdateToastPatch): boolean {
+	const updateToast = (id: number, patch: UpdateToastPatch): boolean => {
 		const toast = toasts.value.find(t => t.id === id)
 		if (!toast) return false
 		Object.assign(toast, patch)
 		return true
 	}
 
-	function removeToast(id: number) {
+	const removeToast = (id: number) => {
 		const index = toasts.value.findIndex(t => t.id === id)
 		if (index !== -1) toasts.value.splice(index, 1)
 	}
 
-	function clearToasts() {
+	const clearToasts = () => {
 		toasts.value = []
 	}
 

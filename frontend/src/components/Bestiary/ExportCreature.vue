@@ -3,12 +3,11 @@ import type { Statblock } from "~/shared";
 import html2canvas from "html2canvas";
 import { useRoute } from "vue-router";
 import { getUmami } from "@/utils/app/analytics";
-import { $loading } from "@/utils/app/loading";
 import { useToast } from "@/utils/app/toast";
 import { useFetch } from "@/utils/utils";
 
 const { data } = defineProps<{ data: Statblock }>();
-const { addToast } = useToast()
+const { addToast, removeToast } = useToast()
 const $route = useRoute();
 
 const exportStatblockToClipBoard = async () => {
@@ -68,7 +67,8 @@ const exportHomebrewery = async () => {
 const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 	if (!data)
 		return;
-	const loader = $loading.show();
+	const toastId = addToast("Exporting...", { loading: true })
+
 	const el = document.getElementById("statblock");
 	if (!el)
 		return;
@@ -85,7 +85,8 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 	link.click();
 	el.classList.remove("toPrint");
 	el.style = "";
-	loader.hide();
+
+	removeToast(toastId)
 	void getUmami()?.track("Export statblock to image");
 };
 </script>

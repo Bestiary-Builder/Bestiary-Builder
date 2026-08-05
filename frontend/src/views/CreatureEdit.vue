@@ -25,24 +25,24 @@ const tab = ref<number>(typeof ($route.query?.pane) === "string" ? Number.parseI
 const data = ref<Statblock>(defaultStatblock);
 const rawInfo = ref<CreatureWithStats | null>(null);
 
-const { addToast } = useToast();
+const { addToast, removeToast } = useToast();
 
 // load creature data
 onMounted(async () => {
-	// const loader = $loading.show();
+	const toastId = addToast("Loading...", { loading: true })
 	const { success, data: cData, error } = await useFetch<CreatureWithStats>(`/api/creature/${$route.params.id.toString()}`);
 	if (success) {
 		data.value = (cData).stats;
 		await nextTick(() => madeChanges.value = false);
 		rawInfo.value = cData;
 		await loadRawInfo();
-		// loader.hide();
+		removeToast(toastId)
 	}
 	else {
 		addToast(error, { color: "error" })
 		madeChanges.value = false;
 		await $router.push("/error");
-		// loader.hide();
+		removeToast(toastId)
 	}
 });
 
@@ -94,7 +94,7 @@ const saveStatblock = async (shouldNotify = true): Promise<boolean> => {
 		);
 	}
 	else {
-		addToast(error, { timeout: -1 });
+		addToast(error, { timeout: -1, isHtml: true, color: "error" });
 		if (error.includes("includes blocked words or phrases"))
 			void getUmami()?.track("Blocked words", { error });
 	}
