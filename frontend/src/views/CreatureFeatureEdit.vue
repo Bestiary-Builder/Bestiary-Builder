@@ -15,6 +15,7 @@ import { $toast, htmlToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { parseDescIntoAutomation } from "~/shared";
+import { useHotkey } from "vuetify";
 
 const $router = useRouter();
 const $route = useRoute();
@@ -226,6 +227,8 @@ const saveStatblock2 = async (shouldNotify: boolean): Promise<boolean> => {
 		return false;
 	}
 };
+useHotkey("cmd+s", async () => await saveStatblock2(true), { inputs: true })
+
 
 type AutomationTypes = "automation" | "basic-example" | "srd-features/2014" | "srd-features/2024";
 const loadFeature = async (feature: FeatureEntity, apiPath: AutomationTypes) => {

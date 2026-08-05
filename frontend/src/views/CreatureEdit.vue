@@ -16,6 +16,7 @@ import { $toast, htmlToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { defaultStatblock } from "~/shared";
+import { useHotkey } from "vuetify";
 
 const $route = useRoute();
 const $router = useRouter();
@@ -101,7 +102,7 @@ const saveStatblock = async (shouldNotify = true): Promise<boolean> => {
 };
 
 provide("saveStatblock", saveStatblock);
-
+useHotkey("cmd+s", async () => await saveStatblock(), { inputs: true })
 // end of lifecycle
 const madeChanges = ref(false);
 
@@ -242,6 +243,7 @@ const importCreature = async (creature: Statblock) => {
 	await saveStatblock(false);
 	$toast.success(`Successfully imported ${data.value.description.name}`);
 };
+
 </script>
 
 <template>
@@ -265,7 +267,7 @@ const importCreature = async (creature: Statblock) => {
 		]">
 			<v-icon-btn v-if="madeChanges && (isOwner || isEditor)" icon="mdi:content-save" text="Save creature"
 				:class="{ inverted: !isSavingStatblock }" @click="saveStatblock()" size="24"
-				:loading="isSavingStatblock" />
+				v-tooltip="'Save Creature (CTRL+S)'" :loading="isSavingStatblock" />
 
 			<CopyCreature v-if="rawInfo" no-import-all :may-import="isOwner || isEditor"
 				:current-creature="{ ...rawInfo, bestiaryName: bestiary?.name || '' }"

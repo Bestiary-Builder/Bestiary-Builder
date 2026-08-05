@@ -11,6 +11,7 @@ import VisualEditor from "@/components/VisualEditor/VisualEditor.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { $toast } from "@/utils/app/toast";
 import { useFetch } from "@/utils/utils";
+import { useHotkey } from "vuetify";
 
 const character = ref<AvraeCharacter | null>(null);
 const AvraeToken = useLocalStorage("AvraeToken", "");
@@ -46,6 +47,7 @@ const saveAttacks = async () => {
 
 	isSavingAttacks.value = false
 };
+useHotkey("cmd+s", async () => await saveAttacks(), { inputs: true })
 
 const addAttack = () => {
 	if (!character.value)

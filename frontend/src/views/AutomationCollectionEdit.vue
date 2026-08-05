@@ -13,6 +13,7 @@ import { $loading } from "@/utils/app/loading";
 import { $toast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
+import { useHotkey } from "vuetify";
 
 const $route = useRoute();
 const data = ref<AutomationWithType[]>([]);
@@ -233,6 +234,8 @@ const updateCollection = async () => {
 		$toast.error(error);
 	}
 };
+useHotkey("cmd+s", async () => await updateCollection(), { inputs: true })
+
 </script>
 
 <template>

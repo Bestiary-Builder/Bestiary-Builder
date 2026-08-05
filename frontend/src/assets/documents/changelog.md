@@ -23,6 +23,7 @@ _???, 2026_
 - Added a user setting to choose between 2024 and 2014 SRD options.
 - Added more image export options: 1 column, 2 column, 2 column extra wide
 - Updated the available default spells to choose from when editing spellcasting on a creature to all currently published spells.
+- Added CMD/CTRL+S hotkeys for saving creatures / collections
 
 ### Fixes
 - Improved the accuracy of the 2014 SRD Creatures and Actions data.
