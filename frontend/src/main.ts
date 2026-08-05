@@ -24,7 +24,7 @@ import "@/assets/styles/main.less";
 import "./utils/app/analytics";
 
 import "vuetify/styles";
-import "@mdi/font/css/materialdesignicons.css";
+// import "@mdi/font/css/materialdesignicons.css";
 import iconifyAdapter from './utils/app/icon';
 
 const vuetify = createVuetify({

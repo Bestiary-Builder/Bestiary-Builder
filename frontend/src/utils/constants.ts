@@ -116,7 +116,7 @@ export const alignments = [
 	"Neutral Good",
 	"Chaotic Good",
 	"Lawful Neutral",
-	"Neutral",
+	"True Neutral",
 	"Chaotic Neutral",
 	"Lawful Evil",
 	"Neutral Evil",

@@ -1,16 +1,11 @@
 <script setup lang="ts">
 import type { SaveEntity, SkillsEntity, Stat, Statblock } from "~/shared";
 import type { StatblockDesign } from "~/shared/prisma/enums";
-import { Document } from "@tiptap/extension-document";
-import { Markdown, MarkdownManager } from "@tiptap/markdown";
-import StarterKit from "@tiptap/starter-kit";
-import { generateHTML } from "@tiptap/vue-3";
-import { marked } from "marked";
+import MarkdownIt from 'markdown-it'
 import { computed, onMounted } from "vue";
 import { featureGenerator, resistanceGenerator, stats } from "@/utils/constants";
 import { store } from "@/utils/store";
 import { capitalizeFirstLetter, crAsString, displayCasterCasting, displayInnateCasting, displaySpeedOrSenses, hpCalc, ppCalc, signedNumber, SKILLS_BY_STAT, statCalc } from "~/shared";
-import HangingList from "../StatblockEditor/HangingList";
 
 const { data, statblockDesign = null, is2024 = null } = defineProps<{ data: Statblock; statblockDesign?: StatblockDesign; is2024?: boolean }>();
 
@@ -171,38 +166,55 @@ onMounted(async () => {
 		await import("./styles/monstermanual/mm.css");
 });
 
-const CustomDocument = Document.extend({
-	renderMarkdown: (node, h) =>
-		node.content ? h.renderChildren(node.content, "\n\n") : "",
-});
-const extensions = [
-	HangingList,
-	CustomDocument,
-	StarterKit.configure({ document: false }),
-	Markdown,
-];
-const manager = new MarkdownManager({
-	extensions,
-});
+const md = new MarkdownIt({
+	html: false,
+	breaks: false,
+	linkify: true,
+	typographer: false
+})
 
-const render = (str: string, inline?: boolean) => {
-	try {
-		let markdown = str
-			.replaceAll("&emsp;", "\u2003")
-			.replaceAll("&ensp;", "\u2002")
-			.replaceAll("&nbsp;", "\u00A0");
-		if (!inline)
-			markdown = markdown.replaceAll(/(?<!\n)\n(?!\n)/g, "\n\n");
+const mdInlineBreaks = new MarkdownIt({ html: false, breaks: true, linkify: true })
 
-		if (inline)
-			return marked.parseInline(markdown);
-		const json = manager.parse(markdown);
-		return generateHTML(json, extensions);
+const listMarker = /^\s*([-*+]|\d+[.)])\s+/
+
+const expandNewlinesToParagraphs = (text: string) => {
+	const lines = text.split('\n')
+	const out = []
+	let i = 0
+
+	while (i < lines.length) {
+		const line = lines[i]
+
+		if (line.trim() === '') {
+			// one visible empty paragraph per blank line, not collapsed
+			out.push('', '&nbsp;', '')
+			i++
+			continue
+		}
+
+		out.push(line)
+		i++
+
+		const next = lines[i]
+		if (next === undefined) continue
+		if (next.trim() === '') continue // blank line(s) handled on next loop iteration(s)
+
+		const curIsList = listMarker.test(line)
+		const nextIsList = listMarker.test(next)
+		if (curIsList && nextIsList) continue // keep consecutive list items tight
+
+		out.push('') // separate everything else into its own paragraph
 	}
-	catch {
-		return "";
+
+	return out.join('\n')
+}
+
+const render = (text: string, inline = false) => {
+	if (inline) {
+		return mdInlineBreaks.renderInline(text)
 	}
-};
+	return md.render(expandNewlinesToParagraphs(text))
+}
 </script>
 
 <template>

@@ -63,7 +63,7 @@ const loadRawInfo = async () => {
 		if (isOwner.value || isEditor.value)
 			shouldShowEditor.value = true;
 		if (!isOwner.value && !isEditor.value)
-			await $router.push(`/ creature / view / ${rawInfo.value?.id}`);
+			await $router.push(`/creature/view/${rawInfo.value?.id}`);
 	}
 	else {
 		addToast(error, { color: "error" });
