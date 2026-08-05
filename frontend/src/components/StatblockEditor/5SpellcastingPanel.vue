@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import type { CreatureWithStats, InnateSpellsEntity, Statblock } from "~/shared";
 import { computed, onMounted, ref, watch } from "vue";
-import { useRules } from "vuetify/labs/rules";
 import { $toast } from "@/utils/app/toast";
 import { classes, classLevels, stats } from "@/utils/constants";
 import { useFetch } from "@/utils/utils";
 import { defaultStatblock, getSpellSlots } from "~/shared";
-import LabelledComponent from "../FormInputs/LabelledComponent.vue";
 import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
 
 const { data, rawInfo } = defineProps<{ data: Statblock; rawInfo: CreatureWithStats | null }>();
@@ -142,19 +140,21 @@ const handleNewCustomInnateSpell = () => {
 					color="primary" density="compact" hide-details />
 			</div>
 		</div>
+		<v-divider />
+		<v-spacer />
 		<div class="editor-field__container two-wide">
 			<TransitionGroup name="list">
 				<template v-for="_, times in data.spellcasting.innateSpells.spellList" :key="times">
-					<LabelledComponent :title="times === '0' ? 'At will' : `${times}/day`" takes-custom-text-input
-						:for="`innateSpellTimes${times}`">
-						<div :class="{ 'select-with-delete': parseInt(times.toString()) > 3 }">
+					<div :class="{ 'select-with-delete': parseInt(times.toString()) > 3 }">
+						<div>
 							<v-combobox v-model="data.spellcasting.innateSpells.spellList[times]" item-title="spell"
 								:items="spellListFlattened" multiple chips closable-chips return-object
-								hint="Supports custom spells" @update:modelValue="handleNewCustomInnateSpell" />
-							<v-icon-btn v-if="parseInt(times.toString()) > 3" v-tooltip="'Delete this daily amount'"
-								icon="mdi:delete" @click="delete data.spellcasting.innateSpells.spellList[times]" />
+								hint="Supports custom spells" @update:modelValue="handleNewCustomInnateSpell"
+								:label="times === '0' ? 'At will' : `${times}/day`" />
 						</div>
-					</LabelledComponent>
+						<v-icon-btn v-if="parseInt(times.toString()) > 3" v-tooltip="'Delete this daily amount'"
+							icon="mdi:delete" @click="delete data.spellcasting.innateSpells.spellList[times]" />
+					</div>
 				</template>
 			</TransitionGroup>
 		</div>
@@ -162,7 +162,7 @@ const handleNewCustomInnateSpell = () => {
 			<v-dialog max-width="750">
 				<template #activator="{ props: activatorProps }">
 					<v-btn v-bind="activatorProps" class="mb-4">
-						Customize
+						Customize daily spellcasting
 					</v-btn>
 				</template>
 
@@ -251,7 +251,7 @@ const handleNewCustomInnateSpell = () => {
 			<v-dialog max-width="750">
 				<template #activator="{ props: activatorProps }">
 					<v-btn v-bind="activatorProps">
-						Customize
+						Customize class spellcasting
 					</v-btn>
 				</template>
 
