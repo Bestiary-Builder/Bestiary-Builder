@@ -1,21 +1,11 @@
-import { h, ref, type Ref } from "vue";
-import { toast } from "vue-sonner";
+import { ref, type Ref } from "vue";
 import type { SingleSnackbarProps } from "vuetify/lib/components/VSnackbarQueue/VSnackbarQueue.mjs";
-
-export const $toast = toast;
-
-export const htmlToast = (html: string) => {
-	return h("div", {
-		innerHTML: `${html}`
-	});
-};
-
 
 export interface ToastItem {
 	id: number
 	text: string
 	color: SingleSnackbarProps["color"]
-	timeout: number
+	timeout: number,
 	show: boolean,
 	loading: boolean,
 	prependIcon: string
@@ -34,7 +24,7 @@ export function useToast() {
 			id,
 			text,
 			color: options.color ?? '',
-			timeout: options.timeout ?? 2500,
+			timeout: options.loading || false ? -1 : options.timeout ?? 2500,
 			show: true,
 			loading: options.loading || false,
 			prependIcon: options.prependIcon || 'mdi:information'

@@ -5,7 +5,7 @@ import { onMounted, ref, shallowRef, watch } from "vue";
 import YAML from "yaml";
 import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import { getUmami } from "@/utils/app/analytics";
-import { $toast, htmlToast } from "@/utils/app/toast";
+import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 
@@ -18,6 +18,7 @@ const emit = defineEmits<{
 const errorMessage = ref<null | string>(null);
 const hasEditedName = ref(false);
 
+const { addToast } = useToast()
 // Automation
 const automationString = ref("");
 onMounted(() => {
@@ -32,7 +33,7 @@ const saveAutomation = async () => {
 		parsed = YAML.parse(automationString.value);
 	}
 	catch {
-		$toast.error("YAML contains Error. Failed to save automation");
+		addToast("YAML contains Error. Failed to save automation", { color: "error" });
 		return;
 	}
 	// parsed == null
@@ -46,7 +47,7 @@ const saveAutomation = async () => {
 			props.data.automation = parsed;
 		}
 		else {
-			$toast.error(htmlToast(error));
+			addToast(error, { color: "error" });
 			return;
 		}
 	}
@@ -56,7 +57,7 @@ const saveAutomation = async () => {
 
 	if (!success) {
 		addToast(error, { color: "error" });
-		;
+
 		if (error.includes("includes blocked words or phrases"))
 			void getUmami()?.track("Blocked words", { error });
 		return;
@@ -65,7 +66,7 @@ const saveAutomation = async () => {
 		emit("savedStandaloneData");
 	}
 
-	$toast.success("Successfully saved automation!");
+	addToast("Successfully saved automation!", { color: "success" });
 };
 
 // Documentation context by mouse location
@@ -75,7 +76,7 @@ const handleMount = (editor: any) => (editorRef.value = editor);
 // utils
 const copyAutomation = async () => {
 	await navigator.clipboard.writeText(automationString.value);
-	$toast.success("Copied automation to clipboard!");
+	addToast("Copied automation to clipboard!");
 };
 
 const validateYaml = () => {

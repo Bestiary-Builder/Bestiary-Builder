@@ -5,11 +5,12 @@ import { reactive, ref } from "vue";
 import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
 import SectionHeader from "@/components/VisualEditor/Nodes/shared/SectionHeader.vue";
 import { getUmami } from "@/utils/app/analytics";
-import { $toast } from "@/utils/app/toast";
+import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { sendToLogin, useFetch } from "@/utils/utils";
 import { SupporterStatus } from "~/shared";
 
+const { addToast } = useToast()
 const logoutClick = async () => {
 	const { success, error } = await useFetch("/api/logout");
 	if (success)
@@ -34,7 +35,7 @@ const saveSettings = async () => {
 	if (success) {
 		store.user = (data as any).data;
 		void getUmami()?.track("Update preferences", preferences);
-		$toast.success("Successfully saved your preferences");
+		addToast("Successfully saved your preferences");
 	}
 };
 

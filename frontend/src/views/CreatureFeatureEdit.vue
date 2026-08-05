@@ -11,7 +11,7 @@ import Markdown from "@/components/Global/Markdown.vue";
 import Editor from "@/components/StatblockEditor/Editor.vue";
 import VisualEditor from "@/components/VisualEditor/VisualEditor.vue";
 import { $loading } from "@/utils/app/loading";
-import { $toast, htmlToast } from "@/utils/app/toast";
+import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { parseDescIntoAutomation } from "~/shared";
@@ -24,6 +24,7 @@ const aid = $route.params.aid as any;
 const data = ref<Statblock>();
 const rawInfo = ref<CreatureWithStats | null>(null);
 
+const { addToast, updateToast } = useToast()
 const visualEditorRef = useTemplateRef("VisualEditorRef");
 // load creature data
 onMounted(async () => {
@@ -40,7 +41,7 @@ onMounted(async () => {
 		loader.hide();
 	}
 	else {
-		$toast.error(`Error: ${error}`);
+		addToast("Something went wrong", { color: "error" })
 		madeChanges.value = false;
 		await $router.push("/error");
 		loader.hide();
@@ -54,7 +55,7 @@ const isOwner = ref(false);
 const isEditor = ref(false);
 const shouldShowEditor = ref(false);
 const loadRawInfo = async () => {
-	const { success, data, error } = await useFetch<BestiaryExtended>(`/api/bestiary/${rawInfo.value?.bestiaryId}`);
+	const { success, data, error } = await useFetch<BestiaryExtended>(`/ api / bestiary / ${rawInfo.value?.bestiaryId}`);
 	if (success) {
 		bestiary.value = data;
 		isOwner.value = store.user?.id === bestiary.value.ownerId;
@@ -62,7 +63,7 @@ const loadRawInfo = async () => {
 		if (isOwner.value || isEditor.value)
 			shouldShowEditor.value = true;
 		if (!isOwner.value && !isEditor.value)
-			await $router.push(`/creature/view/${rawInfo.value?.id}`);
+			await $router.push(`/ creature / view / ${rawInfo.value?.id}`);
 	}
 	else {
 		addToast(error, { color: "error" });
@@ -117,7 +118,7 @@ const bestiary = ref<BestiaryExtended | null>(null);
 
 async function getBestiary() {
 	// Request bestiary info
-	const { success, data, error } = await useFetch<BestiaryExtended>(`/api/bestiary/${rawInfo.value?.bestiaryId}`);
+	const { success, data, error } = await useFetch<BestiaryExtended>(`/ api / bestiary / ${rawInfo.value?.bestiaryId}`);
 	if (!success) {
 		bestiary.value = null;
 		addToast(error, { color: "error" });
@@ -146,7 +147,7 @@ const saveStatblock2 = async (shouldNotify: boolean): Promise<boolean> => {
 		return false;
 
 	rawInfo.value.stats = data.value;
-	const toastId = shouldNotify ? $toast.loading("Validating...") : undefined;
+	const toastId = shouldNotify ? addToast("Validating...", { loading: true }) : undefined;
 	isSavingCreature.value = true
 	try {
 		// Parse
@@ -157,14 +158,19 @@ const saveStatblock2 = async (shouldNotify: boolean): Promise<boolean> => {
 	}
 	catch (err) {
 		if (toastId) {
-			$toast.error(`Error parsing automation YAML. ${err instanceof Error ? err.message : "An unexpected error occurred."}`, {
-				id: toastId,
-				duration: 10000,
+			updateToast(toastId, {
+				text: `Error parsing automation YAML.${err instanceof Error ? err.message : "An unexpected error occurred."}`,
+				color: "error",
+				loading: false,
+				prependIcon: "mdi:alert-circle",
+				timeout: -1,
 			});
 		}
 		else {
-			$toast.error(`Error parsing automation YAML. ${err instanceof Error ? err.message : "An unexpected error occurred."}`, {
-				duration: 10000,
+			addToast(`Error parsing automation YAML.${err instanceof Error ? err.message : "An unexpected error occurred."}`, {
+				color: "error",
+				prependIcon: "mdi:alert-circle",
+				timeout: -1,
 			});
 		}
 		isSavingCreature.value = false
@@ -175,26 +181,38 @@ const saveStatblock2 = async (shouldNotify: boolean): Promise<boolean> => {
 		const validAutomation = await validateAttack(data.value.features[type][aid].automation);
 		if (validAutomation !== true) {
 			if (toastId)
-				$toast.error(htmlToast(validAutomation), { duration: 20000, id: toastId, dismissible: true });
+				updateToast(toastId, {
+					text: validAutomation,
+					color: "error",
+					loading: false,
+					prependIcon: "mdi:alert-circle",
+					timeout: -1
+				})
 			isSavingCreature.value = false
 			return false;
 		}
 
 		// Update loading message
 		if (toastId)
-			$toast.loading("Saving...", { id: toastId });
+			updateToast(toastId, { text: "Saving..." });
 		// Save
-		const { success, error } = await useFetch<CreatureWithStats>(`/api/creature/${rawInfo.value.id}/update`, "POST", rawInfo.value);
+		const { success, error } = await useFetch<CreatureWithStats>(`/ api / creature / ${rawInfo.value.id} / update`, "POST", rawInfo.value);
 		if (!success) {
 			if (toastId) {
-				$toast.error(`Error saving statblock. ${error}`, {
-					id: toastId,
-					duration: 10000,
-				});
+				updateToast(toastId, {
+					text: `Error saving statblock. ${error}`,
+					color: "error",
+					loading: false,
+					prependIcon: "mdi:alert-circle",
+					timeout: -1
+				})
+
 			}
 			else {
-				$toast.error(`Error saving statblock. ${error}`, {
-					duration: 10000,
+				addToast(`Error saving statblock. ${error}`, {
+					color: "error",
+					prependIcon: "mdi:alert-circle",
+					timeout: -1
 				});
 			}
 			isSavingCreature.value = false
@@ -214,15 +232,20 @@ const saveStatblock2 = async (shouldNotify: boolean): Promise<boolean> => {
 		);
 
 		if (toastId)
-			setTimeout(() => $toast.success("Saved action successfully.", { id: toastId }), 500);
+			setTimeout(() => updateToast(toastId, { text: "Saved action!", loading: false, prependIcon: "mdi-check", timeout: 2500 })
+				, 500);
 		isSavingCreature.value = false
 		return true;
 	}
 	catch (err) {
 		if (toastId) {
-			$toast.error(
-				err instanceof Error ? err.message : "An unexpected error occurred.",
-				{ id: toastId }
+			updateToast(toastId,
+				{
+					text: err instanceof Error ? err.message : "An unexpected error occurred.",
+					color: "error",
+					loading: false,
+					prependIcon: "mdi:alert-cirle"
+				}
 			);
 		}
 		isSavingCreature.value = false
@@ -267,7 +290,7 @@ const loadFeature = async (feature: FeatureEntity, apiPath: AutomationTypes) => 
 		visualEditorRef.value.currentEffect = null;
 		visualEditorRef.value.currentContext = [];
 	}
-	$toast.success(`Successfully loaded ${feature.name}!`);
+	addToast(`Successfully loaded ${feature.name}!`);
 	await saveStatblock2(false);
 };
 
@@ -281,14 +304,14 @@ const generateAutomation = async () => {
 			automationString.value = YAML.stringify(result);
 		}
 		catch {
-			$toast.error("Something went when generating automation!");
+			addToast("Something went wrong when generation automation", { color: "error" })
 		}
 	}
 };
 
 const copyAutomation = async () => {
 	await navigator.clipboard.writeText(automationString.value);
-	$toast.success("Copied automation to clipboard!");
+	addToast("Copied automation to clipboard!");
 };
 
 const automationString = ref("");
@@ -436,8 +459,9 @@ const changeEditor = () => {
 			isVisualEditor.value = !isVisualEditor.value;
 		}
 		catch (err) {
-			$toast.error(`Error parsing automation YAML. ${err instanceof Error ? err.message : "An unexpected error occurred."}`, {
-				duration: 10000,
+			addToast(`Error parsing automation YAML.${err instanceof Error ? err.message : "An unexpected error occurred."}`, {
+				timeout: 10000,
+				color: "error"
 			});
 		}
 	}
@@ -450,7 +474,7 @@ watch(toNavigateTo, async () => {
 	if (didSave)
 		await $router.push(`/creature/edit/${rawInfo.value?.id}/${toNavigateTo.value[0]}/${toNavigateTo.value[1]}`);
 	else
-		$toast.error("Could not open another action as this action did not save correctly.");
+		addToast("Could not open other action because this did not save correctly.", { color: "error" })
 	$router.go(0);
 });
 

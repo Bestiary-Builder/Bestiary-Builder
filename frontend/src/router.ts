@@ -4,9 +4,10 @@ import fileRoutes from "~pages";
 import { sendToLogin } from "@/utils/utils";
 
 import { routes as sharedRoutes } from "~/shared";
-import { $toast } from "./utils/app/toast";
+import { useToast } from "./utils/app/toast";
 import { store } from "./utils/store";
 
+const { addToast } = useToast()
 const routes = sharedRoutes.routes.map((route) => {
 	return {
 		...route,
@@ -60,11 +61,11 @@ router.afterEach((to) => {
 	const keys = Object.keys(to.query);
 	if (keys.includes("loginSuccess") || keys.includes("loginError")) {
 		if (to.query.loginSuccess) {
-			$toast.success("Succesfully logged in");
+			addToast("Succesfully logged in", { color: "success", timeout: -1 });
 			delete to.query.loginSuccess;
 		}
 		if (to.query.loginError) {
-			$toast.error(`Login failed: ${to.query.loginError.toString()}`, { duration: 0 });
+			addToast(`Login failed: ${to.query.loginError.toString()}`, { color: "success", timeout: -1 });
 			delete to.query.loginError;
 		}
 		// Remove queries from parameter

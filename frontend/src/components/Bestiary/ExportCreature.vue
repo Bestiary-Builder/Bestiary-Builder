@@ -4,17 +4,17 @@ import html2canvas from "html2canvas";
 import { useRoute } from "vue-router";
 import { getUmami } from "@/utils/app/analytics";
 import { $loading } from "@/utils/app/loading";
-import { $toast } from "@/utils/app/toast";
+import { useToast } from "@/utils/app/toast";
 import { useFetch } from "@/utils/utils";
 
 const { data } = defineProps<{ data: Statblock }>();
-
+const { addToast } = useToast()
 const $route = useRoute();
 
 const exportStatblockToClipBoard = async () => {
 	const text = JSON.stringify(data, null, 2);
 	await navigator.clipboard.writeText(text);
-	$toast.info("Exported this statblock to your clipboard.");
+	addToast("Exported this statblock to your clipboard.");
 	void getUmami()?.track("Export statblock to clipboard");
 };
 
@@ -52,7 +52,7 @@ const exportHomebrewery = async () => {
 		);
 		if (success) {
 			await navigator.clipboard.writeText(resultData.metadata);
-			$toast.info("Exported this statblock markdown to your clipboard");
+			addToast("Exported this statblock markdown to your clipboard");
 			void getUmami()?.track("Export statblock to homebrewery");
 		}
 		else {
@@ -61,7 +61,7 @@ const exportHomebrewery = async () => {
 		}
 	}
 	catch (err) {
-		$toast.error(err as string);
+		addToast(err as string, { color: "error" });
 	}
 };
 

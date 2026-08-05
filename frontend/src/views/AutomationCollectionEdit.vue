@@ -7,11 +7,12 @@ import YAML from "yaml";
 import Markdown from "@/components/Global/Markdown.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { $loading } from "@/utils/app/loading";
-import { $toast } from "@/utils/app/toast";
+import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { useHotkey } from "vuetify";
 
+const { addToast, updateToast } = useToast()
 const $route = useRoute();
 const data = ref<AutomationWithType[]>([]);
 const collection = ref<AutomationCollectionExtended | null>(null);
@@ -27,7 +28,6 @@ onMounted(async () => {
 	}
 	else {
 		addToast(error, { color: "error" });
-		;
 	}
 
 	await getAutomations();
@@ -40,7 +40,7 @@ const addAttack = async (name: string, automation: null | AttackModel | AttackMo
 	if (!collection.value)
 		return;
 	if (name === "New Automation") {
-		$toast.warning("Automation must have a non-default name!");
+		addToast("Automation must have a non-default name!");
 		return;
 	}
 	const loader = $loading.show();
@@ -48,13 +48,12 @@ const addAttack = async (name: string, automation: null | AttackModel | AttackMo
 	if (success) {
 		await getAutomations();
 		if (shouldNotify)
-			$toast.success(`Successfully added automation: ${name}`);
+			addToast(`Successfully added automation: ${name}`);
 		activeAttackIndex.value = data.value.length - 1;
 		getUmami()?.track("Add automation");
 	}
 	else {
 		addToast(error, { color: "error" });
-		;
 		if (error.includes("includes blocked words or phrases"))
 			void getUmami()?.track("Blocked words", { error });
 	}
@@ -66,7 +65,7 @@ const deleteAutomation = async () => {
 	const loader = $loading.show();
 	const { success, error } = await useFetch(`/api/automation/${_id.toString()}/delete`);
 	if (success) {
-		$toast.success("Successfully deleted the automation!");
+		addToast("Successfully deleted the automation!");
 		void getUmami()?.track("Delete automation");
 		await getAutomations();
 		activeAttackIndex.value = -1;
@@ -91,7 +90,7 @@ const getAutomations = async () => {
 
 const exportMyAutomations = async () => {
 	await navigator.clipboard.writeText(JSON.stringify(data.value.map(a => a.automation)));
-	$toast.success("Copied all automation to clipboard!");
+	addToast("Copied all automation to clipboard!");
 };
 
 const showImportModal = ref(false);
@@ -108,7 +107,7 @@ const importAutomations = async () => {
 		else name = a.name;
 		await addAttack(name, a, false);
 	}
-	$toast.info("Done importing automation!");
+	addToast("Done importing automation!", { color: "info" });
 	showImportModal.value = false;
 };
 
@@ -136,46 +135,32 @@ onUnmounted(() => {
 	window.removeEventListener("beforeunload", unloadHandler);
 });
 
-const characters = ref<Array<any>>([]);
-const getAvraeCharacters = async () => {
-	const toasterId = $toast.loading("Getting character data from Avrae...");
-	const { success, data, error } = await useFetch("/api/character/list");
-	if (success) {
-		$toast.success("Loaded Avrae Characters", { id: toasterId });
-		void getUmami()?.track("Loaded Avrae Characters");
-		characters.value = data as any[];
-	}
-	else {
-		addToast(error, { color: "error" });
-		;
-	}
-};
+
 
 const selectedCharacter = ref<any>();
 watch(selectedCharacter, async () => {
 	if (activeAttackIndex.value < 0) {
-		$toast.info("No automation selected.");
+		addToast("No automation selected.");
 		return;
 	}
 	let automation: null | AttackModel | AttackModel[] = data.value[activeAttackIndex.value].automation;
 
 	if (automation === null) {
-		$toast.info("You cannot import empty automation.");
+		addToast("You cannot import empty automation.");
 		return;
 	}
 	if (!Array.isArray(automation))
 		automation = [automation];
 
-	const toasterId = $toast.loading("Waiting on the Avrae API...");
+	const toasterId = addToast("Waiting on the Avrae API...", { loading: true });
 	const { success, error } = await useFetch(`/api/character/${selectedCharacter.value.upstream}/attacks/add`, "POST", automation);
 
 	if (success) {
-		$toast.success(`Successfully imported ${data.value[activeAttackIndex.value].name} to ${selectedCharacter.value.name}`, { id: toasterId });
+		updateToast(toasterId, { text: `Successfully imported ${data.value[activeAttackIndex.value].name} to ${selectedCharacter.value.name}`, timeout: 2500 });
 		getUmami()?.track("Imported Attack to Avrae");
 	}
 	else {
 		addToast(error, { color: "error" });
-		;
 	}
 });
 
@@ -230,16 +215,14 @@ const updateCollection = async () => {
 		return;
 	const { success, data, error } = await useFetch<AutomationCollectionExtended>(`/api/automation-collection/${collection.value.id}/update`, "POST", toValue(settingOptions));
 	if (success) {
-		$toast.success("Updated collection!");
+		addToast("Updated collection!", { color: "success" });
 		collection.value = data;
 	}
 	else {
 		addToast(error, { color: "error" });
-		;
 	}
 };
 useHotkey("cmd+s", async () => await updateCollection(), { inputs: true })
-
 </script>
 
 <template>

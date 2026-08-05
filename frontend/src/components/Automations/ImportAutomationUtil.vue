@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import type { FeatureEntity, Id } from "~/shared";
 import { onMounted, ref } from "vue";
-import { $toast } from "@/utils/app/toast";
+import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 
+const { addToast } = useToast()
 const emit = defineEmits<{
 	(e: "loadFeature", feature: FeatureEntity, apiPath: AutomationTypes): void;
 }>();
@@ -55,13 +56,13 @@ const selectAndLoad = async (apiPath: AutomationTypes, name: string, _id: Id | n
 	const { success, data: iData, error } = await useFetch(`/api/${apiPath}/${encodeURIComponent(_id?.toString() ?? name)}`);
 	let feature: FeatureEntity | null = null;
 	if (!success) {
-		$toast.error(`Error: ${error}`);
+		addToast(error, { color: "error" });
 		return;
 	}
 	feature = iData as FeatureEntity | null;
 
 	if (!feature) {
-		$toast.error(`Error: Failed to import ${name}`);
+		addToast(`Failed to import ${name}. No feature data found.`, { color: "error" });
 		return;
 	}
 

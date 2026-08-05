@@ -13,14 +13,14 @@ import Markdown from "@/components/Global/Markdown.vue";
 import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { $loading } from "@/utils/app/loading";
-import { $toast } from "@/utils/app/toast";
+import { useToast } from "@/utils/app/toast";
 import { creatureTypes } from "@/utils/constants";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { defaultStatblock } from "~/shared";
 
 const route = useRoute();
-
+const { addToast } = useToast();
 const searchText = ref("");
 const debouncedSearch = refDebounced(searchText, 500);
 
@@ -36,6 +36,8 @@ const creatures = ref<CreatureWithStats[] | null>(null);
 const editors = ref<User[]>([]);
 const lastHoveredCreature = ref<Statblock | null>(null);
 const lastClickedCreature = ref<Statblock | null>(null);
+
+
 const hasPinnedBefore = ref(false);
 const bookmarked = ref(false);
 const isOwner = ref(false);
@@ -111,7 +113,7 @@ watch(lastClickedCreature, (): void => {
 	if (!hasPinnedBefore.value)
 		hasPinnedBefore.value = true;
 
-	$toast.info("Pinned creature to the view. Click unpin there to go back to hover behaviour.");
+	addToast("Pinned creature to the view. Click unpin there to go back to hover behaviour.");
 });
 
 watch(() => bestiary.value?.status, (newValue): void => {
@@ -177,7 +179,7 @@ async function exportHomebrewery() {
 
 		if (success) {
 			await navigator.clipboard.writeText(resultData.metadata);
-			$toast.info("Exported this bestiary markdown to your clipboard");
+			addToast("Exported this bestiary markdown to your clipboard");
 			void getUmami()?.track("Export bestiary to homebrewery");
 		}
 		else {
@@ -186,7 +188,7 @@ async function exportHomebrewery() {
 		}
 	}
 	catch (err) {
-		$toast.error(err as string);
+		addToast(err as string, { color: "error" });
 	}
 	finally {
 		loader.hide();
@@ -229,7 +231,7 @@ async function exportBestiary(asFile: boolean) {
 				2
 			)
 		);
-		$toast.info("Exported this bestiary to your clipboard.");
+		addToast("Exported this bestiary to your clipboard.");
 		void getUmami()?.track("Export bestiary to clipboard");
 	}
 }
@@ -256,7 +258,7 @@ async function getBestiary() {
 		}
 		else {
 			creatures.value = null;
-			$toast.error(creatureResult.error);
+			addToast(creatureResult.error || '', { color: "error" })
 		}
 	});
 	// Fetch editors
@@ -266,7 +268,7 @@ async function getBestiary() {
 			if (editorResult.success)
 				editors.value.push(editorResult.data as User);
 			else
-				$toast.error(editorResult.error);
+				addToast(editorResult.error || '', { color: "error" })
 		});
 	}
 	// Bookmark state
@@ -277,7 +279,7 @@ async function getBestiary() {
 			}
 			else {
 				bookmarked.value = false;
-				$toast.error(bookmarkResult.error);
+				addToast(bookmarkResult.error || '', { color: "error" })
 			}
 		});
 	}
@@ -294,11 +296,11 @@ async function toggleBookmark() {
 	if (success) {
 		bookmarked.value = data.state;
 		if (bookmarked.value) {
-			$toast.success("Successfully bookmarked this bestiary!");
+			addToast("Successfully bookmarked this bestiary!", { color: "success" });
 			void getUmami()?.track("Bookmark bestiary");
 		}
 		else {
-			$toast.success("Successfully unbookmarked this bestiary!");
+			addToast("Successfully unbookmarked this bestiary!", { color: "success" });
 			void getUmami()?.track("Unbookmark bestiary");
 		}
 	}
@@ -321,7 +323,7 @@ const copyCurrentBestiary = () => {
 		toAdd.push({ ...creature, bestiaryName: bestiary.value.name });
 
 	copiedCreatures.value = copiedCreatures.value.concat(toAdd);
-	$toast.success("Successfully copied current Bestiary");
+	addToast("Successfully copied current Bestiary");
 	void getUmami()?.track("Copy bestiary");
 };
 
@@ -423,7 +425,7 @@ const getDraggableKey = (item: any) => {
 							<CreatureListItem v-if="filterCreature(element)" :id="element.id" :data="element.stats"
 								:can-edit="false" @mouseover="lastHoveredCreature = element.stats"
 								@pin-creature="lastClickedCreature = element.stats"
-								@copy-creature="copiedCreatures.push({ ...element, bestiaryName: bestiary.name }); $toast.info('Copied Successfully!')"" />
+								@copy-creature="copiedCreatures.push({ ...element, bestiaryName: bestiary.name }); addToast('Copied Successfully!')"" />
 						</template>
 			</Draggable>
 		</div>

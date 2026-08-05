@@ -500,7 +500,7 @@ async function getBestiary() {
 		}
 		else {
 			creatures.value = null;
-			$toast.error(creatureResult.error);
+			addToast(creatureResult.error, { color: "error" });
 		}
 	});
 	// Fetch editors
@@ -542,7 +542,7 @@ async function updateBestiary() {
 	}
 	else {
 		addToast(error, { color: "error" });
-		;
+
 		if (error.includes("includes blocked words or phrases"))
 			void getUmami()?.track("Blocked words", { error });
 	}
@@ -557,11 +557,11 @@ async function toggleBookmark() {
 	if (success) {
 		bookmarked.value = data.state;
 		if (bookmarked.value) {
-			$toast.success("Successfully bookmarked this bestiary!");
+			addToast("Successfully bookmarked this bestiary!");
 			void getUmami()?.track("Bookmark bestiary");
 		}
 		else {
-			$toast.success("Successfully unbookmarked this bestiary!");
+			addToast("Successfully unbookmarked this bestiary!");
 			void getUmami()?.track("Unbookmark bestiary");
 		}
 	}
@@ -584,7 +584,7 @@ const copyCurrentBestiary = () => {
 		toAdd.push({ ...creature, bestiaryName: bestiary.value.name });
 
 	copiedCreatures.value = copiedCreatures.value.concat(toAdd);
-	$toast.success("Successfully copied current Bestiary");
+	addToast("Copied current Bestiary");
 	void getUmami()?.track("Copy bestiary");
 };
 

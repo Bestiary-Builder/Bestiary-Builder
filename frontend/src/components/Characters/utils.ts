@@ -1,8 +1,9 @@
 import type { AttackModel } from "~/shared";
 import { getUmami } from "@/utils/app/analytics";
-import { $toast } from "@/utils/app/toast";
+import { useToast } from "@/utils/app/toast";
 import { useFetch } from "@/utils/utils";
 
+const { addToast, updateToast } = useToast()
 export type AvraeCharacter = Record<string, unknown> & {
 	overrides: {
 		attacks: AttackModel[];
@@ -16,10 +17,10 @@ export type AvraeCharacter = Record<string, unknown> & {
 };
 
 export const getAvraeCharacters = async () => {
-	const toasterId = $toast.loading("Getting character data from Avrae...");
+	const toasterId = addToast("Getting character data from Avrae...", { loading: true });
 	const { success, data, error } = await useFetch<AvraeCharacter[]>("/api/character/list");
 	if (success && data) {
-		$toast.success("Loaded Avrae Characters", { id: toasterId });
+		updateToast(toasterId, { text: "Loaded Avrae Characters", loading: false, timeout: 2500, prependIcon: "mdi:check" });
 		void getUmami()?.track("Loaded Avrae Characters");
 		return data.sort((x, y) => {
 			return (x.active === y.active) ? 0 : x.active ? -1 : 1;
@@ -27,9 +28,9 @@ export const getAvraeCharacters = async () => {
 	}
 	else {
 		if (error === "invalid credentials")
-			$toast.error("No Avrae Token set.", { id: toasterId });
+			updateToast(toasterId, { text: "No Avrae Token Set", color: "error", loading: false, timeout: 2500 });
 		else
-			$toast.error(error, { id: toasterId });
+			updateToast(toasterId, { text: error, color: "error", loading: false, timeout: 2500 });
 		return null;
 	}
 };
@@ -39,11 +40,11 @@ export const getAvraeCharacterByUpstream = async (upstream: string) => {
 	if (characters) {
 		const char = characters.find(char => char.upstream === upstream);
 		if (!char) {
-			$toast.error(`Could not find your character with upstream ${upstream}.`);
+			addToast(`Could not find your character with upstream ${upstream}.`, { color: "error" });
 			return null;
 		}
 		return char;
 	}
-	$toast.error(`Could not find your characters.`);
+	addToast(`Could not find your characters.`, { color: "error" });
 	return null;
 };

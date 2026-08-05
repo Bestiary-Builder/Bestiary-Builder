@@ -4,8 +4,10 @@ import type { AttackInteraction, AttackModel, ButtonInteraction, EffectWithTarge
 import { Icon } from "@iconify/vue";
 import { computed, inject } from "vue";
 import { useRoute } from "vue-router";
-import { $toast } from "@/utils/app/toast";
+import { useToast } from "@/utils/app/toast";
 import { activation_type, defaultNodes, displayNames } from "./util";
+
+const { addToast } = useToast();
 
 const props = defineProps<{ context: string[]; name?: string }>();
 const $route = useRoute();
@@ -104,7 +106,7 @@ const addAndSelect = async (node: string, pasteCopied = false) => {
 			if (copiedEffect) {
 				const { isTargetContext } = computedContext.value;
 				if (!isTargetContext && ["error", "attack", "save", "damage", "temphp", "check"].includes(copiedEffect.value?.type || "error")) {
-					$toast.error(`Effect of type \`${copiedEffect.value?.type}\` cannot be placed outside a Target Effect.`);
+					addToast(`Effect of type \`${copiedEffect.value?.type}\` cannot be placed outside a Target Effect.`, { color: "warn" });
 					return;
 				}
 

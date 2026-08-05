@@ -5,12 +5,12 @@ import { useRoute } from "vue-router";
 import CopyCreature from "@/components/Bestiary/CopyCreature.vue";
 import ExportCreature from "@/components/Bestiary/ExportCreature.vue";
 import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
-import { $toast } from "@/utils/app/toast";
+import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 
 const $route = useRoute();
-
+const { addToast } = useToast()
 const data = ref<CreatureWithStats | null>(null);
 const bestiary = ref<BestiaryExtended | null>(null);
 const isOwner = ref(false);
@@ -29,11 +29,11 @@ onMounted(async () => {
 		}
 		else {
 			addToast(error, { color: "error" });
-			;
+
 		}
 	}
 	else {
-		$toast.error(`Error: ${error}`);
+		addToast(error, { color: "error" })
 	}
 });
 </script>

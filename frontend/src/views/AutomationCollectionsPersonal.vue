@@ -5,19 +5,21 @@ import { useRouter } from "vue-router";
 import Draggable from "vuedraggable";
 import CollectionTile from "@/components/Global/CollectionTile.vue";
 import { getUmami } from "@/utils/app/analytics";
-import { $toast } from "@/utils/app/toast";
+import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { useRules } from "vuetify/labs/rules";
 
 const $router = useRouter();
+const { addToast } = useToast()
+
 const automationCollections = ref<AutomationCollectionExtended[]>();
 const getMyCollections = async () => {
 	const { success, data, error } = await useFetch<AutomationCollectionExtended[]>(`/api/automation-collection/personal`);
 	if (success)
 		automationCollections.value = data;
 	else addToast(error, { color: "error" });
-	;
+
 	console.log(success, data, error);
 };
 
@@ -40,7 +42,7 @@ const createAutomationCollection = async () => {
 	const { success, data, error } = await useFetch<AutomationCollectionExtended>("/api/automation-collection/add", "POST", toValue(createOptions));
 
 	if (success) {
-		$toast.success("Created automation collection");
+		addToast("Created automation collection", { color: "success" });
 		void getUmami()?.track("Add automation collection");
 		showCreateModal.value = false;
 		resetCreateInput();
@@ -48,7 +50,7 @@ const createAutomationCollection = async () => {
 	}
 	else {
 		addToast(error, { color: "error" });
-		;
+
 		if (error.includes("includes blocked words or phrases"))
 			void getUmami()?.track("Blocked words", { error });
 	}
@@ -64,7 +66,7 @@ const deleteAutomationCollection = async (id: AutomationCollectionExtended["id"]
 	const { success, error } = await useFetch<AutomationCollectionExtended>(`/api/automation-collection/${id}/delete`, "POST");
 
 	if (success) {
-		$toast.success("Successfully deleted automation collection");
+		addToast("Deleted automation collection");
 		getUmami()?.track("Delete automation collection");
 		await getMyCollections();
 	}

@@ -8,7 +8,9 @@ import EffectAsRaw from "./Nodes/shared/EffectAsRaw.vue";
 import SectionHeader from "./Nodes/shared/SectionHeader.vue";
 import TreeRoot from "./TreeRoot.vue";
 import { useHotkey } from "vuetify";
-import { $toast } from "@/utils/app/toast.js";
+import { useToast } from "@/utils/app/toast";
+
+const { addToast } = useToast()
 
 const { name, noListAttack = false } = defineProps<{ name: string; noListAttack?: boolean }>();
 const currentEffect = ref<EffectWithTarget | AttackModel | ButtonInteraction | null>(null);
@@ -50,7 +52,7 @@ provide("hoveredEffectData", hoveredEffectData)
 useHotkey("cmd+c", () => {
 	if (hoveredEffectContext && hoveredEffectContext.value && hoveredEffectData && hoveredEffectData.value) {
 		copiedEffect.value = hoveredEffectData.value
-		$toast("Copied effect")
+		addToast("Copied effect")
 	} else if (Object.hasOwn(currentEffect.value || {}, "type")) {
 		// @ts-ignore
 		copiedEffect.value = currentEffect.value
@@ -64,7 +66,7 @@ useHotkey("cmd+x", () => {
 		if (!context) return
 		if (nodeList && nodeList.length > 0) {
 			copiedEffect.value = hoveredEffectData.value
-			$toast("Cut effect")
+			addToast("Cut effect")
 
 			const tree = nodeList
 			const indexToRemove = Number.parseInt(context[context.length - 1] || "0");
@@ -120,12 +122,12 @@ const pasteCopiedWithHotkey = async () => {
 		if (copiedEffect) {
 			const isTargetContext = context.includes("$target")
 			if (!isTargetContext && ["error", "attack", "save", "damage", "temphp", "check"].includes(copiedEffect.value?.type || "error")) {
-				$toast.error(`Effect of type \`${copiedEffect.value?.type}\` cannot be placed outside a Target Effect.`);
+				addToast(`Effect of type \`${copiedEffect.value?.type}\` cannot be placed outside a Target Effect.`, { color: "warn" });
 				return;
 			}
 
 			tree.push(JSON.parse(JSON.stringify(copiedEffect.value)));
-			$toast("Pasted effect")
+			addToast("Pasted effect")
 		}
 	}
 	catch (e) {

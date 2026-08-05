@@ -9,7 +9,7 @@ import ImportAutomationUtil
 import { getAvraeCharacterByUpstream } from "@/components/Characters/utils";
 import VisualEditor from "@/components/VisualEditor/VisualEditor.vue";
 import { getUmami } from "@/utils/app/analytics";
-import { $toast } from "@/utils/app/toast";
+import { useToast } from "@/utils/app/toast";
 import { useFetch } from "@/utils/utils";
 import { useHotkey } from "vuetify";
 
@@ -17,6 +17,7 @@ const character = ref<AvraeCharacter | null>(null);
 const AvraeToken = useLocalStorage("AvraeToken", "");
 const $route = useRoute();
 
+const { addToast, updateToast } = useToast()
 onMounted(async () => {
 	if (AvraeToken)
 		character.value = await getAvraeCharacterByUpstream($route.params.upstream as string);
@@ -30,19 +31,19 @@ const saveAttacks = async () => {
 		return;
 	const attacks = character.value.overrides.attacks;
 	if (!attacks) {
-		$toast.info("No attacks.");
+		addToast("No attacks.");
 		return;
 	}
 	isSavingAttacks.value = true
-	const toasterId = $toast.loading("Waiting on the Avrae API...");
+	const toasterId = addToast("Waiting on the Avrae API...", { loading: true });
 	const { success, error } = await useFetch(`/api/character/${character.value.upstream}/attacks/set`, "POST", attacks);
 
 	if (success) {
-		$toast.success(`Successfully updated your attacks`, { id: toasterId });
+		updateToast(toasterId, { text: `Successfully updated your attacks`, loading: false, prependIcon: 'mdi-check', timeout: 2500 });
 		void getUmami()?.track("Imported Attack to Avrae");
 	}
 	else {
-		$toast.error(error, { id: toasterId });
+		updateToast(toasterId, { text: error, loading: false, timeout: 2500, prependIcon: "mdi:alert-circle", color: "error" });
 	}
 
 	isSavingAttacks.value = false
@@ -64,11 +65,11 @@ const loadFeature = async (feature: FeatureEntity) => {
 		character.value.overrides.attacks = [];
 
 	if (feature.automation === null) {
-		$toast.error("Cannot import a feature with empty automation.");
+		addToast("Automation has no feature", { color: "error" })
 		return;
 	}
 	if (Array.isArray(feature.automation)) {
-		$toast.info("Features with multiple automations will import as seperate automations");
+		addToast("Features with multiple automations will import as seperate automations");
 		for (const auto of feature.automation) {
 			character.value.overrides.attacks.push(auto);
 		}
@@ -78,7 +79,7 @@ const loadFeature = async (feature: FeatureEntity) => {
 	}
 
 	activeAttackIndex.value = character.value.overrides.attacks.length - 1;
-	$toast.success(`Successfully loaded ${feature.name}!`);
+	addToast(`Successfully loaded ${feature.name}!`, { color: "success" });
 };
 
 provide("setActionName", false);
