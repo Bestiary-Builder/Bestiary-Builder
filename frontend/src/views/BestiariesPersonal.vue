@@ -158,11 +158,3 @@ const getDraggableKey = (item: any) => {
 		</div>
 	</div>
 </template>
-
-<style scoped>
-.modal-desc {
-	display: flex;
-	flex-direction: column;
-	gap: 0.5rem;
-}
-</style>

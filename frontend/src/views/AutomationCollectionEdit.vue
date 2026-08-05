@@ -4,10 +4,7 @@ import { onMounted, onUnmounted, reactive, ref, toValue, watch } from "vue";
 import { onBeforeRouteLeave, useRoute } from "vue-router";
 import Draggable from "vuedraggable";
 import YAML from "yaml";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import Markdown from "@/components/Global/Markdown.vue";
-import Modal from "@/components/Global/Modal.vue";
-import Editor from "@/components/StatblockEditor/Editor.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { $loading } from "@/utils/app/loading";
 import { $toast } from "@/utils/app/toast";
@@ -186,7 +183,6 @@ const resetCreateInput = () => {
 };
 
 const cancelCreate = () => {
-	showCreateModal.value = false;
 	resetCreateInput();
 };
 
@@ -201,7 +197,6 @@ const saveOrder = async () => {
 
 const personal = ref(true);
 
-const showSettingsModal = ref(false);
 const settingOptions = ref({
 	name: "",
 	description: "",
@@ -251,8 +246,8 @@ useHotkey("cmd+s", async () => await updateCollection(), { inputs: true })
 			isCurrent: true
 		}
 	]">
-		<v-icon-btn text="Add attack" @click="showCreateModal = true" icon="mdi:plus" size="24" />
-		<v-icon-btn text="Settings" @click="showSettingsModal = true" icon="mdi:cog" size="24" />
+		<!-- <v-icon-btn text="Add attack" @click="showCreateModal = true" icon="mdi:plus" size="24" />
+		<v-icon-btn text="Settings" @click="showSettingsModal = true" icon="mdi:cog" size="24" /> -->
 		<v-icon-btn text="Import automation" @click="showImportModal = true" icon="mdi:import" size="24" />
 		<v-icon-btn text="Export automation" @click="exportMyAutomations()" icon="mdi:export" size="24" />
 	</Breadcrumbs>
@@ -284,82 +279,6 @@ useHotkey("cmd+s", async () => await updateCollection(), { inputs: true })
 			</template>
 		</Draggable>
 	</div>
-
-	<Modal :show="showImportModal" @close="showImportModal = false">
-		<template #header>
-			Import Automation
-		</template>
-		<template #body>
-			<LabelledComponent title="List of automation" for="listInput">
-				<p>Insert a list of automation in JSON/YAML format.</p>
-				<input id="listInput" v-model="importedListOfAutomation" type="text" placeholder="JSON">
-			</LabelledComponent>
-			<hr>
-		</template>
-		<template #footer>
-			<div class="two-wide">
-				<button class="btn confirm" @click="importAutomations">
-					Import
-				</button>
-				<button class="btn" @click="showImportModal = false; importedListOfAutomation = ''">
-					Cancel
-				</button>
-			</div>
-		</template>
-	</Modal>
-
-	<Modal :show="showCreateModal" @close="showCreateModal = false">
-		<template #header>
-			Create new attack
-		</template>
-		<template #body>
-			<div class="modal-desc">
-				<LabelledComponent title="Name">
-					<input v-model="createOptions.name" type="text" :maxlength="store.limits?.nameLength"
-						:minlength="store.limits?.nameMin">
-				</LabelledComponent>
-				<LabelledComponent title="Description">
-					<input v-model="createOptions.description" type="text" :maxlength="store.limits?.descriptionLength">
-				</LabelledComponent>
-			</div>
-		</template>
-		<template #footer>
-			<button class="btn confirm" @click="addAttack(createOptions.name, null, true, createOptions.description)">
-				Create
-			</button>
-			<button class="btn" @click="cancelCreate">
-				Cancel
-			</button>
-		</template>
-	</Modal>
-
-	<Modal v-if="collection" :show="showSettingsModal" @close="showSettingsModal = false">
-		<template #header>
-			Collection settings
-		</template>
-		<template #body>
-			<div class="modal-desc">
-				<LabelledComponent title="Name">
-					<input v-model="settingOptions.name" type="text" :maxlength="store.limits?.nameLength"
-						:minlength="store.limits?.nameMin">
-				</LabelledComponent>
-				<LabelledComponent title="Description">
-					<Editor v-model="settingOptions.description" />
-				</LabelledComponent>
-				<LabelledComponent title="Tags">
-					<v-select v-model="settingOptions.tags" multiple :options="store.automationTags" />
-				</LabelledComponent>
-			</div>
-		</template>
-		<template #footer>
-			<button class="btn confirm" @click="updateCollection">
-				Update
-			</button>
-			<button class="btn" @click="showSettingsModal = false">
-				Cancel
-			</button>
-		</template>
-	</Modal>
 </template>
 
 <style scoped lang="less">

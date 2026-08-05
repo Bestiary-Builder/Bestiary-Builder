@@ -146,11 +146,3 @@ const rules = useRules()
 		</Draggable>
 	</div>
 </template>
-
-<style lang="less" scoped>
-.modal-desc {
-	display: flex;
-	flex-direction: column;
-	gap: 0.5rem;
-}
-</style>

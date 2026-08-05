@@ -12,7 +12,6 @@ import UserBanner from "@/components/Bestiary/UserBanner.vue";
 import CRInput from "@/components/FormInputs/CRInput.vue";
 import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import Markdown from "@/components/Global/Markdown.vue";
-import Modal from "@/components/Global/Modal.vue";
 import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { $loading } from "@/utils/app/loading";
@@ -59,7 +58,6 @@ const searchOptions = ref({
 
 const sortMode = useLocalStorage("sortModeForBestiaries", "Alphabetically");
 const isExpanded = ref(false);
-const showImportModal = ref(false);
 const srdCreatures = ref<string[]>([]);
 
 const sortCreatures = () => {
@@ -304,8 +302,6 @@ async function importBestiaryFromCritterDB() {
 	loader.hide();
 	$toast.success("Importing has finished!");
 	void getUmami()?.track("Import bestiary from CritterDB");
-	if (cSuccess && !creatureData.error)
-		showImportModal.value = false;
 }
 
 async function importCreaturesFromBestiaryBuilder() {
@@ -348,8 +344,6 @@ async function importCreaturesFromBestiaryBuilder() {
 
 	await getBestiary();
 	loader.hide();
-	if (success && !data.error)
-		showImportModal.value = false;
 }
 
 async function createCreature(stats = defaultStatblock, shouldHaveLoader = true, openPage = true) {
@@ -896,54 +890,6 @@ const getDraggableKey = (item: any) => {
 				</div>
 			</div>
 		</div>
-		<Modal v-if="bestiary && isOwner" :show="showImportModal" @close="showImportModal = false">
-			<template #header>
-				Import Creatures
-			</template>
-			<template #body>
-				<LabelledComponent title="CritterDB bestiary link" for="critterlink">
-					<p>Insert a link to a critterDB bestiary to import all its creatures.</p>
-					<p>Make sure the bestiary is public or has link sharing enabled.</p>
-					<div class="flow-horizontally">
-						<input id="critterlink" v-model="critterDbId" type="text" placeholder="CritterDB bestiary link">
-						<button class="btn confirm" @click.prevent="importBestiaryFromCritterDB">
-							Import
-						</button>
-					</div>
-				</LabelledComponent>
-
-				<hr>
-
-				<LabelledComponent title="Bestiary Builder JSON" for="bestiaryjson">
-					<p>
-						Insert the JSON as text gotten from clicking export on another bestiary within Bestiary Builder.
-					</p>
-					<div class="flow-horizontally">
-						<input id="bestiaryjson" v-model="bestiaryBuilderJson" type="text"
-							placeholder="Bestiary builder JSON">
-						<button class="btn confirm" @click.prevent="importCreaturesFromBestiaryBuilder">
-							Import
-						</button>
-					</div>
-				</LabelledComponent>
-
-				<hr>
-
-				<div v-if="JSON.stringify(notices) !== '{}'">
-					<p class="warning">
-						<b>Please note the following for this import:</b>
-					</p>
-					<div v-for="(notice, creature) in notices" :key="creature">
-						<h3>
-							{{ creature }}
-						</h3>
-						<p>
-							{{ notice }}
-						</p>
-					</div>
-				</div>
-			</template>
-		</Modal>
 	</div>
 </template>
 

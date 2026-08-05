@@ -9,8 +9,6 @@ import "vue-sonner/style.css";
 <template>
 	<v-app>
 		<Toaster position="bottom-left" theme="dark" rich-colors :expand="true" />
-
-		<div id="modal" />
 		<NavHeader />
 		<main>
 			<RouterView />

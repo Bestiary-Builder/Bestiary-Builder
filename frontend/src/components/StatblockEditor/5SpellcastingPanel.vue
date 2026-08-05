@@ -4,12 +4,9 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useRules } from "vuetify/labs/rules";
 import { $toast } from "@/utils/app/toast";
 import { classes, classLevels, stats } from "@/utils/constants";
-import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { defaultStatblock, getSpellSlots } from "~/shared";
 import LabelledComponent from "../FormInputs/LabelledComponent.vue";
-import LabelledNumberInput from "../FormInputs/LabelledNumberInput.vue";
-import Modal from "../Global/Modal.vue";
 import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
 
 const { data, rawInfo } = defineProps<{ data: Statblock; rawInfo: CreatureWithStats | null }>();
@@ -40,7 +37,6 @@ watch(selectedSpell, () => {
 		selectedSpell.value[x] = null;
 }, { deep: true });
 
-const showSpellModal = ref(false);
 
 const spellLevelList = computed((): number[] => {
 	const sClass = data.spellcasting.casterSpells.castingClass;
@@ -111,10 +107,6 @@ const addNewDaily = () => {
 		data.spellcasting.innateSpells.spellList[newDailyAmount.value] = [];
 	newDailyAmount.value = null;
 };
-
-const showSpellSlotModal = ref(false);
-
-const rules = useRules();
 </script>
 
 <template>
@@ -147,9 +139,7 @@ const rules = useRules();
 						<div :class="{ 'select-with-delete': parseInt(times.toString()) > 3 }">
 							<v-select v-model="data.spellcasting.innateSpells.spellList[times]"
 								:reduce="(sp: any) => ({ spell: sp.spell ?? sp, comment: sp.comment ?? '' })"
-								width="100%" label="spell" :items="spellListFlattened" multiple
-								:deselect-from-dropdown="true" :close-on-select="false"
-								:input-id="`innateSpellTimes${times}`" :taggable="true" :push-tags="true" />
+								:items="spellListFlattened" multiple chips closable-chips />
 							<v-icon v-if="parseInt(times.toString()) > 3" v-tooltip="'Delete this daily amount'"
 								icon="mdi:delete" class="delete-button button-icon"
 								@click="delete data.spellcasting.innateSpells.spellList[times]" />
@@ -158,34 +148,72 @@ const rules = useRules();
 				</template>
 			</TransitionGroup>
 		</div>
+		<div class="grid-two">
+			<v-dialog max-width="750">
+				<template #activator="{ props: activatorProps }">
+					<v-btn v-bind="activatorProps" class="mb-4">
+						Customize
+					</v-btn>
+				</template>
 
-		<div class="editor-field__container three-wide">
-			<LabelledComponent title="Add daily amount" for="innateSpellDailyAmount">
-				<LabelledNumberInput v-model="newDailyAmount" title="" :min="4" :step="1" :is-clearable="true"
-					label-id="innateSpellDailyAmount" />
-				<button class="btn" @click="addNewDaily()">
-					Add
-				</button>
-			</LabelledComponent>
-			<LabelledComponent title="Edit specific spells" for="editspells">
-				<button id="editspells" class="btn" @click="showSpellModal = true">
-					Edit cast level/add comment
-				</button>
-			</LabelledComponent>
-			<LabelledComponent title="Description override" for="innateDescription">
-				<textarea id="innateDescription" v-model="data.spellcasting.innateSpells.customDescription" rows="2"
-					:maxlength="store.limits?.descriptionLength" />
-			</LabelledComponent>
-			<div>
-				<v-number-input v-model="data.spellcasting.innateSpells.spellDcOverride" label="DC Override"
-					clearable />
-			</div>
-			<div>
-				<v-number-input v-model="data.spellcasting.innateSpells.spellBonusOverride"
-					label="Attack Bonus Override" clearable />
-			</div>
+				<template #default="{ isActive }">
+					<v-card title="Customize daily spellcasting defaults"
+						subtitle="The options here allow you to customize the defaults inferred from the statblock and default rules">
+						<v-sheet class="pa-4">
+							<v-container class="pa-0">
+								<v-row>
+									<v-col>
+										<v-number-input v-model="data.spellcasting.innateSpells.spellDcOverride"
+											label="DC Override" clearable />
+									</v-col>
+									<v-col>
+										<v-number-input v-model="data.spellcasting.innateSpells.spellBonusOverride"
+											label="Attack Bonus Override" clearable />
+									</v-col>
+								</v-row>
+							</v-container>
+							<div>
+								<v-textarea v-model="data.spellcasting.innateSpells.customDescription"
+									label="Description override" />
+							</div>
+							<v-divider />
+							<v-card-text> Add a new daily amount of casts here. </v-card-text>
+							<v-container class="pa-0">
+								<v-row>
+									<v-col>
+										<v-number-input label="Add new daily amount" :min="4" clearable
+											v-model="newDailyAmount" />
+									</v-col>
+									<v-col>
+										<v-btn @click="addNewDaily()" class="w-100" size="large">
+											Add
+										</v-btn>
+									</v-col>
+								</v-row>
+							</v-container>
+							<v-spacer />
+							<v-divider />
+							<v-container class="pa-0">
+								<v-card-text> Add a (comment) to each spell here. </v-card-text>
+								<v-row>
+									<template v-for="times, idx in data.spellcasting.innateSpells.spellList" :key="idx">
+										<v-col v-for="(spell, index) of times" cols="4" :key="index">
+											<v-text-field v-model="spell.comment" :label="spell.spell" />
+										</v-col>
+									</template>
+								</v-row>
+							</v-container>
+							<v-spacer />
+						</v-sheet>
+						<v-card-actions>
+							<v-btn @click="isActive.value = false">
+								Close
+							</v-btn>
+						</v-card-actions>
+					</v-card>
+				</template>
+			</v-dialog>
 		</div>
-
 		<SectionHeader title="Class Spellcasting" />
 		<div class="editor-field__container two-wide">
 			<div>
@@ -211,10 +239,10 @@ const rules = useRules();
 			</v-row>
 		</v-container>
 		<div class="grid-two">
-			<v-dialog max-width="950">
+			<v-dialog max-width="750">
 				<template #activator="{ props: activatorProps }">
 					<v-btn v-bind="activatorProps">
-						Customize defaults
+						Customize
 					</v-btn>
 				</template>
 
@@ -238,13 +266,19 @@ const rules = useRules();
 								<v-textarea v-model="data.spellcasting.casterSpells.customDescription"
 									label="Description override" />
 							</div>
+							<v-spacer />
+							<v-divider />
+
 							<v-container v-if="data.spellcasting.casterSpells.spellSlotList" class="pa-0">
-								<v-row gap="16">
+								<v-card-text> Override the number of spell slots granted at each level
+									here.</v-card-text>
+								<v-row>
 									<v-col v-for="x in 9" :key="x" cols="4">
 										<v-number-input v-model="data.spellcasting.casterSpells.spellSlotList[x]"
-											:label="`Level ${x} slots number`" :min="0" />
+											:label="`Level ${x}`" :min="0" size="small" variant="solo" clearable />
 									</v-col>
 								</v-row>
+
 							</v-container>
 						</v-sheet>
 						<v-card-actions>
@@ -257,44 +291,6 @@ const rules = useRules();
 			</v-dialog>
 		</div>
 	</div>
-
-	<Modal :show="showSpellModal" @close="showSpellModal = false">
-		<template #header>
-			Edit Innate Spellcasting list
-		</template>
-		<template #body>
-			<p>You can use this to add text to specific spells such as "self only" or "at 5th level".</p>
-			<div class="two-wide">
-				<template v-for="times in data.spellcasting.innateSpells.spellList" :key="times">
-					<template v-if="times.length > 0">
-						<LabelledComponent v-for="(spell, index) in times" :key="index" :title="spell.spell"
-							:for="`editSpell${spell.spell}`">
-							<input :id="`editSpell${spell.spell}`" v-model="spell.comment" type="text"
-								placeholder="comment">
-						</LabelledComponent>
-					</template>
-				</template>
-			</div>
-		</template>
-	</Modal>
-
-	<Modal :show="showSpellSlotModal" @close="showSpellSlotModal = false">
-		<template #header>
-			Edit Spell Slot Amount
-		</template>
-		<template #body>
-			<p>
-				You can use this to edit how many spell slots a creature has. <br> Note that changing a creature's
-				spellcasting level or class will reset this.
-			</p>
-			<div v-if="data.spellcasting.casterSpells.spellSlotList" class="two-wide">
-				<template v-for="x in 9" :key="x">
-					<LabelledNumberInput v-model="data.spellcasting.casterSpells.spellSlotList[x]" :title="`Level ${x}`"
-						:min="0" :max="9" :step="1" :label-id="`editSpellSlot${x}`" />
-				</template>
-			</div>
-		</template>
-	</Modal>
 </template>
 
 <style lang="less">
