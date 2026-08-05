@@ -1,4 +1,5 @@
 @import "https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700";
+
 :root {
 	--color-surface-0: #1a1919;
 	--color-surface-1: #3b3736;
@@ -111,6 +112,7 @@ body {
 	::-webkit-scrollbar-thumb:hover {
 		box-shadow: inset 0 0 0 10px var(--background-color-icon--hover);
 	}
+
 	::-webkit-scrollbar-thumb:active {
 		box-shadow: inset 0 0 0 10px var(--background-color-icon--active);
 	}
@@ -162,6 +164,7 @@ body {
 b {
 	font-weight: bold;
 }
+
 /* A elements that don't have a class get default styles */
 a:not([class]) {
 	text-decoration-skip-ink: auto;
@@ -202,4 +205,11 @@ select {
 	grid-template-columns: 1fr 1fr;
 	gap: 1rem;
 	display: grid;
+}
+
+
+@media screen and (max-width: 700px) {
+	.grid-two {
+		grid-template-columns: 1fr;
+	}
 }

@@ -324,94 +324,80 @@ const importCreature = async (creature: Statblock) => {
 			<ExportCreature :data="data" />
 		</Breadcrumbs>
 		<div class="content more-wide" :class="{ 'is-statblock-only': !shouldShowEditor }">
-			<v-sheet elevation="2" color="surface-1">
-				<v-tabs v-model="tab" color="primary" grow style="background-color: rgba(33,33,33,1)">
-					<v-tab :value="1">
-						Description
-					</v-tab>
-					<v-tab :value="2">
-						Core
-					</v-tab>
-					<v-tab :value="3">
-						Stats
-					</v-tab>
-					<v-tab :value="4">
-						Defenses
-					</v-tab>
-					<v-tab :value="5">
-						Features
-					</v-tab>
-					<v-tab :value="6">
-						Spells
-					</v-tab>
-				</v-tabs>
-				<v-divider />
-				<v-sheet color="surface-1">
-					<v-tabs-window v-model="tab" class="editor-content">
-						<v-tabs-window-item :value="1">
-							<v-sheet color="surface-1" class="pa-4">
-								<DescriptionPanel :data="data" />
+			<v-container class="pa-0">
+				<v-row>
+					<v-col :cols="store.isMobile ? 12 : 6">
+						<v-sheet elevation="2" color="surface-1">
+							<v-tabs v-model="tab" color="primary" style="background-color: rgba(33,33,33,1)"
+								:grow="!store.isMobile" :show-arrows="store.isMobile">
+								<v-tab :value="1">
+									Description
+								</v-tab>
+								<v-tab :value="2">
+									Core
+								</v-tab>
+								<v-tab :value="3">
+									Stats
+								</v-tab>
+								<v-tab :value="4">
+									Defenses
+								</v-tab>
+								<v-tab :value="5">
+									Features
+								</v-tab>
+								<v-tab :value="6">
+									Spells
+								</v-tab>
+							</v-tabs>
+							<v-divider />
+							<v-sheet color="surface-1">
+								<v-tabs-window v-model="tab" class="editor-content">
+									<v-tabs-window-item :value="1">
+										<v-sheet color="surface-1" class="pa-4">
+											<DescriptionPanel :data="data" />
+										</v-sheet>
+									</v-tabs-window-item>
+									<v-tabs-window-item :value="2">
+										<v-sheet color="surface-1" class="pa-4">
+											<CorePanel :data="data" />
+										</v-sheet>
+									</v-tabs-window-item>
+									<v-tabs-window-item :value="3">
+										<v-sheet color="surface-1" class="pa-4">
+											<StatsPanel :data="data" />
+										</v-sheet color="surface-1">
+									</v-tabs-window-item>
+									<v-tabs-window-item :value="4">
+										<v-sheet color="surface-1" class="pa-4">
+											<DefensesPanel :data="data" />
+										</v-sheet>
+									</v-tabs-window-item>
+									<v-tabs-window-item :value="5">
+										<v-sheet color="surface-1" class="pa-4">
+											<FeaturesPanel :data="data" :raw-info="rawInfo" />
+										</v-sheet>
+									</v-tabs-window-item>
+									<v-tabs-window-item :value="6">
+										<v-sheet color="surface-1" class="pa-4">
+											<SpellcastingPanel :data="data" :raw-info="rawInfo" />
+										</v-sheet>
+									</v-tabs-window-item>
+								</v-tabs-window>
 							</v-sheet>
-						</v-tabs-window-item>
-						<v-tabs-window-item :value="2">
-							<v-sheet color="surface-1" class="pa-4">
-								<CorePanel :data="data" />
-							</v-sheet>
-						</v-tabs-window-item>
-						<v-tabs-window-item :value="3">
-							<v-sheet color="surface-1" class="pa-4">
-								<StatsPanel :data="data" />
-							</v-sheet color="surface-1">
-						</v-tabs-window-item>
-						<v-tabs-window-item :value="4">
-							<v-sheet color="surface-1" class="pa-4">
-								<DefensesPanel :data="data" />
-							</v-sheet>
-						</v-tabs-window-item>
-						<v-tabs-window-item :value="5">
-							<v-sheet color="surface-1" class="pa-4">
-								<FeaturesPanel :data="data" :raw-info="rawInfo" />
-							</v-sheet>
-						</v-tabs-window-item>
-						<v-tabs-window-item :value="6">
-							<v-sheet color="surface-1" class="pa-4">
-								<SpellcastingPanel :data="data" :raw-info="rawInfo" />
-							</v-sheet>
-						</v-tabs-window-item>
-					</v-tabs-window>
-				</v-sheet>
-			</v-sheet>
-			<div class="content-container__inner">
-				<v-skeleton-loader type="heading, divider, text, text, sentences, heading, text"
-					v-if="rawInfo === null" />
-				<StatblockRenderer v-else id="statblock" :data="data" />
-			</div>
+						</v-sheet>
+					</v-col>
+
+					<v-col :cols="store.isMobile ? 12 : 6">
+						<v-skeleton-loader type="heading, divider, text, text, sentences, heading, text"
+							v-if="rawInfo === null" />
+						<StatblockRenderer v-else id="statblock" :data="data" />
+					</v-col>
+				</v-row>
+			</v-container>
 		</div>
 	</div>
 </template>
-
-<style scoped lang="less">
-.content {
-	display: grid;
-	gap: 2rem;
-	grid-template-columns: 1fr 1fr;
-}
-
-@media screen and (max-width: 1200px) {
-	.content {
-		grid-template-columns: 1fr;
-	}
-}
-</style>
-
 <style lang="less">
-.table-footer {
-	.v-select .vs__dropdown-toggle {
-		border-width: 0;
-		color: darkgrey;
-	}
-}
-
 @import url("@/assets/styles/mixins.less");
 @import url("@/components/StatblockEditor/styles/statblock-editor.less");
 </style>
