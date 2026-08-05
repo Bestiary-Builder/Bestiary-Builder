@@ -34,7 +34,8 @@ const loadImportedAutomation = async (apiPath: string, saveTo: keyof LoadedAutom
 	}
 	else {
 		loadedAutomation.value[saveTo] = [];
-		$toast.error(error);
+		addToast(error, { color: "error" });
+		;
 	}
 };
 

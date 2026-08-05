@@ -7,13 +7,13 @@ import { useRules } from "vuetify/labs/rules";
 import CollectionTile from "@/components/Global/CollectionTile.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { $loading } from "@/utils/app/loading";
-import { $toast } from "@/utils/app/toast";
+import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 
 const rules = useRules();
-
 const router = useRouter();
+const { addToast } = useToast()
 
 onMounted(async () => {
 	const loader = $loading.show();
@@ -31,7 +31,7 @@ const getBestiaries = async () => {
 	}
 	else {
 		bestiaries.value = [];
-		$toast.error(error);
+		addToast(error);
 	}
 };
 
@@ -55,12 +55,12 @@ const createBestiary = async () => {
 	// Send data to server
 	const { success, data, error } = await useFetch<BestiaryExtended>("/api/bestiary/add", "POST", toValue(createOptions));
 	if (success) {
-		$toast.success("Created bestiary");
+		addToast("Created bestiary");
 		void getUmami()?.track("Add bestiary");
 		await router.push(`/bestiary/edit/${data.id.toString()}`);
 	}
 	else {
-		$toast.error(error);
+		addToast(error);
 	}
 };
 
@@ -70,11 +70,11 @@ const deleteBestiary = async (id: BestiaryExtended["id"]) => {
 	const loader = $loading.show();
 	const { success, error } = await useFetch(`/api/bestiary/${id}/delete`);
 	if (success) {
-		$toast.success("Deleted bestiary succesfully");
+		addToast("Deleted bestiary succesfully", { color: "success" });
 		getUmami()?.track("Delete bestiary");
 	}
 	else {
-		$toast.error(error);
+		addToast(error);
 	}
 	loader.hide();
 	await getBestiaries();

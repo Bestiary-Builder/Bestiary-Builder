@@ -63,7 +63,8 @@ const loadRawInfo = async () => {
 			await $router.push(`/creature/view/${rawInfo.value?.id}`);
 	}
 	else {
-		$toast.error(error);
+		addToast(error, { color: "error" });
+		;
 	}
 };
 
@@ -219,7 +220,8 @@ const importCritterDB = async () => {
 
 	const { success, data: cData, error } = await useFetch(`/api/critterdbcreature/${link}`);
 	if (!success) {
-		$toast.error(error);
+		addToast(error, { color: "error" });
+		;
 		return;
 	}
 

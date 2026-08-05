@@ -28,7 +28,8 @@ onMounted(async () => {
 			isEditor.value = (bestiary.value?.editors ?? []).map(e => e.userId).includes(store.user?.id ?? "");
 		}
 		else {
-			$toast.error(error);
+			addToast(error, { color: "error" });
+			;
 		}
 	}
 	else {

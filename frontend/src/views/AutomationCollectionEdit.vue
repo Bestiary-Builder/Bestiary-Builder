@@ -26,7 +26,8 @@ onMounted(async () => {
 		setSettingInputs();
 	}
 	else {
-		$toast.error(error);
+		addToast(error, { color: "error" });
+		;
 	}
 
 	await getAutomations();
@@ -52,7 +53,8 @@ const addAttack = async (name: string, automation: null | AttackModel | AttackMo
 		getUmami()?.track("Add automation");
 	}
 	else {
-		$toast.error(error);
+		addToast(error, { color: "error" });
+		;
 		if (error.includes("includes blocked words or phrases"))
 			void getUmami()?.track("Blocked words", { error });
 	}
@@ -69,7 +71,10 @@ const deleteAutomation = async () => {
 		await getAutomations();
 		activeAttackIndex.value = -1;
 	}
-	else { $toast.error(error); }
+	else {
+		addToast(error, { color: "error" });
+		;
+	}
 	loader.hide();
 };
 
@@ -79,7 +84,8 @@ const getAutomations = async () => {
 	const { success, data: rData, error } = await useFetch<AutomationWithType[]>(`/api/automation-collection/${collection.value.id}/automations`);
 	if (success)
 		data.value = rData;
-	else $toast.error(error);
+	else addToast(error, { color: "error" });
+	;
 	initialData = JSON.stringify(data.value);
 };
 
@@ -140,7 +146,8 @@ const getAvraeCharacters = async () => {
 		characters.value = data as any[];
 	}
 	else {
-		$toast.error(error);
+		addToast(error, { color: "error" });
+		;
 	}
 };
 
@@ -167,7 +174,8 @@ watch(selectedCharacter, async () => {
 		getUmami()?.track("Imported Attack to Avrae");
 	}
 	else {
-		$toast.error(error);
+		addToast(error, { color: "error" });
+		;
 	}
 });
 
@@ -226,7 +234,8 @@ const updateCollection = async () => {
 		collection.value = data;
 	}
 	else {
-		$toast.error(error);
+		addToast(error, { color: "error" });
+		;
 	}
 };
 useHotkey("cmd+s", async () => await updateCollection(), { inputs: true })

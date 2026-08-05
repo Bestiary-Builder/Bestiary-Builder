@@ -65,7 +65,8 @@ const loadRawInfo = async () => {
 			await $router.push(`/creature/view/${rawInfo.value?.id}`);
 	}
 	else {
-		$toast.error(error);
+		addToast(error, { color: "error" });
+		;
 	}
 };
 
@@ -119,7 +120,8 @@ async function getBestiary() {
 	const { success, data, error } = await useFetch<BestiaryExtended>(`/api/bestiary/${rawInfo.value?.bestiaryId}`);
 	if (!success) {
 		bestiary.value = null;
-		$toast.error(error);
+		addToast(error, { color: "error" });
+		;
 		return;
 	}
 	bestiary.value = data;

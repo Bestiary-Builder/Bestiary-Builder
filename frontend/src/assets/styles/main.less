@@ -1,5 +1,6 @@
 @import "./base.css";
 @import "./mixins.less";
+
 body {
 	font-family: var(--font-family-base);
 	color: var(--color-base);
@@ -26,6 +27,7 @@ h6 {
 	color: var(--color-base--emphasized);
 	font-weight: 100;
 }
+
 orangered h2 {
 	font-weight: 300;
 }
@@ -33,9 +35,11 @@ orangered h2 {
 hr {
 	border-color: currentColor;
 }
+
 a {
 	color: rgb(205, 205, 205);
 	text-decoration: underline 0.1em rgba(0, 0, 0, 0);
+
 	&:hover {
 		text-decoration-color: color-mix(in srgb, currentColor, rgba(0, 0, 0, 0.5));
 	}
@@ -52,6 +56,7 @@ a {
 	appearance: none;
 	transition: background-color 0.3s ease;
 	cursor: pointer;
+
 	&:hover {
 		background-color: #272727;
 	}
@@ -67,6 +72,7 @@ a {
 		color: black;
 		font-weight: 600;
 	}
+
 	&.danger-hover:hover {
 		background-color: var(--color-destructive);
 		color: black;
@@ -102,6 +108,7 @@ select {
 	padding: 2rem 10vw;
 	min-height: 100vh;
 	margin-top: calc(var(--breadcrumbs-height) + var(--navbar-height) + 1.5rem);
+
 	& .markdown {
 		:not(.stat-block) h2 {
 			text-align: left;
@@ -128,11 +135,13 @@ select {
 		}
 	}
 }
+
 @media screen and (max-width: 1080px) {
 	.content {
 		padding: 1rem 2vw;
 	}
 }
+
 @media screen and (min-width: 1081px) {
 	.content.less-wide {
 		padding: 2rem 25vw;
@@ -159,13 +168,16 @@ b.indent {
 	font-weight: bold;
 	text-decoration: unset;
 	transition: background-color 300ms ease;
+
 	svg {
 		color: white !important;
 		translate: 0 3px;
 	}
+
 	span {
 		margin-left: 0.6rem;
 	}
+
 	&:hover {
 		background-color: #ed2139;
 	}
@@ -192,12 +204,12 @@ p:has(img[src="/Beholder.webp"]) {
 		width: 50%;
 	}
 
-	+ p {
+	+p {
 		text-align: center;
 	}
 }
 
-blockquote:has(p img[src="/Beholder.webp"]) ~ p {
+blockquote:has(p img[src="/Beholder.webp"])~p {
 	text-align: center;
 	display: block;
 	margin: auto;
@@ -223,6 +235,7 @@ blockquote:has(p img[src="/Beholder.webp"]) ~ p {
 		scale: 1.1;
 		translate: 0 -2px;
 	}
+
 	&:hover {
 		color: var(--color-surface-0);
 	}
@@ -238,7 +251,8 @@ blockquote:has(p img[src="/Beholder.webp"]) ~ p {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 	grid-gap: 1rem;
-	& > a {
+
+	&>a {
 		text-decoration: none;
 	}
 }
@@ -246,4 +260,9 @@ blockquote:has(p img[src="/Beholder.webp"]) ~ p {
 .v-tooltip .v-overlay__content {
 	background-color: #000 !important;
 	color: #fff !important;
+}
+
+
+.v-snackbar__wrapper {
+	font-family: Roboto;
 }

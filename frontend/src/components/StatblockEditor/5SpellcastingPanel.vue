@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import type { CreatureWithStats, InnateSpellsEntity, Statblock } from "~/shared";
 import { computed, onMounted, ref, watch } from "vue";
-import { $toast } from "@/utils/app/toast";
+import { useToast } from "@/utils/app/toast";
 import { classes, classLevels, stats } from "@/utils/constants";
 import { useFetch } from "@/utils/utils";
 import { defaultStatblock, getSpellSlots } from "~/shared";
 import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
 
 const { data, rawInfo } = defineProps<{ data: Statblock; rawInfo: CreatureWithStats | null }>();
+const { addToast } = useToast()
 
 const spellList = ref<{ [key: number]: string[] }>();
 const spellListFlattened = ref<InnateSpellsEntity[]>();
@@ -98,7 +99,7 @@ const newDailyAmount = ref<number | null>(null);
 
 const addNewDaily = () => {
 	if (!newDailyAmount.value) {
-		$toast.error("You did not choose an amount per day");
+		addToast("You did not choose an amount per day");
 		return;
 	}
 	if (newDailyAmount.value >= 4)

@@ -181,7 +181,8 @@ async function exportHomebrewery() {
 			void getUmami()?.track("Export bestiary to homebrewery");
 		}
 		else {
-			$toast.error(error);
+			addToast(error, { color: "error" });
+			;
 		}
 	}
 	catch (err) {
@@ -240,7 +241,8 @@ async function getBestiary() {
 	const { success, data, error } = await useFetch<BestiaryExtended>(`/api/bestiary/${id.toString()}`);
 	if (!success) {
 		bestiary.value = null;
-		$toast.error(error);
+		addToast(error, { color: "error" });
+		;
 		return;
 	}
 	bestiary.value = data;
@@ -302,7 +304,8 @@ async function toggleBookmark() {
 	}
 	else {
 		bookmarked.value = false;
-		$toast.error(error);
+		addToast(error, { color: "error" });
+		;
 	}
 	loader.hide();
 }

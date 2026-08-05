@@ -298,6 +298,8 @@ function toggleHeading(
 <template>
 	<div ref="wrapper" class="monaco-wrapper-thing">
 		<div class="button-container">
+			<span> <b> Description</b></span>
+			<v-divider vertical />
 			<v-icon-btn size="20" icon="mdi:format-bold" text="Bold" @click="toggleMarkdown(editorRef!, '**')" />
 			<v-icon-btn size="20" icon="mdi:format-italic" text="Italic" @click="toggleMarkdown(editorRef!, '*')" />
 			<v-icon-btn size="20" icon="mdi:format-list-bulleted" text="List"

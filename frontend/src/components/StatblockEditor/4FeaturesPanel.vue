@@ -3,21 +3,21 @@ import type { CreatureWithStats, Features, Statblock } from "~/shared";
 import { inject } from "vue";
 import { useRouter } from "vue-router";
 import Draggable from "vuedraggable";
-import { $toast } from "@/utils/app/toast";
+import { useToast } from "@/utils/app/toast";
 import { newFeatureGenerator } from "@/utils/constants";
 import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
 import { getDraggableKey } from "./utils";
 
 const { data, rawInfo } = defineProps<{ data: Statblock; rawInfo: CreatureWithStats | null }>();
 const $router = useRouter();
-
+const { addToast } = useToast()
 const saveStatblock = inject<any>("saveStatblock");
 const openFeature = async (path: string) => {
 	const didSave = await saveStatblock(false);
 	if (didSave)
 		await $router.push(path);
 	else
-		$toast.error("Cannot open action while creature cannot save.");
+		addToast("Cannot open action while creature cannot save.");
 };
 
 const deleteFeature = (type: keyof Features, index: number) => {

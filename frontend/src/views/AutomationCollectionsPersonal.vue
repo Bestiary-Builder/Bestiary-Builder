@@ -16,7 +16,8 @@ const getMyCollections = async () => {
 	const { success, data, error } = await useFetch<AutomationCollectionExtended[]>(`/api/automation-collection/personal`);
 	if (success)
 		automationCollections.value = data;
-	else $toast.error(error);
+	else addToast(error, { color: "error" });
+	;
 	console.log(success, data, error);
 };
 
@@ -46,7 +47,8 @@ const createAutomationCollection = async () => {
 		// await $router.push(`/bestiary/edit/${data.id.toString()}`);
 	}
 	else {
-		$toast.error(error);
+		addToast(error, { color: "error" });
+		;
 		if (error.includes("includes blocked words or phrases"))
 			void getUmami()?.track("Blocked words", { error });
 	}
@@ -67,7 +69,8 @@ const deleteAutomationCollection = async (id: AutomationCollectionExtended["id"]
 		await getMyCollections();
 	}
 	else {
-		$toast.error(error);
+		addToast(error, { color: "error" });
+		;
 	}
 };
 

@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import type { Statblock } from "~/shared";
-import { $toast } from "@/utils/app/toast";
+import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { statFullName } from "~/shared";
-import LabelledComponent from "../FormInputs/LabelledComponent.vue";
 import SimpleNumberInput from "../FormInputs/SimpleNumberInput.vue";
 import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
 
 const { data } = defineProps<{ data: Statblock }>();
+const { addToast } = useToast()
 
 const deleteSkill = (index: number) => {
 	data.abilities.skills?.splice(index, 1);
@@ -15,11 +15,11 @@ const deleteSkill = (index: number) => {
 
 const addNewSkill = (newSkillName: string) => {
 	if (!newSkillName) {
-		$toast.error("No skill chosen.");
+		addToast("No skill chosen.");
 		return;
 	}
 	if (data.abilities.skills.some(obj => obj.skillName === newSkillName)) {
-		$toast.error("You already have this skill.");
+		addToast("You already have this skill.");
 		return;
 	}
 

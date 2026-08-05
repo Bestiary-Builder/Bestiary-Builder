@@ -2,22 +2,24 @@
 import type { Statblock } from "~/shared";
 import { ref } from "vue";
 import Draggable from "vuedraggable";
-import { $toast } from "@/utils/app/toast";
+import { useToast } from "@/utils/app/toast";
 import { languages } from "@/utils/constants";
 import SimpleNumberInput from "../FormInputs/SimpleNumberInput.vue";
 import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
 import { getDraggableKey } from "./utils";
 
+const { addToast } = useToast()
 const { data } = defineProps<{ data: Statblock }>();
 
 const newSpeed = ref("");
 const addNewSpeed = (newSpeedName: string) => {
 	if (!newSpeedName) {
-		$toast.error("No speed chosen.");
+		addToast("No speed given.")
 		return;
 	}
 	if (data.core.speed.some(obj => obj.name === newSpeedName)) {
-		$toast.error("You already have this speed.");
+		addToast("You already have this speed.");
+
 		return;
 	}
 	data.core.speed.push({ name: newSpeedName, value: 30, unit: "ft", comment: "" });
@@ -26,11 +28,11 @@ const addNewSpeed = (newSpeedName: string) => {
 const newSense = ref("")
 const addNewSense = (newSenseName: string) => {
 	if (!newSenseName) {
-		$toast.error("No sense chosen.");
+		addToast("No sense given");
 		return;
 	}
 	if (data.core.senses.some(obj => obj.name === newSenseName)) {
-		$toast.error("You already have this sense.");
+		addToast("You already have this sense.");
 		return;
 	}
 	data.core.senses.push({ name: newSenseName, value: 30, unit: "ft", comment: "" });

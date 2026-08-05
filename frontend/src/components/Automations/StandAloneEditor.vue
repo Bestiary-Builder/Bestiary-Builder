@@ -55,7 +55,8 @@ const saveAutomation = async () => {
 	const { success, error } = await useFetch<FeatureEntity>(`/api/automation/${props.data.id.toString()}/update`, "POST", props.data);
 
 	if (!success) {
-		$toast.error(error);
+		addToast(error, { color: "error" });
+		;
 		if (error.includes("includes blocked words or phrases"))
 			void getUmami()?.track("Blocked words", { error });
 		return;
@@ -96,7 +97,9 @@ const validateYaml = () => {
 			<div>
 				<div class="editor-field__container two-wide">
 					<LabelledComponent title="Feature name" for="featurename">
-						<input id="featurename" v-model="data.name" type="text" placeholder="Enter name" :minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength" @change="hasEditedName = true">
+						<input id="featurename" v-model="data.name" type="text" placeholder="Enter name"
+							:minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength"
+							@change="hasEditedName = true">
 					</LabelledComponent>
 					<LabelledComponent title="Save automation" for="saveAutomation">
 						<button class="btn confirm" for="saveAutotomation" @click="saveAutomation()">
@@ -107,7 +110,9 @@ const validateYaml = () => {
 
 				<div class="editor-field__container">
 					<LabelledComponent title="Feature description" for="featuredescription">
-						<textarea id="featuredescription" v-model="data.description" height="94" placeholder="Enter description" style="height: 93px" :maxlength="store.limits?.descriptionLength" />
+						<textarea id="featuredescription" v-model="data.description" height="94"
+							placeholder="Enter description" style="height: 93px"
+							:maxlength="store.limits?.descriptionLength" />
 					</LabelledComponent>
 				</div>
 
@@ -130,7 +135,9 @@ const validateYaml = () => {
 				</div>
 			</div>
 			<div class="automation-editor">
-				<VueMonacoEditor v-model:value="automationString" theme="vs-dark" :options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false }" height="750px" language="yaml" @mount="handleMount" />
+				<VueMonacoEditor v-model:value="automationString" theme="vs-dark"
+					:options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false }"
+					height="750px" language="yaml" @mount="handleMount" />
 			</div>
 		</div>
 	</div>
@@ -144,6 +151,7 @@ const validateYaml = () => {
 a {
 	color: orangered;
 }
+
 .two-wide {
 	display: grid;
 	gap: 2rem;
@@ -160,6 +168,7 @@ a {
 	gap: 2rem;
 	grid-template-columns: 1fr 1fr 1fr;
 }
+
 @media screen and (max-width: 1080px) {
 	.three-wide {
 		grid-template-columns: 1fr 1fr;
@@ -167,6 +176,7 @@ a {
 }
 
 @media screen and (max-width: 950px) {
+
 	.three-wide,
 	.two-wide {
 		gap: 1rem;
@@ -218,6 +228,7 @@ a {
 .save-custom-automation {
 	cursor: pointer;
 	transition: color ease-in-out 0.2s;
+
 	&:hover {
 		color: orangered;
 	}

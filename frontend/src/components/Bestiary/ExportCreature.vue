@@ -56,7 +56,8 @@ const exportHomebrewery = async () => {
 			void getUmami()?.track("Export statblock to homebrewery");
 		}
 		else {
-			$toast.error(error);
+			addToast(error, { color: "error" });
+			;
 		}
 	}
 	catch (err) {

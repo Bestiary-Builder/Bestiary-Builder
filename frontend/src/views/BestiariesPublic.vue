@@ -7,7 +7,7 @@ import { getUmami } from "@/utils/app/analytics";
 import { $loading } from "@/utils/app/loading";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
-import { $toast } from "../utils/app/toast";
+import { useToast } from "../utils/app/toast";
 
 onMounted(async () => {
 	const loader = $loading.show();
@@ -15,6 +15,7 @@ onMounted(async () => {
 	loader.hide();
 });
 
+const { addToast } = useToast()
 const bestiaries = ref<BestiaryExtended[]>([]);
 
 const selectedPage = ref(1);
@@ -41,7 +42,7 @@ const searchBestiaries = async () => {
 	else {
 		bestiaries.value = [];
 		totalPages.value = 1;
-		$toast.error(error);
+		addToast(error, { color: "error" });
 	}
 };
 
@@ -54,7 +55,7 @@ const getBookmarkedBestiaries = async () => {
 	}
 	else {
 		bestiaries.value = [];
-		$toast.error(error);
+		addToast(error, { color: "error" });
 	}
 };
 

@@ -14,7 +14,8 @@ const logoutClick = async () => {
 	const { success, error } = await useFetch("/api/logout");
 	if (success)
 		location.reload();
-	else $toast.error(error);
+	else addToast(error, { color: "error" });
+	;
 };
 
 const bestiaryCount = ref(0);
