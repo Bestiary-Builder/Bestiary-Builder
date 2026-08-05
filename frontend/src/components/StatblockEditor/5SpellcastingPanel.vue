@@ -143,20 +143,16 @@ const handleNewCustomInnateSpell = () => {
 		<v-divider />
 		<v-spacer />
 		<div class="editor-field__container two-wide">
-			<TransitionGroup name="list">
-				<template v-for="_, times in data.spellcasting.innateSpells.spellList" :key="times">
-					<div :class="{ 'select-with-delete': parseInt(times.toString()) > 3 }">
-						<div>
-							<v-combobox v-model="data.spellcasting.innateSpells.spellList[times]" item-title="spell"
-								:items="spellListFlattened" multiple chips closable-chips return-object
-								hint="Supports custom spells" @update:modelValue="handleNewCustomInnateSpell"
-								:label="times === '0' ? 'At will' : `${times}/day`" />
-						</div>
-						<v-icon-btn v-if="parseInt(times.toString()) > 3" v-tooltip="'Delete this daily amount'"
-							icon="mdi:delete" @click="delete data.spellcasting.innateSpells.spellList[times]" />
-					</div>
-				</template>
-			</TransitionGroup>
+			<template v-for="_, times in data.spellcasting.innateSpells.spellList" :key="times">
+				<div :class="{ 'select-with-delete': parseInt(times.toString()) > 3 }" class="mb-4">
+					<v-combobox v-model="data.spellcasting.innateSpells.spellList[times]" item-title="spell"
+						:items="spellListFlattened" multiple chips closable-chips return-object
+						hint="Supports custom spells" @update:modelValue="handleNewCustomInnateSpell"
+						:label="times === '0' ? 'At will' : `${times}/day`" class="w-100" persistent-hint />
+					<v-icon-btn v-if="parseInt(times.toString()) > 3" v-tooltip="'Delete this daily amount'"
+						icon="mdi:delete" @click="delete data.spellcasting.innateSpells.spellList[times]" />
+				</div>
+			</template>
 		</div>
 		<div class="grid-two">
 			<v-dialog max-width="750">
@@ -227,11 +223,12 @@ const handleNewCustomInnateSpell = () => {
 		<SectionHeader title="Class Spellcasting" />
 		<div class="editor-field__container two-wide">
 			<div>
-				<v-select v-model="data.spellcasting.casterSpells.castingClass" :items="classes" label="Class" />
+				<v-select v-model="data.spellcasting.casterSpells.castingClass" :items="classes" label="Class"
+					clearable />
 			</div>
 			<div>
-				<v-select v-model="data.spellcasting.casterSpells.casterLevel" :items="classLevels"
-					label="Caster level" />
+				<v-select v-model="data.spellcasting.casterSpells.casterLevel" :items="classLevels" label="Caster level"
+					clearable />
 			</div>
 		</div>
 		<v-container v-if="data.spellcasting.casterSpells.castingClass" class="pa-0">
