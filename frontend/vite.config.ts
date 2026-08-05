@@ -3,7 +3,6 @@
 import { fileURLToPath, URL } from "node:url";
 import vue from "@vitejs/plugin-vue";
 
-import FontAwesome from "unplugin-vue-fontawesome/vite";
 import { defineConfig } from "vite";
 import Pages from "vite-plugin-pages";
 import generateSitemap from "vite-plugin-pages-sitemap";
@@ -33,23 +32,6 @@ export default defineConfig({
 		// @ts-expect-error untyped
 		rawloader({
 			fileRegex: /\.md$/
-		}),
-		FontAwesome({
-			// the fontawesome collections to use
-			collections: "free",
-
-			// collection that is used if no collection is specified
-			defaultCollection: "solid",
-
-			// prop names to be tested for icons
-			props: ["icon"],
-
-			// component names to be tested for icons, use an empty array to check all components
-			components: ["icon", "font-awesome-icon"],
-
-			// filters for transforming targets
-			include: [/\.vue$/, /\.vue\?vue/],
-			exclude: [/node_modules/, /\.git/]
 		})
 	],
 	resolve: {
