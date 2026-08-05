@@ -7,6 +7,8 @@ import AutomationDocumentation from "./Nodes/shared/AutomationDocumentation.vue"
 import EffectAsRaw from "./Nodes/shared/EffectAsRaw.vue";
 import SectionHeader from "./Nodes/shared/SectionHeader.vue";
 import TreeRoot from "./TreeRoot.vue";
+import { useHotkey } from "vuetify";
+import { $toast } from "@/utils/app/toast.js";
 
 const { name, noListAttack = false } = defineProps<{ name: string; noListAttack?: boolean }>();
 const currentEffect = ref<EffectWithTarget | AttackModel | ButtonInteraction | null>(null);
@@ -38,6 +40,140 @@ const currentNode = computed(() => {
 
 const copiedEffect = ref<EffectWithTarget | null>(null);
 provide("copiedEffect", copiedEffect);
+
+const hoveredEffectContext = ref<string[] | null>(null)
+provide("hoveredEffectContext", hoveredEffectContext)
+
+const hoveredEffectData = ref<EffectWithTarget | null>(null)
+provide("hoveredEffectData", hoveredEffectData)
+
+useHotkey("cmd+c", () => {
+	if (hoveredEffectContext && hoveredEffectContext.value && hoveredEffectData && hoveredEffectData.value) {
+		copiedEffect.value = hoveredEffectData.value
+		$toast("Copied effect")
+	} else if (Object.hasOwn(currentEffect.value || {}, "type")) {
+		// @ts-ignore
+		copiedEffect.value = currentEffect.value
+	}
+})
+
+useHotkey("cmd+x", () => {
+	if (hoveredEffectContext && hoveredEffectContext.value && hoveredEffectData && hoveredEffectData.value) {
+		const context = hoveredEffectContext.value
+		let nodeList = nodeListEffectIsPartOf.value
+		if (!context) return
+		if (nodeList && nodeList.length > 0) {
+			copiedEffect.value = hoveredEffectData.value
+			$toast("Cut effect")
+
+			const tree = nodeList
+			const indexToRemove = Number.parseInt(context[context.length - 1] || "0");
+			tree.splice(indexToRemove, 1);
+		}
+	}
+})
+
+useHotkey("cmd+v", async () => {
+	if (hoveredEffectContext && hoveredEffectContext.value) {
+		console.log(hoveredEffectContext.value)
+		await pasteCopiedWithHotkey()
+	}
+})
+
+const pasteCopiedWithHotkey = async () => {
+	if (!hoveredEffectContext || !hoveredEffectContext.value)
+		return
+	const context = hoveredEffectContext.value
+	// traverse through the tree.
+	if (!automation || !automation.value || !context)
+		return;
+
+	let tree: any;
+	if (Array.isArray(automation.value))
+		tree = automation.value[Number.parseInt(context[0])].automation;
+	else
+		tree = automation.value.automation;
+
+	for (const [idx, key] of context.entries()) {
+		const isArrayIndex = /^\d+$/.test(key);
+		if (key === "root")
+			continue;
+		if (key.startsWith("$"))
+			continue;
+		if (isArrayIndex) {
+			if (idx === 0)
+				continue;
+			const index = Number.parseInt(key, 10);
+			if (Array.isArray(tree) && index < tree.length)
+				tree = tree[index];
+			else
+				return undefined;
+		}
+		else {
+			if (typeof tree === "object" && key in tree)
+				tree = tree[key];
+			else
+				return undefined;
+		}
+	}
+	try {
+		if (copiedEffect) {
+			const isTargetContext = context.includes("$target")
+			if (!isTargetContext && ["error", "attack", "save", "damage", "temphp", "check"].includes(copiedEffect.value?.type || "error")) {
+				$toast.error(`Effect of type \`${copiedEffect.value?.type}\` cannot be placed outside a Target Effect.`);
+				return;
+			}
+
+			tree.push(JSON.parse(JSON.stringify(copiedEffect.value)));
+			$toast("Pasted effect")
+		}
+	}
+	catch (e) {
+		console.error(e);
+	}
+};
+
+const nodeListEffectIsPartOf = computed(() => {
+	let tree: any = [];
+	const context = hoveredEffectContext.value
+
+	// traverse through the tree.
+	if (!automation || !automation.value || !context)
+		return;
+	if (Array.isArray(automation.value))
+		tree = automation.value[Number.parseInt(context[0])].automation;
+
+	else
+		tree = automation.value.automation;
+
+	for (const [idx, key] of context.entries()) {
+		const isArrayIndex = /^\d+$/.test(key);
+		if (idx === context.length - 1)
+			break;
+
+		if (key === "root")
+			continue;
+		if (key.startsWith("$"))
+			continue;
+		if (isArrayIndex) {
+			if (idx === 0)
+				continue;
+			const index = Number.parseInt(key, 10);
+			if (Array.isArray(tree) && index < tree.length)
+				tree = tree[index];
+			else
+				return undefined;
+		}
+		else {
+			if (typeof tree === "object" && key in tree)
+				tree = tree[key];
+			else
+				return undefined;
+		}
+	}
+
+	return tree;
+});
 </script>
 
 <template>

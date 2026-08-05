@@ -12,7 +12,6 @@ const { data } = defineProps<{ data: Statblock }>();
 
 const newSpeed = ref("");
 const addNewSpeed = (newSpeedName: string) => {
-	console.log(true);
 	if (!newSpeedName) {
 		$toast.error("No speed chosen.");
 		return;

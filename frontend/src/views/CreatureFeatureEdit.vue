@@ -523,8 +523,8 @@ provide("setActionDescription", setDesc);
 		}
 	]">
 		<v-icon-btn v-if="madeChanges && (isOwner || isEditor)" icon="mdi:content-save" text="Save creature"
-			:class="{ inverted: !isSavingCreature }" @click="saveStatblock2(true)" size="24"
-			:loading="isSavingCreature" />
+			:class="{ inverted: !isSavingCreature }" @click="saveStatblock2(true)" size="24" :loading="isSavingCreature"
+			v-tooltip="'Save feature (CTRL+S)'" />
 		<v-icon-btn icon="fa7-solid:wand-sparkles"
 			text="Generate automation from description. May be incomplete or inaccurate. Only works for basic, to hit attacks."
 			@click="generateAutomation" size="24" />

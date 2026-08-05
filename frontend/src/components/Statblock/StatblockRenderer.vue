@@ -161,7 +161,6 @@ const calculatePassiveInitiative = () => {
 };
 
 onMounted(async () => {
-	console.log(design)
 	if (design === "Odyssey")
 		await import("./styles/odyssey/odyssey.css");
 

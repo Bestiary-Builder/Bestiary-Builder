@@ -66,7 +66,6 @@ const selectAndLoad = async (apiPath: AutomationTypes, name: string, _id: Id | n
 
 	emit("loadFeature", feature, apiPath);
 };
-console.log(loadedAutomation.value.myAutomation)
 </script>
 
 <template>
@@ -107,11 +106,7 @@ console.log(loadedAutomation.value.myAutomation)
 						</v-list-item>
 					</template>
 				</v-autocomplete>
-				<!-- <v-select :items="loadedAutomation.myAutomation"
-					@option:selected="(selected: myAutomationSkeleton) => (selectAndLoad('automation', selected.name, selected.id))"
-					label="Import Custom Automation" /> -->
 			</v-card-text>
-
 		</v-card>
 	</DropdownMenu>
 </template>

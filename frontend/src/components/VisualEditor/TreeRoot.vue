@@ -36,8 +36,10 @@ const setAutomationEmpty = () => {
 	if (automation)
 		automation.value = null;
 };
+
 const currentEffect = inject<Ref<EffectWithTarget | AttackModel>>("currentEffect");
 const currentContext = inject<Ref<string[]>>("currentContext");
+const hoveredEffectContext = inject<Ref<string[] | null>>("hoveredEffectContext")
 </script>
 
 <template>
@@ -76,7 +78,9 @@ const currentContext = inject<Ref<string[]>>("currentContext");
 							:context="[index.toString(), ...context, idx.toString()]" />
 					</div>
 				</TransitionGroup>
-				<p :style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`">
+				<p :style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`"
+					@mouseenter="hoveredEffectContext = [index.toString(), ...context]"
+					@mouseleave="hoveredEffectContext = null">
 					<EffectAdder :context="[index.toString(), ...context]" />
 				</p>
 			</template>
@@ -119,7 +123,8 @@ const currentContext = inject<Ref<string[]>>("currentContext");
 						:context="[...context, idx.toString()]" />
 				</div>
 			</TransitionGroup>
-			<p :style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`">
+			<p :style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`"
+				@mouseenter="hoveredEffectContext = context" @mouseleave="hoveredEffectContext = null">
 				<EffectAdder :context="context" />
 			</p>
 			<p v-if="!noListAttack && rootType === 'root'"

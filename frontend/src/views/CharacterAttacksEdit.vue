@@ -99,7 +99,7 @@ provide("setActionDescription", false);
 		}
 	]">
 		<v-icon-btn icon="mdi:content-save" text="Save attacks" :class="{ inverted: !isSavingAttacks }"
-			@click="saveAttacks" size="24" :loading="isSavingAttacks" />
+			@click="saveAttacks" size="24" :loading="isSavingAttacks" v-tooltip="'Save attacks (CTRL+S)'" />
 		<v-icon-btn icon="mdi:plus" text="Add attack" @click="addAttack" size="24" />
 		<ImportAutomationUtil @load-feature="(feature: FeatureEntity) => loadFeature(feature)" />
 	</Breadcrumbs>
