@@ -54,7 +54,6 @@
 		"@vitejs/plugin-vue": "^5.0.0",
 		"@vue/tsconfig": "^0.5.1",
 		"eslint-plugin-format": "^2.0.1",
-		"unplugin-vue-fontawesome": "^1.0.6",
 		"vite": "^6.3.3",
 		"vite-plugin-pages": "^0.32.0",
 		"vite-plugin-pages-sitemap": "^1.6.1",
