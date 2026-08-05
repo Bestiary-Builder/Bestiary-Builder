@@ -22,6 +22,8 @@ const addNewSpeed = (newSpeedName: string) => {
 	}
 	data.core.speed.push({ name: newSpeedName, value: 30, unit: "ft", comment: "" });
 };
+
+const newSense = ref("")
 const addNewSense = (newSenseName: string) => {
 	if (!newSenseName) {
 		$toast.error("No sense chosen.");
@@ -102,9 +104,10 @@ const addNewSense = (newSenseName: string) => {
 				</template>
 			</Draggable>
 		</table>
-		<div class="two-wide mt-4">
+		<div class="two-wide my-4">
 			<v-combobox v-model="newSpeed" :items="['Walk', 'Swim', 'Fly', 'Climb', 'Burrow']"
-				label="Select speed to add" @submit="addNewSpeed(newSpeed)" />
+				label="Select speed to add" hint="Supports custom speeds" persistent-hint clearable />
+			<v-btn @click="addNewSpeed(newSpeed)" size="large"> Add Speed </v-btn>
 		</div>
 
 		<SectionHeader title="Senses" />
@@ -171,25 +174,27 @@ const addNewSense = (newSenseName: string) => {
 				</template>
 			</Draggable>
 		</table>
-		<div class=" grid-two mt-4">
+		<div class=" grid-two my-4">
 			<div>
 				<v-combobox :items="['Darkvision', 'Blindsight', 'Truesight', 'Tremorsense']"
-					label="Select sense to add" @submit="(selected: string) => (addNewSense(selected))" />
+					label="Select sense to add" hint="Supports custom speeds" persistent-hint clearable
+					v-model="newSense" />
 			</div>
-			<div>
-				<v-number-input v-model="data.misc.passivePerceptionOverride" label="Passive perception override"
-					clearable />
-			</div>
+			<v-btn @click="addNewSense(newSense)" size="large"> Add Sense </v-btn>
 		</div>
 
 		<SectionHeader title="Miscellaneous" />
-		<div class="grid-two">
+		<div class="grid-two mt-4">
 			<div>
 				<v-combobox v-model="data.core.languages" multiple chips closable-chips label="Languages"
 					:items="languages" />
 			</div>
 			<div>
 				<v-number-input v-model="data.misc.telepathy" label="Telepathy" :min="0" :step="5" />
+			</div>
+			<div>
+				<v-number-input v-model="data.misc.passivePerceptionOverride" label="Passive perception override"
+					clearable />
 			</div>
 		</div>
 	</div>

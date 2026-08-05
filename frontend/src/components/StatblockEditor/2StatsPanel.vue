@@ -82,7 +82,8 @@ const addNewSkill = (newSkillName: string) => {
 						</td>
 						<td v-else>
 							<SimpleNumberInput v-model="data.abilities.saves[stat].override"
-								:label="`${name} save override`" :label-id="`${stat}Override`" is-clearable />
+								:label="`${name} save override`" :label-id="`${stat}Override`" is-clearable
+								:min="Number.NEGATIVE_INFINITY" />
 						</td>
 					</tr>
 				</tbody>
@@ -134,7 +135,7 @@ const addNewSkill = (newSkillName: string) => {
 						</td>
 						<td v-else>
 							<SimpleNumberInput v-model="skill.override" :label="`${skill.skillName} save override`"
-								:label-id="`${skill.skillName}Override`" is-clearable />
+								:label-id="`${skill.skillName}Override`" is-clearable :min="Number.NEGATIVE_INFINITY" />
 						</td>
 						<td>
 							<div>

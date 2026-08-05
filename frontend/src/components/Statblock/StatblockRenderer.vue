@@ -231,7 +231,7 @@ const render = (str: string, inline?: boolean) => {
 				</div>
 				<div class="stat-block__speed-container">
 					<b> Speed </b>
-					<span v-html="render(displaySpeedOrSenses(data.core.speed, false, v2024), true)" />
+					<span v-html="render(displaySpeedOrSenses(data.core.speed, false, v2024), true) || '—'" />
 				</div>
 			</div>
 			<!-- <img v-if="data.description.image" class="stat-block__image" :src="data.description.image"> -->
