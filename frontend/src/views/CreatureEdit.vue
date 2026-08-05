@@ -53,7 +53,7 @@ const isEditor = ref(false);
 const shouldShowEditor = ref(false);
 
 const loadRawInfo = async () => {
-	const { success, data, error } = await useFetch<BestiaryExtended>(`/ api / bestiary / ${rawInfo.value?.bestiaryId}`);
+	const { success, data, error } = await useFetch<BestiaryExtended>(`/api/bestiary/${rawInfo.value?.bestiaryId}`);
 	if (success) {
 		bestiary.value = data;
 		isOwner.value = store.user?.id === bestiary.value.ownerId;
@@ -62,7 +62,7 @@ const loadRawInfo = async () => {
 			shouldShowEditor.value = true;
 
 		if (!isOwner.value && !isEditor.value)
-			await $router.push(`/ creature / view / ${rawInfo.value?.id}`);
+			await $router.push(`/creature/view/${rawInfo.value?.id}`);
 	}
 	else {
 		addToast(error, { color: "error" });
@@ -78,7 +78,7 @@ const saveStatblock = async (shouldNotify = true): Promise<boolean> => {
 	isSavingStatblock.value = true
 
 	// Send to backend
-	const { success, error } = await useFetch<CreatureWithStats>(`/ api / creature / ${rawInfo.value.id.toString()} / update`, "POST", rawInfo.value);
+	const { success, error } = await useFetch<CreatureWithStats>(`/api/creature/${rawInfo.value.id.toString()}/update`, "POST", rawInfo.value);
 	if (success) {
 		if (shouldNotify)
 			addToast("Saved stat block", { color: "success" });
@@ -220,7 +220,7 @@ const importCritterDB = async () => {
 	const linkEls = link.split("/");
 	link = linkEls[linkEls.length - 1];
 
-	const { success, data: cData, error } = await useFetch(`/ api / critterdbcreature / ${link}`);
+	const { success, data: cData, error } = await useFetch(`/api/critterdbcreature/${link}`);
 	if (!success) {
 		addToast(error, { color: "error" });
 		;

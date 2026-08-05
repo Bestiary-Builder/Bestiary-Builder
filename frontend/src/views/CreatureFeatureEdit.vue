@@ -55,7 +55,7 @@ const isOwner = ref(false);
 const isEditor = ref(false);
 const shouldShowEditor = ref(false);
 const loadRawInfo = async () => {
-	const { success, data, error } = await useFetch<BestiaryExtended>(`/ api / bestiary / ${rawInfo.value?.bestiaryId}`);
+	const { success, data, error } = await useFetch<BestiaryExtended>(`/api/bestiary/${rawInfo.value?.bestiaryId}`);
 	if (success) {
 		bestiary.value = data;
 		isOwner.value = store.user?.id === bestiary.value.ownerId;
@@ -118,7 +118,7 @@ const bestiary = ref<BestiaryExtended | null>(null);
 
 async function getBestiary() {
 	// Request bestiary info
-	const { success, data, error } = await useFetch<BestiaryExtended>(`/ api / bestiary / ${rawInfo.value?.bestiaryId}`);
+	const { success, data, error } = await useFetch<BestiaryExtended>(`/api/bestiary/${rawInfo.value?.bestiaryId}`);
 	if (!success) {
 		bestiary.value = null;
 		addToast(error, { color: "error" });
@@ -196,7 +196,7 @@ const saveStatblock2 = async (shouldNotify: boolean): Promise<boolean> => {
 		if (toastId)
 			updateToast(toastId, { text: "Saving..." });
 		// Save
-		const { success, error } = await useFetch<CreatureWithStats>(`/ api / creature / ${rawInfo.value.id} / update`, "POST", rawInfo.value);
+		const { success, error } = await useFetch<CreatureWithStats>(`/api/creature/${rawInfo.value.id}/update`, "POST", rawInfo.value);
 		if (!success) {
 			if (toastId) {
 				updateToast(toastId, {
