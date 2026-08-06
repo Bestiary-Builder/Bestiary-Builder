@@ -20,7 +20,7 @@ import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { defaultStatblock } from "~/shared";
 
-const { addToast, updateToast } = useToast()
+const { addToast, updateToast, removeToast } = useToast()
 const rules = useRules();
 const $route = useRoute();
 const $router = useRouter();
@@ -143,8 +143,9 @@ watch(debouncedFaction, () => {
 });
 const initialLoading = ref(true);
 onMounted(async () => {
-	await getBestiary().then(() => {
-	});
+	const toastId = addToast("Loading...", { loading: true })
+	await getBestiary()
+	removeToast(toastId)
 	if (bestiary.value?.name)
 		document.title = `${bestiary.value?.name.substring(0, 16)} | Bestiary Builder`;
 
@@ -192,11 +193,11 @@ async function exportHomebrewery() {
 			void getUmami()?.track("Export bestiary to homebrewery");
 		}
 		else {
-			updateToast(toastId, { text: error, color: "error", prependIcon: "mdi:alert-circle", timeout: 2000 })
+			updateToast(toastId, { text: error, color: "error", timeout: 2000 })
 		}
 	}
 	catch (err) {
-		updateToast(toastId, { text: err as string, color: "error", prependIcon: "mdi:alert-circle", timeout: 2000 })
+		updateToast(toastId, { text: err as string, color: "error", timeout: 2000 })
 	}
 }
 
@@ -280,7 +281,7 @@ async function importBestiaryFromCritterDB() {
 			notices.value[creature] = "Failed to parse, due to unrecognized data.";
 	}
 	else {
-		updateToast(toastId, { text: error, color: "error", timeout: 2500, prependIcon: "mdi:alert-circle" });
+		updateToast(toastId, { text: error, color: "error", timeout: 2500 });
 		return;
 	}
 	updateToast(toastId, { text: "Saving creatures has started. This may take a while." });
@@ -338,9 +339,7 @@ async function importCreaturesFromBestiaryBuilder() {
 	await getBestiary();
 }
 
-async function createCreature(stats = defaultStatblock, shouldHaveLoader = true, openPage = true) {
-	let loader;
-
+async function createCreature(stats = defaultStatblock, openPage = true) {
 	// Replace for actual creation data:
 	const data = {
 		stats,
@@ -514,7 +513,7 @@ async function updateBestiary() {
 	// Send to backend
 	const { success, error } = await useFetch<Bestiary>(`/api/bestiary/${bestiary.value.id.toString()}/update`, "POST", bestiary.value);
 	if (success) {
-		updateToast(toastId, { text: "Saved", color: "succes" });
+		updateToast(toastId, { text: "Saved", color: "success" });
 		savedBestiary.value = bestiary.value;
 	}
 	else {
@@ -609,7 +608,7 @@ const getDraggableKey = (item: any) => {
 			</DropdownMenu>
 
 			<CopyCreature :may-import="isOwner || isEditor" :current-creatures="creatures || []"
-				can-copy-current-bestiary @import-creature="(creature) => createCreature(creature, true, false)"
+				can-copy-current-bestiary @import-creature="(creature) => createCreature(creature, false)"
 				@import-all-creatures="createManyCreatures" @copy-current-bestiary="copyCurrentBestiary" />
 
 			<v-dialog v-if="isOwner" max-width="950">

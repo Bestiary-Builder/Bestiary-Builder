@@ -20,7 +20,7 @@ export const getAvraeCharacters = async () => {
 	const toasterId = addToast("Getting character data from Avrae...", { loading: true });
 	const { success, data, error } = await useFetch<AvraeCharacter[]>("/api/character/list");
 	if (success && data) {
-		updateToast(toasterId, { text: "Loaded Avrae Characters", loading: false, timeout: 2500, prependIcon: "mdi:check" });
+		updateToast(toasterId, { text: "Loaded Avrae Characters", prependIcon: "mdi:check" });
 		void getUmami()?.track("Loaded Avrae Characters");
 		return data.sort((x, y) => {
 			return (x.active === y.active) ? 0 : x.active ? -1 : 1;
@@ -28,9 +28,9 @@ export const getAvraeCharacters = async () => {
 	}
 	else {
 		if (error === "invalid credentials")
-			updateToast(toasterId, { text: "No Avrae Token Set", color: "error", loading: false, timeout: 2500 });
+			updateToast(toasterId, { text: "No Avrae Token Set", color: "error" });
 		else
-			updateToast(toasterId, { text: error, color: "error", loading: false, timeout: 2500 });
+			updateToast(toasterId, { text: error, color: "error" });
 		return null;
 	}
 };

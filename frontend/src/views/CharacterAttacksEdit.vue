@@ -39,11 +39,11 @@ const saveAttacks = async () => {
 	const { success, error } = await useFetch(`/api/character/${character.value.upstream}/attacks/set`, "POST", attacks);
 
 	if (success) {
-		updateToast(toasterId, { text: `Successfully updated your attacks`, loading: false, prependIcon: 'mdi-check', timeout: 2500 });
+		updateToast(toasterId, { text: `Successfully updated your attacks`, prependIcon: 'mdi-check' });
 		void getUmami()?.track("Imported Attack to Avrae");
 	}
 	else {
-		updateToast(toasterId, { text: error, loading: false, timeout: 2500, prependIcon: "mdi:alert-circle", color: "error" });
+		updateToast(toasterId, { text: error, color: "error" });
 	}
 
 	isSavingAttacks.value = false

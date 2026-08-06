@@ -161,15 +161,12 @@ const saveStatblock2 = async (shouldNotify: boolean): Promise<boolean> => {
 			updateToast(toastId, {
 				text: `Error parsing automation YAML. ${err instanceof Error ? err.message : "An unexpected error occurred."}`,
 				color: "error",
-				loading: false,
-				prependIcon: "mdi:alert-circle",
 				timeout: -1,
 			});
 		}
 		else {
 			addToast(`Error parsing automation YAML. ${err instanceof Error ? err.message : "An unexpected error occurred."}`, {
 				color: "error",
-				prependIcon: "mdi:alert-circle",
 				timeout: -1,
 			});
 		}
@@ -184,8 +181,6 @@ const saveStatblock2 = async (shouldNotify: boolean): Promise<boolean> => {
 				updateToast(toastId, {
 					text: validAutomation,
 					color: "error",
-					loading: false,
-					prependIcon: "mdi:alert-circle",
 					timeout: -1,
 					isHtml: true
 				})
@@ -203,8 +198,6 @@ const saveStatblock2 = async (shouldNotify: boolean): Promise<boolean> => {
 				updateToast(toastId, {
 					text: `Error saving statblock. ${error}`,
 					color: "error",
-					loading: false,
-					prependIcon: "mdi:alert-circle",
 					timeout: -1
 				})
 
@@ -212,7 +205,6 @@ const saveStatblock2 = async (shouldNotify: boolean): Promise<boolean> => {
 			else {
 				addToast(`Error saving statblock. ${error}`, {
 					color: "error",
-					prependIcon: "mdi:alert-circle",
 					timeout: -1
 				});
 			}
@@ -233,7 +225,7 @@ const saveStatblock2 = async (shouldNotify: boolean): Promise<boolean> => {
 		);
 
 		if (toastId)
-			setTimeout(() => updateToast(toastId, { text: "Saved action!", loading: false, prependIcon: "mdi-check", timeout: 2500 })
+			setTimeout(() => updateToast(toastId, { text: "Saved action!", prependIcon: "mdi-check" })
 				, 500);
 		isSavingCreature.value = false
 		return true;
@@ -244,8 +236,6 @@ const saveStatblock2 = async (shouldNotify: boolean): Promise<boolean> => {
 				{
 					text: err instanceof Error ? err.message : "An unexpected error occurred.",
 					color: "error",
-					loading: false,
-					prependIcon: "mdi:alert-cirle"
 				}
 			);
 		}
