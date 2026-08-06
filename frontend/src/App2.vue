@@ -31,7 +31,7 @@ const dismiss = () => {
     <v-app>
         <v-app-bar scroll-behavior="elevate" class="border" app elevation="3">
             <template v-slot:prepend>
-                <v-app-bar-nav-icon>
+                <v-app-bar-nav-icon @click="drawer = !drawer">
                 </v-app-bar-nav-icon>
                 <v-app-bar-title text="Bestiary Builder"
                     style="font-family: 'Space Mono'; letter-spacing: -0.05rem; font-weight: bold;">
