@@ -7,6 +7,22 @@ import { routes as sharedRoutes } from "~/shared";
 import { useToast } from "./utils/app/toast";
 import { store } from "./utils/store";
 
+import { useRecentPages } from "./utils/app/useRecentPages";
+
+
+interface TrackedRoute {
+	pattern: RegExp;
+	icon: string;
+	labelPrefix: string;
+}
+
+const TRACKED_ROUTES: TrackedRoute[] = [
+	{ pattern: /^\/creature\/edit\/([^/]+)(?:\/.*)?$/, icon: "mdi:paw", labelPrefix: "Creature" },
+	{ pattern: /^\/bestiary\/edit\/([^/]+)$/, icon: "mdi:book-open-variant", labelPrefix: "Bestiary" },
+	{ pattern: /^\/automation\/edit\/([^/]+)$/, icon: "mdi:swap-horizontal", labelPrefix: "Automation" },
+];
+
+
 const { addToast } = useToast()
 const routes = sharedRoutes.routes.map((route) => {
 	return {
@@ -73,6 +89,9 @@ router.afterEach((to) => {
 			console.error(err);
 		});
 	}
+
+	const { trackVisit } = useRecentPages();
+	trackVisit(to.path, to.meta.pageTitle as string | undefined);
 });
 
 // Export

@@ -17,6 +17,7 @@ import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { defaultStatblock } from "~/shared";
 import { useHotkey } from "vuetify";
+import { useRecentPages } from "@/utils/app/useRecentPages";
 
 const $route = useRoute();
 const $router = useRouter();
@@ -26,6 +27,7 @@ const data = ref<Statblock>(defaultStatblock);
 const rawInfo = ref<CreatureWithStats | null>(null);
 
 const { addToast, removeToast } = useToast();
+const { updateLabel } = useRecentPages()
 
 // load creature data
 onMounted(async () => {
@@ -37,6 +39,7 @@ onMounted(async () => {
 		rawInfo.value = cData;
 		await loadRawInfo();
 		removeToast(toastId)
+		updateLabel($route.path, data.value.description.name);
 	}
 	else {
 		addToast(error, { color: "error" })
@@ -66,7 +69,6 @@ const loadRawInfo = async () => {
 	}
 	else {
 		addToast(error, { color: "error" });
-		;
 	}
 };
 
@@ -83,6 +85,8 @@ const saveStatblock = async (shouldNotify = true): Promise<boolean> => {
 		if (shouldNotify)
 			addToast("Saved stat block", { color: "success" });
 		madeChanges.value = false;
+		updateLabel($route.path, data.value.description.name);
+
 		// watch data only once, as traversing the object deeply is expensive.
 		const unwatch = watch(
 			() => data.value,

@@ -1,17 +1,26 @@
 <script setup lang="ts">
 import { useElementSize, useShare } from "@vueuse/core";
 import { isClient } from "@vueuse/shared";
-import { ref, watchEffect } from "vue";
+import { computed, ref, watchEffect } from "vue";
 import { useToast } from "@/utils/app/toast";
 
 const { isLessWide = false, routes } = defineProps<{ routes: links; isLessWide?: boolean }>();
 
 const { addToast } = useToast()
+
 type links = {
 	path: string;
 	text: string;
 	isCurrent: boolean;
 }[];
+
+const breadcrumbItems = computed(() =>
+	routes.map((route) => ({
+		title: route.text,
+		to: route.path,
+		disabled: route.isCurrent,
+	}))
+);
 
 const options = ref({
 	title: "Bestiary Builder",
@@ -37,97 +46,83 @@ watchEffect(() => {
 </script>
 
 <template>
-	<nav id="breadcrumb" ref="breadcrumbs" class="breadcrumbs__container" :class="{ 'less-wide': isLessWide }"
-		aria-label="Header">
-		<ol class="breadcrumbs__links" aria-label="Breadcrumbs">
-			<li v-for="(route, index) in routes" :key="index">
-				<RouterLink v-if="!route.isCurrent" :to="route.path">
-					{{ route.text }}
-				</RouterLink>
-				<h1 v-else class="current-page" aria-current="page">
-					{{ route.text }}
-				</h1>
-				<span v-if="index + 1 !== routes.length" class="seperator"> ></span>
-			</li>
-		</ol>
+	<Teleport to="#navbar .v-toolbar__prepend">
+		<v-breadcrumbs :items="breadcrumbItems" divider=">" class="left-buttons">
+			<template #item="{ item }">
+				<v-breadcrumbs-item :disabled="item.disabled" :style="`opacity: ${item.disabled ? 1 : ''}`">
+					<RouterLink v-if="!item.disabled" :to="item.to || '/'" class="crumb-link">
+						{{ item.title }}
+					</RouterLink>
+					<h1 v-else class="crumb-current" aria-current="page">
+						{{ item.title }}
+					</h1>
+				</v-breadcrumbs-item>
+			</template>
+		</v-breadcrumbs>
+	</Teleport>
 
+	<Teleport to="#navbar .v-toolbar__append">
 		<div class="right-buttons">
 			<slot />
 			<v-icon-btn text="Share this page" @click="startShare" icon="mdi:share" size="24" />
 		</div>
-	</nav>
+	</Teleport>
 </template>
 
-<style lang="less">
-.breadcrumbs__container {
-	background-color: var(--color-surface-0);
-	padding: 0.7rem 5vw;
-	box-shadow:
-		rgba(0, 0, 0, 0.19) 0px 10px 20px,
-		rgba(0, 0, 0, 0.23) 0px 6px 6px;
-	position: static;
-	width: 100%;
-	// top: 0;
+<style lang="less" scoped>
+.left-buttons {
+	margin-left: 4.5rem;
+}
+
+
+.right-buttons {
+	margin-right: 5.5rem;
+
 	display: flex;
-	justify-content: space-between;
-	margin-top: var(--navbar-height);
-	flex-wrap: wrap;
-	z-index: 100;
+	gap: 1.5rem;
 
-	.right-buttons {
-		display: flex;
-		gap: 1rem;
+	& button {
+		margin: auto 0;
 
-		& button {
-			margin: auto 0;
+		svg {
+			scale: 0.9
+		}
 
-			svg {
-				scale: 0.9
-			}
+		&.inverted {
+			background-color: orangered;
+			color: var(--bg-surface);
 
-			&.inverted {
-				background-color: orangered;
-				color: var(--color-surface-0);
-
-				&:hover {
-					background-color: var(--color-surface-0);
-					color: orangered;
-				}
+			&:hover {
+				background-color: var(--bg-surface);
+				color: orangered;
 			}
 		}
 	}
 }
 
-@media screen and (max-width: 1080px) {
-	.breadcrumbs__container {
-		padding: 0.7rem 0vw;
-	}
+.crumb-link {
+	color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+	text-decoration: none;
+	font-size: 0.875rem;
+	font-weight: 400;
+	transition: color 0.15s ease;
 }
 
-@media screen and (min-width: 1080px) {
-	.breadcrumbs__container.less-wide {
-		padding: 0.7rem 10vw;
-	}
+.crumb-link:hover {
+	color: rgb(var(--v-theme-on-surface));
+	text-decoration: underline;
 }
 
-.breadcrumbs__links {
-	display: flex;
-	flex-direction: row;
-	flex-wrap: wrap;
-	gap: 0.7rem;
-	font-size: 1.2rem;
+.crumb-current {
 	margin: 0;
-	padding-left: 0;
-	list-style: none;
-
-	.current-page {
-		font-weight: bold;
-		font-size: 1.2rem;
-		max-width: 60vw;
-		text-wrap: nowrap;
-		overflow: hidden;
-	}
+	font-size: 0.875rem;
+	font-weight: bold;
+	line-height: inherit;
+	color: white;
+	color: white;
+	opacity: 1 !important;
 }
+
 
 @media (max-width: 842px) {
 	.breadcrumbs__container {

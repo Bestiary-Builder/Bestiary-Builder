@@ -35,9 +35,7 @@ watch(
 			await nextTick();
 			const el = document.getElementById(route.hash.replace("#", ""));
 			if (el) {
-				const bodyStyles = document.body.style;
-				const yOffset = Number.parseFloat(bodyStyles.getPropertyValue("--breadcrumbs-height")) + Number.parseFloat(bodyStyles.getPropertyValue("--navbar-height"));
-				const y = el.getBoundingClientRect().y - 50 - yOffset + window.scrollY;
+				const y = el.getBoundingClientRect().y - 50 + window.scrollY;
 				window.scrollTo({ top: y, behavior: prefersReducedMotion.matches ? "auto" : "smooth" });
 			}
 		}).catch(() => { });

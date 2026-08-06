@@ -13,16 +13,15 @@ const emit = defineEmits<{
 <template>
 	<div class="content-tile creature-tile">
 		<div class="left-side">
-			<h2 style="color: orangered">
+			<h3 style="color: orangered" class="font-weight">
 				{{ data.description?.name }} <span> CR {{ crAsString(data.description.cr) }}
 				</span>
-			</h2>
+			</h3>
 
 			<p>{{ data?.core?.size }} {{ data?.core?.race }}</p>
 			<p v-if="data.description.alignment">
 				{{ data?.description?.alignment }}
 			</p>
-			<p class="text-truncate"> {{ data?.description.image.substring(0, 20) }}</p>
 		</div>
 		<div class="right-side">
 			<v-icon-btn :text="`Copy ${data.description.name}`" icon="mdi:content-copy" @click="emit('copyCreature')"

@@ -1,5 +1,5 @@
 import type { Component } from "vue";
-
+import BestiaryBuilderLogo from "@/assets/svg/logo.svg"
 import DropdownMenu from "./components/Global/DropdownMenu.vue";
 import Breadcrumbs from "./components/Page/Breadcrumbs.vue";
 // monaco editor
@@ -92,6 +92,9 @@ const vuetify = createVuetify({
 		sets: {
 			iconify: iconifyAdapter,
 		},
+		aliases: {
+			"bestiaryBuilder": BestiaryBuilderLogo
+		}
 	},
 });
 

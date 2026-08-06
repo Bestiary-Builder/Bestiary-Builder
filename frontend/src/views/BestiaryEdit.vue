@@ -19,6 +19,9 @@ import { creatureTypes } from "@/utils/constants";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { defaultStatblock } from "~/shared";
+import { useRecentPages } from "@/utils/app/useRecentPages";
+
+const { updateLabel } = useRecentPages();
 
 const { addToast, updateToast, removeToast } = useToast()
 const rules = useRules();
@@ -457,13 +460,14 @@ async function getBestiary() {
 	if (!success) {
 		bestiary.value = null;
 		addToast(error, { color: "error" });
-		;
 		return;
 	}
 	bestiary.value = data;
 	savedBestiary.value = bestiary.value;
 	isOwner.value = store.user?.id === bestiary.value.ownerId;
 	isEditor.value = (bestiary.value?.editors ?? []).map(e => e.userId).includes(store.user?.id ?? "");
+
+	updateLabel($route.path, bestiary.value.name);
 
 	if (!isOwner.value && !isEditor.value)
 		await $router.push(`/bestiary/view/${bestiary.value.id}`);
@@ -822,7 +826,7 @@ const getDraggableKey = (item: any) => {
 					<div v-if="isOwner || isEditor" class="create-tile">
 						<DropdownMenu>
 							<template #activator="{ props }">
-								<v-btn v-bind="props" variant="plain" :ripple="false">
+								<v-btn v-bind="props" variant="plain">
 									Add creature
 								</v-btn>
 							</template>
@@ -970,7 +974,7 @@ const getDraggableKey = (item: any) => {
 					cursor: pointer;
 
 					svg {
-						color: #536d8c;
+						color: orangered;
 					}
 				}
 
@@ -1036,24 +1040,25 @@ const getDraggableKey = (item: any) => {
 }
 
 .header-tile {
-	background-color: var(--color-surface-2);
+	background-color: orangered;
 	cursor: unset;
 	margin: 0 0rem 1rem;
 	padding: 1rem;
 	border-radius: 2px;
+	color: black;
 
 	h2 {
 		text-align: center;
 		text-wrap: nowrap;
 		overflow: hidden;
-		color: white;
 		max-width: 90vw;
+		color: black;
+		font-weight: bold;
 	}
 
 	.description {
 		max-height: 8rem;
 		font-size: small;
-		color: rgb(205, 205, 205);
 		overflow-y: hidden;
 		overflow-wrap: anywhere;
 

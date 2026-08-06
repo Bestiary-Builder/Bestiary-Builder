@@ -10,8 +10,12 @@ import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { useHotkey } from "vuetify";
+import { useRecentPages } from "@/utils/app/useRecentPages";
 
 const { addToast, updateToast } = useToast()
+const { updateLabel } = useRecentPages()
+
+
 const $route = useRoute();
 const data = ref<AutomationWithType[]>([]);
 const collection = ref<AutomationCollectionExtended | null>(null);
@@ -23,6 +27,8 @@ onMounted(async () => {
 	if (success) {
 		collection.value = data;
 		setSettingInputs();
+		updateLabel($route.path, collection.value.name);
+
 	}
 	else {
 		addToast(error, { color: "error" });

@@ -6,7 +6,6 @@ import { computed, nextTick, onMounted, onUnmounted, provide, ref, shallowRef, u
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
 import YAML from "yaml";
 import ImportAutomationUtil from "@/components/Automations/ImportAutomationUtil.vue";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import Markdown from "@/components/Global/Markdown.vue";
 import Editor from "@/components/StatblockEditor/Editor.vue";
 import VisualEditor from "@/components/VisualEditor/VisualEditor.vue";
@@ -15,6 +14,8 @@ import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { parseDescIntoAutomation } from "~/shared";
 import { useHotkey } from "vuetify";
+import { useRecentPages } from "@/utils/app/useRecentPages";
+
 
 const $router = useRouter();
 const $route = useRoute();
@@ -23,7 +24,8 @@ const aid = $route.params.aid as any;
 const data = ref<Statblock>();
 const rawInfo = ref<CreatureWithStats | null>(null);
 
-const { addToast, updateToast, removeToast } = useToast()
+const { addToast, updateToast, removeToast } = useToast();
+const { updateLabel } = useRecentPages()
 const visualEditorRef = useTemplateRef("VisualEditorRef");
 
 // load creature data
@@ -37,7 +39,7 @@ onMounted(async () => {
 		await loadRawInfo();
 		await getBestiary();
 		automationString.value = YAML.stringify(data.value.features[type][aid].automation) ?? YAML.stringify(null);
-
+		updateLabel($route.path, data.value.description.name);
 		removeToast(toastId)
 	}
 	else {
@@ -228,6 +230,7 @@ const saveStatblock2 = async (shouldNotify: boolean): Promise<boolean> => {
 			setTimeout(() => updateToast(toastId, { text: "Saved action!", prependIcon: "mdi-check" })
 				, 500);
 		isSavingCreature.value = false
+		updateLabel($route.path, data.value.description.name);
 		return true;
 	}
 	catch (err) {

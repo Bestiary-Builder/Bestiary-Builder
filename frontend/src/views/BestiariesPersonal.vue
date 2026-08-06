@@ -86,6 +86,8 @@ const saveOrder = async () => {
 const getDraggableKey = (item: any) => {
 	return item;
 };
+
+const newBestiaryIsOpen = ref(false)
 </script>
 
 <template>
@@ -96,7 +98,7 @@ const getDraggableKey = (item: any) => {
 			isCurrent: true
 		}
 	]">
-		<v-dialog max-width="750">
+		<v-dialog max-width="750" v-model="newBestiaryIsOpen">
 			<template #activator="{ props: activatorProps }">
 				<v-icon-btn icon="mdi:plus" label="Create new bestiary" inverted v-bind="activatorProps" size="24" />
 			</template>
@@ -152,5 +154,7 @@ const getDraggableKey = (item: any) => {
 				Create a bestiary
 			</v-btn>
 		</div>
+		<v-fab icon="mdi:plus" location="bottom end" app color="primary" @click="newBestiaryIsOpen = true"
+			size="large"></v-fab>
 	</div>
 </template>

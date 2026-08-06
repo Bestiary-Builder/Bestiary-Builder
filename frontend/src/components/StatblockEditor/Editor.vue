@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type * as Monaco from "monaco-editor";
 import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
-import { shallowRef, useTemplateRef, watch } from "vue";
+import { nextTick, shallowRef, useTemplateRef, watch } from "vue";
 import { useElementSize, watchDebounced } from "@vueuse/core";
 
 const { height = 250 } = defineProps<{ height?: number }>();
@@ -47,6 +47,10 @@ function handleMount(
 	);
 
 	editor.layout()
+
+	setTimeout(() => {
+		editorRef.value?.layout()
+	}, 1000)
 }
 
 function toggleMarkdown(
@@ -297,8 +301,7 @@ function toggleHeading(
 
 const wrapper = useTemplateRef("wrapper")
 const { width } = useElementSize(wrapper)
-watchDebounced(width, () => {
-	console.log("doing something")
+watchDebounced(width, async () => {
 	editorRef.value?.layout()
 }, { debounce: 500, maxWait: 1000 },
 )
@@ -321,11 +324,9 @@ watchDebounced(width, () => {
 			<v-icon-btn size="20" icon="mdi:format-header-3" text="Heading 3" @click="toggleHeading(editorRef!, 3)" />
 			<v-icon-btn size="20" icon="mdi:format-header-4" text="Heading 4" @click="toggleHeading(editorRef!, 4)" />
 		</div>
-		<div class="editor-container" :style="`height: ${height}px`">
-			<VueMonacoEditor ref="editor" v-model:value="model" theme="vs-dark"
-				:options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false, lineNumbers: 'off' }"
-				class="description-editor" height="100%" width="100%" language="markdown" @mount="handleMount" />
-		</div>
+		<VueMonacoEditor ref="editor" v-model:value="model" theme="vs-dark"
+			:options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false, lineNumbers: 'off' }"
+			class="description-editor" :height="`${height}px`" width="100%" language="markdown" @mount="handleMount" />
 	</div>
 </template>
 
