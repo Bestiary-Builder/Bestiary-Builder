@@ -46,6 +46,7 @@ function handleMount(
 		}
 	);
 
+	editor.layout()
 }
 
 function toggleMarkdown(

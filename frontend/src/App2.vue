@@ -64,8 +64,7 @@ const dismiss = () => {
                 </v-list-group>
                 <v-divider />
 
-                <v-list-item title="Characters" value="characters" to="/characters/personal"
-                    prepend-icon="mdi:account-group" />
+                <v-list-item title="Characters" value="characters" to="/characters" prepend-icon="mdi:account-group" />
                 <v-divider />
             </v-list>
             <template v-slot:append>
