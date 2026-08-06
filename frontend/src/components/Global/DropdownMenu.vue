@@ -42,7 +42,6 @@ const updateOpen = (value: boolean) => {
 			<slot name="activator" v-bind="{ props: activatorProps }" />
 		</template>
 		<slot />
-		asdfasdf
 	</v-menu>
 
 	<v-bottom-sheet v-else :model-value="isOpen" v-bind="sheetProps" @update:model-value="updateOpen">
