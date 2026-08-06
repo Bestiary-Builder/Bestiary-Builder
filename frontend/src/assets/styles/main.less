@@ -5,18 +5,16 @@ body {
 	font-family: var(--font-family-base);
 	color: var(--color-base);
 
-	position: relative;
-	width: 100%;
+	// position: relative;
+	// width: 100%;
 
 	text-rendering: optimizeSpeed;
-	min-height: 100vh;
-	overflow-x: hidden;
 }
 
-main {
-	width: 100vw;
-	min-height: 80vh;
-}
+// main {
+// 	width: 100vw;
+// 	min-height: 80vh;
+// }
 
 h1,
 h2,
@@ -105,9 +103,9 @@ select {
 }
 
 .content {
-	padding: 2rem 10vw;
+	padding: 3rem 5vw;
 	min-height: 100vh;
-	margin-top: calc(var(--breadcrumbs-height) + var(--navbar-height) + 1.5rem);
+	// margin-top: calc(var(--breadcrumbs-height) + var(--navbar-height) + 1.5rem);
 
 	& .markdown {
 		:not(.stat-block) h2 {
@@ -138,13 +136,13 @@ select {
 
 @media screen and (max-width: 1080px) {
 	.content {
-		padding: 1rem 2vw;
+		padding: 1rem 5vw;
 	}
 }
 
 @media screen and (min-width: 1081px) {
 	.content.less-wide {
-		padding: 2rem 25vw;
+		padding: 2rem 10vw;
 	}
 }
 

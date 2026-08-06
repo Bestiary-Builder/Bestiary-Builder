@@ -71,7 +71,7 @@ export const useToast = () => {
 	const removeToast = (id: number) => {
 		const toast = toasts.value.find(t => t.id === id)
 		if (!toast) return
-		toast.timeout = 50
+		toasts.value.splice(toasts.value.indexOf(toast))
 	}
 
 	const clearToasts = () => {

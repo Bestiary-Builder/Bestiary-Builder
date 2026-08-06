@@ -14,7 +14,7 @@ import * as directives from "vuetify/directives";
 import { createRulesPlugin } from "vuetify/labs/rules";
 
 // Vue-select
-import App from "@/App.vue";
+import App from "@/App2.vue";
 
 import router from "@/router";
 

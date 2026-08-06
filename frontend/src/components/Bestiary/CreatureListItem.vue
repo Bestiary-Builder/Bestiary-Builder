@@ -22,6 +22,7 @@ const emit = defineEmits<{
 			<p v-if="data.description.alignment">
 				{{ data?.description?.alignment }}
 			</p>
+			<p class="text-truncate"> {{ data?.description.image.substring(0, 20) }}</p>
 		</div>
 		<div class="right-side">
 			<v-icon-btn :text="`Copy ${data.description.name}`" icon="mdi:content-copy" @click="emit('copyCreature')"

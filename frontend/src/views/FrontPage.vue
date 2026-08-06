@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import type { GlobalStats } from "~/shared";
-import { onBeforeMount, ref } from "vue";
+import { onMounted, ref } from "vue";
 import dataFile from "@/assets/documents/home.md";
 import Markdown from "@/components/Global/Markdown.vue";
 import { useFetch } from "@/utils/utils";
 
 const stats = ref<null | GlobalStats>(null);
-onBeforeMount(async () => {
+onMounted(async () => {
 	const { success, data } = await useFetch<GlobalStats>("/api/stats");
 	if (success) {
 		stats.value = data;
@@ -38,7 +38,9 @@ onBeforeMount(async () => {
 				</ul>
 				<ul class="right">
 					<li>
-						Welcome to Bestiary Builder, <i>the</i> convenient Bestiary Creator for <span style="display: inline-block"><b>D&D 5e</b>,</span> designed for incredible integration with <b><a href="https://avrae.io/"> Avrae</a></b> and convenience of use!
+						Welcome to Bestiary Builder, <i>the</i> convenient Bestiary Creator for <span
+							style="display: inline-block"><b>D&D 5e</b>,</span> designed for incredible integration with
+						<b><a href="https://avrae.io/"> Avrae</a></b> and convenience of use!
 					</li>
 				</ul>
 			</div>
@@ -53,24 +55,27 @@ onBeforeMount(async () => {
 
 <style scoped lang="less">
 @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&display=block");
+
 .content {
 	z-index: 2;
 	position: relative;
 	padding-top: 0;
 }
+
 .article-header {
 	display: grid;
 	place-items: center;
 	position: relative;
 	height: 95svh;
-	overflow-x: clip;
-	padding-block: 7rem;
+	padding-block: 0rem;
 	margin-block-end: 3rem;
 	color: white;
+	font-family: "Space Mono", Roboto;
 
 	.header-content {
 		z-index: 1;
 		text-align: center;
+
 		h1 {
 			font-size: 12vw;
 			text-transform: uppercase;
@@ -78,6 +83,7 @@ onBeforeMount(async () => {
 			letter-spacing: 3px;
 		}
 	}
+
 	.header-image {
 		grid-column: 1 / -1;
 		position: absolute;
@@ -88,7 +94,7 @@ onBeforeMount(async () => {
 		object-fit: cover;
 		z-index: 0;
 		pointer-events: none;
-		transform-origin: top right;
+		transform-origin: top center;
 		scale: 1;
 	}
 
@@ -124,6 +130,7 @@ onBeforeMount(async () => {
 				color: white;
 			}
 		}
+
 		.right {
 			text-wrap: balance;
 			text-align: left;
@@ -133,6 +140,7 @@ onBeforeMount(async () => {
 			}
 
 			b {
+
 				&,
 				a {
 					color: orangered;
@@ -150,6 +158,7 @@ onBeforeMount(async () => {
 			.right {
 				text-align: left;
 				font-size: 1rem;
+
 				b {
 					font-size: 1rem;
 				}
@@ -163,6 +172,7 @@ onBeforeMount(async () => {
 }
 
 @keyframes header-image-animation {
+
 	85%,
 	100% {
 		opacity: 0.3;

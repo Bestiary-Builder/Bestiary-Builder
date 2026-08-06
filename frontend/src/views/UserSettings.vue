@@ -538,9 +538,4 @@ const srdOptions = [
 hr {
 	width: 100%;
 }
-
-.btn-icon {
-	color: orangered;
-	translate: 0 -3px;
-}
 </style>

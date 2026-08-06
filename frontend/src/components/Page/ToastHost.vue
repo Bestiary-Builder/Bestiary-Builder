@@ -8,7 +8,7 @@
         </template>
         <div v-else v-html="toast.text" />
         <template v-slot:actions v-if="toast.timeout < 0">
-            <v-btn color="white" variant="text" icon="mdi-close" @click="removeToast(toast.id)"></v-btn>
+            <v-btn color="black" variant="text" icon="mdi-close" @click="removeToast(toast.id)"></v-btn>
         </template>
     </v-snackbar>
 </template>

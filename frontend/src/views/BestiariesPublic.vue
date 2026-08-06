@@ -111,8 +111,8 @@ watch(debouncedSearch, async () => searchBestiaries());
 				<CollectionTile :data="bestiary" />
 			</RouterLink>
 		</div>
-		<div v-else class="zero-found">
-			<span v-if="viewMode !== 'Bookmarked'"> Did not find any Bestiaries with that name or tags.</span>
+		<div v-else class="zero-found text-center">
+			<span v-if="viewMode !== 'Bookmarked'"> No bestiaries found. </span>
 			<span v-else>You do not have any bookmarked bestiaries. View a Bestiary and click on the ⭐ icon to bookmark
 				it.</span>
 		</div>

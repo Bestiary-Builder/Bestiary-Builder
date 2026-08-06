@@ -331,19 +331,18 @@ function toggleHeading(
 	padding: .4rem
 }
 
-.editor-container {
-	resize: vertical;
-	overflow: auto;
-	min-height: 100px;
-}
+// .editor-container {
+// 	resize: vertical;
+// 	overflow: auto;
+// 	min-height: 100px;
+// }
 </style>
 
 <style lang="less">
 .monaco-wrapper-thing {
 	.monaco-editor {
 		min-height: 100px;
-		height: 100%;
-		width: 100%;
+
 	}
 
 	.monaco-editor,
@@ -362,26 +361,5 @@ function toggleHeading(
 		left: 20px !important;
 	}
 
-	.markdown-highlight {
-		color: #ff79c6;
-	}
-
-	.markdown-marker {
-		opacity: 0.5;
-	}
-}
-
-@media screen and (max-width: 1200px) {
-
-	.monaco-wrapper-thing,
-	.monaco-editor,
-	.editor-container {
-		max-width: 90vw;
-	}
-}
-
-.editor-container>div {
-	height: 100% !important;
-	min-height: 100px;
 }
 </style>

@@ -61,13 +61,13 @@ watchEffect(() => {
 <style lang="less">
 .breadcrumbs__container {
 	background-color: var(--color-surface-0);
-	padding: 0.7rem 9.5vw;
+	padding: 0.7rem 5vw;
 	box-shadow:
 		rgba(0, 0, 0, 0.19) 0px 10px 20px,
 		rgba(0, 0, 0, 0.23) 0px 6px 6px;
-	position: fixed;
-	top: 0;
+	position: static;
 	width: 100%;
+	// top: 0;
 	display: flex;
 	justify-content: space-between;
 	margin-top: var(--navbar-height);
@@ -100,13 +100,13 @@ watchEffect(() => {
 
 @media screen and (max-width: 1080px) {
 	.breadcrumbs__container {
-		padding: 1rem 2vw;
+		padding: 0.7rem 0vw;
 	}
 }
 
 @media screen and (min-width: 1080px) {
 	.breadcrumbs__container.less-wide {
-		padding: 0.7rem 25vw;
+		padding: 0.7rem 10vw;
 	}
 }
 
