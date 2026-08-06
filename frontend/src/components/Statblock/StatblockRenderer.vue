@@ -394,13 +394,13 @@ const render = (text: string, inline = false) => {
 					class="feature-description">
 					<b><i>Innate Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics">
 								(Psionics)</span>.</i></b>
-					<span class="feature-container__desc" v-html="render(displayInnateCasting(data, v2024), true)" />
+					<span class="feature-container__desc indented" v-html="render(displayInnateCasting(data, v2024))" />
 				</p>
 
 				<p v-if="showCasterCasting && data.spellcasting.casterSpells.castingClass && data.spellcasting.casterSpells.casterLevel && data.spellcasting.casterSpells.spellSlotList"
 					class="feature-description">
 					<b><i>Spellcasting</i></b>
-					<span class="feature-container__desc" v-html="render(displayCasterCasting(data, v2024))" />
+					<span class="feature-container__desc indented" v-html="render(displayCasterCasting(data, v2024))" />
 				</p>
 			</div>
 		</div>
@@ -423,7 +423,7 @@ const render = (text: string, inline = false) => {
 				<p v-if="showInnateCasting && data.spellcasting.innateSpells.displayAsAction"
 					class="feature-description">
 					<b><i>Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics"> (Psionics)</span>.</i></b>
-					<span class="feature-container__desc" v-html="render(displayInnateCasting(data, v2024), true)" />
+					<span class="feature-container__desc indented" v-html="render(displayInnateCasting(data, v2024))" />
 				</p>
 			</div>
 		</div>

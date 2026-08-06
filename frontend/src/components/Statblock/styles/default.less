@@ -169,6 +169,18 @@
 	padding-inline-start: 1.4rem;
 }
 
+
+:global(.indented p:has(strong):not(p:has(strong) ~ p:has(strong))) {
+	margin-top: .4rem;
+}
+
+:global(.indented p:has(strong)) {
+	display: inline-block;
+	text-indent: -10px;
+	margin-left: 10px
+}
+
+
 .stat-container-wrapper {
 	display: inline-block;
 }
@@ -215,6 +227,8 @@
 		border-bottom: 0px solid;
 	}
 }
+
+
 
 @media screen and (max-width: 1400px) {
 	.stat-block.v2024 {
