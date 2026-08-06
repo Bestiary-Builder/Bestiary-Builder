@@ -553,55 +553,68 @@ provide("setActionDescription", setDesc);
 			size="24" />
 	</Breadcrumbs>
 	<div v-if="data" class="content">
-		<div class="editor-field__container two-wide uneven">
-			<div>
-				<div>
+		<div class="pa-0">
+			<v-row>
+				<v-col cols="4">
 					<v-text-field v-model="data.features[type][aid].name" type="text" label="Feature name"
-						:minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength" variant="outlined" />
+						:minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength" variant="outlined"
+						hide-details />
 					<span v-if="isVisualEditor">
 						<input v-model="parityOptions.updateName" type="checkbox" style="scale: .7; translate: 0 4px">
 						<small style="font-size: x-small;"> <i>Updates the name of the first action in the automation
 								structure to this text while enabled.</i> </small>
 					</span>
+					<div style="margin-top: 1rem;">
+						<select v-model="toNavigateTo" class="ghost w-100" placeholder="Open other attack">
+							<option :value="[-1, -1]" disabled selected>
+								Open another action
+							</option>
+							<template v-for="aType, name in data.features" :key="name">
+								<optgroup v-if="aType.length > 0" :label="name">
+									<option v-for="action, index in aType" :key="index" :value="[name, index]">
+										{{ action.name }}
+									</option>
+								</optgroup>
+							</template>
+						</select>
+					</div>
+
+					<div v-if="!isVisualEditor && showDescriptionButtons">
+						<b> Descriptions: </b>
+						<span style="color: var(--color-destructive)"> Don't match. </span>
+						<p style="text-decoration: underline; font-size: smaller; cursor: pointer;"
+							@click="updateAutomationDescFromFeatureDesc">
+							Update from feature
+						</p>
+						<p style="text-decoration: underline; font-size: smaller; cursor: pointer"
+							@click="updateFeatureDescFromAutomationDesc">
+							Update from automation
+						</p>
+					</div>
+				</v-col>
+				<v-col cols="8">
+					<Editor v-model="data.features[type][aid].description" :height="100" />
+					<span v-if="isVisualEditor" class="sub-action">
+						<input v-model="parityOptions.updateDescription" type="checkbox">
+						<small> <i>Updates the last text node of the first action in the automation structure to this
+								text
+								while
+								enabled.</i> </small>
+					</span>
+				</v-col>
+			</v-row>
+		</div>
+		<div class="editor-field__container two-wide uneven">
+			<div>
+				<div>
+
 				</div>
 
-				<div style="margin-top: 1rem;">
-					<select v-model="toNavigateTo" class="ghost" placeholder="Open other attack">
-						<option :value="[-1, -1]" disabled selected>
-							Open another action
-						</option>
-						<template v-for="aType, name in data.features" :key="name">
-							<optgroup v-if="aType.length > 0" :label="name">
-								<option v-for="action, index in aType" :key="index" :value="[name, index]">
-									{{ action.name }}
-								</option>
-							</optgroup>
-						</template>
-					</select>
-				</div>
-				<div v-if="!isVisualEditor && showDescriptionButtons">
-					<b> Descriptions: </b>
-					<span style="color: var(--color-destructive)"> Don't match. </span>
-					<p style="text-decoration: underline; font-size: smaller; cursor: pointer;"
-						@click="updateAutomationDescFromFeatureDesc">
-						Update from feature
-					</p>
-					<p style="text-decoration: underline; font-size: smaller; cursor: pointer"
-						@click="updateFeatureDescFromAutomationDesc">
-						Update from automation
-					</p>
-				</div>
+
+
 			</div>
 
-			<LabelledComponent title="Description" for="description">
-				<Editor v-model="data.features[type][aid].description" :height="100" />
-				<span v-if="isVisualEditor" class="sub-action">
-					<input v-model="parityOptions.updateDescription" type="checkbox">
-					<small> <i>Updates the last text node of the first action in the automation structure to this text
-							while
-							enabled.</i> </small>
-				</span>
-			</LabelledComponent>
+
 		</div>
 
 		<div v-if="!isVisualEditor" class="editor">

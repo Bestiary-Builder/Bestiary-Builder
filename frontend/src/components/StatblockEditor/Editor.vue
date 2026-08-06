@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type * as Monaco from "monaco-editor";
 import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
-import { useResizeObserver } from "@vueuse/core";
-import { shallowRef, useTemplateRef } from "vue";
+import { shallowRef, useTemplateRef, watch } from "vue";
+import { useElementSize, watchDebounced } from "@vueuse/core";
 
 const { height = 250 } = defineProps<{ height?: number }>();
 
@@ -294,6 +294,14 @@ function toggleHeading(
 	);
 }
 
+
+const wrapper = useTemplateRef("wrapper")
+const { width } = useElementSize(wrapper)
+watchDebounced(width, () => {
+	console.log("doing something")
+	editorRef.value?.layout()
+}, { debounce: 500, maxWait: 1000 },
+)
 </script>
 
 <template>
