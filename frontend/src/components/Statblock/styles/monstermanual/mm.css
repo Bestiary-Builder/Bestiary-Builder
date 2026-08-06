@@ -50,6 +50,10 @@ body .v-card .stat-block.MonsterManual {
 		color: #4d1e20;
 	}
 
+	.feature-header {
+		font-weight: normal;
+	}
+	
 	.stat-table:first-of-type {
 		tbody>tr>td {
 			background-color: #ded4cc;
