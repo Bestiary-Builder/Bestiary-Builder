@@ -2,13 +2,13 @@
 import type { Ref } from "vue";
 import type { AttackInteraction, AttackModel, ButtonInteraction, EffectWithTarget, Features } from "~/shared";
 import { Icon } from "@iconify/vue";
-import { computed, inject } from "vue";
+import { computed, inject, ref } from "vue";
 import { useRoute } from "vue-router";
 import { useToast } from "@/utils/app/toast";
 import { activation_type, defaultNodes, displayNames } from "./util";
 
 const { addToast } = useToast();
-
+const isOpen = ref(false)
 const props = defineProps<{ context: string[]; name?: string }>();
 const $route = useRoute();
 const type = $route.params.type as keyof Features;
@@ -115,17 +115,19 @@ const addAndSelect = async (node: string, pasteCopied = false) => {
 		}
 		else { tree.push(JSON.parse(JSON.stringify(defaultNodes[node]))); }
 		currentEffect!.value = tree[tree.length - 1];
+		isOpen.value = false
 	}
 	catch (e) {
 		console.error(e);
 	}
+
 };
 
 const copiedEffect = inject<Ref<EffectWithTarget | null>>("copiedEffect");
 </script>
 
 <template>
-	<DropdownMenu v-if="displayNames" location="end center" origin="start center" offset="10% 0%">
+	<DropdownMenu v-if="displayNames" location="end center" origin="start center" offset="10% 0%" v-model="isOpen">
 		<template #activator="{ props }">
 			<div role="button" class="container" v-bind="props">
 				<span class="icon">
