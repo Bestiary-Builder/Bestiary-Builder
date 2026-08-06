@@ -50,7 +50,7 @@ const dismiss = () => {
 
                     <v-list-item title="My Bestiaries" value="personalBestiaries" to="/bestiaries/personal" link />
                     <v-list-item title="Explore" value="publicBestiaries" to="/bestiaries/public" link />
-                    <v-list-item title="Bookmarked" value="savedBestiaries" to="/bestiaries/public/saved" link />
+                    <!-- <v-list-item title="Bookmarked" value="savedBestiaries" to="/bestiaries/public/saved" link /> -->
                 </v-list-group>
                 <v-divider />
                 <v-list-group value="automations">
@@ -60,7 +60,7 @@ const dismiss = () => {
 
                     <v-list-item title="My Automations" value="personalAutomations" to="/automations/personal" link />
                     <v-list-item title="Explore" value="publicAutomations" to="/automations/public" link />
-                    <v-list-item title="Subscribed" value="savedAutomations" to="/automations/public/saved" link />
+                    <!-- <v-list-item title="Subscribed" value="savedAutomations" to="/automations/public/saved" link /> -->
                 </v-list-group>
                 <v-divider />
 
