@@ -55,12 +55,12 @@ const collectionConfigs: Record<CollectionType, CollectionConfig> = {
         labels: { itemName: "creature", itemNamePlural: "creatures", collectionName: "bestiary" },
     },
     automations: {
-        apiRoute: "automations",
+        apiRoute: "automation-collection",
         itemRoute: "automation",
         itemsKey: "automations",
         itemRawKey: "automation",
         addManyRoute: "addautomations",
-        parentIdField: "automationCollectionId",
+        parentIdField: "collectionId",
         labels: { itemName: "automation", itemNamePlural: "automations", collectionName: "automation collection" },
     },
 };

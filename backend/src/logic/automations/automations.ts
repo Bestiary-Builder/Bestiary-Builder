@@ -102,10 +102,11 @@ app.post("/api/automation/:id/update", requireUser, async (req, res) => {
 });
 
 app.post("/api/automation/add", requireUser, async (req, res) => {
+	console.log(req.body.data)
 	const user = req.user!;
 	if (!req.body.data)
 		return res.status(400).json({ error: "Automation data not found." });
-	const input = req.body.data as Partial<Automation>;
+	const input = req.body.data.automation as Partial<Automation>;
 	const preparedInput = prepareAutomationInput(input, "");
 	if ("error" in preparedInput)
 		return res.status(400).json({ error: preparedInput.error });

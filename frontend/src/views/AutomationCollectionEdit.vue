@@ -1,348 +1,855 @@
 <script setup lang="ts">
-import type { AttackModel, AutomationCollectionExtended, AutomationWithType } from "~/shared";
-import { onMounted, onUnmounted, reactive, ref, toValue, watch } from "vue";
-import { onBeforeRouteLeave, useRoute } from "vue-router";
+import type { AutomationWithType } from "~/shared";
+import { refDebounced, useLocalStorage } from "@vueuse/core";
+import { onMounted, ref, watch } from "vue";
 import Draggable from "vuedraggable";
-import YAML from "yaml";
+import { useRules } from "vuetify/labs/rules";
+import StatusIcon from "@/components/Bestiary/StatusIcon.vue";
+import UserBanner from "@/components/Bestiary/UserBanner.vue";
+import CRInput from "@/components/FormInputs/CRInput.vue";
 import Markdown from "@/components/Global/Markdown.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { useToast } from "@/utils/app/toast";
+import { creatureTypes } from "@/utils/constants";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
-import { useHotkey } from "vuetify";
-import { useRecentPages } from "@/utils/app/useRecentPages";
+import { useCollection } from "@/components/Bestiary/useCollection";
 
-const { addToast, updateToast } = useToast()
-const { updateLabel } = useRecentPages()
+const {
+	collection,
+	items,
+	editors,
+	isOwner,
+	isEditor,
+	bookmarked,
+	notices,
+	getCollection,
+	updateCollection,
+	toggleBookmark,
+	addEditor,
+	removeEditor,
+	createItem,
+	createManyItems,
+	deleteItem
+} = useCollection("automations")
 
+const { addToast, updateToast, removeToast } = useToast()
+const rules = useRules();
 
-const $route = useRoute();
-const data = ref<AutomationWithType[]>([]);
-const collection = ref<AutomationCollectionExtended | null>(null);
-let initialData = "";
-// get our data
+const srdCreatures = ref<string[]>([]);
 onMounted(async () => {
-	const { success, data, error } = await useFetch<AutomationCollectionExtended>(`/api/automation-collection/${$route.params.id}`);
+	const toastId = addToast("Loading...", { loading: true })
+	await getCollection()
+	removeToast(toastId)
+	if (collection.value?.name)
+		document.title = `${collection.value?.name.substring(0, 16)} | Bestiary Builder`;
 
-	if (success) {
-		collection.value = data;
-		setSettingInputs();
-		updateLabel($route.path, collection.value.name);
+	await useFetch<string[]>(`/api/srd-creatures/${store.user?.SRDVersion === "SRD_2024" ? "2024" : "2014"}/list`).then(({ success, data, error }) => {
+		if (success)
+			srdCreatures.value = data;
 
+		if (error)
+			addToast(error, { color: "error" })
+	});
+});
+
+const searchText = ref("")
+const searchTextDebounced = refDebounced(searchText, 500, { maxWait: 1000 })
+
+
+const searchOptions = ref({
+	tags: [] as string[],
+	minCr: 0,
+	maxCr: 30,
+	env: "",
+	faction: ""
+});
+
+
+const sortMode = useLocalStorage("sortModeForAutomations", "Alphabetically");
+
+const sortCreatures = () => {
+	if (!items.value)
+		return;
+	if (sortMode.value === "Custom") {
+		// Do nothing, order as recieved
+		return items.value;
+	}
+	if (sortMode.value === "Alphabetically") {
+		items.value.sort((a, b) => {
+			const nameA = a.name.toLowerCase();
+			const nameB = b.name.toLowerCase();
+			if (nameA < nameB)
+				return -1;
+			if (nameA > nameB)
+				return 1;
+			return 0;
+		});
+	}
+	else if (sortMode.value === "Creature Type") {
+		items.value.sort((a, b) => {
+			const nameA = (Array.isArray(a.automation) ? a.automation[0]?.activation_type : a.automation?.activation_type) ?? 0;
+			const nameB = (Array.isArray(b.automation) ? b.automation[0]?.activation_type : b.automation?.activation_type) ?? 0;
+			if (nameA < nameB)
+				return -1;
+			if (nameA > nameB)
+				return 1;
+			return 0;
+		});
+	}
+
+
+	return items.value;
+};
+
+function filterCreature(data: AutomationWithType) {
+	const filterChecks: boolean[] = [];
+	if (searchTextDebounced.value !== "")
+		filterChecks.push(data.name.toLowerCase().includes(searchTextDebounced.value.toLowerCase().trim()));
+
+	return filterChecks.every(_ => _);
+}
+
+
+const saveOrder = async () => {
+	if (items.value && collection.value) {
+		const orderIds = items.value.map(creature => creature.id);
+		await useFetch(`/api/automation-collection/${collection.value.id}/creatures/order`, "POST", orderIds);
+	}
+};
+
+async function exportCollection(asFile: boolean) {
+	if (asFile) {
+		const file = new File(
+			[
+				JSON.stringify(
+					items.value?.map(obj => obj.automation),
+					null,
+					2
+				)
+			],
+			"items.txt",
+			{
+				type: "text/plain"
+			}
+		);
+
+		// https://javascript.plainenglish.io/javascript-create-file-c36f8bccb3be
+		const link = document.createElement("a");
+		const url = URL.createObjectURL(file);
+
+		link.href = url;
+		link.download = file.name;
+		document.body.appendChild(link);
+		link.click();
+
+		document.body.removeChild(link);
+		window.URL.revokeObjectURL(url);
 	}
 	else {
-		addToast(error, { color: "error" });
+		await navigator.clipboard.writeText(
+			JSON.stringify(
+				items.value?.map(obj => obj.automation),
+				null,
+				2
+			)
+		);
+		addToast("Exported this collection to your clipboard.");
+		void getUmami()?.track("Export collection to clipboard");
 	}
+}
 
-	await getAutomations();
-});
 
-const activeAttackIndex = ref(-1);
+// const importFields = reactive({
+// 	critterDbId: "",
+// 	bestiaryBuilderJson: ""
+// })
 
-const addAttack = async (name: string, automation: null | AttackModel | AttackModel[], shouldNotify = true, description = "") => {
-	if (!collection.value)
-		return;
-	if (name === "New Automation") {
-		addToast("Automation must have a non-default name!");
-		return;
-	}
-	const { success, error } = await useFetch<AutomationWithType>(`/api/automation/add`, "POST", { name, automation, description, collectionId: collection.value.id });
-	if (success) {
-		await getAutomations();
-		if (shouldNotify)
-			addToast(`Successfully added automation: ${name}`);
-		activeAttackIndex.value = data.value.length - 1;
-		getUmami()?.track("Add automation");
-	}
-	else {
-		addToast(error, { color: "error" });
-		if (error.includes("includes blocked words or phrases"))
-			void getUmami()?.track("Blocked words", { error });
-	}
-};
 
-const deleteAutomation = async () => {
-	const _id = data.value[activeAttackIndex.value].id;
-	const { success, error } = await useFetch(`/api/automation/${_id.toString()}/delete`);
-	if (success) {
-		addToast("Successfully deleted the automation!");
-		void getUmami()?.track("Delete automation");
-		await getAutomations();
-		activeAttackIndex.value = -1;
-	}
-	else {
-		addToast(error, { color: "error" });
-		;
-	}
-};
+// async function importCreaturesFromBestiaryBuilder() {
+// 	let creaturesToImport;
+// 	if (importFields.bestiaryBuilderJson.length === 0) {
+// 		addToast("No JSON given", { color: "error" });
+// 		return;
+// 	}
+// 	try {
+// 		creaturesToImport = JSON.parse(importFields.bestiaryBuilderJson);
+// 	}
+// 	catch (e) {
+// 		addToast("Something is wrong with the format of your JSON", { color: "error" });
+// 		return;
+// 	}
 
-const getAutomations = async () => {
-	if (!collection.value)
-		return;
-	const { success, data: rData, error } = await useFetch<AutomationWithType[]>(`/api/automation-collection/${collection.value.id}/automations`);
-	if (success)
-		data.value = rData;
-	else addToast(error, { color: "error" });
-	;
-	initialData = JSON.stringify(data.value);
-};
+// 	if (!Array.isArray(creaturesToImport))
+// 		creaturesToImport = [creaturesToImport];
 
-const exportMyAutomations = async () => {
-	await navigator.clipboard.writeText(JSON.stringify(data.value.map(a => a.automation)));
-	addToast("Copied all automation to clipboard!");
-};
+// 	addToast("Importing creatures has started. This may take a while.");
+// 	const { success, data, error } = await useFetch<{ error?: string; ignoredCreatures: { creature: string; error: string }[] }>(`/api/bestiary/${collection.value?.id.toString()}/addcreatures`, "POST", creaturesToImport);
 
-const showImportModal = ref(false);
-const importedListOfAutomation = ref("");
+// 	if (!success) {
+// 		notices.value = {};
+// 		addToast(error, { color: "error" });
+// 	}
+// 	else if (data.error) {
+// 		addToast("The import was completed with errors.", { color: "error" });
+// 		notices.value.Errors = data.error;
+// 		for (const error of data.ignoredCreatures)
+// 			notices.value[error.creature] = error.error;
+// 	}
+// 	else {
+// 		addToast("Importing has finished!", { color: "success" });
+// 		void getUmami()?.track("Import bestiary from BestiaryBuilder");
+// 	}
 
-const importAutomations = async () => {
-	const parsedAutomation = YAML.parse(importedListOfAutomation.value) as any[];
-	for (const a of parsedAutomation) {
-		let name: string;
-		if (a == null)
-			continue;
-		if (Array.isArray(a))
-			name = a[0].name.replace(" (1H)", "").replace(" (2H)", "");
-		else name = a.name;
-		await addAttack(name, a, false);
-	}
-	addToast("Done importing automation!", { color: "info" });
-	showImportModal.value = false;
-};
-
-onBeforeRouteLeave(() => {
-	// when the user leaves this route
-	if (initialData !== JSON.stringify(data.value)) {
-		const answer = window.confirm("Do you really want to leave? you have unsaved changes!");
-		if (!answer)
-			return false;
-	}
-});
-
-const unloadHandler = (event: Event) => {
-	if (initialData !== JSON.stringify(data.value)) {
-		window.confirm("Do you really want to leave? you have unsaved changes!");
-		event.preventDefault();
-		event.returnValue = true;
-	}
-};
-
-onMounted(() => {
-	window.addEventListener("beforeunload", unloadHandler);
-});
-onUnmounted(() => {
-	window.removeEventListener("beforeunload", unloadHandler);
-});
+// 	await getCollection();
+// }
 
 
 
-const selectedCharacter = ref<any>();
-watch(selectedCharacter, async () => {
-	if (activeAttackIndex.value < 0) {
-		addToast("No automation selected.");
-		return;
-	}
-	let automation: null | AttackModel | AttackModel[] = data.value[activeAttackIndex.value].automation;
-
-	if (automation === null) {
-		addToast("You cannot import empty automation.");
-		return;
-	}
-	if (!Array.isArray(automation))
-		automation = [automation];
-
-	const toasterId = addToast("Waiting on the Avrae API...", { loading: true });
-	const { success, error } = await useFetch(`/api/character/${selectedCharacter.value.upstream}/attacks/add`, "POST", automation);
-
-	if (success) {
-		updateToast(toasterId, { text: `Successfully imported ${data.value[activeAttackIndex.value].name} to ${selectedCharacter.value.name}`, timeout: 2500 });
-		getUmami()?.track("Imported Attack to Avrae");
-	}
-	else {
-		addToast(error, { color: "error" });
-	}
-});
-
-const showCreateModal = ref(false);
-const createOptions = reactive({
-	name: "",
-	description: "",
-});
-
-const resetCreateInput = () => {
-	createOptions.name = "";
-	createOptions.description = "";
-};
-
-const cancelCreate = () => {
-	resetCreateInput();
-};
-
+// draggable stuff
 const getDraggableKey = (item: any) => {
 	return item;
 };
 
-const saveOrder = async () => {
-	const orderIds = data.value.map(i => i.id);
-	await useFetch("/api/automation-collection/order", "POST", orderIds);
-};
+// misc
+const editorToAdd = ref("");
+const showWarning = ref(false);
+const isExpanded = ref(false);
 
-const personal = ref(true);
 
-const settingOptions = ref({
-	name: "",
-	description: "",
-	tags: [] as string[],
-	status: "",
-	image: ""
+
+
+watch(() => collection.value?.status, (newValue): void => {
+	if (newValue === "private" || newValue === "public")
+		showWarning.value = false;
+	if (newValue === "public")
+		showWarning.value = true;
 });
 
-const setSettingInputs = () => {
-	if (!collection.value)
-		return;
-	settingOptions.value = {
-		name: toValue(collection.value.name),
-		description: toValue(collection.value.description),
-		tags: toValue(collection.value.tags),
-		status: toValue(collection.value.status),
-		image: toValue(collection.value.image)
-	};
-};
+watch(() => collection.value?.name, (): void => {
+	if (collection.value?.name)
+		document.title = `${collection.value?.name.substring(0, 16)} | Bestiary Builder`;
+});
 
-const updateCollection = async () => {
-	if (!collection.value)
-		return;
-	const { success, data, error } = await useFetch<AutomationCollectionExtended>(`/api/automation-collection/${collection.value.id}/update`, "POST", toValue(settingOptions));
-	if (success) {
-		addToast("Updated collection!", { color: "success" });
-		collection.value = data;
-	}
-	else {
-		addToast(error, { color: "error" });
-	}
-};
-useHotkey("cmd+s", async () => await updateCollection(), { inputs: true })
 </script>
 
 <template>
-	<Breadcrumbs :routes="[
-		{
-			path: '/automations/personal',
-			text: 'My Automation',
-			isCurrent: false
-		},
-		{
-			path: '',
-			text: collection ? collection.name : 'Unknown name',
-			isCurrent: true
-		}
-	]">
-		<!-- <v-icon-btn text="Add attack" @click="showCreateModal = true" icon="mdi:plus" size="24" />
-		<v-icon-btn text="Settings" @click="showSettingsModal = true" icon="mdi:cog" size="24" /> -->
-		<v-icon-btn text="Import automation" @click="showImportModal = true" icon="mdi:import" size="24"
-			v-tooltip="'Settings'" />
-		<v-icon-btn text="Export automation" @click="exportMyAutomations()" icon="mdi:export" size="24"
-			v-tooltip="'Export collection'" />
-	</Breadcrumbs>
-	<div v-if="collection" class="content less-wide">
-		<h1> {{ collection?.name }}</h1>
-		<ul class="tag-container">
-			<li v-for="tag of collection?.tags.sort()">
-				{{ tag }}
-			</li>
-		</ul>
+	<div>
+		<Breadcrumbs v-if="collection" :routes="[
+			{
+				path: isOwner || isEditor ? '/bestiaries/personal' : '/bestiaries/public',
+				text: isOwner || isEditor ? 'My Bestiaries' : 'Bestiaries',
+				isCurrent: false
+			},
+			{
+				path: '',
+				text: collection?.name,
+				isCurrent: true
+			}
+		]">
+			<DropdownMenu v-if="isEditor || isOwner">
+				<template #activator="{ props }">
+					<v-icon-btn text="Create creature" icon="mdi:plus" size="24" v-bind="props" class="inverted"
+						v-tooltip="'Create creature'" />
+				</template>
+				<v-card min-width="300" class="text-center pa-4" title="Create automation">
+					<v-card-actions class="d-flex flex-column align-center justify-center">
+						<v-btn size="x-large" @click="createItem({ name: 'my new name' })">
+							From scratch
+						</v-btn>
+						<div class="d-flex align-center my-4 w-100">
+							<v-divider class="flex-grow-1" />
+							<span class="mx-4 text-medium-emphasis">OR</span>
+							<v-divider class="flex-grow-1" />
+						</div>
 
-		<Markdown :text="collection.description" />
-		<h2> Actions </h2>
-		<Draggable :key="Math.random()" :list="data" group="bestiaries" :animation="150" :item-key="getDraggableKey"
-			class="attack-container" :handle="store.isMobile ? '.handle' : ''" :disabled="!personal" tag="ol"
-			@change="saveOrder">
-			<template #item="{ element, index }">
-				<li class="attack-tile">
-					<h3>
-						{{ element.name }}
-					</h3>
-					<p> {{ element.description }}</p>
-				</li>
-			</template>
-			<template #footer>
-				<li class="ghost attack-tile" @click="showCreateModal = true">
-					Add attack
-				</li>
-			</template>
-		</Draggable>
+					</v-card-actions>
+				</v-card>
+			</DropdownMenu>
+
+			<v-dialog v-if="isOwner" max-width="950">
+				<template #activator="{ props }">
+					<v-icon-btn text="Collection Settings" icon="mdi:cog" size="24" v-bind="props"
+						v-tooltip="'Settings'" />
+				</template>
+
+				<template #default="{ isActive }">
+					<v-card title="Collection Settings">
+						<v-sheet class="pa-4" max-width="1800" rounded="lg" width="100%">
+							<v-form>
+								<div class="grid-two">
+									<v-text-field v-model="collection.name" label="Name"
+										:maxlength="store.limits?.nameLength" :min-length="store.limits?.nameMin"
+										:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]"
+										class="mb-4" />
+									<v-text-field v-model="collection.image" label="Image" class="mb-4" />
+								</div>
+
+								<v-textarea v-model="collection.description"
+									:max-length="store.limits?.descriptionLength"
+									:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]"
+									label="Description" class="mb-4" hint="Supports Markdown" persistent-hint counter />
+								<div class="grid-two">
+									<div>
+										<v-select v-model="collection.status" label="Status"
+											:items="[{ value: 'private', title: 'Private' }, { value: 'unlisted', title: 'Unlisted' }, { value: 'public', title: 'Public' }]" />
+									</div>
+									<v-select v-model="collection.tags" multiple :items="store.tags || []" label="Tags"
+										chips closable-chips />
+								</div>
+
+								<div class="editor-block">
+									<h3 style="margin-bottom: .5rem">
+										Editors
+									</h3>
+									<small>
+										Editors can add, edit, and remove items. <br>
+										Editors cannot edit the Collection itself. <br>
+										Editors cannot add other editors. The owner can remove editors at any time.
+									</small>
+									<div class="editor-container" style="margin-top: .5rem">
+										<div v-for="editor in editors" :key="editor.id" class="editor-list">
+											<p>
+												<UserBanner :id="editor.id" />
+												<span v-if="isOwner" role="button" class="delete-creature"
+													@click="removeEditor(editor.id)"> <span>🗑️</span> </span>
+											</p>
+										</div>
+									</div>
+									<div class="grid-two">
+										<v-text-field v-model="editorToAdd" inputmode="numeric" label="Discord user ID"
+											:rules="[rules.integer('This must be a numeric Discord User ID.')]"
+											pattern="[0-9]*" />
+										<v-btn class="mz-auto" @click="addEditor(editorToAdd)">
+											Add
+										</v-btn>
+									</div>
+								</div>
+								<p v-if="showWarning" class="warning">
+									By changing the Collection status to public I confirm that I am the copyright holder
+									of the content
+									within, or that I have permission from the copyright holder to share this content. I
+									hereby agree to
+									the <RouterLink to="../content-policy">
+										Content Policy
+									</RouterLink> and agree to
+									be fully liable for the content within. I affirm that the content does not include
+									any official
+									non-free D&D content. Bestiaries that breach these terms may have their status
+									changed to private or
+									be outright removed, and may result in a ban if the content breaches our content
+									policy.
+								</p>
+							</v-form>
+						</v-sheet>
+						<v-card-actions>
+							<v-spacer />
+							<v-btn text="Save changes" color="green" size="large" @click="updateCollection" />
+							<v-btn text="Cancel" size="large" @click="isActive.value = false" />
+						</v-card-actions>
+					</v-card>
+				</template>
+			</v-dialog>
+			<DropdownMenu>
+				<template #activator="{ props }">
+					<v-icon-btn text="Search automations" icon="mdi:tag" size="24" v-bind="props"
+						v-tooltip="'Search automations'" />
+				</template>
+				<v-card min-width="300" class="text-center pb-2 pa-4" title="Search collection">
+					<v-card-actions class="d-flex flex-column align-center justify-center" min-width="200">
+						<v-select v-model="sortMode"
+							:items="['Custom', 'Alphabetically', 'CR Ascending', 'CR Descending', 'Creature Type']"
+							label="Collection sort type" width="100%" />
+						<div class="grid-two">
+							<v-text-field v-model="searchText" label="Name" width="200" />
+							<v-select v-model="searchOptions.tags" :items="creatureTypes" label="Creature type" multiple
+								chips closable-chips width="200" />
+							<CRInput v-model="searchOptions.minCr" label="Minimum CR" />
+							<CRInput v-model="searchOptions.maxCr" label="Maximum CR" />
+							<v-text-field v-model="searchOptions.faction" label="Faction" width="200" />
+							<v-text-field v-model="searchOptions.env" label="Environment" width="200" />
+						</div>
+					</v-card-actions>
+				</v-card>
+			</DropdownMenu>
+
+			<v-dialog v-if="isOwner" max-width="750">
+				<template #activator="{ props }">
+					<v-icon-btn text="Import automations" icon="mdi:import" size="24" v-bind="props"
+						v-tooltip="'Import automations'" />
+				</template>
+
+				<template #default="{ isActive }">
+					<v-card title="Import Collection">
+						<v-sheet class="pa-4" max-width="1800" rounded="lg" width="100%">
+							<div class="grid-two">
+
+							</div>
+						</v-sheet>
+						<v-card-actions>
+							<v-spacer />
+							<v-btn text="Cancel" size="large" @click="isActive.value = false" />
+						</v-card-actions>
+						<v-sheet v-if="JSON.stringify(notices) !== '{}'">
+							<p class="warning">
+								<b>Please note the following for this import:</b>
+							</p>
+							<div v-for="(notice, creature) in notices" :key="creature">
+								<h3>
+									{{ creature }}
+								</h3>
+								<p>
+									{{ notice }}
+								</p>
+							</div>
+						</v-sheet>
+					</v-card>
+				</template>
+			</v-dialog>
+
+			<DropdownMenu>
+				<template #activator="{ props }">
+					<v-icon-btn text="Export collection" icon="mdi:export" size="24" v-bind="props" />
+				</template>
+				<v-card min-width="300" class="text-center pb-2 pa-4" title="Export collection">
+					<v-card-actions class="d-flex flex-column align-center justify-center" min-width="200">
+						<v-btn class="w-100" color="green" size="large" @click="exportCollection(false)">
+							Clipboard
+						</v-btn>
+						<v-btn class="w-100" color="green" size="large" @click="exportCollection(true)">
+							File
+						</v-btn>
+					</v-card-actions>
+				</v-card>
+			</DropdownMenu>
+		</Breadcrumbs>
+		<div class="content">
+			<div v-if="collection" class="bestiary">
+				<div class="left-side-container">
+					<div class="content-tile header-tile">
+						<h2>{{ collection.name ? collection.name : "..." }}</h2>
+						<Markdown class="description" :class="{ expanded: isExpanded }"
+							:text="collection.description || 'No description set.'" tag="p" />
+						<button v-if="collection.description.length > 0" v-tooltip="'Expand description'"
+							class="expand-btn" aria-label="Expand description" @click="isExpanded = !isExpanded">
+							{{ isExpanded ? "▲" : "▼" }}
+						</button>
+						<hr>
+						<div class="footer" :class="{ 'three-wide': isOwner }">
+							<UserBanner :id="collection.ownerId" />
+							<div v-tooltip.left="collection.status">
+								<StatusIcon :icon="collection.status" />
+							</div>
+							<div>{{ items?.length }}<v-icon icon="mdi:paw" size="20" /></div>
+							<div v-if="!isOwner" role="button" aria-label="Toggle bookmark status" class="bookmark"
+								@click.prevent="toggleBookmark">
+								<span v-if="bookmarked" v-tooltip="'Unbookmark this collection'"
+									class="bookmark-enabled"><v-icon size="20" icon="mdi-star" /></span>
+								<span v-else v-tooltip="'Bookmark this collection'" class="bookmark-disabled"><v-icon
+										size="20" icon="mdi-star" /></span>
+							</div>
+						</div>
+					</div>
+					<v-skeleton-loader type="heading, text, text" v-if="items === null" />
+					<Draggable v-else :list="sortCreatures()" :animation="500" class="tile-container list-tiles"
+						:item-key="getDraggableKey" :disabled="sortMode !== 'Custom'" @change="saveOrder">
+						<template #item="{ element }">
+							<div>
+								{{ element.name }}
+							</div>
+						</template>
+					</Draggable>
+
+					<div v-if="isOwner || isEditor" class="create-tile">
+						<DropdownMenu>
+							<template #activator="{ props }">
+								<v-btn v-bind="props" variant="plain">
+									Add action
+								</v-btn>
+							</template>
+							<v-card min-width="300" class="text-center pa-4" title="Create automation">
+								<v-card-actions class="d-flex flex-column align-center justify-center">
+									<v-btn size="x-large" @click="createItem({ name: 'My Action' })">
+										From scratch
+									</v-btn>
+								</v-card-actions>
+							</v-card>
+						</DropdownMenu>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 </template>
 
-<style scoped lang="less">
+<style lang="less">
+@import url("@/components/FormInputs/styles/number-input.less");
 @import url("@/assets/styles/mixins.less");
+
+.flow-vertically {
+	display: flex;
+	flex-direction: column;
+	gap: 0.3rem;
+	margin: 0.5rem 0;
+
+	label {
+		font-weight: bold;
+		text-decoration: underline;
+	}
+}
+
+.flow-horizontally {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 1rem;
+}
 
 .two-wide {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
-	gap: 0rem 1rem;
+	gap: 1rem;
 }
 
-.selected-container {
-	display: flex;
-
-	button {
-		translate: 0 4px;
-	}
-}
-
-.modal-desc {
+.list-tiles {
 	display: flex;
 	flex-direction: column;
-	gap: 0.5rem;
-}
+	gap: 1rem;
+	position: relative;
+	overflow: scroll;
+	max-height: 80vh;
+	overflow-x: clip;
+	padding: 0rem;
+	margin-top: 1rem;
 
-.content {
-	display: flex;
-	flex-direction: column;
-	gap: 0.5rem;
-}
-
-.attack-container {
-	display: flex;
-	flex-direction: column;
-	gap: 0.5rem;
-	list-style-type: none;
-	margin: 0;
-	padding: 0;
-
-	& .attack-tile {
-		background-color: var(--color-surface-1);
-		padding: 0.5rem;
+	.content-tile {
+		height: fit-content !important;
+		background: var(--color-surface-1);
+		color: white;
+		padding: 1rem;
+		box-shadow:
+			rgba(0, 0, 0, 0.19) 0px 10px 20px,
+			rgba(0, 0, 0, 0.23) 0px 6px 6px;
+		cursor: pointer;
+		transition: all 1s;
+		transition-timing-function: cubic-bezier(0.06, 0.975, 0.195, 0.985);
 		border-radius: 2px;
+		border-radius: 3px;
 
-		&.ghost {
-			background-color: unset;
-			font-style: italic;
-			cursor: pointer;
+		h3 {
+			font-size: 1.5rem;
+		}
+
+		&.creature-tile {
+			display: flex;
+			flex-direction: row;
+			flex-wrap: nowrap;
+			justify-content: space-between;
+
+			.left-side {
+
+				span,
+				p {
+					font-style: italic;
+					font-size: 0.85rem;
+				}
+
+				.cr {
+					color: orangered;
+					width: 3rem;
+					display: inline-block;
+				}
+			}
+
+			.right-side {
+				display: flex;
+				flex-direction: row;
+				gap: 0.5rem;
+
+				a {
+					text-decoration: none;
+				}
+
+				span,
+				button {
+					background: none;
+					border: none;
+					color: orangered;
+					font-size: 1.2rem;
+					display: flex;
+					align-items: center;
+					height: 100%;
+					cursor: pointer;
+
+					svg {
+						color: orangered;
+					}
+				}
+
+				button {
+					.scale-on-hover(1.2);
+
+					&:hover {
+						overflow: visible;
+					}
+				}
+			}
+
+			&:hover {
+				background-color: #484544;
+			}
 		}
 	}
 }
 
-.tag-container {
-	list-style-type: none;
-	margin: 0;
-	padding: 0;
+.create-tile {
+	padding-top: 1rem;
+	text-align: center;
+	text-decoration: underline;
 
-	li {
-		display: inline-block;
-		font-size: smaller;
-		background-color: var(--color-surface-3);
-		padding: 0.5rem;
-		border-radius: 16px;
-		margin-right: 0.5rem;
-		font-weight: bold;
+	span {
+		cursor: pointer;
 	}
 }
-</style>
 
-<style>
-.markdown img {
-	max-width: 250px;
+@media screen and (max-width: 842px) {
+	.list-tiles {
+		max-height: 40vh;
+
+		.content-tile {
+			padding: 0.5rem;
+
+			h3 {
+				font-size: 1rem;
+			}
+
+			&.creature-tile {
+				.left-side span {
+					font-size: 0.6rem;
+				}
+
+				.right-side {
+					width: 30%;
+					gap: 0.3rem;
+					justify-content: space-evenly;
+
+					span {
+						font-size: 0.9rem;
+
+						&.cr {
+							width: 4rem;
+							justify-content: right;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+.header-tile {
+	background-color: orangered;
+	cursor: unset;
+	margin: 0 0rem 1rem;
+	padding: 1rem;
+	border-radius: 2px;
+	color: black;
+
+	h2 {
+		text-align: center;
+		text-wrap: nowrap;
+		overflow: hidden;
+		max-width: 90vw;
+		color: black;
+		font-weight: bold;
+	}
+
+	.description {
+		max-height: 8rem;
+		font-size: small;
+		overflow-y: hidden;
+		overflow-wrap: anywhere;
+
+		&.expanded {
+			max-height: unset;
+		}
+	}
+
+	.description:not(.expanded) {
+		-webkit-mask-image: linear-gradient(180deg, #000 80%, transparent);
+		mask-image: linear-gradient(180deg, #000 80%, transparent);
+	}
+
+	.footer {
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr 1fr;
+		font-size: 1rem;
+
+		margin-top: 0.5rem;
+
+		&.three-wide {
+			grid-template-columns: 1fr 1fr 1fr;
+		}
+
+		div {
+			text-align: center;
+		}
+
+		div:first-of-type {
+			text-align: left;
+		}
+
+		div:last-of-type {
+			text-align: right;
+		}
+	}
+}
+
+@media screen and (max-width: 842px) {
+	.header-tile {
+		padding: 0.5rem;
+
+		.description {
+			font-size: xx-small;
+		}
+
+		.footer {
+			font-size: 0.7rem;
+			grid-template-columns: 2fr 1fr 1fr 1fr;
+
+			&.three-wide {
+				grid-template-columns: 2fr 1fr 1fr;
+			}
+		}
+	}
+}
+
+.bestiary {
+	display: grid;
+	gap: 2rem;
+	grid-template-columns: 1fr 1fr;
+}
+
+@media screen and (max-width: 1080px) {
+	.list-tiles {
+		padding: 0;
+
+		.content-tile.creature-tile:hover {
+			background-color: #464343;
+			scale: 1;
+		}
+	}
+
+	.bestiary {
+		grid-template-columns: 1fr;
+	}
+}
+
+.pin-notice,
+.expand-btn {
+	float: right;
+	cursor: pointer;
+}
+
+.unpin-button {
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+.expand-btn {
+	border: none;
+	background: none;
+	color: orangered;
+	font-size: 1.6rem;
+	translate: 0 -20px;
+
+	transition: background-color 0.3s ease-in-out;
+
+	&:hover {
+		background-color: var(--color-surface-0);
+	}
+}
+
+.no-creature-text {
+	font-size: 1.3rem;
+	text-align: center;
+	margin-top: 1rem;
+}
+
+.bookmark {
+	cursor: pointer;
+	font-size: 1.2rem;
+	color: goldenrod;
+
+	.bookmark-disabled {
+		filter: grayscale(100%);
+		transition: filter 0.3s ease;
+
+		&:hover {
+			filter: grayscale(0%);
+		}
+	}
+
+	.bookmark-enabled {
+		filter: grayscale(0%);
+		transition: filter 0.3s ease;
+
+		&:hover {
+			filter: grayscale(100%);
+		}
+	}
+}
+
+.slide-fade-enter-active {
+	transition: all 0.3s ease-out;
+}
+
+.slide-fade-leave-active {
+	transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.fade-enter-from,
+.fade-leave-to {
+	transform: translateY(-10px);
+	opacity: 0;
+}
+
+
+.fade-enter-active {
+	transition: all 0.2s ease-out;
+}
+
+.fade-leave-active {
+	transition: all 0.2s ease-out;
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+	opacity: 0;
+}
+
+.editor-block {
+	margin-top: 1rem;
+
+	.editor-list p {
+		display: flex;
+		gap: 1rem;
+		margin: 1rem 0;
+	}
+}
+
+.warning {
+	color: var(--color-destructive);
+	margin-top: 0.5rem;
+}
+
+.editor-container {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+}
+
+.v-select.drop-up.vs--open {
+	border-radius: 0 0 4px 4px;
+	border-top-color: transparent;
+	border-bottom: 1px solid var(--vs-border-color);
 }
 </style>
