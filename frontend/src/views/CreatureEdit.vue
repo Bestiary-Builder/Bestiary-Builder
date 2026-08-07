@@ -61,6 +61,7 @@ const loadRawInfo = async () => {
 		bestiary.value = data;
 		isOwner.value = store.user?.id === bestiary.value.ownerId;
 		isEditor.value = (bestiary.value?.editors ?? []).map(e => e.userId).includes(store.user?.id ?? "");
+
 		if (isOwner.value || isEditor.value)
 			shouldShowEditor.value = true;
 

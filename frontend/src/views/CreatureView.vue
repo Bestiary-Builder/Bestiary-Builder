@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { BestiaryExtended, CreatureWithStats } from "~/shared";
 import { onMounted, ref } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import CopyCreature from "@/components/Bestiary/CopyCreature.vue";
 import ExportCreature from "@/components/Bestiary/ExportCreature.vue";
 import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
@@ -10,11 +10,14 @@ import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 
 const $route = useRoute();
+const $router = useRouter();
+
 const { addToast } = useToast()
 const data = ref<CreatureWithStats | null>(null);
 const bestiary = ref<BestiaryExtended | null>(null);
 const isOwner = ref(false);
 const isEditor = ref(false);
+
 // load creature data
 onMounted(async () => {
 	const { success, data: cData, error } = await useFetch<CreatureWithStats>(`/api/creature/${$route.params.id.toString()}`);
@@ -26,6 +29,8 @@ onMounted(async () => {
 			bestiary.value = bData;
 			isOwner.value = store.user?.id === bData.ownerId;
 			isEditor.value = (bestiary.value?.editors ?? []).map(e => e.userId).includes(store.user?.id ?? "");
+			if (bestiary.value && data.value && (isOwner.value || isEditor.value)) $router.push(`/creature/edit/${data.value.id}`)
+
 		}
 		else {
 			addToast(error, { color: "error" });

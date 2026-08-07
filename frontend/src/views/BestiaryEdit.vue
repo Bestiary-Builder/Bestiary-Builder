@@ -365,7 +365,6 @@ const isExpanded = ref(false);
 
 
 watch(lastClickedCreature, (): void => {
-	console.log('slay')
 	if (hasPinnedBefore.value)
 		return;
 	if (!hasPinnedBefore.value)

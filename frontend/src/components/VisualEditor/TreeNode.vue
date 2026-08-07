@@ -176,7 +176,18 @@ const onMouseLeave = () => {
 				icon="ooui:arrow-down" inline width=".75em" @click.prevent="moveDown" />
 			<Icon v-else icon="ooui:arrow-down" inline width=".75em" color="#3f3f3f" class="disabled" />
 
-			<Icon icon="fa7-solid:eraser" inline width=".75em" @click="deleteNode" />
+			<!-- <Icon icon="mdi:trash" inline width=".75em" @click="deleteNode" /> -->
+			<DropdownMenu>
+				<template #activator="{ props }">
+					<Icon icon="mdi:trash" inline width=".75em" v-bind="props" />
+				</template>
+				<v-card class="text-center pb-2" :subtitle="`Are you sure you want to delete this ${selfType} Effect?`">
+					<v-card-text>
+						<v-btn color="error" @click="deleteNode" class="w-100"> Delete </v-btn>
+
+					</v-card-text>
+				</v-card>
+			</DropdownMenu>
 			<Icon icon="ooui:copy-ltr" inline width=".75em" @click="copyNode" />
 			<Icon icon="ooui:cut-ltr" inline width=".75em" @click="cutNode" />
 		</span>
