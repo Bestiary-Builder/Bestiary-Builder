@@ -176,6 +176,9 @@ const nodeListEffectIsPartOf = computed(() => {
 
 	return tree;
 });
+
+const showControls = ref(true)
+provide("showControls", showControls)
 </script>
 
 <template>
@@ -186,6 +189,9 @@ const nodeListEffectIsPartOf = computed(() => {
 			<p v-else class="container" style="padding: 6px">
 				<EffectAdder :context="['root']" :name="name" />
 			</p>
+			<v-btn @click="showControls = !showControls" class="pl-2" variant="text" size="x-small">
+				<small> <i>{{ showControls ? 'Hide' : 'Show' }} controls</i></small>
+			</v-btn>
 		</div>
 		<div class="editor">
 			<div v-if="!currentEffect && currentContext.length === 0">

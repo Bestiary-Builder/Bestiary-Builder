@@ -124,10 +124,13 @@ const addAndSelect = async (node: string, pasteCopied = false) => {
 };
 
 const copiedEffect = inject<Ref<EffectWithTarget | null>>("copiedEffect");
+
+const showControls = inject<Ref<boolean>>("showControls")
 </script>
 
 <template>
-	<DropdownMenu v-if="displayNames" location="end center" origin="start center" offset="10% 0%" v-model="isOpen">
+	<DropdownMenu v-if="displayNames && showControls" location="end center" origin="start center" offset="10% 0%"
+		v-model="isOpen">
 		<template #activator="{ props }">
 			<div role="button" class="container" v-bind="props">
 				<span class="icon">

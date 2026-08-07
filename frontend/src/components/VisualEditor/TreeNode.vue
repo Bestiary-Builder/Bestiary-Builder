@@ -160,6 +160,8 @@ const onMouseLeave = () => {
 		hoveredEffectData.value = null
 	}
 }
+
+const showControls = inject<Ref<boolean>>("showControls")
 </script>
 
 <template>
@@ -168,7 +170,7 @@ const onMouseLeave = () => {
 		@mouseenter="onMouseEnter(props.context.slice(0, props.context.length - 1), props.data)"
 		@mouseleave="onMouseLeave">
 		<NodeHeader :type="selfType" :additional-text="additionalText" :is-current="isCurrentSelectedContext" />
-		<span class="tree-buttons">
+		<span class="tree-buttons" v-if="showControls">
 			<v-tooltip text="Move up in current context">
 				<template #activator="{ props }">
 					<Icon v-if="(nodeListEffectIsPartOf || []).length > 0 && indexInRespectToParent !== 0"

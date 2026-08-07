@@ -40,6 +40,8 @@ const setAutomationEmpty = () => {
 const currentEffect = inject<Ref<EffectWithTarget | AttackModel>>("currentEffect");
 const currentContext = inject<Ref<string[]>>("currentContext");
 const hoveredEffectContext = inject<Ref<string[] | null>>("hoveredEffectContext")
+
+const showControls = inject<Ref<boolean>>("showControls")
 </script>
 
 <template>
@@ -53,7 +55,7 @@ const hoveredEffectContext = inject<Ref<string[] | null>>("hoveredEffectContext"
 						:inline="true" width="1em"
 						:color="JSON.stringify(currentContext) === JSON.stringify([index.toString(), ...context]) ? 'rgb(var(--v-theme-success))' : 'grey'" />
 					{{ auto.name }}
-					<span class="tree-buttons" @click.stop>
+					<span class="tree-buttons" @click.stop v-if="showControls">
 						<DropdownMenu>
 							<template #activator="{ props }">
 								<Icon icon="mdi:trash" inline width=".75em" role="button" class="trigger" color="grey"
@@ -84,7 +86,7 @@ const hoveredEffectContext = inject<Ref<string[] | null>>("hoveredEffectContext"
 					<EffectAdder :context="[index.toString(), ...context]" />
 				</p>
 			</template>
-			<p v-if="rootType === 'root'"
+			<p v-if="rootType === 'root' && showControls"
 				:style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`" class="add"
 				@click="addListAttack()">
 				Add Attack to this feature
@@ -98,7 +100,7 @@ const hoveredEffectContext = inject<Ref<string[] | null>>("hoveredEffectContext"
 					:inline="true" width="1em"
 					:color="JSON.stringify(currentContext) === JSON.stringify(context) ? 'rgb(var(--v-theme-success))' : 'grey'" />
 				{{ data.name }}
-				<span class="tree-buttons" @click.stop>
+				<span class="tree-buttons" @click.stop v-if="showControls">
 					<DropdownMenu>
 						<template #activator="{ props }">
 							<Icon icon="mdi:trash" inline width=".75em" role="button" class="trigger" color="grey"
@@ -127,7 +129,7 @@ const hoveredEffectContext = inject<Ref<string[] | null>>("hoveredEffectContext"
 				@mouseenter="hoveredEffectContext = context" @mouseleave="hoveredEffectContext = null">
 				<EffectAdder :context="context" />
 			</p>
-			<p v-if="!noListAttack && rootType === 'root'"
+			<p v-if="!noListAttack && rootType === 'root' && showControls"
 				:style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`" class="add"
 				@click="makeListAttack()">
 				Add Attack to this feature
