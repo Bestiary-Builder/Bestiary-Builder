@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { SaveEntity, SkillsEntity, Stat, Statblock } from "~/shared";
+import type { FeatureEntity, SaveEntity, SkillsEntity, Stat, Statblock } from "~/shared";
 import type { StatblockDesign } from "~/shared/prisma/enums";
 import MarkdownIt from 'markdown-it'
 import { computed, onMounted } from "vue";
@@ -218,6 +218,13 @@ const render = (text: string, inline = false) => {
 	}
 	return md.render(expandNewlinesToParagraphs(text))
 }
+
+const renderFeature = (feature: FeatureEntity) => {
+	let output = ''
+	output += `***${feature.name}${feature.automation ? '˚' : ''}.*** `
+	output += feature.description
+	return render(output)
+}
 </script>
 
 <template>
@@ -387,11 +394,8 @@ const render = (text: string, inline = false) => {
 				<p v-if="data.misc.featureHeaderTexts.features" class="feature-header">
 					<span v-html="render(data.misc.featureHeaderTexts.features)" />
 				</p>
-				<p v-for="(feature, index) in data.features.features" :key="index" class="feature-description">
-					<b> <i>{{ feature.name }}.</i><sup v-if="feature.automation" v-tooltip="'Has Automation'"
-							class="feature-container__automation-icon">†</sup> </b>
-					<span class="feature-container__desc" v-html="render(feature.description)" />
-				</p>
+				<div v-for="(feature, index) in data.features.features" :key="index" class="feature-description"
+					v-html="renderFeature(feature)" />
 
 				<p v-if="showInnateCasting && !data.spellcasting.innateSpells.displayAsAction"
 					class="feature-description">
@@ -417,11 +421,9 @@ const render = (text: string, inline = false) => {
 				<p v-if="data.misc.featureHeaderTexts.actions" class="feature-header">
 					<span v-html="render(data.misc.featureHeaderTexts.actions)" />
 				</p>
-				<p v-for="(feature, index) in data.features.actions" :key="index" class="feature-description">
-					<b> <i>{{ feature.name }}.</i><sup v-if="feature.automation" v-tooltip="'Has Automation'"
-							class="feature-container__automation-icon">†</sup></b>
-					<span class="feature-container__desc" v-html="render(feature.description)" />
-				</p>
+				<div v-for="(feature, index) in data.features.actions" :key="index" class="feature-description"
+					v-html="renderFeature(feature)" />
+
 
 				<p v-if="showInnateCasting && data.spellcasting.innateSpells.displayAsAction"
 					class="feature-description">
@@ -445,11 +447,8 @@ const render = (text: string, inline = false) => {
 					<p v-else-if="data.misc.featureHeaderTexts[fType]" class="feature-header">
 						<span v-html="render(data.misc.featureHeaderTexts[fType])" />
 					</p>
-					<p v-for="(feature, index) in data.features[fType]" :key="index" class="feature-description">
-						<b> <i> {{ feature.name }}.</i></b>
-						<sup v-if="feature.automation" v-tooltip="'Has Automation'"
-							class="feature-container__automation-icon">†</sup>
-						<span class="feature-container__desc" v-html="render(feature.description)" />
+					<p v-for="(feature, index) in data.features[fType]" :key="index" class="feature-description"
+						v-html="renderFeature(feature)">
 					</p>
 				</div>
 			</div>
