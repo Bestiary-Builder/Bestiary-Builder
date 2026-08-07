@@ -7,7 +7,7 @@ import { useToast } from "@/utils/app/toast";
 import { useFetch } from "@/utils/utils";
 
 const { data } = defineProps<{ data: Statblock }>();
-const { addToast, removeToast } = useToast()
+const { addToast, removeToast, updateToast } = useToast()
 const $route = useRoute();
 
 const exportStatblockToClipBoard = async () => {
@@ -70,8 +70,10 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 	const toastId = addToast("Exporting...", { loading: true })
 
 	const el = document.getElementById("statblock");
-	if (!el)
+	if (!el) {
+		updateToast(toastId, { text: "Uh oh! No statblock element found", color: "error" });
 		return;
+	}
 
 	el.style = `width: ${type === "2x1 wide" ? "1200" : "800"}px; column-count: ${type === "1x1" ? "1" : "2"};`;
 	el.classList.add("toPrint");

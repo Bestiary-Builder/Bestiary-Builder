@@ -2,26 +2,31 @@
 import type { AvraeCharacter } from "@/components/Characters/utils";
 import type { FeatureEntity } from "~/shared";
 import { useLocalStorage } from "@vueuse/core";
-import { onMounted, provide, ref } from "vue";
+import { onMounted, provide, ref, useTemplateRef } from "vue";
 import { useRoute } from "vue-router";
 import ImportAutomationUtil
 	from "@/components/Automations/ImportAutomationUtil.vue";
 import { getAvraeCharacterByUpstream } from "@/components/Characters/utils";
-import VisualEditor from "@/components/VisualEditor/VisualEditor.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { useToast } from "@/utils/app/toast";
 import { useFetch } from "@/utils/utils";
 import { useHotkey } from "vuetify";
+import { store } from "@/utils/store";
+import EditAutomation from "@/components/Automations/EditAutomation.vue";
+import { useRecentPages } from "@/utils/app/useRecentPages";
 
 const character = ref<AvraeCharacter | null>(null);
 const AvraeToken = useLocalStorage("AvraeToken", "");
 const $route = useRoute();
+const { updateLabel } = useRecentPages()
 
 const { addToast, updateToast } = useToast()
 onMounted(async () => {
-	if (AvraeToken)
+	if (AvraeToken) {
 		character.value = await getAvraeCharacterByUpstream($route.params.upstream as string);
-	console.log(character.value);
+		if (character.value)
+			updateLabel($route.path, character.value.name);
+	}
 });
 
 const activeAttackIndex = ref<number>(-1);
@@ -39,7 +44,7 @@ const saveAttacks = async () => {
 	const { success, error } = await useFetch(`/api/character/${character.value.upstream}/attacks/set`, "POST", attacks);
 
 	if (success) {
-		updateToast(toasterId, { text: `Successfully updated your attacks`, prependIcon: 'mdi-check' });
+		setTimeout(() => updateToast(toasterId, { text: `Successfully updated your attacks`, prependIcon: 'mdi-check' }), 250);
 		void getUmami()?.track("Imported Attack to Avrae");
 	}
 	else {
@@ -48,6 +53,7 @@ const saveAttacks = async () => {
 
 	isSavingAttacks.value = false
 };
+
 useHotkey("cmd+s", async () => await saveAttacks(), { inputs: true })
 
 const addAttack = () => {
@@ -84,6 +90,9 @@ const loadFeature = async (feature: FeatureEntity) => {
 
 provide("setActionName", false);
 provide("setActionDescription", false);
+
+const EditAutomationRef = useTemplateRef("EditAutomationRef");
+const isVisualEditor = ref(store.user?.preferredEditor === "Visual");
 </script>
 
 <template>
@@ -101,6 +110,8 @@ provide("setActionDescription", false);
 	]">
 		<v-icon-btn icon="mdi:content-save" text="Save attacks" :class="{ inverted: !isSavingAttacks }"
 			@click="saveAttacks" size="24" :loading="isSavingAttacks" v-tooltip="'Save attacks (CTRL+S)'" />
+		<v-icon-btn size="24" icon="mdi:code-block-braces" text="Change editor"
+			@click="EditAutomationRef?.toggleEditor()" v-tooltip="'Change editor'" />
 		<v-icon-btn icon="mdi:plus" text="Add attack" @click="addAttack" size="24" v-tooltip="'Add attack'" />
 		<ImportAutomationUtil @load-feature="(feature: FeatureEntity) => loadFeature(feature)" />
 	</Breadcrumbs>
@@ -111,17 +122,18 @@ provide("setActionDescription", false);
 	</div>
 	<div v-else-if="character" class="content">
 		<div class="selected-container">
-			<select v-model="activeAttackIndex" style="width: 250px;">
+			<select v-model="activeAttackIndex">
 				<option :value="-1">
-					No attack selected
+					Select an attack
 				</option>
 				<option v-for="attack, idx of character.overrides.attacks" :key="idx" :value="idx">
 					{{ attack.name }}
 				</option>
 			</select>
-			<DropdownMenu v-if="activeAttackIndex > -1">
+			<DropdownMenu>
 				<template #activator="{ props }">
-					<v-icon-btn icon="mdi:trash" text="Delete currently selected attack" v-bind="props" />
+					<v-icon-btn icon="mdi:trash" text="Delete currently selected attack" v-bind="props"
+						:disabled="activeAttackIndex < 0" />
 				</template>
 				<v-card min-width="300" class="text-center pb-2">
 					<v-card-text>
@@ -136,21 +148,13 @@ provide("setActionDescription", false);
 				</v-card>
 			</DropdownMenu>
 		</div>
-		<div style="margin-top: 2rem;">
-			<VisualEditor v-if="activeAttackIndex !== -1" v-model="character.overrides.attacks[activeAttackIndex]"
-				name="New Attack" no-list-attack />
+		<div class="mt-8">
+			<EditAutomation ref="EditAutomationRef" v-model="character.overrides.attacks[activeAttackIndex]"
+				v-model:is-visual-editor="isVisualEditor" :name="character.name" no-list-attack
+				v-if="activeAttackIndex > -1" />
+			<div v-else>
+				No attack selected.
+			</div>
 		</div>
 	</div>
 </template>
-
-<style scoped lang="less">
-@import url("@/assets/styles/mixins.less");
-
-.selected-container {
-	display: flex;
-
-	button {
-		translate: 0 4px;
-	}
-}
-</style>

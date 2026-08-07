@@ -1,21 +1,17 @@
 <script setup lang="ts">
-import type { AttackModel, AutomationDocumentation, BestiaryExtended, CreatureWithStats, FeatureEntity, Features, Statblock } from "~/shared";
-import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
+import type { AttackModel, BestiaryExtended, CreatureWithStats, FeatureEntity, Features, Statblock } from "~/shared";
 import { useLocalStorage } from "@vueuse/core";
-import { computed, nextTick, onMounted, onUnmounted, provide, ref, shallowRef, useTemplateRef, watch } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, provide, ref, useTemplateRef, watch } from "vue";
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
-import YAML from "yaml";
+import EditAutomation from "@/components/Automations/EditAutomation.vue";
 import ImportAutomationUtil from "@/components/Automations/ImportAutomationUtil.vue";
-import Markdown from "@/components/Global/Markdown.vue";
 import Editor from "@/components/StatblockEditor/Editor.vue";
-import VisualEditor from "@/components/VisualEditor/VisualEditor.vue";
 import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { parseDescIntoAutomation } from "~/shared";
 import { useHotkey } from "vuetify";
 import { useRecentPages } from "@/utils/app/useRecentPages";
-
 
 const $router = useRouter();
 const $route = useRoute();
@@ -25,12 +21,12 @@ const data = ref<Statblock>();
 const rawInfo = ref<CreatureWithStats | null>(null);
 
 const { addToast, updateToast, removeToast } = useToast();
-const { updateLabel } = useRecentPages()
-const visualEditorRef = useTemplateRef("VisualEditorRef");
+const { updateLabel } = useRecentPages();
+const EditAutomationRef = useTemplateRef("EditAutomationRef");
 
 // load creature data
 onMounted(async () => {
-	const toastId = addToast("Loading...", { loading: true })
+	const toastId = addToast("Loading...", { loading: true });
 	const { success, data: cData, error } = await useFetch<CreatureWithStats>(`/api/creature/${$route.params.id.toString()}`);
 	if (success) {
 		data.value = (cData).stats;
@@ -38,15 +34,14 @@ onMounted(async () => {
 		rawInfo.value = cData;
 		await loadRawInfo();
 		await getBestiary();
-		automationString.value = YAML.stringify(data.value.features[type][aid].automation) ?? YAML.stringify(null);
 		updateLabel($route.path, data.value.description.name);
-		removeToast(toastId)
+		removeToast(toastId);
 	}
 	else {
-		addToast("Something went wrong", { color: "error" })
+		addToast(error, { color: "error" });
 		madeChanges.value = false;
 		await $router.push("/error");
-		removeToast(toastId)
+		removeToast(toastId);
 	}
 });
 
@@ -55,21 +50,18 @@ const madeChanges = ref(false);
 // ownership
 const isOwner = ref(false);
 const isEditor = ref(false);
-const shouldShowEditor = ref(false);
 const loadRawInfo = async () => {
 	const { success, data, error } = await useFetch<BestiaryExtended>(`/api/bestiary/${rawInfo.value?.bestiaryId}`);
 	if (success) {
 		bestiary.value = data;
 		isOwner.value = store.user?.id === bestiary.value.ownerId;
 		isEditor.value = (bestiary.value?.editors ?? []).map(e => e.userId).includes(store.user?.id ?? "");
-		if (isOwner.value || isEditor.value)
-			shouldShowEditor.value = true;
+
 		if (!isOwner.value && !isEditor.value)
 			await $router.push(`/creature/view/${rawInfo.value?.id}`);
 	}
 	else {
 		addToast(error, { color: "error" });
-		;
 	}
 };
 
@@ -91,7 +83,6 @@ onBeforeRouteUpdate(() => {
 	}
 });
 onBeforeRouteLeave(() => {
-	// when the user leaves this route
 	if (isVisualEditor.value)
 		return;
 
@@ -118,17 +109,15 @@ onUnmounted(() => {
 
 const bestiary = ref<BestiaryExtended | null>(null);
 
-async function getBestiary() {
-	// Request bestiary info
+const getBestiary = async () => {
 	const { success, data, error } = await useFetch<BestiaryExtended>(`/api/bestiary/${rawInfo.value?.bestiaryId}`);
 	if (!success) {
 		bestiary.value = null;
 		addToast(error, { color: "error" });
-		;
 		return;
 	}
 	bestiary.value = data;
-}
+};
 
 // saving
 const validateAttack = async (automation: any): Promise<true | string> => {
@@ -142,41 +131,24 @@ const validateAttack = async (automation: any): Promise<true | string> => {
 };
 
 const isSaved = ref(false);
+const isSavingCreature = ref(false);
 
-const isSavingCreature = ref(false)
 const saveStatblock2 = async (shouldNotify: boolean): Promise<boolean> => {
 	if (!rawInfo.value || !data.value)
 		return false;
 
-	rawInfo.value.stats = data.value;
-	const toastId = shouldNotify ? addToast("Validating...", { loading: true }) : undefined;
-	isSavingCreature.value = true
-	try {
-		// Parse
-		if (!isVisualEditor.value) {
-			const automationAsCode = YAML.parse(automationString.value);
-			data.value.features[type][aid].automation = automationAsCode;
-		}
-	}
-	catch (err) {
-		if (toastId) {
-			updateToast(toastId, {
-				text: `Error parsing automation YAML. ${err instanceof Error ? err.message : "An unexpected error occurred."}`,
-				color: "error",
-				timeout: -1,
-			});
-		}
-		else {
-			addToast(`Error parsing automation YAML. ${err instanceof Error ? err.message : "An unexpected error occurred."}`, {
-				color: "error",
-				timeout: -1,
-			});
-		}
-		isSavingCreature.value = false
+	if (!isVisualEditor.value && EditAutomationRef.value?.yamlError) {
+		const message = `Error parsing automation YAML. ${EditAutomationRef.value.yamlError}`;
+		if (shouldNotify)
+			addToast(message, { color: "error", timeout: -1 });
 		return false;
 	}
+
+	rawInfo.value.stats = data.value;
+	const toastId = shouldNotify ? addToast("Validating...", { loading: true }) : undefined;
+	isSavingCreature.value = true;
+
 	try {
-		// Validate
 		const validAutomation = await validateAttack(data.value.features[type][aid].automation);
 		if (validAutomation !== true) {
 			if (toastId)
@@ -184,33 +156,31 @@ const saveStatblock2 = async (shouldNotify: boolean): Promise<boolean> => {
 					text: validAutomation,
 					color: "error",
 					timeout: -1,
-					isHtml: true
-				})
-			isSavingCreature.value = false
+					isHtml: true,
+				});
+			isSavingCreature.value = false;
 			return false;
 		}
 
-		// Update loading message
 		if (toastId)
 			updateToast(toastId, { text: "Saving..." });
-		// Save
+
 		const { success, error } = await useFetch<CreatureWithStats>(`/api/creature/${rawInfo.value.id}/update`, "POST", rawInfo.value);
 		if (!success) {
 			if (toastId) {
 				updateToast(toastId, {
 					text: `Error saving statblock. ${error}`,
 					color: "error",
-					timeout: -1
-				})
-
+					timeout: -1,
+				});
 			}
 			else {
 				addToast(`Error saving statblock. ${error}`, {
 					color: "error",
-					timeout: -1
+					timeout: -1,
 				});
 			}
-			isSavingCreature.value = false
+			isSavingCreature.value = false;
 			return false;
 		}
 
@@ -223,31 +193,27 @@ const saveStatblock2 = async (shouldNotify: boolean): Promise<boolean> => {
 				madeChanges.value = true;
 				unwatch();
 			},
-			{ deep: true }
+			{ deep: true },
 		);
 
 		if (toastId)
-			setTimeout(() => updateToast(toastId, { text: "Saved action!", prependIcon: "mdi-check" })
-				, 500);
-		isSavingCreature.value = false
+			setTimeout(() => updateToast(toastId, { text: "Saved action!", prependIcon: "mdi-check" }), 500);
+		isSavingCreature.value = false;
 		updateLabel($route.path, data.value.description.name);
 		return true;
 	}
 	catch (err) {
 		if (toastId) {
-			updateToast(toastId,
-				{
-					text: err instanceof Error ? err.message : "An unexpected error occurred.",
-					color: "error",
-				}
-			);
+			updateToast(toastId, {
+				text: err instanceof Error ? err.message : "An unexpected error occurred.",
+				color: "error",
+			});
 		}
-		isSavingCreature.value = false
+		isSavingCreature.value = false;
 		return false;
 	}
 };
-useHotkey("cmd+s", async () => await saveStatblock2(true), { inputs: true })
-
+useHotkey("cmd+s", async () => await saveStatblock2(true), { inputs: true });
 
 type AutomationTypes = "automation" | "basic-example" | "srd-features/2014" | "srd-features/2024";
 const loadFeature = async (feature: FeatureEntity, apiPath: AutomationTypes) => {
@@ -277,13 +243,9 @@ const loadFeature = async (feature: FeatureEntity, apiPath: AutomationTypes) => 
 			feature.description = "";
 		}
 
-		automationString.value = YAML.stringify(feature.automation);
 		data.value.features[type][aid] = feature;
 	}
-	if (visualEditorRef.value) {
-		visualEditorRef.value.currentEffect = null;
-		visualEditorRef.value.currentContext = [];
-	}
+	EditAutomationRef.value?.resetVisualEditorState();
 	addToast(`Successfully loaded ${feature.name}!`);
 	await saveStatblock2(false);
 };
@@ -295,94 +257,22 @@ const generateAutomation = async () => {
 	if (result) {
 		try {
 			data.value.features[type][aid].automation = result;
-			automationString.value = YAML.stringify(result);
 		}
 		catch {
-			addToast("Something went wrong when generation automation", { color: "error" })
+			addToast("Something went wrong when generation automation", { color: "error" });
 		}
 	}
 };
-
-const copyAutomation = async () => {
-	await navigator.clipboard.writeText(automationString.value);
-	addToast("Copied automation to clipboard!");
-};
-
-const automationString = ref("");
-
-// monaco editor
-const editorRef = shallowRef();
-const handleMount = (editor: any) => (editorRef.value = editor);
-// Documentation context by mouse location
-const currentContext = ref("");
-const cursorPosition = ref(0);
-
-const ourInterval = setInterval(() => {
-	if (!isVisualEditor.value)
-		cursorPosition.value = editorRef.value?.getModel().getOffsetAt(editorRef.value?.getPosition());
-}, 1000);
-
-onUnmounted(() => {
-	clearInterval(ourInterval);
-});
-
-watch(cursorPosition, () => getContext());
-
-const getContext = () => {
-	const textToTraverse = automationString.value;
-	let buffer = "";
-	let type = "";
-	let startingPosition = cursorPosition.value;
-
-	// if the user has their cursor on the word type, it would begin the buffer in that word and would not be able to detect it.
-	// Therefore before we start we check if the immediate vicinity of our cursor includes type:. if it does, start 6 characters later so we can properly extract the type.
-	// clamp slices to string min and max, to be sure it doesn't go out of range
-	const closeVicinity = textToTraverse.slice(Math.max(startingPosition - 6, 0), Math.min(startingPosition + 6, textToTraverse.length));
-	if (closeVicinity.includes("type:"))
-		startingPosition += 6;
-
-	// from our position in the string we go backwards until we find the first type: string.
-	// Then we get our first word after that type:
-	// Works both with yaml or json string
-	// Assumes that type: is always at the beginning of a node, and that a user does not have type: in a text field
-	for (let i = startingPosition; i--; i < textToTraverse.length) {
-		const char = textToTraverse.charAt(i);
-		buffer = char + buffer;
-		if (buffer.startsWith("type:")) {
-			type = textToTraverse.slice(i).match(/type['"]?:\s*['"]?(\w+)['"]?/)?.[1] || "";
-			break;
-		}
-	}
-
-	currentContext.value = type;
-};
-
-// Documentation helpers
-const docu = ref<AutomationDocumentation>({});
-
-onMounted(async () => {
-	const { success, data } = await useFetch<AutomationDocumentation>("/api/automationDocumentation");
-	if (success)
-		docu.value = data;
-});
-
-const currentDocu = computed(() => {
-	return docu.value[currentContext.value];
-});
 
 // Description parity helpers
 const updateFeatureDescFromAutomationDesc = () => {
-	let auto;
-	try {
-		auto = YAML.parse(automationString.value);
-	}
-	catch {
+	const auto = data.value?.features[type][aid].automation as AttackModel | AttackModel[] | null | undefined;
+	if (!auto || Array.isArray(auto))
 		return;
-	}
-	if (Array.isArray(auto))
-		return;
-	for (const field of (auto?.automation || []).reverse() || []) {
+	for (let i = (auto.automation || []).length - 1; i >= 0; i--) {
+		const field = auto.automation[i];
 		if (field.type === "text" && data.value) {
+			//@ts-ignore
 			data.value.features[type][aid].description = field.text;
 			return;
 		}
@@ -390,40 +280,28 @@ const updateFeatureDescFromAutomationDesc = () => {
 };
 
 const updateAutomationDescFromFeatureDesc = () => {
-	let auto;
-	try {
-		auto = YAML.parse(automationString.value);
-	}
-	catch {
+	const auto = data.value?.features[type][aid].automation as AttackModel | AttackModel[] | null | undefined;
+	if (!auto || Array.isArray(auto))
 		return;
-	}
-	if (Array.isArray(auto))
-		return;
-	for (const field of (auto?.automation || []).reverse() || []) {
+	for (let i = (auto.automation || []).length - 1; i >= 0; i--) {
+		const field = auto.automation[i];
 		if (field.type === "text") {
-			field.text = data.value?.features[type][aid].description;
-			auto.automation.reverse();
-			automationString.value = YAML.stringify(auto);
+			field.text = data.value?.features[type][aid].description ?? "";
 			return;
 		}
 	}
 };
 
 const getAutomationDescription = (): string | boolean => {
-	let auto;
-	try {
-		auto = YAML.parse(automationString.value);
-	}
-	catch {
+	const auto = data.value?.features[type][aid].automation as AttackModel | AttackModel[] | null | undefined;
+	if (!auto || Array.isArray(auto) || !auto.automation || auto.automation.length === 0)
 		return false;
-	}
-	if (Array.isArray(auto))
-		return false;
-	if (!data.value?.features[type][aid].automation || !auto || auto?.automation?.length === 0)
-		return false;
-	for (const field of (auto?.automation || []).reverse() || []) {
-		if (field?.type === "text")
+	for (let i = auto.automation.length - 1; i >= 0; i--) {
+		const field = auto.automation[i];
+		if (field?.type === "text") {
+			//@ts-ignore
 			return field.text;
+		}
 	}
 	return "";
 };
@@ -442,25 +320,6 @@ const showDescriptionButtons = computed(() => {
 
 const isVisualEditor = ref(store.user?.preferredEditor === "Visual");
 
-const changeEditor = () => {
-	if (data.value) {
-		try {
-			if (isVisualEditor.value)
-				automationString.value = YAML.stringify(data.value.features[type][aid].automation);
-			else
-				data.value.features[type][aid].automation = YAML.parse(automationString.value);
-
-			isVisualEditor.value = !isVisualEditor.value;
-		}
-		catch (err) {
-			addToast(`Error parsing automation YAML.${err instanceof Error ? err.message : "An unexpected error occurred."}`, {
-				timeout: 10000,
-				color: "error"
-			});
-		}
-	}
-};
-
 const toNavigateTo = ref([-1, -1]);
 
 watch(toNavigateTo, async () => {
@@ -468,13 +327,13 @@ watch(toNavigateTo, async () => {
 	if (didSave)
 		await $router.push(`/creature/edit/${rawInfo.value?.id}/${toNavigateTo.value[0]}/${toNavigateTo.value[1]}`);
 	else
-		addToast("Could not open other action because this did not save correctly.", { color: "error" })
+		addToast("Could not open other action because this did not save correctly.", { color: "error" });
 	$router.go(0);
 });
 
 const parityOptions = useLocalStorage("featureEditParityOptions", {
 	updateName: true,
-	updateDescription: true
+	updateDescription: true,
 });
 
 watch(() => data.value?.features[type][aid].name, (newName) => {
@@ -549,13 +408,13 @@ provide("setActionDescription", setDesc);
 			text="Generate automation from description. May be incomplete or inaccurate. Only works for basic, to hit attacks."
 			@click="generateAutomation" size="24"
 			v-tooltip="'Generate automation from description. May be incomplete or inaccurate. Only works for basic, to hit attacks.'" />
-		<v-icon-btn size="24" icon="mdi:code-block-braces" text="Change editor" @click="changeEditor"
-			v-tooltip="'Change editor'" />
+		<v-icon-btn size="24" icon="mdi:code-block-braces" text="Change editor"
+			@click="EditAutomationRef?.toggleEditor()" v-tooltip="'Change editor'" />
 		<ImportAutomationUtil @load-feature="(feature, apiPath) => loadFeature(feature, apiPath)" />
 		<v-icon-btn v-if="data && store.isMobile" icon="mdi:delete" text="Clear automation"
 			@click="data.features[type][aid].automation = {}" size="24" v-tooltip="'Clear automation'" />
-		<v-icon-btn v-if="data && store.isMobile" icon="mdi:content-copy" text="Copy automation" @click="copyAutomation"
-			size="24" v-tooltip="'Copy automation'" />
+		<v-icon-btn v-if="data && store.isMobile" icon="mdi:content-copy" text="Copy automation"
+			@click="EditAutomationRef?.copyAutomation()" size="24" v-tooltip="'Copy automation'" />
 	</Breadcrumbs>
 	<div v-if="data" class="content">
 		<div class="pa-0">
@@ -614,63 +473,11 @@ provide("setActionDescription", setDesc);
 				<div>
 
 				</div>
-
-
-
-			</div>
-
-
-		</div>
-
-		<div v-if="!isVisualEditor" class="editor">
-			<VueMonacoEditor v-model:value="automationString" theme="vs-dark"
-				:options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false }"
-				height="500px" language="yaml" @mount="handleMount" />
-		</div>
-		<div v-else style="margin-top: 2rem">
-			<VisualEditor ref="VisualEditorRef" v-model="data.features[type][aid].automation"
-				:name="data.features[type][aid].name" />
-		</div>
-		<div v-if="!isVisualEditor">
-			<div v-if="currentDocu" class="docs">
-				<hr>
-				<h3>Documentation: {{ currentContext }}</h3>
-				<Markdown class="small" :text="currentDocu.desc" />
-
-				<div>
-					<hr>
-					<h4>Overview</h4>
-					See full documentation <a
-						:href="`https://avrae.readthedocs.io/en/stable/automation_ref.html#${currentDocu.url}`"
-						target="_blank">here</a>.
-					<VueMonacoEditor v-if="currentDocu?.ts"
-						:value="`// Values denoted with an ? are optional.\n${currentDocu.ts}`" theme="vs-dark"
-						:options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, automaticLayout: true, readOnly: true, scrollBeyondLastLine: false }"
-						language="typescript" height="200px" />
-				</div>
-				<div v-if="currentDocu?.opt">
-					<hr>
-					<h4>Options</h4>
-					<ul>
-						<li v-for="(info, name) in currentDocu.opt" :key="name">
-							<span class="highlight">{{ name }}</span>
-							<Markdown :text="info" />
-						</li>
-					</ul>
-				</div>
-				<div v-if="currentDocu?.variables">
-					<hr>
-					<h4>Exposed Variables</h4>
-					<ul>
-						<li v-for="(info, name) in currentDocu.variables" :key="name">
-							<span class="highlight">{{ name }}</span>
-							[<code>{{ info.type }}</code>]
-							<Markdown :text="info.desc" />
-						</li>
-					</ul>
-				</div>
 			</div>
 		</div>
+
+		<EditAutomation ref="EditAutomationRef" v-model="data.features[type][aid].automation"
+			v-model:is-visual-editor="isVisualEditor" :name="data.features[type][aid].name" />
 	</div>
 </template>
 
@@ -684,10 +491,6 @@ provide("setActionDescription", setDesc);
 		grid-template-columns: 1fr 2fr;
 		max-width: 100%;
 	}
-}
-
-.editor {
-	margin-top: 1rem;
 }
 
 a {

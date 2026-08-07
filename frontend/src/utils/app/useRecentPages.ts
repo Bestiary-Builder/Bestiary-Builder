@@ -20,6 +20,7 @@ const TRACKED_ROUTES: TrackedRoute[] = [
     { pattern: /^\/creature\/edit\/([^/]+)$/, icon: "mdi:paw", labelPrefix: "Creature" },
     { pattern: /^\/bestiary\/edit\/([^/]+)$/, icon: "mdi:book-open-page-variant", labelPrefix: "Bestiary" },
     { pattern: /^\/automations\/edit\/([^/]+)$/, icon: "material-symbols:automation", labelPrefix: "Automation" },
+    { pattern: /^\/characters\/([^/]+)$/, icon: "mdi:account", labelPrefix: "Character" },
 ];
 
 const recentPages = useLocalStorage<RecentPage[]>("recent-pages", []);

@@ -38,7 +38,8 @@ const dismiss = () => {
                         <v-icon icon="$bestiaryBuilder" style="opacity: 1; scale: 1.4" />
                     </template>
                     <RouterLink to="/" class="d-flex align-center flex-grow-1 text-decoration-none text-high-emphasis">
-                        <v-list-item-title color="primary" class="text-high-emphasis font-weight-bold">Bestiary
+                        <v-list-item-title color="primary" class="text-high-emphasis font-weight-bold"
+                            style="font-size: larger;">Bestiary
                             Builder</v-list-item-title>
                         <v-spacer />
                     </RouterLink>
