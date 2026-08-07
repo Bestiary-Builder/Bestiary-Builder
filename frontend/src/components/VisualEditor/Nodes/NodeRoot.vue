@@ -28,7 +28,7 @@ const rules = useRules()
 			<div>
 				<v-text-field v-model="currentEffect.thumb" label="Thumbnail URL" />
 			</div>
-			<v-text-field v-model="currentEffect.verb" label="Verb" placeholder="attacks with" />
+			<v-text-field v-model="currentEffect.verb" label="Verb" placeholder="attacks with" persistent-placeholder />
 			<v-checkbox v-model="currentEffect.proper" label="Name is proper noun" />
 		</div>
 		<v-textarea v-model="currentEffect.phrase" label="Flavor Text" rows="5" />
