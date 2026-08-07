@@ -237,8 +237,8 @@ watch(() => collection.value?.name, (): void => {
 	<div>
 		<Breadcrumbs v-if="collection" :routes="[
 			{
-				path: isOwner || isEditor ? '/bestiaries/personal' : '/bestiaries/public',
-				text: isOwner || isEditor ? 'My Bestiaries' : 'Bestiaries',
+				path: isOwner || isEditor ? '/automations/personal' : '/automations/public',
+				text: isOwner || isEditor ? 'My Automations' : 'Automations',
 				isCurrent: false
 			},
 			{
@@ -424,8 +424,30 @@ watch(() => collection.value?.name, (): void => {
 			</DropdownMenu>
 		</Breadcrumbs>
 		<div class="content">
-			<div v-if="collection" class="bestiary">
-				<div class="left-side-container">
+			<div v-if="collection">
+				<v-chip-group v-if="collection.tags.length">
+					<v-chip v-for="tag in [...collection.tags].sort()" :key="tag" size="small" variant="tonal">
+						{{ tag }}
+					</v-chip>
+				</v-chip-group>
+				<UserBanner :id="collection.ownerId" class="mt-2 mb-4" />
+
+				<Markdown class="description " :text="collection.description || 'No description set.'" tag="p" />
+				<StatusIcon :icon="collection.status" />
+				<div>{{ items?.length }}<v-icon icon="material-symbols:automation" size="20" /></div>
+				{{ }}
+
+				<v-skeleton-loader type="heading, text, text" v-if="items === null" />
+				<Draggable v-else :list="sortCreatures()" :animation="500" class="tile-container list-tiles"
+					:item-key="getDraggableKey" :disabled="sortMode !== 'Custom'" @change="saveOrder">
+					<template #item="{ element }">
+						<div>
+							{{ element.name }}
+						</div>
+					</template>
+				</Draggable>
+				<span v-if="items?.length === 0"> No automations in this collection.</span>
+				<!-- <div class="left-side-container">
 					<div class="content-tile header-tile">
 						<h2>{{ collection.name ? collection.name : "..." }}</h2>
 						<Markdown class="description" :class="{ expanded: isExpanded }"
@@ -476,7 +498,7 @@ watch(() => collection.value?.name, (): void => {
 							</v-card>
 						</DropdownMenu>
 					</div>
-				</div>
+				</div> -->
 			</div>
 		</div>
 	</div>

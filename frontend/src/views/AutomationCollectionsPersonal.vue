@@ -23,7 +23,6 @@ const getMyCollections = async () => {
 	console.log(success, data, error);
 };
 
-const showCreateModal = ref(false);
 const createOptions = reactive({
 	name: "",
 	description: "",
@@ -38,15 +37,16 @@ const resetCreateInput = () => {
 	createOptions.status = "unlisted";
 	createOptions.tags = []
 };
+
 const createAutomationCollection = async () => {
 	const { success, data, error } = await useFetch<AutomationCollectionExtended>("/api/automation-collection/add", "POST", toValue(createOptions));
 
 	if (success) {
 		addToast("Created automation collection", { color: "success" });
 		void getUmami()?.track("Add automation collection");
-		showCreateModal.value = false;
+		newCollectionIsOpen.value = false;
 		resetCreateInput();
-		// await $router.push(`/bestiary/edit/${data.id.toString()}`);
+
 	}
 	else {
 		addToast(error, { color: "error" });
@@ -87,13 +87,9 @@ const saveOrder = async () => {
 	await useFetch("/api/automation-collection/order", "POST", orderIds);
 };
 
-const statusOptions = [
-	{ title: 'Private', value: 'private' },
-	{ title: 'Unlisted', value: 'unlisted' },
-	{ title: 'Public', value: 'public' },
-]
-
 const rules = useRules()
+
+const newCollectionIsOpen = ref(false)
 </script>
 
 <template>
@@ -104,36 +100,58 @@ const rules = useRules()
 			isCurrent: true
 		}
 	]">
-		<v-dialog max-width="500">
+		<v-dialog max-width="750" v-model="newCollectionIsOpen">
 			<template #activator="{ props: activatorProps }">
-				<v-icon-btn icon="mdi:plus" v-bind="activatorProps" size="24" v-tooltip="'Create Collection'" />
+				<v-icon-btn icon="mdi:plus" label="Create new Automation Collection" inverted v-bind="activatorProps"
+					size="24" v-tooltip="'Create new Automation Collection'" />
 			</template>
 
 			<template #default="{ isActive }">
-				<v-card title="Create new automation collection">
-					<v-card-text>
-						<v-text-field v-model="createOptions.name" label="Name" :maxlength="store.limits?.nameLength"
-							:min-length="store.limits?.nameMin"
-							:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]" />
-						<v-textarea v-model="createOptions.description" :max-length="store.limits?.descriptionLength"
-							:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]" label="Description"
-							counter />
-						<div class="grid-two">
-							<div>
-								<v-select v-model="createOptions.status" label="Status" :items="statusOptions" />
-							</div>
-							<v-select v-model="createOptions.tags" multiple :items="store.automationTags || []"
-								label="Tags" chips closable-chips />
-						</div>
-					</v-card-text>
+				<v-card title="Create new Automation Collection" class="pa-4">
+					<v-container class="pa-0">
+						<v-row>
+							<v-col>
+								<div>
+									<v-text-field v-model="createOptions.name" label="Name"
+										:maxlength="store.limits?.nameLength" :min-length="store.limits?.nameMin"
+										:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]"
+										class="mb-4" />
+								</div>
+							</v-col>
+							<v-col>
+								<div>
+									<v-text-field v-model="createOptions.image" label="Image" class="mb-4"
+										:rules="[rules.imageLink()]" />
+								</div>
+							</v-col>
+						</v-row>
+					</v-container>
+
+					<v-textarea v-model="createOptions.description" :max-length="store.limits?.descriptionLength"
+						:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]" label="Description"
+						class="mb-4" hint="Supports Markdown" persistent-hint />
+
+					<v-container class="pa-0">
+						<v-row>
+							<v-col>
+								<div>
+									<v-select v-model="createOptions.status" label="Status"
+										:items="[{ value: 'private', title: 'Private' }, { value: 'unlisted', title: 'Unlisted' }, { value: 'public', title: 'Public' }]" />
+								</div>
+							</v-col>
+							<v-col>
+								<div>
+									<v-select v-model="createOptions.tags" multiple :items="store.tags || []"
+										label="Tags" chips closable-chips />
+								</div>
+							</v-col>
+						</v-row>
+					</v-container>
+
 					<v-card-actions>
 						<v-spacer />
-						<v-btn @click="resetCreateInput(); isActive.value = false">
-							Cancel
-						</v-btn>
-						<v-btn color="green" @click="createAutomationCollection">
-							Create
-						</v-btn>
+						<v-btn text="Create" color="success" size="large" @click="createAutomationCollection" />
+						<v-btn text="Close" size="large" @click="isActive.value = false; resetCreateInput()" />
 					</v-card-actions>
 				</v-card>
 			</template>
@@ -149,5 +167,7 @@ const rules = useRules()
 				</RouterLink>
 			</template>
 		</Draggable>
+		<v-fab icon="mdi:plus" location="bottom end" app color="primary" @click="newCollectionIsOpen = true"
+			size="large"></v-fab>
 	</div>
 </template>
