@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Bestiary, BestiaryExtended, CreatureWithStats, Statblock, User } from "~/shared";
 import { refDebounced, useLocalStorage } from "@vueuse/core";
-import { onMounted, ref, watch } from "vue";
+import { onMounted, reactive, ref, shallowRef, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import Draggable from "vuedraggable";
 import { useRules } from "vuetify/labs/rules";
@@ -19,138 +19,36 @@ import { creatureTypes } from "@/utils/constants";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { defaultStatblock } from "~/shared";
-import { useRecentPages } from "@/utils/app/useRecentPages";
+import { useCollection } from "@/components/Bestiary/useCollection";
 
-const { updateLabel } = useRecentPages();
+const {
+	collection,
+	items,
+	editors,
+	isOwner,
+	isEditor,
+	bookmarked,
+	notices,
+	getCollection,
+	updateCollection,
+	toggleBookmark,
+	addEditor,
+	removeEditor,
+	createItem,
+	createManyItems,
+	deleteItem
+} = useCollection("bestiary")
 
 const { addToast, updateToast, removeToast } = useToast()
 const rules = useRules();
-const $route = useRoute();
-const $router = useRouter();
-const searchText = ref("");
-const debouncedSearch = refDebounced(searchText, 500);
 
-const searchEnv = ref("");
-const debouncedEnv = refDebounced(searchEnv, 500);
-const searchFaction = ref("");
-const debouncedFaction = refDebounced(searchFaction, 500);
-
-const bestiary = ref<BestiaryExtended | null>(null);
-const savedBestiary = ref<BestiaryExtended | null>(null);
-const creatures = ref<CreatureWithStats[] | null>(null);
-const editors = ref<User[]>([]);
-const lastHoveredCreature = ref<Statblock | null>(null);
-const lastClickedCreature = ref<Statblock | null>(null);
-const hasPinnedBefore = ref(false);
-const bookmarked = ref(false);
-const isOwner = ref(false);
-const isEditor = ref(false);
-const editorToAdd = ref("");
-const showWarning = ref(false);
-const critterDbId = ref("");
-const bestiaryBuilderJson = ref("");
-const notices = ref<Record<string, string>>({});
-const searchOptions = ref({
-	text: "",
-	tags: [] as string[],
-	minCr: 0,
-	maxCr: 30,
-	env: "",
-	faction: ""
-});
-
-const sortMode = useLocalStorage("sortModeForBestiaries", "Alphabetically");
-const isExpanded = ref(false);
 const srdCreatures = ref<string[]>([]);
-
-const sortCreatures = () => {
-	if (!creatures.value)
-		return;
-	if (sortMode.value === "Custom") {
-		// Do nothing, order as recieved
-		return creatures.value;
-	}
-	if (sortMode.value === "Alphabetically") {
-		creatures.value.sort((a, b) => {
-			const nameA = a.stats.description.name.toLowerCase();
-			const nameB = b.stats.description.name.toLowerCase();
-			if (nameA < nameB)
-				return -1;
-			if (nameA > nameB)
-				return 1;
-			return 0;
-		});
-	}
-	else if (sortMode.value === "Creature Type") {
-		creatures.value.sort((a, b) => {
-			const nameA = a.stats.core.race.toLowerCase();
-			const nameB = b.stats.core.race.toLowerCase();
-			if (nameA < nameB)
-				return -1;
-			if (nameA > nameB)
-				return 1;
-			return 0;
-		});
-	}
-	else if (sortMode.value === "CR Descending") {
-		creatures.value.sort((a, b) => {
-			return b.stats.description.cr - a.stats.description.cr;
-		});
-	}
-	else if (sortMode.value === "CR Ascending") {
-		creatures.value.sort((a, b) => {
-			return a.stats.description.cr - b.stats.description.cr;
-		});
-	}
-
-	return creatures.value;
-};
-
-const saveOrder = async () => {
-	if (creatures.value && bestiary.value) {
-		const orderIds = creatures.value.map(creature => creature.id);
-		await useFetch(`/api/bestiary/${bestiary.value.id}/creatures/order`, "POST", orderIds);
-	}
-};
-
-watch(lastClickedCreature, (): void => {
-	if (hasPinnedBefore.value)
-		return;
-	if (!hasPinnedBefore.value)
-		hasPinnedBefore.value = true;
-
-	addToast("Pinned creature to the view. Click unpin there to go back to hover behaviour.");
-	void getUmami()?.track("Pinned creature");
-});
-
-watch(() => bestiary.value?.status, (newValue): void => {
-	if (newValue === "private")
-		showWarning.value = false;
-	if (newValue === "public")
-		showWarning.value = true;
-});
-
-watch(() => bestiary.value?.name, (): void => {
-	if (bestiary.value?.name)
-		document.title = `${bestiary.value?.name.substring(0, 16)} | Bestiary Builder`;
-});
-
-watch(debouncedSearch, () => {
-	searchOptions.value.text = searchText.value;
-});
-watch(debouncedEnv, () => {
-	searchOptions.value.env = searchEnv.value;
-});
-watch(debouncedFaction, () => {
-	searchOptions.value.faction = searchFaction.value;
-});
-const initialLoading = ref(true);
 onMounted(async () => {
 	const toastId = addToast("Loading...", { loading: true })
-	await getBestiary()
+	await getCollection()
 	removeToast(toastId)
-	if (bestiary.value?.name)
-		document.title = `${bestiary.value?.name.substring(0, 16)} | Bestiary Builder`;
+	if (collection.value?.name)
+		document.title = `${collection.value?.name.substring(0, 16)} | Bestiary Builder`;
 
 	await useFetch<string[]>(`/api/srd-creatures/${store.user?.SRDVersion === "SRD_2024" ? "2024" : "2014"}/list`).then(({ success, data, error }) => {
 		if (success)
@@ -161,10 +59,68 @@ onMounted(async () => {
 	});
 });
 
+const searchText = ref("")
+const searchTextDebounced = refDebounced(searchText, 500, { maxWait: 1000 })
+
+
+const searchOptions = ref({
+	tags: [] as string[],
+	minCr: 0,
+	maxCr: 30,
+	env: "",
+	faction: ""
+});
+
+
+const sortMode = useLocalStorage("sortModeForBestiaries", "Alphabetically");
+
+const sortCreatures = () => {
+	if (!items.value)
+		return;
+	if (sortMode.value === "Custom") {
+		// Do nothing, order as recieved
+		return items.value;
+	}
+	if (sortMode.value === "Alphabetically") {
+		items.value.sort((a, b) => {
+			const nameA = a.stats.description.name.toLowerCase();
+			const nameB = b.stats.description.name.toLowerCase();
+			if (nameA < nameB)
+				return -1;
+			if (nameA > nameB)
+				return 1;
+			return 0;
+		});
+	}
+	else if (sortMode.value === "Creature Type") {
+		items.value.sort((a, b) => {
+			const nameA = a.stats.core.race.toLowerCase();
+			const nameB = b.stats.core.race.toLowerCase();
+			if (nameA < nameB)
+				return -1;
+			if (nameA > nameB)
+				return 1;
+			return 0;
+		});
+	}
+	else if (sortMode.value === "CR Descending") {
+		items.value.sort((a, b) => {
+			return b.stats.description.cr - a.stats.description.cr;
+		});
+	}
+	else if (sortMode.value === "CR Ascending") {
+		items.value.sort((a, b) => {
+			return a.stats.description.cr - b.stats.description.cr;
+		});
+	}
+
+	return items.value;
+};
+
 function filterCreature(data: CreatureWithStats) {
 	const filterChecks: boolean[] = [];
-	if (searchOptions.value.text !== "")
-		filterChecks.push(data.stats.description.name.toLowerCase().includes(searchOptions.value.text.toLowerCase().trim()));
+	if (searchTextDebounced.value !== "")
+		filterChecks.push(data.stats.description.name.toLowerCase().includes(searchTextDebounced.value.toLowerCase().trim()));
 
 	if (searchOptions.value.env !== "")
 		filterChecks.push(data.stats.description.environment.toLowerCase().includes(searchOptions.value.env.toLowerCase().trim()));
@@ -181,12 +137,25 @@ function filterCreature(data: CreatureWithStats) {
 	return filterChecks.every(_ => _);
 }
 
+
+const saveOrder = async () => {
+	if (items.value && collection.value) {
+		const orderIds = items.value.map(creature => creature.id);
+		await useFetch(`/api/bestiary/${collection.value.id}/creatures/order`, "POST", orderIds);
+	}
+};
+
+
+
+
+
+
 async function exportHomebrewery() {
 	const toastId = addToast("Exporting...", { loading: true });
 
 	try {
 		const { success, data: resultData, error } = await useFetch<{ metadata: string }>(
-			`/api/homebrewery/export/bestiary/${bestiary.value?.id.toString()}`,
+			`/api/homebrewery/export/bestiary/${collection.value?.id.toString()}`,
 			"GET"
 		);
 
@@ -209,12 +178,12 @@ async function exportBestiary(asFile: boolean) {
 		const file = new File(
 			[
 				JSON.stringify(
-					creatures.value?.map(obj => obj.stats),
+					items.value?.map(obj => obj.stats),
 					null,
 					2
 				)
 			],
-			"Creatures.txt",
+			"items.txt",
 			{
 				type: "text/plain"
 			}
@@ -235,7 +204,7 @@ async function exportBestiary(asFile: boolean) {
 	else {
 		await navigator.clipboard.writeText(
 			JSON.stringify(
-				creatures.value?.map(obj => obj.stats),
+				items.value?.map(obj => obj.stats),
 				null,
 				2
 			)
@@ -245,8 +214,14 @@ async function exportBestiary(asFile: boolean) {
 	}
 }
 
+
+const importFields = reactive({
+	critterDbId: "",
+	bestiaryBuilderJson: ""
+})
+
 async function importBestiaryFromCritterDB() {
-	let link = critterDbId.value.trim();
+	let link = importFields.critterDbId.trim();
 	if (link.length === 0) {
 		addToast("No CritterDB link given", { color: "error" })
 	}
@@ -288,7 +263,7 @@ async function importBestiaryFromCritterDB() {
 		return;
 	}
 	updateToast(toastId, { text: "Saving creatures has started. This may take a while." });
-	const { success: cSuccess, data: creatureData, error: cError } = await useFetch<{ error?: string; ignoredCreatures: { creature: string; error: string }[] }>(`/api/bestiary/${bestiary.value?.id.toString()}/addcreatures`, "POST", data.data.creatures);
+	const { success: cSuccess, data: creatureData, error: cError } = await useFetch<{ error?: string; ignoredCreatures: { creature: string; error: string }[] }>(`/api/bestiary/${collection.value?.id.toString()}/addcreatures`, "POST", data.data.creatures);
 	if (!cSuccess) {
 		notices.value = {};
 		addToast(cError, { color: "error" });
@@ -299,19 +274,19 @@ async function importBestiaryFromCritterDB() {
 		for (const error of creatureData.ignoredCreatures)
 			notices.value[error.creature] = error.error;
 	}
-	await getBestiary();
+	await getCollection();
 	addToast("Importing has finished!", { color: "success" });
 	void getUmami()?.track("Import bestiary from CritterDB");
 }
 
 async function importCreaturesFromBestiaryBuilder() {
 	let creaturesToImport;
-	if (bestiaryBuilderJson.value.length === 0) {
+	if (importFields.bestiaryBuilderJson.length === 0) {
 		addToast("No JSON given", { color: "error" });
 		return;
 	}
 	try {
-		creaturesToImport = JSON.parse(bestiaryBuilderJson.value);
+		creaturesToImport = JSON.parse(importFields.bestiaryBuilderJson);
 	}
 	catch (e) {
 		addToast("Something is wrong with the format of your JSON", { color: "error" });
@@ -322,7 +297,7 @@ async function importCreaturesFromBestiaryBuilder() {
 		creaturesToImport = [creaturesToImport];
 
 	addToast("Importing creatures has started. This may take a while.");
-	const { success, data, error } = await useFetch<{ error?: string; ignoredCreatures: { creature: string; error: string }[] }>(`/api/bestiary/${bestiary.value?.id.toString()}/addcreatures`, "POST", creaturesToImport);
+	const { success, data, error } = await useFetch<{ error?: string; ignoredCreatures: { creature: string; error: string }[] }>(`/api/bestiary/${collection.value?.id.toString()}/addcreatures`, "POST", creaturesToImport);
 
 	if (!success) {
 		notices.value = {};
@@ -339,72 +314,9 @@ async function importCreaturesFromBestiaryBuilder() {
 		void getUmami()?.track("Import bestiary from BestiaryBuilder");
 	}
 
-	await getBestiary();
+	await getCollection();
 }
 
-async function createCreature(stats = defaultStatblock, openPage = true) {
-	// Replace for actual creation data:
-	const data = {
-		stats,
-		bestiaryId: bestiary.value?.id
-	} as CreatureWithStats;
-	// Send data to server
-	const { success, data: resultData, error } = await useFetch<CreatureWithStats>("/api/creature/add", "POST", data);
-	if (success) {
-		const data = resultData;
-		void getUmami()?.track("Create creature");
-		if (openPage)
-			await $router.push(`/creature/edit/${data.id.toString()}`);
-		else
-			await getBestiary();
-	}
-	else {
-		addToast(error, { color: "error" });
-	}
-}
-
-async function createManyCreatures() {
-	const creatures = [];
-	for (const creature of copiedCreatures.value)
-		creatures.push(creature.stats);
-
-
-	const toastId = addToast("Importing creatures has started. This may take a while.");
-	const { success, data, error } = await useFetch<{ error?: string; ignoredCreatures: { creature: string; error: string }[] }>(`/api/bestiary/${bestiary.value?.id.toString()}/addcreatures`, "POST", creatures);
-
-	if (!success) {
-		notices.value = {};
-		updateToast(toastId, { text: error, color: "error" });
-	}
-	else if (data.error) {
-		updateToast(toastId, { text: "The import was completed with errors.", color: "error" });
-
-		notices.value.Errors = data.error;
-		for (const error of data.ignoredCreatures)
-			notices.value[error.creature] = error.error;
-	}
-	else {
-		updateToast(toastId, { text: "Importing has finished!", color: "success" });
-		void getUmami()?.track("Imported creatures from BestiaryBuilder", { count: creatures.length });
-	}
-
-	await getBestiary();
-}
-
-async function deleteCreature(id: string) {
-	const { success, error } = await useFetch(`/api/creature/${id.toString()}/delete`);
-	if (success) {
-		addToast("Deleted creature succesfully", { color: "success" });
-		void getUmami()?.track("Delete creature");
-		if (!bestiary.value)
-			return;
-		bestiary.value.creatures = bestiary.value.creatures.filter(c => c.id !== id);
-		creatures.value = creatures.value?.filter(c => c.id !== id) ?? [];
-	}
-	else {
-		addToast(error, { color: "error" });
-	}
-}
 
 async function importSrdCreature(creature: string | null) {
 	if (!creature)
@@ -412,7 +324,7 @@ async function importSrdCreature(creature: string | null) {
 	const { success, data, error } = await useFetch<Statblock>(`/api/srd-creatures/${store.user?.SRDVersion === "SRD_2024" ? "2024" : "2014"}/${encodeURIComponent(creature)}`);
 
 	if (success) {
-		await createCreature(data);
+		await createItem(data);
 		void getUmami()?.track("Import SRD creature");
 		return data;
 	}
@@ -421,143 +333,17 @@ async function importSrdCreature(creature: string | null) {
 	}
 }
 
-async function addEditor() {
-	if (!bestiary.value)
-		return;
-	const id = editorToAdd.value;
-	const { success, error } = await useFetch(`/api/bestiary/${bestiary.value.id.toString()}/editors/add/${id}`);
-	if (success) {
-		addToast("Added editor succesfully", { color: "success" });
-		void getUmami()?.track("Add bestiary editor");
-	}
-	else {
-		addToast(error, { color: "error" });
-	}
 
-	await getBestiary();
-}
-
-async function removeEditor(id: string) {
-	if (!bestiary.value)
-		return;
-	const { success, error } = await useFetch(`/api/bestiary/${bestiary.value.id.toString()}/editors/remove/${id}`);
-	if (success) {
-		addToast("Removed editor succesfully", { color: "success" });
-		void getUmami()?.track("Remove bestiary editor");
-	}
-	else {
-		addToast(error, { color: "error" });
-	}
-
-	await getBestiary();
-}
-
-async function getBestiary() {
-	// Get id
-	const id = $route.params.id;
-	// Request bestiary info
-	const { success, data, error } = await useFetch<BestiaryExtended>(`/api/bestiary/${id.toString()}`);
-	if (!success) {
-		bestiary.value = null;
-		addToast(error, { color: "error" });
-		return;
-	}
-	bestiary.value = data;
-	savedBestiary.value = bestiary.value;
-	isOwner.value = store.user?.id === bestiary.value.ownerId;
-	isEditor.value = (bestiary.value?.editors ?? []).map(e => e.userId).includes(store.user?.id ?? "");
-
-	updateLabel($route.path, bestiary.value.name);
-
-	if (!isOwner.value && !isEditor.value)
-		await $router.push(`/bestiary/view/${bestiary.value.id}`);
-
-	initialLoading.value = false;
-	// Fetch creatures
-	await useFetch<CreatureWithStats[]>(`/api/bestiary/${bestiary.value.id.toString()}/creatures`).then(async (creatureResult) => {
-		if (creatureResult.success) {
-			creatures.value = creatureResult.data;
-		}
-		else {
-			creatures.value = null;
-			addToast(creatureResult.error, { color: "error" });
-		}
-	});
-	// Fetch editors
-	editors.value = [] as User[];
-	for (const { userId: editorId } of bestiary.value?.editors ?? []) {
-		await useFetch(`/api/user/${editorId}`).then((editorResult) => {
-			if (editorResult.success)
-				editors.value.push(editorResult.data as User);
-			else
-				addToast(editorResult.error, { color: "error" })
-		});
-	}
-	// Bookmark state
-	if (store.user) {
-		await useFetch<{ state: boolean }>(`/api/bestiary/${bestiary.value.id.toString()}/bookmark/get`).then(async (bookmarkResult) => {
-			if (bookmarkResult.success) {
-				bookmarked.value = (bookmarkResult.data).state;
-			}
-			else {
-				bookmarked.value = false;
-				addToast(bookmarkResult.error, { color: "error" })
-			}
-		});
-	}
-	else {
-		bookmarked.value = false;
-	}
-}
-
-async function updateBestiary() {
-	if (!bestiary.value)
-		return;
-	const toastId = addToast("Saving...", { loading: true })
-	// Send to backend
-	const { success, error } = await useFetch<Bestiary>(`/api/bestiary/${bestiary.value.id.toString()}/update`, "POST", bestiary.value);
-	if (success) {
-		updateToast(toastId, { text: "Saved", color: "success" });
-		savedBestiary.value = bestiary.value;
-	}
-	else {
-		updateToast(toastId, { text: error, color: "error" });
-
-		if (error.includes("includes blocked words or phrases"))
-			void getUmami()?.track("Blocked words", { error });
-	}
-}
-
-async function toggleBookmark() {
-	if (!bestiary.value)
-		return;
-	const { success, data, error } = await useFetch<{ state: boolean }>(`/api/bestiary/${bestiary.value.id.toString()}/bookmark/toggle`);
-	if (success) {
-		bookmarked.value = data.state;
-		if (bookmarked.value) {
-			addToast("Successfully bookmarked this bestiary!");
-			void getUmami()?.track("Bookmark bestiary");
-		}
-		else {
-			addToast("Successfully unbookmarked this bestiary!");
-			void getUmami()?.track("Unbookmark bestiary");
-		}
-	}
-	else {
-		bookmarked.value = false;
-		addToast(error, { color: "error" });
-	}
-}
 
 type CopiedCreature = CreatureWithStats & { bestiaryName: string };
 const copiedCreatures = useLocalStorage<CopiedCreature[]>("copiedCreatures", []);
 
 const copyCurrentBestiary = () => {
-	if (!creatures.value || !bestiary.value)
+	if (!items.value || !collection.value)
 		return;
 	const toAdd: CopiedCreature[] = [];
-	for (const creature of creatures.value)
-		toAdd.push({ ...creature, bestiaryName: bestiary.value.name });
+	for (const creature of items.value)
+		toAdd.push({ ...creature, bestiaryName: collection.value.name });
 
 	copiedCreatures.value = copiedCreatures.value.concat(toAdd);
 	addToast("Copied current Bestiary");
@@ -568,11 +354,53 @@ const copyCurrentBestiary = () => {
 const getDraggableKey = (item: any) => {
 	return item;
 };
+
+// misc
+const lastHoveredCreature = ref<Statblock | null>(null);
+const lastClickedCreature = ref<Statblock | null>(null);
+const hasPinnedBefore = ref(false);
+const editorToAdd = ref("");
+const showWarning = ref(false);
+const isExpanded = ref(false);
+
+
+watch(lastClickedCreature, (): void => {
+	console.log('slay')
+	if (hasPinnedBefore.value)
+		return;
+	if (!hasPinnedBefore.value)
+		hasPinnedBefore.value = true;
+
+	addToast("Pinned creature to the view. Click unpin there to go back to hover behaviour.");
+	void getUmami()?.track("Pinned creature");
+});
+
+watch(() => collection.value?.status, (newValue): void => {
+	if (newValue === "private" || newValue === "public")
+		showWarning.value = false;
+	if (newValue === "public")
+		showWarning.value = true;
+});
+
+watch(() => collection.value?.name, (): void => {
+	if (collection.value?.name)
+		document.title = `${collection.value?.name.substring(0, 16)} | Bestiary Builder`;
+});
+
+
+
+const pinCreature = (creature: Statblock) => {
+	if (creature === lastClickedCreature.value) {
+		lastClickedCreature.value = null
+	} else {
+		lastClickedCreature.value = creature
+	}
+}
 </script>
 
 <template>
 	<div>
-		<Breadcrumbs v-if="bestiary" :routes="[
+		<Breadcrumbs v-if="collection" :routes="[
 			{
 				path: isOwner || isEditor ? '/bestiaries/personal' : '/bestiaries/public',
 				text: isOwner || isEditor ? 'My Bestiaries' : 'Bestiaries',
@@ -580,7 +408,7 @@ const getDraggableKey = (item: any) => {
 			},
 			{
 				path: '',
-				text: bestiary?.name,
+				text: collection?.name,
 				isCurrent: true
 			}
 		]">
@@ -590,7 +418,7 @@ const getDraggableKey = (item: any) => {
 				</template>
 				<v-card min-width="300" class="text-center pa-4" title="Create creature">
 					<v-card-actions class="d-flex flex-column align-center justify-center">
-						<v-btn size="x-large" @click="createCreature()">
+						<v-btn size="x-large" @click="createItem(defaultStatblock)">
 							From scratch
 						</v-btn>
 						<div class="d-flex align-center my-4 w-100">
@@ -611,9 +439,10 @@ const getDraggableKey = (item: any) => {
 				</v-card>
 			</DropdownMenu>
 
-			<CopyCreature :may-import="isOwner || isEditor" :current-creatures="creatures || []"
-				can-copy-current-bestiary @import-creature="(creature) => createCreature(creature, false)"
-				@import-all-creatures="createManyCreatures" @copy-current-bestiary="copyCurrentBestiary" />
+			<CopyCreature :may-import="isOwner || isEditor" :current-creatures="items || []" can-copy-current-bestiary
+				@import-creature="(creature) => createItem(creature, false)"
+				@import-all-creatures="createManyItems(copiedCreatures.map(x => x.stats))"
+				@copy-current-bestiary="copyCurrentBestiary" />
 
 			<v-dialog v-if="isOwner" max-width="950">
 				<template #activator="{ props }">
@@ -625,22 +454,23 @@ const getDraggableKey = (item: any) => {
 						<v-sheet class="pa-4" max-width="1800" rounded="lg" width="100%">
 							<v-form>
 								<div class="grid-two">
-									<v-text-field v-model="bestiary.name" label="Name"
+									<v-text-field v-model="collection.name" label="Name"
 										:maxlength="store.limits?.nameLength" :min-length="store.limits?.nameMin"
 										:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]"
 										class="mb-4" />
-									<v-text-field v-model="bestiary.image" label="Image" class="mb-4" />
+									<v-text-field v-model="collection.image" label="Image" class="mb-4" />
 								</div>
 
-								<v-textarea v-model="bestiary.description" :max-length="store.limits?.descriptionLength"
+								<v-textarea v-model="collection.description"
+									:max-length="store.limits?.descriptionLength"
 									:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]"
 									label="Description" class="mb-4" hint="Supports Markdown" persistent-hint counter />
 								<div class="grid-two">
 									<div>
-										<v-select v-model="bestiary.status" label="Status"
+										<v-select v-model="collection.status" label="Status"
 											:items="[{ value: 'private', title: 'Private' }, { value: 'unlisted', title: 'Unlisted' }, { value: 'public', title: 'Public' }]" />
 									</div>
-									<v-select v-model="bestiary.tags" multiple :items="store.tags || []" label="Tags"
+									<v-select v-model="collection.tags" multiple :items="store.tags || []" label="Tags"
 										chips closable-chips />
 								</div>
 
@@ -649,7 +479,7 @@ const getDraggableKey = (item: any) => {
 										Editors
 									</h3>
 									<small>
-										Editors can add, edit, and remove creatures. <br>
+										Editors can add, edit, and remove items. <br>
 										Editors cannot edit the Bestiary itself. <br>
 										Editors cannot add other editors. The owner can remove editors at any time.
 									</small>
@@ -668,7 +498,7 @@ const getDraggableKey = (item: any) => {
 												label="Discord user ID"
 												:rules="[rules.integer('This must be a numeric Discord User ID.')]"
 												pattern="[0-9]*" />
-											<v-btn class="mz-auto" @click="addEditor()">
+											<v-btn class="mz-auto" @click="addEditor(editorToAdd)">
 												Add
 											</v-btn>
 										</div>
@@ -693,7 +523,7 @@ const getDraggableKey = (item: any) => {
 						</v-sheet>
 						<v-card-actions>
 							<v-spacer />
-							<v-btn text="Save changes" color="green" size="large" @click="updateBestiary" />
+							<v-btn text="Save changes" color="green" size="large" @click="updateCollection" />
 							<v-btn text="Cancel" size="large" @click="isActive.value = false" />
 						</v-card-actions>
 					</v-card>
@@ -714,8 +544,8 @@ const getDraggableKey = (item: any) => {
 								chips closable-chips width="200" />
 							<CRInput v-model="searchOptions.minCr" label="Minimum CR" />
 							<CRInput v-model="searchOptions.maxCr" label="Maximum CR" />
-							<v-text-field v-model="searchFaction" label="Faction" width="200" />
-							<v-text-field v-model="searchEnv" label="Environment" width="200" />
+							<v-text-field v-model="searchOptions.faction" label="Faction" width="200" />
+							<v-text-field v-model="searchOptions.env" label="Environment" width="200" />
 						</div>
 					</v-card-actions>
 				</v-card>
@@ -730,10 +560,10 @@ const getDraggableKey = (item: any) => {
 					<v-card title="Import bestiary">
 						<v-sheet class="pa-4" max-width="1800" rounded="lg" width="100%">
 							<div class="grid-two">
-								<v-text-field v-model="critterDbId" label="CritterDB Bestiary link"
+								<v-text-field v-model="importFields.critterDbId" label="CritterDB Bestiary link"
 									hint="Make sure the Bestiary is public or has link-sharing enabled"
 									persistent-hint />
-								<v-text-field v-model="bestiaryBuilderJson" label="Bestiary Builder JSON"
+								<v-text-field v-model="importFields.bestiaryBuilderJson" label="Bestiary Builder JSON"
 									hint="JSON as text gotten from clicking export elsewhere on BB" persistent-hint />
 								<v-btn size="large" @click="importBestiaryFromCritterDB()">
 									Import CritterDB
@@ -784,23 +614,23 @@ const getDraggableKey = (item: any) => {
 			</DropdownMenu>
 		</Breadcrumbs>
 		<div class="content">
-			<div v-if="bestiary" class="bestiary">
+			<div v-if="collection" class="bestiary">
 				<div class="left-side-container">
 					<div class="content-tile header-tile">
-						<h2>{{ bestiary.name ? bestiary.name : "..." }}</h2>
+						<h2>{{ collection.name ? collection.name : "..." }}</h2>
 						<Markdown class="description" :class="{ expanded: isExpanded }"
-							:text="bestiary.description || 'No description set.'" tag="p" />
-						<button v-if="bestiary.description.length > 0" v-tooltip="'Expand description'"
+							:text="collection.description || 'No description set.'" tag="p" />
+						<button v-if="collection.description.length > 0" v-tooltip="'Expand description'"
 							class="expand-btn" aria-label="Expand description" @click="isExpanded = !isExpanded">
 							{{ isExpanded ? "▲" : "▼" }}
 						</button>
 						<hr>
 						<div class="footer" :class="{ 'three-wide': isOwner }">
-							<UserBanner :id="bestiary.ownerId" />
-							<div v-tooltip.left="bestiary.status">
-								<StatusIcon :icon="bestiary.status" />
+							<UserBanner :id="collection.ownerId" />
+							<div v-tooltip.left="collection.status">
+								<StatusIcon :icon="collection.status" />
 							</div>
-							<div>{{ bestiary.creatures.length }}<v-icon icon="mdi:paw" size="20" /></div>
+							<div>{{ items?.length }}<v-icon icon="mdi:paw" size="20" /></div>
 							<div v-if="!isOwner" role="button" aria-label="Toggle bookmark status" class="bookmark"
 								@click.prevent="toggleBookmark">
 								<span v-if="bookmarked" v-tooltip="'Unbookmark this bestiary'"
@@ -810,16 +640,15 @@ const getDraggableKey = (item: any) => {
 							</div>
 						</div>
 					</div>
-					<v-skeleton-loader type="heading, text, text" v-if="creatures === null" />
-					<Draggable v-else :list="sortCreatures() || Array(0).fill({ stats: defaultStatblock })"
-						:animation="500" class="tile-container list-tiles" :item-key="getDraggableKey"
-						:disabled="sortMode !== 'Custom'" @change="saveOrder">
+					<v-skeleton-loader type="heading, text, text" v-if="items === null" />
+					<Draggable v-else :list="sortCreatures()" :animation="500" class="tile-container list-tiles"
+						:item-key="getDraggableKey" :disabled="sortMode !== 'Custom'" @change="saveOrder">
 						<template #item="{ element }">
 							<CreatureListItem v-if="filterCreature(element)" :id="element.id" :data="element.stats"
 								:can-edit="isOwner || isEditor" @mouseover="lastHoveredCreature = element.stats"
-								@delete-creature="(id) => deleteCreature(id)"
-								@pin-creature="lastClickedCreature = element.stats"
-								@copy-creature="copiedCreatures.push({ ...element, bestiaryName: bestiary.name }); addToast('Copied Successfully!')" />
+								@delete-creature="(id) => deleteItem(id)" @pin-creature="pinCreature(element.stats)"
+								@copy-creature="copiedCreatures.push({ ...element, bestiaryName: collection.name }); addToast('Copied Successfully!')"
+								:is-pinned="lastClickedCreature === element.stats" />
 						</template>
 					</Draggable>
 
@@ -832,7 +661,7 @@ const getDraggableKey = (item: any) => {
 							</template>
 							<v-card min-width="300" class="text-center pa-4" title="Create creature">
 								<v-card-actions class="d-flex flex-column align-center justify-center">
-									<v-btn size="x-large" @click="createCreature()">
+									<v-btn size="x-large" @click="createItem(defaultStatblock)">
 										From scratch
 									</v-btn>
 									<div class="d-flex align-center my-4 w-100">
@@ -854,10 +683,10 @@ const getDraggableKey = (item: any) => {
 						</DropdownMenu>
 					</div>
 				</div>
-				<div v-if="creatures && lastHoveredCreature" class="statblock-container">
-					<span v-if="false && lastClickedCreature" class="pin-notice">
-						<span class="unpin-button" role="button" aria-label="unpin currently pinned creature"
-							@click="lastClickedCreature = null"><b>unpin</b></span>📌
+				<div v-if="items && lastHoveredCreature" class="statblock-container">
+					<span v-if="lastClickedCreature" class="pin-notice">
+						<v-btn class="unpin-button" variant="text" density="compact" @click="lastClickedCreature = null"
+							append-icon="mdi:pin-off"><b>unpin</b></v-btn>
 					</span>
 					<Transition name="fade" mode="out-in">
 						<StatblockRenderer
@@ -1200,11 +1029,12 @@ const getDraggableKey = (item: any) => {
 	transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
 }
 
-.slide-fade-enter-from,
-.slide-fade-leave-to {
-	transform: translateX(-50px);
+.fade-enter-from,
+.fade-leave-to {
+	transform: translateY(-10px);
 	opacity: 0;
 }
+
 
 .fade-enter-active {
 	transition: all 0.2s ease-out;

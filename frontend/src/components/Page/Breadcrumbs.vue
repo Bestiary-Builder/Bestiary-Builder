@@ -71,7 +71,7 @@ watchEffect(() => {
 
 <style lang="less" scoped>
 .left-buttons {
-	margin-left: 4.5rem;
+	margin-left: 2rem;
 }
 
 
@@ -88,14 +88,17 @@ watchEffect(() => {
 			scale: 0.9
 		}
 
-		&.inverted {
-			background-color: orangered;
-			color: var(--bg-surface);
 
-			&:hover {
-				background-color: var(--bg-surface);
-				color: orangered;
-			}
+	}
+
+	& button.inverted {
+		background-color: orangered;
+		color: var(--bg-surface);
+
+
+		&:hover {
+			background-color: var(--bg-surface);
+			color: orangered;
 		}
 	}
 }

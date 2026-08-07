@@ -2,7 +2,7 @@
 import type { Statblock } from "~/shared";
 import { crAsString } from "~/shared";
 
-const { data, canEdit, id } = defineProps<{ data: Statblock; canEdit: boolean; id: string }>();
+const { data, canEdit, id, isPinned } = defineProps<{ data: Statblock; canEdit: boolean; id: string, isPinned: boolean }>();
 const emit = defineEmits<{
 	(e: "deleteCreature", id: string): void;
 	(e: "pinCreature"): void;
@@ -24,6 +24,7 @@ const emit = defineEmits<{
 			</p>
 		</div>
 		<div class="right-side">
+			<v-icon-btn text="Pin creature" @click="emit('pinCreature')" :icon="isPinned ? 'mdi:pin-off' : 'mdi:pin'" />
 			<v-icon-btn :text="`Copy ${data.description.name}`" icon="mdi:content-copy" @click="emit('copyCreature')"
 				size="24" />
 			<DropdownMenu v-if="canEdit">

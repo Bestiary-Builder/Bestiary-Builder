@@ -16,13 +16,6 @@ watch(() => data.description.cr, () => {
 });
 
 const rules = useRules();
-const imageUrlPattern = /^https?:\/\/.+\.(?:png|jpe?g|webp|gif|apng)(?:\?.*)?$/i;
-const imageRules = [
-	rules.pattern(
-		imageUrlPattern,
-		"Enter a valid image URL https and one of (.png, .jpg, .jpeg, .webp, .gif, or .apng)"
-	),
-];
 </script>
 
 <template>
@@ -35,7 +28,7 @@ const imageRules = [
 					:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]" />
 			</div>
 			<div>
-				<v-text-field v-model="data.description.image" label="Image URL" :rules="imageRules" />
+				<v-text-field v-model="data.description.image" label="Image URL" :rules="[rules.imageLink()]" />
 			</div>
 		</div>
 		<div class="editor-field__container one-wide pb-4">

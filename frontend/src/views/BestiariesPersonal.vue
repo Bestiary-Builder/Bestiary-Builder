@@ -104,31 +104,47 @@ const newBestiaryIsOpen = ref(false)
 			</template>
 
 			<template #default="{ isActive }">
-				<v-card title="Create new bestiary">
-					<v-sheet class="pa-4" max-width="1800" rounded="lg" width="100%">
-						<v-form>
-							<div class="grid-two">
-								<v-text-field v-model="createOptions.name" label="Name"
-									:maxlength="store.limits?.nameLength" :min-length="store.limits?.nameMin"
-									:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]"
-									class="mb-4" />
-								<v-text-field v-model="createOptions.image" label="Image" class="mb-4" />
-							</div>
+				<v-card title="Create new bestiary" class="pa-4">
+					<v-container class="pa-0">
+						<v-row>
+							<v-col>
+								<div>
+									<v-text-field v-model="createOptions.name" label="Name"
+										:maxlength="store.limits?.nameLength" :min-length="store.limits?.nameMin"
+										:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]"
+										class="mb-4" />
+								</div>
+							</v-col>
+							<v-col>
+								<div>
+									<v-text-field v-model="createOptions.image" label="Image" class="mb-4"
+										:rules="[rules.imageLink()]" />
+								</div>
+							</v-col>
+						</v-row>
+					</v-container>
 
-							<v-textarea v-model="createOptions.description"
-								:max-length="store.limits?.descriptionLength"
-								:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]" label="Description"
-								class="mb-4" hint="Supports Markdown" persistent-hint />
-							<div class="grid-two" counter>
+					<v-textarea v-model="createOptions.description" :max-length="store.limits?.descriptionLength"
+						:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]" label="Description"
+						class="mb-4" hint="Supports Markdown" persistent-hint />
+
+					<v-container class="pa-0">
+						<v-row>
+							<v-col>
 								<div>
 									<v-select v-model="createOptions.status" label="Status"
 										:items="[{ value: 'private', title: 'Private' }, { value: 'unlisted', title: 'Unlisted' }, { value: 'public', title: 'Public' }]" />
 								</div>
-								<v-select v-model="createOptions.tags" multiple :items="store.tags || []" label="Tags"
-									chips closable-chips />
-							</div>
-						</v-form>
-					</v-sheet>
+							</v-col>
+							<v-col>
+								<div>
+									<v-select v-model="createOptions.tags" multiple :items="store.tags || []"
+										label="Tags" chips closable-chips />
+								</div>
+							</v-col>
+						</v-row>
+					</v-container>
+
 					<v-card-actions>
 						<v-spacer />
 						<v-btn text="Create" color="green" size="large" @click="createBestiary" />
