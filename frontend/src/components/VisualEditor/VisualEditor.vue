@@ -57,7 +57,7 @@ useHotkey("cmd+c", () => {
 		// @ts-ignore
 		copiedEffect.value = currentEffect.value
 	}
-})
+}, { preventDefault: false })
 
 useHotkey("cmd+x", () => {
 	if (hoveredEffectContext && hoveredEffectContext.value && hoveredEffectData && hoveredEffectData.value) {
