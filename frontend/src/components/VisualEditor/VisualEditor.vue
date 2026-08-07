@@ -73,14 +73,14 @@ useHotkey("cmd+x", () => {
 			tree.splice(indexToRemove, 1);
 		}
 	}
-})
+}, { preventDefault: false })
 
 useHotkey("cmd+v", async () => {
 	if (hoveredEffectContext && hoveredEffectContext.value) {
 		console.log(hoveredEffectContext.value)
 		await pasteCopiedWithHotkey()
 	}
-})
+}, { preventDefault: false })
 
 const pasteCopiedWithHotkey = async () => {
 	if (!hoveredEffectContext || !hoveredEffectContext.value)
