@@ -100,7 +100,8 @@ const newBestiaryIsOpen = ref(false)
 	]">
 		<v-dialog max-width="750" v-model="newBestiaryIsOpen">
 			<template #activator="{ props: activatorProps }">
-				<v-icon-btn icon="mdi:plus" label="Create new bestiary" inverted v-bind="activatorProps" size="24" />
+				<v-icon-btn icon="mdi:plus" label="Create new bestiary" inverted v-bind="activatorProps" size="24"
+					v-tooltip="'Create new bestiary'" />
 			</template>
 
 			<template #default="{ isActive }">

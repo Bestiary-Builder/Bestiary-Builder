@@ -92,7 +92,8 @@ watch(debouncedSearch, async () => searchBestiaries());
 
 		<DropdownMenu>
 			<template #activator="{ props }">
-				<v-icon-btn icon="mdi:magnify" v-bind="props" text="Search bestiaries" size="24" />
+				<v-icon-btn icon="mdi:magnify" v-bind="props" text="Search bestiaries" size="24"
+					v-tooltip="'Search bestiaries'" />
 			</template>
 			<v-card min-width="300" class="text-center pb-2" title="Search bestiaries">
 				<v-spacer />

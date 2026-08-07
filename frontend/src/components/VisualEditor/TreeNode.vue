@@ -8,6 +8,7 @@ import EffectAdder from "./EffectAdder.vue";
 import NodeHeader from "./Nodes/shared/NodeHeader.vue";
 import TreeRoot from "./TreeRoot.vue";
 import { deepKeys } from "./util";
+import { mergeProps } from "vue"
 
 const props = defineProps<{ data: EffectWithTarget; depth: number; parentType: string; context: string[] }>();
 
@@ -168,28 +169,55 @@ const onMouseLeave = () => {
 		@mouseleave="onMouseLeave">
 		<NodeHeader :type="selfType" :additional-text="additionalText" :is-current="isCurrentSelectedContext" />
 		<span class="tree-buttons">
-			<Icon v-if="(nodeListEffectIsPartOf || []).length > 0 && indexInRespectToParent !== 0" icon="ooui:arrow-up"
-				inline width=".75em" @click.prevent="moveUp" />
-			<Icon v-else icon="ooui:arrow-up" inline width=".75em" color="#3f3f3f" class="disabled" />
-			<Icon
-				v-if="(nodeListEffectIsPartOf || []).length > 0 && indexInRespectToParent !== (nodeListEffectIsPartOf || []).length - 1"
-				icon="ooui:arrow-down" inline width=".75em" @click.prevent="moveDown" />
-			<Icon v-else icon="ooui:arrow-down" inline width=".75em" color="#3f3f3f" class="disabled" />
-
-			<!-- <Icon icon="mdi:trash" inline width=".75em" @click="deleteNode" /> -->
-			<DropdownMenu>
+			<v-tooltip text="Move up in current context">
 				<template #activator="{ props }">
-					<Icon icon="mdi:trash" inline width=".75em" v-bind="props" />
+					<Icon v-if="(nodeListEffectIsPartOf || []).length > 0 && indexInRespectToParent !== 0"
+						icon="ooui:arrow-up" inline width=".75em" class="no-focus-outline" v-bind="props"
+						@click.prevent="moveUp" />
+					<Icon v-else icon="ooui:arrow-up" inline width=".75em" color="#3f3f3f"
+						class="disabled no-focus-outline" v-bind="props" />
+				</template>
+			</v-tooltip>
+
+			<v-tooltip text="Move down in current context">
+				<template #activator="{ props }">
+					<Icon
+						v-if="(nodeListEffectIsPartOf || []).length > 0 && indexInRespectToParent !== (nodeListEffectIsPartOf || []).length - 1"
+						icon="ooui:arrow-down" inline width=".75em" class="no-focus-outline" v-bind="props"
+						@click.prevent="moveDown" />
+					<Icon v-else icon="ooui:arrow-down" inline width=".75em" color="#3f3f3f"
+						class="disabled no-focus-outline" v-bind="props" />
+				</template>
+			</v-tooltip>
+
+			<DropdownMenu>
+				<template #activator="{ props: menuProps }">
+					<v-tooltip text="Delete this node">
+						<template #activator="{ props: tooltipProps }">
+							<Icon icon="mdi:trash" inline width=".75em" v-bind="mergeProps(menuProps, tooltipProps)"
+								class="no-focus-outline" />
+						</template>
+					</v-tooltip>
 				</template>
 				<v-card class="text-center pb-2" :subtitle="`Are you sure you want to delete this ${selfType} Effect?`">
 					<v-card-text>
 						<v-btn color="error" @click="deleteNode" class="w-100"> Delete </v-btn>
-
 					</v-card-text>
 				</v-card>
 			</DropdownMenu>
-			<Icon icon="ooui:copy-ltr" inline width=".75em" @click="copyNode" />
-			<Icon icon="ooui:cut-ltr" inline width=".75em" @click="cutNode" />
+
+			<v-tooltip text="Copy this node">
+				<template #activator="{ props }">
+					<Icon icon="ooui:copy-ltr" inline width=".75em" @click="copyNode" v-bind="props"
+						class="no-focus-outline" />
+				</template>
+			</v-tooltip>
+			<v-tooltip text="Cut this node">
+				<template #activator="{ props }">
+					<Icon icon="ooui:cut-ltr" inline width=".75em" @click="cutNode" v-bind="props"
+						class="no-focus-outline" />
+				</template>
+			</v-tooltip>
 		</span>
 		<span v-if="['attack', 'condition', 'save'].includes(selfType)" class="collapse-button"
 			@click.stop="isCollapsed = !isCollapsed">

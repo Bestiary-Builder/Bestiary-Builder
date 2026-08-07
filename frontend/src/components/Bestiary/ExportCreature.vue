@@ -94,7 +94,8 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 <template>
 	<v-dialog max-width="400">
 		<template #activator="{ props }">
-			<v-icon-btn icon="mdi:export" label="Export Creature" v-bind="props" size="24" />
+			<v-icon-btn icon="mdi:export" label="Export Creature" v-bind="props" size="24"
+				v-tooltip="'Export creature'" />
 		</template>
 
 		<template #default="{ isActive }">

@@ -239,8 +239,10 @@ useHotkey("cmd+s", async () => await updateCollection(), { inputs: true })
 	]">
 		<!-- <v-icon-btn text="Add attack" @click="showCreateModal = true" icon="mdi:plus" size="24" />
 		<v-icon-btn text="Settings" @click="showSettingsModal = true" icon="mdi:cog" size="24" /> -->
-		<v-icon-btn text="Import automation" @click="showImportModal = true" icon="mdi:import" size="24" />
-		<v-icon-btn text="Export automation" @click="exportMyAutomations()" icon="mdi:export" size="24" />
+		<v-icon-btn text="Import automation" @click="showImportModal = true" icon="mdi:import" size="24"
+			v-tooltip="'Settings'" />
+		<v-icon-btn text="Export automation" @click="exportMyAutomations()" icon="mdi:export" size="24"
+			v-tooltip="'Export collection'" />
 	</Breadcrumbs>
 	<div v-if="collection" class="content less-wide">
 		<h1> {{ collection?.name }}</h1>

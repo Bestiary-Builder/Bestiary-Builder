@@ -3,11 +3,12 @@
 	cursor: pointer;
 	transition: color 150ms ease-out;
 	user-select: none;
+
 	&:hover {
 		color: color-mix(in srgb, currentColor, white) !important;
 	}
 
-	& > svg {
+	&>svg {
 		color: currentColor;
 		cursor: pointer;
 	}
@@ -15,11 +16,13 @@
 	.collapse-button {
 		user-select: none;
 		margin-left: 0.1rem;
+
 		svg {
 			scale: 1.2;
 			transition: color 0.3s ease-out;
 			color: currentColor;
 			cursor: pointer;
+
 			&:hover {
 				color: orangered;
 			}
@@ -33,11 +36,13 @@
 		margin-left: 0.5em;
 		justify-content: flex-end;
 		float: right;
+
 		svg {
 			scale: 1.2;
 			transition: color 0.3s ease-out;
 			color: currentColor;
 			cursor: pointer;
+
 			&:not(.disabled):hover {
 				color: orangered !important;
 			}
@@ -52,4 +57,9 @@
 	&.section-node {
 		font-style: italic;
 	}
+}
+
+.no-focus-outline:focus,
+.no-focus-outline:focus-visible {
+	outline: none;
 }

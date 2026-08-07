@@ -284,7 +284,8 @@ const importCreature = async (creature: Statblock) => {
 
 			<v-dialog v-if="isOwner || isEditor" width="600">
 				<template #activator="{ props }">
-					<v-icon-btn text="Import Creature" icon="mdi:import" size="24" v-bind="props" />
+					<v-icon-btn text="Import Creature" icon="mdi:import" size="24" v-bind="props"
+						v-tooltip="'Import creature'" />
 				</template>
 
 				<template #default="{ isActive }">

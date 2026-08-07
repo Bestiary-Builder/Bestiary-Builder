@@ -106,7 +106,7 @@ const rules = useRules()
 	]">
 		<v-dialog max-width="500">
 			<template #activator="{ props: activatorProps }">
-				<v-icon-btn icon="mdi:plus" v-bind="activatorProps" size="24" />
+				<v-icon-btn icon="mdi:plus" v-bind="activatorProps" size="24" v-tooltip="'Create Collection'" />
 			</template>
 
 			<template #default="{ isActive }">

@@ -547,13 +547,15 @@ provide("setActionDescription", setDesc);
 			v-tooltip="'Save feature (CTRL+S)'" />
 		<v-icon-btn icon="fa7-solid:wand-sparkles"
 			text="Generate automation from description. May be incomplete or inaccurate. Only works for basic, to hit attacks."
-			@click="generateAutomation" size="24" />
-		<v-icon-btn size="24" icon="mdi:code-block-braces" text="Change editor" @click="changeEditor" />
+			@click="generateAutomation" size="24"
+			v-tooltip="'Generate automation from description. May be incomplete or inaccurate. Only works for basic, to hit attacks.'" />
+		<v-icon-btn size="24" icon="mdi:code-block-braces" text="Change editor" @click="changeEditor"
+			v-tooltip="'Change editor'" />
 		<ImportAutomationUtil @load-feature="(feature, apiPath) => loadFeature(feature, apiPath)" />
 		<v-icon-btn v-if="data && store.isMobile" icon="mdi:delete" text="Clear automation"
-			@click="data.features[type][aid].automation = {}" size="24" />
+			@click="data.features[type][aid].automation = {}" size="24" v-tooltip="'Clear automation'" />
 		<v-icon-btn v-if="data && store.isMobile" icon="mdi:content-copy" text="Copy automation" @click="copyAutomation"
-			size="24" />
+			size="24" v-tooltip="'Copy automation'" />
 	</Breadcrumbs>
 	<div v-if="data" class="content">
 		<div class="pa-0">

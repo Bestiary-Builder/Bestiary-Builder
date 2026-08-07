@@ -267,7 +267,8 @@ const pinCreature = (creature: Statblock) => {
 
 			<DropdownMenu>
 				<template #activator="{ props }">
-					<v-icon-btn text="Search creatures" icon="mdi:tag" size="24" v-bind="props" />
+					<v-icon-btn text="Search creatures" icon="mdi:tag" size="24" v-bind="props"
+						v-tooltip="'Search creatures'" />
 				</template>
 				<v-card min-width="300" class="text-center pb-2 pa-4" title="Search bestiary">
 					<v-card-actions class="d-flex flex-column align-center justify-center" min-width="200">
@@ -289,7 +290,8 @@ const pinCreature = (creature: Statblock) => {
 
 			<DropdownMenu>
 				<template #activator="{ props }">
-					<v-icon-btn text="Export Bestiary" icon="mdi:export" size="24" v-bind="props" />
+					<v-icon-btn text="Export Bestiary" icon="mdi:export" size="24" v-bind="props"
+						v-tooltip="'Export bestiary'" />
 				</template>
 				<v-card min-width="300" class="text-center pb-2 pa-4" title="Export bestiary">
 					<v-card-actions class="d-flex flex-column align-center justify-center" min-width="200">

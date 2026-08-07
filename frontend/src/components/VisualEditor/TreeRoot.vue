@@ -51,7 +51,7 @@ const hoveredEffectContext = inject<Ref<string[] | null>>("hoveredEffectContext"
 					<Icon
 						:icon="JSON.stringify(currentContext) === JSON.stringify([index.toString(), ...context]) ? 'material-symbols:asterisk' : 'material-symbols:swords'"
 						:inline="true" width="1em"
-						:color="JSON.stringify(currentContext) === JSON.stringify([index.toString(), ...context]) ? 'var(--color-success)' : 'grey'" />
+						:color="JSON.stringify(currentContext) === JSON.stringify([index.toString(), ...context]) ? 'rgb(var(--v-theme-success))' : 'grey'" />
 					{{ auto.name }}
 					<span class="tree-buttons" @click.stop>
 						<DropdownMenu>
@@ -96,7 +96,7 @@ const hoveredEffectContext = inject<Ref<string[] | null>>("hoveredEffectContext"
 				<Icon
 					:icon="JSON.stringify(currentContext) === JSON.stringify(context) ? 'material-symbols:asterisk' : 'material-symbols:swords'"
 					:inline="true" width="1em"
-					:color="JSON.stringify(currentContext) === JSON.stringify(context) ? 'var(--color-success)' : 'grey'" />
+					:color="JSON.stringify(currentContext) === JSON.stringify(context) ? 'rgb(var(--v-theme-success))' : 'grey'" />
 				{{ data.name }}
 				<span class="tree-buttons" @click.stop>
 					<DropdownMenu>

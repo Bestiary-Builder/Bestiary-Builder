@@ -74,7 +74,8 @@ const selectAndLoad = async (apiPath: AutomationTypes, name: string, _id: Id | n
 
 	<DropdownMenu>
 		<template #activator="{ props }">
-			<v-icon-btn icon="mdi:database" text="Import Action" size="24" v-bind="props" />
+			<v-icon-btn icon="mdi:database" text="Import Action" size="24" v-bind="props"
+				v-tooltip="'Import Feature'" />
 		</template>
 		<v-card width="500" mi class="text-center pb-2">
 			<v-card-text>

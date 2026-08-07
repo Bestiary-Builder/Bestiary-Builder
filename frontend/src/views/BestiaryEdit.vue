@@ -413,7 +413,8 @@ const pinCreature = (creature: Statblock) => {
 		]">
 			<DropdownMenu v-if="isEditor || isOwner">
 				<template #activator="{ props }">
-					<v-icon-btn text="Create creature" icon="mdi:plus" size="24" v-bind="props" class="inverted" />
+					<v-icon-btn text="Create creature" icon="mdi:plus" size="24" v-bind="props" class="inverted"
+						v-tooltip="'Create creature'" />
 				</template>
 				<v-card min-width="300" class="text-center pa-4" title="Create creature">
 					<v-card-actions class="d-flex flex-column align-center justify-center">
@@ -445,11 +446,12 @@ const pinCreature = (creature: Statblock) => {
 
 			<v-dialog v-if="isOwner" max-width="950">
 				<template #activator="{ props }">
-					<v-icon-btn text="Edit bestiary" icon="mdi:cog" size="24" v-bind="props" />
+					<v-icon-btn text="Bestiary Settings" icon="mdi:cog" size="24" v-bind="props"
+						v-tooltip="'Settings'" />
 				</template>
 
 				<template #default="{ isActive }">
-					<v-card title="Edit bestiary">
+					<v-card title="Bestiary Settings">
 						<v-sheet class="pa-4" max-width="1800" rounded="lg" width="100%">
 							<v-form>
 								<div class="grid-two">
@@ -530,7 +532,8 @@ const pinCreature = (creature: Statblock) => {
 			</v-dialog>
 			<DropdownMenu>
 				<template #activator="{ props }">
-					<v-icon-btn text="Search creatures" icon="mdi:tag" size="24" v-bind="props" />
+					<v-icon-btn text="Search creatures" icon="mdi:tag" size="24" v-bind="props"
+						v-tooltip="'Search creatures'" />
 				</template>
 				<v-card min-width="300" class="text-center pb-2 pa-4" title="Search bestiary">
 					<v-card-actions class="d-flex flex-column align-center justify-center" min-width="200">
@@ -552,7 +555,8 @@ const pinCreature = (creature: Statblock) => {
 
 			<v-dialog v-if="isOwner" max-width="750">
 				<template #activator="{ props }">
-					<v-icon-btn text="Import automation" icon="mdi:import" size="24" v-bind="props" />
+					<v-icon-btn text="Import creatures" icon="mdi:import" size="24" v-bind="props"
+						v-tooltip="'Import creatures'" />
 				</template>
 
 				<template #default="{ isActive }">

@@ -42,7 +42,8 @@ const importManyCreatures = () => {
 <template>
 	<DropdownMenu>
 		<template #activator="{ props }">
-			<v-icon-btn icon="mdi:content-copy" v-bind="props" text="Manage copies" size="24" />
+			<v-icon-btn icon="mdi:content-copy" v-bind="props" text="Manage copies" size="24"
+				v-tooltip="'Manage copies'" />
 		</template>
 		<v-card min-width="500" class="text-center pa-4 d-flex justify-center flex-column">
 			<v-card-text>

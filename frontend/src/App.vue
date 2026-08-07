@@ -2,11 +2,11 @@
 import { RouterView } from "vue-router";
 import ToastHost from "./components/Page/ToastHost.vue";
 import { ref } from "vue";
-import { store } from "./utils/store";
-import { sendToLogin } from "./utils/utils";
+import { store } from "./utils/store.js";
+import { sendToLogin } from "./utils/utils.js";
 import { useLocalStorage } from "@vueuse/core";
 import { onMounted } from "vue";
-import { useRecentPages } from "./utils/app/useRecentPages";
+import { useRecentPages } from "./utils/app/useRecentPages.js";
 
 const { recentPages } = useRecentPages();
 
