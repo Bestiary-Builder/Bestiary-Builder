@@ -55,6 +55,9 @@ export const vuetify = createVuetify({
         },
         VNumberInput: {
             controlVariant: "stacked"
+        },
+        VAutocomplete: {
+            variant: "solo-filled"
         }
     },
     theme: {

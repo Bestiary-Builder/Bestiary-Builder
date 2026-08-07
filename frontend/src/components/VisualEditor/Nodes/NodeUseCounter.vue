@@ -2,11 +2,10 @@
 import type { Ref } from "vue";
 import type { AbilityReference, Counter, SpellSlotReference } from "~/shared";
 import { inject, onMounted, ref, watch } from "vue";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import { useFetch } from "@/utils/utils";
-import IntExpression from "./shared/IntExpression.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
+import { useRules } from "vuetify/labs/rules";
 
 const currentEffect = inject<Ref<Counter>>("currentEffect");
 
@@ -53,67 +52,57 @@ onMounted(async () => {
 });
 
 useDataCleanup(currentEffect, ["allowOverflow", "fixedValue"]);
+
+const rules = useRules()
 </script>
 
 <template>
 	<template v-if="currentEffect">
 		<SectionHeader title="Use Counter" />
 		<div class="two-wide">
-			<LabelledComponent title="Counter Type" for="counterType">
-				<select id="counterType" v-model="counterType" title="Error Behaviour" class="ghost">
-					<option value="cc">
-						Custom Counter
-					</option>
-					<option value="ss">
-						Spell Slot
-					</option>
-					<option value="abi">
-						Ability
-					</option>
-				</select>
-			</LabelledComponent>
-			<LabelledComponent v-if="typeof (currentEffect.counter) === 'string'" title="Counter Name*" for="counterName">
-				<input id="counterName" v-model="currentEffect.counter" type="text">
-				<small style="font-size: x-small"> Leave empty and set Error Behaviour to <i>Ignore</i> to take arbitrary <code>-amt #</code> input.</small>
-			</LabelledComponent>
-			<LabelledComponent v-else-if="typeof (currentEffect!.counter) === 'object' && Object.hasOwn(currentEffect!.counter, 'slot')" title="Slot Level*" for="slotLevel">
-				<div class="input-wrapper">
-					<input id="slotLevel" v-model="(currentEffect.counter as SpellSlotReference).slot" type="text" :class="{ required: (currentEffect.counter as SpellSlotReference).slot.toString().length === 0 }"> <IntExpression />
-				</div>
-			</LabelledComponent>
-			<LabelledComponent v-else-if="typeof (currentEffect!.counter) === 'object' && Object.hasOwn(currentEffect!.counter, 'id') && Object.hasOwn(currentEffect!.counter, 'typeId')" title="Ability Reference" for="abilityReference">
-				<v-select v-model="currentEffect.counter" :options="limitedUse" label="name" input-id="text" :reduce="(x : any) => ({ id: x.id, typeId: x.typeId })" />
-			</LabelledComponent>
+			<div>
+				<v-select v-model="counterType" label="Counter Type" title="Error Behaviour" :items="[
+					{ title: 'Custom Counter', value: 'cc' },
+					{ title: 'Spell Slot', value: 'ss' },
+					{ title: 'Ability', value: 'abi' },
+				]" />
+			</div>
+
+			<div v-if="typeof (currentEffect.counter) === 'string'">
+				<v-text-field v-model="currentEffect.counter" label="Counter Name"
+					hint="Leave empty and set Error Behaviour to Ignore to takearbitrary -amt # input. "
+					persistent-hint />
+			</div>
+			<div
+				v-else-if="typeof (currentEffect!.counter) === 'object' && Object.hasOwn(currentEffect!.counter, 'slot')">
+				<v-text-field v-model="(currentEffect.counter as SpellSlotReference).slot" label="Slot Level"
+					:rules="[rules.required()]" hint="IntExpression" />
+			</div>
+			<v-select
+				v-else-if="typeof (currentEffect!.counter) === 'object' && Object.hasOwn(currentEffect!.counter, 'id') && Object.hasOwn(currentEffect!.counter, 'typeId')"
+				v-model="currentEffect.counter" label="Ability Reference" :items="limitedUse" item-title="name"
+				:item-value="(x: any) => ({ id: x.id, typeId: x.typeId })" return-object />
 			<span v-else> Something went wrong with this node. Please delete it and recreate the counter node.</span>
-			<LabelledComponent title="Amount" for="amount">
-				<div class="input-wrapper">
-					<input id="amount" v-model="currentEffect.amount" type="text"><IntExpression />
-				</div>
-			</LabelledComponent>
+			<div>
+				<v-text-field v-model="currentEffect.amount" label="Amount"
+					hint="Negative numbers add uses to the counter. IntExpression" />
+			</div>
 		</div>
 
-		<hr>
 		<SectionHeader title="Additional Options" />
 		<div class="two-wide">
-			<LabelledComponent title="Allow Overflow" for="allowOverflow">
-				<span><input id="allowOverflow" v-model="currentEffect.allowOverflow" type="checkbox"> <label for="allowOverflow"> If False, attempting to overflow/underflow a counter (i.e. use more charges than available or add charges exceeding max) will error instead of clipping to bounds. </label> </span>
-			</LabelledComponent>
-			<LabelledComponent title="Fixed value" for="fixedValue">
-				<span> <input id="fixedValue" v-model="currentEffect.fixedValue" type="checkbox"> <label for="fixedValue"> Whether this counter should ignore the <span style="display: inline-block">-amt</span> argument.</label> </span>
-			</LabelledComponent>
-			<LabelledComponent title="Error Behaviour" for="error">
-				<select id="error" v-model="currentEffect.errorBehaviour" title="Error Behaviour" class="ghost">
-					<option value="warn">
-						Warn
-					</option>
-					<option value="raise">
-						Raise
-					</option>
-					<option value="ignore">
-						Ignore
-					</option>
-				</select>
-			</LabelledComponent>
+			<v-select v-model="currentEffect.errorBehaviour" label="Error Behaviour" title="Error Behaviour" :items="[
+				{ title: 'Warn', value: 'warn' },
+				{ title: 'Raise', value: 'raise' },
+				{ title: 'Ignore', value: 'ignore' },
+			]" />
+
+			<v-checkbox v-model="currentEffect.allowOverflow"
+				label="If True, attempting to overflow/underflow a counter (i.e. use more charges than available or add charges exceeding max) will clip to bounds rather than error." />
+			<v-checkbox v-model="currentEffect.fixedValue"
+				label="Whether this counter should ignore the -amt argument.">
+			</v-checkbox>
+
 		</div>
 	</template>
 </template>

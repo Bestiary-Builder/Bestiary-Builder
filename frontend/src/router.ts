@@ -77,7 +77,7 @@ router.afterEach((to) => {
 	const keys = Object.keys(to.query);
 	if (keys.includes("loginSuccess") || keys.includes("loginError")) {
 		if (to.query.loginSuccess) {
-			addToast("Succesfully logged in", { color: "success", timeout: -1 });
+			addToast("Succesfully logged in", { color: "success" });
 			delete to.query.loginSuccess;
 		}
 		if (to.query.loginError) {

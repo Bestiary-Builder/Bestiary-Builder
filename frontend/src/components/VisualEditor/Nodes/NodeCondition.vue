@@ -2,8 +2,6 @@
 import type { Ref } from "vue";
 import type { Condition } from "~/shared";
 import { computed, inject } from "vue";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
-import IntExpression from "./shared/IntExpression.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
 
@@ -30,33 +28,21 @@ useDataCleanup(currentEffect, ["errorBehaviour"]);
 <template>
 	<template v-if="currentEffect">
 		<SectionHeader title="Branch" />
-		<LabelledComponent title="Condition*" for="condition">
-			<div class="input-wrapper">
-				<input id="condition" v-model="currentEffect.condition" type="text" :class="{ required: currentEffect.condition.length === 0, warning: isWarning }"> <IntExpression />
-				<span v-if="isWarning" class="delay" style="color: var(--color-warning); font-size: small;"> Equality checks should use double ==.</span>
-			</div>
-		</LabelledComponent>
+		<div>
+			<v-text-field v-model="currentEffect.condition" label="Condition"
+				:messages="isWarning ? ['Equality checks should use double ==.'] : []" hint="IntExpression"
+				:color="isWarning ? 'warning' : undefined" />
+		</div>
+
 		<SectionHeader title="Additional Options" />
 		<div class="two-wide">
-			<LabelledComponent title="Error Behaviour" for="error">
-				<select id="error" v-model="currentEffect.errorBehaviour" title="Error Behaviour" class="ghost">
-					<option value="true">
-						Treat as True
-					</option>
-					<option value="false">
-						Treat as False
-					</option>
-					<option value="both">
-						Run both
-					</option>
-					<option value="neither">
-						Neither
-					</option>
-					<option value="raise">
-						Raise
-					</option>
-				</select>
-			</LabelledComponent>
+			<v-select v-model="currentEffect.errorBehaviour" label="Error Behaviour" title="Error Behaviour" :items="[
+				{ title: 'Treat as True', value: 'true' },
+				{ title: 'Treat as False', value: 'false' },
+				{ title: 'Run both', value: 'both' },
+				{ title: 'Neither', value: 'neither' },
+				{ title: 'Raise', value: 'raise' },
+			]" />
 		</div>
 	</template>
 </template>

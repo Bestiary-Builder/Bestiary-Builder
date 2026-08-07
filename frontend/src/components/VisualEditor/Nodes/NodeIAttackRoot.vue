@@ -2,7 +2,6 @@
 import type { Ref } from "vue";
 import type { AttackInteraction } from "~/shared";
 import { inject } from "vue";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
 
@@ -14,78 +13,37 @@ useDataCleanup(currentEffect, ["defaultAttackBonus", "defaultCastingMod", "defau
 	<template v-if="currentEffect">
 		<SectionHeader :title="`Attack (${currentEffect.attack.name})`" />
 		<div class="two-wide">
-			<LabelledComponent title="Attack Name*" for="name">
-				<input id="name" v-model="currentEffect.attack.name" type="text" :class="{ required: currentEffect.attack.name.length === 0 }">
-			</LabelledComponent>
-			<LabelledComponent title="Thumbnail URL" for="thumb">
-				<input id="thumb" v-model="currentEffect.attack.thumb" type="text">
-			</LabelledComponent>
-			<LabelledComponent title="Verb" for="verb">
-				<input id="verb" v-model="currentEffect.attack.verb" type="text" placeholder="attacks with">
-			</LabelledComponent>
-			<LabelledComponent title="Proper Noun" for="proper">
-				<span><input id="proper" v-model="currentEffect.attack.proper" type="checkbox"> <label for="proper">Name is proper noun</label>  </span>
-			</LabelledComponent>
+			<v-text-field v-model="currentEffect.attack.name" label="Attack Name*"
+				:class="{ required: currentEffect.attack.name.length === 0 }" />
+			<v-text-field v-model="currentEffect.attack.thumb" label="Thumbnail URL" />
+			<v-text-field v-model="currentEffect.attack.verb" label="Verb" placeholder="attacks with" />
+			<v-checkbox v-model="currentEffect.attack.proper" label="Name is proper noun" />
 		</div>
-		<LabelledComponent title="Flavor Text" for="text" style="margin-top: 1rem">
-			<textarea id="text" v-model="currentEffect.attack.phrase" rows="20" placeholder="Flavor text" />
-		</labelledcomponent>
+		<v-textarea v-model="currentEffect.attack.phrase" label="Flavor Text" rows="5" />
 
 		<div class="two-wide">
-			<LabelledComponent title="Crit On" for="criton">
-				<select id="criton" v-model="currentEffect.attack.criton" class="ghost">
-					<option :value="null">
-						(crit on 20)
-					</option>
-					<option v-for="x in 20" :key="20 - x" :value="20 - x">
-						{{ 20 - x }}
-					</option>
-				</select>
-			</LabelledComponent>
-			<LabelledComponent title="Extra Crit Damage" for="critdamage">
-				<input id="critdamage" v-model="currentEffect.attack.extra_crit_damage" type="text">
-			</LabelledComponent>
+			<v-select v-model="currentEffect.attack.criton" label="Crit On" :items="[
+				{ title: '(crit on 20)', value: null },
+				...Array.from({ length: 20 }, (_, i) => ({ title: (20 - i).toString(), value: 20 - i })),
+			]" />
+			<v-text-field v-model="currentEffect.attack.extra_crit_damage" label="Extra Crit Damage" />
 		</div>
 
 		<SectionHeader title="Additional Options" />
 		<div class="two-wide">
-			<LabelledComponent title="Action Type" for="activationType">
-				<select id="activationType" v-model="currentEffect.attack.activation_type" title="Activation Type" class="ghost">
-					<option :value="null">
-						Attack
-					</option>
-					<option :value="1">
-						Action
-					</option>
-					<option :value="2">
-						No Action
-					</option>
-					<option :value="3">
-						Bonus Action
-					</option>
-					<option :value="4">
-						Reaction
-					</option>
-					<option :value="6">
-						Minute
-					</option>
-					<option :value="7">
-						Hour
-					</option>
-					<option :value="8">
-						Special
-					</option>
-					<option :value="9">
-						Legendary
-					</option>
-					<option :value="10">
-						Mythic
-					</option>
-					<option :value="11">
-						Lair
-					</option>
-				</select>
-			</LabelledComponent>
+			<v-select v-model="currentEffect.attack.activation_type" label="Action Type" title="Activation Type" :items="[
+				{ title: 'Attack', value: null },
+				{ title: 'Action', value: 1 },
+				{ title: 'No Action', value: 2 },
+				{ title: 'Bonus Action', value: 3 },
+				{ title: 'Reaction', value: 4 },
+				{ title: 'Minute', value: 6 },
+				{ title: 'Hour', value: 7 },
+				{ title: 'Special', value: 8 },
+				{ title: 'Legendary', value: 9 },
+				{ title: 'Mythic', value: 10 },
+				{ title: 'Lair', value: 11 },
+			]" />
 		</div>
 	</template>
 </template>

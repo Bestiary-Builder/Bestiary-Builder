@@ -2,8 +2,6 @@
 import type { Ref } from "vue";
 import type { Roll } from "~/shared";
 import { inject, onBeforeUnmount, watch } from "vue";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
-import AnnotatedString from "./shared/AnnotatedString.vue";
 import HigherLevels from "./shared/HigherLevels.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
@@ -33,37 +31,29 @@ useDataCleanup(currentEffect, ["cantripScale", "hidden", "displayName", "fixedVa
 	<template v-if="currentEffect">
 		<SectionHeader title="Roll" />
 		<div class="two-wide">
-			<LabelledComponent title="Name*" for="name">
-				<input id="name" v-model="currentEffect.name" type="text">
-			</LabelledComponent>
-			<LabelledComponent title="Dice*" for="dice">
-				<div class="input-wrapper">
-					<input id="dice" v-model="currentEffect.dice" type="text"><AnnotatedString />
-				</div>
-			</LabelledComponent>
+			<v-text-field v-model="currentEffect.name" label="Name" />
+			<div>
+				<v-text-field v-model="currentEffect.dice" label="Dice" hint="AnnotatedString" />
+			</div>
 		</div>
 
 		<SectionHeader title="Additional Options" />
 		<div class="two-wide">
-			<LabelledComponent title="Display name" for="displayName">
-				<input id="displayName" v-model="currentEffect.displayName" type="text">
-			</LabelledComponent>
-			<LabelledComponent title="Fixed value" for="fixedValue">
-				<span> <input id="fixedValue" v-model="currentEffect.fixedValue" type="checkbox"> <label for="fixedValue"> Whether this roll should ignore the <span style="display: inline-block">-d</span> argument and damage bonus effects.</label> </span>
-			</LabelledComponent>
-			<LabelledComponent title="Hidden" for="hidden">
-				<span><input id="hidden" v-model="currentEffect.hidden" type="checkbox"> <label for="overheal">Whether to display the roll in the Meta field, or to apply any bonuses from the -d argument.</label>  </span>
-			</LabelledComponent>
+			<v-text-field v-model="currentEffect.displayName" label="Display name" />
+			<v-checkbox v-model="currentEffect.fixedValue" label="Whether this roll should ignore the -d argument and
+					damage bonus effects." />
+
+			<v-checkbox v-model="currentEffect.hidden"
+				label="Whether to display the roll in the Meta field, or to apply any bonuses from the -d argument." />
 		</div>
 
 		<SectionHeader title="Spell Options" />
 		<div class="two-wide">
-			<LabelledComponent title="At higher levels" for="higherLevels">
+			<v-checkbox v-model="currentEffect.cantripScale" label="Whether this roll should scale like a cantrip." />
+			<div>
+				<div>At higher levels</div>
 				<HigherLevels v-model="(currentEffect.higher as Record<number, string>)" />
-			</LabelledComponent>
-			<LabelledComponent title="Scales like Cantrip" for="cantripScale">
-				<span><input id="cantripScale" v-model="currentEffect.cantripScale" type="checkbox"> <label for="cantripScale"> Whether this roll should scale like a cantrip. </label> </span>
-			</LabelledComponent>
+			</div>
 		</div>
 	</template>
 </template>

@@ -56,8 +56,8 @@ const hoveredEffectContext = inject<Ref<string[] | null>>("hoveredEffectContext"
 					<span class="tree-buttons" @click.stop>
 						<DropdownMenu>
 							<template #activator="{ props }">
-								<Icon icon="fa7-solid:eraser" inline width=".75em" role="button" class="trigger"
-									color="grey" v-bind="props" />
+								<Icon icon="mdi:trash" inline width=".75em" role="button" class="trigger" color="grey"
+									v-bind="props" />
 							</template>
 							<v-card min-width="300" class="text-center pb-2">
 								<v-card-text>
@@ -101,8 +101,8 @@ const hoveredEffectContext = inject<Ref<string[] | null>>("hoveredEffectContext"
 				<span class="tree-buttons" @click.stop>
 					<DropdownMenu>
 						<template #activator="{ props }">
-							<Icon icon="fa7-solid:eraser" inline width=".75em" role="button" class="trigger"
-								color="grey" v-bind="props" />
+							<Icon icon="mdi:trash" inline width=".75em" role="button" class="trigger" color="grey"
+								v-bind="props" />
 						</template>
 						<v-card min-width="300" class="text-center pb-2">
 							<v-card-text>

@@ -3,12 +3,12 @@ import type { Ref } from "vue";
 import type { PassiveEffectDef } from "./passiveEffect";
 import type { IEffect } from "~/shared";
 import { computed, inject } from "vue";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import AnnotatedString from "../shared/AnnotatedString.vue";
-import IntExpression from "../shared/IntExpression.vue";
 import SectionHeader from "../shared/SectionHeader.vue";
 import { useDataCleanup } from "../shared/utils";
 import { PASSIVE_EFFECTS } from "./passiveEffect";
+import Editor from "@/components/StatblockEditor/Editor.vue";
+import { useRules } from "vuetify/labs/rules";
 
 const currentEffect = inject<Ref<IEffect>>("currentEffect");
 
@@ -18,7 +18,8 @@ const filteredPassiveEffects = computed(() => {
 	return PASSIVE_EFFECTS.filter(x => !Object.keys(currentEffect.value.effects as any).includes(x.value));
 });
 
-const addNewPassiveEffect = (effect: PassiveEffectDef) => {
+const addNewPassiveEffect = (effect: PassiveEffectDef | null) => {
+	if (effect === null) return
 	if (!currentEffect!.value.effects)
 		currentEffect!.value.effects = {};
 	if (effect.isList)
@@ -65,96 +66,77 @@ const addAttack = () => {
 };
 
 useDataCleanup(currentEffect, ["end", "tick_on_caster", "conc", "desc", "save_as", "parent", "target_self", "stacking", "hidden"], { effects: PASSIVE_EFFECTS.map(x => x.value) });
+
+const rules = useRules()
 </script>
 
 <template>
 	<template v-if="currentEffect">
 		<SectionHeader title="Initiative Effect" />
 		<div class="two-wide">
-			<LabelledComponent title="Name*" for="name">
-				<div class="input-wrapper">
-					<input id="name" v-model="currentEffect.name" type="text" :class="{ required: currentEffect.name.length === 0 }">
-					<AnnotatedString />
-				</div>
-			</LabelledComponent>
+			<div>
+				<v-text-field v-model="currentEffect.name" label="Name" :rules="[rules.required()]"
+					hint="AnnotatedString" />
+			</div>
 		</div>
 		<SectionHeader title="Duration Options" />
-		<div class="two-wide">
-			<LabelledComponent title="Duration" for="duration">
-				<div class="input-wrapper">
-					<input id="duration" v-model="currentEffect.duration" type="text"> <IntExpression />
-				</div>
-			</LabelledComponent>
-			<LabelledComponent title="Ticks on End" for="end">
-				<span><input id="end" v-model="currentEffect.end" type="checkbox"> <label for="end">Ticks on end of turn.</label>  </span>
-			</LabelledComponent>
-			<LabelledComponent title="Ticks on Caster" for="caster">
-				<span><input id="caster" v-model="currentEffect.tick_on_caster" type="checkbox"> <label for="caster">Ticks on Caster rather than the Target.</label>  </span>
-			</LabelledComponent>
-			<LabelledComponent title="Requires concentration" for="conc">
-				<span><input id="conc" v-model="currentEffect.conc" type="checkbox"> <label for="conc">Requires concentration.</label>  </span>
-			</LabelledComponent>
+		<div class="grid-two">
+			<div>
+				<v-text-field v-model="currentEffect.duration" label="Duration" hint="IntExpression" />
+			</div>
+			<v-checkbox v-model="currentEffect.end" label="Ticks on end of turn." hide-details />
+			<v-checkbox v-model="currentEffect.tick_on_caster" label="Ticks on Caster rather than the Target."
+				hide-details />
+			<v-checkbox v-model="currentEffect.conc" label="Requires concentration." hide-details />
 		</div>
 		<SectionHeader title="Passive Effects" />
-		<LabelledComponent v-for="effect, key in currentEffect.effects" :key="key" :title="getEffectData(key)?.label || ''" :for="key" style="margin-top: 1rem">
-			<div v-if="getInputType(key) !== 'list'" class="input-wrapper">
-				<input :id="key" v-model="(currentEffect as any).effects[key]" type="text">
-				<AnnotatedString v-if="getInputType(key) === 'annotatedstring'" />
-				<IntExpression v-else />
+		<div class="grid-two mt-4">
+			<div v-for="effect, key in currentEffect.effects" :key="key">
+				<div v-if="getInputType(key) !== 'list'">
+					<v-text-field :id="key" v-model="(currentEffect as any).effects[key]"
+						:label="getEffectData(key)?.label || ''"
+						:hint="getInputType(key) === 'annotatedstring' ? 'AnnotatedString' : 'IntExpression'" />
+				</div>
+				<div v-else>
+					<v-combobox v-model="(currentEffect as any).effects[key]" :label="getEffectData(key)?.label || ''"
+						:items="getEffectData(key)?.defaultOptions" item-title="label" item-value="value"
+						:multiple="getEffectData(key)?.isList" :chips="getEffectData(key)?.isList"
+						:closable-chips="getEffectData(key)?.isList" variant="solo-filled" />
+				</div>
 			</div>
-			<div v-else>
-				<v-select
-					v-model="(currentEffect as any).effects[key]"
-					taggable
-					:options="getEffectData(key)?.defaultOptions"
-					:input-id="key"
-					:multiple="getEffectData(key)?.isList"
-					:reduce="(x: any) => x.value"
-					:create-option="(x: string) => ({ label: x, value: x })"
-				/>
-			</div>
-		</LabelledComponent>
-		<LabelledComponent title="New Passive Effect" for="newPassiveEffect" style="margin-top: 1rem;" class="standout">
-			<div class="two-wide">
-				<v-select :options="filteredPassiveEffects" @option:selected="(e: PassiveEffectDef) => addNewPassiveEffect(e)" />
-			</div>
-		</LabelledComponent>
-		<SectionHeader title="Buttons & Attacks" />
-		<div class="two-wide">
-			<LabelledComponent title="New Button" for="addButton ">
-				<button id="addButton" class="btn" @click="addButton()">
-					Add a button
-				</button>
-			</LabelledComponent>
-			<LabelledComponent title="New Attack" for="addAttack ">
-				<button id="addButton" class="btn" @click="addAttack()">
-					Add an attack
-				</button>
-			</LabelledComponent>
 		</div>
-		<small> Manage individual buttons and attacks by selecting them in the Effect Tree. </small>
-		<SectionHeader title="Additional Options" />
-		<LabelledComponent title="Description" for="text" style="margin-bottom: 1rem">
-			<div class="input-wrapper">
-				<textarea id="text" v-model="currentEffect.desc" rows="5" placeholder="Description" /><AnnotatedString />
+
+		<div class="grid-two">
+			<v-autocomplete :items="filteredPassiveEffects" item-title="label" label="New Passive Effect" return-object
+				@update:model-value="(e: PassiveEffectDef | null) => addNewPassiveEffect(e)" prepend-icon="mdi:plus"
+				icon-color="primary" item-color="primary" />
+		</div>
+		<div class="my-4">
+			<SectionHeader title="Buttons & Attacks" />
+			<div class="two-wide mt-4">
+				<v-btn @click="addButton">
+					Add a button
+				</v-btn>
+				<v-btn @click="addAttack">
+					Add an attack
+				</v-btn>
 			</div>
-		</labelledcomponent>
+			<p class="pt-3">
+				<small>
+					Manage individual buttons and attacks by selecting them in the Effect Tree.
+				</small>
+			</p>
+		</div>
+		<SectionHeader title="Additional Options" />
+		<div class="my-4">
+			<Editor v-model="currentEffect.desc" />
+		</div>
 		<div class="two-wide">
-			<LabelledComponent title="Save As" for="saveAs">
-				<input id="saveAs" v-model="currentEffect.save_as" type="text">
-			</LabelledComponent>
-			<LabelledComponent title="Parent" for="parent">
-				<input id="parent" v-model="currentEffect.parent" type="text">
-			</LabelledComponent>
-			<LabelledComponent title="Effect Stacking" for="effectStacking">
-				<span><input id="effectStacking" v-model="currentEffect.stacking" type="checkbox"> <label for="effectStacking">Ticks on end of turn.</label>  </span>
-			</LabelledComponent>
-			<LabelledComponent title="Target Self" for="targetSelf">
-				<span><input id="targetSelf" v-model="currentEffect.target_self" type="checkbox"> <label for="end">Target Self</label>  </span>
-			</LabelledComponent>
-			<LabelledComponent title="Hidden effect" for="hidden">
-				<span><input id="hidden" v-model="currentEffect.hidden" type="checkbox"> <label for="end">Hidden Effect</label>  </span>
-			</LabelledComponent>
+			<v-text-field v-model="currentEffect.save_as" label="Save As" hide-details />
+			<v-text-field v-model="currentEffect.parent" label="Parent" hide-details />
+			<v-checkbox v-model="currentEffect.stacking" label="Ticks on end of turn." hide-details density="compact" />
+			<v-checkbox v-model="currentEffect.target_self" label="Target Self" hide-details density="compact" />
+			<v-checkbox v-model="currentEffect.hidden" label="Hidden effect" hide-details density="compact" />
 		</div>
 	</template>
 </template>
@@ -163,7 +145,7 @@ useDataCleanup(currentEffect, ["end", "tick_on_caster", "conc", "desc", "save_as
 @import url("../styles/automation-editor.less");
 
 .standout {
-	border-left: 2px dashed orangered;
+	border-left: 2px solid orangered;
 	padding-left: 1rem;
 }
 

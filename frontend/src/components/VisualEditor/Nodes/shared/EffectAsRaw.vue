@@ -24,6 +24,8 @@ const sanitizedEffect = (effect: any) => {
 		input.buttons = ["..."];
 	if (Object.hasOwn(input, "attacks"))
 		input.attacks = ["..."];
+	if (Object.hasOwn(input, "automation"))
+		input.automation = ["..."];
 	return input;
 };
 </script>

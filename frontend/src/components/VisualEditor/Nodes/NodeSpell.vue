@@ -2,9 +2,7 @@
 import type { Ref } from "vue";
 import type { Spell } from "~/shared";
 import { inject, onMounted, ref } from "vue";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import { useFetch } from "@/utils/utils";
-import IntExpression from "./shared/IntExpression.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
 
@@ -29,46 +27,23 @@ useDataCleanup(currentEffect, ["level", "attackBonus", "castingMod", "parent"]);
 <template>
 	<template v-if="currentEffect">
 		<SectionHeader title="Cast Spell" />
-		<LabelledComponent title="Spell" for="spell">
-			<v-select v-model="currentEffect.id" :options="spells" input-id="spell" label="label" :reduce="(spell : any) => spell.id" :clearable="false" placeholder="(default level)" />
-		</LabelledComponent>
+		<v-autocomplete v-model="currentEffect.id" label="Spell" :items="spells" item-title="label" item-value="id" />
 
 		<SectionHeader title="Additional Options" />
 
 		<div class="two-wide">
-			<LabelledComponent title="Level" for="level">
-				<select id="level" v-model="currentEffect.level" class="ghost">
-					<option :value="null">
-						(default level)
-					</option>
-					<option v-for="x in 10" :key="x" :value="x - 1">
-						{{ x - 1 }}
-					</option>
-				</select>
-			</LabelledComponent>
-			<LabelledComponent title="Parent Effect" for="parent">
-				<input id="parent" v-model="currentEffect.parent" type="text">
-			</LabelledComponent>
+			<v-select v-model="currentEffect.level" label="Level" :items="[
+				{ title: '(default level)', value: null },
+				...Array.from({ length: 10 }, (_, i) => ({ title: i.toString(), value: i })),
+			]" />
+			<v-text-field v-model="currentEffect.parent" label="Parent Effect" />
 		</div>
 
 		<SectionHeader title="Caster Spellcasting Override" />
-
 		<div class="two-wide">
-			<LabelledComponent title="DC" for="dc">
-				<div class="input-wrapper">
-					<input id="dc" v-model="currentEffect.dc" type="text"><IntExpression />
-				</div>
-			</LabelledComponent>
-			<LabelledComponent title="Attack Bonus" for="attackBonus">
-				<div class="input-wrapper">
-					<input id="attackBonus" v-model="currentEffect.attackBonus" type="text"><IntExpression />
-				</div>
-			</LabelledComponent>
-			<LabelledComponent title="Casting Modifier" for="castingMod">
-				<div class="input-wrapper">
-					<input id="castingMod" v-model="currentEffect.castingMod" type="text"><IntExpression />
-				</div>
-			</LabelledComponent>
+			<v-text-field v-model="currentEffect.dc" label="DC" hint="IntExpression" />
+			<v-text-field v-model="currentEffect.attackBonus" label="Attack Bonus" hint="IntExpression" />
+			<v-text-field v-model="currentEffect.castingMod" label="Casting Modifier" hint="IntExpression" />
 		</div>
 	</template>
 </template>

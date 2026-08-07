@@ -22,7 +22,7 @@ export type AutomationCollectionExtended = AutomationCollection & { automations:
 export type AutomationCollectionWithCount = AutomationCollection & { automationCount: number };
 
 export class GlobalStats {
-	constructor(public bestiaries: number, public creatures: number, public users: number) {}
+	constructor(public bestiaries: number, public creatures: number, public users: number) { }
 }
 
 export interface AutomationDocumentationEntity {
@@ -387,7 +387,7 @@ export interface Spell {
 export interface Check {
 	type: "check";
 	ability: string[];
-	contestAbility?: string | string[];
+	contestAbility?: string[];
 	dc?: IntExpression;
 	success: Effect[];
 	fail: Effect[];

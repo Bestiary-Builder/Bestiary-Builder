@@ -2,8 +2,6 @@
 import type { Ref } from "vue";
 import type { TempHP } from "~/shared";
 import { inject, onBeforeUnmount, watch } from "vue";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
-import AnnotatedString from "./shared/AnnotatedString.vue";
 import HigherLevels from "./shared/HigherLevels.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
@@ -32,19 +30,16 @@ useDataCleanup(currentEffect, ["cantripScale"]);
 <template>
 	<template v-if="currentEffect">
 		<SectionHeader title="Temp HP" />
-		<LabelledComponent title="Amount" for="amount">
-			<div class="input-wrapper">
-				<input id="amount" v-model="currentEffect.amount" type="text"><AnnotatedString />
-			</div>
-		</LabelledComponent>
+		<div>
+			<v-text-field v-model="currentEffect.amount" label="Amount" hint="AnnotatedString" />
+		</div>
 		<SectionHeader title="Additional Options" />
 		<div class="two-wide">
-			<LabelledComponent title="Scales like Cantrip" for="cantripScale">
-				<span><input id="cantripScale" v-model="currentEffect.cantripScale" type="checkbox"> <label for="cantripScale"> Whether this roll should scale like a cantrip. </label> </span>
-			</LabelledComponent>
-			<LabelledComponent title="At higher levels" for="higherLevels">
+			<v-checkbox v-model="currentEffect.cantripScale" label="Whether this roll should scale like a cantrip." />
+			<div>
+				<div>At higher levels</div>
 				<HigherLevels v-model="(currentEffect.higher as Record<number, string>)" />
-			</LabelledComponent>
+			</div>
 		</div>
 	</template>
 </template>

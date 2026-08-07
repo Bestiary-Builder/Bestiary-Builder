@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import type { Bestiary, BestiaryExtended, CreatureWithStats, Statblock, User } from "~/shared";
+import type { CreatureWithStats, Statblock } from "~/shared";
 import { refDebounced, useLocalStorage } from "@vueuse/core";
-import { onMounted, reactive, ref, shallowRef, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { onMounted, reactive, ref, watch } from "vue";
 import Draggable from "vuedraggable";
 import { useRules } from "vuetify/labs/rules";
 import CopyCreature from "@/components/Bestiary/CopyCreature.vue";
@@ -10,7 +9,6 @@ import CreatureListItem from "@/components/Bestiary/CreatureListItem.vue";
 import StatusIcon from "@/components/Bestiary/StatusIcon.vue";
 import UserBanner from "@/components/Bestiary/UserBanner.vue";
 import CRInput from "@/components/FormInputs/CRInput.vue";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import Markdown from "@/components/Global/Markdown.vue";
 import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
 import { getUmami } from "@/utils/app/analytics";
@@ -493,17 +491,14 @@ const pinCreature = (creature: Statblock) => {
 											</p>
 										</div>
 									</div>
-									<LabelledComponent title="Add editor" for="addeditor" style="margin-top: .5rem">
-										<div class="grid-two">
-											<v-text-field v-model="editorToAdd" inputmode="numeric"
-												label="Discord user ID"
-												:rules="[rules.integer('This must be a numeric Discord User ID.')]"
-												pattern="[0-9]*" />
-											<v-btn class="mz-auto" @click="addEditor(editorToAdd)">
-												Add
-											</v-btn>
-										</div>
-									</LabelledComponent>
+									<div class="grid-two">
+										<v-text-field v-model="editorToAdd" inputmode="numeric" label="Discord user ID"
+											:rules="[rules.integer('This must be a numeric Discord User ID.')]"
+											pattern="[0-9]*" />
+										<v-btn class="mz-auto" @click="addEditor(editorToAdd)">
+											Add
+										</v-btn>
+									</div>
 								</div>
 								<p v-if="showWarning" class="warning">
 									By changing the bestiary status to public I confirm that I am the copyright holder

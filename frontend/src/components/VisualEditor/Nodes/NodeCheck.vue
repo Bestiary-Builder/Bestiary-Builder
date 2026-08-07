@@ -2,7 +2,6 @@
 import type { Ref } from "vue";
 import type { Check, } from "~/shared";
 import { inject } from "vue";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
 
@@ -12,53 +11,45 @@ const skills = ["acrobatics", "animalHandling", "arcana", "athletics", "deceptio
 useDataCleanup(currentEffect, ["dc", "contestTie", "contestAbility", "adv"]);
 if (currentEffect?.value.ability.length === 0)
 	currentEffect.value.ability.push("athletics");
+
+const contestDcWarning = (): boolean | string => {
+	const hasContestAbility = (currentEffect!.value?.contestAbility?.length ?? 0) > 0
+	const hasDc = (currentEffect!.value?.dc?.length ?? 0) > 0
+
+	if (hasContestAbility && hasDc)
+		return "Warning: You cannot both have a DC and a contest ability"
+
+	return true
+}
 </script>
 
 <template>
 	<template v-if="currentEffect">
 		<SectionHeader title="Ability Check" />
 		<div class="two-wide">
-			<LabelledComponent title="Ability" for="check">
-				<v-select v-model="currentEffect.ability" multiple :options="skills" input-id="check" label="label" :clearable="false" />
-			</LabelledComponent>
-			<LabelledComponent title="Contest Ability" for="contestCheck">
-				<v-select v-model="currentEffect.contestAbility" multiple :options="skills" input-id="contestCheck" label="label" />
-			</LabelledComponent>
+			<v-select v-model="currentEffect.ability" label="Ability" :items="skills" item-title="label" multiple
+				:clearable="false" chips closable-chips />
+			<v-select v-model="currentEffect.contestAbility" label="Contest Ability" :items="skills" item-title="label"
+				multiple chips closable-chips :rules="[contestDcWarning]" persistent-hint />
 		</div>
 
 		<SectionHeader title="Additional Options" />
 		<div class="two-wide">
-			<LabelledComponent title="DC" for="dc">
-				<div class="input-wrapper">
-					<input id="dc" v-model="currentEffect.dc" type="text" placeholder="DC (Optional)"><IntExpression />
-				</div>
-			</LabelledComponent>
-			<LabelledComponent title="Contest Tie" for="contestTie">
-				<select id="contestTie" v-model="currentEffect.contestTie" title="Contest Tie" class="ghost">
-					<option value="success">
-						Success (default)
-					</option>
-					<option value="fail">
-						Fail
-					</option>
-					<option value="neither">
-						Neither
-					</option>
-				</select>
-			</LabelledComponent>
-			<LabelledComponent title="Advantage" for="advantage">
-				<select id="sortTargetBy" v-model="currentEffect.adv" placeholder="Advantage (optional)" title="Advantage" class="ghost">
-					<option :value="0">
-						Flat
-					</option>
-					<option :value="1">
-						Advantage
-					</option>
-					<option :value="-1">
-						Disadvantage
-					</option>
-				</select>
-			</LabelledComponent>
+			<div>
+				<v-text-field v-model="currentEffect.dc" label="DC (optional)" :rules="[contestDcWarning]"
+					hint="IntExpression" />
+			</div>
+			<v-select v-model="currentEffect.contestTie" label="Contest Tie Behaviour (optional)" title="Contest Tie"
+				:items="[
+					{ title: 'Success (default)', value: 'success' },
+					{ title: 'Fail', value: 'fail' },
+					{ title: 'Neither', value: 'neither' },
+				]" />
+			<v-select v-model="currentEffect.adv" label="Advantage (optional)" title="Advantage" :items="[
+				{ title: 'Flat', value: 0 },
+				{ title: 'Advantage', value: 1 },
+				{ title: 'Disadvantage', value: -1 },
+			]" />
 		</div>
 	</template>
 </template>

@@ -2,9 +2,7 @@
 import type { Ref } from "vue";
 import type { Save } from "~/shared";
 import { inject, watch } from "vue";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import { fullStatNames } from "@/utils/constants";
-import IntExpression from "./shared/IntExpression.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
 
@@ -25,34 +23,19 @@ useDataCleanup(currentEffect, ["dc"]);
 	<template v-if="currentEffect">
 		<SectionHeader title="Saving Throw" />
 		<div class="two-wide">
-			<LabelledComponent title="Save Stat" for="saveStat">
-				<select id="saveStat" v-model="currentEffect.stat" title="Saving throw stat" class="ghost">
-					<option v-for="(label, value) in fullStatNames" :key="value" :value="value">
-						{{ label }}
-					</option>
-				</select>
-			</LabelledComponent>
+			<v-select v-model="currentEffect.stat" label="Save Stat" title="Saving throw stat"
+				:items="Object.entries(fullStatNames).map(([value, label]) => ({ title: label, value }))" />
 		</div>
 		<SectionHeader title="Additional Options" />
-		<LabelledComponent title="DC" for="dc">
-			<div class="input-wrapper">
-				<input id="dc" v-model="currentEffect.dc" type="text" placeholder="DC (Optional)"><IntExpression />
-			</div>
-		</LabelledComponent>
+		<div>
+			<v-text-field v-model="currentEffect.dc" label="DC (optional)" hint="IntExpression" />
+		</div>
 		<div class="two-wide">
-			<LabelledComponent title="Advantage" for="advantage">
-				<select id="sortTargetBy" v-model="currentEffect.adv" placeholder="Advantage (optional)" title="Advantage" class="ghost">
-					<option :value="0">
-						Flat
-					</option>
-					<option :value="1">
-						Advantage
-					</option>
-					<option :value="-1">
-						Disadvantage
-					</option>
-				</select>
-			</LabelledComponent>
+			<v-select v-model="currentEffect.adv" label="Advantage (optional)" :items="[
+				{ title: 'Flat', value: 0 },
+				{ title: 'Advantage', value: 1 },
+				{ title: 'Disadvantage', value: -1 },
+			]" />
 		</div>
 	</template>
 </template>

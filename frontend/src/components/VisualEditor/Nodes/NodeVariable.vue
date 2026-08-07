@@ -2,11 +2,10 @@
 import type { Ref } from "vue";
 import type { Variable } from "~/shared";
 import { inject, onBeforeUnmount, onMounted, watch } from "vue";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import HigherLevels from "./shared/HigherLevels.vue";
-import IntExpression from "./shared/IntExpression.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
+import { useRules } from "vuetify/labs/rules";
 
 const currentEffect = inject<Ref<Variable>>("currentEffect");
 const _currentContext = inject<Ref<string[]>>("currentContext");
@@ -29,33 +28,31 @@ onMounted(() => {
 		currentEffect!.value.higher = {};
 });
 useDataCleanup(currentEffect, ["onError"]);
+
+const rules = useRules()
 </script>
 
 <template>
 	<template v-if="currentEffect">
 		<SectionHeader title="Set Variable" />
-		<div class="two-wide" style="margin-bottom: 1rem;">
-			<LabelledComponent title="Name*" for="name">
-				<input id="name" v-model="currentEffect.name" type="text" :class="{ required: currentEffect.name.length === 0 }">
-			</LabelledComponent>
+		<div class="two-wide mb-4">
+			<v-text-field v-model="currentEffect.name" label="Name" :rules="[rules.required()]" />
 		</div>
-		<LabelledComponent title="Value*" for="value">
-			<div class="input-wrapper">
-				<input id="value" v-model="currentEffect.value" type="text" :class="{ required: currentEffect.value.length === 0 }"> <IntExpression />
-			</div>
-		</LabelledComponent>
+		<div>
+			<v-text-field v-model="currentEffect.value" label="Value" :rules="[rules.required()]"
+				hint="IntExpression" />
+		</div>
 
 		<SectionHeader title="Additional Options" />
 
 		<div class="two-wide">
-			<LabelledComponent title="On Error" for="error">
-				<div class="input-wrapper">
-					<input id="error" v-model="currentEffect.onError" type="text"> <IntExpression />
-				</div>
-			</LabelledComponent>
-			<LabelledComponent v-if="currentEffect.higher" title="At higher levels" for="higherLevels">
+			<div>
+				<v-text-field v-model="currentEffect.onError" label="On Error" hint="IntExpression" />
+			</div>
+			<div v-if="currentEffect.higher">
+				<div>At higher levels</div>
 				<HigherLevels v-model="(currentEffect.higher as Record<number, string>)" is-int-expression />
-			</LabelledComponent>
+			</div>
 		</div>
 	</template>
 </template>

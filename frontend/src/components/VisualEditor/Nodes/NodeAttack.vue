@@ -2,8 +2,6 @@
 import type { Ref } from "vue";
 import type { Attack } from "~/shared";
 import { inject, onUnmounted, ref, watch } from "vue";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
-import IntExpression from "./shared/IntExpression.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
 
@@ -41,40 +39,22 @@ useDataCleanup(currentEffect, ["attackBonus"]);
 <template>
 	<template v-if="currentEffect">
 		<SectionHeader title="Attack" />
-		<LabelledComponent title="Attack Bonus" for="attackBonus">
-			<div class="input-wrapper">
-				<input id="attackBonus" v-model="currentEffect.attackBonus" type="text"> <IntExpression />
-			</div>
-		</LabelledComponent>
+		<v-text-field label="Attack Bonus" v-model="currentEffect.attackBonus" hint="IntExpression" />
+
 		<SectionHeader title="Additional Options" />
 		<div class="two-wide">
-			<LabelledComponent title="Advantage (optional)" for="advantage">
-				<select id="advantage" v-model="currentEffect.adv" title="Advantage" class="ghost" @change="handleChange">
-					<option value="0">
-						Flat
-					</option>
-					<option value="1">
-						Advantage
-					</option>
-					<option value="2">
-						Elven Advantage
-					</option>
-					<option value="-1">
-						Disadvantage
-					</option>
-					<option v-if="!isCustom" value="custom">
-						Custom
-					</option>
-					<option v-else :value="currentEffect.adv">
-						Custom
-					</option>
-				</select>
-			</LabelledComponent>
-			<LabelledComponent v-if="isCustom" title="Custom Advantage" for="customAdvantage">
-				<div class="input-wrapper">
-					<input id="customAdvantage" v-model="currentEffect.adv" type="text"> <IntExpression />
-				</div>
-			</LabelledComponent>
+			<v-select v-model="currentEffect.adv" label="Advantage (optional)" title="Advantage" :items="[
+				{ title: 'Flat', value: '0' },
+				{ title: 'Advantage', value: '1' },
+				{ title: 'Elven Advantage', value: '2' },
+				{ title: 'Disadvantage', value: '-1' },
+				isCustom
+					? { title: 'Custom', value: currentEffect.adv }
+					: { title: 'Custom', value: 'custom' },
+			]" @update:model-value="handleChange" />
+			<template v-if="isCustom">
+				<v-text-field label="Custom Advantage" v-model="currentEffect.adv" hint="IntExpression" />
+			</template>
 		</div>
 	</template>
 </template>

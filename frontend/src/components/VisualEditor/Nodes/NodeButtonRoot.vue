@@ -2,8 +2,6 @@
 import type { Ref } from "vue";
 import type { ButtonInteraction } from "~/shared";
 import { inject, ref, watch } from "vue";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
-import IntExpression from "./shared/IntExpression.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
 
@@ -25,60 +23,43 @@ watch(() => currentEffect!.value?.style, () => {
 	<template v-if="currentEffect">
 		<SectionHeader :title="`Button (${currentEffect.label.substring(0, 40).trim()})`" />
 		<div class="two-wide">
-			<LabelledComponent title="Button Label*" for="label">
-				<input id="label" v-model="currentEffect.label" type="text" :class="{ required: currentEffect.label.length === 0 }">
-			</LabelledComponent>
-			<LabelledComponent title="Verb" for="verb">
-				<input id="verb" v-model="currentEffect.verb" type="text" placeholder="attacks with">
-			</LabelledComponent>
-			<LabelledComponent title="Button Style" for="style">
-				<select id="style" v-model="currentEffect.style" class="ghost">
-					<option :value="null" style="color: #5865F2">
-						Blurple (default)
-					</option>
-					<option value="2" style="color: #4E5058">
-						Grey
-					</option>
-					<option value="3" style="color: #248045">
-						Green
-					</option>
-					<option value="4" style="color: #DA373C">
-						Red
-					</option>
-					<option value="custom">
-						Custom Expression
-					</option>
-				</select>
-			</LabelledComponent>
+			<v-text-field label="Button Label" v-model="currentEffect.label"
+				:class="{ required: currentEffect.label.length === 0 }" />
+			<v-text-field label="Verb" v-model="currentEffect.verb" placeholder="attacks with" />
+			<v-select v-model="currentEffect.style" label="Button Style" :items="[
+				{ title: 'Blurple (default)', value: null, props: { style: 'color: #5865F2' } },
+				{ title: 'Grey', value: '2', props: { style: 'color: #4E5058' } },
+				{ title: 'Green', value: '3', props: { style: 'color: #248045' } },
+				{ title: 'Red', value: '4', props: { style: 'color: #DA373C' } },
+				{ title: 'Custom Expression', value: 'custom' },
+			]" />
+			<template v-if="isCustom">
+				<v-text-field label="Custom Style Expression" v-model="currentEffect.style" hint="IntExpression" />
+			</template>
 		</div>
-		<LabelledComponent v-if="isCustom" title="Custom Style Expression">
-			<div class="input-wrapper">
-				<input id="slotLevel" v-model="currentEffect.style" type="text"> <IntExpression />
-			</div>
-		</LabelledComponent>
+
+
 		<SectionHeader title="Casting Overrides" />
 		<small>
-			Use these options to pass casting information about the caster to the button, or arbritary number variables you can use for anything, such as a number of dice. Use the variables below in your button automation to access the values you set here.
+			Use these options to pass casting information about the caster to the button, or arbritary number variables
+			you can
+			use for anything, such as a number of dice. Use the variables below in your button automation to access the
+			values
+			you set here.
 		</small>
-		<div class="two-wide" style="margin-top: .5rem">
-			<LabelledComponent title="Default DC" for="defaultDc">
-				<div class="input-wrapper">
-					<input id="defaultDc" v-model="currentEffect.defaultDC" type="text"> <IntExpression />
-				</div>
-				<code>spell_dc </code>
-			</LabelledComponent>
-			<LabelledComponent title="Default Attack Bonus" for="defaultAttack">
-				<div class="input-wrapper">
-					<input id="defaultAttack" v-model="currentEffect.defaultAttackBonus" type="text"> <IntExpression />
-				</div>
-				<code> spell_attack_bonus</code>
-			</LabelledComponent>
-			<LabelledComponent title="Default Casting Modifier" for="defaultCastingMod">
-				<div class="input-wrapper">
-					<input id="defaultCastingMod" v-model="currentEffect.defaultCastingMod" type="text"> <IntExpression />
-				</div>
-				<code> spell</code>
-			</LabelledComponent>
+		<div class="two-wide mt-2">
+			<div>
+				<v-text-field label=" Default DC" v-model="currentEffect.defaultDC" hint="spell_dc IntExpression"
+					persistent-hint />
+			</div>
+			<div>
+				<v-text-field label="Default Attack Bonus" v-model="currentEffect.defaultAttackBonus"
+					hint="spell_attack_bonus IntExpression" persistent-hint />
+			</div>
+			<div>
+				<v-text-field label="Default Casting Modifier IntExpression" v-model="currentEffect.defaultCastingMod"
+					hint="spell" persistent-hint />
+			</div>
 		</div>
 	</template>
 </template>

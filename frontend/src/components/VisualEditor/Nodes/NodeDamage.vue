@@ -2,8 +2,6 @@
 import type { Ref } from "vue";
 import type { Damage } from "~/shared";
 import { inject, onBeforeUnmount, watch } from "vue";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
-import AnnotatedString from "./shared/AnnotatedString.vue";
 import HigherLevels from "./shared/HigherLevels.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
@@ -32,25 +30,23 @@ useDataCleanup(currentEffect, ["overheal", "cantripScale", "fixedValue"]);
 <template>
 	<template v-if="currentEffect">
 		<SectionHeader title="Damage" />
-		<LabelledComponent title="Damage" for="damage">
-			<div class="input-wrapper">
-				<textarea id="damage" v-model="currentEffect.damage" type="text" /><AnnotatedString />
-			</div>
-		</LabelledComponent>
+		<v-text-field label="Damage" v-model="currentEffect.damage" :hint="'Annotated string'" />
+
 		<SectionHeader title="Additional Options" />
 		<div class="two-wide">
-			<LabelledComponent title="Allow Overheal" for="overheal">
-				<span><input id="overheal" v-model="currentEffect.overheal" type="checkbox"> <label for="overheal">Whether this damage should allow a target to exceed its hit point maximum.</label>  </span>
-			</LabelledComponent>
-			<LabelledComponent title="Scales like Cantrip" for="cantripScale">
-				<span><input id="cantripScale" v-model="currentEffect.cantripScale" type="checkbox"> <label for="cantripScale"> Whether this roll should scale like a cantrip. </label> </span>
-			</LabelledComponent>
-			<LabelledComponent title="Fixed value" for="fixedValue">
-				<span> <input id="fixedValue" v-model="currentEffect.fixedValue" type="checkbox"> <label for="fixedValue"> Whether this roll should ignore the <span style="display: inline-block">-d</span> argument and damage bonus effects.</label> </span>
-			</LabelledComponent>
-			<LabelledComponent title="At higher levels" for="higherLevels">
+			<v-checkbox v-model="currentEffect.fixedValue" label="Whether this roll should ignore the -d argument and
+					damage bonus effects." hide-details />
+
+			<v-checkbox v-model="currentEffect.overheal"
+				label="Whether this damage should go through if it exceeds the targets hit point maximum."
+				hide-details />
+			<v-checkbox v-model="currentEffect.cantripScale" label="Whether this roll should scale like a cantrip."
+				hide-details />
+
+			<div>
+				<div>At higher levels</div>
 				<HigherLevels v-model="(currentEffect!.higher as Record<number, string>)" />
-			</LabelledComponent>
+			</div>
 		</div>
 	</template>
 </template>

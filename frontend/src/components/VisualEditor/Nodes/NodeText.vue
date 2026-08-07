@@ -2,11 +2,10 @@
 import type { Ref } from "vue";
 import type { AbilityReference, Text } from "~/shared";
 import { inject, onMounted, ref, watch } from "vue";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
 import { useFetch } from "@/utils/utils";
-import AnnotatedString from "./shared/AnnotatedString.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
+import Editor from "@/components/StatblockEditor/Editor.vue";
 
 const currentEffect = inject<Ref<Text>>("currentEffect");
 
@@ -30,39 +29,40 @@ watch(() => descIsText.value, () => {
 useDataCleanup(currentEffect, ["title"]);
 
 const setDesc = inject<false | Function>("setActionDescription");
+
+const abilityTitle = (item: Record<string, unknown>) => {
+	return `${item.name} (${item.type})`
+}
+
+
 </script>
 
 <template>
 	<template v-if="currentEffect">
 		<SectionHeader title="Text" />
 		<div class="two-wide">
-			<LabelledComponent title="Title" for="title">
-				<input id="title" v-model="currentEffect.title" type="text" placeholder="Effect">
-			</LabelledComponent>
+			<v-text-field label="Title" v-model="currentEffect.title" />
 		</div>
 
-		<LabelledComponent title="Description" for="text" style="margin-top: 1rem">
-			<div v-if="descIsText" class="input-wrapper">
-				<textarea id="text" v-model="(currentEffect.text as string)" rows="5" placeholder="Description" /><AnnotatedString />
-				<small v-if="setDesc" style="font-size: x-small; cursor: pointer" role="button" @click="setDesc(currentEffect.text)"> <i>Set the description of the statblock trait to this text.</i> </small>
-			</div>
-			<v-select v-else v-model="currentEffect.text" :options="abilities" label="name" input-id="text" :reduce="(x : any) => ({ id: x.id, typeId: x.typeId })" />
-		</labelledcomponent>
-		<LabelledComponent title="Text Type" for="textType" style="margin-top: 1rem">
-			<select id="textType" v-model="descIsText" class="ghost">
-				<option :value="true">
-					Text
-				</option>
-				<option :value="false">
-					Ability Reference
-				</option>
-			</select>
-		</LabelledComponent>
+		<div v-if="typeof (currentEffect!.text) === 'string'" class="mb-4">
+			<Editor v-model="currentEffect.text" />
+			<small v-if="setDesc" style="font-size: x-small; cursor: pointer" role="button"
+				@click="setDesc(currentEffect.text)"> <i>Set the description of the statblock trait to this text.</i>
+			</small>
+		</div>
+		<v-autocomplete v-else v-model="currentEffect.text" :items="abilities" :item-title="abilityTitle" return-object
+			label="Ability Reference" />
+
+		<v-select v-model="descIsText" :items="[
+			{ title: 'Text', value: true },
+			{ title: 'Ability Reference', value: false },
+		]" label="Text type" />
 	</template>
 </template>
 
 <style scoped>
-	@import url("./styles/automation-editor.less");
+@import url("./styles/automation-editor.less");
+
 textarea {
 	min-height: 150px;
 }

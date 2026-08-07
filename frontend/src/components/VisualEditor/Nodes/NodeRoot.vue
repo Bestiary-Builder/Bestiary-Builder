@@ -1,98 +1,62 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
 import type { AttackModel } from "~/shared";
-import { inject } from "vue";
-import LabelledComponent from "@/components/FormInputs/LabelledComponent.vue";
+import { inject, watch } from "vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
+import { useRules } from "vuetify/labs/rules";
 
 const currentEffect = inject<Ref<AttackModel>>("currentEffect");
 
 useDataCleanup(currentEffect, ["thumb", "verb", "proper", "phrase", "criton", "extra_crit_damage", "activation_type", "list_display_override"]);
 
 const setName = inject<false | Function>("setActionName");
+
+const rules = useRules()
 </script>
 
 <template>
 	<template v-if="currentEffect">
 		<SectionHeader title="Attack Model" />
 		<div class="two-wide">
-			<LabelledComponent title="Attack Name*" for="name">
-				<input id="name" v-model="currentEffect.name" type="text" :class="{ required: (currentEffect.name ?? '').length === 0 }">
-				<small v-if="setName" style="font-size: x-small; cursor: pointer" role="button" @click="setName(currentEffect.name)"> <i>Click here to set the name of the statblock feature to this name.</i> </small>
-			</LabelledComponent>
-			<LabelledComponent title="Thumbnail URL" for="thumb">
-				<input id="thumb" v-model="currentEffect.thumb" type="text">
-			</LabelledComponent>
-			<LabelledComponent title="Verb" for="verb">
-				<input id="verb" v-model="currentEffect.verb" type="text" placeholder="attacks with">
-			</LabelledComponent>
-			<LabelledComponent title="Proper Noun" for="proper">
-				<span><input id="proper" v-model="currentEffect.proper" type="checkbox"> <label for="proper">Name is proper noun</label>  </span>
-			</LabelledComponent>
+			<div>
+				<v-text-field v-model="currentEffect.name" label="Attack Name" :rules="[rules.required()]" />
+				<small v-if="setName" style="font-size: x-small; cursor: pointer" role="button"
+					@click="setName(currentEffect.name)"> <i>Click here to set the name of the statblock feature to this
+						name.</i> </small>
+			</div>
+			<div>
+				<v-text-field v-model="currentEffect.thumb" label="Thumbnail URL" />
+			</div>
+			<v-text-field v-model="currentEffect.verb" label="Verb" placeholder="attacks with" />
+			<v-checkbox v-model="currentEffect.proper" label="Name is proper noun" />
 		</div>
-		<LabelledComponent title="Flavor Text" for="text" style="margin-top: 1rem">
-			<textarea id="text" v-model="currentEffect.phrase" rows="5" placeholder="Flavor text" />
-		</labelledcomponent>
+		<v-textarea v-model="currentEffect.phrase" label="Flavor Text" rows="5" />
 
 		<div class="two-wide">
-			<LabelledComponent title="Crit On" for="criton">
-				<select id="criton" v-model="currentEffect.criton" class="ghost">
-					<option :value="null">
-						(crit on 20)
-					</option>
-					<option v-for="x in 20" :key="20 - x" :value="20 - x">
-						{{ 20 - x }}
-					</option>
-				</select>
-			</LabelledComponent>
-			<LabelledComponent title="Extra Crit Damage" for="critdamage">
-				<input id="critdamage" v-model="currentEffect.extra_crit_damage" type="text">
-			</LabelledComponent>
+			<v-select v-model="currentEffect.criton" label="Crit On" :items="[
+				{ title: '(crit on 20)', value: null },
+				...Array.from({ length: 20 }, (_, i) => ({ title: (20 - i).toString(), value: 20 - i })),
+			]" />
+			<v-text-field v-model="currentEffect.extra_crit_damage" label="Extra Crit Damage" />
 		</div>
 
 		<SectionHeader title="Additional Options" />
 		<div class="two-wide">
-			<LabelledComponent title="Action Type" for="activationType">
-				<select id="activationType" v-model="currentEffect.activation_type" title="Activation Type" class="ghost">
-					<option value="">
-						Attack
-					</option>
-					<option :value="1">
-						Action
-					</option>
-					<option :value="2">
-						No Action
-					</option>
-					<option :value="3">
-						Bonus Action
-					</option>
-					<option :value="4">
-						Reaction
-					</option>
-					<option :value="6">
-						Minute
-					</option>
-					<option :value="7">
-						Hour
-					</option>
-					<option :value="8">
-						Special
-					</option>
-					<option :value="9">
-						Legendary
-					</option>
-					<option :value="10">
-						Mythic
-					</option>
-					<option :value="11">
-						Lair
-					</option>
-				</select>
-			</LabelledComponent>
-			<LabelledComponent title="List display override" for="listDisplayOverride">
-				<input id="listDisplayOverride" v-model="currentEffect.list_display_override" type="text">
-			</LabelledComponent>
+			<v-select v-model="currentEffect.activation_type" label="Action Type" title="Activation Type" :items="[
+				{ title: 'Attack', value: null },
+				{ title: 'Action', value: 1 },
+				{ title: 'No Action', value: 2 },
+				{ title: 'Bonus Action', value: 3 },
+				{ title: 'Reaction', value: 4 },
+				{ title: 'Minute', value: 6 },
+				{ title: 'Hour', value: 7 },
+				{ title: 'Special', value: 8 },
+				{ title: 'Legendary', value: 9 },
+				{ title: 'Mythic', value: 10 },
+				{ title: 'Lair', value: 11 },
+			]" placeholder="(attack)" />
+			<v-text-field v-model="currentEffect.list_display_override" label="List display override" />
 		</div>
 	</template>
 </template>
