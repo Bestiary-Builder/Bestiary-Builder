@@ -435,7 +435,7 @@ watchDebounced(width, async () => {
 			<v-icon-btn size="20" icon="mdi:format-list-numbered" text="Ordered list"
 				@click="toggleOrderedList(editorRef!)" />
 			<v-icon-btn size="20" icon="mdi-format-indent-increase" text="Ordered list"
-				@click="toggleLineSuffix(editorRef!, '{.hanging}')"
+				@click="toggleLineSuffix(editorRef!, ' {.hanging}')"
 				v-tooltip="'Makes everything but the first line indented as a \'hanging\' list.'" />
 			<v-divider vertical />
 			<v-icon-btn size="20" icon="mdi:format-header-1" text="Heading 1" @click="toggleHeading(editorRef!, 1)" />

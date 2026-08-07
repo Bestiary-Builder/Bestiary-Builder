@@ -2,6 +2,7 @@
 import type { FeatureEntity, SaveEntity, SkillsEntity, Stat, Statblock } from "~/shared";
 import type { StatblockDesign } from "~/shared/prisma/enums";
 import MarkdownIt from 'markdown-it'
+
 import { computed, onMounted } from "vue";
 import { featureGenerator, resistanceGenerator, stats } from "@/utils/constants";
 import { store } from "@/utils/store";
@@ -171,8 +172,8 @@ import markdownItAttrs from "markdown-it-attrs";
 const md = new MarkdownIt({
 	html: false,
 	breaks: false,
-	linkify: true,
-	typographer: false
+	linkify: false,
+	typographer: false,
 })
 md.use(markdownItAttrs, { allowedAttributes: ['class'] })
 
@@ -453,12 +454,14 @@ const renderFeature = (feature: FeatureEntity) => {
 				</div>
 			</div>
 		</template>
-		<div v-if="data.description.description" class="feature-container statblock__description">
-			<h2 class="feature-container__title">
-				Description
-			</h2>
-			<div class="markdown" v-html="render(data.description.description)" />
-		</div>
+
+	</div>
+
+	<div v-if="data.description.description" class="feature-container statblock__description px-4">
+		<h2 class="feature-container__title">
+			Description
+		</h2>
+		<div class="markdown" v-html="render(data.description.description)" />
 	</div>
 </template>
 
