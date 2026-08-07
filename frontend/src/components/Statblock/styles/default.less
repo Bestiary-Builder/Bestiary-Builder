@@ -157,29 +157,6 @@
 	overflow-wrap: anywhere;
 }
 
-// styling only for the markdown rendered content which is not inside the vue component scope
-:global(.feature-container__desc p) {
-	display: inline;
-}
-
-:global(.stat-block ul) {
-	white-space: normal;
-	margin-bottom: 0;
-	margin-block-start: 0rem;
-	padding-inline-start: 1.4rem;
-}
-
-
-:global(.indented p:has(strong):not(p:has(strong) ~ p:has(strong))) {
-	margin-top: .4rem;
-}
-
-:global(.indented p:has(strong)) {
-	display: inline-block;
-	text-indent: -10px;
-	margin-left: 10px
-}
-
 
 .stat-container-wrapper {
 	display: inline-block;
@@ -246,4 +223,39 @@
 	.stat-block.v2024 {
 		column-count: 1;
 	}
+}
+
+// styling only for the markdown rendered content which is not inside the vue component scope
+:global(.feature-container__desc p) {
+	display: inline;
+}
+
+:global(.stat-block ul) {
+	white-space: normal;
+	margin-bottom: 0;
+	margin-block-start: 0rem;
+	padding-inline-start: 1.4rem;
+}
+
+
+// for spell lists automatically generated we use this
+:global(.indented p:has(strong):not(p:has(strong) ~ p:has(strong))) {
+	margin-top: .4rem;
+}
+
+:global(.indented p:has(strong)) {
+	display: inline-block;
+	text-indent: -10px;
+	margin-left: 10px
+}
+
+// users can add {.hanging} to a line to make it a hanging list
+:global(.statblock__description .hanging) {
+	text-indent: -10px;
+	margin-left: 10px
+}
+
+:global(.feature-description:has(.hanging)) {
+	text-indent: -10px;
+	margin-left: 10px
 }

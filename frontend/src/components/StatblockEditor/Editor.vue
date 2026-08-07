@@ -192,6 +192,63 @@ function toggleLinePrefix(
 	]);
 }
 
+const toggleLineSuffix = (
+	editor: Monaco.editor.IStandaloneCodeEditor,
+	suffix: string
+) => {
+	const model = editor.getModel();
+	const selection = editor.getSelection();
+
+	if (!model || !selection)
+		return;
+
+	const startLine = selection.startLineNumber;
+	const endLine = selection.endLineNumber;
+
+	const lines = [];
+
+	let remove = true;
+
+	for (let line = startLine; line <= endLine; line++) {
+		const text = model.getLineContent(line);
+
+		if (!text.trimEnd().endsWith(suffix)) {
+			remove = false;
+			break;
+		}
+	}
+
+	for (let line = startLine; line <= endLine; line++) {
+		const text = model.getLineContent(line);
+
+		if (remove) {
+			const trimmed = text.trimEnd();
+			const index = trimmed.lastIndexOf(suffix);
+
+			lines.push(
+				index >= 0 && index === trimmed.length - suffix.length
+					? text.slice(0, index)
+					: text
+			);
+		}
+		else {
+			lines.push(text + suffix);
+		}
+	}
+
+	editor.executeEdits("toggle-line-suffix", [
+		{
+			range: {
+				startLineNumber: startLine,
+				startColumn: 1,
+				endLineNumber: endLine,
+				endColumn: model.getLineMaxColumn(endLine),
+			},
+			text: lines.join("\n"),
+		},
+	]);
+};
+
 function toggleOrderedList(
 	editor: Monaco.editor.IStandaloneCodeEditor
 ) {
@@ -299,6 +356,63 @@ function toggleHeading(
 }
 
 
+function toggleHanging(
+	editor: Monaco.editor.IStandaloneCodeEditor,
+	level: number
+) {
+	const model = editor.getModel();
+	const selection = editor.getSelection();
+
+	if (!model || !selection)
+		return;
+
+	const startLine = selection.startLineNumber;
+	const endLine = selection.endLineNumber;
+
+	const prefix = `${"#".repeat(level)} `;
+
+	const edits = [];
+
+	for (let line = startLine; line <= endLine; line++) {
+		const text = model.getLineContent(line);
+
+		// Match existing heading
+		const match = text.match(/^#{1,4}\s+/);
+
+		let newText: string;
+
+		if (match) {
+			const existingPrefix = match[0];
+
+			// Same heading level -> remove heading
+			if (existingPrefix === prefix)
+				newText = text.slice(existingPrefix.length);
+			// Different level -> replace heading
+			else
+				newText = prefix + text.slice(existingPrefix.length);
+		}
+		// No heading -> add one
+		else {
+			newText = prefix + text;
+		}
+
+		edits.push({
+			range: {
+				startLineNumber: line,
+				startColumn: 1,
+				endLineNumber: line,
+				endColumn: model.getLineMaxColumn(line),
+			},
+			text: newText,
+		});
+	}
+
+	editor.executeEdits(
+		"toggle-heading",
+		edits
+	);
+}
+
 const wrapper = useTemplateRef("wrapper")
 const { width } = useElementSize(wrapper)
 watchDebounced(width, async () => {
@@ -314,11 +428,16 @@ watchDebounced(width, async () => {
 			<v-divider vertical />
 			<v-icon-btn size="20" icon="mdi:format-bold" text="Bold" @click="toggleMarkdown(editorRef!, '**')" />
 			<v-icon-btn size="20" icon="mdi:format-italic" text="Italic" @click="toggleMarkdown(editorRef!, '*')" />
+			<v-divider vertical />
+
 			<v-icon-btn size="20" icon="mdi:format-list-bulleted" text="List"
 				@click="toggleLinePrefix(editorRef!, '* ')" />
 			<v-icon-btn size="20" icon="mdi:format-list-numbered" text="Ordered list"
 				@click="toggleOrderedList(editorRef!)" />
-
+			<v-icon-btn size="20" icon="mdi-format-indent-increase" text="Ordered list"
+				@click="toggleLineSuffix(editorRef!, '{.hanging}')"
+				v-tooltip="'Makes everything but the first line indented as a \'hanging\' list.'" />
+			<v-divider vertical />
 			<v-icon-btn size="20" icon="mdi:format-header-1" text="Heading 1" @click="toggleHeading(editorRef!, 1)" />
 			<v-icon-btn size="20" icon="mdi:format-header-2" text="Heading 2" @click="toggleHeading(editorRef!, 2)" />
 			<v-icon-btn size="20" icon="mdi:format-header-3" text="Heading 3" @click="toggleHeading(editorRef!, 3)" />

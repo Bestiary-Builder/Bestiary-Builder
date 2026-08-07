@@ -166,12 +166,15 @@ onMounted(async () => {
 		await import("./styles/monstermanual/mm.css");
 });
 
+import markdownItAttrs from "markdown-it-attrs";
+
 const md = new MarkdownIt({
 	html: false,
 	breaks: false,
 	linkify: true,
 	typographer: false
 })
+md.use(markdownItAttrs, { allowedAttributes: ['class'] })
 
 const mdInlineBreaks = new MarkdownIt({ html: false, breaks: true, linkify: true })
 
@@ -451,7 +454,7 @@ const render = (text: string, inline = false) => {
 				</div>
 			</div>
 		</template>
-		<div v-if="data.description.description" class="feature-container">
+		<div v-if="data.description.description" class="feature-container statblock__description">
 			<h2 class="feature-container__title">
 				Description
 			</h2>
