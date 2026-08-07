@@ -10,8 +10,8 @@ export const displayNames: Record<string, { label: string; icon: string }> = {
 	text: { label: "Text", icon: "material-symbols:text-fields-sharp" },
 	damage: { label: "Damage", icon: "picon:angry" },
 	condition: { label: "Branch", icon: "material-symbols:arrow-split" },
-	hit: { label: "Hit", icon: "" },
-	miss: { label: "Miss", icon: "" },
+	hit: { label: "Hit", icon: "mdi:check" },
+	miss: { label: "Miss", icon: "mdi:close" },
 	attack: { label: "Attack", icon: "material-symbols:swords" },
 	roll: { label: "Roll", icon: "ion:dice" },
 	spell: { label: "Spell", icon: "material-symbols:magic-button" },
@@ -100,7 +100,7 @@ export const deepKeys = ["effects", "hit", "miss", "fail", "success", "onTrue", 
 
 type activation_types = {
 	[id in keyof Features]: number;
-}; ;
+};;
 export const activation_type: activation_types = {
 	features: 2,
 	actions: 1,
