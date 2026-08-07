@@ -55,7 +55,7 @@ const availableNodes = computed(() => {
 		return ["attack", "save", "damage", "temphp", "ieffect2", "roll", "text", "variable", "condition", "counter", "check"];
 
 	if (!isTargetContext && (contextLevel === "attacks" || contextLevel === "buttons"))
-		return ["target", "remove_ieffect", "roll", "text", "variable", "condition", "counter", "spell"];
+		return ["target", "roll", "text", "variable", "condition", "counter", "remove_ieffect", "spell"];
 	if (isTargetContext && (contextLevel === "attacks" || contextLevel === "buttons"))
 		return ["attack", "save", "damage", "temphp", "ieffect2", "remove_ieffect", "roll", "text", "variable", "condition", "counter", "check"];
 
@@ -129,8 +129,7 @@ const showControls = inject<Ref<boolean>>("showControls")
 </script>
 
 <template>
-	<DropdownMenu v-if="displayNames && showControls" location="end center" origin="start center" offset="10% 0%"
-		v-model="isOpen">
+	<DropdownMenu v-if="displayNames && showControls" location="bottom center" v-model="isOpen">
 		<template #activator="{ props }">
 			<div role="button" class="container" v-bind="props">
 				<span class="icon">
@@ -138,19 +137,19 @@ const showControls = inject<Ref<boolean>>("showControls")
 				</span><span>{{ automation === null ? 'Create Automation' : 'Add Effect' }}</span>
 			</div>
 		</template>
-		<v-card max-width="800" title="Choose an effect to add." class="pa-4">
+		<v-card max-width="300" subtitle="Choose an effect to add." class="pa-4">
 			<v-card-actions>
-				<v-row>
-					<v-col v-for="node in availableNodes" :key="node" cols="6">
+				<v-row density="compact">
+					<v-col v-for="node in availableNodes" :key="node" cols="12">
 						<v-btn :key="node" @click="addAndSelect(node)" :prepend-icon="displayNames![node]?.icon"
-							size="large">
+							size="small">
 							{{ displayNames[node]?.label }}
 						</v-btn>
 
 					</v-col>
-					<v-col cols="6">
+					<v-col cols="12">
 						<v-btn v-if="copiedEffect"" @click=" addAndSelect('', true)" prepend-icon="ooui:copy-ltr"
-							size="large">
+							size="small">
 							Paste Cut/Copied Effect
 						</v-btn>
 					</v-col>

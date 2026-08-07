@@ -68,6 +68,39 @@ const addAttack = () => {
 useDataCleanup(currentEffect, ["end", "tick_on_caster", "conc", "desc", "save_as", "parent", "target_self", "stacking", "hidden"], { effects: PASSIVE_EFFECTS.map(x => x.value) });
 
 const rules = useRules()
+
+interface EffectOption {
+	label: string
+	value: string
+}
+
+const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] | null>({
+	get: () => {
+		const raw = (currentEffect!.value as any).effects[key]
+		const options: EffectOption[] = getEffectData(key)?.defaultOptions ?? []
+
+		if (getEffectData(key)?.isList) {
+			const values: string[] = Array.isArray(raw) ? raw : []
+			return values.map(v => options.find(o => o.value === v) ?? { label: v, value: v })
+		}
+
+		return options.find(o => o.value === raw) ?? (raw ? { label: raw, value: raw } : null)
+	},
+	set: (val) => {
+		if (getEffectData(key)?.isList) {
+			const arr = Array.isArray(val) ? val : []
+				; (currentEffect!.value as any).effects[key] = arr.map(item =>
+					typeof item === "string" ? item : item.value,
+				)
+		}
+
+		else {
+			//@ts-ignore
+			(currentEffect!.value as any).effects[key] = typeof val === "string" ? val : val?.value ?? null
+		}
+	},
+})
+
 </script>
 
 <template>
@@ -82,7 +115,7 @@ const rules = useRules()
 		<SectionHeader title="Duration Options" />
 		<div class="grid-two">
 			<div>
-				<v-text-field v-model="currentEffect.duration" label="Duration" hint="IntExpression" />
+				<v-text-field v-model="currentEffect.duration" label="Duration" hint="IntExpression" hide-details />
 			</div>
 			<v-checkbox v-model="currentEffect.end" label="Ticks on end of turn." hide-details />
 			<v-checkbox v-model="currentEffect.tick_on_caster" label="Ticks on Caster rather than the Target."
@@ -98,7 +131,7 @@ const rules = useRules()
 						:hint="getInputType(key) === 'annotatedstring' ? 'AnnotatedString' : 'IntExpression'" />
 				</div>
 				<div v-else>
-					<v-combobox v-model="(currentEffect as any).effects[key]" :label="getEffectData(key)?.label || ''"
+					<v-combobox v-model="effectValueFor(key).value" :label="getEffectData(key)?.label || ''"
 						:items="getEffectData(key)?.defaultOptions" item-title="label" item-value="value"
 						:multiple="getEffectData(key)?.isList" :chips="getEffectData(key)?.isList"
 						:closable-chips="getEffectData(key)?.isList" variant="solo-filled" />

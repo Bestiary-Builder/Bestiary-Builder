@@ -31,7 +31,7 @@ const SAVING_THROWS = [
 	{ label: "Intelligence", value: "int" },
 	{ label: "Wisdom", value: "wis" },
 	{ label: "Charisma", value: "cha" },
-] as const;
+];
 
 const SKILL_NAMES = [
 	{ label: "All", value: "all" },
@@ -60,7 +60,7 @@ const SKILL_NAMES = [
 	{ label: "Intelligence", value: "intelligence" },
 	{ label: "Wisdom", value: "wisdom" },
 	{ label: "Charisma", value: "charisma" },
-] as const;
+];
 
 // ==== passive effects ====
 export interface PassiveEffectDef {
@@ -71,7 +71,7 @@ export interface PassiveEffectDef {
 	// allow adding multiple of this passive effect
 	isList?: boolean;
 	// if set, default to the first default option and allow the user to choose between any of these or an expression
-	defaultOptions?: Readonly<{ label: string; value: string }[]>;
+	defaultOptions?: { label: string; value: string }[];
 }
 
 export const PASSIVE_EFFECTS: PassiveEffectDef[] = [
