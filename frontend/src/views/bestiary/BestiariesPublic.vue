@@ -6,7 +6,7 @@ import CollectionTile from "@/components/Global/CollectionTile.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
-import { useToast } from "../utils/app/toast";
+import { useToast } from "@/utils/app/toast";
 
 onMounted(async () => {
 	const toastId = addToast("Loading...", { loading: true })

@@ -230,7 +230,6 @@ const renderFeature = (feature: FeatureEntity) => {
 
 <template>
 	<div class="statblock-outer">
-
 		<div class="stat-block" :class="[v2024 ? 'v2024' : '', design]" id="statblock">
 			<div class="stat-block__row">
 				<h1 class="stat-block__name-container">

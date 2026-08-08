@@ -33,7 +33,7 @@ const {
 
 const { addToast, updateToast, removeToast } = useToast()
 const $router = useRouter()
-const srdCreatures = ref<string[]>([]);
+
 onMounted(async () => {
 	const toastId = addToast("Loading...", { loading: true })
 	await getCollection()
@@ -42,14 +42,6 @@ onMounted(async () => {
 
 	if (collection.value?.name)
 		document.title = `${collection.value?.name.substring(0, 16)} | Bestiary Builder`;
-
-	await useFetch<string[]>(`/api/srd-creatures/${store.user?.SRDVersion === "SRD_2024" ? "2024" : "2014"}/list`).then(({ success, data, error }) => {
-		if (success)
-			srdCreatures.value = data;
-
-		if (error)
-			addToast(error, { color: "error" })
-	});
 });
 
 const searchText = ref("")
@@ -355,7 +347,8 @@ const pinCreature = (creature: Statblock) => {
 					<Transition name="fade" mode="out-in">
 						<StatblockRenderer
 							:key="lastClickedCreature?.description.name || lastHoveredCreature.description.name"
-							:data="lastClickedCreature || lastHoveredCreature" />
+							:data="lastClickedCreature || lastHoveredCreature" is2024
+							statblock-design="BestiaryBuilder" />
 					</Transition>
 				</div>
 				<div v-else class="statblock-container">

@@ -1,18 +1,15 @@
 <script setup lang="ts">
-import type { AutomationWithType } from "~/shared";
+import type { AttackModel, AutomationWithType } from "~/shared";
 import { refDebounced, useLocalStorage } from "@vueuse/core";
 import { onMounted, ref, watch } from "vue";
-import Draggable from "vuedraggable";
 import { useRules } from "vuetify/labs/rules";
 import StatusIcon from "@/components/Bestiary/StatusIcon.vue";
 import UserBanner from "@/components/Bestiary/UserBanner.vue";
-import CRInput from "@/components/FormInputs/CRInput.vue";
 import Markdown from "@/components/Global/Markdown.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { useToast } from "@/utils/app/toast";
 import { creatureTypes } from "@/utils/constants";
 import { store } from "@/utils/store";
-import { useFetch } from "@/utils/utils";
 import { useCollection } from "@/components/Bestiary/useCollection";
 
 const {
@@ -36,21 +33,12 @@ const {
 const { addToast, updateToast, removeToast } = useToast()
 const rules = useRules();
 
-const srdCreatures = ref<string[]>([]);
 onMounted(async () => {
 	const toastId = addToast("Loading...", { loading: true })
 	await getCollection()
 	removeToast(toastId)
 	if (collection.value?.name)
 		document.title = `${collection.value?.name.substring(0, 16)} | Bestiary Builder`;
-
-	await useFetch<string[]>(`/api/srd-creatures/${store.user?.SRDVersion === "SRD_2024" ? "2024" : "2014"}/list`).then(({ success, data, error }) => {
-		if (success)
-			srdCreatures.value = data;
-
-		if (error)
-			addToast(error, { color: "error" })
-	});
 });
 
 const searchText = ref("")
@@ -68,7 +56,7 @@ const searchOptions = ref({
 
 const sortMode = useLocalStorage("sortModeForAutomations", "Alphabetically");
 
-const sortCreatures = () => {
+const sortAutomations = () => {
 	if (!items.value)
 		return;
 	if (sortMode.value === "Custom") {
@@ -102,7 +90,7 @@ const sortCreatures = () => {
 	return items.value;
 };
 
-function filterCreature(data: AutomationWithType) {
+function filterAutomations(data: AutomationWithType) {
 	const filterChecks: boolean[] = [];
 	if (searchTextDebounced.value !== "")
 		filterChecks.push(data.name.toLowerCase().includes(searchTextDebounced.value.toLowerCase().trim()));
@@ -110,13 +98,6 @@ function filterCreature(data: AutomationWithType) {
 	return filterChecks.every(_ => _);
 }
 
-
-const saveOrder = async () => {
-	if (items.value && collection.value) {
-		const orderIds = items.value.map(creature => creature.id);
-		await useFetch(`/api/automation-collection/${collection.value.id}/creatures/order`, "POST", orderIds);
-	}
-};
 
 async function exportCollection(asFile: boolean) {
 	if (asFile) {
@@ -231,6 +212,15 @@ watch(() => collection.value?.name, (): void => {
 		document.title = `${collection.value?.name.substring(0, 16)} | Bestiary Builder`;
 });
 
+const getAutomationInformation = (data: AutomationWithType["automation"], key: keyof AttackModel, fallback: string) => {
+	if (!data) return fallback
+
+	if (Array.isArray(data)) {
+		data = data[0]
+	}
+
+	return data[key]?.toString() ?? fallback
+}
 </script>
 
 <template>
@@ -335,7 +325,7 @@ watch(() => collection.value?.name, (): void => {
 									</RouterLink> and agree to
 									be fully liable for the content within. I affirm that the content does not include
 									any official
-									non-free D&D content. Bestiaries that breach these terms may have their status
+									non-free D&D content. Collections that breach these terms may have their status
 									changed to private or
 									be outright removed, and may result in a ban if the content breaches our content
 									policy.
@@ -364,10 +354,6 @@ watch(() => collection.value?.name, (): void => {
 							<v-text-field v-model="searchText" label="Name" width="200" />
 							<v-select v-model="searchOptions.tags" :items="creatureTypes" label="Creature type" multiple
 								chips closable-chips width="200" />
-							<CRInput v-model="searchOptions.minCr" label="Minimum CR" />
-							<CRInput v-model="searchOptions.maxCr" label="Maximum CR" />
-							<v-text-field v-model="searchOptions.faction" label="Faction" width="200" />
-							<v-text-field v-model="searchOptions.env" label="Environment" width="200" />
 						</div>
 					</v-card-actions>
 				</v-card>
@@ -431,21 +417,26 @@ watch(() => collection.value?.name, (): void => {
 					</v-chip>
 				</v-chip-group>
 				<UserBanner :id="collection.ownerId" class="mt-2 mb-4" />
-
+				<v-img :src="collection.image" width="200" />
 				<Markdown class="description " :text="collection.description || 'No description set.'" tag="p" />
 				<StatusIcon :icon="collection.status" />
 				<div>{{ items?.length }}<v-icon icon="material-symbols:automation" size="20" /></div>
 				{{ }}
 
 				<v-skeleton-loader type="heading, text, text" v-if="items === null" />
-				<Draggable v-else :list="sortCreatures()" :animation="500" class="tile-container list-tiles"
-					:item-key="getDraggableKey" :disabled="sortMode !== 'Custom'" @change="saveOrder">
-					<template #item="{ element }">
-						<div>
-							{{ element.name }}
-						</div>
+
+				<v-list v-else>
+					<template v-for="auto, idx in sortAutomations()" :key="idx">
+						<v-list-item :title="auto.name" v-if="filterAutomations(auto)">
+							<v-list-subheader
+								:title="getAutomationInformation(auto.automation, 'activation_type', '0')">
+
+							</v-list-subheader>
+						</v-list-item>
 					</template>
-				</Draggable>
+
+				</v-list>
+
 				<span v-if="items?.length === 0"> No automations in this collection.</span>
 				<!-- <div class="left-side-container">
 					<div class="content-tile header-tile">

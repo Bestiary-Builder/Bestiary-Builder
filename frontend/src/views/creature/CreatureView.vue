@@ -64,7 +64,7 @@ onMounted(async () => {
 		<div class="content">
 			<div class="content-container__inner">
 				<v-skeleton-loader type="heading, divider, text, text, sentences, heading, text" v-if="data === null" />
-				<StatblockRenderer v-else id="statblock" :data="data.stats" />
+				<StatblockRenderer v-else id="statblock" :data="data.stats" is2024 statblock-design="BestiaryBuilder" />
 			</div>
 		</div>
 	</div>

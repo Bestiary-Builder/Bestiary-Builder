@@ -61,8 +61,8 @@ const dismiss = () => {
                         <v-list-item v-bind="props" prepend-icon="material-symbols:automation" title="Automations" />
                     </template>
 
-                    <v-list-item title="My Automations" value="personalAutomations" to="/automations/personal" link />
-                    <v-list-item title="Explore" value="publicAutomations" to="/automations/public" link />
+                    <v-list-item title="My Automations" value="personalAutomations" to="/armory/personal" link />
+                    <v-list-item title="Explore" value="publicAutomations" to="/armory/public" link />
                     <!-- <v-list-item title="Subscribed" value="savedAutomations" to="/automations/public/saved" link /> -->
                 </v-list-group>
                 <v-divider />
@@ -95,7 +95,7 @@ const dismiss = () => {
                         append-icon="mdi:open-in-new" />
 
                     <v-divider />
-                    <v-list-item prepend-icon="mdi:cog" v-if="store.user" to="/user" :title="store.user.username">
+                    <v-list-item append-icon="mdi:cog" v-if="store.user" to="/user" :title="store.user.username">
                         <template #prepend>
                             <v-avatar alt="avatar"
                                 :image="store.user.avatar ? `https://cdn.discordapp.com/avatars/${store.user.id}/${store.user.avatar}.png` : 'https://cdn.discordapp.com/embed/avatars/0.png'"

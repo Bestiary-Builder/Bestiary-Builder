@@ -161,7 +161,7 @@ const newCollectionIsOpen = ref(false)
 		<Draggable :key="Math.random()" :list="automationCollections" :animation="150" :item-key="getDraggableKey"
 			class="tile-container" :handle="store.isMobile ? '.handle' : ''" @change="saveOrder">
 			<template #item="{ element, idx }">
-				<RouterLink :to="`/automations/edit/${element.id}`">
+				<RouterLink :to="`/armory/edit/${element.id}`">
 					<CollectionTile :key="idx" :data="element"
 						@delete-collection-item="(id) => deleteAutomationCollection(id)" />
 				</RouterLink>
