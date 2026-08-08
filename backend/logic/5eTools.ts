@@ -62,21 +62,27 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 	outputData.core = {
 		proficiencyBonus: Math.max(2, Math.min(9, Math.floor((outputData.description.cr + 3) / 4)) + 1),
 		race: (() => {
-			const typeData = data.type;
-			if (typeof typeData == "string")
-				return capitalizeFirstLetter(typeData);
-			const baseType = typeData.type;
-			log.log("error", typeData)
-			if (!typeData?.tags || typeData?.tags.length === 0)
-				return capitalizeFirstLetter(baseType);
+			try {
+				const typeData = data.type;
+				if (typeof typeData == "string")
+					return capitalizeFirstLetter(typeData);
+				const baseType = typeData.type;
+				log.log("error", typeData)
+				if (!typeData?.tags || typeData?.tags.length === 0)
+					return capitalizeFirstLetter(baseType);
 
-			if (typeof typeData?.tags[0] == "string")
-				return `${capitalizeFirstLetter(baseType)} (${typeData?.tags.map((a: string) => capitalizeFirstLetter(a)).join(" ")})`;
+				if (typeof typeData?.tags[0] == "string")
+					return `${capitalizeFirstLetter(baseType)} (${typeData?.tags.map((a: string) => capitalizeFirstLetter(a)).join(" ")})`;
 
-			if (typeof typeData?.tags[0] == "object")
-				return `${capitalizeFirstLetter(baseType)} ${typeData?.tags.map((t: any) => `${capitalizeFirstLetter(t.prefix)}} ${capitalizeFirstLetter(t.tag)}`).join(", ")}`;
+				if (typeof typeData?.tags[0] == "object")
+					return `${capitalizeFirstLetter(baseType)} ${typeData?.tags.map((t: any) => `${capitalizeFirstLetter(t.prefix)}} ${capitalizeFirstLetter(t.tag)}`).join(", ")}`;
 
-			return "";
+				return "";
+			} catch {
+				log.error(data.type)
+				log.error(data)
+				return ""
+			}
 		})(),
 		size: (() => {
 			const sizeMap = {
