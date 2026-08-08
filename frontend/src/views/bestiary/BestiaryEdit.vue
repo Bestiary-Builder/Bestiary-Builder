@@ -360,7 +360,7 @@ const hasPinnedBefore = ref(false);
 const editorToAdd = ref("");
 const showWarning = ref(false);
 const isExpanded = ref(false);
-
+const newCreatureIsOpen = ref(false)
 
 watch(lastClickedCreature, (): void => {
 	if (hasPinnedBefore.value)
@@ -409,33 +409,10 @@ const pinCreature = (creature: Statblock) => {
 				isCurrent: true
 			}
 		]">
-			<DropdownMenu v-if="isEditor || isOwner">
-				<template #activator="{ props }">
-					<v-icon-btn text="Create creature" icon="mdi:plus" size="24" v-bind="props" class="inverted"
-						v-tooltip="'Create creature'" />
-				</template>
-				<v-card min-width="300" class="text-center pa-4" title="Create creature">
-					<v-card-actions class="d-flex flex-column align-center justify-center">
-						<v-btn size="x-large" @click="createItem(defaultStatblock)">
-							From scratch
-						</v-btn>
-						<div class="d-flex align-center my-4 w-100">
-							<v-divider class="flex-grow-1" />
-							<span class="mx-4 text-medium-emphasis">OR</span>
-							<v-divider class="flex-grow-1" />
-						</div>
 
-						<v-autocomplete :items="srdCreatures" label="Select SRD creature" width="400"
-							@update:model-value="item => importSrdCreature(item)">
-							<template #item="{ props, item }">
-								<v-list-item v-bind="props" density="compact" style="min-height: 28px">
-									{{ (item as any).title }}
-								</v-list-item>
-							</template>
-						</v-autocomplete>
-					</v-card-actions>
-				</v-card>
-			</DropdownMenu>
+			<v-icon-btn text="Create creature" icon="mdi:plus" size="24" class="inverted" v-tooltip="'Create creature'"
+				@click="newCreatureIsOpen = !newCreatureIsOpen" />
+
 
 			<CopyCreature :may-import="isOwner || isEditor" :current-creatures="items || []" can-copy-current-bestiary
 				@import-creature="(creature) => createItem(creature, false)"
@@ -651,34 +628,11 @@ const pinCreature = (creature: Statblock) => {
 					</Draggable>
 
 					<div v-if="isOwner || isEditor" class="create-tile">
-						<DropdownMenu>
-							<template #activator="{ props }">
-								<v-btn v-bind="props" variant="plain">
-									Add creature
-								</v-btn>
-							</template>
-							<v-card min-width="300" class="text-center pa-4" title="Create creature">
-								<v-card-actions class="d-flex flex-column align-center justify-center">
-									<v-btn size="x-large" @click="createItem(defaultStatblock)">
-										From scratch
-									</v-btn>
-									<div class="d-flex align-center my-4 w-100">
-										<v-divider class="flex-grow-1" />
-										<span class="mx-4 text-medium-emphasis">OR</span>
-										<v-divider class="flex-grow-1" />
-									</div>
 
-									<v-autocomplete :items="srdCreatures" label="Select SRD creature" width="400"
-										@update:model-value="item => importSrdCreature(item)">
-										<template #item="{ props, item }">
-											<v-list-item v-bind="props" density="compact" style="min-height: 28px">
-												{{ (item as any).title }}
-											</v-list-item>
-										</template>
-									</v-autocomplete>
-								</v-card-actions>
-							</v-card>
-						</DropdownMenu>
+						<v-btn @click="newCreatureIsOpen = !newCreatureIsOpen" variant="plain" :ripple="false">
+							Add creature
+						</v-btn>
+
 					</div>
 				</div>
 				<div v-if="items && lastHoveredCreature" class="statblock-container">
@@ -700,6 +654,33 @@ const pinCreature = (creature: Statblock) => {
 			</div>
 		</div>
 	</div>
+
+	<v-dialog v-model="newCreatureIsOpen" max-width="500">
+		<v-card min-width="300" class="text-center pa-4" title="Create creature">
+			<v-card-actions class="d-flex flex-column align-center justify-center">
+				<v-btn size="x-large" @click="createItem(defaultStatblock)">
+					From scratch
+				</v-btn>
+				<div class="d-flex align-center my-4 w-100">
+					<v-divider class="flex-grow-1" />
+					<span class="mx-4 text-medium-emphasis">OR</span>
+					<v-divider class="flex-grow-1" />
+				</div>
+
+				<v-autocomplete :items="srdCreatures" label="Select SRD creature" width="400"
+					@update:model-value="item => importSrdCreature(item)">
+					<template #item="{ props, item }">
+						<v-list-item v-bind="props" density="compact" style="min-height: 28px">
+							{{ (item as any).title }}
+						</v-list-item>
+					</template>
+				</v-autocomplete>
+			</v-card-actions>
+		</v-card>
+	</v-dialog>
+
+	<v-fab icon="mdi:plus" location="bottom end" app color="primary" @click="newCreatureIsOpen = true"
+		size="large"></v-fab>
 </template>
 
 <style lang="less">

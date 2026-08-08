@@ -104,7 +104,7 @@ const isVisualEditor = ref(store.user?.preferredEditor === "Visual");
 		},
 		{
 			path: '',
-			text: character ? character.name : '',
+			text: character ? character.name : 'Character',
 			isCurrent: true
 		}
 	]">

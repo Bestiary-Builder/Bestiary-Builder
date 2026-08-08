@@ -489,7 +489,7 @@ const activationTypeOptions = computed(() => {
 	</div>
 
 	<v-dialog max-width="750" v-model="createNewActionOpen">
-		<v-card title="Collection Settings" class="pa-4">
+		<v-card title="New Action" class="pa-4">
 			<v-card-text>
 				<v-row>
 					<v-col>
@@ -518,6 +518,8 @@ const activationTypeOptions = computed(() => {
 			</v-card-actions>
 		</v-card>
 	</v-dialog>
+	<v-fab icon="mdi:plus" location="bottom end" app color="primary" @click="createNewActionOpen = true"
+		size="large"></v-fab>
 </template>
 
 <style lang="less" scoped>
