@@ -61,7 +61,7 @@ const lastUpdated = computed(() => {
 					{{ firstLetters }}
 				</div>
 			</div>
-			<hr>
+			<v-divider thickness="2" />
 			<div class="meta">
 				<h2> {{ data.name }} </h2>
 				<span>
@@ -76,42 +76,43 @@ const lastUpdated = computed(() => {
 				<p v-if="data.description" class="description mt-1 mb-1">
 					{{ data.description }}
 				</p>
-				<div class="collection-footer">
-					<div class="d-flex justify-content align-items">
-						<b>{{ data.viewCount }} views </b>
-					</div>
-					<span v-if="'automations' in data" class="d-flex justify-content align-items">
-						<b>{{ data.automations.length }}</b>
-						<v-icon icon="mdi:sword-cross" size="20" />
-					</span>
-					<span v-if="'creatures' in data" class="d-flex justify-content align-items">
-						<b>{{ data.creatures.length }} </b>
-						<v-icon icon="mdi:paw" size="20" />
-					</span>
-					<div class="info-buttons">
-						<v-icon icon="material-symbols:drag-indicator" v-if="store.isMobile" class="handle" size="20" />
-						<StatusIcon :icon="data.status" />
 
-						<DropdownMenu v-if="store.user?.id === data.ownerId">
-							<template #activator="{ props }">
-								<v-icon-btn text="Delete Collection" size="20" color="currentColor" v-bind="props"
-									@click.stop.prevent="props.onClick?.($event)" icon="mdi:delete">
-								</v-icon-btn>
-							</template>
-							<v-card min-width="300" class="text-center pb-2">
-								<v-card-text>
-									Are you sure you want to delete <b>{{ data.name }}</b>?
-									<br> This action cannot be undone.
-								</v-card-text>
-								<v-card-actions>
-									<v-btn size="large" class="w-100" color="red"
-										@click.stop.prevent="$emit('deleteCollectionItem', data.id)">
-										Confirm
-									</v-btn>
-								</v-card-actions>
-							</v-card>
-						</DropdownMenu>
-					</div>
+			</div>
+			<div class="collection-footer">
+				<div class="d-flex justify-content align-items">
+					<b>{{ data.viewCount }} views </b>
+				</div>
+				<span v-if="'automations' in data" class="d-flex justify-content align-items">
+					<b>{{ data.automations.length }}</b>
+					<v-icon icon="mdi:sword-cross" size="20" />
+				</span>
+				<span v-if="'creatures' in data" class="d-flex justify-content align-items">
+					<b>{{ data.creatures.length }} </b>
+					<v-icon icon="mdi:paw" size="20" />
+				</span>
+				<div class="info-buttons">
+					<v-icon icon="material-symbols:drag-indicator" v-if="store.isMobile" class="handle" size="20" />
+					<StatusIcon :icon="data.status" />
+
+					<DropdownMenu v-if="store.user?.id === data.ownerId">
+						<template #activator="{ props }">
+							<v-icon-btn text="Delete Collection" size="20" color="currentColor" v-bind="props"
+								@click.stop.prevent="props.onClick?.($event)" icon="mdi:delete">
+							</v-icon-btn>
+						</template>
+						<v-card min-width="300" class="text-center pb-2">
+							<v-card-text>
+								Are you sure you want to delete <b>{{ data.name }}</b>?
+								<br> This action cannot be undone.
+							</v-card-text>
+							<v-card-actions>
+								<v-btn size="large" class="w-100" color="red"
+									@click.stop.prevent="$emit('deleteCollectionItem', data.id)">
+									Confirm
+								</v-btn>
+							</v-card-actions>
+						</v-card>
+					</DropdownMenu>
 				</div>
 			</div>
 		</div>
@@ -126,6 +127,7 @@ const lastUpdated = computed(() => {
 
 .collection-container {
 	transition: scale ease-in-out 0.2s;
+	height: 100%;
 
 	&:hover {
 		scale: 1.02;
@@ -135,6 +137,9 @@ const lastUpdated = computed(() => {
 .collection {
 	border-radius: 0.5rem;
 	background-color: var(--color-surface-0);
+	height: 100%;
+	display: flex;
+	flex-direction: column;
 
 	.image-container {
 		padding-top: 56%;
@@ -160,7 +165,7 @@ const lastUpdated = computed(() => {
 	}
 
 	.meta {
-		padding: 0 0.5rem 1rem;
+		padding: 0 0.5rem;
 		font-family: "Scala Sans Offc", Roboto, Helvetica, sans-serif;
 
 		h2 {
@@ -176,17 +181,20 @@ const lastUpdated = computed(() => {
 			font-size: smaller;
 		}
 
-		.collection-footer {
-			display: flex;
-			justify-content: space-between;
-			margin-top: .5rem;
 
-			.info-buttons {
-				grid-auto-flow: column;
-				grid-auto-columns: 1fr;
-				display: grid;
-				gap: 0.25rem;
-			}
+	}
+
+	.collection-footer {
+		margin-top: auto;
+		display: flex;
+		justify-content: space-between;
+		padding: 0.25rem 0.5rem 0.75rem;
+
+		.info-buttons {
+			grid-auto-flow: column;
+			grid-auto-columns: 1fr;
+			display: grid;
+			gap: 0.25rem;
 		}
 	}
 }
