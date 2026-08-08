@@ -66,7 +66,7 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 			if (typeof typeData == "string")
 				return capitalizeFirstLetter(typeData);
 			const baseType = typeData.type;
-
+			log.log("error", typeData)
 			if (!typeData?.tags || typeData?.tags.length === 0)
 				return capitalizeFirstLetter(baseType);
 
