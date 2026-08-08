@@ -5,7 +5,6 @@ import { ref } from "vue";
 import { store } from "./utils/store.js";
 import { sendToLogin } from "./utils/utils.js";
 import { useLocalStorage } from "@vueuse/core";
-import { onMounted } from "vue";
 import { useRecentPages } from "./utils/app/useRecentPages.js";
 
 const { recentPages } = useRecentPages();
@@ -30,7 +29,6 @@ const dismiss = () => {
 
 <template>
     <v-app>
-
         <v-navigation-drawer app v-model="drawer">
             <v-list nav v-model:opened="openGroups" open-strategy="multiple" class="pt-0" density="compact">
                 <v-list-item height="64" class="px-2">
@@ -130,7 +128,11 @@ const dismiss = () => {
             </router-view>
         </v-main>
         <v-footer class="d-flex align-center justify-center ga-2 flex-wrap flex-grow-1 py-3" color="surface-light-1">
-            <v-btn v-for="link in links" :key="link" :text="link" variant="text" rounded></v-btn>
+            <v-btn to="/" text="Home" variant="plain" />
+            <v-btn text="Discord" variant="plain" href="https://discord.gg/a6bwXCSymN" target="_blank" />
+            <v-btn text="Patreon" variant="plain" href="https://patreon.com/BestiaryBuilder" target="_blank" />
+            <v-btn to="/privacy-policy" text="Privacy Policy" variant="plain" />
+            <v-btn to="/terms-and-conditions" text="Terms and Conditions" variant="plain" />
 
             <div class="flex-1-0-100 text-center mt-2">
                 {{ new Date().getFullYear() }} — <strong>Bestiary Builder</strong>

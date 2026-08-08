@@ -24,7 +24,8 @@ const emit = defineEmits<{
 			</p>
 		</div>
 		<div class="right-side">
-			<v-icon-btn text="Pin creature" @click="emit('pinCreature')" :icon="isPinned ? 'mdi:pin-off' : 'mdi:pin'" />
+			<v-icon-btn text="Pin creature" @click="emit('pinCreature')" :icon="isPinned ? 'mdi:pin-off' : 'mdi:pin'"
+				size="24" />
 			<v-icon-btn :text="`Copy ${data.description.name}`" icon="mdi:content-copy" @click="emit('copyCreature')"
 				size="24" />
 			<DropdownMenu v-if="canEdit">
@@ -46,7 +47,7 @@ const emit = defineEmits<{
 			<RouterLink class="creature" :to="`/creature/${canEdit ? 'edit' : 'view'}/${id}`"
 				:aria-label="`${canEdit ? 'Edit' : 'View'} creature`" size="24">
 				<v-icon-btn icon="mdi:pencil" v-if="canEdit" size="24" />
-				<v-icon-btn icon="mdi:eye" v-else />
+				<v-icon-btn icon="mdi:eye" v-else size="24" />
 			</RouterLink>
 		</div>
 	</div>
