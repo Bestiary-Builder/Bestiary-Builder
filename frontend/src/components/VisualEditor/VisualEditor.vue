@@ -255,7 +255,7 @@ section {
 	display: grid;
 	gap: 0rem 1rem;
 	margin-bottom: 1rem;
-	grid-template-columns: 1fr 3fr;
+	grid-template-columns: 1fr 2fr;
 }
 
 @media screen and (max-width: 1200px) {

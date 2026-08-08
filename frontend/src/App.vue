@@ -9,21 +9,21 @@ import { useRecentPages } from "./utils/app/useRecentPages.js";
 
 const { recentPages } = useRecentPages();
 
-const links = [
-    'Home',
-    'Patreon',
-    'Discord',
-    'Terms of Service',
-    'Privacy Policy',
-]
-
-const drawer = ref(true)
 const openGroups = ref(['bestiaries', 'automations', 'recentlyViewed'])
 
 const dismissed = useLocalStorage('update3.0.0dismissed', false)
 
 const dismiss = () => {
     dismissed.value = true
+}
+
+const drawer = ref<boolean | null>(null)
+const toggleDrawer = () => {
+    if (drawer.value === null) {
+        drawer.value = true
+    } else {
+        drawer.value = !drawer.value
+    }
 }
 </script>
 
@@ -109,7 +109,7 @@ const dismiss = () => {
         </v-navigation-drawer>
         <v-app-bar scroll-behavior="elevate" class="border-b" app elevation="3" height="64" id="navbar">
             <template #prepend>
-                <v-app-bar-nav-icon @click="drawer = !drawer" />
+                <v-app-bar-nav-icon @click="toggleDrawer" v-model="drawer" />
             </template>
             <div id="app-bar-actions" class="d-flex align-center" />
             <template #append>
