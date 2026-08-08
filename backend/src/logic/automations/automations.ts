@@ -8,10 +8,6 @@ import { Prisma } from "~/shared/src/prisma-types";
 import { automationCollections, getOrCreateDefaultAutomationCollection } from "../collections/automationCollections";
 import { possibleUser, requireUser } from "../main/login";
 
-async function canViewAutomation(automation: Automation, userId: Id | null) {
-	return (await automationCollections.authorize(automation.collectionId, userId, "view")).ok;
-}
-
 async function canEditAutomation(automation: Automation, userId: Id) {
 	return (await automationCollections.authorize(automation.collectionId, userId, "edit")).ok;
 }
@@ -51,11 +47,12 @@ app.get("/api/automation/:id", possibleUser, async (req, res) => {
 	const automation = await getAutomation(id);
 	if (!automation)
 		return res.status(404).json({ error: "No automation with that id found." });
-	if (!await canViewAutomation(automation, req.user?.id ?? null))
-		return res.status(401).json({ error: "You don't have access to this automation." });
+	const authorization = await automationCollections.authorize(automation.collectionId, req.user?.id ?? null, "view");
+	if (!authorization.ok)
+		return res.status(401).json({ error: " You don't have access to this automation." });
 
 	log.info(`Retrieved automation with the id ${id}`);
-	return res.json(automation);
+	return res.json({ ...automation, permissionLevel: authorization.permission });
 });
 
 app.get("/api/my-automations", requireUser, async (req, res) => {
@@ -105,7 +102,7 @@ app.post("/api/automation/add", requireUser, async (req, res) => {
 	const user = req.user!;
 	if (!req.body.data)
 		return res.status(400).json({ error: "Automation data not found." });
-	const input = req.body.data as { automation: Partial<Automation>, collectionId: string };
+	const input = req.body.data as { automation: Partial<Automation>; collectionId: string };
 	const preparedInput = prepareAutomationInput(input.automation, "");
 	if ("error" in preparedInput)
 		return res.status(400).json({ error: preparedInput.error });

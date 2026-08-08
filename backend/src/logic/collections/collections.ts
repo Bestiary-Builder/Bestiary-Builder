@@ -1,8 +1,8 @@
-import type { BestiaryStatus, Id } from "~/shared";
+import type { BestiaryStatus, Id, CollectionPermission as SharedCollectionPermission } from "~/shared";
 import { checkAdminAccount } from "@/utilities/constants";
 import { getUser } from "@/utilities/database";
 
-export type CollectionPermission = "none" | "view" | "editor" | "owner";
+export type CollectionPermission = SharedCollectionPermission;
 export type CollectionAction = "view" | "edit" | "delete" | "manage-editors" | "order-items";
 
 export interface CollectionWithEditors {

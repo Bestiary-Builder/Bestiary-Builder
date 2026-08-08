@@ -2,6 +2,7 @@ import type * as Prisma from "../prisma/internal/prismaNamespace";
 import type { Statblock } from "./build-types";
 
 export type Id = string;
+export type CollectionPermission = "none" | "view" | "editor" | "owner";
 
 // Database types
 export { BestiaryStatus, SupporterStatus } from "../prisma/enums";
@@ -20,6 +21,9 @@ export type BestiaryExtended = Bestiary & { creatures: { id: Id }[]; editors: { 
 export type BestiaryWithCount = Bestiary & { creatureCount: number };
 export type AutomationCollectionExtended = AutomationCollection & { automations: Automation[]; editors: { userId: Id }[] };
 export type AutomationCollectionWithCount = AutomationCollection & { automationCount: number };
+export type BestiaryResponse = BestiaryExtended & { permissionLevel: CollectionPermission };
+export type CreatureResponse = CreatureWithStats & { permissionLevel: CollectionPermission };
+export type AutomationCollectionResponse = AutomationCollectionExtended & { permissionLevel: CollectionPermission };
 
 export class GlobalStats {
 	constructor(public bestiaries: number, public creatures: number, public users: number) { }
@@ -35,6 +39,7 @@ export interface AutomationDocumentationEntity {
 export interface AutomationDocumentation { [key: string]: AutomationDocumentationEntity }
 
 export type AutomationWithType = Omit<Automation, "automation"> & { automation: null | AttackModel | AttackModel[] };
+export type AutomationResponse = AutomationWithType & { permissionLevel: CollectionPermission };
 
 // Built types
 export * from "./build-types";

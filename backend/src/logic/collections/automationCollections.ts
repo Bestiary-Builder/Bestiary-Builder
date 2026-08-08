@@ -153,7 +153,7 @@ app.get("/api/automation-collection/:id", possibleUser, async (req, res) => {
 			maxAge: 1000 * 60 * 15
 		});
 	}
-	return res.json(authorization.collection);
+	return res.json({ ...authorization.collection, permissionLevel: authorization.permission });
 });
 
 app.post("/api/automation-collection/:id/update", requireUser, async (req, res) => {

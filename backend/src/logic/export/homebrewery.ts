@@ -66,7 +66,7 @@ app.get("/api/homebrewery/export/creature/:id", possibleUser, async (req, res) =
 
 		const permissionLevel = await checkCreaturePermission(creature, user);
 
-		if (!permissionLevel)
+		if (permissionLevel === "none")
 			return res.status(401).json({ error: "You don't have permission to view this creature." });
 
 		if (!creature.stats)

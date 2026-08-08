@@ -1,40 +1,38 @@
 <script setup lang="ts">
-import type { BestiaryExtended, CreatureWithStats } from "~/shared";
+import type { BestiaryResponse, CreatureResponse } from "~/shared";
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import CopyCreature from "@/components/Bestiary/CopyCreature.vue";
 import ExportCreature from "@/components/Bestiary/ExportCreature.vue";
 import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
 import { useToast } from "@/utils/app/toast";
-import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 
 const $route = useRoute();
 const $router = useRouter();
 
 const { addToast } = useToast()
-const data = ref<CreatureWithStats | null>(null);
-const bestiary = ref<BestiaryExtended | null>(null);
+const data = ref<CreatureResponse | null>(null);
+const bestiary = ref<BestiaryResponse | null>(null);
 const isOwner = ref(false);
 const isEditor = ref(false);
 
 // load creature data
 onMounted(async () => {
-	const { success, data: cData, error } = await useFetch<CreatureWithStats>(`/api/creature/${$route.params.id.toString()}`);
+	const { success, data: cData, error } = await useFetch<CreatureResponse>(`/api/creature/${$route.params.id.toString()}`);
 	if (success) {
 		data.value = cData;
 		// loader.hide();
-		const { success, data: bData, error } = await useFetch<BestiaryExtended>(`/api/bestiary/${data.value?.bestiaryId}`);
+		const { success, data: bData, error } = await useFetch<BestiaryResponse>(`/api/bestiary/${data.value?.bestiaryId}`);
 		if (success) {
 			bestiary.value = bData;
-			isOwner.value = store.user?.id === bData.ownerId;
-			isEditor.value = (bestiary.value?.editors ?? []).map(e => e.userId).includes(store.user?.id ?? "");
-			if (bestiary.value && data.value && (isOwner.value || isEditor.value)) $router.push(`/creature/edit/${data.value.id}`)
-
+			isOwner.value = bData.permissionLevel === "owner";
+			isEditor.value = bData.permissionLevel === "editor";
+			if (bestiary.value && data.value && (isOwner.value || isEditor.value))
+				void $router.push(`/creature/edit/${data.value.id}`)
 		}
 		else {
 			addToast(error, { color: "error" });
-
 		}
 	}
 	else {

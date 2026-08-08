@@ -1,17 +1,17 @@
 // types/collection.ts
+import type { Automation, AutomationCollectionResponse, AutomationWithType, BestiaryResponse, BestiaryStatus, CreatureWithStats, Statblock, User } from "~/shared";
+import { ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
 import { getUmami } from "@/utils/app/analytics";
 import { useToast } from "@/utils/app/toast";
 import { useRecentPages } from "@/utils/app/useRecentPages";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
-import { ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import type { BestiaryExtended, CreatureWithStats, AutomationCollectionExtended, AutomationWithType, BestiaryStatus, User, Statblock, Automation } from "~/shared";
 
 type CollectionType = "bestiary" | "automations";
 
-type CollectionBase = BestiaryExtended | AutomationCollectionExtended
+type CollectionBase = BestiaryResponse | AutomationCollectionResponse
 
 interface ItemBase {
     id: string;
@@ -19,12 +19,12 @@ interface ItemBase {
 
 interface CollectionTypeMap {
     bestiary: {
-        collection: BestiaryExtended;
+        collection: BestiaryResponse;
         item: CreatureWithStats;
         itemRaw: CreatureWithStats["stats"];
     };
     automations: {
-        collection: AutomationCollectionExtended;
+        collection: AutomationCollectionResponse;
         item: AutomationWithType;
         itemRaw: Automation["automation"];
     };
@@ -98,8 +98,8 @@ export const useCollection = <T extends CollectionType>(type: T) => {
         }
 
         collection.value = data;
-        isOwner.value = store.user?.id === collection.value.ownerId;
-        isEditor.value = (collection.value.editors ?? []).map((e) => e.userId).includes(store.user?.id ?? "");
+        isOwner.value = collection.value.permissionLevel === "owner";
+        isEditor.value = collection.value.permissionLevel === "editor";
 
         updateLabel($route.path, collection.value.name);
 
@@ -149,7 +149,8 @@ export const useCollection = <T extends CollectionType>(type: T) => {
         if (!collection.value)
             return;
         const toastId = addToast("Saving...", { loading: true });
-        const { success, error } = await useFetch<Collection>(`/api/${config.apiRoute}/${collection.value.id.toString()}/update`, "POST", collection.value);
+        const { permissionLevel: _, ...collectionData } = collection.value;
+        const { success, error } = await useFetch<Collection>(`/api/${config.apiRoute}/${collection.value.id.toString()}/update`, "POST", collectionData);
         if (success) {
             updateToast(toastId, { text: "Saved", color: "success" });
         }

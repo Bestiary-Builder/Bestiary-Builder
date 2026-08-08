@@ -66,7 +66,7 @@ app.get("/api/bestiary/:id", possibleUser, async (req, res) => {
 		log.info(`Retrieved bestiary with the id ${_id}`);
 		if (!bestiary.tags)
 			bestiary.tags = [];
-		return res.json(bestiary);
+		return res.json({ ...bestiary, permissionLevel });
 	}
 	else {
 		return res.status(401).json({ error: "You don't have access to this bestiary." });

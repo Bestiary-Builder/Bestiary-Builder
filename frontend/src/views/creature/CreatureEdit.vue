@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { BestiaryExtended, CreatureWithStats, Statblock } from "~/shared";
+import type { BestiaryResponse, CreatureResponse, Statblock } from "~/shared";
 import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
 import CopyCreature from "@/components/Bestiary/CopyCreature.vue";
@@ -24,7 +24,7 @@ const $router = useRouter();
 
 const tab = ref<number>(typeof ($route.query?.pane) === "string" ? Number.parseInt($route.query.pane) : 1);
 const data = ref<Statblock>(defaultStatblock);
-const rawInfo = ref<CreatureWithStats | null>(null);
+const rawInfo = ref<CreatureResponse | null>(null);
 
 const { addToast, removeToast } = useToast();
 const { updateLabel } = useRecentPages()
@@ -32,7 +32,7 @@ const { updateLabel } = useRecentPages()
 // load creature data
 onMounted(async () => {
 	const toastId = addToast("Loading...", { loading: true })
-	const { success, data: cData, error } = await useFetch<CreatureWithStats>(`/api/creature/${$route.params.id.toString()}`);
+	const { success, data: cData, error } = await useFetch<CreatureResponse>(`/api/creature/${$route.params.id.toString()}`);
 	if (success) {
 		data.value = (cData).stats;
 		await nextTick(() => madeChanges.value = false);
@@ -50,17 +50,17 @@ onMounted(async () => {
 });
 
 // bestiary data
-const bestiary = ref<BestiaryExtended | null>(null);
+const bestiary = ref<BestiaryResponse | null>(null);
 const isOwner = ref(false);
 const isEditor = ref(false);
 const shouldShowEditor = ref(false);
 
 const loadRawInfo = async () => {
-	const { success, data, error } = await useFetch<BestiaryExtended>(`/api/bestiary/${rawInfo.value?.bestiaryId}`);
+	const { success, data, error } = await useFetch<BestiaryResponse>(`/api/bestiary/${rawInfo.value?.bestiaryId}`);
 	if (success) {
 		bestiary.value = data;
-		isOwner.value = store.user?.id === bestiary.value.ownerId;
-		isEditor.value = (bestiary.value?.editors ?? []).map(e => e.userId).includes(store.user?.id ?? "");
+		isOwner.value = bestiary.value.permissionLevel === "owner";
+		isEditor.value = bestiary.value.permissionLevel === "editor";
 
 		if (isOwner.value || isEditor.value)
 			shouldShowEditor.value = true;
@@ -81,7 +81,8 @@ const saveStatblock = async (shouldNotify = true): Promise<boolean> => {
 	isSavingStatblock.value = true
 
 	// Send to backend
-	const { success, error } = await useFetch<CreatureWithStats>(`/api/creature/${rawInfo.value.id.toString()}/update`, "POST", rawInfo.value);
+	const { permissionLevel: _, ...creature } = rawInfo.value;
+	const { success, error } = await useFetch<CreatureResponse>(`/api/creature/${creature.id.toString()}/update`, "POST", creature);
 	if (success) {
 		if (shouldNotify)
 			addToast("Saved stat block", { color: "success" });

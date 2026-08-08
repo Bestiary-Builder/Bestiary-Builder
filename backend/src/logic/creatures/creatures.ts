@@ -11,9 +11,8 @@ import { prepareCreatureStats } from "./creaturePreparation";
 export async function checkCreaturePermission(creature: Creature, user: User | null) {
 	const bestiary = await getBestiary(creature.bestiaryId);
 	if (!bestiary)
-		return false;
-	const bestiaryPermissionLevel = await checkBestiaryPermission(bestiary, user);
-	return bestiaryPermissionLevel !== "none";
+		return "none";
+	return await checkBestiaryPermission(bestiary, user);
 }
 
 // Get info
@@ -25,9 +24,9 @@ app.get("/api/creature/:id", possibleUser, async (req, res) => {
 	const creature = await getCreature(_id);
 	if (creature) {
 		const permissionLevel = await checkCreaturePermission(creature, user);
-		if (permissionLevel) {
+		if (permissionLevel !== "none") {
 			log.info(`Retrieved creature with the id ${_id}`);
-			return res.json(creature);
+			return res.json({ ...creature, permissionLevel });
 		}
 		else {
 			return res.status(401).json({ error: "You don't have permission to view this creature." });
