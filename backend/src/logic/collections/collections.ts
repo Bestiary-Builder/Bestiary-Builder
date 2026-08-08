@@ -1,4 +1,5 @@
 import type { BestiaryStatus, Id } from "~/shared";
+import { checkAdminAccount } from "@/utilities/constants";
 import { getUser } from "@/utilities/database";
 
 export type CollectionPermission = "none" | "view" | "editor" | "owner";
@@ -34,6 +35,8 @@ export type CollectionBookmarkResult = { ok: true; state: boolean } | { ok: fals
 
 export function createCollectionService<C extends CollectionWithEditors, ListedC extends C>(repository: CollectionRepository<C, ListedC>) {
 	function getPermission(collection: C, userId: Id | null): CollectionPermission {
+		if (userId && checkAdminAccount(userId))
+			return "owner";
 		if (userId === collection.ownerId)
 			return "owner";
 		if (userId && collection.editors.some(editor => editor.userId === userId))

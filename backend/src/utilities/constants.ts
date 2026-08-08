@@ -55,6 +55,12 @@ function checkLimits(data: { name: string; description: string }) {
 		return `Description exceeds the character limit of ${limits.descriptionLength} characters.`;
 }
 
+const ADMIN_ACCOUNTS = process.env.ADMIN_ACCOUNTS?.split(",") ?? [];
+
+export function checkAdminAccount(userId: string) {
+	return ADMIN_ACCOUNTS.includes(userId);
+}
+
 // Inject additional properties on express.Request
 declare module "express" {
 	interface Request {
