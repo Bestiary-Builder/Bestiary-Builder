@@ -90,10 +90,12 @@ export const useCollection = <T extends CollectionType>(type: T) => {
 
     const getCollection = async () => {
         const id = $route.params.id;
-        const { success, data, error } = await useFetch<Collection>(`/api/${config.apiRoute}/${id.toString()}`);
+        const { success, data, error, status } = await useFetch<Collection>(`/api/${config.apiRoute}/${id.toString()}`);
         if (!success) {
             collection.value = null;
             addToast(error, { color: "error" });
+            if (status === 401 || status === 404)
+                await $router.replace("/404");
             return;
         }
 

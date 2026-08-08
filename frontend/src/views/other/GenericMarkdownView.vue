@@ -28,7 +28,7 @@ onMounted(() => {
 watch(
 	() => route.fullPath,
 	async () => {
-		import(`../assets/documents/${props.filePath}.md`).then(async (doc) => {
+		import(`../../assets/documents/${props.filePath}.md`).then(async (doc) => {
 			dataFile.value = doc.default;
 			if (!route.hash)
 				return;
@@ -45,12 +45,15 @@ watch(
 </script>
 
 <template>
-	<Breadcrumbs :routes="[
-		{
-			path: '',
-			text: $route.name as string ?? 'Name not found',
-			isCurrent: true
-		}
-	]" :is-less-wide="true" />
+	<Breadcrumbs
+		:routes="[
+			{
+				path: '',
+				text: $route.name as string ?? 'Name not found',
+				isCurrent: true
+			}
+		]"
+		:is-less-wide="true"
+	/>
 	<div class="content markdown less-wide" v-html="md.render(dataFile)" />
 </template>

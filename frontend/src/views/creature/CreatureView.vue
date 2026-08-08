@@ -19,11 +19,11 @@ const isEditor = ref(false);
 
 // load creature data
 onMounted(async () => {
-	const { success, data: cData, error } = await useFetch<CreatureResponse>(`/api/creature/${$route.params.id.toString()}`);
+	const { success, data: cData, error, status } = await useFetch<CreatureResponse>(`/api/creature/${$route.params.id.toString()}`);
 	if (success) {
 		data.value = cData;
 		// loader.hide();
-		const { success, data: bData, error } = await useFetch<BestiaryResponse>(`/api/bestiary/${data.value?.bestiaryId}`);
+		const { success, data: bData, error, status } = await useFetch<BestiaryResponse>(`/api/bestiary/${data.value?.bestiaryId}`);
 		if (success) {
 			bestiary.value = bData;
 			isOwner.value = bData.permissionLevel === "owner";
@@ -33,10 +33,14 @@ onMounted(async () => {
 		}
 		else {
 			addToast(error, { color: "error" });
+			if (status === 401 || status === 404)
+				await $router.replace("/404");
 		}
 	}
 	else {
 		addToast(error, { color: "error" })
+		if (status === 401 || status === 404)
+			await $router.replace("/404");
 	}
 });
 </script>

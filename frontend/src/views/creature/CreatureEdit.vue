@@ -32,19 +32,19 @@ const { updateLabel } = useRecentPages()
 // load creature data
 onMounted(async () => {
 	const toastId = addToast("Loading...", { loading: true })
-	const { success, data: cData, error } = await useFetch<CreatureResponse>(`/api/creature/${$route.params.id.toString()}`);
+	const { success, data: cData, error, status } = await useFetch<CreatureResponse>(`/api/creature/${$route.params.id.toString()}`);
 	if (success) {
 		data.value = (cData).stats;
 		await nextTick(() => madeChanges.value = false);
 		rawInfo.value = cData;
-		await loadRawInfo();
+		if (await loadRawInfo())
+			updateLabel($route.path, data.value.description.name);
 		removeToast(toastId)
-		updateLabel($route.path, data.value.description.name);
 	}
 	else {
 		addToast(error, { color: "error" })
 		madeChanges.value = false;
-		await $router.push("/error");
+		await $router.push(status === 401 || status === 404 ? "/404" : "/error");
 		removeToast(toastId)
 	}
 });
@@ -56,7 +56,7 @@ const isEditor = ref(false);
 const shouldShowEditor = ref(false);
 
 const loadRawInfo = async () => {
-	const { success, data, error } = await useFetch<BestiaryResponse>(`/api/bestiary/${rawInfo.value?.bestiaryId}`);
+	const { success, data, error, status } = await useFetch<BestiaryResponse>(`/api/bestiary/${rawInfo.value?.bestiaryId}`);
 	if (success) {
 		bestiary.value = data;
 		isOwner.value = bestiary.value.permissionLevel === "owner";
@@ -67,9 +67,13 @@ const loadRawInfo = async () => {
 
 		if (!isOwner.value && !isEditor.value)
 			await $router.push(`/creature/view/${rawInfo.value?.id}`);
+		return true;
 	}
 	else {
 		addToast(error, { color: "error" });
+		if (status === 401 || status === 404)
+			await $router.replace("/404");
+		return false;
 	}
 };
 
@@ -111,7 +115,7 @@ const saveStatblock = async (shouldNotify = true): Promise<boolean> => {
 };
 
 provide("saveStatblock", saveStatblock);
-useHotkey("cmd+s", async () => await saveStatblock(), { inputs: true })
+useHotkey("cmd+s", async () => saveStatblock(), { inputs: true })
 // end of lifecycle
 const madeChanges = ref(false);
 
