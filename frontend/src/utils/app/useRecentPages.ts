@@ -19,7 +19,8 @@ const MAX_RECENT = 5;
 const TRACKED_ROUTES: TrackedRoute[] = [
     { pattern: /^\/creature\/edit\/([^/]+)$/, icon: "mdi:paw", labelPrefix: "Creature" },
     { pattern: /^\/bestiary\/edit\/([^/]+)$/, icon: "mdi:book-open-page-variant", labelPrefix: "Bestiary" },
-    { pattern: /^\/automations\/edit\/([^/]+)$/, icon: "material-symbols:automation", labelPrefix: "Automation" },
+    { pattern: /^\/armory\/edit\/([^/]+)$/, icon: "material-symbols:automation", labelPrefix: "Armory" },
+    { pattern: /^\/automation\/edit\/([^/]+)$/, icon: "mdi:sword-cross", labelPrefix: "Automation" },
     { pattern: /^\/characters\/([^/]+)$/, icon: "mdi:account", labelPrefix: "Character" },
 ];
 

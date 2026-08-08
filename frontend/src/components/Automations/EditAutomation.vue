@@ -155,7 +155,7 @@ const currentDocu = computed(() => docu.value[currentContext.value]);
 </script>
 
 <template>
-    <div v-if="!isVisualEditor" class="editor">
+    <div v-if="!isVisualEditor" class="editor pt-4">
         <VueMonacoEditor v-model:value="automationString" theme="vs-dark"
             :options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false }"
             height="800px" language="yaml" @mount="handleMount" />

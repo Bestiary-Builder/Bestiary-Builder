@@ -26,7 +26,7 @@ interface CollectionTypeMap {
     automations: {
         collection: AutomationCollectionResponse;
         item: AutomationWithType;
-        itemRaw: Automation["automation"];
+        itemRaw: Partial<AutomationWithType>;
     };
 }
 

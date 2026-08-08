@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { AttackModel, AutomationWithType } from "~/shared";
 import { refDebounced, useLocalStorage } from "@vueuse/core";
-import { onMounted, ref, watch } from "vue";
+import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useRules } from "vuetify/labs/rules";
 import StatusIcon from "@/components/Bestiary/StatusIcon.vue";
 import UserBanner from "@/components/Bestiary/UserBanner.vue";
@@ -11,6 +11,7 @@ import { useToast } from "@/utils/app/toast";
 import { creatureTypes } from "@/utils/constants";
 import { store } from "@/utils/store";
 import { useCollection } from "@/components/Bestiary/useCollection";
+import { ACTION_TYPE_MAP, getActionTypeLabel } from "./utils";
 
 const {
 	collection,
@@ -141,61 +142,9 @@ async function exportCollection(asFile: boolean) {
 }
 
 
-// const importFields = reactive({
-// 	critterDbId: "",
-// 	bestiaryBuilderJson: ""
-// })
-
-
-// async function importCreaturesFromBestiaryBuilder() {
-// 	let creaturesToImport;
-// 	if (importFields.bestiaryBuilderJson.length === 0) {
-// 		addToast("No JSON given", { color: "error" });
-// 		return;
-// 	}
-// 	try {
-// 		creaturesToImport = JSON.parse(importFields.bestiaryBuilderJson);
-// 	}
-// 	catch (e) {
-// 		addToast("Something is wrong with the format of your JSON", { color: "error" });
-// 		return;
-// 	}
-
-// 	if (!Array.isArray(creaturesToImport))
-// 		creaturesToImport = [creaturesToImport];
-
-// 	addToast("Importing creatures has started. This may take a while.");
-// 	const { success, data, error } = await useFetch<{ error?: string; ignoredCreatures: { creature: string; error: string }[] }>(`/api/bestiary/${collection.value?.id.toString()}/addcreatures`, "POST", creaturesToImport);
-
-// 	if (!success) {
-// 		notices.value = {};
-// 		addToast(error, { color: "error" });
-// 	}
-// 	else if (data.error) {
-// 		addToast("The import was completed with errors.", { color: "error" });
-// 		notices.value.Errors = data.error;
-// 		for (const error of data.ignoredCreatures)
-// 			notices.value[error.creature] = error.error;
-// 	}
-// 	else {
-// 		addToast("Importing has finished!", { color: "success" });
-// 		void getUmami()?.track("Import bestiary from BestiaryBuilder");
-// 	}
-
-// 	await getCollection();
-// }
-
-
-
-// draggable stuff
-const getDraggableKey = (item: any) => {
-	return item;
-};
-
 // misc
 const editorToAdd = ref("");
 const showWarning = ref(false);
-const isExpanded = ref(false);
 
 
 
@@ -212,22 +161,70 @@ watch(() => collection.value?.name, (): void => {
 		document.title = `${collection.value?.name.substring(0, 16)} | Bestiary Builder`;
 });
 
-const getAutomationInformation = (data: AutomationWithType["automation"], key: keyof AttackModel, fallback: string) => {
+const getAutomationInformation = (data: AutomationWithType["automation"], key: keyof AttackModel, fallback: string | number) => {
 	if (!data) return fallback
 
 	if (Array.isArray(data)) {
 		data = data[0]
 	}
 
-	return data[key]?.toString() ?? fallback
+	return data[key] ?? fallback
 }
+
+const getActivationType = (automation: AttackModel | AttackModel[] | null): number => {
+	if (automation === null) return 0
+	const attack = Array.isArray(automation) ? automation[0] : automation
+	return attack?.activation_type ?? 0
+}
+
+const groupByActivationType = (items: AutomationWithType[]): Record<number, AutomationWithType[]> => {
+	return items.reduce((groups, item) => {
+		const key = getActivationType(item.automation)
+		if (!groups[key]) groups[key] = []
+		groups[key].push(item)
+		return groups
+	}, {} as Record<number, AutomationWithType[]>)
+}
+
+const groupedItems = computed(() => {
+	const grouped = groupByActivationType(items.value || [])
+
+	return Object.entries(grouped)
+		.map(([type, items]) => ({
+			type: Number(type),
+			label: getActionTypeLabel(Number(type)),
+			items,
+		}))
+		.sort((a, b) => a.type - b.type)
+})
+
+const openedGroups = ref<number[]>(Object.keys(ACTION_TYPE_MAP).map(x => parseInt(x)))
+
+const createNewActionOpen = ref(false)
+
+const createOptions = reactive({
+	name: "",
+	description: "",
+	activation_type: null
+})
+
+const activationTypeOptions = computed(() => {
+	return Object.entries(ACTION_TYPE_MAP)
+		.map(([key, title]) => ({
+			title,
+			value: Number(key) === 0 ? null : Number(key),
+		}))
+		.sort((a, b) => (a.value ?? 0) - (b.value ?? 0))
+})
+
+
 </script>
 
 <template>
 	<div>
 		<Breadcrumbs v-if="collection" :routes="[
 			{
-				path: isOwner || isEditor ? '/automations/personal' : '/automations/public',
+				path: isOwner || isEditor ? '/armories/personal' : '/armories/public',
 				text: isOwner || isEditor ? 'My Automations' : 'Automations',
 				isCurrent: false
 			},
@@ -237,25 +234,9 @@ const getAutomationInformation = (data: AutomationWithType["automation"], key: k
 				isCurrent: true
 			}
 		]">
-			<DropdownMenu v-if="isEditor || isOwner">
-				<template #activator="{ props }">
-					<v-icon-btn text="Create creature" icon="mdi:plus" size="24" v-bind="props" class="inverted"
-						v-tooltip="'Create creature'" />
-				</template>
-				<v-card min-width="300" class="text-center pa-4" title="Create automation">
-					<v-card-actions class="d-flex flex-column align-center justify-center">
-						<v-btn size="x-large" @click="createItem({ name: 'my new name' })">
-							From scratch
-						</v-btn>
-						<div class="d-flex align-center my-4 w-100">
-							<v-divider class="flex-grow-1" />
-							<span class="mx-4 text-medium-emphasis">OR</span>
-							<v-divider class="flex-grow-1" />
-						</div>
+			<v-icon-btn text="Create creature" icon="mdi:plus" size="24"
+				@click="createNewActionOpen = !createNewActionOpen" class="inverted" v-tooltip="'Create creature'" />
 
-					</v-card-actions>
-				</v-card>
-			</DropdownMenu>
 
 			<v-dialog v-if="isOwner" max-width="950">
 				<template #activator="{ props }">
@@ -411,458 +392,139 @@ const getAutomationInformation = (data: AutomationWithType["automation"], key: k
 		</Breadcrumbs>
 		<div class="content">
 			<div v-if="collection">
-				<v-chip-group v-if="collection.tags.length">
-					<v-chip v-for="tag in [...collection.tags].sort()" :key="tag" size="small" variant="tonal">
-						{{ tag }}
-					</v-chip>
-				</v-chip-group>
-				<UserBanner :id="collection.ownerId" class="mt-2 mb-4" />
-				<v-img :src="collection.image" width="200" />
-				<Markdown class="description " :text="collection.description || 'No description set.'" tag="p" />
-				<StatusIcon :icon="collection.status" />
-				<div>{{ items?.length }}<v-icon icon="material-symbols:automation" size="20" /></div>
-				{{ }}
+				<v-card class="pa-2" color="surface-1" elevation="0">
+					<v-card-title class="pb-0">
+						{{ collection.name }}
+					</v-card-title>
+					<v-card-text>
+						<v-row density="compact">
+							<v-col cols="4">
+								<v-row>
+									<v-col class="d-flex justify-start align-center">
+										<UserBanner :id="collection.ownerId" class="mt-2 mb-4" />
 
+									</v-col>
+									<v-col class="d-flex justify-center align-center">
+										<div>
+											{{ items?.length }}
+											<v-icon icon="material-symbols:automation" size="20" />
+										</div>
+									</v-col>
+									<v-col class="d-flex justify-end align-center">
+										<StatusIcon :icon="collection.status" />
+									</v-col>
+								</v-row>
+
+								<v-col cols="12">
+									<v-chip-group v-if="collection.tags.length">
+										<v-chip v-for="tag in [...collection.tags].sort()" :key="tag" size="small"
+											variant="tonal">
+											{{ tag }}
+										</v-chip>
+									</v-chip-group>
+								</v-col>
+
+								<v-col cols="12">
+									<Markdown class="description "
+										:text="collection.description || 'No description set.'" tag="p" />
+
+								</v-col>
+							</v-col>
+							<v-col cols="8">
+								<v-img :src="collection.image" max-height="200" />
+
+							</v-col>
+
+						</v-row>
+
+					</v-card-text>
+				</v-card>
+
+				<v-divider class="my-4" />
 				<v-skeleton-loader type="heading, text, text" v-if="items === null" />
-
-				<v-list v-else>
-					<template v-for="auto, idx in sortAutomations()" :key="idx">
-						<v-list-item :title="auto.name" v-if="filterAutomations(auto)">
-							<v-list-subheader
-								:title="getAutomationInformation(auto.automation, 'activation_type', '0')">
-
-							</v-list-subheader>
-						</v-list-item>
-					</template>
-
-				</v-list>
-
-				<span v-if="items?.length === 0"> No automations in this collection.</span>
-				<!-- <div class="left-side-container">
-					<div class="content-tile header-tile">
-						<h2>{{ collection.name ? collection.name : "..." }}</h2>
-						<Markdown class="description" :class="{ expanded: isExpanded }"
-							:text="collection.description || 'No description set.'" tag="p" />
-						<button v-if="collection.description.length > 0" v-tooltip="'Expand description'"
-							class="expand-btn" aria-label="Expand description" @click="isExpanded = !isExpanded">
-							{{ isExpanded ? "▲" : "▼" }}
-						</button>
-						<hr>
-						<div class="footer" :class="{ 'three-wide': isOwner }">
-							<UserBanner :id="collection.ownerId" />
-							<div v-tooltip.left="collection.status">
-								<StatusIcon :icon="collection.status" />
-							</div>
-							<div>{{ items?.length }}<v-icon icon="mdi:paw" size="20" /></div>
-							<div v-if="!isOwner" role="button" aria-label="Toggle bookmark status" class="bookmark"
-								@click.prevent="toggleBookmark">
-								<span v-if="bookmarked" v-tooltip="'Unbookmark this collection'"
-									class="bookmark-enabled"><v-icon size="20" icon="mdi-star" /></span>
-								<span v-else v-tooltip="'Bookmark this collection'" class="bookmark-disabled"><v-icon
-										size="20" icon="mdi-star" /></span>
-							</div>
-						</div>
-					</div>
-					<v-skeleton-loader type="heading, text, text" v-if="items === null" />
-					<Draggable v-else :list="sortCreatures()" :animation="500" class="tile-container list-tiles"
-						:item-key="getDraggableKey" :disabled="sortMode !== 'Custom'" @change="saveOrder">
-						<template #item="{ element }">
-							<div>
-								{{ element.name }}
-							</div>
+				<v-list v-else v-model:opened="openedGroups">
+					<v-list-group v-for="group in groupedItems" :key="group.type" :value="group.type">
+						<template #activator="{ props }">
+							<v-list-item v-bind="props" :title="group.label"
+								:subtitle="`${group.items.length} action${group.items.length > 1 ? 's' : ''}`" />
 						</template>
-					</Draggable>
 
-					<div v-if="isOwner || isEditor" class="create-tile">
-						<DropdownMenu>
-							<template #activator="{ props }">
-								<v-btn v-bind="props" variant="plain">
-									Add action
-								</v-btn>
+						<v-list-item v-for="item in group.items" :key="item.id">
+							<template #default>
+								<v-list-item-title>
+									{{ item.name }}
+								</v-list-item-title>
+								<v-list-item-subtitle>
+									{{ item.description }}
+								</v-list-item-subtitle>
 							</template>
-							<v-card min-width="300" class="text-center pa-4" title="Create automation">
-								<v-card-actions class="d-flex flex-column align-center justify-center">
-									<v-btn size="x-large" @click="createItem({ name: 'My Action' })">
-										From scratch
-									</v-btn>
-								</v-card-actions>
-							</v-card>
-						</DropdownMenu>
-					</div>
-				</div> -->
+
+
+							<template #append>
+								<v-icon-btn icon="mdi-pencil" variant="text" size="small"
+									@click="$router.push(`/automation/edit/${item.id}`)" />
+								<DropdownMenu>
+									<template #activator="{ props }">
+										<v-icon-btn icon="mdi:trash" v-bind="props" />
+									</template>
+									<v-card min-width="300" class="text-center pb-2">
+										<v-card-text>
+											Are you sure you want to delete <br><b>{{ item.name }}</b>?
+										</v-card-text>
+										<v-card-actions>
+											<v-btn color="red" size="large" @click="deleteItem(item.id)"
+												class="mx-auto">
+												Confirm
+											</v-btn>
+										</v-card-actions>
+									</v-card>
+								</DropdownMenu>
+							</template>
+						</v-list-item>
+					</v-list-group>
+				</v-list>
+				<span v-if="items?.length === 0"> No automations in this collection.</span>
 			</div>
 		</div>
 	</div>
+
+	<v-dialog max-width="750" v-model="createNewActionOpen">
+		<v-card title="Collection Settings" class="pa-4">
+			<v-card-text>
+				<v-row>
+					<v-col>
+						<v-text-field label="Name"
+							:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 3)]"
+							v-model="createOptions.name" />
+
+					</v-col>
+					<v-col>
+						<v-select label="Type" :items="activationTypeOptions" v-model="createOptions.activation_type">
+
+						</v-select>
+					</v-col>
+					<v-col cols="12">
+						<v-textarea label="Description" v-model="createOptions.description"
+							:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]" counter />
+					</v-col>
+				</v-row>
+
+			</v-card-text>
+			<v-card-actions>
+				<v-spacer />
+				<v-btn text="Create" color="success" size="large"
+					@click="createItem({ name: createOptions.name, description: createOptions.description, automation: { _v: 2, activation_type: createOptions.activation_type || 0, name: createOptions.name, automation: [] } }, false); createNewActionOpen = false" />
+				<v-btn text="Cancel" size="large" @click="createNewActionOpen = false" />
+			</v-card-actions>
+		</v-card>
+	</v-dialog>
 </template>
 
-<style lang="less">
-@import url("@/components/FormInputs/styles/number-input.less");
-@import url("@/assets/styles/mixins.less");
-
-.flow-vertically {
-	display: flex;
-	flex-direction: column;
-	gap: 0.3rem;
-	margin: 0.5rem 0;
-
-	label {
-		font-weight: bold;
-		text-decoration: underline;
+<style lang="less" scoped>
+@media screen and (min-width: 1200px) {
+	.content {
+		padding-left: 20rem;
+		padding-right: 20rem;
 	}
-}
-
-.flow-horizontally {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	gap: 1rem;
-}
-
-.two-wide {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	gap: 1rem;
-}
-
-.list-tiles {
-	display: flex;
-	flex-direction: column;
-	gap: 1rem;
-	position: relative;
-	overflow: scroll;
-	max-height: 80vh;
-	overflow-x: clip;
-	padding: 0rem;
-	margin-top: 1rem;
-
-	.content-tile {
-		height: fit-content !important;
-		background: var(--color-surface-1);
-		color: white;
-		padding: 1rem;
-		box-shadow:
-			rgba(0, 0, 0, 0.19) 0px 10px 20px,
-			rgba(0, 0, 0, 0.23) 0px 6px 6px;
-		cursor: pointer;
-		transition: all 1s;
-		transition-timing-function: cubic-bezier(0.06, 0.975, 0.195, 0.985);
-		border-radius: 2px;
-		border-radius: 3px;
-
-		h3 {
-			font-size: 1.5rem;
-		}
-
-		&.creature-tile {
-			display: flex;
-			flex-direction: row;
-			flex-wrap: nowrap;
-			justify-content: space-between;
-
-			.left-side {
-
-				span,
-				p {
-					font-style: italic;
-					font-size: 0.85rem;
-				}
-
-				.cr {
-					color: orangered;
-					width: 3rem;
-					display: inline-block;
-				}
-			}
-
-			.right-side {
-				display: flex;
-				flex-direction: row;
-				gap: 0.5rem;
-
-				a {
-					text-decoration: none;
-				}
-
-				span,
-				button {
-					background: none;
-					border: none;
-					color: orangered;
-					font-size: 1.2rem;
-					display: flex;
-					align-items: center;
-					height: 100%;
-					cursor: pointer;
-
-					svg {
-						color: orangered;
-					}
-				}
-
-				button {
-					.scale-on-hover(1.2);
-
-					&:hover {
-						overflow: visible;
-					}
-				}
-			}
-
-			&:hover {
-				background-color: #484544;
-			}
-		}
-	}
-}
-
-.create-tile {
-	padding-top: 1rem;
-	text-align: center;
-	text-decoration: underline;
-
-	span {
-		cursor: pointer;
-	}
-}
-
-@media screen and (max-width: 842px) {
-	.list-tiles {
-		max-height: 40vh;
-
-		.content-tile {
-			padding: 0.5rem;
-
-			h3 {
-				font-size: 1rem;
-			}
-
-			&.creature-tile {
-				.left-side span {
-					font-size: 0.6rem;
-				}
-
-				.right-side {
-					width: 30%;
-					gap: 0.3rem;
-					justify-content: space-evenly;
-
-					span {
-						font-size: 0.9rem;
-
-						&.cr {
-							width: 4rem;
-							justify-content: right;
-						}
-					}
-				}
-			}
-		}
-	}
-}
-
-.header-tile {
-	background-color: orangered;
-	cursor: unset;
-	margin: 0 0rem 1rem;
-	padding: 1rem;
-	border-radius: 2px;
-	color: black;
-
-	h2 {
-		text-align: center;
-		text-wrap: nowrap;
-		overflow: hidden;
-		max-width: 90vw;
-		color: black;
-		font-weight: bold;
-	}
-
-	.description {
-		max-height: 8rem;
-		font-size: small;
-		overflow-y: hidden;
-		overflow-wrap: anywhere;
-
-		&.expanded {
-			max-height: unset;
-		}
-	}
-
-	.description:not(.expanded) {
-		-webkit-mask-image: linear-gradient(180deg, #000 80%, transparent);
-		mask-image: linear-gradient(180deg, #000 80%, transparent);
-	}
-
-	.footer {
-		display: grid;
-		grid-template-columns: 1fr 1fr 1fr 1fr;
-		font-size: 1rem;
-
-		margin-top: 0.5rem;
-
-		&.three-wide {
-			grid-template-columns: 1fr 1fr 1fr;
-		}
-
-		div {
-			text-align: center;
-		}
-
-		div:first-of-type {
-			text-align: left;
-		}
-
-		div:last-of-type {
-			text-align: right;
-		}
-	}
-}
-
-@media screen and (max-width: 842px) {
-	.header-tile {
-		padding: 0.5rem;
-
-		.description {
-			font-size: xx-small;
-		}
-
-		.footer {
-			font-size: 0.7rem;
-			grid-template-columns: 2fr 1fr 1fr 1fr;
-
-			&.three-wide {
-				grid-template-columns: 2fr 1fr 1fr;
-			}
-		}
-	}
-}
-
-.bestiary {
-	display: grid;
-	gap: 2rem;
-	grid-template-columns: 1fr 1fr;
-}
-
-@media screen and (max-width: 1080px) {
-	.list-tiles {
-		padding: 0;
-
-		.content-tile.creature-tile:hover {
-			background-color: #464343;
-			scale: 1;
-		}
-	}
-
-	.bestiary {
-		grid-template-columns: 1fr;
-	}
-}
-
-.pin-notice,
-.expand-btn {
-	float: right;
-	cursor: pointer;
-}
-
-.unpin-button {
-	text-decoration: underline;
-	cursor: pointer;
-}
-
-.expand-btn {
-	border: none;
-	background: none;
-	color: orangered;
-	font-size: 1.6rem;
-	translate: 0 -20px;
-
-	transition: background-color 0.3s ease-in-out;
-
-	&:hover {
-		background-color: var(--color-surface-0);
-	}
-}
-
-.no-creature-text {
-	font-size: 1.3rem;
-	text-align: center;
-	margin-top: 1rem;
-}
-
-.bookmark {
-	cursor: pointer;
-	font-size: 1.2rem;
-	color: goldenrod;
-
-	.bookmark-disabled {
-		filter: grayscale(100%);
-		transition: filter 0.3s ease;
-
-		&:hover {
-			filter: grayscale(0%);
-		}
-	}
-
-	.bookmark-enabled {
-		filter: grayscale(0%);
-		transition: filter 0.3s ease;
-
-		&:hover {
-			filter: grayscale(100%);
-		}
-	}
-}
-
-.slide-fade-enter-active {
-	transition: all 0.3s ease-out;
-}
-
-.slide-fade-leave-active {
-	transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
-}
-
-.fade-enter-from,
-.fade-leave-to {
-	transform: translateY(-10px);
-	opacity: 0;
-}
-
-
-.fade-enter-active {
-	transition: all 0.2s ease-out;
-}
-
-.fade-leave-active {
-	transition: all 0.2s ease-out;
-}
-
-.slide-fade-enter-from,
-.slide-fade-leave-to {
-	opacity: 0;
-}
-
-.editor-block {
-	margin-top: 1rem;
-
-	.editor-list p {
-		display: flex;
-		gap: 1rem;
-		margin: 1rem 0;
-	}
-}
-
-.warning {
-	color: var(--color-destructive);
-	margin-top: 0.5rem;
-}
-
-.editor-container {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-}
-
-.v-select.drop-up.vs--open {
-	border-radius: 0 0 4px 4px;
-	border-top-color: transparent;
-	border-bottom: 1px solid var(--vs-border-color);
 }
 </style>
