@@ -118,26 +118,5 @@ watch(debouncedSearch, async () => searchBestiaries());
 				it.</span>
 		</div>
 	</div>
-	<div v-if="totalPages > 0" class="page-nav__container">
-		<v-btn v-tooltip="'Decrease page number'" aria-label="Decrease page number"
-			@click="selectedPage = Math.max(1, selectedPage - 1)" variant="text">
-			-
-		</v-btn>
-		<span>{{ selectedPage }}/{{ totalPages }}</span>
-		<v-btn v-tooltip="'Increase page number'" aria-label="Increase page number"
-			@click="selectedPage = Math.min(totalPages, selectedPage + 1)" variant="text">
-			+
-		</v-btn>
-	</div>
+	<v-pagination v-model="selectedPage" :length="totalPages" class="mb-4" />
 </template>
-
-<style scoped lang="less">
-.page-nav__container {
-	display: flex;
-	justify-content: center;
-	gap: 1rem;
-	align-items: center;
-	font-size: 1.3rem;
-	padding-top: 1rem;
-}
-</style>

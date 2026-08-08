@@ -122,4 +122,6 @@ watch(debouncedSearch, async () => searchCollections());
                 it.</span>
         </div>
     </div>
+    <v-pagination v-model="selectedPage" :length="totalPages" class="mb-4" />
+
 </template>
