@@ -1,14 +1,14 @@
 import fetch from "node-fetch";
 import { app } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
-import { requireUser } from "../main/login";
 import "@/utilities/env";
+import { AttackModel } from "~/shared";
 
-const API = "https://api.avrae.io/characters";
+const API = "https://api.avrae.io";
 
-app.get("/api/character/list", requireUser, async (req, res) => {
+app.get("/api/character/list", async (req, res) => {
 	try {
-		const result = await fetch(`${API}`, {
+		const result = await fetch(`${API}/characters`, {
 			method: "GET",
 			headers: {
 				"Content-Type": "application/json",
@@ -26,31 +26,40 @@ app.get("/api/character/list", requireUser, async (req, res) => {
 	}
 });
 
-app.post("/api/character/:upstream/attacks/add/", requireUser, async (req, res) => {
-	const automationList = req.body.data;
+const mergeByName = <T extends AttackModel>(firstList: T[], secondList: T[]): T[] => {
+	const secondNames = new Set(secondList.map((item) => item.name))
+	const filteredFirstList = firstList.filter((item) => !secondNames.has(item.name))
+	return [...filteredFirstList, ...secondList]
+}
+
+app.post("/api/character/:upstream/attacks/add", async (req, res) => {
+	const automationList = req.body.data as AttackModel[];
 	const upstream = req.params.upstream;
 
 	if (!upstream)
 		return res.status(400).json({ error: "No character ID given." });
 	try {
-		const currentAttacks = await fetch(`${API}/${upstream}/attacks`, {
+		const currentAttacks = await fetch(`${API}/characters/${upstream}/attacks`, {
 			method: "GET",
 			headers: {
 				"Content-Type": "application/json",
 				"Authorization": req.headers["avrae-token"] || ""
 			}
 		}).then(response => response.json());
+
 		if (currentAttacks?.error)
 			return res.status(500).json({ error: currentAttacks.error });
 
-		const putAttacks = await fetch(`${API}/${upstream}/attacks`, {
+		const attacks = mergeByName(currentAttacks, automationList)
+		const putAttacks = await fetch(`${API}/characters/${upstream}/attacks`, {
 			method: "PUT",
 			headers: {
 				"Content-Type": "application/json",
 				"Authorization": req.headers["avrae-token"] || ""
 			},
-			body: JSON.stringify(currentAttacks.concat(automationList))
+			body: JSON.stringify(attacks)
 		}).then(response => response.json());
+
 		if (putAttacks?.error)
 			return res.status(500).json({ error: putAttacks.error });
 		return res.json(putAttacks);
@@ -61,14 +70,14 @@ app.post("/api/character/:upstream/attacks/add/", requireUser, async (req, res) 
 	}
 });
 
-app.post("/api/character/:upstream/attacks/set/", requireUser, async (req, res) => {
+app.post("/api/character/:upstream/attacks/set", async (req, res) => {
 	const automationList = req.body.data;
 	const upstream = req.params.upstream;
 
 	if (!upstream)
 		return res.status(400).json({ error: "No character ID given." });
 	try {
-		const putAttacks = await fetch(`${API}/${upstream}/attacks`, {
+		const putAttacks = await fetch(`${API}/characters/${upstream}/attacks`, {
 			method: "PUT",
 			headers: {
 				"Content-Type": "application/json",
@@ -86,16 +95,33 @@ app.post("/api/character/:upstream/attacks/set/", requireUser, async (req, res) 
 	}
 });
 
+const GVAR_CREATED_REGEX = /^Gvar ([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}) created\.$/
 app.post("/api/character/makeattackgvar", async (req, res) => {
 	const automationList = req.body.data;
+
 	if (!automationList)
 		return res.status(400).json({ error: "No automation given." });
 
-	await fetch(`${API}/customizations/gvars`, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-			"Authorization": process.env.DUMMY_AVRAE_TOKEN || ""
-		},
-	});
+	try {
+		const createGvar = await fetch(`${API}/customizations/gvars`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				"Authorization": process.env.DUMMY_AVRAE_TOKEN || ""
+			},
+			body: JSON.stringify({ value: automationList })
+		}).then(response => response.text());
+
+		const match = createGvar.match(GVAR_CREATED_REGEX)
+		if (match) {
+			return res.json({ gvarId: match[1] })
+		}
+		else {
+			return res.status(500).json({ error: createGvar })
+		}
+	}
+	catch (err) {
+		log.log("critical", err)
+		return res.status(500).json({ error: "Unknown server error occured, please try again." });
+	}
 });

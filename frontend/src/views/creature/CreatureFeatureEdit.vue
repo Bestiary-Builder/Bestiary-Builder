@@ -12,6 +12,7 @@ import { useFetch } from "@/utils/utils";
 import { parseDescIntoAutomation } from "~/shared";
 import { useHotkey } from "vuetify";
 import { useRecentPages } from "@/utils/app/useRecentPages";
+import ImportToCharacter from "@/components/Characters/ImportToCharacter.vue";
 
 const $router = useRouter();
 const $route = useRoute();
@@ -421,6 +422,7 @@ provide("setActionDescription", setDesc);
 		<v-icon-btn size="24" icon="mdi:code-block-braces" text="Change editor"
 			@click="EditAutomationRef?.toggleEditor()" v-tooltip="'Change editor'" />
 		<ImportAutomationUtil @load-feature="(feature, apiPath) => loadFeature(feature, apiPath)" />
+		<ImportToCharacter :automation="data?.features[type][aid].automation ?? null" />
 		<v-icon-btn v-if="data && store.isMobile" icon="mdi:delete" text="Clear automation"
 			@click="data.features[type][aid].automation = {}" size="24" v-tooltip="'Clear automation'" />
 		<v-icon-btn v-if="data && store.isMobile" icon="mdi:content-copy" text="Copy automation"

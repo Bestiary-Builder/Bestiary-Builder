@@ -12,6 +12,7 @@ import { creatureTypes } from "@/utils/constants";
 import { store } from "@/utils/store";
 import { useCollection } from "@/components/Bestiary/useCollection";
 import { ACTION_TYPE_MAP, getActionTypeLabel } from "./utils";
+import ImportToCharacter from "@/components/Characters/ImportToCharacter.vue";
 
 const {
 	collection,
@@ -461,8 +462,9 @@ const activationTypeOptions = computed(() => {
 
 
 							<template #append>
-								<v-icon-btn icon="mdi-pencil" variant="text" size="small"
+								<v-icon-btn icon="mdi-pencil" variant="text"
 									@click="$router.push(`/automation/edit/${item.id}`)" />
+								<ImportToCharacter :automation="item.automation" />
 								<DropdownMenu>
 									<template #activator="{ props }">
 										<v-icon-btn icon="mdi:trash" v-bind="props" />

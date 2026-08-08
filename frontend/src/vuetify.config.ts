@@ -3,6 +3,7 @@ import "vuetify/styles";
 // import "@mdi/font/css/materialdesignicons.css";
 import iconifyAdapter from './utils/app/icon';
 import BestiaryBuilderLogo from "@/assets/svg/logo.svg"
+import AvraeLogo from "@/assets/svg/Avrae_Logo.svg"
 
 import { createVuetify } from "vuetify";
 import * as components from "vuetify/components";
@@ -78,7 +79,8 @@ export const vuetify = createVuetify({
             iconify: iconifyAdapter,
         },
         aliases: {
-            "bestiaryBuilder": BestiaryBuilderLogo
+            "bestiaryBuilder": BestiaryBuilderLogo,
+            "avrae": AvraeLogo
         }
     },
 });

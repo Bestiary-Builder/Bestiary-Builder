@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AttackModel, AutomationCollection, AutomationCollectionExtended, AutomationWithType, BestiaryExtended, CreatureWithStats, FeatureEntity, Features, Statblock } from "~/shared";
+import type { AttackModel, AutomationCollectionExtended, AutomationWithType, FeatureEntity, Features } from "~/shared";
 import { useLocalStorage } from "@vueuse/core";
 import { computed, nextTick, onMounted, onUnmounted, provide, ref, useTemplateRef, watch } from "vue";
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
@@ -12,6 +12,7 @@ import { useFetch } from "@/utils/utils";
 import { parseDescIntoAutomation } from "~/shared";
 import { useHotkey } from "vuetify";
 import { useRecentPages } from "@/utils/app/useRecentPages";
+import ImportToCharacter from "@/components/Characters/ImportToCharacter.vue";
 
 const $router = useRouter();
 const $route = useRoute();
@@ -371,6 +372,12 @@ const setDesc = (setDesc: string) => {
 
 provide("setActionName", setName);
 provide("setActionDescription", setDesc);
+
+const makeGvar = async () => {
+    console.log("run this")
+    const { success, data: aAdata, error } = await useFetch("/api/character/makeattackgvar", "POST", data.value?.automation)
+    console.log(success, aAdata, error)
+}
 </script>
 
 <template>
@@ -396,6 +403,7 @@ provide("setActionDescription", setDesc);
         <v-icon-btn size="24" icon="mdi:code-block-braces" text="Change editor"
             @click="EditAutomationRef?.toggleEditor()" v-tooltip="'Change editor'" />
         <ImportAutomationUtil @load-feature="(feature, apiPath) => loadFeature(feature, apiPath)" />
+        <ImportToCharacter :automation="data?.automation || null" />
         <v-icon-btn v-if="data && store.isMobile" icon="mdi:delete" text="Clear automation"
             @click="data.automation = null" size="24" v-tooltip="'Clear automation'" />
         <v-icon-btn v-if="data && store.isMobile" icon="mdi:content-copy" text="Copy automation"

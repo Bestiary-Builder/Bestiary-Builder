@@ -4,6 +4,7 @@ import { useToast } from "@/utils/app/toast";
 import { useFetch } from "@/utils/utils";
 
 const { addToast, updateToast } = useToast()
+
 export type AvraeCharacter = Record<string, unknown> & {
 	overrides: {
 		attacks: AttackModel[];
@@ -27,6 +28,7 @@ export const getAvraeCharacters = async () => {
 		});
 	}
 	else {
+		console.log(error)
 		if (error === "invalid credentials")
 			updateToast(toasterId, { text: "No Avrae Token Set", color: "error" });
 		else

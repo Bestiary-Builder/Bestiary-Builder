@@ -5,6 +5,8 @@ import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 
+const isOpen = ref(false);
+
 const { addToast } = useToast()
 const emit = defineEmits<{
 	(e: "loadFeature", feature: FeatureEntity, apiPath: AutomationTypes): void;
@@ -67,17 +69,18 @@ const selectAndLoad = async (apiPath: AutomationTypes, name: string, _id: Id | n
 	}
 
 	emit("loadFeature", feature, apiPath);
+	isOpen.value = false
 };
 </script>
 
 <template>
 
-	<DropdownMenu>
+	<DropdownMenu v-model="isOpen">
 		<template #activator="{ props }">
 			<v-icon-btn icon="mdi:database" text="Import Action" size="24" v-bind="props"
 				v-tooltip="'Import Feature'" />
 		</template>
-		<v-card width="500" mi class="text-center pb-2">
+		<v-card width="500" class="text-center pa-4">
 			<v-card-text>
 
 				<v-autocomplete :items="loadedAutomation.srdFeatures" label="Import SRD Feature"
