@@ -413,6 +413,5 @@ const importCreature = async (creature: Statblock) => {
 	</div>
 </template>
 <style lang="less">
-@import url("@/assets/styles/mixins.less");
 @import url("@/components/StatblockEditor/styles/statblock-editor.less");
 </style>

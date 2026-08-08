@@ -363,7 +363,6 @@ const pinCreature = (creature: Statblock) => {
 
 <style lang="less">
 @import url("@/components/FormInputs/styles/number-input.less");
-@import url("@/assets/styles/mixins.less");
 
 .flow-vertically {
 	display: flex;
@@ -461,14 +460,6 @@ const pinCreature = (creature: Statblock) => {
 
 					svg {
 						color: orangered;
-					}
-				}
-
-				button {
-					.scale-on-hover(1.2);
-
-					&:hover {
-						overflow: visible;
 					}
 				}
 			}
