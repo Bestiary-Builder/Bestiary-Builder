@@ -80,6 +80,10 @@ export async function getFrontendHtml(route: routes.Route, req: Request) {
 			}
 		}
 	}
+	// Sanitize title and description
+	title = title.replace(/"/g, "&quot;").trim();
+	description = description?.replace(/"/g, "&quot;").trim();
+
 	// Create metatags
 	const metatags = [
 		`<title>${title}</title>`,
