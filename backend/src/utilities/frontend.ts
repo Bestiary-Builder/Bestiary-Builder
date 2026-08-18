@@ -25,9 +25,7 @@ export async function getFrontendHtml(route: routes.Route, req: Request) {
 				}
 				else {
 					title = `${bestiary.name} | Bestiary Builder`;
-					let desc = bestiary.description?.length > 0 ? bestiary.description : "No description set.";
-					desc += `\n${bestiary.creatureCount} creature${bestiary.creatureCount > 1 ? "s" : ""} created by ${bestiary.owner.username}.`;
-					description = desc;
+					description = `${bestiary.creatureCount} creature${bestiary.creatureCount !== 1 ? "s" : ""} created by ${bestiary.owner.username}.\n${bestiary.description?.length > 0 ? bestiary.description : "No description set."}`;
 					image = bestiary.image?.length > 0 ? bestiary.image : null;
 				}
 			}
@@ -41,9 +39,7 @@ export async function getFrontendHtml(route: routes.Route, req: Request) {
 				}
 				else {
 					title = `${creature.stats.description.name} | Bestiary Builder`;
-					let desc = creature.stats.description.description?.length > 0 ? creature.stats.description.description : "No description set.";
-					desc += `\nFrom bestiary ${creature.bestiary.name} created by ${creature.bestiary.owner.username}.`;
-					description = desc;
+					description = `From bestiary ${creature.bestiary.name} created by ${creature.bestiary.owner.username}.\n${creature.stats.description.description?.length > 0 ? creature.stats.description.description : "No description set."}`;
 					image = creature.stats.description.image?.length > 0 ? creature.stats.description.image : null;
 				}
 			}
@@ -57,9 +53,7 @@ export async function getFrontendHtml(route: routes.Route, req: Request) {
 				}
 				else {
 					title = `${armory.name} | Bestiary Builder`;
-					let desc = armory.description?.length > 0 ? armory.description : "No description set.";
-					desc += `\n${armory.automationCount} automation${armory.automationCount > 1 ? "s" : ""} created by${armory.owner.username}.`;
-					description = desc;
+					description = `${armory.automationCount} automation${armory.automationCount !== 1 ? "s" : ""} created by${armory.owner.username}.\n${armory.description?.length > 0 ? armory.description : "No description set."}`;
 					image = armory.image?.length > 0 ? armory.image : null;
 				}
 			}
@@ -73,9 +67,7 @@ export async function getFrontendHtml(route: routes.Route, req: Request) {
 				}
 				else {
 					title = `${automation.name} | Bestiary Builder`;
-					let desc = automation.description?.length > 0 ? automation.description : "No description set.";
-					desc += `\nFrom bestiary ${automation.collection.name} created by ${automation.collection.owner.username}.`;
-					description = desc;
+					description = `From collection ${automation.collection.name} created by ${automation.collection.owner.username}.\n${automation.description?.length > 0 ? automation.description : "No description set."}`;
 				}
 			}
 		}
