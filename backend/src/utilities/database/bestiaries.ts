@@ -1,4 +1,4 @@
-import type { Id, User } from "~/shared";
+import type { BestiaryWithCount, Id, User } from "~/shared";
 import type { BestiaryCreateInput, BestiaryUpdateInput } from "~/shared/src/prisma-types";
 import { v4 as uuid } from "uuid";
 import { log } from "@/utilities/logger";
@@ -30,6 +30,32 @@ export async function getBestiary(id: Id, includeCreatures = false) {
 	return await withDatabaseFallback(async () => {
 		log.log("database", `Reading bestiary with the id ${id}.`);
 		return await getPrismaClient().bestiary.findUnique({ where: { id }, include: includeCreatures ? { ...defaultIncludes, creatures: includeCreatures } : defaultIncludes });
+	}, null);
+}
+export async function getBestiaryMetaData(id: Id) {
+	if (!id)
+		return null;
+	return await withDatabaseFallback(async () => {
+		log.log("database", `Reading bestiary metadata with the id ${id}.`);
+		const result = await getPrismaClient().bestiary.findUnique({
+			where: { id },
+			include: {
+				_count: {
+					select: {
+						creatures: true
+					}
+				},
+				owner: {
+					select: {
+						username: true,
+					}
+				}
+			}
+		});
+
+		if (!result)
+			return null;
+		return { ...result, creatureCount: result?._count.creatures ?? 0 } as Omit<typeof result, "_count"> & { creatureCount: number };
 	}, null);
 }
 export async function updateBestiary(data: BestiaryUpdateInput, id: Id) {

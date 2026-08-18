@@ -87,13 +87,13 @@ export const routes: Route[] = [
 		path: "/armory/edit/:id",
 		name: "Edit Automation Collection",
 		file: "armory/ArmoryEdit.vue",
-		meta: { navbar: false, loggedIn: true, dynamic: false },
+		meta: { navbar: false, loggedIn: true, dynamic: true },
 	},
 	{
 		path: "/armory/view/:id",
 		name: "View Automation Collection",
 		file: "armory/ArmoryView.vue",
-		meta: { navbar: false, loggedIn: false, dynamic: false },
+		meta: { navbar: false, loggedIn: false, dynamic: true },
 	},
 	{
 		path: "/automation/edit/:id",

@@ -19,6 +19,25 @@ export async function getAutomation(id: Id) {
 		return (await getPrismaClient().automation.findUnique({ where: { id } }));
 	}, null);
 }
+export async function getAutomationMetaData(id: Id) {
+	return await withDatabaseFallback(async () => {
+		log.log("database", `Reading automation metadata with the id ${id}.`);
+		return (await getPrismaClient().automation.findUnique({
+			where: { id },
+			include: {
+				collection: {
+					include: {
+						owner: {
+							select: {
+								username: true,
+							}
+						}
+					}
+				}
+			}
+		}));
+	}, null);
+}
 export async function createAutomation(data: CreateAutomationData, collectionId: Id) {
 	return await withDatabaseFallback(async () => {
 		log.log("database", `Creating new automation`);
@@ -94,6 +113,30 @@ export async function getAutomationCollection(id: Id) {
 			where: { id },
 			include: collectionIncludes
 		});
+	}, null);
+}
+
+export async function getAutomationCollectionMetaData(id: Id) {
+	return await withDatabaseFallback(async () => {
+		const result = await getPrismaClient().automationCollection.findUnique({
+			where: { id },
+			include: {
+				_count: {
+					select: {
+						automations: true
+					}
+				},
+				owner: {
+					select: {
+						username: true,
+					}
+				},
+			}
+		});
+
+		if (!result)
+			return null;
+		return { ...result, automationCount: result._count.automations } as Omit<typeof result, "_count"> & { automationCount: number };
 	}, null);
 }
 

@@ -11,6 +11,25 @@ export async function getCreature(id: Id) {
 		return await getPrismaClient().creature.findUnique({ where: { id } });
 	}, null);
 }
+export async function getCreatureMetaData(id: Id) {
+	return await withDatabaseFallback(async () => {
+		log.log("database", `Getting creature metadata with the id ${id}.`);
+		return await getPrismaClient().creature.findUnique({
+			where: { id },
+			include: {
+				bestiary: {
+					include: {
+						owner: {
+							select: {
+								username: true,
+							}
+						}
+					}
+				}
+			}
+		});
+	}, null);
+}
 export async function createCreature(data: Creature) {
 	return await withDatabaseFallback(async () => {
 		const creature: CreatureCreateInput = { stats: data.stats, lastUpdated: new Date(Date.now()), index: data.index, bestiary: { connect: { id: data.bestiaryId } } };
