@@ -5,6 +5,7 @@ import { Icon } from "@iconify/vue";
 import { inject } from "vue";
 import EffectAdder from "./EffectAdder.vue";
 import TreeNode from "./TreeNode.vue";
+import { VueDraggable } from "vue-draggable-plus";
 
 const { data, depth = 0, parentType = "root", rootType = "root", context = ["root"], noListAttack = false } = defineProps<{ data: AttackModel | AttackModel[]; depth?: number; parentType?: string; rootType?: "root" | "button" | "attack"; context?: string[]; noListAttack?: boolean }>();
 
@@ -74,12 +75,12 @@ const showControls = inject<Ref<boolean>>("showControls")
 						</DropdownMenu>
 					</span>
 				</p>
-				<TransitionGroup name="fade">
-					<div v-for="(node, idx) in auto.automation ?? []" :key="(node as any)">
-						<TreeNode :data="node" :depth="depth" :parent-type="parentType"
-							:context="[index.toString(), ...context, idx.toString()]" />
-					</div>
-				</TransitionGroup>
+				<VueDraggable v-model="auto.automation" group="g1" handle=".drag-handle" ghost-class="drag-ghost"
+					class="draggable-list" :animation="200" :swap-threshold="0.65" :invert-swap="true"
+					:inverted-swap-threshold="0.65">
+					<TreeNode v-for="(node, idx) in auto.automation ?? []" :key="(node as any)" :data="node"
+						:depth="depth" :parent-type="parentType" :context="[...context, idx.toString()]" />
+				</VueDraggable>
 				<p :style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`"
 					@mouseenter="hoveredEffectContext = [index.toString(), ...context]"
 					@mouseleave="hoveredEffectContext = null">
@@ -119,12 +120,12 @@ const showControls = inject<Ref<boolean>>("showControls")
 					</DropdownMenu>
 				</span>
 			</p>
-			<TransitionGroup name="fade">
-				<div v-for="(node, idx) in data.automation ?? []" :key="(node as any)">
-					<TreeNode :data="node" :depth="depth" :parent-type="parentType"
-						:context="[...context, idx.toString()]" />
-				</div>
-			</TransitionGroup>
+			<VueDraggable v-model="data.automation" group="g1" handle=".drag-handle" ghost-class="drag-ghost"
+				class="draggable-list" :animation="200" :swap-threshold="0.65" :invert-swap="true"
+				:inverted-swap-threshold="0.65">
+				<TreeNode v-for="(node, idx) in data.automation ?? []" :key="(node as any)" :data="node" :depth="depth"
+					:parent-type="parentType" :context="[...context, idx.toString()]" />
+			</VueDraggable>
 			<p :style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`"
 				@mouseenter="hoveredEffectContext = context" @mouseleave="hoveredEffectContext = null">
 				<EffectAdder :context="context" />
@@ -139,7 +140,7 @@ const showControls = inject<Ref<boolean>>("showControls")
 </template>
 
 <style scoped lang="less">
-div:not(.delete-attack-button, .v-card, .v-card-text, .v-card-actions) {
+div:not(.delete-attack-button, .v-card, .v-card-text, .v-card-actions, .drag-ghost) {
 	background: repeating-linear-gradient(to right,
 			grey,
 			grey 1px,

@@ -485,10 +485,5 @@ watchDebounced(width, async () => {
 	.margin {
 		width: 0px;
 	}
-
-	.monaco-scrollable-element.editor-scrollable {
-		left: 20px !important;
-	}
-
 }
 </style>

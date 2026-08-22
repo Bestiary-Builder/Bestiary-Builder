@@ -3,7 +3,7 @@
 	cursor: pointer;
 	transition: color 150ms ease-out;
 	user-select: none;
-	padding-bottom: 3px;
+	padding-bottom: 4px;
 
 	&:hover {
 		color: color-mix(in srgb, currentColor, white) !important;
@@ -63,4 +63,34 @@
 .no-focus-outline:focus,
 .no-focus-outline:focus-visible {
 	outline: none;
+}
+
+.drag-handle {
+	cursor: grab;
+}
+
+.drag-ghost {
+	opacity: 1;
+	outline: 1px dotted white;
+	position: relative;
+
+	& * p,
+	& * .add-effect {
+		// background-color: 0.7;
+	}
+
+
+}
+
+.drag-ghost::before {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.2);
+	content: '';
+}
+
+.tree-row {
+	margin-left: calc(var(--depth, 0) * 15px);
 }

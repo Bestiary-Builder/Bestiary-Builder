@@ -53,10 +53,7 @@ const firstLetters = computed(() => {
 	<div>
 		<div class="character">
 			<div class="image-container">
-				<img v-if="characterImage" :src="characterImage" class="image">
-				<div v-else class="image">
-					{{ firstLetters }}
-				</div>
+				<img :src="characterImage" class="image" :alt="firstLetters">
 			</div>
 			<hr>
 			<div class="meta">
@@ -80,8 +77,8 @@ const firstLetters = computed(() => {
 	font-family: "Scala Sans Offc";
 	src: url("../Statblock/styles/ScalaSans.woff2") format("woff2");
 }
+
 .character {
-	border-radius: 0.5rem;
 	background-color: var(--color-surface-0);
 	transition: scale ease-in-out 0.2s;
 
@@ -98,12 +95,23 @@ const firstLetters = computed(() => {
 			top: 0;
 			width: 100%;
 			height: 100%;
-			border-radius: 4px;
 			object-fit: cover;
 			display: flex;
 			align-items: center;
 			justify-content: center;
 			font-size: xx-large;
+			background-color: transparent;
+
+			&::after {
+				content: attr(alt);
+				position: absolute;
+				inset: 0;
+				display: grid;
+				place-items: center;
+				font-size: xx-large;
+				border: unset;
+				background: var(--color-surface-0);
+			}
 		}
 	}
 

@@ -131,7 +131,7 @@ const showControls = inject<Ref<boolean>>("showControls")
 <template>
 	<DropdownMenu v-if="displayNames && showControls" location="bottom center" v-model="isOpen">
 		<template #activator="{ props }">
-			<div role="button" class="container" v-bind="props">
+			<div role="button" class="container add-effect" v-bind="props">
 				<span class="icon">
 					<Icon icon="material-symbols:add-circle" width="1em" color="orangered" />
 				</span><span>{{ automation === null ? 'Create Automation' : 'Add Effect' }}</span>
