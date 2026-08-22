@@ -30,9 +30,12 @@ onMounted(async () => {
 			your user settings
 		</RouterLink> for how to enable this.
 	</div>
-	<div v-else class="content">
+	<div class="content">
 		<div class="character-container">
 			<CharacterTile v-for="char, idx of characters" :key="idx" :character="char" />
+		</div>
+		<div v-if="characters === null">
+			Loading...
 		</div>
 	</div>
 </template>

@@ -181,7 +181,7 @@ async function exportBestiary(asFile: boolean) {
 					2
 				)
 			],
-			"items.txt",
+			`${collection.value?.name || ''} from Bestiary Builder.txt`,
 			{
 				type: "text/plain"
 			}
@@ -215,7 +215,7 @@ async function exportBestiary(asFile: boolean) {
 
 const importFields = reactive({
 	critterDbId: "",
-	bestiaryBuilderJson: ""
+	bestiaryBuilderJson: null
 })
 
 async function importBestiaryFromCritterDB() {
@@ -279,40 +279,49 @@ async function importBestiaryFromCritterDB() {
 
 async function importCreaturesFromBestiaryBuilder() {
 	let creaturesToImport;
-	if (importFields.bestiaryBuilderJson.length === 0) {
+	console.log(importFields.bestiaryBuilderJson)
+	if (!importFields.bestiaryBuilderJson) {
 		addToast("No JSON given", { color: "error" });
 		return;
 	}
 	try {
-		creaturesToImport = JSON.parse(importFields.bestiaryBuilderJson);
+		const reader = new FileReader()
+		reader.onload = async () => {
+			console.log(reader.result)
+			creaturesToImport = JSON.parse(reader.result as string || '');
+
+			if (!Array.isArray(creaturesToImport))
+				creaturesToImport = [creaturesToImport];
+
+			addToast("Importing creatures has started. This may take a while.");
+			const { success, data, error } = await useFetch<{ error?: string; ignoredCreatures: { creature: string; error: string }[] }>(`/api/bestiary/${collection.value?.id.toString()}/addcreatures`, "POST", creaturesToImport);
+
+			if (!success) {
+				notices.value = {};
+				addToast(error, { color: "error" });
+			}
+			else if (data.error) {
+				addToast("The import was completed with errors.", { color: "error" });
+				notices.value.Errors = data.error;
+				for (const error of data.ignoredCreatures)
+					notices.value[error.creature] = error.error;
+			}
+			else {
+				addToast("Importing has finished!", { color: "success" });
+				void getUmami()?.track("Import bestiary from BestiaryBuilder");
+			}
+
+			await getCollection();
+		}
+		reader.readAsText(importFields.bestiaryBuilderJson)
+
 	}
 	catch (e) {
 		addToast("Something is wrong with the format of your JSON", { color: "error" });
 		return;
 	}
 
-	if (!Array.isArray(creaturesToImport))
-		creaturesToImport = [creaturesToImport];
 
-	addToast("Importing creatures has started. This may take a while.");
-	const { success, data, error } = await useFetch<{ error?: string; ignoredCreatures: { creature: string; error: string }[] }>(`/api/bestiary/${collection.value?.id.toString()}/addcreatures`, "POST", creaturesToImport);
-
-	if (!success) {
-		notices.value = {};
-		addToast(error, { color: "error" });
-	}
-	else if (data.error) {
-		addToast("The import was completed with errors.", { color: "error" });
-		notices.value.Errors = data.error;
-		for (const error of data.ignoredCreatures)
-			notices.value[error.creature] = error.error;
-	}
-	else {
-		addToast("Importing has finished!", { color: "success" });
-		void getUmami()?.track("Import bestiary from BestiaryBuilder");
-	}
-
-	await getCollection();
 }
 
 
@@ -538,8 +547,9 @@ const pinCreature = (creature: Statblock) => {
 								<v-text-field v-model="importFields.critterDbId" label="CritterDB Bestiary link"
 									hint="Make sure the Bestiary is public or has link-sharing enabled"
 									persistent-hint />
-								<v-text-field v-model="importFields.bestiaryBuilderJson" label="Bestiary Builder JSON"
-									hint="JSON as text gotten from clicking export elsewhere on BB" persistent-hint />
+								<v-file-input v-model="importFields.bestiaryBuilderJson" label="Bestiary Builder JSON"
+									hint="JSON (.json/.txt) describing a bestiary gotten from clicking export elsewhere on BB"
+									persistent-hint accept=".txt,.json" />
 								<v-btn size="large" @click="importBestiaryFromCritterDB()">
 									Import CritterDB
 								</v-btn>

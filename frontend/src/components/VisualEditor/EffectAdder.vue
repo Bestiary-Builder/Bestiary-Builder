@@ -4,10 +4,8 @@ import type { AttackInteraction, AttackModel, ButtonInteraction, EffectWithTarge
 import { Icon } from "@iconify/vue";
 import { computed, inject, ref } from "vue";
 import { useRoute } from "vue-router";
-import { useToast } from "@/utils/app/toast";
 import { activation_type, defaultNodes, displayNames } from "./util";
 
-const { addToast } = useToast();
 const isOpen = ref(false)
 const props = defineProps<{ context: string[]; name?: string }>();
 const $route = useRoute();
@@ -64,7 +62,7 @@ const availableNodes = computed(() => {
 
 const automation = inject<Ref<null | AttackModel | AttackModel[]>>("automation");
 const currentEffect = inject<Ref<EffectWithTarget | ButtonInteraction | AttackInteraction>>("currentEffect");
-const addAndSelect = async (node: string, pasteCopied = false) => {
+const addAndSelect = async (node: string) => {
 	// traverse through the tree.
 	if (!automation)
 		return;
@@ -102,18 +100,7 @@ const addAndSelect = async (node: string, pasteCopied = false) => {
 		}
 	}
 	try {
-		if (pasteCopied) {
-			if (copiedEffect) {
-				const { isTargetContext } = computedContext.value;
-				if (!isTargetContext && ["error", "attack", "save", "damage", "temphp", "check"].includes(copiedEffect.value?.type || "error")) {
-					addToast(`Effect of type \`${copiedEffect.value?.type}\` cannot be placed outside a Target Effect.`, { color: "warn" });
-					return;
-				}
-
-				tree.push(JSON.parse(JSON.stringify(copiedEffect.value)));
-			}
-		}
-		else { tree.push(JSON.parse(JSON.stringify(defaultNodes[node]))); }
+		tree.push(JSON.parse(JSON.stringify(defaultNodes[node])));
 		currentEffect!.value = tree[tree.length - 1];
 		isOpen.value = false
 	}
@@ -123,7 +110,6 @@ const addAndSelect = async (node: string, pasteCopied = false) => {
 
 };
 
-const copiedEffect = inject<Ref<EffectWithTarget | null>>("copiedEffect");
 
 const showControls = inject<Ref<boolean>>("showControls")
 </script>
@@ -146,12 +132,6 @@ const showControls = inject<Ref<boolean>>("showControls")
 							{{ displayNames[node]?.label }}
 						</v-btn>
 
-					</v-col>
-					<v-col cols="12">
-						<v-btn v-if="copiedEffect"" @click=" addAndSelect('', true)" prepend-icon="ooui:copy-ltr"
-							size="small">
-							Paste Cut/Copied Effect
-						</v-btn>
 					</v-col>
 				</v-row>
 			</v-card-actions>

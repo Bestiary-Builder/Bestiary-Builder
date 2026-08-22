@@ -111,3 +111,15 @@ export const activation_type: activation_types = {
 	lair: 11,
 	regional: 8
 };
+
+export const draggingProps = {
+	'group': 'tree-group',
+	'handle': ".drag-handle",
+	'ghost-class': "drag-ghost",
+	'class': "draggable-list",
+	'animation': 200,
+	'swap-treshold': 0.65,
+	'invert-swap': true,
+	'inverted-swap-treshold': 0.65,
+	'clone': () => { }
+}

@@ -7,7 +7,7 @@ import { capitalizeFirstLetter } from "~/shared";
 import EffectAdder from "./EffectAdder.vue";
 import NodeHeader from "./Nodes/shared/NodeHeader.vue";
 import TreeRoot from "./TreeRoot.vue";
-import { deepKeys } from "./util";
+import { deepKeys, draggingProps } from "./util";
 import { mergeProps } from "vue"
 import { VueDraggable } from 'vue-draggable-plus'
 
@@ -104,7 +104,7 @@ const additionalText = computed(() => {
 		if (!target)
 			return "";
 
-		return target.toString().substring(0, 99).trim();
+		return target.toString().substring(0, 99).trim().replace("caster.name", "Caster").replace("target.name", "Target");
 	}
 	return "";
 });
@@ -122,8 +122,8 @@ const showControls = inject<Ref<boolean>>("showControls")
 			<span class="tree-buttons" v-if="showControls">
 				<v-tooltip text="Drag to move this node">
 					<template #activator="{ props }">
-						<Icon icon="mdi:drag" inline width=".75em" class="no-focus-outline drag-handle" v-bind="props"
-							@click.stop />
+						<Icon icon="material-symbols:drag-indicator" inline width=".75em"
+							class="no-focus-outline drag-handle" v-bind="props" @click.stop />
 					</template>
 				</v-tooltip>
 
@@ -166,9 +166,7 @@ const showControls = inject<Ref<boolean>>("showControls")
 						</span>
 					</p>
 					<template v-if="!branchesCollapsed.includes(key)">
-						<VueDraggable v-model="(data as any)[key]" :group="EFFECT_GROUP" handle=".drag-handle"
-							ghost-class="drag-ghost" class="draggable-list" :animation="200" :swap-threshold="0.65"
-							:invert-swap="true" :inverted-swap-threshold="0.65">
+						<VueDraggable v-model="(data as any)[key]" v-bind="draggingProps">
 							<TreeNode v-for="(childNode, index) in effect" :key="childNode as any"
 								:data="childNode as any" :depth="depth + (!['root', 'effects'].includes(key) ? 2 : 1)"
 								:parent-type="key" :context="[...context, `$${selfType}`, key, index.toString()]" />
@@ -180,9 +178,7 @@ const showControls = inject<Ref<boolean>>("showControls")
 					</template>
 				</template>
 				<template v-if="(key as EffectKey) === 'buttons'">
-					<VueDraggable v-model="(data as any).buttons" group="buttons" ghost-class="drag-ghost"
-						class="draggable-list" handle=".drag-handle" :animation="200" :swap-threshold="0.65"
-						:invert-swap="true" :inverted-swap-threshold="0.65">
+					<VueDraggable v-model="(data as any).buttons" v-bind="{ ...draggingProps, group: 'buttons' }">
 						<div v-for="(button, index) in effect" :key="index" class="button-item">
 							<p :style="`margin-left: ${(depth + 2) * 15}px;`" class="tree-row"
 								@click="currentEffect = (button as any as ButtonInteraction); currentContext = [...context, 'buttons', index.toString()]">
@@ -196,8 +192,7 @@ const showControls = inject<Ref<boolean>>("showControls")
 					</VueDraggable>
 				</template>
 				<template v-if="(key as EffectKey) === 'attacks'">
-					<VueDraggable v-model="(data as any).attacks" group="attacks" ghost-class="drag-ghost"
-						class="draggable-list" handle=".drag-handle">
+					<VueDraggable v-model="(data as any).attacks" v-bind="{ ...draggingProps, group: 'attacks' }">
 						<div v-for="(attack, index) in effect" :key="index" class="attack-item">
 							<p :style="`margin-left: ${(depth + 2) * 15}px;`" class="tree-row"
 								@click="currentEffect = (attack as any as AttackInteraction); currentContext = [...context, 'attacks', index.toString()]">

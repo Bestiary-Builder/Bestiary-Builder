@@ -157,4 +157,7 @@ const isVisualEditor = ref(store.user?.preferredEditor === "Visual");
 			</div>
 		</div>
 	</div>
+	<div v-else class="content">
+		Loading...
+	</div>
 </template>
