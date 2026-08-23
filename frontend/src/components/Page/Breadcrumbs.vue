@@ -3,6 +3,7 @@ import { useElementSize, useShare } from "@vueuse/core";
 import { isClient } from "@vueuse/shared";
 import { computed, ref, watchEffect } from "vue";
 import { useToast } from "@/utils/app/toast";
+import { store } from "@/utils/store";
 
 const { isLessWide = false, routes } = defineProps<{ routes: links; isLessWide?: boolean }>();
 
@@ -47,9 +48,11 @@ watchEffect(() => {
 
 <template>
 	<Teleport to="#navbar .v-toolbar__prepend">
-		<v-breadcrumbs :items="breadcrumbItems" divider=">" class="left-buttons">
+		<v-breadcrumbs :items="store.isMobile ? breadcrumbItems.slice(-2) : breadcrumbItems"
+			:divider="store.isMobile ? '/' : '>'" class="left-buttons">
 			<template #item="{ item }">
-				<v-breadcrumbs-item :disabled="item.disabled" :style="`opacity: ${item.disabled ? 1 : ''}`">
+				<v-breadcrumbs-item :disabled="item.disabled" :style="`opacity: ${item.disabled ? 1 : ''}`"
+					density="compact">
 					<RouterLink v-if="!item.disabled" :to="item.to || '/'" class="crumb-link">
 						{{ item.title }}
 					</RouterLink>
@@ -128,18 +131,26 @@ watchEffect(() => {
 
 
 @media (max-width: 842px) {
-	.breadcrumbs__container {
-		padding: 0.5rem;
+	.v-breadcrumbs {
+		padding: 0px 6px;
+		margin: 0;
 	}
 
-	.breadcrumbs__links {
-		font-size: 0.8rem;
-		display: flex;
-		align-items: center;
+	.crumb-link,
+	.crumb-current {
+		font-size: 0.7rem;
+		line-height: 0.7rem;
 
-		.current-page {
-			font-size: 0.8rem;
-		}
+	}
+
+	.left-buttons {
+		margin-left: 0;
+	}
+
+	.right-buttons {
+		margin-right: 5px;
+		gap: 0.5rem;
+		scale: 0.8;
 	}
 }
 </style>
