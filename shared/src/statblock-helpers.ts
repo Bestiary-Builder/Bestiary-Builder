@@ -308,6 +308,8 @@ export function displayInnateCasting(data: Statblock, v2024: boolean = false): s
 			.sort()
 			.join(", ")}`
 		);
+	} else {
+		listOutput.unshift('')
 	}
 	return output + listOutput.join("\n");
 }
