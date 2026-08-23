@@ -44,7 +44,7 @@ provide("showControls", showControls)
 	<section class="two-wide uneven">
 		<div class="tree">
 			<SectionHeader title="Effect Tree" />
-			<TreeRoot v-if="automation" :data="automation" :depth="-1" :no-list-attack="noListAttack" />
+			<TreeRoot v-if="automation" :data="automation" :depth="0" :no-list-attack="noListAttack" />
 			<p v-else class="container" style="padding: 6px">
 				<EffectAdder :context="['root']" :name="name" />
 			</p>

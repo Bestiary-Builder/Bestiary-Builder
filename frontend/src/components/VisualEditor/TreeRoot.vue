@@ -75,17 +75,15 @@ const showControls = inject<Ref<boolean>>("showControls")
 						</DropdownMenu>
 					</span>
 				</p>
-				<VueDraggable v-model="auto.automation" v-bind="draggingProps">
+				<VueDraggable v-model="auto.automation" v-bind="draggingProps" :style="`--depth: ${depth}`">
 					<TreeNode v-for="(node, idx) in auto.automation ?? []" :key="(node as any)" :data="node"
 						:depth="depth" :parent-type="parentType" :context="[...context, idx.toString()]" />
-				</VueDraggable>
-				<p :style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`">
 					<EffectAdder :context="[index.toString(), ...context]" />
-				</p>
+
+				</VueDraggable>
 			</template>
-			<p v-if="rootType === 'root' && showControls"
-				:style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`" class="add"
-				@click="addListAttack()">
+			<p v-if="!noListAttack && rootType === 'root' && showControls" :style="`--depth: ${depth + 1}`"
+				class="tree-row" @click="addListAttack()">
 				Add Attack to this feature
 			</p>
 		</template>
@@ -116,16 +114,13 @@ const showControls = inject<Ref<boolean>>("showControls")
 					</DropdownMenu>
 				</span>
 			</p>
-			<VueDraggable v-model="data.automation" v-bind="draggingProps">
+			<VueDraggable v-model="data.automation" v-bind="draggingProps" :style="`--depth: ${depth}`">
 				<TreeNode v-for="(node, idx) in data.automation ?? []" :key="(node as any)" :data="node" :depth="depth"
 					:parent-type="parentType" :context="[...context, idx.toString()]" />
+				<EffectAdder :context="context" :depth="depth" />
 			</VueDraggable>
-			<p :style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`">
-				<EffectAdder :context="context" />
-			</p>
-			<p v-if="!noListAttack && rootType === 'root' && showControls"
-				:style="`background-color: var(--color-surface-0); margin-left: ${(depth + 1) * 15}px`" class="add"
-				@click="makeListAttack()">
+			<p v-if="!noListAttack && rootType === 'root' && showControls" :style="`--depth: ${depth + 1}`"
+				class="tree-row" @click="makeListAttack()">
 				Add Attack to this feature
 			</p>
 		</template>
@@ -133,20 +128,6 @@ const showControls = inject<Ref<boolean>>("showControls")
 </template>
 
 <style scoped lang="less">
-div:not(.delete-attack-button, .v-card, .v-card-text, .v-card-actions, .drag-ghost) {
-	background: repeating-linear-gradient(to right,
-			grey,
-			grey 1px,
-			var(--color-surface-0) 1px,
-			var(--color-surface-0) 15px);
-	background-position: -9px;
-}
-
-p,
-div:not(.delete-attack-button) {
-	font-size: 14px;
-}
-
 .container:first-of-type {
 	padding: 0.4rem;
 	background-color: var(--color-surface-0);

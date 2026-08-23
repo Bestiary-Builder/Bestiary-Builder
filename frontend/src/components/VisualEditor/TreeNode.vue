@@ -13,10 +13,6 @@ import { VueDraggable } from 'vue-draggable-plus'
 
 const props = defineProps<{ data: EffectWithTarget; depth: number; parentType: string; context: string[] }>();
 
-// Shared group name: any array of sibling effect nodes anywhere in the tree
-// uses this group, so nodes can be dragged across branches/depths.
-const EFFECT_GROUP = "g1";
-
 const selfType = computed<string>(() => {
 	return props.data.type;
 });
@@ -89,8 +85,6 @@ const nodeListEffectIsPartOf = computed(() => {
 	return tree;
 });
 
-
-
 const additionalText = computed(() => {
 	if (selfType.value === "target") {
 		const target = (props.data as Target).target || "";
@@ -110,14 +104,13 @@ const additionalText = computed(() => {
 });
 
 
-
 const showControls = inject<Ref<boolean>>("showControls")
 </script>
 
 <template>
 	<div class="tree-node">
-		<p class="drag-area tree-row" tag="p" :style="`margin-left: ${(depth + 1) * 15}px; color: grey;`"
-			@click="currentEffect = data; currentContext = context">
+		<p class="drag-area tree-row" style="color: grey;" @click="currentEffect = data; currentContext = context"
+			:style="`--depth: ${depth}`">
 			<NodeHeader :type="selfType" :additional-text="additionalText" :is-current="isCurrentSelectedContext" />
 			<span class="tree-buttons" v-if="showControls">
 				<v-tooltip text="Drag to move this node">
@@ -155,9 +148,8 @@ const showControls = inject<Ref<boolean>>("showControls")
 			<template v-for="effect, key of data" :key="key">
 				<template v-if="deepKeys.includes(key) && selfType !== 'ieffect2'">
 					<!--- E.g. hit, Miss, on False text -->
-					<p v-if="!['root', 'effects'].includes(key)" :key="key"
-						:style="`margin-left: ${(depth + 2) * 15}px;`" class="tree-row section-node"
-						@click.stop="toggleBranch(key)">
+					<p v-if="!['root', 'effects'].includes(key)" :key="key" :style="`--depth: ${depth + 1}`"
+						class="tree-row section-node" @click.stop="toggleBranch(key)">
 						<NodeHeader :type="key" />
 						<span v-if="['onTrue', 'onFalse', 'hit', 'miss', 'fail', 'success'].includes(key)"
 							class="collapse-button">
@@ -166,21 +158,22 @@ const showControls = inject<Ref<boolean>>("showControls")
 						</span>
 					</p>
 					<template v-if="!branchesCollapsed.includes(key)">
-						<VueDraggable v-model="(data as any)[key]" v-bind="draggingProps">
+						<VueDraggable v-model="(data as any)[key]" v-bind="draggingProps"
+							:style="`--depth: ${depth + (!['root', 'effects'].includes(key) ? 2 : 1)}`">
 							<TreeNode v-for="(childNode, index) in effect" :key="childNode as any"
 								:data="childNode as any" :depth="depth + (!['root', 'effects'].includes(key) ? 2 : 1)"
 								:parent-type="key" :context="[...context, `$${selfType}`, key, index.toString()]" />
+							<EffectAdder :context="[...context, `$${selfType}`, key]"
+								:depth="depth + (!['root', 'effects'].includes(key) ? 2 : 1)" />
 						</VueDraggable>
-						<p :style="`margin-left: ${(depth + (!['root', 'effects'].includes(key) ? 3 : 2)) * 15}px;`"
-							class="tree-row">
-							<EffectAdder :context="[...context, `$${selfType}`, key]" />
-						</p>
+
 					</template>
 				</template>
 				<template v-if="(key as EffectKey) === 'buttons'">
-					<VueDraggable v-model="(data as any).buttons" v-bind="{ ...draggingProps, group: 'buttons' }">
+					<VueDraggable v-model="(data as any).buttons" v-bind="{ ...draggingProps, group: 'buttons' }"
+						:style="`--depth: ${depth + 1}`">
 						<div v-for="(button, index) in effect" :key="index" class="button-item">
-							<p :style="`margin-left: ${(depth + 2) * 15}px;`" class="tree-row"
+							<p class="tree-row" :style="`--depth: ${depth + 1}`"
 								@click="currentEffect = (button as any as ButtonInteraction); currentContext = [...context, 'buttons', index.toString()]">
 								<NodeHeader :type="key"
 									:additional-text="(button as any as ButtonInteraction).label.trim()"
@@ -192,9 +185,10 @@ const showControls = inject<Ref<boolean>>("showControls")
 					</VueDraggable>
 				</template>
 				<template v-if="(key as EffectKey) === 'attacks'">
-					<VueDraggable v-model="(data as any).attacks" v-bind="{ ...draggingProps, group: 'attacks' }">
+					<VueDraggable v-model="(data as any).attacks" v-bind="{ ...draggingProps, group: 'attacks' }"
+						:style="`--depth: ${depth + 1}`">
 						<div v-for="(attack, index) in effect" :key="index" class="attack-item">
-							<p :style="`margin-left: ${(depth + 2) * 15}px;`" class="tree-row"
+							<p class="tree-row" :style="`--depth: ${depth + 1}`"
 								@click="currentEffect = (attack as any as AttackInteraction); currentContext = [...context, 'attacks', index.toString()]">
 								<NodeHeader :type="key"
 									:additional-text="(attack as any as AttackInteraction).attack.name.trim()"

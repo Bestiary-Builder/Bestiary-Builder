@@ -3,7 +3,7 @@
 	cursor: pointer;
 	transition: color 150ms ease-out;
 	user-select: none;
-	padding-bottom: 4px;
+	font-size: 14px;
 
 	&:hover {
 		color: color-mix(in srgb, currentColor, white) !important;
@@ -70,25 +70,24 @@
 }
 
 .drag-ghost {
-	opacity: 1;
-	outline: 1px dotted white;
-	position: relative;
-
-	& * p,
-	& * .add-effect {
-		// background-color: 0.7;
-	}
-}
-
-.drag-ghost::before {
-	position: absolute;
-	inset: 0;
+	outline: 1px dashed white;
+	padding-left: calc(var(--depth, 0) * 15px);
 	width: 100%;
-	height: 100%;
-	background-color: rgba(0, 0, 0, 0.2);
-	content: '';
 }
 
 .tree-row {
-	margin-left: calc(var(--depth, 0) * 15px);
+	&::before {
+		content: '';
+		width: calc(var(--depth, 0) * 15px);
+		height: calc(1rem + 4.2px);
+		display: inline-block;
+		vertical-align: middle;
+
+		background: repeating-linear-gradient(to right,
+				grey,
+				grey 1px,
+				var(--color-surface-0) 1px,
+				var(--color-surface-0) 15px);
+		background-position: -9px;
+	}
 }

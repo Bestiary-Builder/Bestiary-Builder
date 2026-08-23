@@ -7,7 +7,7 @@ import { useRoute } from "vue-router";
 import { activation_type, defaultNodes, displayNames } from "./util";
 
 const isOpen = ref(false)
-const props = defineProps<{ context: string[]; name?: string }>();
+const props = defineProps<{ context: string[]; name?: string, depth?: number }>();
 const $route = useRoute();
 const type = $route.params.type as keyof Features;
 const computedContext = computed(() => {
@@ -117,11 +117,11 @@ const showControls = inject<Ref<boolean>>("showControls")
 <template>
 	<DropdownMenu v-if="displayNames && showControls" location="bottom center" v-model="isOpen">
 		<template #activator="{ props }">
-			<div role="button" class="container add-effect" v-bind="props">
+			<p class="tree-row" v-bind="props" :style="`--depth: ${depth}`">
 				<span class="icon">
 					<Icon icon="material-symbols:add-circle" width="1em" color="orangered" />
 				</span><span>{{ automation === null ? 'Create Automation' : 'Add Effect' }}</span>
-			</div>
+			</p>
 		</template>
 		<v-card max-width="300" subtitle="Choose an effect to add." class="pa-4">
 			<v-card-actions>
@@ -140,17 +140,6 @@ const showControls = inject<Ref<boolean>>("showControls")
 </template>
 
 <style scoped lang="less">
-.container {
-	background-color: var(--color-surface-0);
-	cursor: pointer;
-	color: rgb(168, 168, 168);
-	transition: all 0.1s ease;
-
-	&:hover {
-		color: white;
-	}
-}
-
 button {
 	width: 100%;
 	color: orangered;
