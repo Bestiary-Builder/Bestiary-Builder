@@ -259,3 +259,8 @@
 	text-indent: -10px;
 	margin-left: 10px
 }
+
+// within markdown scope, `˚` is used to mark features with automation. This icon is not rendered in printed contexts
+:global(.toPrint .feature-description * em > strong > code) {
+	display: none;
+}

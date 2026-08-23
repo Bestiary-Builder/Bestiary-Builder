@@ -222,7 +222,7 @@ const render = (text: string, inline = false) => {
 
 const renderFeature = (feature: FeatureEntity) => {
 	let output = ''
-	output += `***${feature.name}${feature.automation ? '˚' : ''}.*** `
+	output += `***${feature.name}${feature.automation ? '`˚`' : ''}.*** `
 	output += feature.description
 	return render(output)
 }

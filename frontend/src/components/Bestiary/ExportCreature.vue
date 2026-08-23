@@ -78,7 +78,6 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 	el.style = `width: ${type === "2x1 wide" ? "1200" : "800"}px; column-count: ${type === "1x1" ? "1" : "2"};`;
 	el.classList.add("toPrint");
 
-	removeCharFromElement(el, '˚')
 	const canvas = await html2canvas(el, { scale: 2 });
 	const image = canvas.toDataURL("image/jpeg");
 	const link = document.createElement("a");
@@ -92,25 +91,6 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 	removeToast(toastId)
 	void getUmami()?.track("Export statblock to image");
 };
-
-const removeCharFromElement = (element: HTMLElement, charToRemove: string) => {
-	const walker = document.createTreeWalker(
-		element,
-		NodeFilter.SHOW_TEXT,
-		null
-	);
-
-	const textNodes = [];
-	let node;
-	while ((node = walker.nextNode())) {
-		textNodes.push(node);
-	}
-
-	textNodes.forEach((textNode) => {
-		textNode.textContent = textNode.textContent?.split(charToRemove).join('') || '';
-	});
-};
-
 </script>
 
 <template>
