@@ -201,7 +201,8 @@ const currentDocu = computed(() => docu.value[currentContext.value]);
         </div>
     </div>
     <div v-else style="margin-top: 2rem">
-        <VisualEditor ref="VisualEditorRef" v-model="visualEditorModel" :name="name || ''" no-list-attack />
+        <VisualEditor ref="VisualEditorRef" v-model="visualEditorModel" :name="name || ''"
+            :no-list-attack="noListAttack" />
     </div>
 </template>
 
