@@ -405,7 +405,7 @@ const importCreature = async (creature: Statblock) => {
 					<v-col :cols="store.isMobile ? 12 : 6">
 						<v-skeleton-loader type="heading, divider, text, text, sentences, heading, text"
 							v-if="rawInfo === null" />
-						<StatblockRenderer v-else id="statblock" :data="data" />
+						<StatblockRenderer v-else :data="data" />
 					</v-col>
 				</v-row>
 			</v-container>
