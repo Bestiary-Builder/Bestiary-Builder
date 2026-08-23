@@ -62,8 +62,23 @@ const createNewFeature = (type: keyof Features) => {
 								<div>
 									<v-icon-btn icon="mdi:pencil" text="Edit this feature"
 										@click="openFeature(`${rawInfo?.id}/${fType}/${index}`)" size="20" />
-									<v-icon-btn icon="mdi:delete" text="Delete this feature"
-										@click="deleteFeature(fType, index)" size="20" />
+									<DropdownMenu>
+										<template #activator="{ props }">
+											<v-icon-btn icon="mdi:trash" text="Delete this feature" v-bind="props"
+												size="20" />
+										</template>
+										<v-card min-width="300" class="text-center pb-2">
+											<v-card-text>
+												Are you sure you want to delete <br><b>{{ element.name }}</b>?
+											</v-card-text>
+											<v-card-actions>
+												<v-btn size="large" color="red" class="mx-auto w-100"
+													@click="deleteFeature(fType, index)">
+													Delete
+												</v-btn>
+											</v-card-actions>
+										</v-card>
+									</DropdownMenu>
 								</div>
 							</td>
 						</tr>
