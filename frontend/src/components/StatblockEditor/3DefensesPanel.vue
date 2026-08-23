@@ -7,47 +7,47 @@ const { data } = defineProps<{ data: Statblock }>();
 </script>
 
 <template>
-	<div
-		id="tabpanel-4" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0"
-		aria-labelledby="tab-4"
-	>
-		<div class="editor-field__container three-wide">
-			<v-number-input v-model="data.defenses.hp.numOfHitDie" label="Hit Die Number" :min="0" />
-			<v-number-input v-model="data.defenses.hp.sizeOfHitDie" label="Hit Die Size" :min="1" :step="2" />
-			<v-number-input v-model="data.defenses.hp.override" label="HP Override" :min="0" clearable />
-		</div>
-		<div class="editor-field__container two-wide">
-			<v-number-input v-model="data.defenses.ac.ac" label="Armor Class" :min="0" />
-			<v-text-field v-model="data.defenses.ac.acSource" label="Armor source" />
-		</div>
+	<div id="tabpanel-4" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0"
+		aria-labelledby="tab-4">
+		<v-row class="mt-4">
+			<v-col>
+				<v-number-input v-model="data.defenses.hp.numOfHitDie" label="Hit Die Number" :min="0" />
+			</v-col>
+			<v-col>
+				<v-number-input v-model="data.defenses.hp.sizeOfHitDie" label="Hit Die Size" :min="1" :step="2" />
+			</v-col>
+			<v-col>
+				<v-number-input v-model="data.defenses.hp.override" label="HP Override" :min="0" clearable />
+			</v-col>
+		</v-row>
+		<v-row class="mt-4">
+			<v-col>
+				<v-number-input v-model="data.defenses.ac.ac" label="Armor Class" :min="0" />
+			</v-col>
+			<v-col>
+				<v-text-field v-model="data.defenses.ac.acSource" label="Armor source" />
 
+			</v-col>
+		</v-row>
 		<SectionHeader title="Resistances" />
-		<div class="editor-field__container two-wide">
-			<div>
-				<v-select
-					v-model="data.defenses.vulnerabilities" label="Vulnerabilities" multiple chips closable-chips
-					:items="resistanceList"
-				/>
-			</div>
-			<div>
-				<v-select
-					v-model="data.defenses.resistances" label="Resistances" multiple chips closable-chips
-					:items="resistanceList"
-				/>
-			</div>
-			<div>
-				<v-select
-					v-model="data.defenses.immunities" label="Immunities" multiple chips closable-chips
-					:items="resistanceList"
-				/>
-			</div>
-			<div>
-				<v-select
-					v-model="data.defenses.conditionImmunities" label="Condition Immunities" multiple chips closable-chips
-					:items="conditionList"
-				/>
-			</div>
-		</div>
+		<v-row class="mt-4">
+			<v-col cols="6">
+				<v-combobox v-model="data.defenses.vulnerabilities" label="Vulnerabilities" multiple chips
+					closable-chips :items="resistanceList" hint="Supports custom input" persistent-hint />
+			</v-col>
+			<v-col cols="6">
+				<v-combobox v-model="data.defenses.resistances" label="Resistances" multiple chips closable-chips
+					:items="resistanceList" hint="Supports custom input" persistent-hint />
+			</v-col>
+			<v-col cols="6">
+				<v-combobox v-model="data.defenses.immunities" label="Immunities" multiple chips closable-chips
+					:items="resistanceList" hint="Supports custom input" persistent-hint />
+			</v-col>
+			<v-col cols="6">
+				<v-combobox v-model="data.defenses.conditionImmunities" label="Condition Immunities" multiple chips
+					closable-chips :items="conditionList" hint="Supports custom input" persistent-hint />
+			</v-col>
+		</v-row>
 	</div>
 </template>
 

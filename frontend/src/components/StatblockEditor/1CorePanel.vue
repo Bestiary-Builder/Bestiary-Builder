@@ -189,7 +189,7 @@ const addNewSense = (newSenseName: string) => {
 		<div class="grid-two mt-4">
 			<div>
 				<v-combobox v-model="data.core.languages" multiple chips closable-chips label="Languages"
-					:items="languages" />
+					:items="languages" hint="Supports custom languages" persistent-hint />
 			</div>
 			<div>
 				<v-number-input v-model="data.misc.telepathy" label="Telepathy" :min="0" :step="5" />
