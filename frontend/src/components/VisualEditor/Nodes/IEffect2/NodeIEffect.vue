@@ -106,12 +106,13 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 <template>
 	<template v-if="currentEffect">
 		<SectionHeader title="Initiative Effect" />
-		<div class="two-wide">
-			<div>
+		<v-row>
+			<v-col cols="6">
 				<v-text-field v-model="currentEffect.name" label="Name" :rules="[rules.required()]"
 					hint="AnnotatedString" />
-			</div>
-		</div>
+			</v-col>
+		</v-row>
+
 		<SectionHeader title="Duration Options" />
 		<div class="grid-two">
 			<div>
@@ -128,13 +129,51 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 				<div v-if="getInputType(key) !== 'list'">
 					<v-text-field :id="key" v-model="(currentEffect as any).effects[key]"
 						:label="getEffectData(key)?.label || ''"
-						:hint="getInputType(key) === 'annotatedstring' ? 'AnnotatedString' : 'IntExpression'" />
+						:hint="getInputType(key) === 'annotatedstring' ? 'AnnotatedString' : 'IntExpression'">
+						<template #append>
+							<DropdownMenu>
+								<template #activator="{ props }">
+									<v-icon-btn icon="mdi:delete" label="Delete passive effect" v-bind="props" />
+								</template>
+								<v-card min-width="300" class="text-center pb-2">
+									<v-card-text>
+										Are you sure you want to delete<br> <b>{{ getEffectData(key)?.label }}</b>?
+									</v-card-text>
+									<v-card-actions>
+										<v-btn size="large" color="red" class="w-100"
+											@click="delete currentEffect.effects![key]">
+											Delete
+										</v-btn>
+									</v-card-actions>
+								</v-card>
+							</DropdownMenu>
+						</template>
+					</v-text-field>
 				</div>
 				<div v-else>
 					<v-combobox v-model="effectValueFor(key).value" :label="getEffectData(key)?.label || ''"
 						:items="getEffectData(key)?.defaultOptions" item-title="label" item-value="value"
 						:multiple="getEffectData(key)?.isList" :chips="getEffectData(key)?.isList"
-						:closable-chips="getEffectData(key)?.isList" variant="solo-filled" />
+						:closable-chips="getEffectData(key)?.isList" variant="solo-filled">
+						<template #append>
+							<DropdownMenu>
+								<template #activator="{ props }">
+									<v-icon-btn icon="mdi:delete" label="Delete passive effect" v-bind="props" />
+								</template>
+								<v-card min-width="300" class="text-center pb-2">
+									<v-card-text>
+										Are you sure you want to delete<br> <b>{{ getEffectData(key)?.label }}</b>?
+									</v-card-text>
+									<v-card-actions>
+										<v-btn size="large" color="red" class="w-100"
+											@click="delete currentEffect.effects![key]">
+											Delete
+										</v-btn>
+									</v-card-actions>
+								</v-card>
+							</DropdownMenu>
+						</template>
+					</v-combobox>
 				</div>
 			</div>
 		</div>
@@ -170,6 +209,8 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 			<v-checkbox v-model="currentEffect.stacking" label="Ticks on end of turn." hide-details density="compact" />
 			<v-checkbox v-model="currentEffect.target_self" label="Target Self" hide-details density="compact" />
 			<v-checkbox v-model="currentEffect.hidden" label="Hidden effect" hide-details density="compact" />
+			<v-checkbox label="Stacking" v-model="currentEffect.stacking" hide-details density="compact" />
+
 		</div>
 	</template>
 </template>
