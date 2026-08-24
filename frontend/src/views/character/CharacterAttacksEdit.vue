@@ -110,9 +110,9 @@ const isVisualEditor = ref(store.user?.preferredEditor === "Visual");
 	]">
 		<v-icon-btn icon="mdi:content-save" text="Save attacks" :class="{ inverted: !isSavingAttacks }"
 			@click="saveAttacks" size="24" :loading="isSavingAttacks" v-tooltip="'Save attacks (CTRL+S)'" />
+		<v-icon-btn icon="mdi:plus" text="Add attack" @click="addAttack" size="24" v-tooltip="'Add attack'" />
 		<v-icon-btn size="24" icon="mdi:code-block-braces" text="Change editor"
 			@click="EditAutomationRef?.toggleEditor()" v-tooltip="'Change editor'" />
-		<v-icon-btn icon="mdi:plus" text="Add attack" @click="addAttack" size="24" v-tooltip="'Add attack'" />
 		<ImportAutomationUtil @load-feature="(feature: FeatureEntity) => loadFeature(feature)" />
 	</Breadcrumbs>
 	<div v-if="!AvraeToken" class="content">
