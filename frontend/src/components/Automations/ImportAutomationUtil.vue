@@ -38,14 +38,12 @@ const loadImportedAutomation = async (apiPath: string, saveTo: keyof LoadedAutom
 	else {
 		loadedAutomation.value[saveTo] = [];
 		addToast(error, { color: "error" });
-		;
 	}
 };
 
 onMounted(async () => {
 	if (store.user?.SRDVersion === "SRD_2024")
 		await loadImportedAutomation("srd-features/2024/list", "srdFeatures");
-
 	else
 		await loadImportedAutomation("srd-features/2014/list", "srdFeatures");
 

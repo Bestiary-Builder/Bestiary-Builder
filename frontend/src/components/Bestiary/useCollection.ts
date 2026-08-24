@@ -1,5 +1,5 @@
 // types/collection.ts
-import type { Automation, AutomationCollectionResponse, AutomationWithType, BestiaryResponse, BestiaryStatus, CreatureWithStats, Statblock, User } from "~/shared";
+import type { AutomationCollectionResponse, AutomationWithType, BestiaryResponse, CreatureWithStats, User } from "~/shared";
 import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
