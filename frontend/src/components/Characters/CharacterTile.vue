@@ -50,23 +50,24 @@ const firstLetters = computed(() => {
 </script>
 
 <template>
-	<div>
+	<div class="character-container">
 		<div class="character">
 			<div class="image-container">
 				<img :src="characterImage" class="image" :alt="firstLetters">
 			</div>
-			<hr>
+			<v-divider thickness="2" />
+
 			<div class="meta">
 				<h2> {{ character.name }} </h2>
 				<i> {{ characterClasses }} </i>
-				<div class="collection-footer">
-					<RouterLink :to="`/characters/${character.upstream}`">
-						<Icon inline icon="material-symbols:swords" />Edit attacks
-					</RouterLink>
-					<a :href="getUpstreamURL(character.upstream)" target="_blank">View sheet
-						<Icon inline icon="uil:book-open" />
-					</a>
-				</div>
+			</div>
+			<div class="collection-footer">
+				<RouterLink :to="`/characters/${character.upstream}`">
+					<Icon inline icon="material-symbols:swords" />Edit attacks
+				</RouterLink>
+				<a :href="getUpstreamURL(character.upstream)" target="_blank">View sheet
+					<Icon inline icon="uil:book-open" />
+				</a>
 			</div>
 		</div>
 	</div>
@@ -78,7 +79,14 @@ const firstLetters = computed(() => {
 	src: url("../Statblock/styles/ScalaSans.woff2") format("woff2");
 }
 
+.character-container {
+	height: 100%;
+}
+
 .character {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
 	background-color: var(--color-surface-0);
 	transition: scale ease-in-out 0.2s;
 
@@ -137,15 +145,21 @@ const firstLetters = computed(() => {
 			margin: 0.5rem 0;
 			font-size: smaller;
 		}
+	}
 
-		.collection-footer {
-			display: flex;
-			justify-content: space-between;
-			font-size: smaller;
+	.collection-footer {
+		margin-top: auto;
+		display: flex;
+		justify-content: space-between;
+		font-size: smaller;
+		padding: 0.25rem 0.5rem 0.75rem;
 
-			svg {
-				translate: 0 3px;
-			}
+		svg {
+			translate: 0 3px;
+		}
+
+		a {
+			font-weight: bold;
 		}
 	}
 }

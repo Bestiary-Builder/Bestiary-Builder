@@ -45,9 +45,5 @@ onMounted(async () => {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
 	grid-gap: 1rem;
-
-	&>a {
-		text-decoration: none;
-	}
 }
 </style>
