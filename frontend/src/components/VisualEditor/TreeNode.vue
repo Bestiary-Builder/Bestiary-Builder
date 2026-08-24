@@ -154,7 +154,7 @@ const showControls = inject<Ref<boolean>>("showControls")
 						<span v-if="['onTrue', 'onFalse', 'hit', 'miss', 'fail', 'success'].includes(key)"
 							class="collapse-button">
 							<Icon icon="solar:alt-arrow-right-bold" inline width=".75em"
-								:rotate="branchesCollapsed.includes(key) ? 0 : 45" />
+								:rotate="branchesCollapsed.includes(key) ? 0 : 45" class="ml-1" />
 						</span>
 					</p>
 					<template v-if="!branchesCollapsed.includes(key)">

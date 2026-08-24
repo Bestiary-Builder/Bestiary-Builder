@@ -82,8 +82,8 @@ const showControls = inject<Ref<boolean>>("showControls")
 
 				</VueDraggable>
 			</template>
-			<p v-if="!noListAttack && rootType === 'root' && showControls" :style="`--depth: ${depth + 1}`"
-				class="tree-row" @click="addListAttack()">
+			<p v-if="!noListAttack && rootType === 'root' && showControls" style="--depth: 0" class="tree-row"
+				@click="addListAttack()">
 				Add Attack to this feature
 			</p>
 		</template>
@@ -119,8 +119,8 @@ const showControls = inject<Ref<boolean>>("showControls")
 					:parent-type="parentType" :context="[...context, idx.toString()]" />
 				<EffectAdder :context="context" :depth="depth" />
 			</VueDraggable>
-			<p v-if="!noListAttack && rootType === 'root' && showControls" :style="`--depth: ${depth + 1}`"
-				class="tree-row" @click="makeListAttack()">
+			<p v-if="!noListAttack && rootType === 'root' && showControls" style="--depth: 0" class="tree-row"
+				@click="makeListAttack()">
 				Add Attack to this feature
 			</p>
 		</template>

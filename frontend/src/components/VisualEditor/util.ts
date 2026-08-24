@@ -19,7 +19,7 @@ export const displayNames: Record<string, { label: string; icon: string }> = {
 	ieffect2: { label: "Init Effect", icon: "streamline-sharp:magic-wand-2-remix" },
 	counter: { label: "Use Counter", icon: "material-symbols:123" },
 	remove_ieffect: { label: "Remove Ieffect", icon: "material-symbols:delete-sharp" },
-	attacks: { label: "Action", icon: "" },
+	attacks: { label: "Action", icon: "mdi:sword" },
 	buttons: { label: "Button", icon: "material-symbols:joystick" },
 	save: { label: "Saving Throw", icon: "fa6-solid:recycle" },
 	temphp: { label: "Temp HP", icon: "material-symbols:shield-with-heart" },
