@@ -9,7 +9,7 @@ body .v-card .stat-block.MonsterManual {
 	border-radius: 0.5rem;
 	color: #4d1e20;
 
-	.stat-block__name-container {
+	.stat-block--name-container {
 		color: #4d1e20;
 		border-color: #4d1e20;
 		margin-bottom: 0.1rem;
@@ -18,7 +18,7 @@ body .v-card .stat-block.MonsterManual {
 	.feature-container {
 		color: black;
 
-		.feature-container__title {
+		.feature-container--title {
 			color: #4d1e20;
 			border-color: #4d1e20;
 			margin-bottom: 0.3rem !important;
@@ -77,7 +77,7 @@ body .v-card .stat-block.MonsterManual {
 	}
 
 	&.toPrint {
-		.feature-container__title {
+		.feature-container--title {
 			margin-bottom: -0.1rem !important;
 			margin-top: 0.2rem !important;
 		}

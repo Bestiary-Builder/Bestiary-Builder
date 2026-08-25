@@ -303,7 +303,7 @@ const importCreature = async (creature: Statblock) => {
 								:label="importType === 'CritterDB Creature link' ? 'Link' : 'JSON data'"
 								class="w-100" />
 							<v-spacer v-else />
-							<v-btn v-if="importText" class="w-100" color="green" @click="importCreatureFromUserInput">
+							<v-btn v-if="importText" class="w-100" color="success" @click="importCreatureFromUserInput">
 								Import
 							</v-btn>
 							<v-spacer v-else />

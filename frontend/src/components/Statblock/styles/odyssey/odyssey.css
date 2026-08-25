@@ -16,7 +16,7 @@ body .v-card .stat-block.Odyssey {
 	border-radius: 0.5rem;
 	padding: 15px;
 
-	.stat-block__name-container {
+	.stat-block--name-container {
 		font-family: Odyssey;
 		color: #095471;
 		border-bottom: 0 solid #095471;
@@ -59,7 +59,7 @@ body .v-card .stat-block.Odyssey {
 		color: #095471;
 	}
 
-	.stat-block__row {
+	.stat-block--row {
 		border-bottom: 0 solid white;
 	}
 
@@ -68,7 +68,7 @@ body .v-card .stat-block.Odyssey {
 		border-bottom: 0 solid white;
 	}
 
-	.feature-container__title {
+	.feature-container--title {
 		font-family: Odyssey;
 		color: #095471;
 		border-bottom: 0 solid white;
@@ -80,7 +80,7 @@ body .v-card .stat-block.Odyssey {
 		margin-bottom: 0.2rem;
 	}
 
-	.stat-block__core {
+	.stat-block--core {
 		color: grey;
 	}
 

@@ -9,7 +9,7 @@ body .v-card .stat-block.Beyond {
 	border-radius: 0.5rem;
 	color: #5b160c;
 
-	.stat-block__name-container {
+	.stat-block--name-container {
 		color: #5b160c;
 		border-color: #5b160c;
 	}
@@ -17,7 +17,7 @@ body .v-card .stat-block.Beyond {
 	.feature-container {
 		color: black;
 
-		.feature-container__title {
+		.feature-container--title {
 			color: #5b160c;
 			border-color: #5b160c;
 		}

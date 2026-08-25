@@ -152,7 +152,7 @@ const newBestiaryIsOpen = ref(false)
 
 			<v-card-actions>
 				<v-spacer />
-				<v-btn text="Create" color="green" size="large" @click="createBestiary" />
+				<v-btn text="Create" color="success" size="large" @click="createBestiary" />
 				<v-btn text="Close" size="large" @click="newBestiaryIsOpen = false; resetCreateInput()" />
 			</v-card-actions>
 		</v-card>

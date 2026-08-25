@@ -514,7 +514,7 @@ const pinCreature = (creature: Statblock) => {
 						</v-row>
 						<v-card-actions>
 							<v-spacer />
-							<v-btn text="Save changes" color="green" size="large" @click="updateCollection" />
+							<v-btn text="Save changes" color="success" size="large" @click="updateCollection" />
 							<v-btn text="Cancel" size="large" @click="isActive.value = false" />
 						</v-card-actions>
 					</v-card>
@@ -607,13 +607,13 @@ const pinCreature = (creature: Statblock) => {
 				</template>
 				<v-card min-width="300" class="text-center pb-2 pa-4" title="Export bestiary">
 					<v-card-actions class="d-flex flex-column align-center justify-center" min-width="200">
-						<v-btn class="w-100" color="green" size="large" @click="exportBestiary(false)">
+						<v-btn class="w-100" color="success" size="large" @click="exportBestiary(false)">
 							Clipboard
 						</v-btn>
-						<v-btn class="w-100" color="green" size="large" @click="exportBestiary(true)">
+						<v-btn class="w-100" color="success" size="large" @click="exportBestiary(true)">
 							File
 						</v-btn>
-						<v-btn class="w-100" color="green" size="large" @click="exportHomebrewery()">
+						<v-btn class="w-100" color="success" size="large" @click="exportHomebrewery()">
 							Homebrewery
 						</v-btn>
 					</v-card-actions>

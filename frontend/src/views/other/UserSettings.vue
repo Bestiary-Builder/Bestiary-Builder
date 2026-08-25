@@ -35,7 +35,7 @@ const saveSettings = async () => {
 	if (success) {
 		store.user = (data as any).data;
 		void getUmami()?.track("Update preferences", preferences);
-		addToast("Successfully saved your preferences");
+		addToast("Successfully saved your preferences", { color: "success" });
 	}
 };
 
@@ -318,7 +318,7 @@ const srdOptions = [
 	<div class="content less-wide">
 		<div v-if="!store.user">
 			<p> You are not logged in. Login with Discord to begin.</p>
-			<v-btn color="green" size="large" @click.prevent="sendToLogin($route.path)" class="mt-4"
+			<v-btn color="success" size="large" @click.prevent="sendToLogin($route.path)" class="mt-4"
 				prepend-icon="ic:sharp-discord">
 				Login
 			</v-btn>
@@ -415,7 +415,7 @@ const srdOptions = [
 					</div>
 
 					<div>
-						<v-btn color="green" @click.prevent="saveSettings" size="large">
+						<v-btn color="success" @click.prevent="saveSettings" size="large">
 							Save Preferences
 						</v-btn>
 					</div>
@@ -423,11 +423,12 @@ const srdOptions = [
 					<SectionHeader title="Avrae Integration" />
 					<v-container class="pa-0">
 						<small> With this setting you can edit character attacks and import attacks to characters
-							directly within BB. To enable it, set your Avrae Token below.BB does not store this token,
-							it is only saved in
-							your browser.
+							directly within BB. <br>To enable it, set your Avrae Token below. Bestiary Builder does not
+							store this
+							token, it is only saved in your browser.
 						</small>
-						<v-text-field v-model="AvraeToken" label="Token" variant="outlined" class="mt-4" />
+						<v-text-field v-model="AvraeToken" label="Token" variant="outlined" class="mt-4"
+							max-width="600" />
 
 						<small> To get the Token:
 							<ol>
@@ -447,7 +448,7 @@ const srdOptions = [
 								</li>
 								<li>
 									Copy the entire value of the
-									<code> avrae-token key and paste it into the field above. </code>
+									<code> avrae-token</code> key and paste it into the field above.
 								</li>
 							</ol>
 						</small>
@@ -455,7 +456,7 @@ const srdOptions = [
 				</div>
 			</div>
 			<SectionHeader title="Log out" />
-			<v-btn color="red" @click.prevent="logoutClick" size="large">
+			<v-btn color="error" @click.prevent="logoutClick" size="large">
 				Log out of Bestiary Builder
 			</v-btn>
 		</div>

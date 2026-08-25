@@ -103,13 +103,13 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 		<template #default="{ isActive }">
 			<v-card class="text-center pa-4" title="Export bestiary">
 				<v-card-actions class="d-flex flex-column align-center justify-center" min-width="200">
-					<v-btn class="w-100" color="green" size="large" @click="exportStatblockToClipBoard()">
+					<v-btn class="w-100" color="success" size="large" @click="exportStatblockToClipBoard()">
 						Clipboard
 					</v-btn>
-					<v-btn class="w-100" color="green" size="large" @click="exportStatblockToFile()">
+					<v-btn class="w-100" color="success" size="large" @click="exportStatblockToFile()">
 						File
 					</v-btn>
-					<v-btn class="w-100" color="green" size="large" @click="exportHomebrewery()">
+					<v-btn class="w-100" color="success" size="large" @click="exportHomebrewery()">
 						Homebrewery
 					</v-btn>
 					<div class="d-flex align-center no-wrap my-4 w-100">
@@ -118,13 +118,13 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 						<v-divider class="flex-grow-1" />
 					</div>
 
-					<v-btn class="w-100" color="green" size="large" @click="exportToImage('2x1')">
+					<v-btn class="w-100" color="success" size="large" @click="exportToImage('2x1')">
 						2 columns
 					</v-btn>
-					<v-btn class="w-100" color="green" size="large" @click="exportToImage('1x1')">
+					<v-btn class="w-100" color="success" size="large" @click="exportToImage('1x1')">
 						1 column
 					</v-btn>
-					<v-btn class="w-100" color="green" size="large" @click="exportToImage('2x1 wide')">
+					<v-btn class="w-100" color="success" size="large" @click="exportToImage('2x1 wide')">
 						2 columns extra wide
 					</v-btn>
 				</v-card-actions>
