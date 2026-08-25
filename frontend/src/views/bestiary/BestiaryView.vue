@@ -3,7 +3,6 @@ import type { CreatureWithStats, Statblock } from "~/shared";
 import { refDebounced, useLocalStorage } from "@vueuse/core";
 import { onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
-import Draggable from "vuedraggable";
 import CopyCreature from "@/components/Bestiary/CopyCreature.vue";
 import CreatureListItem from "@/components/Bestiary/CreatureListItem.vue";
 import StatusIcon from "@/components/Bestiary/StatusIcon.vue";
@@ -205,11 +204,6 @@ const copyCurrentBestiary = () => {
 	void getUmami()?.track("Copy bestiary");
 };
 
-// draggable stuff
-const getDraggableKey = (item: any) => {
-	return item;
-};
-
 // misc
 const lastHoveredCreature = ref<Statblock | null>(null);
 const lastClickedCreature = ref<Statblock | null>(null);
@@ -328,16 +322,15 @@ const pinCreature = (creature: Statblock) => {
 						</div>
 					</div>
 					<v-skeleton-loader type="heading, text, text" v-if="items === null" />
-					<Draggable v-else :list="sortCreatures()" :animation="500" class="tile-container list-tiles"
-						:item-key="getDraggableKey" :disabled="true">
-						<template #item="{ element }">
+					<div class="tile-container list-tiles">
+						<template v-for="element in sortCreatures()">
 							<CreatureListItem v-if="filterCreature(element)" :id="element.id" :data="element.stats"
 								:can-edit="isOwner || isEditor" @mouseover="lastHoveredCreature = element.stats"
 								@delete-creature="(id) => deleteItem(id)" @pin-creature="pinCreature(element.stats)"
 								@copy-creature="copiedCreatures.push({ ...element, bestiaryName: collection.name }); addToast('Copied Successfully!')"
 								:is-pinned="lastClickedCreature === element.stats" />
 						</template>
-					</Draggable>
+					</div>
 				</div>
 				<div v-if="items && lastHoveredCreature" class="statblock-container">
 					<span v-if="lastClickedCreature" class="pin-notice">

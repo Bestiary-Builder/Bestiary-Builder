@@ -2,13 +2,13 @@
 import type { BestiaryExtended } from "~/shared";
 import { onMounted, reactive, ref, toValue } from "vue";
 import { useRouter } from "vue-router";
-import Draggable from "vuedraggable";
 import { useRules } from "vuetify/labs/rules";
 import CollectionTile from "@/components/Global/CollectionTile.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
+import { VueDraggable } from "vue-draggable-plus";
 
 const rules = useRules();
 const router = useRouter();
@@ -83,10 +83,6 @@ const saveOrder = async () => {
 	await useFetch("/api/my-bestiaries/order", "POST", orderIds);
 };
 
-const getDraggableKey = (item: any) => {
-	return item;
-};
-
 const newBestiaryIsOpen = ref(false)
 </script>
 
@@ -98,73 +94,16 @@ const newBestiaryIsOpen = ref(false)
 			isCurrent: true
 		}
 	]">
-		<v-dialog max-width="750" v-model="newBestiaryIsOpen">
-			<template #activator="{ props: activatorProps }">
-				<v-icon-btn icon="mdi:plus" label="Create new bestiary" inverted v-bind="activatorProps" size="24"
-					v-tooltip="'Create new bestiary'" />
-			</template>
-
-			<template #default="{ isActive }">
-				<v-card title="Create new bestiary" class="pa-4">
-					<v-container class="pa-0">
-						<v-row>
-							<v-col>
-								<div>
-									<v-text-field v-model="createOptions.name" label="Name"
-										:maxlength="store.limits?.nameLength" :min-length="store.limits?.nameMin"
-										:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]"
-										class="mb-4" />
-								</div>
-							</v-col>
-							<v-col>
-								<div>
-									<v-text-field v-model="createOptions.image" label="Image" class="mb-4"
-										:rules="[rules.imageLink()]" />
-								</div>
-							</v-col>
-						</v-row>
-					</v-container>
-
-					<v-textarea v-model="createOptions.description" :max-length="store.limits?.descriptionLength"
-						:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]" label="Description"
-						class="mb-4" hint="Supports Markdown" persistent-hint />
-
-					<v-container class="pa-0">
-						<v-row>
-							<v-col>
-								<div>
-									<v-select v-model="createOptions.status" label="Status"
-										:items="[{ value: 'private', title: 'Private' }, { value: 'unlisted', title: 'Unlisted' }, { value: 'public', title: 'Public' }]" />
-								</div>
-							</v-col>
-							<v-col>
-								<div>
-									<v-select v-model="createOptions.tags" multiple :items="store.tags || []"
-										label="Tags" chips closable-chips />
-								</div>
-							</v-col>
-						</v-row>
-					</v-container>
-
-					<v-card-actions>
-						<v-spacer />
-						<v-btn text="Create" color="green" size="large" @click="createBestiary" />
-						<v-btn text="Close" size="large" @click="isActive.value = false; resetCreateInput()" />
-					</v-card-actions>
-				</v-card>
-			</template>
-		</v-dialog>
+		<v-icon-btn icon="mdi:plus" label="Create new bestiary" inverted @click="newBestiaryIsOpen = true" size="24"
+			v-tooltip="'Create new bestiary'" />
 	</Breadcrumbs>
 	<div class="content">
-		<Draggable v-if="bestiaries" :key="Math.random()" :list="bestiaries" :animation="150"
-			:item-key="getDraggableKey" class="tile-container" :handle="store.isMobile ? '.handle' : ''"
-			@change="saveOrder">
-			<template #item="{ element, idx }">
-				<RouterLink :to="`/bestiary/edit/${element.id}`">
-					<CollectionTile :key="idx" :data="element" @delete-collection-item="(id) => deleteBestiary(id)" />
-				</RouterLink>
-			</template>
-		</Draggable>
+		<VueDraggable v-if="bestiaries" v-model="bestiaries" :animation="150" class="tile-container"
+			:handle="store.isMobile ? '.handle' : ''" @update="saveOrder">
+			<RouterLink :to="`/bestiary/edit/${element.id}`" v-for="element, idx, in bestiaries">
+				<CollectionTile :key="idx" :data="element" @delete-collection-item="(id) => deleteBestiary(id)" />
+			</RouterLink>
+		</VueDraggable>
 		<div v-else class="zero-found">
 			<span> You do not have any bestiaries. </span>
 			<v-btn class="btn confirm" @click="createBestiary">
@@ -174,4 +113,55 @@ const newBestiaryIsOpen = ref(false)
 		<v-fab icon="mdi:plus" location="bottom end" app color="primary" @click="newBestiaryIsOpen = true"
 			size="large"></v-fab>
 	</div>
+
+	<v-dialog max-width="750" v-model="newBestiaryIsOpen">
+		<v-card title="Create new bestiary" class="pa-4">
+			<v-container class="pa-0">
+				<v-row>
+					<v-col>
+						<div>
+							<v-text-field v-model="createOptions.name" label="Name"
+								:maxlength="store.limits?.nameLength" :min-length="store.limits?.nameMin"
+								:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]"
+								class="mb-4" />
+						</div>
+					</v-col>
+					<v-col>
+						<div>
+							<v-text-field v-model="createOptions.image" label="Image" class="mb-4"
+								:rules="[rules.imageLink()]" />
+						</div>
+					</v-col>
+				</v-row>
+			</v-container>
+
+			<v-textarea v-model="createOptions.description" :max-length="store.limits?.descriptionLength"
+				:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]" label="Description" class="mb-4"
+				hint="Supports Markdown" persistent-hint />
+
+			<v-container class="pa-0">
+				<v-row>
+					<v-col>
+						<div>
+							<v-select v-model="createOptions.status" label="Status"
+								:items="[{ value: 'private', title: 'Private' }, { value: 'unlisted', title: 'Unlisted' }, { value: 'public', title: 'Public' }]" />
+						</div>
+					</v-col>
+					<v-col>
+						<div>
+							<v-select v-model="createOptions.tags" multiple :items="store.tags || []" label="Tags" chips
+								closable-chips />
+						</div>
+					</v-col>
+				</v-row>
+			</v-container>
+
+			<v-card-actions>
+				<v-spacer />
+				<v-btn text="Create" color="green" size="large" @click="createBestiary" />
+				<v-btn text="Close" size="large" @click="newBestiaryIsOpen = false; resetCreateInput()" />
+			</v-card-actions>
+		</v-card>
+	</v-dialog>
+
 </template>

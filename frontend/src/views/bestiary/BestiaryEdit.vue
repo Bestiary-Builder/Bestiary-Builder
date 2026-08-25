@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import type { CreatureWithStats, Statblock } from "~/shared";
 import { refDebounced, useLocalStorage } from "@vueuse/core";
-import { onMounted, reactive, ref, watch } from "vue";
-import Draggable from "vuedraggable";
+import { onMounted, reactive, ref, watch, watchEffect } from "vue";
 import { useRules } from "vuetify/labs/rules";
 import CopyCreature from "@/components/Bestiary/CopyCreature.vue";
 import CreatureListItem from "@/components/Bestiary/CreatureListItem.vue";
@@ -18,6 +17,7 @@ import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { defaultStatblock } from "~/shared";
 import { useCollection } from "@/components/Bestiary/useCollection";
+import { VueDraggable } from "vue-draggable-plus";
 
 const {
 	collection,
@@ -72,15 +72,20 @@ const searchOptions = ref({
 
 const sortMode = useLocalStorage("sortModeForBestiaries", "Alphabetically");
 
-const sortCreatures = () => {
-	if (!items.value)
-		return;
+const sortedCreatures = ref<CreatureWithStats[]>([])
+watchEffect(() => {
+	if (!items.value) {
+		sortedCreatures.value = [];
+		return
+	}
+
 	if (sortMode.value === "Custom") {
 		// Do nothing, order as recieved
-		return items.value;
+		sortedCreatures.value = items.value
+		return
 	}
 	if (sortMode.value === "Alphabetically") {
-		items.value.sort((a, b) => {
+		sortedCreatures.value = items.value.sort((a, b) => {
 			const nameA = a.stats.description.name.toLowerCase();
 			const nameB = b.stats.description.name.toLowerCase();
 			if (nameA < nameB)
@@ -89,9 +94,10 @@ const sortCreatures = () => {
 				return 1;
 			return 0;
 		});
+		return
 	}
 	else if (sortMode.value === "Creature Type") {
-		items.value.sort((a, b) => {
+		sortedCreatures.value = items.value.sort((a, b) => {
 			const nameA = a.stats.core.race.toLowerCase();
 			const nameB = b.stats.core.race.toLowerCase();
 			if (nameA < nameB)
@@ -100,20 +106,24 @@ const sortCreatures = () => {
 				return 1;
 			return 0;
 		});
+		return;
 	}
 	else if (sortMode.value === "CR Descending") {
-		items.value.sort((a, b) => {
+		sortedCreatures.value = items.value.sort((a, b) => {
 			return b.stats.description.cr - a.stats.description.cr;
 		});
+		return
 	}
 	else if (sortMode.value === "CR Ascending") {
-		items.value.sort((a, b) => {
+		sortedCreatures.value = items.value.sort((a, b) => {
 			return a.stats.description.cr - b.stats.description.cr;
 		});
+		return
 	}
+	sortedCreatures.value = items.value;
+})
 
-	return items.value;
-};
+
 
 function filterCreature(data: CreatureWithStats) {
 	const filterChecks: boolean[] = [];
@@ -138,7 +148,7 @@ function filterCreature(data: CreatureWithStats) {
 
 const saveOrder = async () => {
 	if (items.value && collection.value) {
-		const orderIds = items.value.map(creature => creature.id);
+		const orderIds = sortedCreatures.value.map(creature => creature.id);
 		await useFetch(`/api/bestiary/${collection.value.id}/creatures/order`, "POST", orderIds);
 	}
 };
@@ -340,8 +350,6 @@ async function importSrdCreature(creature: string | null) {
 	}
 }
 
-
-
 type CopiedCreature = CreatureWithStats & { bestiaryName: string };
 const copiedCreatures = useLocalStorage<CopiedCreature[]>("copiedCreatures", []);
 
@@ -355,11 +363,6 @@ const copyCurrentBestiary = () => {
 	copiedCreatures.value = copiedCreatures.value.concat(toAdd);
 	addToast("Copied current Bestiary");
 	void getUmami()?.track("Copy bestiary");
-};
-
-// draggable stuff
-const getDraggableKey = (item: any) => {
-	return item;
 };
 
 // misc
@@ -516,11 +519,12 @@ const pinCreature = (creature: Statblock) => {
 					<v-icon-btn text="Search creatures" icon="mdi:tag" size="24" v-bind="props"
 						v-tooltip="'Search creatures'" />
 				</template>
-				<v-card min-width="300" class="text-center pb-2 pa-4" title="Search bestiary">
+				<v-card min-width="300" class="pa-4" title="Search bestiary">
 					<v-card-actions class="d-flex flex-column align-center justify-center" min-width="200">
 						<v-select v-model="sortMode"
 							:items="['Custom', 'Alphabetically', 'CR Ascending', 'CR Descending', 'Creature Type']"
-							label="Bestiary sort type" width="100%" />
+							label="Bestiary sort type" width="100%" persistent-hint
+							hint="Drag to reorder in Custom mode." />
 						<div class="grid-two">
 							<v-text-field v-model="searchText" label="Name" width="200" />
 							<v-select v-model="searchOptions.tags" :items="creatureTypes" label="Creature type" multiple
@@ -626,16 +630,17 @@ const pinCreature = (creature: Statblock) => {
 						</div>
 					</div>
 					<v-skeleton-loader type="heading, text, text" v-if="items === null" />
-					<Draggable v-else :list="sortCreatures()" :animation="500" class="tile-container list-tiles"
-						:item-key="getDraggableKey" :disabled="sortMode !== 'Custom'" @change="saveOrder">
-						<template #item="{ element }">
+					<VueDraggable v-else v-model="sortedCreatures" :animation="500" class="tile-container list-tiles"
+						:disabled="sortMode !== 'Custom'" @update="saveOrder">
+						<template v-for="element in sortedCreatures">
 							<CreatureListItem v-if="filterCreature(element)" :id="element.id" :data="element.stats"
 								:can-edit="isOwner || isEditor" @mouseover="lastHoveredCreature = element.stats"
 								@delete-creature="(id) => deleteItem(id)" @pin-creature="pinCreature(element.stats)"
 								@copy-creature="copiedCreatures.push({ ...element, bestiaryName: collection.name }); addToast('Copied Successfully!')"
 								:is-pinned="lastClickedCreature === element.stats" />
 						</template>
-					</Draggable>
+
+					</VueDraggable>
 
 					<div v-if="isOwner || isEditor" class="create-tile">
 
@@ -666,25 +671,32 @@ const pinCreature = (creature: Statblock) => {
 	</div>
 
 	<v-dialog v-model="newCreatureIsOpen" max-width="500">
-		<v-card min-width="300" class="text-center pa-4" title="Create creature">
-			<v-card-actions class="d-flex flex-column align-center justify-center">
-				<v-btn size="x-large" @click="createItem(defaultStatblock)">
-					From scratch
-				</v-btn>
-				<div class="d-flex align-center my-4 w-100">
-					<v-divider class="flex-grow-1" />
-					<span class="mx-4 text-medium-emphasis">OR</span>
-					<v-divider class="flex-grow-1" />
-				</div>
-
-				<v-autocomplete :items="srdCreatures" label="Select SRD creature" width="400"
-					@update:model-value="item => importSrdCreature(item)">
-					<template #item="{ props, item }">
-						<v-list-item v-bind="props" density="compact" style="min-height: 28px">
-							{{ (item as any).title }}
-						</v-list-item>
-					</template>
-				</v-autocomplete>
+		<v-card min-width="400" class="text-center pa-4" title="Create creature">
+			<v-card-actions>
+				<v-row>
+					<v-col cols=12>
+						<v-btn size="x-large" class="w-100" @click="createItem(defaultStatblock)">
+							From scratch
+						</v-btn>
+					</v-col>
+					<v-col cols=12>
+						<div class="d-flex align-center my-4 w-100">
+							<v-divider class="flex-grow-1" />
+							<span class="mx-4 text-medium-emphasis">OR</span>
+							<v-divider class="flex-grow-1" />
+						</div>
+					</v-col>
+					<v-col cols=12>
+						<v-autocomplete :items="srdCreatures" label="Select SRD creature"
+							@update:model-value="item => importSrdCreature(item)">
+							<template #item="{ props, item }">
+								<v-list-item v-bind="props" density="compact" style="min-height: 28px">
+									{{ (item as any).title }}
+								</v-list-item>
+							</template>
+						</v-autocomplete>
+					</v-col>
+				</v-row>
 			</v-card-actions>
 		</v-card>
 	</v-dialog>

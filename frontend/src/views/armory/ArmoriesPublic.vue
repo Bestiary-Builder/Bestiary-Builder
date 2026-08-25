@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { AutomationCollectionExtended, AutomationCollectionWithCount } from "~/shared";
 import { onMounted, ref, watch } from "vue";
-import Draggable from "vuedraggable";
 import CollectionTile from "@/components/Global/CollectionTile.vue";
 import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";

@@ -2,18 +2,18 @@
 import type { AutomationCollectionExtended } from "~/shared";
 import { onMounted, reactive, ref, toValue } from "vue";
 import { useRouter } from "vue-router";
-import Draggable from "vuedraggable";
 import CollectionTile from "@/components/Global/CollectionTile.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { useRules } from "vuetify/labs/rules";
+import { VueDraggable } from "vue-draggable-plus";
 
 const $router = useRouter();
 const { addToast } = useToast()
 
-const automationCollections = ref<AutomationCollectionExtended[]>();
+const automationCollections = ref<AutomationCollectionExtended[]>([]);
 const getMyCollections = async () => {
 	const { success, data, error } = await useFetch<AutomationCollectionExtended[]>(`/api/automation-collection/personal`);
 	if (success)
@@ -76,9 +76,6 @@ const deleteAutomationCollection = async (id: AutomationCollectionExtended["id"]
 	}
 };
 
-const getDraggableKey = (item: any) => {
-	return item;
-};
 
 const saveOrder = async () => {
 	if (!automationCollections.value)
@@ -100,74 +97,68 @@ const newCollectionIsOpen = ref(false)
 			isCurrent: true
 		}
 	]">
-		<v-dialog max-width="750" v-model="newCollectionIsOpen">
-			<template #activator="{ props: activatorProps }">
-				<v-icon-btn icon="mdi:plus" label="Create new Automation Collection" inverted v-bind="activatorProps"
-					size="24" v-tooltip="'Create new Automation Collection'" />
-			</template>
-
-			<template #default="{ isActive }">
-				<v-card title="Create new Automation Collection" class="pa-4">
-					<v-container class="pa-0">
-						<v-row>
-							<v-col>
-								<div>
-									<v-text-field v-model="createOptions.name" label="Name"
-										:maxlength="store.limits?.nameLength" :min-length="store.limits?.nameMin"
-										:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]"
-										class="mb-4" />
-								</div>
-							</v-col>
-							<v-col>
-								<div>
-									<v-text-field v-model="createOptions.image" label="Image" class="mb-4"
-										:rules="[rules.imageLink()]" />
-								</div>
-							</v-col>
-						</v-row>
-					</v-container>
-
-					<v-textarea v-model="createOptions.description" :max-length="store.limits?.descriptionLength"
-						:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]" label="Description"
-						class="mb-4" hint="Supports Markdown" persistent-hint />
-
-					<v-container class="pa-0">
-						<v-row>
-							<v-col>
-								<div>
-									<v-select v-model="createOptions.status" label="Status"
-										:items="[{ value: 'private', title: 'Private' }, { value: 'unlisted', title: 'Unlisted' }, { value: 'public', title: 'Public' }]" />
-								</div>
-							</v-col>
-							<v-col>
-								<div>
-									<v-select v-model="createOptions.tags" multiple :items="store.tags || []"
-										label="Tags" chips closable-chips />
-								</div>
-							</v-col>
-						</v-row>
-					</v-container>
-
-					<v-card-actions>
-						<v-spacer />
-						<v-btn text="Create" color="success" size="large" @click="createAutomationCollection" />
-						<v-btn text="Close" size="large" @click="isActive.value = false; resetCreateInput()" />
-					</v-card-actions>
-				</v-card>
-			</template>
-		</v-dialog>
+		<v-icon-btn icon="mdi:plus" label="Create new Automation Collection" class="inverted"
+			@click="newCollectionIsOpen = true" size="24" v-tooltip="'Create new Automation Collection'" />
 	</Breadcrumbs>
 	<div class="content">
-		<Draggable :key="Math.random()" :list="automationCollections" :animation="150" :item-key="getDraggableKey"
-			class="tile-container" :handle="store.isMobile ? '.handle' : ''" @change="saveOrder">
-			<template #item="{ element, idx }">
-				<RouterLink :to="`/armory/edit/${element.id}`">
-					<CollectionTile :key="idx" :data="element"
-						@delete-collection-item="(id) => deleteAutomationCollection(id)" />
-				</RouterLink>
-			</template>
-		</Draggable>
+		<VueDraggable v-model="automationCollections" :animation="150" class="tile-container"
+			:handle="store.isMobile ? '.handle' : ''" @update="saveOrder">
+			<RouterLink :to="`/armory/edit/${element.id}`" v-for="element, idx, in automationCollections">
+				<CollectionTile :key="idx" :data="element"
+					@delete-collection-item="(id) => deleteAutomationCollection(id)" />
+			</RouterLink>
+		</VueDraggable>
 		<v-fab icon="mdi:plus" location="bottom end" app color="primary" @click="newCollectionIsOpen = true"
 			size="large"></v-fab>
 	</div>
+
+	<v-dialog max-width="750" v-model="newCollectionIsOpen">
+		<v-card title="Create new Automation Collection" class="pa-4">
+			<v-container class="pa-0">
+				<v-row>
+					<v-col>
+						<div>
+							<v-text-field v-model="createOptions.name" label="Name"
+								:maxlength="store.limits?.nameLength" :min-length="store.limits?.nameMin"
+								:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]"
+								class="mb-4" />
+						</div>
+					</v-col>
+					<v-col>
+						<div>
+							<v-text-field v-model="createOptions.image" label="Image" class="mb-4"
+								:rules="[rules.imageLink()]" />
+						</div>
+					</v-col>
+				</v-row>
+			</v-container>
+
+			<v-textarea v-model="createOptions.description" :max-length="store.limits?.descriptionLength"
+				:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]" label="Description" class="mb-4"
+				hint="Supports Markdown" persistent-hint />
+
+			<v-container class="pa-0">
+				<v-row>
+					<v-col>
+						<div>
+							<v-select v-model="createOptions.status" label="Status"
+								:items="[{ value: 'private', title: 'Private' }, { value: 'unlisted', title: 'Unlisted' }, { value: 'public', title: 'Public' }]" />
+						</div>
+					</v-col>
+					<v-col>
+						<div>
+							<v-select v-model="createOptions.tags" multiple :items="store.tags || []" label="Tags" chips
+								closable-chips />
+						</div>
+					</v-col>
+				</v-row>
+			</v-container>
+
+			<v-card-actions>
+				<v-spacer />
+				<v-btn text="Create" color="success" size="large" @click="createAutomationCollection" />
+				<v-btn text="Close" size="large" @click="newCollectionIsOpen = false; resetCreateInput()" />
+			</v-card-actions>
+		</v-card>
+	</v-dialog>
 </template>

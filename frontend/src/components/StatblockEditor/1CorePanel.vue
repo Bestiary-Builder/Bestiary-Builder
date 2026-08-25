@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import type { Statblock } from "~/shared";
 import { ref } from "vue";
-import Draggable from "vuedraggable";
 import { useToast } from "@/utils/app/toast";
 import { languages } from "@/utils/constants";
 import SimpleNumberInput from "../FormInputs/SimpleNumberInput.vue";
 import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
-import { getDraggableKey } from "./utils";
+import { VueDraggable } from "vue-draggable-plus";
 
 const { addToast } = useToast()
 const { data } = defineProps<{ data: Statblock }>();
@@ -58,53 +57,49 @@ const addNewSense = (newSenseName: string) => {
 					</td>
 				</tr>
 			</thead>
-			<Draggable :list="data.core.speed" group="speed" :item-key="getDraggableKey" :animation="150" tag="tbody"
-				class=".handle">
-				<template #item="{ element, idx }">
-					<tr>
-						<td>
-							<v-icon icon="material-symbols:drag-indicator" class="handle" size="24" />
-						</td>
-						<th> {{ element.name }}</th>
-						<td>
-							<SimpleNumberInput v-model="element.value" :min="0" :step="5" :label="element.name" />
-						</td>
-						<td class="edit-buttons">
-							<div>
-								<DropdownMenu>
-									<template #activator="{ props }">
-										<v-icon-btn icon="mdi:ruler" text="Set unit for this speed" size="20"
-											v-bind="props" />
-									</template>
-									<v-card min-width="300" class="text-center pb-2" title="Set unit for this speed">
-										<select v-model="element.unit" class="ghost" title="Select speed unit">
-											<option>ft</option>
-											<option>m</option>
-											<option>km</option>
-											<option>mi</option>
-											<option>none</option>
-										</select>
-									</v-card>
-								</DropdownMenu>
-								<DropdownMenu>
-									<template #activator="{ props }">
-										<v-icon-btn icon="mdi:comment" text="Set comment for this speed" size="20"
-											v-bind="props" />
-									</template>
-									<v-card min-width="300" class="text-center pb-2"
-										title="Set (comment) for this speed">
-										<v-card-actions>
-											<v-text-field v-model="element.comment" type="text" label="comment" />
-										</v-card-actions>
-									</v-card>
-								</DropdownMenu>
-								<v-icon-btn icon="mdi:delete" text="Remove this speed" size="20"
-									@click="data.core.speed.splice(idx, 1)" />
-							</div>
-						</td>
-					</tr>
-				</template>
-			</Draggable>
+			<VueDraggable v-model="data.core.speed" :animation="150" tag="tbody" handle=".handle">
+				<tr v-for="element, idx in data.core.speed">
+					<td>
+						<v-icon icon="material-symbols:drag-indicator" class="handle" size="24" />
+					</td>
+					<th> {{ element.name }}</th>
+					<td>
+						<SimpleNumberInput v-model="element.value" :min="0" :step="5" :label="element.name" />
+					</td>
+					<td class="edit-buttons">
+						<div>
+							<DropdownMenu>
+								<template #activator="{ props }">
+									<v-icon-btn icon="mdi:ruler" text="Set unit for this speed" size="20"
+										v-bind="props" />
+								</template>
+								<v-card min-width="300" class="text-center pb-2" title="Set unit for this speed">
+									<select v-model="element.unit" class="ghost" title="Select speed unit">
+										<option>ft</option>
+										<option>m</option>
+										<option>km</option>
+										<option>mi</option>
+										<option>none</option>
+									</select>
+								</v-card>
+							</DropdownMenu>
+							<DropdownMenu>
+								<template #activator="{ props }">
+									<v-icon-btn icon="mdi:comment" text="Set comment for this speed" size="20"
+										v-bind="props" />
+								</template>
+								<v-card min-width="300" class="text-center pb-2" title="Set (comment) for this speed">
+									<v-card-actions>
+										<v-text-field v-model="element.comment" type="text" label="comment" />
+									</v-card-actions>
+								</v-card>
+							</DropdownMenu>
+							<v-icon-btn icon="mdi:delete" text="Remove this speed" size="20"
+								@click="data.core.speed.splice(idx, 1)" />
+						</div>
+					</td>
+				</tr>
+			</VueDraggable>
 		</table>
 		<div class="two-wide my-4">
 			<v-combobox v-model="newSpeed" :items="['Walk', 'Swim', 'Fly', 'Climb', 'Burrow']"
@@ -128,53 +123,49 @@ const addNewSense = (newSenseName: string) => {
 					</td>
 				</tr>
 			</thead>
-			<Draggable :list="data.core.senses" group="senses" :item-key="getDraggableKey" :animation="150" tag="tbody"
-				class=".handle">
-				<template #item="{ element, idx }">
-					<tr>
-						<td>
-							<v-icon icon="material-symbols:drag-indicator" class="handle" size="24" />
-						</td>
-						<th> {{ element.name }}</th>
-						<td>
-							<SimpleNumberInput v-model="element.value" :min="0" :step="5" :label="element.name" />
-						</td>
-						<td class="edit-buttons">
-							<div>
-								<DropdownMenu>
-									<template #activator="{ props }">
-										<v-icon-btn icon="mdi:ruler" text="Set unit for this speed" size="20"
-											v-bind="props" />
-									</template>
-									<v-card min-width="300" class="text-center pb-2" title="Set unit for this sense">
-										<select v-model="element.unit" class="ghost" title="Select sense unit">
-											<option>ft</option>
-											<option>m</option>
-											<option>km</option>
-											<option>mi</option>
-											<option>none</option>
-										</select>
-									</v-card>
-								</DropdownMenu>
-								<DropdownMenu>
-									<template #activator="{ props }">
-										<v-icon-btn icon="mdi:comment" text="Set comment for this sense" size="20"
-											v-bind="props" />
-									</template>
-									<v-card min-width="300" class="text-center pb-2"
-										title="Set (comment) for this sense">
-										<v-card-actions>
-											<v-text-field v-model="element.comment" type="text" label="comment" />
-										</v-card-actions>
-									</v-card>
-								</DropdownMenu>
-								<v-icon-btn icon="mdi:delete" text="Remove this sense" size="20"
-									@click="data.core.senses.splice(idx, 1)" />
-							</div>
-						</td>
-					</tr>
-				</template>
-			</Draggable>
+			<VueDraggable v-model="data.core.senses" :animation="150" tag="tbody" handle=".handle">
+				<tr v-for="element, idx in data.core.senses">
+					<td>
+						<v-icon icon="material-symbols:drag-indicator" class="handle" size="24" />
+					</td>
+					<th> {{ element.name }}</th>
+					<td>
+						<SimpleNumberInput v-model="element.value" :min="0" :step="5" :label="element.name" />
+					</td>
+					<td class="edit-buttons">
+						<div>
+							<DropdownMenu>
+								<template #activator="{ props }">
+									<v-icon-btn icon="mdi:ruler" text="Set unit for this speed" size="20"
+										v-bind="props" />
+								</template>
+								<v-card min-width="300" class="text-center pb-2" title="Set unit for this sense">
+									<select v-model="element.unit" class="ghost" title="Select sense unit">
+										<option>ft</option>
+										<option>m</option>
+										<option>km</option>
+										<option>mi</option>
+										<option>none</option>
+									</select>
+								</v-card>
+							</DropdownMenu>
+							<DropdownMenu>
+								<template #activator="{ props }">
+									<v-icon-btn icon="mdi:comment" text="Set comment for this sense" size="20"
+										v-bind="props" />
+								</template>
+								<v-card min-width="300" class="text-center pb-2" title="Set (comment) for this sense">
+									<v-card-actions>
+										<v-text-field v-model="element.comment" type="text" label="comment" />
+									</v-card-actions>
+								</v-card>
+							</DropdownMenu>
+							<v-icon-btn icon="mdi:delete" text="Remove this sense" size="20"
+								@click="data.core.senses.splice(idx, 1)" />
+						</div>
+					</td>
+				</tr>
+			</VueDraggable>
 		</table>
 		<div class=" grid-two my-4">
 			<div>

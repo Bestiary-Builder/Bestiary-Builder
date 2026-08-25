@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import type { FeatureEntity, Id } from "~/shared";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
+import { type AvraeCharacter, getAvraeCharacterByUpstream, getAvraeCharacters } from "../Characters/utils";
 
 const isOpen = ref(false);
 
@@ -69,18 +70,49 @@ const selectAndLoad = async (apiPath: AutomationTypes, name: string, _id: Id | n
 	emit("loadFeature", feature, apiPath);
 	isOpen.value = false
 };
+
+const AvraeToken = localStorage.getItem("AvraeToken")
+
+const characters = ref<null | AvraeCharacter[]>(null);
+
+const loading = ref(false)
+const selectedCharacter = ref<null | AvraeCharacter["upstream"]>(null);
+const hasFetched = ref(false)
+
+const fetchCharacters = async () => {
+	loading.value = true
+	characters.value = await getAvraeCharacters()
+	loading.value = false
+}
+
+const handleMenuOpen = (isOpen: boolean) => {
+	if (isOpen && !hasFetched.value) {
+		fetchCharacters()
+		hasFetched.value = true
+	}
+}
+
+const selectedCharacterData = ref<null | AvraeCharacter>(null)
+
+watch(() => selectedCharacter.value, async () => {
+	if (selectedCharacter.value)
+		selectedCharacterData.value = await getAvraeCharacterByUpstream(selectedCharacter.value)
+	console.log(selectedCharacterData.value)
+})
+
+const selectedAttack = ref()
+watch(() => selectedAttack.value, () => {
+	isOpen.value = false
+})
 </script>
 
 <template>
+	<v-icon-btn icon="mdi:database" text="Import Action" size="24" @click="isOpen = true"
+		v-tooltip="'Import Feature'" />
 
-	<DropdownMenu v-model="isOpen">
-		<template #activator="{ props }">
-			<v-icon-btn icon="mdi:database" text="Import Action" size="24" v-bind="props"
-				v-tooltip="'Import Feature'" />
-		</template>
-		<v-card width="500" class="text-center pa-4">
+	<v-dialog v-model="isOpen" max-width="500">
+		<v-card class="text-center pa-4">
 			<v-card-text>
-
 				<v-autocomplete :items="loadedAutomation.srdFeatures" label="Import SRD Feature"
 					@update:model-value="selected => (selectAndLoad(`srd-features/${store.user?.SRDVersion === 'SRD_2024' ? '2024' : '2014'}`, selected || ''))"
 					variant="solo-filled" class="w-100" clearable>
@@ -91,7 +123,7 @@ const selectAndLoad = async (apiPath: AutomationTypes, name: string, _id: Id | n
 					</template>
 				</v-autocomplete>
 
-				<v-autocomplete :items="loadedAutomation.basicExamples" label="Import basic Action"
+				<v-autocomplete :items="loadedAutomation.basicExamples" label="Import Basic Action"
 					@update:model-value="selected => (selectAndLoad('basic-example', selected || ''))"
 					variant="solo-filled">
 					<template #item="{ props, item }">
@@ -101,7 +133,7 @@ const selectAndLoad = async (apiPath: AutomationTypes, name: string, _id: Id | n
 					</template>
 				</v-autocomplete>
 				<v-autocomplete :items="loadedAutomation.myAutomation" item-title="name" item-value="id"
-					label="Select an item" return-object
+					label="Select From subscribed Automations " return-object
 					@update:model-value="(selected) => selected && selectAndLoad('automation', selected.name, selected.id)"
 					variant="solo-filled">
 					<template #item="{ props, item }">
@@ -110,7 +142,28 @@ const selectAndLoad = async (apiPath: AutomationTypes, name: string, _id: Id | n
 						</v-list-item>
 					</template>
 				</v-autocomplete>
+				<div v-if="AvraeToken">
+					<v-select v-model="selectedCharacter" :items="characters || []" :loading="loading" item-title="name"
+						item-value="upstream" label="Import From Character" @update:menu="handleMenuOpen" hide-details>
+						<template #no-data>
+							<v-list-item>
+								<v-list-item-title>
+									{{ loading ? 'Loading characters...' : 'No characters found' }}
+								</v-list-item-title>
+							</v-list-item>
+						</template>
+					</v-select>
+
+				</div>
+				<div v-else class="text-primary">
+					You can set up importing from your characters with just a button press!
+					Set it up in <RouterLink to="/user"> your user settings. </RouterLink>
+				</div>
+				<v-select variant="solo-filled" :items="selectedCharacterData.overrides.attacks" class="mt-4"
+					v-if="selectedCharacterData" item-title="name" label="Choose Character Attack" return-object
+					@update:model-value="(selected) => selected && emit('loadFeature', { name: selected.name, description: '', automation: selected }, 'automation')"
+					v-model="selectedAttack" />
 			</v-card-text>
 		</v-card>
-	</DropdownMenu>
+	</v-dialog>
 </template>
