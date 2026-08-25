@@ -887,7 +887,6 @@ const pinCreature = (creature: Statblock) => {
 
 	.description:not(.expanded) {
 		mask-image: linear-gradient(180deg, #000 80%, transparent);
-		mask-image: linear-gradient(180deg, #000 80%, transparent);
 	}
 
 	.footer {
