@@ -121,7 +121,7 @@ const importManyCreatures = () => {
 	right: -20%;
 	font-weight: bold;
 	font-size: 0.7em;
-	color: orangered !important;
+	color: rgb(var(--v-theme-primary)) !important;
 }
 
 .v-popper__custom-menu.with-table {

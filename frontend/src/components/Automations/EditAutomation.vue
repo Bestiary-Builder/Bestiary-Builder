@@ -212,6 +212,6 @@ const currentDocu = computed(() => docu.value[currentContext.value]);
 }
 
 a {
-    color: orangered;
+    color: rgb(var(--v-theme-primary));
 }
 </style>

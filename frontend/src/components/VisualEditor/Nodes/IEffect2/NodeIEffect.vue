@@ -219,7 +219,7 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 @import url("../styles/automation-editor.less");
 
 .standout {
-	border-left: 2px solid orangered;
+	border-left: 2px solid rgb(var(--v-theme-primary));
 	padding-left: 1rem;
 }
 

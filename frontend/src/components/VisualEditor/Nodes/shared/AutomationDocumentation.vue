@@ -33,15 +33,13 @@ const currentDocu = computed(() => {
 					<div>
 						<hr>
 						<h4>Overview</h4>
-						See full documentation <a :href="`https://avrae.readthedocs.io/en/stable/automation_ref.html#${currentDocu.url}`" target="_blank">here</a>.
-						<VueMonacoEditor
-							v-if="currentDocu?.ts"
-							:value="`// Values denoted with an ? are optional.\n${currentDocu.ts}`"
-							theme="vs-dark"
+						See full documentation <a
+							:href="`https://avrae.readthedocs.io/en/stable/automation_ref.html#${currentDocu.url}`"
+							target="_blank">here</a>.
+						<VueMonacoEditor v-if="currentDocu?.ts"
+							:value="`// Values denoted with an ? are optional.\n${currentDocu.ts}`" theme="vs-dark"
 							:options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, automaticLayout: true, readOnly: true, scrollBeyondLastLine: false }"
-							language="typescript"
-							height="200px"
-						/>
+							language="typescript" height="200px" />
 					</div>
 					<div v-if="currentDocu?.opt">
 						<hr>
@@ -72,18 +70,19 @@ const currentDocu = computed(() => {
 
 <style scoped>
 a {
-	color: orangered;
+	color: rgb(var(--v-theme-primary));
 }
 
 .highlight {
-	color: orangered;
-	border-left: 3px solid orangered;
+	color: rgb(var(--v-theme-primary));
+	border-left: 3px solid rgb(var(--v-theme-primary));
 	padding: 3px;
 }
 
 .docs-container {
 	width: 100%;
 }
+
 summary {
 	font-size: smaller;
 }

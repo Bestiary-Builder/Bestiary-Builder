@@ -473,7 +473,7 @@ const makeGvar = async () => {
 }
 
 a {
-    color: orangered;
+    color: rgb(var(--v-theme-primary));
 }
 
 .sub-action {

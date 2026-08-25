@@ -95,13 +95,13 @@ watchEffect(() => {
 	}
 
 	& button.inverted {
-		background-color: orangered;
+		background-color: rgb(var(--v-theme-primary));
 		color: var(--bg-surface);
 
 
 		&:hover {
 			background-color: var(--bg-surface);
-			color: orangered;
+			color: rgb(var(--v-theme-primary));
 		}
 	}
 }

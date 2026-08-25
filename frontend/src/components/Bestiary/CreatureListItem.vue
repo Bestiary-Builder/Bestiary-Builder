@@ -13,7 +13,7 @@ const emit = defineEmits<{
 <template>
 	<div class="content-tile creature-tile">
 		<div class="left-side">
-			<h3 style="color: orangered" class="font-weight">
+			<h3 style="color: rgb(var(--v-theme-primary))" class="font-weight">
 				{{ data.description?.name }} <span> CR {{ crAsString(data.description.cr) }}
 				</span>
 			</h3>

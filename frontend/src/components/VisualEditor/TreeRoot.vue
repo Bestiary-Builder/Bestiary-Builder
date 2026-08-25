@@ -145,7 +145,7 @@ const showControls = inject<Ref<boolean>>("showControls")
 }
 
 .root {
-	color: orangered;
+	color: rgb(var(--v-theme-primary));
 	margin-bottom: 0.2rem;
 }
 

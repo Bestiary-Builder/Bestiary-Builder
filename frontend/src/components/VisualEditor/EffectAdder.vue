@@ -119,7 +119,7 @@ const showControls = inject<Ref<boolean>>("showControls")
 		<template #activator="{ props }">
 			<p class="tree-row" v-bind="props" :style="`--depth: ${depth}`">
 				<span class="icon">
-					<Icon icon="material-symbols:add-circle" width="1em" color="orangered" />
+					<Icon icon="material-symbols:add-circle" width="1em" color="rgb(var(--v-theme-primary))" />
 				</span><span>{{ automation === null ? 'Create Automation' : 'Add Effect' }}</span>
 			</p>
 		</template>
@@ -142,7 +142,7 @@ const showControls = inject<Ref<boolean>>("showControls")
 <style scoped lang="less">
 button {
 	width: 100%;
-	color: orangered;
+	color: rgb(var(--v-theme-primary));
 }
 
 .two-wide {

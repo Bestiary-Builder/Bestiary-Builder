@@ -68,7 +68,7 @@ onMounted(async () => {
 }
 
 .developer {
-	color: orangered;
+	color: rgb(var(--v-theme-primary));
 	text-shadow: var(--color-surface-0) 2px 2px;
 }
 

@@ -506,7 +506,7 @@ provide("setActionDescription", setDesc);
 }
 
 a {
-	color: orangered;
+	color: rgb(var(--v-theme-primary));
 }
 
 .sub-action {

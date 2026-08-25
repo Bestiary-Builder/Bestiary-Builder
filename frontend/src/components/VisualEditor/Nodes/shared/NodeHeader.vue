@@ -7,7 +7,7 @@ const props = defineProps<{ type: keyof typeof displayNames; additionalText?: st
 
 <template>
 	<Icon :icon="isCurrent ? 'material-symbols:asterisk' : displayNames![props.type]?.icon" :inline="true" width="1em"
-		:color="isCurrent ? 'rgb(var(--v-theme-success))' : 'orangered'" />
+		:color="isCurrent ? 'rgb(var(--v-theme-success))' : 'rgb(var(--v-theme-primary))'" />
 	{{ displayNames![props.type]?.label }}<span v-if="additionalText" style="font-size: x-small; margin-left: 6px"
 		class="additional-text">{{ additionalText }}</span>
 </template>

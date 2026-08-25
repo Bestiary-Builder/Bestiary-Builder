@@ -433,7 +433,7 @@ const srdOptions = [
 							<ol>
 								<li>
 									Log in on the <a href="https://avrae.io/dashboard/characters"
-										style="color: orangered"> Avrae Dashboard
+										style="color: rgb(var(--v-theme-primary))"> Avrae Dashboard
 									</a>
 								</li>
 								<li>
@@ -466,7 +466,7 @@ const srdOptions = [
 .content div {
 	.patreon {
 		margin-top: 1rem;
-		color: orangered;
+		color: rgb(var(--v-theme-primary));
 	}
 
 	.center {

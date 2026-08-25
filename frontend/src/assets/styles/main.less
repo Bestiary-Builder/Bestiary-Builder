@@ -39,16 +39,16 @@ a {
 }
 
 select {
-	border: 2px solid orangered;
+	border: 2px solid rgb(var(--v-theme-primary));
 	background: transparent;
-	color: orangered;
+	color: rgb(var(--v-theme-primary));
 	border-radius: 0.2rem;
 	padding: 0 0.2rem;
 	outline: none;
 
 	& option {
 		background-color: var(--color-surface-0);
-		color: orangered;
+		color: rgb(var(--v-theme-primary));
 	}
 
 	&.ghost {
@@ -79,7 +79,7 @@ select {
 		}
 
 		a:not(.header-anchor) {
-			color: orangered;
+			color: rgb(var(--v-theme-primary));
 			text-decoration-color: rgba(255, 69, 0, 0);
 
 			&:hover {

@@ -776,7 +776,7 @@ const pinCreature = (creature: Statblock) => {
 				}
 
 				.cr {
-					color: orangered;
+					color: rgb(var(--v-theme-primary));
 					width: 3rem;
 					display: inline-block;
 				}
@@ -795,7 +795,7 @@ const pinCreature = (creature: Statblock) => {
 				button {
 					background: none;
 					border: none;
-					color: orangered;
+					color: rgb(var(--v-theme-primary));
 					font-size: 1.2rem;
 					display: flex;
 					align-items: center;
@@ -803,7 +803,7 @@ const pinCreature = (creature: Statblock) => {
 					cursor: pointer;
 
 					svg {
-						color: orangered;
+						color: rgb(var(--v-theme-primary));
 					}
 				}
 
@@ -862,19 +862,18 @@ const pinCreature = (creature: Statblock) => {
 }
 
 .header-tile {
-	background-color: orangered;
+	background-color: rgb(var(--v-theme-surface));
 	cursor: unset;
 	margin: 0 0rem 1rem;
 	padding: 1rem;
 	border-radius: 2px;
-	color: black;
 
 	h2 {
 		text-align: center;
 		text-wrap: nowrap;
 		overflow: hidden;
 		max-width: 90vw;
-		color: black;
+		color: rgb(var(--v-theme-primary));
 		font-weight: bold;
 	}
 
@@ -973,7 +972,7 @@ const pinCreature = (creature: Statblock) => {
 .expand-btn {
 	border: none;
 	background: none;
-	color: orangered;
+	color: rgb(var(--v-theme-primary));
 	font-size: 1.6rem;
 	translate: 0 -20px;
 

@@ -123,7 +123,7 @@ onMounted(async () => {
 			text-align: right;
 
 			li {
-				color: orangered;
+				color: rgb(var(--v-theme-primary));
 			}
 
 			b {
@@ -143,7 +143,7 @@ onMounted(async () => {
 
 				&,
 				a {
-					color: orangered;
+					color: rgb(var(--v-theme-primary));
 				}
 			}
 		}

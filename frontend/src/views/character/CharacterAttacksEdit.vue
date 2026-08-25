@@ -116,7 +116,8 @@ const isVisualEditor = ref(store.user?.preferredEditor === "Visual");
 		<ImportAutomationUtil @load-feature="(feature: FeatureEntity) => loadFeature(feature)" />
 	</Breadcrumbs>
 	<div v-if="!AvraeToken" class="content">
-		No Avrae Connection made. Please see <RouterLink to="/user-settings#avrae-token" style="color: orangered">
+		No Avrae Connection made. Please see <RouterLink to="/user-settings#avrae-token"
+			style="color: rgb(var(--v-theme-primary))">
 			your user settings
 		</RouterLink> for how to enable this.
 	</div>
