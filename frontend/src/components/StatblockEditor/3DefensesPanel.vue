@@ -7,25 +7,23 @@ const { data } = defineProps<{ data: Statblock }>();
 </script>
 
 <template>
-	<div id="tabpanel-4" class="editor-content__tab-inner" role="tabpanel" tabindex="0" aria-labelledby="tab-4">
+	<div>
+		<SectionHeader title="HP & AC" />
 		<v-row class="mt-4">
-			<v-col>
+			<v-col cols="4">
 				<v-number-input v-model="data.defenses.hp.numOfHitDie" label="Hit Die Number" :min="0" />
 			</v-col>
-			<v-col>
+			<v-col cols="4">
 				<v-number-input v-model="data.defenses.hp.sizeOfHitDie" label="Hit Die Size" :min="1" :step="2" />
 			</v-col>
-			<v-col>
+			<v-col cols="4">
 				<v-number-input v-model="data.defenses.hp.override" label="HP Override" :min="0" clearable />
 			</v-col>
-		</v-row>
-		<v-row class="mt-4">
-			<v-col>
+			<v-col cols="6">
 				<v-number-input v-model="data.defenses.ac.ac" label="Armor Class" :min="0" />
 			</v-col>
-			<v-col>
+			<v-col cols="6">
 				<v-text-field v-model="data.defenses.ac.acSource" label="Armor source" />
-
 			</v-col>
 		</v-row>
 		<SectionHeader title="Resistances" />
@@ -49,7 +47,3 @@ const { data } = defineProps<{ data: Statblock }>();
 		</v-row>
 	</div>
 </template>
-
-<style lang="less">
-@import url("@/components/StatblockEditor/styles/tabpane.less");
-</style>

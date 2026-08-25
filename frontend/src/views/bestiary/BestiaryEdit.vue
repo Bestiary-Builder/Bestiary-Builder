@@ -18,6 +18,7 @@ import { useFetch } from "@/utils/utils";
 import { defaultStatblock } from "~/shared";
 import { useCollection } from "@/components/Bestiary/useCollection";
 import { VueDraggable } from "vue-draggable-plus";
+import SectionHeader from "@/components/VisualEditor/Nodes/shared/SectionHeader.vue";
 
 const {
 	collection,
@@ -433,79 +434,84 @@ const pinCreature = (creature: Statblock) => {
 
 			<v-dialog v-if="isOwner" max-width="950">
 				<template #activator="{ props }">
-					<v-icon-btn text="Bestiary Settings" icon="mdi:cog" size="24" v-bind="props"
+					<v-icon-btn text="Collection Settings" icon="mdi:cog" size="24" v-bind="props"
 						v-tooltip="'Settings'" />
 				</template>
 
 				<template #default="{ isActive }">
-					<v-card title="Bestiary Settings">
-						<v-sheet class="pa-4" max-width="1800" rounded="lg" width="100%">
-							<v-form>
-								<div class="grid-two">
-									<v-text-field v-model="collection.name" label="Name"
-										:maxlength="store.limits?.nameLength" :min-length="store.limits?.nameMin"
-										:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]"
-										class="mb-4" />
-									<v-text-field v-model="collection.image" label="Image" class="mb-4" />
-								</div>
+					<v-card title="Bestiary Settings" class="pa-4">
+						<v-row>
+							<v-col cols="6">
+								<v-text-field v-model="collection.name" label="Name"
+									:maxlength="store.limits?.nameLength" :min-length="store.limits?.nameMin"
+									:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]"
+									class="mb-4" />
+							</v-col>
+							<v-col cols="6">
+								<v-text-field v-model="collection.image" label="Image" class="mb-4" />
 
+							</v-col>
+
+							<v-col cols="12">
 								<v-textarea v-model="collection.description"
 									:max-length="store.limits?.descriptionLength"
 									:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]"
 									label="Description" class="mb-4" hint="Supports Markdown" persistent-hint counter />
-								<div class="grid-two">
-									<div>
-										<v-select v-model="collection.status" label="Status"
-											:items="[{ value: 'private', title: 'Private' }, { value: 'unlisted', title: 'Unlisted' }, { value: 'public', title: 'Public' }]" />
-									</div>
-									<v-select v-model="collection.tags" multiple :items="store.tags || []" label="Tags"
-										chips closable-chips />
+							</v-col>
+
+							<v-col cols="6">
+								<v-select v-model="collection.status" label="Status"
+									:items="[{ value: 'private', title: 'Private' }, { value: 'unlisted', title: 'Unlisted' }, { value: 'public', title: 'Public' }]" />
+							</v-col>
+							<v-col cols="6">
+								<v-select v-model="collection.tags" multiple :items="store.tags || []" label="Tags"
+									chips closable-chips />
+							</v-col>
+
+							<v-col cols="12" class="px-4">
+								<div>
+									<SectionHeader title="Editors" />
+									<p>
+										Editors can add, edit, and remove items. <br>
+										Editors cannot edit the Collection itself. <br>
+										Editors cannot add other editors. The owner can remove editors at any time.
+									</p>
 								</div>
 
-								<div class="editor-block">
-									<h3 style="margin-bottom: .5rem">
-										Editors
-									</h3>
-									<small>
-										Editors can add, edit, and remove items. <br>
-										Editors cannot edit the Bestiary itself. <br>
-										Editors cannot add other editors. The owner can remove editors at any time.
-									</small>
-									<div class="editor-container" style="margin-top: .5rem">
-										<div v-for="editor in editors" :key="editor.id" class="editor-list">
-											<p>
-												<UserBanner :id="editor.id" />
-												<span v-if="isOwner" role="button" class="delete-creature"
-													@click="removeEditor(editor.id)"> <span>🗑️</span> </span>
-											</p>
-										</div>
-									</div>
-									<div class="grid-two">
-										<v-text-field v-model="editorToAdd" inputmode="numeric" label="Discord user ID"
-											:rules="[rules.integer('This must be a numeric Discord User ID.')]"
-											pattern="[0-9]*" />
-										<v-btn class="mz-auto" @click="addEditor(editorToAdd)">
-											Add
-										</v-btn>
-									</div>
-								</div>
-								<p v-if="showWarning" class="warning">
-									By changing the bestiary status to public I confirm that I am the copyright holder
-									of the content
-									within, or that I have permission from the copyright holder to share this content. I
-									hereby agree to
-									the <RouterLink to="../content-policy">
-										Content Policy
-									</RouterLink> and agree to
-									be fully liable for the content within. I affirm that the content does not include
-									any official
-									non-free D&D content. Bestiaries that breach these terms may have their status
-									changed to private or
-									be outright removed, and may result in a ban if the content breaches our content
-									policy.
+							</v-col>
+							<v-col v-for="editor in editors" :key="editor.id" cols="4">
+								<p>
+									<UserBanner :id="editor.id" />
+									<v-icon-btn v-if="isOwner" icon="mdi:delete" @click="removeEditor(editor.id)" />
 								</p>
-							</v-form>
-						</v-sheet>
+							</v-col>
+							<v-col cols="6">
+								<v-text-field v-model="editorToAdd" inputmode="numeric" label="Discord user ID"
+									:rules="[rules.integer('This must be a numeric Discord User ID.')]"
+									pattern="[0-9]*" />
+							</v-col>
+							<v-col cols="6">
+								<v-btn class="w-100" @click="addEditor(editorToAdd)" size="large">
+									Add
+								</v-btn>
+							</v-col>
+
+							<p v-if="showWarning" style="color: rgb(var(--v-theme-error))">
+								By changing the Collection status to public I confirm that I am the copyright holder
+								of the content
+								within, or that I have permission from the copyright holder to share this content. I
+								hereby agree to
+								the <RouterLink to="../content-policy">
+									Content Policy
+								</RouterLink> and agree to
+								be fully liable for the content within. I affirm that the content does not include
+								any official
+								non-free D&D content. Collections that breach these terms may have their status
+								changed to private or
+								be outright removed, and may result in a ban if the content breaches our content
+								policy.
+							</p>
+						</v-row>
 						<v-card-actions>
 							<v-spacer />
 							<v-btn text="Save changes" color="green" size="large" @click="updateCollection" />
@@ -519,22 +525,32 @@ const pinCreature = (creature: Statblock) => {
 					<v-icon-btn text="Search creatures" icon="mdi:tag" size="24" v-bind="props"
 						v-tooltip="'Search creatures'" />
 				</template>
-				<v-card min-width="300" class="pa-4" title="Search bestiary">
-					<v-card-actions class="d-flex flex-column align-center justify-center" min-width="200">
-						<v-select v-model="sortMode"
-							:items="['Custom', 'Alphabetically', 'CR Ascending', 'CR Descending', 'Creature Type']"
-							label="Bestiary sort type" width="100%" persistent-hint
-							hint="Drag to reorder in Custom mode." />
-						<div class="grid-two">
-							<v-text-field v-model="searchText" label="Name" width="200" />
+				<v-card max-width="400" class="pa-4" title="Search bestiary">
+					<v-row>
+						<v-col cols="12">
+							<v-select v-model="sortMode"
+								:items="['Custom', 'Alphabetically', 'CR Ascending', 'CR Descending', 'Creature Type']"
+								label="Bestiary sort type" hide-details />
+						</v-col>
+						<v-col cols="6">
+							<v-text-field v-model="searchText" label="Name" />
+						</v-col>
+						<v-col cols="6">
 							<v-select v-model="searchOptions.tags" :items="creatureTypes" label="Creature type" multiple
-								chips closable-chips width="200" />
+								chips closable-chips /> </v-col>
+						<v-col cols="6">
 							<CRInput v-model="searchOptions.minCr" label="Minimum CR" />
+						</v-col>
+						<v-col cols="6">
 							<CRInput v-model="searchOptions.maxCr" label="Maximum CR" />
-							<v-text-field v-model="searchOptions.faction" label="Faction" width="200" />
-							<v-text-field v-model="searchOptions.env" label="Environment" width="200" />
-						</div>
-					</v-card-actions>
+						</v-col>
+						<v-col cols="6">
+							<v-text-field v-model="searchOptions.faction" label="Faction" />
+						</v-col>
+						<v-col cols="6">
+							<v-text-field v-model="searchOptions.env" label="Environment" />
+						</v-col>
+					</v-row>
 				</v-card>
 			</DropdownMenu>
 
@@ -545,25 +561,27 @@ const pinCreature = (creature: Statblock) => {
 				</template>
 
 				<template #default="{ isActive }">
-					<v-card title="Import bestiary">
-						<v-sheet class="pa-4" max-width="1800" rounded="lg" width="100%">
-							<div class="grid-two">
+					<v-card title="Import bestiary" max-width="800" class="pa-4">
+						<v-row>
+							<v-col cols="6">
 								<v-text-field v-model="importFields.critterDbId" label="CritterDB Bestiary link"
 									hint="Make sure the Bestiary is public or has link-sharing enabled"
 									persistent-hint />
+								<v-btn size="large" @click="importBestiaryFromCritterDB()" class="w-100 mt-4">
+									Import CritterDB
+								</v-btn>
+							</v-col>
+							<v-col>
 								<v-file-input v-model="importFields.bestiaryBuilderJson" label="Bestiary Builder JSON"
 									hint="JSON (.json/.txt) describing a bestiary gotten from clicking export elsewhere on BB"
 									persistent-hint accept=".txt,.json" />
-								<v-btn size="large" @click="importBestiaryFromCritterDB()">
-									Import CritterDB
-								</v-btn>
-								<v-btn size="large" @click="importCreaturesFromBestiaryBuilder()">
+
+								<v-btn size="large" @click="importCreaturesFromBestiaryBuilder()" class="w-100 mt-4">
 									Import BB
 								</v-btn>
-							</div>
-						</v-sheet>
-						<v-card-actions>
-							<v-spacer />
+							</v-col>
+						</v-row>
+						<v-card-actions class="mt-4">
 							<v-btn text="Cancel" size="large" @click="isActive.value = false" />
 						</v-card-actions>
 						<v-sheet v-if="JSON.stringify(notices) !== '{}'">
@@ -766,6 +784,7 @@ const pinCreature = (creature: Statblock) => {
 			justify-content: space-between;
 
 			.left-side {
+
 				span,
 				p {
 					font-style: italic;
@@ -823,7 +842,7 @@ const pinCreature = (creature: Statblock) => {
 	}
 }
 
-@media screen and (width <= 842px) {
+@media screen and (width <=842px) {
 	.list-tiles {
 		max-height: 40vh;
 
@@ -913,7 +932,7 @@ const pinCreature = (creature: Statblock) => {
 	}
 }
 
-@media screen and (width <= 842px) {
+@media screen and (width <=842px) {
 	.header-tile {
 		padding: 0.5rem;
 
@@ -938,7 +957,7 @@ const pinCreature = (creature: Statblock) => {
 	grid-template-columns: 1fr 1fr;
 }
 
-@media screen and (width <= 1080px) {
+@media screen and (width <=1080px) {
 	.list-tiles {
 		padding: 0;
 
@@ -1046,7 +1065,7 @@ const pinCreature = (creature: Statblock) => {
 }
 
 .warning {
-	color: var(--color-destructive);
+	color: rgb(var(--v-theme-error));
 	margin-top: 0.5rem;
 }
 

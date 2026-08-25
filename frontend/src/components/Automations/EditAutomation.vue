@@ -159,7 +159,7 @@ const currentDocu = computed(() => docu.value[currentContext.value]);
         <VueMonacoEditor v-model:value="automationString" theme="vs-dark"
             :options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false }"
             height="800px" language="yaml" @mount="handleMount" />
-        <small v-if="yamlError" style="color: var(--color-destructive)">{{ yamlError }}</small>
+        <small v-if="yamlError" style="color: rgb(var(--v-theme-error))">{{ yamlError }}</small>
 
         <div v-if="currentDocu" class="docs">
             <hr>

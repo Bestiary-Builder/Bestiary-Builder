@@ -32,7 +32,7 @@ const createNewFeature = (type: keyof Features) => {
 </script>
 
 <template>
-	<div id="tabpanel-5" class="editor-content__tab-inner" role="tabpanel" tabindex="0" aria-labelledby="tab-5">
+	<div>
 		<div v-for="(descText, fType) in newFeatureGenerator" :key="fType">
 			<SectionHeader :title="`${descText.replace('New ', '').replace('Feature', 'Trait')}s`" />
 			<table class="list-table features">
@@ -79,7 +79,8 @@ const createNewFeature = (type: keyof Features) => {
 						</td>
 					</tr>
 					<tr class="table-footer">
-						<td />
+						<td> <v-icon icon="" class="handle invisible" size="24" />
+						</td>
 						<th style="cursor: pointer;" @click="createNewFeature(fType)">
 							Add {{ descText }}
 						</th>
@@ -133,7 +134,3 @@ const createNewFeature = (type: keyof Features) => {
 		</div>
 	</div>
 </template>
-
-<style lang="less">
-@import url("@/components/StatblockEditor/styles/tabpane.less");
-</style>

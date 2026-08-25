@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { RouterView } from "vue-router";
 import ToastHost from "./components/Page/ToastHost.vue";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { store } from "./utils/store.js";
 import { sendToLogin } from "./utils/utils.js";
 import { useLocalStorage } from "@vueuse/core";
@@ -25,6 +25,13 @@ const toggleDrawer = () => {
         drawer.value = !drawer.value
     }
 }
+
+const defaults = computed(() => ({
+    VRow: {
+        size: store.isMobile ? 4 : undefined,
+    },
+}))
+
 </script>
 
 <template>
@@ -123,9 +130,11 @@ const toggleDrawer = () => {
                 Bestiary Builder 3.0.0! See all the changes in the <RouterLink to="/changelog">
                     Changelog </RouterLink>
             </v-alert>
-            <router-view v-slot="{ Component, route }">
-                <component :is="Component" :key="route.params.id" />
-            </router-view>
+            <VDefaultsProvider :defaults="defaults">
+                <router-view v-slot="{ Component, route }">
+                    <component :is="Component" :key="route.params.id" />
+                </router-view>
+            </VDefaultsProvider>
         </v-main>
         <v-footer class="d-flex align-center justify-center ga-2 flex-wrap flex-grow-1 py-3" color="surface-light-1">
             <v-btn to="/" text="Home" variant="plain" />

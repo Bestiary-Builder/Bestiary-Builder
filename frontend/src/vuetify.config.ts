@@ -49,7 +49,7 @@ export const vuetify = createVuetify({
             },
             VNumberInput: {
                 variant: "outlined"
-            }
+            },
         },
         VCheckbox: {
             color: "primary"
@@ -59,7 +59,8 @@ export const vuetify = createVuetify({
         },
         VAutocomplete: {
             variant: "solo-filled"
-        }
+        },
+
     },
     theme: {
         defaultTheme: "dark",

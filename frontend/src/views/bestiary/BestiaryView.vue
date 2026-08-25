@@ -256,21 +256,32 @@ const pinCreature = (creature: Statblock) => {
 					<v-icon-btn text="Search creatures" icon="mdi:tag" size="24" v-bind="props"
 						v-tooltip="'Search creatures'" />
 				</template>
-				<v-card min-width="300" class="text-center pb-2 pa-4" title="Search bestiary">
-					<v-card-actions class="d-flex flex-column align-center justify-center" min-width="200">
-						<v-select v-model="sortMode"
-							:items="['Custom', 'Alphabetically', 'CR Ascending', 'CR Descending', 'Creature Type']"
-							label="Bestiary sort type" width="100%" />
-						<div class="grid-two">
-							<v-text-field v-model="searchText" label="Name" width="200" />
+				<v-card max-width="400" class="pa-4" title="Search bestiary">
+					<v-row>
+						<v-col cols="12">
+							<v-select v-model="sortMode"
+								:items="['Custom', 'Alphabetically', 'CR Ascending', 'CR Descending', 'Creature Type']"
+								label="Bestiary sort type" hide-details />
+						</v-col>
+						<v-col cols="6">
+							<v-text-field v-model="searchText" label="Name" />
+						</v-col>
+						<v-col cols="6">
 							<v-select v-model="searchOptions.tags" :items="creatureTypes" label="Creature type" multiple
-								chips closable-chips width="200" />
+								chips closable-chips /> </v-col>
+						<v-col cols="6">
 							<CRInput v-model="searchOptions.minCr" label="Minimum CR" />
+						</v-col>
+						<v-col cols="6">
 							<CRInput v-model="searchOptions.maxCr" label="Maximum CR" />
-							<v-text-field v-model="searchOptions.faction" label="Faction" width="200" />
-							<v-text-field v-model="searchOptions.env" label="Environment" width="200" />
-						</div>
-					</v-card-actions>
+						</v-col>
+						<v-col cols="6">
+							<v-text-field v-model="searchOptions.faction" label="Faction" />
+						</v-col>
+						<v-col cols="6">
+							<v-text-field v-model="searchOptions.env" label="Environment" />
+						</v-col>
+					</v-row>
 				</v-card>
 			</DropdownMenu>
 
@@ -415,6 +426,7 @@ const pinCreature = (creature: Statblock) => {
 			justify-content: space-between;
 
 			.left-side {
+
 				span,
 				p {
 					font-style: italic;
@@ -471,7 +483,7 @@ const pinCreature = (creature: Statblock) => {
 	}
 }
 
-@media screen and (width <= 842px) {
+@media screen and (width <=842px) {
 	.list-tiles {
 		max-height: 40vh;
 
@@ -561,7 +573,7 @@ const pinCreature = (creature: Statblock) => {
 	}
 }
 
-@media screen and (width <= 842px) {
+@media screen and (width <=842px) {
 	.header-tile {
 		padding: 0.5rem;
 
@@ -586,7 +598,7 @@ const pinCreature = (creature: Statblock) => {
 	grid-template-columns: 1fr 1fr;
 }
 
-@media screen and (width <= 1080px) {
+@media screen and (width <=1080px) {
 	.list-tiles {
 		padding: 0;
 
@@ -694,7 +706,7 @@ const pinCreature = (creature: Statblock) => {
 }
 
 .warning {
-	color: var(--color-destructive);
+	color: rgb(var(--v-theme-error));
 	margin-top: 0.5rem;
 }
 

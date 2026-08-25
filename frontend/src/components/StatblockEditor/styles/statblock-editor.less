@@ -1,75 +1,3 @@
-.two-wide {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	gap: 1rem;
-}
-
-.editor-content {
-	&__tab-inner {
-		.group-header {
-			text-align: center;
-			letter-spacing: -1px;
-			margin-bottom: 0.5rem;
-			border-bottom: 2px dotted var(--border-color-base);
-		}
-
-		.editor-field__container {
-			width: 100%;
-			display: grid;
-			gap: 0.5rem 1rem;
-			margin-bottom: 1rem;
-
-			.flow-vertically {
-				display: flex;
-				flex-direction: column;
-				gap: 0.3rem;
-
-				.button-container p {
-					display: flex;
-					justify-content: space-between;
-				}
-			}
-
-			.editor-field__title .text {
-				font-weight: bold;
-				text-decoration: underline;
-			}
-
-			&.one-wide {
-				grid-template-columns: 1fr;
-			}
-
-			&.two-wide {
-				grid-template-columns: 1fr 1fr;
-			}
-
-			&.three-wide {
-				grid-template-columns: 1fr 1fr 1fr;
-			}
-		}
-	}
-}
-
-
-
-.feature-button__container {
-	display: flex;
-	gap: 0.5rem;
-	justify-content: start;
-}
-
-
-.buttons {
-	display: grid;
-	gap: 1rem;
-	grid-template-columns: 1fr;
-	margin: 1rem 25%;
-
-	:disabled {
-		cursor: not-allowed;
-	}
-}
-
 .handle {
 	padding-top: 0;
 	padding-bottom: 0;
@@ -78,6 +6,11 @@
 
 	&:active {
 		cursor: grabbing;
+	}
+
+	&.invisible {
+		cursor: unset;
+
 	}
 }
 
@@ -107,29 +40,6 @@
 .list-leave-to {
 	opacity: 0;
 	translate: 0 -10px;
-}
-
-.preview-icon {
-	border: unset;
-	position: relative;
-	cursor: pointer;
-	background: transparent;
-	border-radius: 50%;
-	padding: 0.3rem;
-	height: 1.5rem;
-	width: 1.5rem;
-	aspect-ratio: 1;
-	color: grey;
-	transition: all ease 0.3s;
-
-	svg {
-		scale: 1.1;
-		translate: 0 -2px;
-	}
-
-	&:hover {
-		color: var(--color-surface-0);
-	}
 }
 
 .list-table {
@@ -198,15 +108,12 @@
 
 	.edit-buttons>div {
 		width: 100%;
-		display: inline-flex;
+		display: flex;
 		flex-direction: row;
 		justify-content: center;
-		color: var(--color-base);
 		gap: 0.3rem;
-
-		a {
-			color: rgb(var(--v-theme-primary));
-		}
+		justify-content: center;
+		align-items: center;
 	}
 
 	.edit-buttons button svg {
@@ -254,7 +161,6 @@
 }
 
 .list-table.quiet {
-	color: var(--color-base) !important;
 
 	tbody th,
 	tbody td {
@@ -266,13 +172,9 @@
 			color: gray;
 		}
 	}
-
-	.edit-buttons button {
-		color: var(--color-base);
-	}
 }
 
-@media screen and (width <= 450px) {
+@media screen and (width <=450px) {
 	.list-table {
 		font-size: small;
 

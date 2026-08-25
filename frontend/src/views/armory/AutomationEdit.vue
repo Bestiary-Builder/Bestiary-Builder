@@ -422,9 +422,9 @@ const makeGvar = async () => {
                                 structure to this text while enabled.</i> </small>
                     </span>
 
-                    <div v-if="!isVisualEditor && showDescriptionButtons">
-                        <b> Descriptions: </b>
-                        <span style="color: var(--color-destructive)"> Don't match. </span>
+                    <div v-if="!isVisualEditor && showDescriptionButtons" class="mt-4">
+                        <b class="mt-4"> Descriptions: </b>
+                        <span style="color: rgb(var(--v-theme-error))"> Don't match. </span>
                         <p style="text-decoration: underline; font-size: smaller; cursor: pointer;"
                             @click="updateAutomationDescFromFeatureDesc">
                             Update from feature
@@ -446,13 +446,6 @@ const makeGvar = async () => {
                     </span>
                 </v-col>
             </v-row>
-        </div>
-        <div class="editor-field__container two-wide uneven">
-            <div>
-                <div>
-
-                </div>
-            </div>
         </div>
 
         <EditAutomation ref="EditAutomationRef" v-model="data.automation" v-model:is-visual-editor="isVisualEditor"

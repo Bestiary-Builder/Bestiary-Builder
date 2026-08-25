@@ -114,18 +114,26 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 		</v-row>
 
 		<SectionHeader title="Duration Options" />
-		<div class="grid-two">
-			<div>
+		<v-row>
+			<v-col cols=6>
 				<v-text-field v-model="currentEffect.duration" label="Duration" hint="IntExpression" hide-details />
-			</div>
-			<v-checkbox v-model="currentEffect.end" label="Ticks on end of turn." hide-details />
-			<v-checkbox v-model="currentEffect.tick_on_caster" label="Ticks on Caster rather than the Target."
-				hide-details />
-			<v-checkbox v-model="currentEffect.conc" label="Requires concentration." hide-details />
-		</div>
+			</v-col>
+			<v-col cols=6>
+				<v-checkbox v-model="currentEffect.end" label="Ticks on end of turn." hide-details density="compact" />
+			</v-col>
+			<v-col cols="6">
+				<v-checkbox v-model="currentEffect.tick_on_caster" label="Ticks on Caster rather than the Target."
+					hide-details density="compact" />
+			</v-col>
+			<v-col cols="6">
+				<v-checkbox v-model="currentEffect.conc" label="Requires concentration." hide-details
+					density="compact" />
+			</v-col>
+		</v-row>
+
 		<SectionHeader title="Passive Effects" />
-		<div class="grid-two mt-4">
-			<div v-for="effect, key in currentEffect.effects" :key="key">
+		<v-row>
+			<v-col v-for="effect, key in currentEffect.effects" :key="key" cols="6">
 				<div v-if="getInputType(key) !== 'list'">
 					<v-text-field :id="key" v-model="(currentEffect as any).effects[key]"
 						:label="getEffectData(key)?.label || ''"
@@ -175,55 +183,59 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 						</template>
 					</v-combobox>
 				</div>
-			</div>
-		</div>
-
-		<div class="grid-two">
-			<v-autocomplete :items="filteredPassiveEffects" item-title="label" label="New Passive Effect" return-object
-				@update:model-value="(e: PassiveEffectDef | null) => addNewPassiveEffect(e)" prepend-icon="mdi:plus"
-				icon-color="primary" item-color="primary" />
-		</div>
-		<div class="my-4">
-			<SectionHeader title="Buttons & Attacks" />
-			<div class="two-wide mt-4">
-				<v-btn @click="addButton">
+			</v-col>
+			<v-col cols="6">
+				<v-autocomplete :items="filteredPassiveEffects" item-title="label" label="New Passive Effect"
+					return-object @update:model-value="(e: PassiveEffectDef | null) => addNewPassiveEffect(e)"
+					prepend-icon="mdi:plus" icon-color="primary" item-color="primary" />
+			</v-col>
+		</v-row>
+		<SectionHeader title="Buttons & Attacks" />
+		<v-row class="my-4">
+			<v-col cols="6">
+				<v-btn @click="addButton" class="w-100">
 					Add a button
 				</v-btn>
-				<v-btn @click="addAttack">
+			</v-col>
+			<v-col>
+				<v-btn @click="addAttack" class="w-100">
 					Add an attack
 				</v-btn>
-			</div>
-			<p class="pt-3">
-				<small>
-					Manage individual buttons and attacks by selecting them in the Effect Tree.
-				</small>
-			</p>
-		</div>
-		<SectionHeader title="Additional Options" />
-		<div class="my-4">
-			<Editor v-model="currentEffect.desc" />
-		</div>
-		<div class="two-wide">
-			<v-text-field v-model="currentEffect.save_as" label="Save As" hide-details />
-			<v-text-field v-model="currentEffect.parent" label="Parent" hide-details />
-			<v-checkbox v-model="currentEffect.stacking" label="Ticks on end of turn." hide-details density="compact" />
-			<v-checkbox v-model="currentEffect.target_self" label="Target Self" hide-details density="compact" />
-			<v-checkbox v-model="currentEffect.hidden" label="Hidden effect" hide-details density="compact" />
-			<v-checkbox label="Stacking" v-model="currentEffect.stacking" hide-details density="compact" />
+			</v-col>
+			<v-col cols="12">
+				<p> Manage individual buttons and attacks by selecting them in the Effect Tree.
+				</p>
+			</v-col>
+		</v-row>
 
-		</div>
+		<SectionHeader title="Additional Options" />
+		<v-row>
+			<v-col cols="12">
+				<Editor v-model="currentEffect.desc" />
+			</v-col>
+			<v-col cols="6">
+				<v-text-field v-model="currentEffect.save_as" label="Save As" hide-details />
+			</v-col>
+			<v-col cols="6">
+				<v-text-field v-model="currentEffect.parent" label="Parent" hide-details />
+			</v-col>
+			<v-col cols="6">
+				<v-checkbox v-model="currentEffect.stacking" label="Ticks on end of turn." hide-details
+					density="compact" />
+			</v-col>
+			<v-col cols="6">
+				<v-checkbox v-model="currentEffect.target_self" label="Target Self" hide-details density="compact" />
+			</v-col>
+			<v-col cols="6">
+				<v-checkbox v-model="currentEffect.hidden" label="Hidden effect" hide-details density="compact" />
+			</v-col>
+			<v-col cols="6">
+				<v-checkbox label="Stacking" v-model="currentEffect.stacking" hide-details density="compact" />
+			</v-col>
+		</v-row>
 	</template>
 </template>
 
 <style scoped>
 @import url("../styles/automation-editor.less");
-
-.standout {
-	border-left: 2px solid rgb(var(--v-theme-primary));
-	padding-left: 1rem;
-}
-
-textarea {
-	min-height: 5rem;
-}
 </style>

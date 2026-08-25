@@ -455,9 +455,9 @@ provide("setActionDescription", setDesc);
 						</select>
 					</div>
 
-					<div v-if="!isVisualEditor && showDescriptionButtons">
+					<div v-if="!isVisualEditor && showDescriptionButtons" class="mt-4">
 						<b> Descriptions: </b>
-						<span style="color: var(--color-destructive)"> Don't match. </span>
+						<span style="color: rgb(var(--v-theme-error))"> Don't match. </span>
 						<p style="text-decoration: underline; font-size: smaller; cursor: pointer;"
 							@click="updateAutomationDescFromFeatureDesc">
 							Update from feature
@@ -480,14 +480,6 @@ provide("setActionDescription", setDesc);
 				</v-col>
 			</v-row>
 		</div>
-		<div class="editor-field__container two-wide uneven">
-			<div>
-				<div>
-
-				</div>
-			</div>
-		</div>
-
 		<EditAutomation ref="EditAutomationRef" v-model="data.features[type][aid].automation"
 			v-model:is-visual-editor="isVisualEditor" :name="data.features[type][aid].name" :no-list-attack="false" />
 	</div>

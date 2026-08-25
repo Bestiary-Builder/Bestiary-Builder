@@ -1,19 +1,9 @@
 @import url("./base.css");
 
 body {
-	font-family: var(--font-family-base);
-	color: var(--color-base);
-
-	// position: relative;
-	// width: 100%;
-
 	text-rendering: optimizespeed;
 }
 
-// main {
-// 	width: 100vw;
-// 	min-height: 80vh;
-// }
 
 h1,
 h2,
@@ -21,7 +11,6 @@ h3,
 h4,
 h5,
 h6 {
-	color: var(--color-base--emphasized);
 	font-weight: 100;
 }
 
@@ -52,8 +41,7 @@ select {
 	}
 
 	&.ghost {
-		border-color: var(--border-color-base);
-		color: var(--color-base);
+		border-color: rgb(var(--v-theme-surface-variant));
 		color: white;
 	}
 
@@ -93,13 +81,15 @@ select {
 	}
 }
 
-@media screen and (width <= 1080px) {
+@media screen and (width <=1080px) {
 	.content {
 		padding: 1rem 5vw;
+		max-width: 92vw;
+
 	}
 }
 
-@media screen and (width >= 1081px) {
+@media screen and (width >=1081px) {
 	.content.less-wide {
 		padding: 2rem 10vw;
 	}
@@ -107,11 +97,6 @@ select {
 
 b.indent {
 	margin-left: 1.5rem;
-}
-
-.warning {
-	color: var(--color-destructive);
-	font-weight: bold;
 }
 
 .patreon {

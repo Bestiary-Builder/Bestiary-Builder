@@ -39,7 +39,7 @@ const addNewSense = (newSenseName: string) => {
 </script>
 
 <template>
-	<div id="tabpanel-2" class="editor-content__tab-inner" role="tabpanel" tabindex="0" aria-labelledby="tab-2">
+	<div>
 		<SectionHeader title="Speed" />
 		<table v-if="data.core.speed.length > 0" class="list-table quiet">
 			<thead>
@@ -69,10 +69,10 @@ const addNewSense = (newSenseName: string) => {
 						<div>
 							<DropdownMenu>
 								<template #activator="{ props }">
-									<v-icon-btn icon="mdi:ruler" text="Set unit for this speed" size="20"
-										v-bind="props" />
+									<v-icon-btn icon="mdi:ruler" text="Set unit for this speed" size="20" v-bind="props"
+										color="primary" />
 								</template>
-								<v-card min-width="300" class="text-center pb-2" title="Set unit for this speed">
+								<v-card min-width="300" class="text-center pb-2" subtitle="Set unit for this speed">
 									<select v-model="element.unit" class="ghost" title="Select speed unit">
 										<option>ft</option>
 										<option>m</option>
@@ -85,26 +85,32 @@ const addNewSense = (newSenseName: string) => {
 							<DropdownMenu>
 								<template #activator="{ props }">
 									<v-icon-btn icon="mdi:comment" text="Set comment for this speed" size="20"
-										v-bind="props" />
+										v-bind="props" color="primary" />
 								</template>
-								<v-card min-width="300" class="text-center pb-2" title="Set (comment) for this speed">
+								<v-card min-width="300" class="text-center pb-2"
+									subtitle="Set (comment) for this speed">
 									<v-card-actions>
 										<v-text-field v-model="element.comment" type="text" label="comment" />
 									</v-card-actions>
 								</v-card>
 							</DropdownMenu>
 							<v-icon-btn icon="mdi:delete" text="Remove this speed" size="20"
-								@click="data.core.speed.splice(idx, 1)" />
+								@click="data.core.speed.splice(idx, 1)" color="primary" />
 						</div>
 					</td>
 				</tr>
 			</VueDraggable>
 		</table>
-		<div class="two-wide my-4">
-			<v-combobox v-model="newSpeed" :items="['Walk', 'Swim', 'Fly', 'Climb', 'Burrow']"
-				label="Select speed to add" hint="Supports custom speeds" persistent-hint clearable />
-			<v-btn @click="addNewSpeed(newSpeed)" size="large"> Add Speed </v-btn>
-		</div>
+		<v-row class="my-8">
+			<v-col>
+				<v-combobox v-model="newSpeed" :items="['Walk', 'Swim', 'Fly', 'Climb', 'Burrow']"
+					label="Select speed to add" hint="Supports custom speeds" persistent-hint density="compact" />
+			</v-col>
+			<v-col>
+				<v-btn @click="addNewSpeed(newSpeed)" size="large" class="w-100"> Add Speed </v-btn>
+			</v-col>
+		</v-row>
+
 
 		<SectionHeader title="Senses" />
 		<table v-if="data.core.senses.length > 0" class="list-table quiet">
@@ -135,10 +141,10 @@ const addNewSense = (newSenseName: string) => {
 						<div>
 							<DropdownMenu>
 								<template #activator="{ props }">
-									<v-icon-btn icon="mdi:ruler" text="Set unit for this speed" size="20"
-										v-bind="props" />
+									<v-icon-btn icon="mdi:ruler" text="Set unit for this speed" size="20" v-bind="props"
+										color="primary" />
 								</template>
-								<v-card min-width="300" class="text-center pb-2" title="Set unit for this sense">
+								<v-card min-width="300" class="text-center pb-2" subtitle="Set unit for this sense">
 									<select v-model="element.unit" class="ghost" title="Select sense unit">
 										<option>ft</option>
 										<option>m</option>
@@ -151,47 +157,50 @@ const addNewSense = (newSenseName: string) => {
 							<DropdownMenu>
 								<template #activator="{ props }">
 									<v-icon-btn icon="mdi:comment" text="Set comment for this sense" size="20"
-										v-bind="props" />
+										v-bind="props" color="primary" />
 								</template>
-								<v-card min-width="300" class="text-center pb-2" title="Set (comment) for this sense">
+								<v-card min-width="300" class="text-center pb-2"
+									subtitle="Set (comment) for this sense">
 									<v-card-actions>
 										<v-text-field v-model="element.comment" type="text" label="comment" />
 									</v-card-actions>
 								</v-card>
 							</DropdownMenu>
 							<v-icon-btn icon="mdi:delete" text="Remove this sense" size="20"
-								@click="data.core.senses.splice(idx, 1)" />
+								@click="data.core.senses.splice(idx, 1)" color="primary" />
 						</div>
 					</td>
 				</tr>
 			</VueDraggable>
 		</table>
-		<div class=" grid-two my-4">
-			<div>
+
+		<v-row class="my-8">
+			<v-col>
 				<v-combobox :items="['Darkvision', 'Blindsight', 'Truesight', 'Tremorsense']"
-					label="Select sense to add" hint="Supports custom speeds" persistent-hint clearable
-					v-model="newSense" />
-			</div>
-			<v-btn @click="addNewSense(newSense)" size="large"> Add Sense </v-btn>
-		</div>
+					label="Select sense to add" hint="Supports custom senses" persistent-hint v-model="newSense"
+					density="compact" />
+			</v-col>
+			<v-col>
+				<v-btn @click="addNewSense(newSense)" size="large" class="w-100"> Add Sense </v-btn>
+			</v-col>
+		</v-row>
+
 
 		<SectionHeader title="Miscellaneous" />
-		<div class="grid-two mt-4">
-			<div>
+		<v-row class="my-4">
+			<v-col cols="6">
 				<v-combobox v-model="data.core.languages" multiple chips closable-chips label="Languages"
 					:items="languages" hint="Supports custom languages" persistent-hint />
-			</div>
-			<div>
+			</v-col>
+			<v-col cols="6">
 				<v-number-input v-model="data.misc.telepathy" label="Telepathy" :min="0" :step="5" />
-			</div>
-			<div>
+
+			</v-col>
+			<v-col cols="6">
 				<v-number-input v-model="data.misc.passivePerceptionOverride" label="Passive perception override"
 					clearable />
-			</div>
-		</div>
+			</v-col>
+		</v-row>
+
 	</div>
 </template>
-
-<style lang="less">
-@import url("@/components/StatblockEditor/styles/tabpane.less");
-</style>

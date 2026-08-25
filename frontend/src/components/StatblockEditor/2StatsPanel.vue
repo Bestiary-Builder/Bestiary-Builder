@@ -35,7 +35,7 @@ const addNewSkill = (newSkillName: string) => {
 </script>
 
 <template>
-	<div id="tabpanel-3" class="editor-content__tab-inner" role="tabpanel" tabindex="0" aria-labelledby="tab-3">
+	<div>
 		<SectionHeader title="Ability Scores & Saving Throws" />
 		<div>
 			<table class="list-table quiet">
@@ -137,21 +137,19 @@ const addNewSkill = (newSkillName: string) => {
 						</td>
 						<td>
 							<div>
-								<v-icon size="22" icon="mdi:delete" @click="deleteSkill(idx)" />
+								<v-icon size="22" icon="mdi:delete" @click="deleteSkill(idx)" color="primary" />
 							</div>
 						</td>
 					</tr>
 				</tbody>
 			</table>
-			<div class="two-wide editor-field__container">
-				<v-select label="Add a skill" class="mt-4"
-					:items="['Acrobatics', 'Animal Handling', 'Arcana', 'Athletics', 'Charisma', 'Constitution', 'Deception', 'Dexterity', 'History', 'Initiative', 'Insight', 'Intelligence', 'Intimidation', 'Investigation', 'Medicine', 'Nature', 'Perception', 'Performance', 'Persuasion', 'Religion', 'Sleight of Hand', 'Stealth', 'Strength', 'Survival', 'Wisdom']"
-					@update:model-value="(selected) => (addNewSkill(selected || ''))" />
-			</div>
+			<v-row>
+				<v-col cols="6">
+					<v-select label="Add a skill" class="mt-4"
+						:items="['Acrobatics', 'Animal Handling', 'Arcana', 'Athletics', 'Charisma', 'Constitution', 'Deception', 'Dexterity', 'History', 'Initiative', 'Insight', 'Intelligence', 'Intimidation', 'Investigation', 'Medicine', 'Nature', 'Perception', 'Performance', 'Persuasion', 'Religion', 'Sleight of Hand', 'Stealth', 'Strength', 'Survival', 'Wisdom']"
+						@update:model-value="(selected) => (addNewSkill(selected || ''))" />
+				</v-col>
+			</v-row>
 		</div>
 	</div>
 </template>
-
-<style lang="less">
-@import url("@/components/StatblockEditor/styles/tabpane.less");
-</style>
