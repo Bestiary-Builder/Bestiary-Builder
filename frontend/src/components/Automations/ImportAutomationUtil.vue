@@ -156,7 +156,7 @@ watch(() => selectedAttack.value, () => {
 
 				</div>
 				<div v-else class="text-primary">
-					You can set up importing from your characters with just a button press!
+					You can set up importing from your Avrae characters with just a button press!
 					Set it up in <RouterLink to="/user"> your user settings. </RouterLink>
 				</div>
 				<v-select variant="solo-filled" :items="selectedCharacterData.overrides.attacks" class="mt-4"
