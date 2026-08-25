@@ -59,8 +59,7 @@ const addNewSkill = (newSkillName: string) => {
 								:label-id="stat" />
 						</td>
 						<td>
-							<input v-model="data.abilities.saves[stat].isProficient" type="checkbox"
-								:is-clearable="true">
+							<input v-model="data.abilities.saves[stat].isProficient" type="checkbox">
 						</td>
 						<td>
 							<select v-model="data.abilities.saves[stat].adv" class="ghost"

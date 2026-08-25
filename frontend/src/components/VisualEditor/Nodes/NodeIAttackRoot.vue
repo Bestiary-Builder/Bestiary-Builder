@@ -18,7 +18,7 @@ useDataCleanup(currentEffect, ["defaultAttackBonus", "defaultCastingMod", "defau
 			<v-text-field v-model="currentEffect.attack.thumb" label="Thumbnail URL" />
 			<v-text-field v-model="currentEffect.attack.verb" label="Verb" placeholder="attacks with"
 				persistent-placeholder />
-			<v-checkbox v-model="currentEffect.attack.proper" label="Name is proper noun" />
+			<v-checkbox v-model="currentEffect.attack.proper" label="Name is proper noun" hide-details />
 		</div>
 		<v-textarea v-model="currentEffect.attack.phrase" label="Flavor Text" rows="5" />
 

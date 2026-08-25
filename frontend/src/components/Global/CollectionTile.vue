@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { AutomationCollectionExtended, BestiaryExtended } from "~/shared";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { store } from "@/utils/store.js";
 import StatusIcon from "../Bestiary/StatusIcon.vue";
 import UserBanner from "../Bestiary/UserBanner.vue";
@@ -50,6 +50,8 @@ const lastUpdated = computed(() => {
 	const years = Math.floor(days / 365);
 	return `${years}y`;
 });
+
+const isDeleteOpen = ref(false)
 </script>
 
 <template>
@@ -94,7 +96,7 @@ const lastUpdated = computed(() => {
 					<v-icon icon="material-symbols:drag-indicator" v-if="store.isMobile" class="handle" size="20" />
 					<StatusIcon :icon="data.status" />
 
-					<DropdownMenu v-if="store.user?.id === data.ownerId">
+					<DropdownMenu v-if="store.user?.id === data.ownerId" v-model="isDeleteOpen">
 						<template #activator="{ props }">
 							<v-icon-btn text="Delete Collection" size="20" color="currentColor" v-bind="props"
 								@click.stop.prevent="props.onClick?.($event)" icon="mdi:delete">
@@ -107,7 +109,7 @@ const lastUpdated = computed(() => {
 							</v-card-text>
 							<v-card-actions>
 								<v-btn size="large" class="w-100" color="red"
-									@click.stop.prevent="$emit('deleteCollectionItem', data.id)">
+									@click.stop.prevent="$emit('deleteCollectionItem', data.id); isDeleteOpen = false">
 									Confirm
 								</v-btn>
 							</v-card-actions>

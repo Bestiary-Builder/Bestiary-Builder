@@ -98,17 +98,14 @@ const newBestiaryIsOpen = ref(false)
 			v-tooltip="'Create new bestiary'" />
 	</Breadcrumbs>
 	<div class="content">
-		<VueDraggable v-if="bestiaries" v-model="bestiaries" :animation="150" class="tile-container"
+		<VueDraggable v-if="bestiaries.length > 0" v-model="bestiaries" :animation="150" class="tile-container"
 			:handle="store.isMobile ? '.handle' : ''" @update="saveOrder">
 			<RouterLink :to="`/bestiary/edit/${element.id}`" v-for="element, idx, in bestiaries">
 				<CollectionTile :key="idx" :data="element" @delete-collection-item="(id) => deleteBestiary(id)" />
 			</RouterLink>
 		</VueDraggable>
 		<div v-else class="zero-found">
-			<span> You do not have any bestiaries. </span>
-			<v-btn class="btn confirm" @click="createBestiary">
-				Create a bestiary
-			</v-btn>
+			<p> You do not have any bestiaries. </p>
 		</div>
 		<v-fab icon="mdi:plus" location="bottom end" app color="primary" @click="newBestiaryIsOpen = true"
 			size="large"></v-fab>
@@ -118,29 +115,24 @@ const newBestiaryIsOpen = ref(false)
 		<v-card title="Create new bestiary" class="pa-4">
 			<v-container class="pa-0">
 				<v-row>
-					<v-col>
+					<v-col cols="6">
 						<div>
 							<v-text-field v-model="createOptions.name" label="Name"
 								:maxlength="store.limits?.nameLength" :min-length="store.limits?.nameMin"
-								:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]"
-								class="mb-4" />
+								:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]" />
 						</div>
 					</v-col>
-					<v-col>
+					<v-col cols="6">
 						<div>
-							<v-text-field v-model="createOptions.image" label="Image" class="mb-4"
-								:rules="[rules.imageLink()]" />
+							<v-text-field v-model="createOptions.image" label="Image" :rules="[rules.imageLink()]"
+								hide />
 						</div>
 					</v-col>
-				</v-row>
-			</v-container>
-
-			<v-textarea v-model="createOptions.description" :max-length="store.limits?.descriptionLength"
-				:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]" label="Description" class="mb-4"
-				hint="Supports Markdown" persistent-hint />
-
-			<v-container class="pa-0">
-				<v-row>
+					<v-col cols="12">
+						<v-textarea v-model="createOptions.description" :max-length="store.limits?.descriptionLength"
+							:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]" label="Description"
+							class="mb-4" hint="Supports Markdown" persistent-hint />
+					</v-col>
 					<v-col>
 						<div>
 							<v-select v-model="createOptions.status" label="Status"
@@ -155,6 +147,8 @@ const newBestiaryIsOpen = ref(false)
 					</v-col>
 				</v-row>
 			</v-container>
+
+
 
 			<v-card-actions>
 				<v-spacer />

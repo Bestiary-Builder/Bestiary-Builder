@@ -75,7 +75,7 @@ body {
 	max-width: 100vw;
 	padding: 0;
 	margin: 0;
-	accent-color: var(--color-base--subtle);
+	accent-color: rgb(var(--v-theme-primary));;
 	background: rgb(14, 14, 14);
 	color: var(--color-base);
 }

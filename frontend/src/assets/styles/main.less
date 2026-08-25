@@ -25,10 +25,6 @@ h6 {
 	font-weight: 100;
 }
 
-orangered h2 {
-	font-weight: 300;
-}
-
 hr {
 	border-color: currentColor;
 }
@@ -39,41 +35,6 @@ a {
 
 	&:hover {
 		text-decoration-color: color-mix(in srgb, currentColor, rgba(0, 0, 0, 0.5));
-	}
-}
-
-.btn {
-	padding: 6px 12px;
-	background: var(--color-surface-0);
-	border: 1px solid var(--color-surface-1);
-	border-radius: 6px;
-	font-size: 13px;
-	color: rgb(247, 248, 248);
-	height: 46px;
-	appearance: none;
-	transition: background-color 0.3s ease;
-	cursor: pointer;
-
-	&:hover {
-		background-color: #272727;
-	}
-
-	&.confirm {
-		background-color: var(--color-success);
-		color: black;
-		font-weight: 600;
-	}
-
-	&.danger {
-		background-color: var(--color-destructive);
-		color: black;
-		font-weight: 600;
-	}
-
-	&.danger-hover:hover {
-		background-color: var(--color-destructive);
-		color: black;
-		font-weight: 600;
 	}
 }
 
@@ -210,37 +171,6 @@ blockquote:has(p img[src="/Beholder.webp"])~p {
 	display: block;
 	margin: auto;
 	width: 70%;
-}
-
-.btn-icon {
-	padding: 0;
-	border: unset;
-	background: unset;
-	position: relative;
-	cursor: pointer;
-	background: transparent;
-	border-radius: 50%;
-	padding: 0.3rem;
-	height: 1.5rem;
-	width: 1.5rem;
-	aspect-ratio: 1;
-	color: orangered;
-	transition: all ease 0.3s;
-
-	svg {
-		scale: 1.1;
-		translate: 0 -2px;
-	}
-
-	&:hover {
-		color: var(--color-surface-0);
-	}
-}
-
-[data-sonner-toast][data-type="loading"] {
-	--normal-bg: hsl(215, 100%, 6%);
-	--normal-border: hsl(223, 43%, 17%);
-	--normal-text: hsl(216, 87%, 65%);
 }
 
 .tile-container {
