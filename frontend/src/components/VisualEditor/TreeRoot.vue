@@ -140,7 +140,7 @@ const showControls = inject<Ref<boolean>>("showControls")
 	transition: color 150ms ease-out;
 
 	&:hover {
-		color: color-mix(in srgb, currentColor, white);
+		color: color-mix(in srgb, currentcolor, white);
 	}
 }
 

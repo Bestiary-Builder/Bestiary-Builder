@@ -44,6 +44,6 @@ onMounted(async () => {
 .character-container {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
-	grid-gap: 1rem;
+	gap: 1rem;
 }
 </style>

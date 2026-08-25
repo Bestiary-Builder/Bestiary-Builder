@@ -7,8 +7,7 @@ const { data } = defineProps<{ data: Statblock }>();
 </script>
 
 <template>
-	<div id="tabpanel-4" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0"
-		aria-labelledby="tab-4">
+	<div id="tabpanel-4" class="editor-content__tab-inner" role="tabpanel" tabindex="0" aria-labelledby="tab-4">
 		<v-row class="mt-4">
 			<v-col>
 				<v-number-input v-model="data.defenses.hp.numOfHitDie" label="Hit Die Number" :min="0" />

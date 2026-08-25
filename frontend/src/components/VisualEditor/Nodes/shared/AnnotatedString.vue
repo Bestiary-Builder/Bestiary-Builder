@@ -11,6 +11,7 @@
 	right: 4px;
 	top: 4px;
 	padding: 2px;
+
 	svg {
 		color: white;
 		background-color: none;

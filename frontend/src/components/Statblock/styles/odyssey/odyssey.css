@@ -1,12 +1,12 @@
 @font-face {
-	font-family: "Odyssey";
+	font-family: Odyssey;
 	src: url("TrajanOdyssey-Regular.otf") format("opentype");
 }
 
 body .content .stat-block.Odyssey,
 body .v-card .stat-block.Odyssey {
 	color: #095471;
-	background-color: #ffffff;
+	background-color: #fff;
 	background-size: 100% 100%;
 	background-repeat: no-repeat;
 	box-shadow: 0 0 3px #f3f5f9;
@@ -17,9 +17,9 @@ body .v-card .stat-block.Odyssey {
 	padding: 15px;
 
 	.stat-block__name-container {
-		font-family: "Odyssey";
+		font-family: Odyssey;
 		color: #095471;
-		border-bottom: 0px solid #095471;
+		border-bottom: 0 solid #095471;
 		background-image: url("hr.svg");
 		background-size: 47%;
 		background-repeat: no-repeat;
@@ -47,7 +47,7 @@ body .v-card .stat-block.Odyssey {
 	h3,
 	h4,
 	h5 {
-		font-family: "Odyssey";
+		font-family: Odyssey;
 		color: #095471;
 	}
 
@@ -60,18 +60,18 @@ body .v-card .stat-block.Odyssey {
 	}
 
 	.stat-block__row {
-		border-bottom: 0px solid white;
+		border-bottom: 0 solid white;
 	}
 
 	.feature-container {
 		color: black;
-		border-bottom: 0px solid white;
+		border-bottom: 0 solid white;
 	}
 
 	.feature-container__title {
-		font-family: "Odyssey";
+		font-family: Odyssey;
 		color: #095471;
-		border-bottom: 0px solid white;
+		border-bottom: 0 solid white;
 		background-image: url("hr.svg");
 		background-size: contain;
 		background-repeat: no-repeat;
@@ -111,7 +111,7 @@ body .v-card .stat-block.Odyssey {
 	}
 }
 
-@media screen and (max-width: 1400px) {
+@media screen and (width <= 1400px) {
 	.stat-block {
 		h1 {
 			background-size: 100%;

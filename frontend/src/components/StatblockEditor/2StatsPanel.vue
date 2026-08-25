@@ -35,8 +35,7 @@ const addNewSkill = (newSkillName: string) => {
 </script>
 
 <template>
-	<div id="tabpanel-3" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0"
-		aria-labelledby="tab-3">
+	<div id="tabpanel-3" class="editor-content__tab-inner" role="tabpanel" tabindex="0" aria-labelledby="tab-3">
 		<SectionHeader title="Ability Scores & Saving Throws" />
 		<div>
 			<table class="list-table quiet">

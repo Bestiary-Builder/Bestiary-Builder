@@ -6,11 +6,11 @@
 	font-size: 14px;
 
 	&:hover {
-		color: color-mix(in srgb, currentColor, white) !important;
+		color: color-mix(in srgb, currentcolor, white) !important;
 	}
 
 	&>svg {
-		color: currentColor;
+		color: currentcolor;
 		cursor: pointer;
 	}
 
@@ -21,7 +21,7 @@
 		svg {
 			scale: 1.2;
 			transition: color 0.3s ease-out;
-			color: currentColor;
+			color: currentcolor;
 			cursor: pointer;
 
 			&:hover {
@@ -41,7 +41,7 @@
 		svg {
 			scale: 1.2;
 			transition: color 0.3s ease-out;
-			color: currentColor;
+			color: currentcolor;
 			cursor: pointer;
 
 			&:not(.disabled):hover {
@@ -82,7 +82,6 @@
 		height: calc(1rem + 4.2px);
 		display: inline-block;
 		vertical-align: middle;
-
 		background: repeating-linear-gradient(to right,
 				grey,
 				grey 1px,

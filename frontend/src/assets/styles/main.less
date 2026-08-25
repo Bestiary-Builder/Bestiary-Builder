@@ -1,4 +1,4 @@
-@import "./base.css";
+@import url("./base.css");
 
 body {
 	font-family: var(--font-family-base);
@@ -7,7 +7,7 @@ body {
 	// position: relative;
 	// width: 100%;
 
-	text-rendering: optimizeSpeed;
+	text-rendering: optimizespeed;
 }
 
 // main {
@@ -26,15 +26,15 @@ h6 {
 }
 
 hr {
-	border-color: currentColor;
+	border-color: currentcolor;
 }
 
 a {
-	color: rgb(205, 205, 205);
-	text-decoration: underline 0.1em rgba(0, 0, 0, 0);
+	color: rgb(205 205 205);
+	text-decoration: underline 0.1em rgb(0 0 0 / 0%);
 
 	&:hover {
-		text-decoration-color: color-mix(in srgb, currentColor, rgba(0, 0, 0, 0.5));
+		text-decoration-color: color-mix(in srgb, currentcolor, rgb(0 0 0 / 50%));
 	}
 }
 
@@ -80,10 +80,10 @@ select {
 
 		a:not(.header-anchor) {
 			color: rgb(var(--v-theme-primary));
-			text-decoration-color: rgba(255, 69, 0, 0);
+			text-decoration-color: rgb(255 69 0 / 0%);
 
 			&:hover {
-				text-decoration-color: rgba(255, 69, 0, 1);
+				text-decoration-color: rgb(255 69 0 / 100%);
 			}
 		}
 
@@ -93,13 +93,13 @@ select {
 	}
 }
 
-@media screen and (max-width: 1080px) {
+@media screen and (width <= 1080px) {
 	.content {
 		padding: 1rem 5vw;
 	}
 }
 
-@media screen and (min-width: 1081px) {
+@media screen and (width >= 1081px) {
 	.content.less-wide {
 		padding: 2rem 10vw;
 	}
@@ -176,7 +176,7 @@ blockquote:has(p img[src="/Beholder.webp"])~p {
 .tile-container {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-	grid-gap: 1rem;
+	gap: 1rem;
 
 	&>a {
 		text-decoration: none;

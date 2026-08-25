@@ -81,7 +81,7 @@ const importManyCreatures = () => {
 					</caption>
 					<tbody>
 						<tr>
-							<td style="color: grey; border: 0px">
+							<td style="border: 0">
 								Start copying creatures<br>to manage them here!
 							</td>
 						</tr>
@@ -129,7 +129,7 @@ const importManyCreatures = () => {
 }
 
 .list-table {
-	margin: 0 auto 0;
+	margin: 0 auto;
 	padding: 0.5rem 0.5rem 0;
 	padding-bottom: 0;
 	border-collapse: collapse;
@@ -145,7 +145,6 @@ const importManyCreatures = () => {
 
 	thead {
 		color: grey;
-		text-transform: uppercase;
 		font-weight: 400;
 		padding: 0.3125rem 0.125rem 0;
 		text-transform: uppercase;

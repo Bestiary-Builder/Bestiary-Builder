@@ -156,7 +156,7 @@ function clear() {
 	text-align: center;
 	padding: 0;
 	margin: auto;
-	border: 1px solid rgb(60, 63, 68);
+	border: 1px solid rgb(60 63 68);
 	color: white;
 	max-width: 90vw;
 	width: 4rem;
@@ -164,12 +164,12 @@ function clear() {
 
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
-	-webkit-appearance: none;
+	appearance: none;
 	margin: 0;
 }
 
 input[type="number"] {
-	-moz-appearance: textfield;
+	appearance: textfield;
 	appearance: textfield;
 }
 </style>

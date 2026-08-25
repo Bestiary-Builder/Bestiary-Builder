@@ -80,7 +80,6 @@ watchEffect(() => {
 
 .right-buttons {
 	margin-right: 5.5rem;
-
 	display: flex;
 	gap: 1.5rem;
 
@@ -107,7 +106,7 @@ watchEffect(() => {
 }
 
 .crumb-link {
-	color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+	color: rgb(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
 	text-decoration: none;
 	font-size: 0.875rem;
 	font-weight: 400;
@@ -125,14 +124,13 @@ watchEffect(() => {
 	font-weight: bold;
 	line-height: inherit;
 	color: white;
-	color: white;
 	opacity: 1 !important;
 }
 
 
-@media (max-width: 842px) {
+@media (width <= 842px) {
 	.v-breadcrumbs {
-		padding: 0px 6px;
+		padding: 0 6px;
 		margin: 0;
 	}
 

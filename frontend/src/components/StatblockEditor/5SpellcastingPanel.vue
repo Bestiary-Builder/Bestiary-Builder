@@ -120,8 +120,7 @@ const handleNewCustomInnateSpell = () => {
 </script>
 
 <template>
-	<div id="tabpanel-6" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0"
-		aria-labelledby="tab-6">
+	<div id="tabpanel-6" class="editor-content__tab-inner" role="tabpanel" tabindex="0" aria-labelledby="tab-6">
 		<SectionHeader title="Daily Spells" />
 		<div class="editor-field__container three-wide">
 			<div>

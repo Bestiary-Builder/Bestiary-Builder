@@ -1,4 +1,4 @@
-@import "https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700";
+@import url("https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700");
 
 :root {
 	--color-surface-0: #1a1919;
@@ -12,41 +12,41 @@
 	--color-primary__h: 202;
 	--color-primary__s: 82%;
 	--color-primary__l: 71%;
-	--color-destructive: #ee3355;
+	--color-destructive: #e35;
 	--color-success: #4cb31b;
 	--color-warning: #ff820d;
-	--color-link-new: #ee3355;
+	--color-link-new: #e35;
 	--color-link: #79c6f2;
-	--border-color-base: rgba(255, 255, 255, 0.2);
+	--border-color-base: rgb(255 255 255 / 20%);
 	--shadow-strength: 0.3;
 	--font-family-base: "Roboto" monospace, system-ui, -apple-system, sans-serif;
 	--rarity-color-common: #dfe3e8;
 	--rarity-color-uncommon: #4cb31b;
 	--rarity-color-rare: #1da7ec;
 	--rarity-color-epic: #4f0e8b;
-	--rarity-color-exotic: #ee3355;
+	--rarity-color-exotic: #e35;
 	--rarity-color-legendary: #ff820d;
 
-	--background-color-quiet--hover: rgba(255, 255, 255, 0.07);
+	--background-color-quiet--hover: rgb(255 255 255 / 7%);
 
-	--border-color-base--lighter: rgba(255, 255, 255, 0.02);
-	--border-color-base--darker: rgba(255, 255, 255, 0.08);
-	--border-color-input: rgba(255, 255, 255, 0.05);
-	--border-color-input--hover: rgba(255, 255, 255, 0.5);
+	--border-color-base--lighter: rgb(255 255 255 / 2%);
+	--border-color-base--darker: rgb(255 255 255 / 8%);
+	--border-color-input: rgb(255 255 255 / 5%);
+	--border-color-input--hover: rgb(255 255 255 / 50%);
 
-	--color-primary: hsl(var(--color-primary__h), var(--color-primary__s), var(--color-primary__l));
+	--color-primary: hsl(var(--color-primary__h) var(--color-primary__s) var(--color-primary__l));
 
 	--border-radius--small: 4px;
 	--border-radius--medium: 8px;
 	--border-radius--large: 12px;
 
-	--background-color-icon: rgba(255, 255, 255, 0.6);
-	--background-color-icon--hover: rgba(255, 255, 255, 0.8);
-	--background-color-icon--active: rgba(255, 255, 255, 0.4);
+	--background-color-icon: rgb(255 255 255 / 60%);
+	--background-color-icon--hover: rgb(255 255 255 / 80%);
+	--background-color-icon--active: rgb(255 255 255 / 40%);
 
 	--background-color-quiet: transparent;
-	--background-color-quiet--hover: rgba(255, 255, 255, 0.07);
-	--background-color-quiet--active: rgba(255, 255, 255, 0.03);
+	--background-color-quiet--hover: rgb(255 255 255 / 7%);
+	--background-color-quiet--active: rgb(255 255 255 / 3%);
 }
 
 html {
@@ -76,7 +76,7 @@ body {
 	padding: 0;
 	margin: 0;
 	accent-color: rgb(var(--v-theme-primary));;
-	background: rgb(14, 14, 14);
+	background: rgb(14 14 14);
 	color: var(--color-base);
 }
 
@@ -157,7 +157,7 @@ html:focus-within {
 /* Set core body defaults */
 body {
 	min-height: 100vh;
-	text-rendering: optimizeSpeed;
+	text-rendering: optimizespeed;
 	line-height: 1.25;
 }
 
@@ -208,7 +208,7 @@ select {
 }
 
 
-@media screen and (max-width: 700px) {
+@media screen and (width <= 700px) {
 	.grid-two {
 		grid-template-columns: 1fr;
 	}

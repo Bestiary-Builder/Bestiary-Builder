@@ -32,8 +32,7 @@ const createNewFeature = (type: keyof Features) => {
 </script>
 
 <template>
-	<div id="tabpanel-5" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0"
-		aria-labelledby="tab-5">
+	<div id="tabpanel-5" class="editor-content__tab-inner" role="tabpanel" tabindex="0" aria-labelledby="tab-5">
 		<div v-for="(descText, fType) in newFeatureGenerator" :key="fType">
 			<SectionHeader :title="`${descText.replace('New ', '').replace('Feature', 'Trait')}s`" />
 			<table class="list-table features">

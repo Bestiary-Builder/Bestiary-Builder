@@ -1,4 +1,4 @@
-@import "https://fonts.googleapis.com/css2?family=Convergence";
+@import url("https://fonts.googleapis.com/css2?family=Convergence");
 
 @font-face {
 	font-family: "Scala Sans Offc";
@@ -7,25 +7,20 @@
 
 .stat-block {
 	width: 100%;
-
 	background-color: var(--color-surface-1);
 	box-shadow:
-		rgba(0, 0, 0, 0.19) 0px 10px 20px,
-		rgba(0, 0, 0, 0.23) 0px 6px 6px;
-	padding: 0.4rem;
-
+		rgb(0 0 0 / 19%) 0 10px 20px,
+		rgb(0 0 0 / 23%) 0 6px 6px;
 	font-family: "Scala Sans Offc", Roboto, Helvetica, sans-serif;
-	font-size: 15px;
 	line-height: 1.4rem;
 	font-size: 0.9rem;
 	padding: 15px;
-
 	position: block;
 
 	&.toPrint {
 		.stat-block__name-container {
 			padding-bottom: 1rem;
-			margin-bottom: 0rem;
+			margin-bottom: 0;
 		}
 
 		.feature-container__title {
@@ -87,7 +82,7 @@
 	font-family: "Scala Sans Offc", Roboto, Helvetica, sans-serif;
 	font-weight: bold;
 	font-size: 1.75rem;
-	-webkit-column-span: all;
+	column-span: all;
 	column-span: all;
 	margin-bottom: 0.45rem;
 	color: rgb(var(--v-theme-primary));
@@ -172,7 +167,6 @@
 
 	thead>tr>th {
 		color: grey;
-		text-transform: uppercase;
 		font-weight: 400;
 		padding: 0.3125rem 0.125rem 0;
 		text-transform: uppercase;
@@ -182,12 +176,12 @@
 
 	tbody>tr>th {
 		text-transform: uppercase;
-		padding: 0px 8px;
+		padding: 0 8px;
 	}
 
 	tbody>tr>td {
 		text-align: center;
-		padding: 0px 8px;
+		padding: 0 8px;
 		background-color: lighten(#3b3736, 5%);
 	}
 
@@ -201,25 +195,25 @@
 	column-count: 2;
 
 	.v2024-no-bottom-border {
-		border-bottom: 0px solid;
+		border-bottom: 0 solid;
 	}
 }
 
 
 
-@media screen and (max-width: 1400px) {
+@media screen and (width <= 1400px) {
 	.stat-block.v2024 {
 		column-count: 1;
 	}
 }
 
-@media screen and (max-width: 1200px) {
+@media screen and (width <= 1200px) {
 	.stat-block.v2024 {
 		column-count: 2;
 	}
 }
 
-@media screen and (max-width: 700px) {
+@media screen and (width <= 700px) {
 	.stat-block.v2024 {
 		column-count: 1;
 	}
@@ -233,7 +227,7 @@
 :global(.stat-block ul) {
 	white-space: normal;
 	margin-bottom: 0;
-	margin-block-start: 0rem;
+	margin-block-start: 0;
 	padding-inline-start: 1.4rem;
 }
 

@@ -62,12 +62,4 @@ const abilityTitle = (item: Record<string, unknown>) => {
 
 <style scoped>
 @import url("./styles/automation-editor.less");
-
-textarea {
-	min-height: 150px;
-}
-
-:deep(.v-select.vs--single .vs__selected) {
-	max-width: none;
-}
 </style>

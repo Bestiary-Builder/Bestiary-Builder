@@ -39,8 +39,7 @@ const addNewSense = (newSenseName: string) => {
 </script>
 
 <template>
-	<div id="tabpanel-2" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0"
-		aria-labelledby="tab-2">
+	<div id="tabpanel-2" class="editor-content__tab-inner" role="tabpanel" tabindex="0" aria-labelledby="tab-2">
 		<SectionHeader title="Speed" />
 		<table v-if="data.core.speed.length > 0" class="list-table quiet">
 			<thead>

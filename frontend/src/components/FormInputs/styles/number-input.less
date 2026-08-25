@@ -15,12 +15,12 @@
 
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
-	-webkit-appearance: none;
+	appearance: none;
 	margin: 0;
 }
 
 input[type="number"] {
-	-moz-appearance: textfield;
+	appearance: textfield;
 	appearance: textfield;
 }
 
@@ -35,7 +35,7 @@ input[type="number"] {
 	padding: 0;
 	margin: 0;
 	padding-left: 7px;
-	border: 1px solid rgb(60, 63, 68);
+	border: 1px solid rgb(60 63 68);
 	color: white;
 	max-width: 90vw;
 }
@@ -57,13 +57,13 @@ input[type="number"] {
 .quantity-button {
 	position: relative;
 	cursor: pointer;
-	border-left: 1px solid rgb(60, 63, 68);
+	border-left: 1px solid rgb(60 63 68);
 	width: 15px;
 	text-align: center;
 	font-size: 12px;
 	line-height: 1.15;
 	transform: translateX(-100%);
-	-webkit-user-select: none;
+	user-select: none;
 	user-select: none;
 }
 
@@ -71,7 +71,7 @@ input[type="number"] {
 	position: absolute;
 	height: 50%;
 	top: 0;
-	border-bottom: 1px solid rgb(60, 63, 68);
+	border-bottom: 1px solid rgb(60 63 68);
 }
 
 .quantity-button.quantity-down {

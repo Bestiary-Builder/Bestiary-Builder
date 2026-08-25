@@ -84,7 +84,7 @@ onMounted(async () => {
 	}
 }
 
-@media screen and (max-width: 1200px) {
+@media screen and (width <= 1200px) {
 	.content {
 		grid-template-columns: 1fr;
 

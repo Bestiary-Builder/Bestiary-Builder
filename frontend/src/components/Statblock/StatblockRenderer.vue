@@ -475,5 +475,5 @@ const renderFeature = (feature: FeatureEntity) => {
 </template>
 
 <style scoped lang="less">
-@import "./styles/default.less";
+@import url("./styles/default.less");
 </style>

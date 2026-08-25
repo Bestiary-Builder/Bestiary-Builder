@@ -476,14 +476,11 @@ watchDebounced(width, async () => {
 
 	.monaco-editor,
 	.overflow-guard {
-		border-bottom-left-radius: 6px;
-		border-bottom-right-radius: 6px;
-		border-top-left-radius: 0px;
-		border-top-right-radius: 0px;
+		border-radius: 0 0 6px 6px;
 	}
 
 	.margin {
-		width: 0px;
+		width: 0;
 	}
 }
 </style>

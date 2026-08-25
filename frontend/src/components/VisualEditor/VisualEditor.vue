@@ -99,25 +99,25 @@ section {
 	min-height: 800px;
 	padding: 1rem;
 	border-radius: 6px;
-	box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+	box-shadow: rgb(0 0 0 / 24%) 0 3px 8px;
 }
 
 .container {
 	min-height: 800px;
 	border-radius: 6px;
-	box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+	box-shadow: rgb(0 0 0 / 24%) 0 3px 8px;
 	background-color: var(--color-surface-0);
 }
 
 .two-wide.uneven {
 	width: 100%;
 	display: grid;
-	gap: 0rem 1rem;
+	gap: 0 1rem;
 	margin-bottom: 1rem;
 	grid-template-columns: 1fr 2fr;
 }
 
-@media screen and (max-width: 1200px) {
+@media screen and (width <= 1200px) {
 	.two-wide.two-wide.uneven {
 		grid-template-columns: 1fr;
 	}

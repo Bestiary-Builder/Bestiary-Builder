@@ -67,7 +67,7 @@ onMounted(async () => {
 	place-items: center;
 	position: relative;
 	height: 95svh;
-	padding-block: 0rem;
+	padding-block: 0;
 	margin-block-end: 3rem;
 	color: white;
 	font-family: "Space Mono", Roboto;
@@ -140,7 +140,6 @@ onMounted(async () => {
 			}
 
 			b {
-
 				&,
 				a {
 					color: rgb(var(--v-theme-primary));
@@ -149,7 +148,7 @@ onMounted(async () => {
 		}
 	}
 
-	@media screen and (max-width: 950px) {
+	@media screen and (width <= 950px) {
 		.call-to-action {
 			grid-template-columns: 1fr;
 			gap: 1rem;
@@ -172,7 +171,6 @@ onMounted(async () => {
 }
 
 @keyframes header-image-animation {
-
 	85%,
 	100% {
 		opacity: 0.3;

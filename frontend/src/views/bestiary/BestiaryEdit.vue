@@ -740,7 +740,7 @@ const pinCreature = (creature: Statblock) => {
 	overflow: scroll;
 	max-height: 80vh;
 	overflow-x: clip;
-	padding: 0rem;
+	padding: 0;
 	margin-top: 1rem;
 
 	.content-tile {
@@ -749,12 +749,11 @@ const pinCreature = (creature: Statblock) => {
 		color: white;
 		padding: 1rem;
 		box-shadow:
-			rgba(0, 0, 0, 0.19) 0px 10px 20px,
-			rgba(0, 0, 0, 0.23) 0px 6px 6px;
+			rgb(0 0 0 / 19%) 0 10px 20px,
+			rgb(0 0 0 / 23%) 0 6px 6px;
 		cursor: pointer;
 		transition: all 1s;
 		transition-timing-function: cubic-bezier(0.06, 0.975, 0.195, 0.985);
-		border-radius: 2px;
 		border-radius: 3px;
 
 		h3 {
@@ -763,12 +762,10 @@ const pinCreature = (creature: Statblock) => {
 
 		&.creature-tile {
 			display: flex;
-			flex-direction: row;
-			flex-wrap: nowrap;
+			flex-flow: row nowrap;
 			justify-content: space-between;
 
 			.left-side {
-
 				span,
 				p {
 					font-style: italic;
@@ -826,7 +823,7 @@ const pinCreature = (creature: Statblock) => {
 	}
 }
 
-@media screen and (max-width: 842px) {
+@media screen and (width <= 842px) {
 	.list-tiles {
 		max-height: 40vh;
 
@@ -864,7 +861,7 @@ const pinCreature = (creature: Statblock) => {
 .header-tile {
 	background-color: rgb(var(--v-theme-surface));
 	cursor: unset;
-	margin: 0 0rem 1rem;
+	margin: 0 0 1rem;
 	padding: 1rem;
 	border-radius: 2px;
 
@@ -889,7 +886,7 @@ const pinCreature = (creature: Statblock) => {
 	}
 
 	.description:not(.expanded) {
-		-webkit-mask-image: linear-gradient(180deg, #000 80%, transparent);
+		mask-image: linear-gradient(180deg, #000 80%, transparent);
 		mask-image: linear-gradient(180deg, #000 80%, transparent);
 	}
 
@@ -897,7 +894,6 @@ const pinCreature = (creature: Statblock) => {
 		display: grid;
 		grid-template-columns: 1fr 1fr 1fr 1fr;
 		font-size: 1rem;
-
 		margin-top: 0.5rem;
 
 		&.three-wide {
@@ -918,7 +914,7 @@ const pinCreature = (creature: Statblock) => {
 	}
 }
 
-@media screen and (max-width: 842px) {
+@media screen and (width <= 842px) {
 	.header-tile {
 		padding: 0.5rem;
 
@@ -943,7 +939,7 @@ const pinCreature = (creature: Statblock) => {
 	grid-template-columns: 1fr 1fr;
 }
 
-@media screen and (max-width: 1080px) {
+@media screen and (width <= 1080px) {
 	.list-tiles {
 		padding: 0;
 
@@ -975,7 +971,6 @@ const pinCreature = (creature: Statblock) => {
 	color: rgb(var(--v-theme-primary));
 	font-size: 1.6rem;
 	translate: 0 -20px;
-
 	transition: background-color 0.3s ease-in-out;
 
 	&:hover {
