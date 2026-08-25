@@ -109,8 +109,8 @@ const showControls = inject<Ref<boolean>>("showControls")
 
 <template>
 	<div class="tree-node">
-		<p class="drag-area tree-row" style="color: grey;" @click="currentEffect = data; currentContext = context"
-			:style="`--depth: ${depth}`">
+		<p class="drag-area tree-row" style="color: rgb(var(--v-theme-surface-bright));"
+			@click="currentEffect = data; currentContext = context" :style="`--depth: ${depth}`">
 			<NodeHeader :type="selfType" :additional-text="additionalText" :is-current="isCurrentSelectedContext" />
 			<span class="tree-buttons" v-if="showControls">
 				<v-tooltip text="Drag to move this node">

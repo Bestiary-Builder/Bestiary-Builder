@@ -724,8 +724,6 @@ const pinCreature = (creature: Statblock) => {
 </template>
 
 <style lang="less">
-@import url("@/components/FormInputs/styles/number-input.less");
-
 .flow-vertically {
 	display: flex;
 	flex-direction: column;
@@ -1008,20 +1006,20 @@ const pinCreature = (creature: Statblock) => {
 	color: goldenrod;
 
 	.bookmark-disabled {
-		filter: grayscale(100%);
+		filter: rgb(var(--v-theme-surface-bright))scale(100%);
 		transition: filter 0.3s ease;
 
 		&:hover {
-			filter: grayscale(0%);
+			filter: rgb(var(--v-theme-surface-bright))scale(0%);
 		}
 	}
 
 	.bookmark-enabled {
-		filter: grayscale(0%);
+		filter: rgb(var(--v-theme-surface-bright))scale(0%);
 		transition: filter 0.3s ease;
 
 		&:hover {
-			filter: grayscale(100%);
+			filter: rgb(var(--v-theme-surface-bright))scale(100%);
 		}
 	}
 }

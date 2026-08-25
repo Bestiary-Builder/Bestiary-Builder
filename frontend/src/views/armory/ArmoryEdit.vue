@@ -538,8 +538,8 @@ const activationTypeOptions = computed(() => {
 <style lang="less" scoped>
 @media screen and (width >=1200px) {
 	.content {
-		padding-left: 20rem;
-		padding-right: 20rem;
+		padding-left: 10vw;
+		padding-right: 10vw;
 	}
 }
 </style>

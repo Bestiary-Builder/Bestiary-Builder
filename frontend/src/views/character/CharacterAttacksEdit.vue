@@ -61,7 +61,19 @@ const addAttack = () => {
 		return;
 	character.value.overrides.attacks.push({ _v: 2, name: "New attack", automation: [] });
 	activeAttackIndex.value = character.value.overrides.attacks.length - 1;
+	addToast("Successfully created a new attack!")
 };
+
+const isDeleteOpen = ref(false)
+const deleteAttack = (index: number) => {
+	if (character.value) {
+		character.value.overrides.attacks.splice(index, 1);
+		isDeleteOpen.value = false
+
+	}
+
+
+}
 
 const loadFeature = async (feature: FeatureEntity) => {
 	if (!character.value)
@@ -131,7 +143,7 @@ const isVisualEditor = ref(store.user?.preferredEditor === "Visual");
 					{{ attack.name }}
 				</option>
 			</select>
-			<DropdownMenu>
+			<DropdownMenu v-model="isDeleteOpen">
 				<template #activator="{ props }">
 					<v-icon-btn icon="mdi:trash" text="Delete currently selected attack" v-bind="props"
 						:disabled="activeAttackIndex < 0" />
@@ -141,8 +153,7 @@ const isVisualEditor = ref(store.user?.preferredEditor === "Visual");
 						Are you sure you want to delete <br>{{ character.overrides.attacks[activeAttackIndex].name }}?
 					</v-card-text>
 					<v-card-actions>
-						<v-btn size="large" color="red" class="mx-auto"
-							@click="character.overrides.attacks.splice(activeAttackIndex, 1); activeAttackIndex = -1">
+						<v-btn size="large" color="red" class="mx-auto" @click="deleteAttack(activeAttackIndex)">
 							Confirm
 						</v-btn>
 					</v-card-actions>
@@ -157,6 +168,8 @@ const isVisualEditor = ref(store.user?.preferredEditor === "Visual");
 				No attack selected.
 			</div>
 		</div>
+
+		<v-fab icon="mdi:plus" location="bottom end" app color="primary" @click="addAttack" size="large"></v-fab>
 	</div>
 	<div v-else class="content">
 		Loading...

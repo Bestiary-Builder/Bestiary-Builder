@@ -144,7 +144,7 @@ const importManyCreatures = () => {
 	}
 
 	thead {
-		color: grey;
+		color: rgb(var(--v-theme-surface-bright));
 		font-weight: 400;
 		padding: 0.3125rem 0.125rem 0;
 		text-transform: uppercase;
@@ -157,17 +157,17 @@ const importManyCreatures = () => {
 		th {
 			font-weight: normal;
 			text-align: left;
-			border: 1px solid grey;
+			border: 1px solid rgb(var(--v-theme-surface-bright));
 
 			p {
-				color: lightgray;
+				color: rgb(var(--v-theme-surface-bright));
 				font-size: smaller;
 			}
 		}
 
 		td {
 			text-align: center;
-			border: 1px solid grey;
+			border: 1px solid rgb(var(--v-theme-surface-bright));
 
 			svg {
 				cursor: pointer;

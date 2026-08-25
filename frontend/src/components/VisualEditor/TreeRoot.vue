@@ -54,13 +54,13 @@ const showControls = inject<Ref<boolean>>("showControls")
 					<Icon
 						:icon="JSON.stringify(currentContext) === JSON.stringify([index.toString(), ...context]) ? 'material-symbols:asterisk' : 'material-symbols:swords'"
 						:inline="true" width="1em"
-						:color="JSON.stringify(currentContext) === JSON.stringify([index.toString(), ...context]) ? 'rgb(var(--v-theme-success))' : 'grey'" />
+						:color="JSON.stringify(currentContext) === JSON.stringify([index.toString(), ...context]) ? 'rgb(var(--v-theme-success))' : 'rgb(var(--v-theme-surface-bright))'" />
 					{{ auto.name }}
 					<span class="tree-buttons" @click.stop v-if="showControls">
 						<DropdownMenu>
 							<template #activator="{ props }">
-								<Icon icon="mdi:trash" inline width=".75em" role="button" class="trigger" color="grey"
-									v-bind="props" />
+								<Icon icon="mdi:trash" inline width=".75em" role="button" class="trigger"
+									color="rgb(var(--v-theme-surface-bright))" v-bind="props" />
 							</template>
 							<v-card min-width="300" class="text-center pb-2">
 								<v-card-text>
@@ -93,13 +93,13 @@ const showControls = inject<Ref<boolean>>("showControls")
 				<Icon
 					:icon="JSON.stringify(currentContext) === JSON.stringify(context) ? 'material-symbols:asterisk' : 'material-symbols:swords'"
 					:inline="true" width="1em"
-					:color="JSON.stringify(currentContext) === JSON.stringify(context) ? 'rgb(var(--v-theme-success))' : 'grey'" />
+					:color="JSON.stringify(currentContext) === JSON.stringify(context) ? 'rgb(var(--v-theme-success))' : 'rgb(var(--v-theme-surface-bright))'" />
 				{{ data.name }}
 				<span class="tree-buttons" @click.stop v-if="showControls">
 					<DropdownMenu>
 						<template #activator="{ props }">
-							<Icon icon="mdi:trash" inline width=".75em" role="button" class="trigger" color="grey"
-								v-bind="props" />
+							<Icon icon="mdi:trash" inline width=".75em" role="button" class="trigger"
+								color="rgb(var(--v-theme-surface-bright))" v-bind="props" />
 						</template>
 						<v-card min-width="300" class="text-center pb-2">
 							<v-card-text>

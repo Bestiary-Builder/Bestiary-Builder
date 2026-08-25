@@ -453,18 +453,12 @@ watchDebounced(width, async () => {
 .button-container {
 	display: flex;
 	gap: 1rem;
-	background-color: #262525;
+	background-color: rgb(var(--v-theme-surface));
 	border-top-left-radius: 6px;
 	border-top-right-radius: 6px;
 	font-size: smaller;
 	padding: .4rem
 }
-
-// .editor-container {
-// 	resize: vertical;
-// 	overflow: auto;
-// 	min-height: 100px;
-// }
 </style>
 
 <style lang="less">

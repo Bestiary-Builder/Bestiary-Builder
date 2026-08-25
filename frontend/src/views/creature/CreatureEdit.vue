@@ -343,7 +343,7 @@ const importCreature = async (creature: Statblock) => {
 				<v-row>
 					<v-col :cols="store.isMobile ? 12 : 6">
 						<v-sheet elevation="2" color="surface-1">
-							<v-tabs v-model="tab" color="primary" style="background-color: rgb(33 33 33 / 100%)"
+							<v-tabs v-model="tab" color="primary" style="background-color: rgb(var(--v-theme-surface))"
 								:grow="!store.isMobile" :show-arrows="store.isMobile">
 								<v-tab :value="1">
 									Description

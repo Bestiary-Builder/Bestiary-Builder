@@ -99,7 +99,7 @@ _April 17th, 2025_
 _June 26th, 2024_
 
 - Fixed an issue where dragging to reorder speed, senses, and features was not working properly.
-- The save statblock button is now greyed out when no changes have been made.
+- The save statblock button is now rgb(var(--v-theme-surface-bright))ed out when no changes have been made.
 
 ---
 ## v2.3.1

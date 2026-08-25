@@ -17,7 +17,7 @@ body .v-card .stat-block.Odyssey {
 	padding: 15px;
 
 	.stat-block--name-container {
-		font-family: Odyssey;
+		font-family: Odyssey Roboto;
 		color: #095471;
 		border-bottom: 0 solid #095471;
 		background-image: url("hr.svg");
@@ -81,7 +81,7 @@ body .v-card .stat-block.Odyssey {
 	}
 
 	.stat-block--core {
-		color: grey;
+		color: rgb(var(--v-theme-surface-bright));
 	}
 
 	.stat-table:first-of-type {

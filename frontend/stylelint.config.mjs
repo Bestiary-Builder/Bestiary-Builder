@@ -25,5 +25,11 @@ export default {
       files: ['**/*.less'],
       customSyntax: 'postcss-less',
     },
+        {
+      files: ['src/components/Statblock/styles/**/*'],
+      rules: {
+        'scale-unlimited/declaration-strict-value': null,
+      },
+    },
   ],
 }

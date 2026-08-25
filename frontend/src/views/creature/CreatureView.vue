@@ -64,7 +64,7 @@ onMounted(async () => {
 			<ExportCreature :data="data.stats" />
 		</Breadcrumbs>
 		<div class="content">
-			<div class="content-container__inner">
+			<div class="content-container--inner">
 				<v-skeleton-loader type="heading, divider, text, text, sentences, heading, text" v-if="data === null" />
 				<StatblockRenderer v-else :data="data.stats" is2024 statblock-design="BestiaryBuilder" />
 			</div>
@@ -78,17 +78,17 @@ onMounted(async () => {
 	gap: 2rem;
 	grid-template-columns: 1fr;
 
-	.content-container__inner {
+	.content-container--inner {
 		width: 60%;
 		margin: 0 auto;
 	}
 }
 
-@media screen and (width <= 1200px) {
+@media screen and (width <=1200px) {
 	.content {
 		grid-template-columns: 1fr;
 
-		&.is-statblock-only .content-container__inner {
+		&.is-statblock-only .content-container--inner {
 			width: 100%;
 			margin: unset;
 		}

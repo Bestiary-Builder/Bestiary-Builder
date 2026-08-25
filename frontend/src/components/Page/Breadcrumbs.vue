@@ -123,12 +123,11 @@ watchEffect(() => {
 	font-size: 0.875rem;
 	font-weight: bold;
 	line-height: inherit;
-	color: white;
 	opacity: 1 !important;
 }
 
 
-@media (width <= 842px) {
+@media (width <=842px) {
 	.v-breadcrumbs {
 		padding: 0 6px;
 		margin: 0;

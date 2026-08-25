@@ -28,7 +28,7 @@ watch(() => currentEffect!.value?.style, () => {
 			<v-text-field label="Verb" v-model="currentEffect.verb" placeholder="attacks with" />
 			<v-select v-model="currentEffect.style" label="Button Style" :items="[
 				{ title: 'Blurple (default)', value: null, props: { style: 'color: #5865F2' } },
-				{ title: 'Grey', value: '2', props: { style: 'color: #4E5058' } },
+				{ title: 'rgb(var(--v-theme-surface-bright))', value: '2', props: { style: 'color: #4E5058' } },
 				{ title: 'Green', value: '3', props: { style: 'color: #248045' } },
 				{ title: 'Red', value: '4', props: { style: 'color: #DA373C' } },
 				{ title: 'Custom Expression', value: 'custom' },

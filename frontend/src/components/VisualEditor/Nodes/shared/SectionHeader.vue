@@ -27,7 +27,7 @@ defineProps<{ title: string }>();
 		width: 100%;
 		height: 2px;
 		margin-top: 0.75rem;
-		border-color: darkgray;
+		border-color: rgb(var(--v-theme-surface-bright));
 	}
 }
 
