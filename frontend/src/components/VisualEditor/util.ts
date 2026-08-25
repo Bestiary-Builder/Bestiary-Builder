@@ -45,8 +45,8 @@ export const defaultNodes: Record<string, EffectWithTarget> = {
 		type: "save",
 		stat: "dex",
 		dc: "10",
-		fail: [],
-		success: []
+		success: [],
+		fail: []
 	},
 	temphp: {
 		type: "temphp",
@@ -85,8 +85,8 @@ export const defaultNodes: Record<string, EffectWithTarget> = {
 	check: {
 		type: "check",
 		ability: ["athletics"],
-		fail: [],
-		success: []
+		success: [],
+		fail: []
 	},
 	remove_ieffect: {
 		type: "remove_ieffect",

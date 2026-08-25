@@ -35,7 +35,8 @@ useDataCleanup(currentEffect, ["cantripScale"]);
 		</div>
 		<SectionHeader title="Additional Options" />
 		<div class="two-wide">
-			<v-checkbox v-model="currentEffect.cantripScale" label="Whether this roll should scale like a cantrip." />
+			<v-checkbox v-model="currentEffect.cantripScale" label="Whether this roll should scale like a cantrip."
+				hide-details />
 			<div>
 				<div>At higher levels</div>
 				<HigherLevels v-model="(currentEffect.higher as Record<number, string>)" />

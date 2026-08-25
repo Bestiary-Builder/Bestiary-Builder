@@ -8,7 +8,6 @@ import { useDataCleanup } from "./shared/utils";
 import { useRules } from "vuetify/labs/rules";
 
 const currentEffect = inject<Ref<Variable>>("currentEffect");
-const _currentContext = inject<Ref<string[]>>("currentContext");
 
 watch(() => currentEffect!.value?.higher, () => {
 	for (const index in currentEffect!.value.higher) {
@@ -27,7 +26,7 @@ onMounted(() => {
 	if (!Object.hasOwn(currentEffect!.value, "higher"))
 		currentEffect!.value.higher = {};
 });
-useDataCleanup(currentEffect, ["onError"]);
+useDataCleanup(currentEffect, ["onError", "higher"]);
 
 const rules = useRules()
 </script>

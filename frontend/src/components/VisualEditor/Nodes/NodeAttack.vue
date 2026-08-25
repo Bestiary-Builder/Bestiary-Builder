@@ -6,7 +6,6 @@ import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
 
 const currentEffect = inject<Ref<Attack>>("currentEffect");
-const _currentContext = inject<Ref<string[]>>("currentContext");
 
 watch(() => currentEffect?.value?.attackBonus, () => {
 	if (currentEffect?.value?.attackBonus === "")

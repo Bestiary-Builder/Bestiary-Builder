@@ -90,20 +90,25 @@ const rules = useRules()
 		</div>
 
 		<SectionHeader title="Additional Options" />
-		<div class="two-wide">
-			<v-select v-model="currentEffect.errorBehaviour" label="Error Behaviour" title="Error Behaviour" :items="[
-				{ title: 'Warn', value: 'warn' },
-				{ title: 'Raise', value: 'raise' },
-				{ title: 'Ignore', value: 'ignore' },
-			]" />
-
-			<v-checkbox v-model="currentEffect.allowOverflow"
-				label="If True, attempting to overflow/underflow a counter (i.e. use more charges than available or add charges exceeding max) will clip to bounds rather than error." />
-			<v-checkbox v-model="currentEffect.fixedValue"
-				label="Whether this counter should ignore the -amt argument.">
-			</v-checkbox>
-
-		</div>
+		<v-row>
+			<v-col cols="6">
+				<v-select v-model="currentEffect.errorBehaviour" label="Error Behaviour" title="Error Behaviour" :items="[
+					{ title: 'Warn', value: 'warn' },
+					{ title: 'Raise', value: 'raise' },
+					{ title: 'Ignore', value: 'ignore' },
+				]" />
+			</v-col>
+			<v-col cols="6">
+				<v-checkbox v-model="currentEffect.allowOverflow"
+					label="If True, attempting to overflow/underflow a counter (i.e. use more charges than available or add charges exceeding max) will clip to bounds rather than error."
+					hide-details />
+			</v-col>
+			<v-col cols="6">
+				<v-checkbox v-model="currentEffect.fixedValue"
+					label="Whether this counter should ignore the -amt argument." hide-details>
+				</v-checkbox>
+			</v-col>
+		</v-row>
 	</template>
 </template>
 
