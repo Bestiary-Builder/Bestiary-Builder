@@ -9,7 +9,9 @@
 		"type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
 		"test": "vitest",
 		"lint": "eslint .",
-		"lint:fix": "eslint . --fix"
+		"lint:fix": "eslint . --fix",
+		"stylelint": "stylelint \"src/**/*.{vue,css,less}\"",
+		"stylelint:fix": "stylelint \"src/**/*.{vue,css,less}\" --fix"
 	},
 	"dependencies": {
 		"@guolao/vue-monaco-editor": "^1.5.1",
@@ -36,6 +38,11 @@
 		"@vitejs/plugin-vue": "^5.0.0",
 		"@vue/tsconfig": "^0.5.1",
 		"eslint-plugin-format": "^2.0.1",
+		"postcss-html": "^2.0.0",
+		"postcss-less": "^6.0.0",
+		"stylelint": "^17.14.1",
+		"stylelint-config-standard": "^40.0.0",
+		"stylelint-declaration-strict-value": "^1.12.1",
 		"vite": "^6.3.3",
 		"vite-plugin-pages": "^0.32.0",
 		"vite-plugin-pages-sitemap": "^1.6.1",

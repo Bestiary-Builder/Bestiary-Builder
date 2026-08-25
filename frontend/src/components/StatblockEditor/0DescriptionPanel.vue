@@ -19,8 +19,7 @@ const rules = useRules();
 </script>
 
 <template>
-	<div id="tabpanel-1" class="editor-content__tab-inner scale-in" role="tabpanel" tabindex="0"
-		aria-labelledby="tab-1">
+	<div id="tabpanel-1" class="editor-content__tab-inner" role="tabpanel" tabindex="0" aria-labelledby="tab-1">
 		<div class="editor-field__container two-wide">
 			<div>
 				<v-text-field v-model="data.description.name" label="Name" :maxlength="store.limits?.nameLength"
