@@ -1,10 +1,9 @@
-import type { User } from "~/shared";
 import { Buffer } from "node:buffer";
 import discord from "discord.js";
+import { SupporterStatus, type User } from "~/shared";
 import { isProduction } from "@/utilities/constants";
-import { getPrismaClient } from "@/utilities/database";
 import { log } from "@/utilities/logger";
-import { SupporterStatus } from "~/shared";
+import { clearUserCache, getPrismaClient } from "@/utilities/database";
 
 const client = new discord.Client({
 	intents: [discord.IntentsBitField.Flags.Guilds, discord.IntentsBitField.Flags.GuildMessages, discord.IntentsBitField.Flags.GuildMembers]
@@ -66,11 +65,13 @@ async function checkUserStatuses(guild: discord.Guild) {
 	log.info(`Tier 1: ${tier1Ids}`);
 	log.info(`Tier 2: ${tier2Ids}`);
 	// Update database
-	await getPrismaClient().$transaction(async (tx) => {
-		await tx.user.updateMany({ data: { supporter: SupporterStatus.none } });
-		await tx.user.updateMany({ where: { id: { in: tier1Ids } }, data: { supporter: SupporterStatus.wirmling } });
-		await tx.user.updateMany({ where: { id: { in: tier2Ids } }, data: { supporter: SupporterStatus.greatwyrm } });
-	});
+	const prisma = getPrismaClient();
+	await prisma.user.updateMany({ data: { supporter: SupporterStatus.none } });
+	await prisma.$transaction([
+		...tier1Ids.map(id => prisma.user.update({ where: { id }, data: { supporter: SupporterStatus.wirmling } })),
+		...tier2Ids.map(id => prisma.user.update({ where: { id }, data: { supporter: SupporterStatus.greatwyrm } })),
+	]);
+	clearUserCache();
 }
 
 // Public discord logging
