@@ -1,8 +1,8 @@
+import type { AttackModel } from "~/shared";
 import fetch from "node-fetch";
 import { app } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
 import "@/utilities/env";
-import { AttackModel } from "~/shared";
 
 const API = "https://api.avrae.io";
 
@@ -27,10 +27,10 @@ app.get("/api/character/list", async (req, res) => {
 });
 
 const mergeByName = <T extends AttackModel>(firstList: T[], secondList: T[]): T[] => {
-	const secondNames = new Set(secondList.map((item) => item.name))
-	const filteredFirstList = firstList.filter((item) => !secondNames.has(item.name))
-	return [...filteredFirstList, ...secondList]
-}
+	const secondNames = new Set(secondList.map(item => item.name));
+	const filteredFirstList = firstList.filter(item => !secondNames.has(item.name));
+	return [...filteredFirstList, ...secondList];
+};
 
 app.post("/api/character/:upstream/attacks/add", async (req, res) => {
 	const automationList = req.body.data as AttackModel[];
@@ -50,7 +50,7 @@ app.post("/api/character/:upstream/attacks/add", async (req, res) => {
 		if (currentAttacks?.error)
 			return res.status(500).json({ error: currentAttacks.error });
 
-		const attacks = mergeByName(currentAttacks, automationList)
+		const attacks = mergeByName(currentAttacks, automationList);
 		const putAttacks = await fetch(`${API}/characters/${upstream}/attacks`, {
 			method: "PUT",
 			headers: {
@@ -95,7 +95,7 @@ app.post("/api/character/:upstream/attacks/set", async (req, res) => {
 	}
 });
 
-const GVAR_CREATED_REGEX = /^Gvar ([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}) created\.$/
+const GVAR_CREATED_REGEX = /^Gvar ([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}) created\.$/;
 app.post("/api/character/makeattackgvar", async (req, res) => {
 	const automationList = req.body.data;
 
@@ -112,16 +112,16 @@ app.post("/api/character/makeattackgvar", async (req, res) => {
 			body: JSON.stringify({ value: automationList })
 		}).then(response => response.text());
 
-		const match = createGvar.match(GVAR_CREATED_REGEX)
+		const match = createGvar.match(GVAR_CREATED_REGEX);
 		if (match) {
-			return res.json({ gvarId: match[1] })
+			return res.json({ gvarId: match[1] });
 		}
 		else {
-			return res.status(500).json({ error: createGvar })
+			return res.status(500).json({ error: createGvar });
 		}
 	}
 	catch (err) {
-		log.log("critical", err)
+		log.log("critical", err);
 		return res.status(500).json({ error: "Unknown server error occured, please try again." });
 	}
 });

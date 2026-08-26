@@ -7,6 +7,9 @@ import { routes } from "~/shared";
 import { app } from "./constants";
 import { log } from "./logger";
 
+// Middleware needs to be imported before frontend stuff
+import "@/utilities/middleware";
+
 export async function getFrontendHtml(route: routes.Route, req: Request) {
 	// Get information
 	let title = "Bestiary Builder";

@@ -1,4 +1,4 @@
-import type { BestiaryWithCount, Id, User } from "~/shared";
+import type { Id, User } from "~/shared";
 import type { BestiaryCreateInput, BestiaryUpdateInput } from "~/shared/src/prisma-types";
 import { v4 as uuid } from "uuid";
 import { log } from "@/utilities/logger";
@@ -94,7 +94,7 @@ export async function deleteBestiary(bestiaryId: Id) {
 }
 
 export async function getBestiariesByUser(userId: string) {
-	return await withDatabaseFallback(async () => {
+	return (await withDatabaseFallback(async () => {
 		return await getPrismaClient().bestiary.findMany({
 			where: {
 				OR: [
@@ -102,9 +102,32 @@ export async function getBestiariesByUser(userId: string) {
 					{ editors: { some: { userId } } }
 				]
 			},
-			include: { ...defaultIncludes, orderedBy: { where: { userId } } },
+			include: {
+				...defaultIncludes,
+				orderedBy: { where: { userId } },
+				creatures: {
+					select: {
+						id: true,
+						stats: true
+					}
+				},
+			},
 		});
-	}, []);
+	}, [])).map(bestiary => (
+		{
+			...bestiary,
+			creatures: bestiary.creatures.map(creature =>
+				({
+					id: creature.id,
+					name: creature.stats.description.name,
+					alignment: creature.stats.description.alignment,
+					cr: creature.stats.description.cr,
+					size: creature.stats.core.size,
+					race: creature.stats.core.race
+				})
+			)
+		}
+	));
 }
 
 export async function getBestiariesByOwner(userId: string) {
