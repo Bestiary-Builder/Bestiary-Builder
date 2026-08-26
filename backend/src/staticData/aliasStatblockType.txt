@@ -1,0 +1,157 @@
+ class AliasStatBlock
+
+    A base class representing any creature (player or otherwise) that has stats.
+
+    Generally, these are never directly used - notable subclasses are SimpleCombatant and AliasCharacter.
+
+    property ac
+
+        The armor class of the creature.
+
+        Return type
+
+            int or None
+
+    property attacks
+
+        The attacks of the creature.
+
+        Return type
+
+            AliasAttackList
+
+    property creature_type
+
+        The creature type of the creature. Will return None for players or creatures with no creature type.
+
+        Return type
+
+            str or None
+
+    property hp
+
+        The current HP of the creature.
+
+        Return type
+
+            int or None
+
+    hp_str()
+
+        Returns a string describing the creature’s current, max, and temp HP.
+
+        Return type
+
+            str
+
+    property levels
+
+        The levels of the creature.
+
+        Return type
+
+            AliasLevels
+
+    property max_hp
+
+        The maximum HP of the creature.
+
+        Return type
+
+            int or None
+
+    modify_hp(amount, ignore_temp=False, overflow=True)
+
+        Modifies the creature’s remaining HP by a given amount.
+
+        Parameters
+
+                amount (int) – The amount of HP to add/remove.
+
+                ignore_temp (bool) – If amount is negative, whether to damage temp HP first or ignore temp.
+
+                overflow (bool) – If amount is positive, whether to allow overhealing or cap at the creature’s max HP.
+
+        Returns
+
+            A string describing the creature’s current, max, and temp HP after the change.
+        Return type
+
+            str
+
+    property name
+
+        The name of the creature.
+
+        Return type
+
+            str
+
+    reset_hp()
+
+        Heals a creature to max and removes any temp HP.
+
+    property resistances
+
+        The resistances, immunities, and vulnerabilities of the creature.
+
+        Return type
+
+            AliasResistances
+
+    property saves
+
+        The saves of the creature.
+
+        Return type
+
+            AliasSaves
+
+    set_hp(new_hp)
+
+        Sets the creature’s remaining HP.
+
+        Parameters
+
+            new_hp (int) – The amount of remaining HP (a nonnegative integer).
+
+    set_temp_hp(new_temp)
+
+        Sets a creature’s temp HP.
+
+        Parameters
+
+            new_temp (int) – The new temp HP (a non-negative integer).
+
+    property skills
+
+        The skills of the creature.
+
+        Return type
+
+            AliasSkills
+
+    property spellbook
+
+        The creature’s spellcasting information.
+
+        Return type
+
+            AliasSpellbook
+
+    property stats
+
+        The stats of the creature.
+
+        Return type
+
+            AliasBaseStats
+
+    property temp_hp
+
+        The current temp HP of the creature.
+
+        Return type
+
+            int
+

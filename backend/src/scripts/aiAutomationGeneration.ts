@@ -5,6 +5,7 @@ import YAML from "yaml";
 import { validateAutomation } from "../logic/external/automationValidation";
 
 import "dotenv/config";
+import { readFileSync } from "node:fs";
 
 const API_URL = "https://inference.hetzner.com/api/v1/chat/completions";
 const MAX_TRIES = 3;
@@ -159,19 +160,24 @@ async function main() {
 
 	const formattedExamples = formatExamples(examples);
 	const formattedDocumentation = JSON.stringify(automationDocumentation, null, 2);
+	const rstDocumentation = readFileSync("src/staticData/automationDocumentation.rst");
+	const aliasStatblockType = readFileSync("src/staticData/aliasStatblockType.txt");
 
 	const systemPrompt = `You are an Avrae automation generator.
 Generate automation that follows the supplied automation documentation and the patterns demonstrated by the examples.
 Return only the complete automation value as valid raw JSON. Do not include Markdown fences, explanations, commentary, or any text outside the JSON.
 Use the runtime variables from the documentation to express conditionals inside a condition node.
 
-AUTOMATION DOCUMENTATION
-${formattedDocumentation}
+AUTOMATION DOCUMENTATION:
+${rstDocumentation}
 
-VALID EXAMPLES
+Alias statblock class documentation:
+${aliasStatblockType}
+
+VALID EXAMPLES:
 ${formattedExamples}`;
 
-	const prompt = `Generate the automation for the following description:
+	const prompt = `Generate the full automation for the following description:
 ${description}`;
 
 	const messages: ChatMessage[] = [
