@@ -11,10 +11,7 @@ it("basic http requests", async () => {
 	// Does the static files work?
 	expect(await fetch(`${baseURL}/logo.png`).then(r => r.text())).not.toSatisfy((str: string) => str.startsWith("<!doctype html>"));
 	// CSP Header
-	expect(await fetch(`${baseURL}/`).then(r => {
-		console.log(r.headers)
-		return r.headers.get("Content-Security-Policy");
-	})).toContain("default-src 'self';");
+	expect(await fetch(`${baseURL}/`).then(r => r.headers.get("Content-Security-Policy"))).toContain("default-src 'self';");
 });
 
 it("api requests", async () => {
