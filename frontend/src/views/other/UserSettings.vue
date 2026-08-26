@@ -307,22 +307,18 @@ const srdOptions = [
 </script>
 
 <template>
-	<Breadcrumbs
-		:routes="[
-			{
-				path: '',
-				text: 'User',
-				isCurrent: true
-			}
-		]" :is-less-wide="true"
-	/>
+	<Breadcrumbs :routes="[
+		{
+			path: '',
+			text: 'User',
+			isCurrent: true
+		}
+	]" />
 	<div class="content less-wide">
 		<div v-if="!store.user">
 			<p> You are not logged in. Login with Discord to begin.</p>
-			<v-btn
-				color="success" size="large" class="mt-4" prepend-icon="ic:sharp-discord"
-				@click.prevent="sendToLogin($route.path)"
-			>
+			<v-btn color="success" size="large" class="mt-4" prepend-icon="ic:sharp-discord"
+				@click.prevent="sendToLogin($route.path)">
 				Login
 			</v-btn>
 		</div>
@@ -341,8 +337,7 @@ const srdOptions = [
 				</p>
 				<span
 					v-if="!(store.user.supporter === SupporterStatus.wirmling || store.user.supporter === SupporterStatus.greatwyrm)"
-					class="center"
-				>
+					class="center">
 					<a href="https://www.patreon.com/join/BestiaryBuilder" class="patreon">
 						<v-icon icon="mdi:patreon" size="small" />
 						<span> Become a patreon </span>
@@ -364,80 +359,62 @@ const srdOptions = [
 				<div class="preferences mt-4">
 					<div class="setting-container">
 						<div>
-							<v-select
-								v-model="preferences.statblockLayout" label="Statblock Layout"
-								:items="layoutOptions" variant="outlined" density="comfortable" width="400"
-							/>
+							<v-select v-model="preferences.statblockLayout" label="Statblock Layout"
+								:items="layoutOptions" variant="outlined" density="comfortable" width="400" />
 						</div>
 
-						<v-icon-btn
-							v-tooltip="'Set statblock layout to 2024 or 2014. This is appearance only.'"
-							icon="mdi:information"
-						/>
+						<v-icon-btn v-tooltip="'Set statblock layout to 2024 or 2014. This is appearance only.'"
+							icon="mdi:information" />
 						<DropdownMenu>
 							<template #activator="{ props }">
 								<v-icon-btn text="Preview statblock style" icon="mdi:eye" v-bind="props" />
 							</template>
 							<v-card min-width="300" class="pa-4">
-								<StatblockRenderer
-									:data="creatureData" :statblock-design="preferences.statblockDesign"
-									:is2024="preferences.statblockLayout === 'SL_2024'" style="max-width: 650px"
-								/>
+								<StatblockRenderer :data="creatureData" :statblock-design="preferences.statblockDesign"
+									:is2024="preferences.statblockLayout === 'SL_2024'" style="max-width: 650px" />
 							</v-card>
 						</DropdownMenu>
 					</div>
 
 					<div class="setting-container">
 						<div>
-							<v-select
-								v-model="preferences.statblockDesign" :items="statblockDesignOptions"
-								label="Statblock Design" variant="outlined" density="comfortable" width="400"
-							/>
+							<v-select v-model="preferences.statblockDesign" :items="statblockDesignOptions"
+								label="Statblock Design" variant="outlined" density="comfortable" width="400" />
 						</div>
 						<v-icon-btn
 							v-tooltip="'Change the visual design of the statblock. This changes its appearance only.'"
-							icon="mdi:information"
-							title="Setting information"
-						/>
+							icon="mdi:information" title="Setting information" />
 
 						<DropdownMenu>
 							<template #activator="{ props }">
 								<v-icon-btn text="Preview statblock style" icon="mdi:eye" v-bind="props" />
 							</template>
 							<v-card min-width="300" class="pa-4">
-								<StatblockRenderer
-									:data="creatureData" :statblock-design="preferences.statblockDesign"
-									:is2024="preferences.statblockLayout === 'SL_2024'" style="max-width: 650px"
-								/>
+								<StatblockRenderer :data="creatureData" :statblock-design="preferences.statblockDesign"
+									:is2024="preferences.statblockLayout === 'SL_2024'" style="max-width: 650px" />
 							</v-card>
 						</DropdownMenu>
 					</div>
 
 					<div class="setting-container">
 						<div>
-							<v-select
-								v-model="preferences.preferredEditor" :items="preferredEditorOptions"
-								label="Preferred Editor" variant="outlined" density="comfortable" width="400"
-							/>
+							<v-select v-model="preferences.preferredEditor" :items="preferredEditorOptions"
+								label="Preferred Editor" variant="outlined" density="comfortable" width="400" />
 						</div>
 
 						<v-icon-btn
 							v-tooltip="'Set default automation editor to visual (button and layout) or code (YAML) editor.'"
-							icon="mdi:information"
-						/>
+							icon="mdi:information" />
 					</div>
 
 					<div class="setting-container">
 						<div>
-							<v-select
-								v-model="preferences.SRDVersion" :items="srdOptions" label="SRD Version"
-								variant="outlined" density="comfortable" width="400"
-							/>
+							<v-select v-model="preferences.SRDVersion" :items="srdOptions" label="SRD Version"
+								variant="outlined" density="comfortable" width="400" />
 						</div>
 						<v-icon-btn
 							v-tooltip="'Set whether creating Creatures and Features from the SRD should use the 2024 or 2014 list of options.'"
-							icon="mdi:information"
-						/>
+							icon="mdi:information" />
 					</div>
 
 					<div>
@@ -453,18 +430,14 @@ const srdOptions = [
 							store this
 							token, it is only saved in your browser.
 						</small>
-						<v-text-field
-							v-model="AvraeToken" label="Token" variant="outlined" class="mt-4"
-							max-width="600"
-						/>
+						<v-text-field v-model="AvraeToken" label="Token" variant="outlined" class="mt-4"
+							max-width="600" />
 
 						<small> To get the Token:
 							<ol>
 								<li>
-									Log in on the <a
-										href="https://avrae.io/dashboard/characters"
-										style="color: rgb(var(--v-theme-primary))"
-									> Avrae Dashboard
+									Log in on the <a href="https://avrae.io/dashboard/characters"
+										style="color: rgb(var(--v-theme-primary))"> Avrae Dashboard
 									</a>
 								</li>
 								<li>
@@ -552,7 +525,7 @@ const srdOptions = [
 				flex-direction: row;
 				gap: 0.5rem;
 
-				& > div {
+				&>div {
 					margin: auto 0;
 				}
 			}

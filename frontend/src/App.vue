@@ -6,6 +6,7 @@ import ToastHost from "./components/Page/ToastHost.vue";
 import { useRecentPages } from "./utils/app/useRecentPages.js";
 import { store } from "./utils/store.js";
 import { sendToLogin } from "./utils/utils.js";
+import { useThemePersistence } from "./utils/app/theme.js";
 
 const { recentPages } = useRecentPages();
 
@@ -32,6 +33,8 @@ const defaults = computed(() => ({
 		size: store.isMobile ? 4 : undefined,
 	},
 }));
+
+useThemePersistence()
 </script>
 
 <template>

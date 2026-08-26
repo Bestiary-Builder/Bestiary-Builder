@@ -45,15 +45,12 @@ watch(
 </script>
 
 <template>
-	<Breadcrumbs
-		:routes="[
-			{
-				path: '',
-				text: $route.name as string ?? 'Name not found',
-				isCurrent: true
-			}
-		]"
-		:is-less-wide="true"
-	/>
+	<Breadcrumbs :routes="[
+		{
+			path: '',
+			text: $route.name as string ?? 'Name not found',
+			isCurrent: true
+		}
+	]" />
 	<div class="content markdown less-wide" v-html="md.render(dataFile)" />
 </template>

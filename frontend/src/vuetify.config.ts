@@ -9,6 +9,8 @@ import BestiaryBuilderLogo from "@/assets/svg/logo.svg";
 import iconifyAdapter from "./utils/app/icon";
 import "vuetify/styles";
 
+
+const savedTheme = localStorage.getItem('app-theme')
 export const vuetify = createVuetify({
 	components,
 	directives,
@@ -62,7 +64,8 @@ export const vuetify = createVuetify({
 
 	},
 	theme: {
-		defaultTheme: "dark",
+		defaultTheme: savedTheme ? savedTheme : 'dark',
+		transition: true,
 		themes: {
 			dark: {
 				dark: true,
@@ -71,6 +74,12 @@ export const vuetify = createVuetify({
 					"surface-1": "#3b3736"
 				},
 			},
+			light: {
+				dark: false,
+				colors: {
+					"primary": "#ff4500",
+				},
+			}
 		}
 	},
 	icons: {
