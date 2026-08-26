@@ -1,5 +1,5 @@
 import type { CollectionWithEditors } from "./collections";
-import type { Id, Statblock, User } from "~/shared";
+import type { CreatureMetaData, Statblock, User } from "~/shared";
 import type { Bestiary, BestiaryCreateInput, BestiaryStatus, Creature } from "~/shared/src/prisma-types";
 import bestiaryTags from "@/staticData/bestiaryTags.json";
 import { checkBadwords } from "@/utilities/badwords";
@@ -14,7 +14,7 @@ import { possibleUser, requireUser } from "../main/login";
 import { createCollectionService } from "./collections";
 
 type BestiaryWithEditors = Bestiary & CollectionWithEditors & { _count: { bookmarkedBy: number } };
-type BestiaryForUser = BestiaryWithEditors & { creatures: { id: Id }[]; orderedBy: { index: number }[] };
+type BestiaryForUser = BestiaryWithEditors & { creatures: CreatureMetaData[]; orderedBy: { index: number }[] };
 
 export const bestiaryCollections = createCollectionService<BestiaryWithEditors, BestiaryForUser>({
 	getById: getBestiary,
