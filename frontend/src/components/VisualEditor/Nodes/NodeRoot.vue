@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
 import type { AttackModel } from "~/shared";
-import { inject, watch } from "vue";
+import { inject } from "vue";
+import { useRules } from "vuetify/labs/rules";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
-import { useRules } from "vuetify/labs/rules";
 
 const currentEffect = inject<Ref<AttackModel>>("currentEffect");
 
@@ -12,7 +12,7 @@ useDataCleanup(currentEffect, ["thumb", "verb", "proper", "phrase", "criton", "e
 
 const setName = inject<false | Function>("setActionName");
 
-const rules = useRules()
+const rules = useRules();
 </script>
 
 <template>
@@ -21,9 +21,11 @@ const rules = useRules()
 		<div class="two-wide">
 			<div>
 				<v-text-field v-model="currentEffect.name" label="Attack Name" :rules="[rules.required()]" />
-				<small v-if="setName" style="font-size: x-small; cursor: pointer" role="button"
-					@click="setName(currentEffect.name)"> <i>Click here to set the name of the statblock feature to this
-						name.</i> </small>
+				<small
+					v-if="setName" style="font-size: x-small; cursor: pointer" role="button"
+					@click="setName(currentEffect.name)"
+				> <i>Click here to set the name of the statblock feature to this
+					name.</i> </small>
 			</div>
 			<div>
 				<v-text-field v-model="currentEffect.thumb" label="Thumbnail URL" />
@@ -34,28 +36,32 @@ const rules = useRules()
 		<v-textarea v-model="currentEffect.phrase" label="Flavor Text" rows="5" />
 
 		<div class="two-wide">
-			<v-select v-model="currentEffect.criton" label="Crit On" :items="[
-				{ title: '(crit on 20)', value: null },
-				...Array.from({ length: 20 }, (_, i) => ({ title: (20 - i).toString(), value: 20 - i })),
-			]" />
+			<v-select
+				v-model="currentEffect.criton" label="Crit On" :items="[
+					{ title: '(crit on 20)', value: null },
+					...Array.from({ length: 20 }, (_, i) => ({ title: (20 - i).toString(), value: 20 - i })),
+				]"
+			/>
 			<v-text-field v-model="currentEffect.extra_crit_damage" label="Extra Crit Damage" />
 		</div>
 
 		<SectionHeader title="Additional Options" />
 		<div class="two-wide">
-			<v-select v-model="currentEffect.activation_type" label="Action Type" title="Activation Type" :items="[
-				{ title: 'Attack', value: null },
-				{ title: 'Action', value: 1 },
-				{ title: 'No Action', value: 2 },
-				{ title: 'Bonus Action', value: 3 },
-				{ title: 'Reaction', value: 4 },
-				{ title: 'Minute', value: 6 },
-				{ title: 'Hour', value: 7 },
-				{ title: 'Special', value: 8 },
-				{ title: 'Legendary', value: 9 },
-				{ title: 'Mythic', value: 10 },
-				{ title: 'Lair', value: 11 },
-			]" placeholder="(attack)" />
+			<v-select
+				v-model="currentEffect.activation_type" label="Action Type" title="Activation Type" :items="[
+					{ title: 'Attack', value: null },
+					{ title: 'Action', value: 1 },
+					{ title: 'No Action', value: 2 },
+					{ title: 'Bonus Action', value: 3 },
+					{ title: 'Reaction', value: 4 },
+					{ title: 'Minute', value: 6 },
+					{ title: 'Hour', value: 7 },
+					{ title: 'Special', value: 8 },
+					{ title: 'Legendary', value: 9 },
+					{ title: 'Mythic', value: 10 },
+					{ title: 'Lair', value: 11 },
+				]" placeholder="(attack)"
+			/>
 			<v-text-field v-model="currentEffect.list_display_override" label="List display override" />
 		</div>
 	</template>

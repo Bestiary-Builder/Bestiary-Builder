@@ -12,16 +12,38 @@ jobs:
         steps:
             - uses: actions/checkout@v3
             - uses: oven-sh/setup-bun@v2
+            # Install dependencies
             - name: Installing dependencies
               run: bun install
+            # Setup types
             - name: Generate prisma types
               working-directory: ./backend
               run: bun run generate
-            - name: Run Type check
+            - name: Build compiled types
+              working-directory: ./shared
+              run: bun run build-types
+            # Run type checks
+            - name: Type-check shared
+              working-directory: ./shared
               run: bun run type-check
-            - name: Run ESLint
+            - name: Type-check backend
+              working-directory: ./backend
+              run: bun run type-check
+            - name: Type-check frontend
+              working-directory: ./frontend
+              run: bun run type-check
+            # Run ESLint
+            - name: Lint shared
+              working-directory: ./shared
               run: bun run lint
-            - name: Run ESLint
+            - name: Lint backend
+              working-directory: ./backend
+              run: bun run lint
+            - name: Lint frontend
+              working-directory: ./frontend
+              run: bun run lint
+            # Run StyleLint
+            - name: Run Stylelint
               working-directory: ./frontend
               run: bun run stylelint
     build-and-test:

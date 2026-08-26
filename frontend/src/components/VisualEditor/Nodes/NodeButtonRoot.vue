@@ -23,21 +23,24 @@ watch(() => currentEffect!.value?.style, () => {
 	<template v-if="currentEffect">
 		<SectionHeader :title="`Button (${currentEffect.label.substring(0, 40).trim()})`" />
 		<div class="two-wide">
-			<v-text-field label="Button Label" v-model="currentEffect.label"
-				:class="{ required: currentEffect.label.length === 0 }" />
-			<v-text-field label="Verb" v-model="currentEffect.verb" placeholder="attacks with" />
-			<v-select v-model="currentEffect.style" label="Button Style" :items="[
-				{ title: 'Blurple (default)', value: null, props: { style: 'color: #5865F2' } },
-				{ title: 'rgb(var(--v-theme-surface-bright))', value: '2', props: { style: 'color: #4E5058' } },
-				{ title: 'Green', value: '3', props: { style: 'color: #248045' } },
-				{ title: 'Red', value: '4', props: { style: 'color: #DA373C' } },
-				{ title: 'Custom Expression', value: 'custom' },
-			]" />
+			<v-text-field
+				v-model="currentEffect.label" label="Button Label"
+				:class="{ required: currentEffect.label.length === 0 }"
+			/>
+			<v-text-field v-model="currentEffect.verb" label="Verb" placeholder="attacks with" />
+			<v-select
+				v-model="currentEffect.style" label="Button Style" :items="[
+					{ title: 'Blurple (default)', value: null, props: { style: 'color: #5865F2' } },
+					{ title: 'rgb(var(--v-theme-surface-bright))', value: '2', props: { style: 'color: #4E5058' } },
+					{ title: 'Green', value: '3', props: { style: 'color: #248045' } },
+					{ title: 'Red', value: '4', props: { style: 'color: #DA373C' } },
+					{ title: 'Custom Expression', value: 'custom' },
+				]"
+			/>
 			<template v-if="isCustom">
-				<v-text-field label="Custom Style Expression" v-model="currentEffect.style" hint="IntExpression" />
+				<v-text-field v-model="currentEffect.style" label="Custom Style Expression" hint="IntExpression" />
 			</template>
 		</div>
-
 
 		<SectionHeader title="Casting Overrides" />
 		<small>
@@ -49,16 +52,22 @@ watch(() => currentEffect!.value?.style, () => {
 		</small>
 		<div class="two-wide mt-2">
 			<div>
-				<v-text-field label=" Default DC" v-model="currentEffect.defaultDC" hint="spell_dc IntExpression"
-					persistent-hint />
+				<v-text-field
+					v-model="currentEffect.defaultDC" label=" Default DC" hint="spell_dc IntExpression"
+					persistent-hint
+				/>
 			</div>
 			<div>
-				<v-text-field label="Default Attack Bonus" v-model="currentEffect.defaultAttackBonus"
-					hint="spell_attack_bonus IntExpression" persistent-hint />
+				<v-text-field
+					v-model="currentEffect.defaultAttackBonus" label="Default Attack Bonus"
+					hint="spell_attack_bonus IntExpression" persistent-hint
+				/>
 			</div>
 			<div>
-				<v-text-field label="Default Casting Modifier IntExpression" v-model="currentEffect.defaultCastingMod"
-					hint="spell" persistent-hint />
+				<v-text-field
+					v-model="currentEffect.defaultCastingMod" label="Default Casting Modifier IntExpression"
+					hint="spell" persistent-hint
+				/>
 			</div>
 		</div>
 	</template>

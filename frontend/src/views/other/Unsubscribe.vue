@@ -28,13 +28,15 @@ useFetch("/api/unsubscribe")
 </script>
 
 <template>
-	<Breadcrumbs :routes="[
-		{
-			path: '',
-			text: 'Unsubscribe from emails',
-			isCurrent: true,
-		},
-	]" :is-less-wide="true" />
+	<Breadcrumbs
+		:routes="[
+			{
+				path: '',
+				text: 'Unsubscribe from emails',
+				isCurrent: true,
+			},
+		]" :is-less-wide="true"
+	/>
 	<div class="content less-wide center">
 		<div>
 			<h3 v-if="status === 1">

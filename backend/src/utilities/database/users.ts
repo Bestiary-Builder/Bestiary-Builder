@@ -1,6 +1,7 @@
-import { type Id, SupporterStatus, type User } from "~/shared";
+import type { Id, User } from "~/shared";
 import { generateUserSecret } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
+import { SupporterStatus } from "~/shared";
 import { getPrismaClient } from ".";
 import { withDatabaseFallback } from "./operations";
 

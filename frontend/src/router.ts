@@ -5,11 +5,11 @@ import { sendToLogin } from "@/utils/utils";
 
 import { routes as sharedRoutes } from "~/shared";
 import { useToast } from "./utils/app/toast";
-import { store } from "./utils/store";
-
 import { useRecentPages } from "./utils/app/useRecentPages";
 
-const { addToast } = useToast()
+import { store } from "./utils/store";
+
+const { addToast } = useToast();
 const routes = sharedRoutes.routes.map((route) => {
 	return {
 		...route,

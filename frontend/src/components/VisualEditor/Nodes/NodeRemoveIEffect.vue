@@ -16,11 +16,13 @@ useDataCleanup(currentEffect, ["removeParent"]);
 		<p>Remove IEffect only has optional options.</p>
 		<SectionHeader title="Additional Options" />
 		<div class="two-wide">
-			<v-select v-model="currentEffect.removeParent" label="Remove Parent" :items="[
-				{ title: 'Never', value: null },
-				{ title: 'Always', value: 'always' },
-				{ title: 'If No Children', value: 'if_no_children' },
-			]" />
+			<v-select
+				v-model="currentEffect.removeParent" label="Remove Parent" :items="[
+					{ title: 'Never', value: null },
+					{ title: 'Always', value: 'always' },
+					{ title: 'If No Children', value: 'if_no_children' },
+				]"
+			/>
 		</div>
 	</template>
 </template>

@@ -6,8 +6,8 @@ import { computed, inject, ref } from "vue";
 import { useRoute } from "vue-router";
 import { activation_type, defaultNodes, displayNames } from "./util";
 
-const isOpen = ref(false)
-const props = defineProps<{ context: string[]; name?: string, depth?: number }>();
+const props = defineProps<{ context: string[]; name?: string; depth?: number }>();
+const isOpen = ref(false);
 const $route = useRoute();
 const type = $route.params.type as keyof Features;
 const computedContext = computed(() => {
@@ -102,20 +102,18 @@ const addAndSelect = async (node: string) => {
 	try {
 		tree.push(JSON.parse(JSON.stringify(defaultNodes[node])));
 		currentEffect!.value = tree[tree.length - 1];
-		isOpen.value = false
+		isOpen.value = false;
 	}
 	catch (e) {
 		console.error(e);
 	}
-
 };
 
-
-const showControls = inject<Ref<boolean>>("showControls")
+const showControls = inject<Ref<boolean>>("showControls");
 </script>
 
 <template>
-	<DropdownMenu v-if="displayNames && showControls" location="bottom center" v-model="isOpen">
+	<DropdownMenu v-if="displayNames && showControls" v-model="isOpen" location="bottom center">
 		<template #activator="{ props }">
 			<p class="tree-row" v-bind="props" :style="`--depth: ${depth}`">
 				<span class="icon">
@@ -127,11 +125,12 @@ const showControls = inject<Ref<boolean>>("showControls")
 			<v-card-actions>
 				<v-row density="compact">
 					<v-col v-for="node in availableNodes" :key="node" cols="12">
-						<v-btn :key="node" @click="addAndSelect(node)" :prepend-icon="displayNames![node]?.icon"
-							size="small">
+						<v-btn
+							:key="node" :prepend-icon="displayNames![node]?.icon" size="small"
+							@click="addAndSelect(node)"
+						>
 							{{ displayNames[node]?.label }}
 						</v-btn>
-
 					</v-col>
 				</v-row>
 			</v-card-actions>

@@ -40,17 +40,23 @@ useDataCleanup(currentEffect, ["cantripScale", "hidden", "displayName", "fixedVa
 		<SectionHeader title="Additional Options" />
 		<div class="two-wide">
 			<v-text-field v-model="currentEffect.displayName" label="Display name" />
-			<v-checkbox v-model="currentEffect.fixedValue" label="Whether this roll should ignore the -d argument and
-					damage bonus effects." hide-details />
+			<v-checkbox
+				v-model="currentEffect.fixedValue" label="Whether this roll should ignore the -d argument and
+					damage bonus effects." hide-details
+			/>
 
-			<v-checkbox v-model="currentEffect.hidden"
-				label="Whether to display the roll in the Meta field, or to apply any bonuses from the -d argument." />
+			<v-checkbox
+				v-model="currentEffect.hidden"
+				label="Whether to display the roll in the Meta field, or to apply any bonuses from the -d argument."
+			/>
 		</div>
 
 		<SectionHeader title="Spell Options" />
 		<div class="two-wide">
-			<v-checkbox v-model="currentEffect.cantripScale" label="Whether this roll should scale like a cantrip."
-				hide-details />
+			<v-checkbox
+				v-model="currentEffect.cantripScale" label="Whether this roll should scale like a cantrip."
+				hide-details
+			/>
 			<div>
 				<div>At higher levels</div>
 				<HigherLevels v-model="(currentEffect.higher as Record<number, string>)" />

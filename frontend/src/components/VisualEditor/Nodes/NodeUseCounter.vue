@@ -2,10 +2,10 @@
 import type { Ref } from "vue";
 import type { AbilityReference, Counter, SpellSlotReference } from "~/shared";
 import { inject, onMounted, ref, watch } from "vue";
+import { useRules } from "vuetify/labs/rules";
 import { useFetch } from "@/utils/utils";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
-import { useRules } from "vuetify/labs/rules";
 
 const currentEffect = inject<Ref<Counter>>("currentEffect");
 
@@ -53,7 +53,7 @@ onMounted(async () => {
 
 useDataCleanup(currentEffect, ["allowOverflow", "fixedValue"]);
 
-const rules = useRules()
+const rules = useRules();
 </script>
 
 <template>
@@ -61,52 +61,67 @@ const rules = useRules()
 		<SectionHeader title="Use Counter" />
 		<div class="two-wide">
 			<div>
-				<v-select v-model="counterType" label="Counter Type" title="Error Behaviour" :items="[
-					{ title: 'Custom Counter', value: 'cc' },
-					{ title: 'Spell Slot', value: 'ss' },
-					{ title: 'Ability', value: 'abi' },
-				]" />
+				<v-select
+					v-model="counterType" label="Counter Type" title="Error Behaviour" :items="[
+						{ title: 'Custom Counter', value: 'cc' },
+						{ title: 'Spell Slot', value: 'ss' },
+						{ title: 'Ability', value: 'abi' },
+					]"
+				/>
 			</div>
 
 			<div v-if="typeof (currentEffect.counter) === 'string'">
-				<v-text-field v-model="currentEffect.counter" label="Counter Name"
+				<v-text-field
+					v-model="currentEffect.counter" label="Counter Name"
 					hint="Leave empty and set Error Behaviour to Ignore to takearbitrary -amt # input. "
-					persistent-hint />
+					persistent-hint
+				/>
 			</div>
 			<div
-				v-else-if="typeof (currentEffect!.counter) === 'object' && Object.hasOwn(currentEffect!.counter, 'slot')">
-				<v-text-field v-model="(currentEffect.counter as SpellSlotReference).slot" label="Slot Level"
-					:rules="[rules.required()]" hint="IntExpression" />
+				v-else-if="typeof (currentEffect!.counter) === 'object' && Object.hasOwn(currentEffect!.counter, 'slot')"
+			>
+				<v-text-field
+					v-model="(currentEffect.counter as SpellSlotReference).slot" label="Slot Level"
+					:rules="[rules.required()]" hint="IntExpression"
+				/>
 			</div>
 			<v-select
 				v-else-if="typeof (currentEffect!.counter) === 'object' && Object.hasOwn(currentEffect!.counter, 'id') && Object.hasOwn(currentEffect!.counter, 'typeId')"
 				v-model="currentEffect.counter" label="Ability Reference" :items="limitedUse" item-title="name"
-				:item-value="(x: any) => ({ id: x.id, typeId: x.typeId })" return-object />
+				:item-value="(x: any) => ({ id: x.id, typeId: x.typeId })" return-object
+			/>
 			<span v-else> Something went wrong with this node. Please delete it and recreate the counter node.</span>
 			<div>
-				<v-text-field v-model="currentEffect.amount" label="Amount"
-					hint="Negative numbers add uses to the counter. IntExpression" />
+				<v-text-field
+					v-model="currentEffect.amount" label="Amount"
+					hint="Negative numbers add uses to the counter. IntExpression"
+				/>
 			</div>
 		</div>
 
 		<SectionHeader title="Additional Options" />
 		<v-row>
 			<v-col cols="6">
-				<v-select v-model="currentEffect.errorBehaviour" label="Error Behaviour" title="Error Behaviour" :items="[
-					{ title: 'Warn', value: 'warn' },
-					{ title: 'Raise', value: 'raise' },
-					{ title: 'Ignore', value: 'ignore' },
-				]" />
+				<v-select
+					v-model="currentEffect.errorBehaviour" label="Error Behaviour" title="Error Behaviour" :items="[
+						{ title: 'Warn', value: 'warn' },
+						{ title: 'Raise', value: 'raise' },
+						{ title: 'Ignore', value: 'ignore' },
+					]"
+				/>
 			</v-col>
 			<v-col cols="6">
-				<v-checkbox v-model="currentEffect.allowOverflow"
+				<v-checkbox
+					v-model="currentEffect.allowOverflow"
 					label="If True, attempting to overflow/underflow a counter (i.e. use more charges than available or add charges exceeding max) will clip to bounds rather than error."
-					hide-details />
+					hide-details
+				/>
 			</v-col>
 			<v-col cols="6">
-				<v-checkbox v-model="currentEffect.fixedValue"
-					label="Whether this counter should ignore the -amt argument." hide-details>
-				</v-checkbox>
+				<v-checkbox
+					v-model="currentEffect.fixedValue"
+					label="Whether this counter should ignore the -amt argument." hide-details
+				/>
 			</v-col>
 		</v-row>
 	</template>

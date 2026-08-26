@@ -38,21 +38,23 @@ useDataCleanup(currentEffect, ["attackBonus"]);
 <template>
 	<template v-if="currentEffect">
 		<SectionHeader title="Attack" />
-		<v-text-field label="Attack Bonus" v-model="currentEffect.attackBonus" hint="IntExpression" />
+		<v-text-field v-model="currentEffect.attackBonus" label="Attack Bonus" hint="IntExpression" />
 
 		<SectionHeader title="Additional Options" />
 		<div class="two-wide">
-			<v-select v-model="currentEffect.adv" label="Advantage (optional)" title="Advantage" :items="[
-				{ title: 'Flat', value: '0' },
-				{ title: 'Advantage', value: '1' },
-				{ title: 'Elven Advantage', value: '2' },
-				{ title: 'Disadvantage', value: '-1' },
-				isCustom
-					? { title: 'Custom', value: currentEffect.adv }
-					: { title: 'Custom', value: 'custom' },
-			]" @update:model-value="handleChange" />
+			<v-select
+				v-model="currentEffect.adv" label="Advantage (optional)" title="Advantage" :items="[
+					{ title: 'Flat', value: '0' },
+					{ title: 'Advantage', value: '1' },
+					{ title: 'Elven Advantage', value: '2' },
+					{ title: 'Disadvantage', value: '-1' },
+					isCustom
+						? { title: 'Custom', value: currentEffect.adv }
+						: { title: 'Custom', value: 'custom' },
+				]" @update:model-value="handleChange"
+			/>
 			<template v-if="isCustom">
-				<v-text-field label="Custom Advantage" v-model="currentEffect.adv" hint="IntExpression" />
+				<v-text-field v-model="currentEffect.adv" label="Custom Advantage" hint="IntExpression" />
 			</template>
 		</div>
 	</template>

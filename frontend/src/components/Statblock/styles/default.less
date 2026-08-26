@@ -17,7 +17,6 @@
 	padding: 15px;
 	position: block;
 
-
 	.picture-container {
 		position: relative;
 	}
@@ -139,7 +138,6 @@
 		overflow-wrap: anywhere;
 	}
 
-
 	.stat-container-wrapper {
 		display: inline-block;
 	}
@@ -152,7 +150,7 @@
 	.stat-table {
 		border-collapse: collapse;
 
-		thead>tr>th {
+		thead > tr > th {
 			color: rgb(var(--v-theme-surface-bright));
 			font-weight: 400;
 			padding: 0.3125rem 0.125rem 0;
@@ -161,24 +159,22 @@
 			font-size: 0.6875rem;
 		}
 
-		tbody>tr>th {
+		tbody > tr > th {
 			text-transform: uppercase;
 			padding: 0 8px;
 		}
 
-		tbody>tr>td {
+		tbody > tr > td {
 			text-align: center;
 			padding: 0 8px;
 			background-color: lighten(#3b3736, 5%);
 		}
 
-		tbody>tr>th,
-		tbody>tr>td:first-of-type {
+		tbody > tr > th,
+		tbody > tr > td:first-of-type {
 			background-color: darken(#3b3736, 5%);
 		}
 	}
-
-
 
 	&.toPrint {
 		.stat-block--name-container {
@@ -192,7 +188,6 @@
 		}
 	}
 }
-
 
 .stat-block.v2024 {
 	column-count: 2;
@@ -232,27 +227,26 @@
 	padding-inline-start: 1.4rem;
 }
 
-
 // for spell lists automatically generated we use this
 :global(.indented p:has(strong):not(p:has(strong) ~ p:has(strong))) {
-	margin-top: .4rem;
+	margin-top: 0.4rem;
 }
 
 :global(.indented p:has(strong)) {
 	display: inline-block;
 	text-indent: -10px;
-	margin-left: 10px
+	margin-left: 10px;
 }
 
 // users can add {.hanging} to a line to make it a hanging list
 :global(.statblock--description .hanging) {
 	text-indent: -10px;
-	margin-left: 10px
+	margin-left: 10px;
 }
 
 :global(.hanging) {
 	text-indent: -10px;
-	margin-left: 10px
+	margin-left: 10px;
 }
 
 // within markdown scope, `˚` is used to mark features with automation. This icon is not rendered in printed contexts

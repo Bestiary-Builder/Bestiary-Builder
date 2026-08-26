@@ -1,5 +1,5 @@
 <template>
-    <div class="content">
-        To do.
-    </div>
+	<div class="content">
+		To do.
+	</div>
 </template>

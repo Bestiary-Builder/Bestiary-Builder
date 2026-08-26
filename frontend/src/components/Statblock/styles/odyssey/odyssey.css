@@ -85,27 +85,27 @@ body .v-card .stat-block.Odyssey {
 	}
 
 	.stat-table:first-of-type {
-		tbody>th {
+		tbody > th {
 			font-weight: bold;
 		}
 
-		tbody>tr>td {
+		tbody > tr > td {
 			background-color: #c3c6b4;
 		}
 
-		tbody>tr>th,
-		tbody>tr>td:first-of-type {
+		tbody > tr > th,
+		tbody > tr > td:first-of-type {
 			background-color: #e0e2d9;
 		}
 	}
 
 	.stat-table:nth-of-type(2) {
-		tbody>tr>td {
+		tbody > tr > td {
 			background-color: #d8ccd1;
 		}
 
-		tbody>tr>th,
-		tbody>tr>td:first-of-type {
+		tbody > tr > th,
+		tbody > tr > td:first-of-type {
 			background-color: #ebe5e8;
 		}
 	}

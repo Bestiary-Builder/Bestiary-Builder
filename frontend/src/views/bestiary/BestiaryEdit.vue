@@ -2,23 +2,23 @@
 import type { CreatureWithStats, Statblock } from "~/shared";
 import { refDebounced, useLocalStorage } from "@vueuse/core";
 import { onMounted, reactive, ref, watch, watchEffect } from "vue";
+import { VueDraggable } from "vue-draggable-plus";
 import { useRules } from "vuetify/labs/rules";
 import CopyCreature from "@/components/Bestiary/CopyCreature.vue";
 import CreatureListItem from "@/components/Bestiary/CreatureListItem.vue";
 import StatusIcon from "@/components/Bestiary/StatusIcon.vue";
+import { useCollection } from "@/components/Bestiary/useCollection";
 import UserBanner from "@/components/Bestiary/UserBanner.vue";
 import CRInput from "@/components/FormInputs/CRInput.vue";
 import Markdown from "@/components/Global/Markdown.vue";
 import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
+import SectionHeader from "@/components/VisualEditor/Nodes/shared/SectionHeader.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { useToast } from "@/utils/app/toast";
 import { creatureTypes } from "@/utils/constants";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { defaultStatblock } from "~/shared";
-import { useCollection } from "@/components/Bestiary/useCollection";
-import { VueDraggable } from "vue-draggable-plus";
-import SectionHeader from "@/components/VisualEditor/Nodes/shared/SectionHeader.vue";
 
 const {
 	collection,
@@ -36,16 +36,16 @@ const {
 	createItem,
 	createManyItems,
 	deleteItem
-} = useCollection("bestiary")
+} = useCollection("bestiary");
 
-const { addToast, updateToast, removeToast } = useToast()
+const { addToast, updateToast, removeToast } = useToast();
 const rules = useRules();
 
 const srdCreatures = ref<string[]>([]);
 onMounted(async () => {
-	const toastId = addToast("Loading...", { loading: true })
-	await getCollection()
-	removeToast(toastId)
+	const toastId = addToast("Loading...", { loading: true });
+	await getCollection();
+	removeToast(toastId);
 	if (collection.value?.name)
 		document.title = `${collection.value?.name.substring(0, 16)} | Bestiary Builder`;
 
@@ -54,13 +54,12 @@ onMounted(async () => {
 			srdCreatures.value = data;
 
 		if (error)
-			addToast(error, { color: "error" })
+			addToast(error, { color: "error" });
 	});
 });
 
-const searchText = ref("")
-const searchTextDebounced = refDebounced(searchText, 500, { maxWait: 1000 })
-
+const searchText = ref("");
+const searchTextDebounced = refDebounced(searchText, 500, { maxWait: 1000 });
 
 const searchOptions = ref({
 	tags: [] as string[],
@@ -70,20 +69,19 @@ const searchOptions = ref({
 	faction: ""
 });
 
-
 const sortMode = useLocalStorage("sortModeForBestiaries", "Alphabetically");
 
-const sortedCreatures = ref<CreatureWithStats[]>([])
+const sortedCreatures = ref<CreatureWithStats[]>([]);
 watchEffect(() => {
 	if (!items.value) {
 		sortedCreatures.value = [];
-		return
+		return;
 	}
 
 	if (sortMode.value === "Custom") {
 		// Do nothing, order as recieved
-		sortedCreatures.value = items.value
-		return
+		sortedCreatures.value = items.value;
+		return;
 	}
 	if (sortMode.value === "Alphabetically") {
 		sortedCreatures.value = items.value.sort((a, b) => {
@@ -95,7 +93,7 @@ watchEffect(() => {
 				return 1;
 			return 0;
 		});
-		return
+		return;
 	}
 	else if (sortMode.value === "Creature Type") {
 		sortedCreatures.value = items.value.sort((a, b) => {
@@ -113,18 +111,16 @@ watchEffect(() => {
 		sortedCreatures.value = items.value.sort((a, b) => {
 			return b.stats.description.cr - a.stats.description.cr;
 		});
-		return
+		return;
 	}
 	else if (sortMode.value === "CR Ascending") {
 		sortedCreatures.value = items.value.sort((a, b) => {
 			return a.stats.description.cr - b.stats.description.cr;
 		});
-		return
+		return;
 	}
 	sortedCreatures.value = items.value;
-})
-
-
+});
 
 function filterCreature(data: CreatureWithStats) {
 	const filterChecks: boolean[] = [];
@@ -146,18 +142,12 @@ function filterCreature(data: CreatureWithStats) {
 	return filterChecks.every(_ => _);
 }
 
-
 const saveOrder = async () => {
 	if (items.value && collection.value) {
 		const orderIds = sortedCreatures.value.map(creature => creature.id);
 		await useFetch(`/api/bestiary/${collection.value.id}/creatures/order`, "POST", orderIds);
 	}
 };
-
-
-
-
-
 
 async function exportHomebrewery() {
 	const toastId = addToast("Exporting...", { loading: true });
@@ -174,11 +164,11 @@ async function exportHomebrewery() {
 			void getUmami()?.track("Export bestiary to homebrewery");
 		}
 		else {
-			updateToast(toastId, { text: error, color: "error", timeout: 2000 })
+			updateToast(toastId, { text: error, color: "error", timeout: 2000 });
 		}
 	}
 	catch (err) {
-		updateToast(toastId, { text: err as string, color: "error", timeout: 2000 })
+		updateToast(toastId, { text: err as string, color: "error", timeout: 2000 });
 	}
 }
 
@@ -192,7 +182,7 @@ async function exportBestiary(asFile: boolean) {
 					2
 				)
 			],
-			`${collection.value?.name || ''} from Bestiary Builder.txt`,
+			`${collection.value?.name || ""} from Bestiary Builder.txt`,
 			{
 				type: "text/plain"
 			}
@@ -223,16 +213,15 @@ async function exportBestiary(asFile: boolean) {
 	}
 }
 
-
 const importFields = reactive({
 	critterDbId: "",
 	bestiaryBuilderJson: null
-})
+});
 
 async function importBestiaryFromCritterDB() {
 	let link = importFields.critterDbId.trim();
 	if (link.length === 0) {
-		addToast("No CritterDB link given", { color: "error" })
+		addToast("No CritterDB link given", { color: "error" });
 	}
 
 	const isPublic = link.includes("publishedbestiary");
@@ -290,16 +279,16 @@ async function importBestiaryFromCritterDB() {
 
 async function importCreaturesFromBestiaryBuilder() {
 	let creaturesToImport;
-	console.log(importFields.bestiaryBuilderJson)
+	console.log(importFields.bestiaryBuilderJson);
 	if (!importFields.bestiaryBuilderJson) {
 		addToast("No JSON given", { color: "error" });
 		return;
 	}
 	try {
-		const reader = new FileReader()
+		const reader = new FileReader();
 		reader.onload = async () => {
-			console.log(reader.result)
-			creaturesToImport = JSON.parse(reader.result as string || '');
+			console.log(reader.result);
+			creaturesToImport = JSON.parse(reader.result as string || "");
 
 			if (!Array.isArray(creaturesToImport))
 				creaturesToImport = [creaturesToImport];
@@ -323,18 +312,13 @@ async function importCreaturesFromBestiaryBuilder() {
 			}
 
 			await getCollection();
-		}
-		reader.readAsText(importFields.bestiaryBuilderJson)
-
+		};
+		reader.readAsText(importFields.bestiaryBuilderJson);
 	}
 	catch (e) {
 		addToast("Something is wrong with the format of your JSON", { color: "error" });
-		return;
 	}
-
-
 }
-
 
 async function importSrdCreature(creature: string | null) {
 	if (!creature)
@@ -373,7 +357,7 @@ const hasPinnedBefore = ref(false);
 const editorToAdd = ref("");
 const showWarning = ref(false);
 const isExpanded = ref(false);
-const newCreatureIsOpen = ref(false)
+const newCreatureIsOpen = ref(false);
 
 watch(lastClickedCreature, (): void => {
 	if (hasPinnedBefore.value)
@@ -397,75 +381,87 @@ watch(() => collection.value?.name, (): void => {
 		document.title = `${collection.value?.name.substring(0, 16)} | Bestiary Builder`;
 });
 
-
-
 const pinCreature = (creature: Statblock) => {
 	if (creature === lastClickedCreature.value) {
-		lastClickedCreature.value = null
-	} else {
-		lastClickedCreature.value = creature
+		lastClickedCreature.value = null;
 	}
-}
+	else {
+		lastClickedCreature.value = creature;
+	}
+};
 </script>
 
 <template>
 	<div>
-		<Breadcrumbs v-if="collection" :routes="[
-			{
-				path: isOwner || isEditor ? '/bestiaries/personal' : '/bestiaries/public',
-				text: isOwner || isEditor ? 'My Bestiaries' : 'Bestiaries',
-				isCurrent: false
-			},
-			{
-				path: '',
-				text: collection?.name,
-				isCurrent: true
-			}
-		]">
+		<Breadcrumbs
+			v-if="collection" :routes="[
+				{
+					path: isOwner || isEditor ? '/bestiaries/personal' : '/bestiaries/public',
+					text: isOwner || isEditor ? 'My Bestiaries' : 'Bestiaries',
+					isCurrent: false
+				},
+				{
+					path: '',
+					text: collection?.name,
+					isCurrent: true
+				}
+			]"
+		>
+			<v-icon-btn
+				v-tooltip="'Create creature'" text="Create creature" icon="mdi:plus" size="24" class="inverted"
+				@click="newCreatureIsOpen = !newCreatureIsOpen"
+			/>
 
-			<v-icon-btn text="Create creature" icon="mdi:plus" size="24" class="inverted" v-tooltip="'Create creature'"
-				@click="newCreatureIsOpen = !newCreatureIsOpen" />
-
-
-			<CopyCreature :may-import="isOwner || isEditor" :current-creatures="items || []" can-copy-current-bestiary
+			<CopyCreature
+				:may-import="isOwner || isEditor" :current-creatures="items || []" can-copy-current-bestiary
 				@import-creature="(creature) => createItem(creature, false)"
 				@import-all-creatures="createManyItems(copiedCreatures.map(x => x.stats))"
-				@copy-current-bestiary="copyCurrentBestiary" />
+				@copy-current-bestiary="copyCurrentBestiary"
+			/>
 
 			<v-dialog v-if="isOwner" max-width="950">
 				<template #activator="{ props }">
-					<v-icon-btn text="Collection Settings" icon="mdi:cog" size="24" v-bind="props"
-						v-tooltip="'Settings'" />
+					<v-icon-btn
+						v-tooltip="'Settings'" text="Collection Settings" icon="mdi:cog" size="24"
+						v-bind="props"
+					/>
 				</template>
 
 				<template #default="{ isActive }">
 					<v-card title="Bestiary Settings" class="pa-4">
 						<v-row>
 							<v-col cols="6">
-								<v-text-field v-model="collection.name" label="Name"
+								<v-text-field
+									v-model="collection.name" label="Name"
 									:maxlength="store.limits?.nameLength" :min-length="store.limits?.nameMin"
 									:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]"
-									class="mb-4" />
+									class="mb-4"
+								/>
 							</v-col>
 							<v-col cols="6">
 								<v-text-field v-model="collection.image" label="Image" class="mb-4" />
-
 							</v-col>
 
 							<v-col cols="12">
-								<v-textarea v-model="collection.description"
+								<v-textarea
+									v-model="collection.description"
 									:max-length="store.limits?.descriptionLength"
 									:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]"
-									label="Description" class="mb-4" hint="Supports Markdown" persistent-hint counter />
+									label="Description" class="mb-4" hint="Supports Markdown" persistent-hint counter
+								/>
 							</v-col>
 
 							<v-col cols="6">
-								<v-select v-model="collection.status" label="Status"
-									:items="[{ value: 'private', title: 'Private' }, { value: 'unlisted', title: 'Unlisted' }, { value: 'public', title: 'Public' }]" />
+								<v-select
+									v-model="collection.status" label="Status"
+									:items="[{ value: 'private', title: 'Private' }, { value: 'unlisted', title: 'Unlisted' }, { value: 'public', title: 'Public' }]"
+								/>
 							</v-col>
 							<v-col cols="6">
-								<v-select v-model="collection.tags" multiple :items="store.tags || []" label="Tags"
-									chips closable-chips />
+								<v-select
+									v-model="collection.tags" multiple :items="store.tags || []" label="Tags"
+									chips closable-chips
+								/>
 							</v-col>
 
 							<v-col cols="12" class="px-4">
@@ -477,7 +473,6 @@ const pinCreature = (creature: Statblock) => {
 										Editors cannot add other editors. The owner can remove editors at any time.
 									</p>
 								</div>
-
 							</v-col>
 							<v-col v-for="editor in editors" :key="editor.id" cols="4">
 								<p>
@@ -486,12 +481,14 @@ const pinCreature = (creature: Statblock) => {
 								</p>
 							</v-col>
 							<v-col cols="6">
-								<v-text-field v-model="editorToAdd" inputmode="numeric" label="Discord user ID"
+								<v-text-field
+									v-model="editorToAdd" inputmode="numeric" label="Discord user ID"
 									:rules="[rules.integer('This must be a numeric Discord User ID.')]"
-									pattern="[0-9]*" />
+									pattern="[0-9]*"
+								/>
 							</v-col>
 							<v-col cols="6">
-								<v-btn class="w-100" @click="addEditor(editorToAdd)" size="large">
+								<v-btn class="w-100" size="large" @click="addEditor(editorToAdd)">
 									Add
 								</v-btn>
 							</v-col>
@@ -522,22 +519,29 @@ const pinCreature = (creature: Statblock) => {
 			</v-dialog>
 			<DropdownMenu>
 				<template #activator="{ props }">
-					<v-icon-btn text="Search creatures" icon="mdi:tag" size="24" v-bind="props"
-						v-tooltip="'Search creatures'" />
+					<v-icon-btn
+						v-tooltip="'Search creatures'" text="Search creatures" icon="mdi:tag" size="24"
+						v-bind="props"
+					/>
 				</template>
 				<v-card max-width="400" class="pa-4" title="Search bestiary">
 					<v-row>
 						<v-col cols="12">
-							<v-select v-model="sortMode"
+							<v-select
+								v-model="sortMode"
 								:items="['Custom', 'Alphabetically', 'CR Ascending', 'CR Descending', 'Creature Type']"
-								label="Bestiary sort type" hide-details />
+								label="Bestiary sort type" hide-details
+							/>
 						</v-col>
 						<v-col cols="6">
 							<v-text-field v-model="searchText" label="Name" />
 						</v-col>
 						<v-col cols="6">
-							<v-select v-model="searchOptions.tags" :items="creatureTypes" label="Creature type" multiple
-								chips closable-chips /> </v-col>
+							<v-select
+								v-model="searchOptions.tags" :items="creatureTypes" label="Creature type" multiple
+								chips closable-chips
+							/>
+						</v-col>
 						<v-col cols="6">
 							<CRInput v-model="searchOptions.minCr" label="Minimum CR" />
 						</v-col>
@@ -556,27 +560,33 @@ const pinCreature = (creature: Statblock) => {
 
 			<v-dialog v-if="isOwner" max-width="750">
 				<template #activator="{ props }">
-					<v-icon-btn text="Import creatures" icon="mdi:import" size="24" v-bind="props"
-						v-tooltip="'Import creatures'" />
+					<v-icon-btn
+						v-tooltip="'Import creatures'" text="Import creatures" icon="mdi:import" size="24"
+						v-bind="props"
+					/>
 				</template>
 
 				<template #default="{ isActive }">
 					<v-card title="Import bestiary" max-width="800" class="pa-4">
 						<v-row>
 							<v-col cols="6">
-								<v-text-field v-model="importFields.critterDbId" label="CritterDB Bestiary link"
+								<v-text-field
+									v-model="importFields.critterDbId" label="CritterDB Bestiary link"
 									hint="Make sure the Bestiary is public or has link-sharing enabled"
-									persistent-hint />
-								<v-btn size="large" @click="importBestiaryFromCritterDB()" class="w-100 mt-4">
+									persistent-hint
+								/>
+								<v-btn size="large" class="w-100 mt-4" @click="importBestiaryFromCritterDB()">
 									Import CritterDB
 								</v-btn>
 							</v-col>
 							<v-col>
-								<v-file-input v-model="importFields.bestiaryBuilderJson" label="Bestiary Builder JSON"
+								<v-file-input
+									v-model="importFields.bestiaryBuilderJson" label="Bestiary Builder JSON"
 									hint="JSON (.json/.txt) describing a bestiary gotten from clicking export elsewhere on BB"
-									persistent-hint accept=".txt,.json" />
+									persistent-hint accept=".txt,.json"
+								/>
 
-								<v-btn size="large" @click="importCreaturesFromBestiaryBuilder()" class="w-100 mt-4">
+								<v-btn size="large" class="w-100 mt-4" @click="importCreaturesFromBestiaryBuilder()">
 									Import BB
 								</v-btn>
 							</v-col>
@@ -625,10 +635,14 @@ const pinCreature = (creature: Statblock) => {
 				<div class="left-side-container">
 					<div class="content-tile header-tile">
 						<h2>{{ collection.name ? collection.name : "..." }}</h2>
-						<Markdown class="description" :class="{ expanded: isExpanded }"
-							:text="collection.description || 'No description set.'" tag="p" />
-						<button v-if="collection.description.length > 0" v-tooltip="'Expand description'"
-							class="expand-btn" aria-label="Expand description" @click="isExpanded = !isExpanded">
+						<Markdown
+							class="description" :class="{ expanded: isExpanded }"
+							:text="collection.description || 'No description set.'" tag="p"
+						/>
+						<button
+							v-if="collection.description.length > 0" v-tooltip="'Expand description'"
+							class="expand-btn" aria-label="Expand description" @click="isExpanded = !isExpanded"
+						>
 							{{ isExpanded ? "▲" : "▼" }}
 						</button>
 						<hr>
@@ -638,45 +652,54 @@ const pinCreature = (creature: Statblock) => {
 								<StatusIcon :icon="collection.status" />
 							</div>
 							<div>{{ items?.length }}<v-icon icon="mdi:paw" size="20" /></div>
-							<div v-if="!isOwner" role="button" aria-label="Toggle bookmark status" class="bookmark"
-								@click.prevent="toggleBookmark">
-								<span v-if="bookmarked" v-tooltip="'Unbookmark this bestiary'"
-									class="bookmark-enabled"><v-icon size="20" icon="mdi-star" /></span>
+							<div
+								v-if="!isOwner" role="button" aria-label="Toggle bookmark status" class="bookmark"
+								@click.prevent="toggleBookmark"
+							>
+								<span
+									v-if="bookmarked" v-tooltip="'Unbookmark this bestiary'"
+									class="bookmark-enabled"
+								><v-icon size="20" icon="mdi-star" /></span>
 								<span v-else v-tooltip="'Bookmark this bestiary'" class="bookmark-disabled"><v-icon
-										size="20" icon="mdi-star" /></span>
+									size="20" icon="mdi-star"
+								/></span>
 							</div>
 						</div>
 					</div>
-					<v-skeleton-loader type="heading, text, text" v-if="items === null" />
-					<VueDraggable v-else v-model="sortedCreatures" :animation="500" class="tile-container list-tiles"
-						:disabled="sortMode !== 'Custom'" @update="saveOrder">
+					<v-skeleton-loader v-if="items === null" type="heading, text, text" />
+					<VueDraggable
+						v-else v-model="sortedCreatures" :animation="500" class="tile-container list-tiles"
+						:disabled="sortMode !== 'Custom'" @update="saveOrder"
+					>
 						<template v-for="element in sortedCreatures">
-							<CreatureListItem v-if="filterCreature(element)" :id="element.id" :data="element.stats"
-								:can-edit="isOwner || isEditor" @mouseover="lastHoveredCreature = element.stats"
-								@delete-creature="(id) => deleteItem(id)" @pin-creature="pinCreature(element.stats)"
+							<CreatureListItem
+								v-if="filterCreature(element)" :id="element.id" :data="element.stats"
+								:can-edit="isOwner || isEditor" :is-pinned="lastClickedCreature === element.stats"
+								@mouseover="lastHoveredCreature = element.stats" @delete-creature="(id) => deleteItem(id)"
+								@pin-creature="pinCreature(element.stats)"
 								@copy-creature="copiedCreatures.push({ ...element, bestiaryName: collection.name }); addToast('Copied Successfully!')"
-								:is-pinned="lastClickedCreature === element.stats" />
+							/>
 						</template>
-
 					</VueDraggable>
 
 					<div v-if="isOwner || isEditor" class="create-tile">
-
-						<v-btn @click="newCreatureIsOpen = !newCreatureIsOpen" variant="plain" :ripple="false">
+						<v-btn variant="plain" :ripple="false" @click="newCreatureIsOpen = !newCreatureIsOpen">
 							Add creature
 						</v-btn>
-
 					</div>
 				</div>
 				<div v-if="items && lastHoveredCreature" class="statblock-container">
 					<span v-if="lastClickedCreature" class="pin-notice">
-						<v-btn class="unpin-button" variant="text" density="compact" @click="lastClickedCreature = null"
-							append-icon="mdi:pin-off"><b>unpin</b></v-btn>
+						<v-btn
+							class="unpin-button" variant="text" density="compact" append-icon="mdi:pin-off"
+							@click="lastClickedCreature = null"
+						><b>unpin</b></v-btn>
 					</span>
 					<Transition name="fade" mode="out-in">
 						<StatblockRenderer
 							:key="lastClickedCreature?.description.name || lastHoveredCreature.description.name"
-							:data="lastClickedCreature || lastHoveredCreature" />
+							:data="lastClickedCreature || lastHoveredCreature"
+						/>
 					</Transition>
 				</div>
 				<div v-else class="statblock-container">
@@ -692,21 +715,23 @@ const pinCreature = (creature: Statblock) => {
 		<v-card min-width="400" class="text-center pa-4" title="Create creature">
 			<v-card-actions>
 				<v-row>
-					<v-col cols=12>
+					<v-col cols="12">
 						<v-btn size="x-large" class="w-100" @click="createItem(defaultStatblock)">
 							From scratch
 						</v-btn>
 					</v-col>
-					<v-col cols=12>
+					<v-col cols="12">
 						<div class="d-flex align-center my-4 w-100">
 							<v-divider class="flex-grow-1" />
 							<span class="mx-4 text-medium-emphasis">OR</span>
 							<v-divider class="flex-grow-1" />
 						</div>
 					</v-col>
-					<v-col cols=12>
-						<v-autocomplete :items="srdCreatures" label="Select SRD creature"
-							@update:model-value="item => importSrdCreature(item)">
+					<v-col cols="12">
+						<v-autocomplete
+							:items="srdCreatures" label="Select SRD creature"
+							@update:model-value="item => importSrdCreature(item)"
+						>
 							<template #item="{ props, item }">
 								<v-list-item v-bind="props" density="compact" style="min-height: 28px">
 									{{ (item as any).title }}
@@ -719,8 +744,10 @@ const pinCreature = (creature: Statblock) => {
 		</v-card>
 	</v-dialog>
 
-	<v-fab icon="mdi:plus" location="bottom end" app color="primary" @click="newCreatureIsOpen = true"
-		size="large"></v-fab>
+	<v-fab
+		icon="mdi:plus" location="bottom end" app color="primary" size="large"
+		@click="newCreatureIsOpen = true"
+	/>
 </template>
 
 <style lang="less">
@@ -782,7 +809,6 @@ const pinCreature = (creature: Statblock) => {
 			justify-content: space-between;
 
 			.left-side {
-
 				span,
 				p {
 					font-style: italic;
@@ -820,7 +846,6 @@ const pinCreature = (creature: Statblock) => {
 						color: rgb(var(--v-theme-primary));
 					}
 				}
-
 			}
 
 			&:hover {
@@ -1006,20 +1031,20 @@ const pinCreature = (creature: Statblock) => {
 	color: goldenrod;
 
 	.bookmark-disabled {
-		filter: rgb(var(--v-theme-surface-bright))scale(100%);
+		filter: rgb(var(--v-theme-surface-bright)) scale(100%);
 		transition: filter 0.3s ease;
 
 		&:hover {
-			filter: rgb(var(--v-theme-surface-bright))scale(0%);
+			filter: rgb(var(--v-theme-surface-bright)) scale(0%);
 		}
 	}
 
 	.bookmark-enabled {
-		filter: rgb(var(--v-theme-surface-bright))scale(0%);
+		filter: rgb(var(--v-theme-surface-bright)) scale(0%);
 		transition: filter 0.3s ease;
 
 		&:hover {
-			filter: rgb(var(--v-theme-surface-bright))scale(100%);
+			filter: rgb(var(--v-theme-surface-bright)) scale(100%);
 		}
 	}
 }
@@ -1037,7 +1062,6 @@ const pinCreature = (creature: Statblock) => {
 	transform: translateY(-10px);
 	opacity: 0;
 }
-
 
 .fade-enter-active {
 	transition: all 0.2s ease-out;

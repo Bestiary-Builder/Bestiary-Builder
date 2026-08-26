@@ -10,7 +10,7 @@ import { store } from "@/utils/store";
 import { sendToLogin, useFetch } from "@/utils/utils";
 import { SupporterStatus } from "~/shared";
 
-const { addToast } = useToast()
+const { addToast } = useToast();
 const logoutClick = async () => {
 	const { success, error } = await useFetch("/api/logout");
 	if (success)
@@ -284,50 +284,55 @@ const creatureData = {
 const AvraeToken = useLocalStorage("AvraeToken", "");
 
 const layoutOptions = [
-	{ title: '2024 (OneD&D / Default)', value: 'SL_2024' },
-	{ title: '2014 (5e2014)', value: 'SL_2014' },
-]
+	{ title: "2024 (OneD&D / Default)", value: "SL_2024" },
+	{ title: "2014 (5e2014)", value: "SL_2014" },
+];
 
 const statblockDesignOptions = [
-	{ title: 'Bestiary Builder (Default)', value: 'BestiaryBuilder' },
-	{ title: 'Beyond', value: 'Beyond' },
-	{ title: 'Odyssey', value: 'Odyssey' },
-	{ title: 'Monster Manual (Compact)', value: 'MonsterManual' },
-]
+	{ title: "Bestiary Builder (Default)", value: "BestiaryBuilder" },
+	{ title: "Beyond", value: "Beyond" },
+	{ title: "Odyssey", value: "Odyssey" },
+	{ title: "Monster Manual (Compact)", value: "MonsterManual" },
+];
 
 const preferredEditorOptions = [
-	{ title: 'Visual (Default)', value: 'Visual' },
-	{ title: 'Code', value: 'Code' },
-]
+	{ title: "Visual (Default)", value: "Visual" },
+	{ title: "Code", value: "Code" },
+];
 
 const srdOptions = [
-	{ title: '2024 (Default)', value: 'SRD_2024' },
-	{ title: '2014', value: 'SRD_2014' },
-]
+	{ title: "2024 (Default)", value: "SRD_2024" },
+	{ title: "2014", value: "SRD_2014" },
+];
 </script>
 
-
 <template>
-	<Breadcrumbs :routes="[
-		{
-			path: '',
-			text: 'User',
-			isCurrent: true
-		}
-	]" :is-less-wide="true" />
+	<Breadcrumbs
+		:routes="[
+			{
+				path: '',
+				text: 'User',
+				isCurrent: true
+			}
+		]" :is-less-wide="true"
+	/>
 	<div class="content less-wide">
 		<div v-if="!store.user">
 			<p> You are not logged in. Login with Discord to begin.</p>
-			<v-btn color="success" size="large" @click.prevent="sendToLogin($route.path)" class="mt-4"
-				prepend-icon="ic:sharp-discord">
+			<v-btn
+				color="success" size="large" class="mt-4" prepend-icon="ic:sharp-discord"
+				@click.prevent="sendToLogin($route.path)"
+			>
 				Login
 			</v-btn>
 		</div>
 		<div v-else>
 			<div class="list">
 				<p> You are logged in to Bestiary Builder with Discord as <b> {{ store.user.username }} </b>.</p>
-				<p> You have been a user of Bestiary Builder since <b>{{ store.user.joinedAt ? new
-					Date(store.user.joinedAt).toDateString() : "Not Found" }}</b>.</p>
+				<p>
+					You have been a user of Bestiary Builder since <b>{{ store.user.joinedAt ? new
+						Date(store.user.joinedAt).toDateString() : "Not Found" }}</b>.
+				</p>
 				<p> You have created <b>{{ bestiaryCount }}</b> bestiaries since then.</p>
 				<p v-if="store.user.supporter === SupporterStatus.none">
 					If you enjoy using our site, consider supporting us on Patreon!
@@ -336,7 +341,8 @@ const srdOptions = [
 				</p>
 				<span
 					v-if="!(store.user.supporter === SupporterStatus.wirmling || store.user.supporter === SupporterStatus.greatwyrm)"
-					class="center">
+					class="center"
+				>
 					<a href="https://www.patreon.com/join/BestiaryBuilder" class="patreon">
 						<v-icon icon="mdi:patreon" size="small" />
 						<span> Become a patreon </span>
@@ -358,64 +364,84 @@ const srdOptions = [
 				<div class="preferences mt-4">
 					<div class="setting-container">
 						<div>
-							<v-select label="Statblock Layout" v-model="preferences.statblockLayout"
-								:items="layoutOptions" variant="outlined" density="comfortable" width="400" />
+							<v-select
+								v-model="preferences.statblockLayout" label="Statblock Layout"
+								:items="layoutOptions" variant="outlined" density="comfortable" width="400"
+							/>
 						</div>
 
-						<v-icon-btn icon="mdi:information"
-							v-tooltip="'Set statblock layout to 2024 or 2014. This is appearance only.'" />
+						<v-icon-btn
+							v-tooltip="'Set statblock layout to 2024 or 2014. This is appearance only.'"
+							icon="mdi:information"
+						/>
 						<DropdownMenu>
 							<template #activator="{ props }">
 								<v-icon-btn text="Preview statblock style" icon="mdi:eye" v-bind="props" />
 							</template>
 							<v-card min-width="300" class="pa-4">
-								<StatblockRenderer :data="creatureData" :statblock-design="preferences.statblockDesign"
-									:is2024="preferences.statblockLayout === 'SL_2024'" style="max-width: 650px" />
+								<StatblockRenderer
+									:data="creatureData" :statblock-design="preferences.statblockDesign"
+									:is2024="preferences.statblockLayout === 'SL_2024'" style="max-width: 650px"
+								/>
 							</v-card>
 						</DropdownMenu>
 					</div>
 
 					<div class="setting-container">
 						<div>
-							<v-select v-model="preferences.statblockDesign" :items="statblockDesignOptions"
-								label="Statblock Design" variant="outlined" density="comfortable" width="400" />
+							<v-select
+								v-model="preferences.statblockDesign" :items="statblockDesignOptions"
+								label="Statblock Design" variant="outlined" density="comfortable" width="400"
+							/>
 						</div>
-						<v-icon-btn icon="mdi:information"
+						<v-icon-btn
 							v-tooltip="'Change the visual design of the statblock. This changes its appearance only.'"
-							title="Setting information" />
+							icon="mdi:information"
+							title="Setting information"
+						/>
 
 						<DropdownMenu>
 							<template #activator="{ props }">
 								<v-icon-btn text="Preview statblock style" icon="mdi:eye" v-bind="props" />
 							</template>
 							<v-card min-width="300" class="pa-4">
-								<StatblockRenderer :data="creatureData" :statblock-design="preferences.statblockDesign"
-									:is2024="preferences.statblockLayout === 'SL_2024'" style="max-width: 650px" />
+								<StatblockRenderer
+									:data="creatureData" :statblock-design="preferences.statblockDesign"
+									:is2024="preferences.statblockLayout === 'SL_2024'" style="max-width: 650px"
+								/>
 							</v-card>
 						</DropdownMenu>
 					</div>
 
 					<div class="setting-container">
 						<div>
-							<v-select v-model="preferences.preferredEditor" :items="preferredEditorOptions"
-								label="Preferred Editor" variant="outlined" density="comfortable" width="400" />
+							<v-select
+								v-model="preferences.preferredEditor" :items="preferredEditorOptions"
+								label="Preferred Editor" variant="outlined" density="comfortable" width="400"
+							/>
 						</div>
 
-						<v-icon-btn icon="mdi:information"
-							v-tooltip="'Set default automation editor to visual (button and layout) or code (YAML) editor.'" />
+						<v-icon-btn
+							v-tooltip="'Set default automation editor to visual (button and layout) or code (YAML) editor.'"
+							icon="mdi:information"
+						/>
 					</div>
 
 					<div class="setting-container">
 						<div>
-							<v-select v-model="preferences.SRDVersion" :items="srdOptions" label="SRD Version"
-								variant="outlined" density="comfortable" width="400" />
+							<v-select
+								v-model="preferences.SRDVersion" :items="srdOptions" label="SRD Version"
+								variant="outlined" density="comfortable" width="400"
+							/>
 						</div>
-						<v-icon-btn icon="mdi:information"
-							v-tooltip="'Set whether creating Creatures and Features from the SRD should use the 2024 or 2014 list of options.'" />
+						<v-icon-btn
+							v-tooltip="'Set whether creating Creatures and Features from the SRD should use the 2024 or 2014 list of options.'"
+							icon="mdi:information"
+						/>
 					</div>
 
 					<div>
-						<v-btn color="success" @click.prevent="saveSettings" size="large">
+						<v-btn color="success" size="large" @click.prevent="saveSettings">
 							Save Preferences
 						</v-btn>
 					</div>
@@ -427,14 +453,18 @@ const srdOptions = [
 							store this
 							token, it is only saved in your browser.
 						</small>
-						<v-text-field v-model="AvraeToken" label="Token" variant="outlined" class="mt-4"
-							max-width="600" />
+						<v-text-field
+							v-model="AvraeToken" label="Token" variant="outlined" class="mt-4"
+							max-width="600"
+						/>
 
 						<small> To get the Token:
 							<ol>
 								<li>
-									Log in on the <a href="https://avrae.io/dashboard/characters"
-										style="color: rgb(var(--v-theme-primary))"> Avrae Dashboard
+									Log in on the <a
+										href="https://avrae.io/dashboard/characters"
+										style="color: rgb(var(--v-theme-primary))"
+									> Avrae Dashboard
 									</a>
 								</li>
 								<li>
@@ -456,7 +486,7 @@ const srdOptions = [
 				</div>
 			</div>
 			<SectionHeader title="Log out" />
-			<v-btn color="error" @click.prevent="logoutClick" size="large">
+			<v-btn color="error" size="large" @click.prevent="logoutClick">
 				Log out of Bestiary Builder
 			</v-btn>
 		</div>
@@ -522,7 +552,7 @@ const srdOptions = [
 				flex-direction: row;
 				gap: 0.5rem;
 
-				&>div {
+				& > div {
 					margin: auto 0;
 				}
 			}

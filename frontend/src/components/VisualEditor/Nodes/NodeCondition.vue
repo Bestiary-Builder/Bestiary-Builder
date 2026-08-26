@@ -29,20 +29,24 @@ useDataCleanup(currentEffect, ["errorBehaviour"]);
 	<template v-if="currentEffect">
 		<SectionHeader title="Branch" />
 		<div>
-			<v-text-field v-model="currentEffect.condition" label="Condition"
+			<v-text-field
+				v-model="currentEffect.condition" label="Condition"
 				:messages="isWarning ? ['Equality checks should use double ==.'] : []" hint="IntExpression"
-				:color="isWarning ? 'warning' : undefined" />
+				:color="isWarning ? 'warning' : undefined"
+			/>
 		</div>
 
 		<SectionHeader title="Additional Options" />
 		<div class="two-wide">
-			<v-select v-model="currentEffect.errorBehaviour" label="Error Behaviour" title="Error Behaviour" :items="[
-				{ title: 'Treat as True', value: 'true' },
-				{ title: 'Treat as False', value: 'false' },
-				{ title: 'Run both', value: 'both' },
-				{ title: 'Neither', value: 'neither' },
-				{ title: 'Raise', value: 'raise' },
-			]" />
+			<v-select
+				v-model="currentEffect.errorBehaviour" label="Error Behaviour" title="Error Behaviour" :items="[
+					{ title: 'Treat as True', value: 'true' },
+					{ title: 'Treat as False', value: 'false' },
+					{ title: 'Run both', value: 'both' },
+					{ title: 'Neither', value: 'neither' },
+					{ title: 'Raise', value: 'raise' },
+				]"
+			/>
 		</div>
 	</template>
 </template>

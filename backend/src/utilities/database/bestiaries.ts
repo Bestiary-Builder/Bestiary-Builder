@@ -1,4 +1,4 @@
-import type { BestiaryWithCount, Id, User } from "~/shared";
+import type { Id, User } from "~/shared";
 import type { BestiaryCreateInput, BestiaryUpdateInput } from "~/shared/src/prisma-types";
 import { v4 as uuid } from "uuid";
 import { log } from "@/utilities/logger";

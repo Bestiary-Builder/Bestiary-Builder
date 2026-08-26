@@ -16,13 +16,15 @@ onMounted(async () => {
 </script>
 
 <template>
-	<Breadcrumbs :routes="[
-		{
-			path: '',
-			text: 'Characters',
-			isCurrent: true
-		}
-	]" />
+	<Breadcrumbs
+		:routes="[
+			{
+				path: '',
+				text: 'Characters',
+				isCurrent: true
+			}
+		]"
+	/>
 	<div v-if="!AvraeToken" class="content">
 		This page allows you to edit the attacks of your Avrae characters using the BB editor.
 		<br><br>

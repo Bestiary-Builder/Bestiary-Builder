@@ -2,10 +2,10 @@
 import type { Ref } from "vue";
 import type { Variable } from "~/shared";
 import { inject, onBeforeUnmount, onMounted, watch } from "vue";
+import { useRules } from "vuetify/labs/rules";
 import HigherLevels from "./shared/HigherLevels.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
-import { useRules } from "vuetify/labs/rules";
 
 const currentEffect = inject<Ref<Variable>>("currentEffect");
 
@@ -28,7 +28,7 @@ onMounted(() => {
 });
 useDataCleanup(currentEffect, ["onError", "higher"]);
 
-const rules = useRules()
+const rules = useRules();
 </script>
 
 <template>
@@ -38,8 +38,10 @@ const rules = useRules()
 			<v-text-field v-model="currentEffect.name" label="Name" :rules="[rules.required()]" />
 		</div>
 		<div>
-			<v-text-field v-model="currentEffect.value" label="Value" :rules="[rules.required()]"
-				hint="IntExpression" />
+			<v-text-field
+				v-model="currentEffect.value" label="Value" :rules="[rules.required()]"
+				hint="IntExpression"
+			/>
 		</div>
 
 		<SectionHeader title="Additional Options" />

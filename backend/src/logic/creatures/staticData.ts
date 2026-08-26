@@ -4,12 +4,12 @@ import SRDCreatures2014 from "@/staticData/2014/SRDCreatures2014.json";
 import SRDAttacks2024 from "@/staticData/2024/SRDAttacks2024.json";
 import SRDCreatures2024 from "@/staticData/2024/SRDCreatures2024.json";
 import data from "@/staticData/automationDocumentation.json";
+import automationTags from "@/staticData/automationTags.json";
+import bestiaryTags from "@/staticData/bestiaryTags.json";
 import limits from "@/staticData/limits.json";
 import basicExamples from "@/staticData/shared/basicExamples.json";
 import spells from "@/staticData/shared/spells.json";
 import tOF from "@/staticData/shared/textOnlyFeatures.json";
-import bestiaryTags from "@/staticData/bestiaryTags.json";
-import automationTags from "@/staticData/automationTags.json";
 
 import { app } from "@/utilities/constants";
 

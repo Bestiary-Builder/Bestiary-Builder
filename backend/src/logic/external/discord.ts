@@ -1,9 +1,10 @@
+import type { User } from "~/shared";
 import { Buffer } from "node:buffer";
 import discord from "discord.js";
-import { SupporterStatus, type User } from "~/shared";
 import { isProduction } from "@/utilities/constants";
-import { log } from "@/utilities/logger";
 import { clearUserCache, getPrismaClient } from "@/utilities/database";
+import { log } from "@/utilities/logger";
+import { SupporterStatus } from "~/shared";
 
 const client = new discord.Client({
 	intents: [discord.IntentsBitField.Flags.Guilds, discord.IntentsBitField.Flags.GuildMessages, discord.IntentsBitField.Flags.GuildMembers]

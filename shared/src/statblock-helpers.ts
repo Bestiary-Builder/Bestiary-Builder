@@ -274,13 +274,13 @@ export function displayInnateCasting(data: Statblock, v2024: boolean = false): s
 		)}:`;
 	}
 	else if (!data.description.isProperNoun && sData.displayAsAction) {
-		output += `The ${name.toLowerCase()} casts one of the following spells${componentsString(sData.noComponentsOfType)}${componentsString(sData.noComponentsOfType) ? ' and ' : ' '}using ${fullSpellAbilityName(sData.spellCastingAbility)} as the spellcasting ability (spell save DC ${spellDc(true, data)}, ${signedNumber(spellAttackBonus(true, data))} to hit with spell attacks).`;
+		output += `The ${name.toLowerCase()} casts one of the following spells${componentsString(sData.noComponentsOfType)}${componentsString(sData.noComponentsOfType) ? " and " : " "}using ${fullSpellAbilityName(sData.spellCastingAbility)} as the spellcasting ability (spell save DC ${spellDc(true, data)}, ${signedNumber(spellAttackBonus(true, data))} to hit with spell attacks).`;
 	}
 	else if (data.description.isProperNoun && !sData.displayAsAction) {
 		output += `${name}'s spellcasting ability is ${fullSpellAbilityName(sData.spellCastingAbility)} (spell save DC ${spellDc(true, data)}, ${signedNumber(spellAttackBonus(true, data))} to hit with spell attacks). ${name} can innately cast the following spells${componentsString(sData.noComponentsOfType)}:`;
 	}
 	else if (data.description.isProperNoun && sData.displayAsAction) {
-		output += `${name} casts one of the following spells${componentsString(sData.noComponentsOfType)}${componentsString(sData.noComponentsOfType) ? ' and ' : ' '}using ${fullSpellAbilityName(sData.spellCastingAbility)} as the spellcasting ability (spell save DC ${spellDc(true, data)}, ${signedNumber(spellAttackBonus(true, data))} to hit with spell attacks).`;
+		output += `${name} casts one of the following spells${componentsString(sData.noComponentsOfType)}${componentsString(sData.noComponentsOfType) ? " and " : " "}using ${fullSpellAbilityName(sData.spellCastingAbility)} as the spellcasting ability (spell save DC ${spellDc(true, data)}, ${signedNumber(spellAttackBonus(true, data))} to hit with spell attacks).`;
 	}
 
 	let addZero = false;
@@ -308,8 +308,9 @@ export function displayInnateCasting(data: Statblock, v2024: boolean = false): s
 			.sort()
 			.join(", ")}`
 		);
-	} else {
-		listOutput.unshift('')
+	}
+	else {
+		listOutput.unshift("");
 	}
 	return output + listOutput.join("\n");
 }

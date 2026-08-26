@@ -7,7 +7,7 @@ import { store } from "@/utils/store";
 
 const { isLessWide = false, routes } = defineProps<{ routes: links; isLessWide?: boolean }>();
 
-const { addToast } = useToast()
+const { addToast } = useToast();
 
 type links = {
 	path: string;
@@ -16,7 +16,7 @@ type links = {
 }[];
 
 const breadcrumbItems = computed(() =>
-	routes.map((route) => ({
+	routes.map(route => ({
 		title: route.text,
 		to: route.path,
 		disabled: route.isCurrent,
@@ -48,11 +48,15 @@ watchEffect(() => {
 
 <template>
 	<Teleport to="#navbar .v-toolbar__prepend">
-		<v-breadcrumbs :items="store.isMobile ? breadcrumbItems.slice(-2) : breadcrumbItems"
-			:divider="store.isMobile ? '/' : '>'" class="left-buttons">
+		<v-breadcrumbs
+			:items="store.isMobile ? breadcrumbItems.slice(-2) : breadcrumbItems"
+			:divider="store.isMobile ? '/' : '>'" class="left-buttons"
+		>
 			<template #item="{ item }">
-				<v-breadcrumbs-item :disabled="item.disabled" :style="`opacity: ${item.disabled ? 1 : ''}`"
-					density="compact">
+				<v-breadcrumbs-item
+					:disabled="item.disabled" :style="`opacity: ${item.disabled ? 1 : ''}`"
+					density="compact"
+				>
 					<RouterLink v-if="!item.disabled" :to="item.to || '/'" class="crumb-link">
 						{{ item.title }}
 					</RouterLink>
@@ -67,7 +71,7 @@ watchEffect(() => {
 	<Teleport to="#navbar .v-toolbar__append">
 		<div class="right-buttons">
 			<slot />
-			<v-icon-btn text="Share this page" @click="startShare" icon="mdi:share" size="24" />
+			<v-icon-btn text="Share this page" icon="mdi:share" size="24" @click="startShare" />
 		</div>
 	</Teleport>
 </template>
@@ -76,7 +80,6 @@ watchEffect(() => {
 .left-buttons {
 	margin-left: 2rem;
 }
-
 
 .right-buttons {
 	margin-right: 5.5rem;
@@ -87,16 +90,13 @@ watchEffect(() => {
 		margin: auto 0;
 
 		svg {
-			scale: 0.9
+			scale: 0.9;
 		}
-
-
 	}
 
 	& button.inverted {
 		background-color: rgb(var(--v-theme-primary));
 		color: var(--bg-surface);
-
 
 		&:hover {
 			background-color: var(--bg-surface);
@@ -126,7 +126,6 @@ watchEffect(() => {
 	opacity: 1 !important;
 }
 
-
 @media (width <=842px) {
 	.v-breadcrumbs {
 		padding: 0 6px;
@@ -137,7 +136,6 @@ watchEffect(() => {
 	.crumb-current {
 		font-size: 0.7rem;
 		line-height: 0.7rem;
-
 	}
 
 	.left-buttons {

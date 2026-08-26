@@ -2,6 +2,7 @@
 import type { BestiaryResponse, CreatureResponse, Statblock } from "~/shared";
 import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
+import { useHotkey } from "vuetify";
 import CopyCreature from "@/components/Bestiary/CopyCreature.vue";
 import ExportCreature from "@/components/Bestiary/ExportCreature.vue";
 import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
@@ -13,11 +14,10 @@ import FeaturesPanel from "@/components/StatblockEditor/4FeaturesPanel.vue";
 import SpellcastingPanel from "@/components/StatblockEditor/5SpellcastingPanel.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { useToast } from "@/utils/app/toast";
+import { useRecentPages } from "@/utils/app/useRecentPages";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { defaultStatblock } from "~/shared";
-import { useHotkey } from "vuetify";
-import { useRecentPages } from "@/utils/app/useRecentPages";
 
 const $route = useRoute();
 const $router = useRouter();
@@ -27,11 +27,11 @@ const data = ref<Statblock>(defaultStatblock);
 const rawInfo = ref<CreatureResponse | null>(null);
 
 const { addToast, removeToast } = useToast();
-const { updateLabel } = useRecentPages()
+const { updateLabel } = useRecentPages();
 
 // load creature data
 onMounted(async () => {
-	const toastId = addToast("Loading...", { loading: true })
+	const toastId = addToast("Loading...", { loading: true });
 	const { success, data: cData, error, status } = await useFetch<CreatureResponse>(`/api/creature/${$route.params.id.toString()}`);
 	if (success) {
 		data.value = (cData).stats;
@@ -39,13 +39,13 @@ onMounted(async () => {
 		rawInfo.value = cData;
 		if (await loadRawInfo())
 			updateLabel($route.path, data.value.description.name);
-		removeToast(toastId)
+		removeToast(toastId);
 	}
 	else {
-		addToast(error, { color: "error" })
+		addToast(error, { color: "error" });
 		madeChanges.value = false;
 		await $router.push(status === 401 || status === 404 ? "/404" : "/error");
-		removeToast(toastId)
+		removeToast(toastId);
 	}
 });
 
@@ -77,12 +77,12 @@ const loadRawInfo = async () => {
 	}
 };
 
-const isSavingStatblock = ref(false)
+const isSavingStatblock = ref(false);
 const saveStatblock = async (shouldNotify = true): Promise<boolean> => {
 	if (!rawInfo.value)
 		return false;
 	rawInfo.value.stats = data.value;
-	isSavingStatblock.value = true
+	isSavingStatblock.value = true;
 
 	// Send to backend
 	const { permissionLevel: _, ...creature } = rawInfo.value;
@@ -108,14 +108,14 @@ const saveStatblock = async (shouldNotify = true): Promise<boolean> => {
 		if (error.includes("includes blocked words or phrases"))
 			void getUmami()?.track("Blocked words", { error });
 	}
-	isSavingStatblock.value = false
+	isSavingStatblock.value = false;
 	if (success)
 		return true;
 	return false;
 };
 
 provide("saveStatblock", saveStatblock);
-useHotkey("cmd+s", async () => saveStatblock(), { inputs: true })
+useHotkey("cmd+s", async () => saveStatblock(), { inputs: true });
 // end of lifecycle
 const madeChanges = ref(false);
 
@@ -167,7 +167,7 @@ const notices = ref<{ [key: string]: string[] }>({});
 
 const import5etools = async () => {
 	if (importText.value.startsWith("___")) {
-		addToast("You copied the Markdown, not the JSON", { color: "error" })
+		addToast("You copied the Markdown, not the JSON", { color: "error" });
 		return;
 	}
 	try {
@@ -182,7 +182,7 @@ const import5etools = async () => {
 		void getUmami()?.track("Import creature from 5eTools");
 	}
 	catch (err) {
-		addToast(err as string, { color: "error" })
+		addToast(err as string, { color: "error" });
 	}
 };
 
@@ -209,7 +209,7 @@ const importBestiaryBuilder = async () => {
 		}
 	}
 	catch (e) {
-		addToast(e as string, { color: "error" })
+		addToast(e as string, { color: "error" });
 	}
 };
 
@@ -218,12 +218,12 @@ const importCritterDB = async () => {
 	try {
 		const url = new URL(link);
 		if (url.hostname !== "critterdb.com" && !url.hostname.endsWith(".critterdb.com")) {
-			addToast("This is not a critterDB link. Are you sure the link is right?", { color: "error" })
+			addToast("This is not a critterDB link. Are you sure the link is right?", { color: "error" });
 			return;
 		}
 	}
 	catch {
-		addToast("Could not parse input as link", { color: "error" })
+		addToast("Could not parse input as link", { color: "error" });
 		return;
 	}
 
@@ -257,51 +257,62 @@ const importCreature = async (creature: Statblock) => {
 	await saveStatblock(false);
 	addToast(`Successfully imported ${data.value.description.name}`);
 };
-
 </script>
 
 <template>
 	<div>
-		<Breadcrumbs :routes="[
-			{
-				path: '/bestiaries/personal',
-				text: 'My Bestiaries',
-				isCurrent: false
-			},
-			{
-				path: `/bestiary/edit/${bestiary?.id}`,
-				text: bestiary?.name || 'Bestiary',
-				isCurrent: false
-			},
-			{
-				path: '',
-				text: data?.description.name || 'Creature',
-				isCurrent: true
-			}
-		]">
-			<v-icon-btn v-if="madeChanges && (isOwner || isEditor)" icon="mdi:content-save" text="Save creature"
-				:class="{ inverted: !isSavingStatblock }" @click="saveStatblock()" size="24"
-				v-tooltip="'Save Creature (CTRL+S)'" :loading="isSavingStatblock" />
+		<Breadcrumbs
+			:routes="[
+				{
+					path: '/bestiaries/personal',
+					text: 'My Bestiaries',
+					isCurrent: false
+				},
+				{
+					path: `/bestiary/edit/${bestiary?.id}`,
+					text: bestiary?.name || 'Bestiary',
+					isCurrent: false
+				},
+				{
+					path: '',
+					text: data?.description.name || 'Creature',
+					isCurrent: true
+				}
+			]"
+		>
+			<v-icon-btn
+				v-if="madeChanges && (isOwner || isEditor)" v-tooltip="'Save Creature (CTRL+S)'" icon="mdi:content-save"
+				text="Save creature" :class="{ inverted: !isSavingStatblock }" size="24"
+				:loading="isSavingStatblock" @click="saveStatblock()"
+			/>
 
-			<CopyCreature v-if="rawInfo" no-import-all :may-import="isOwner || isEditor"
+			<CopyCreature
+				v-if="rawInfo" no-import-all :may-import="isOwner || isEditor"
 				:current-creature="{ ...rawInfo, bestiaryName: bestiary?.name || '' }"
-				@import-creature="(creature) => importCreature(creature)" />
+				@import-creature="(creature) => importCreature(creature)"
+			/>
 
 			<v-dialog v-if="isOwner || isEditor" width="600">
 				<template #activator="{ props }">
-					<v-icon-btn text="Import Creature" icon="mdi:import" size="24" v-bind="props"
-						v-tooltip="'Import creature'" />
+					<v-icon-btn
+						v-tooltip="'Import creature'" text="Import Creature" icon="mdi:import" size="24"
+						v-bind="props"
+					/>
 				</template>
 
 				<template #default="{ isActive }">
 					<v-card class="text-center pb-2 pa-4" title="Import Creature">
 						<v-card-actions class="d-flex flex-column align-center justify-center" min-width="200">
-							<v-select v-model="importType" label="Choose import type"
+							<v-select
+								v-model="importType" label="Choose import type"
 								:items="['Bestiary Builder JSON', '5e Tools JSON', 'CritterDB Creature link']"
-								class="w-100" />
-							<v-text-field v-if="importType" v-model="importText"
+								class="w-100"
+							/>
+							<v-text-field
+								v-if="importType" v-model="importText"
 								:label="importType === 'CritterDB Creature link' ? 'Link' : 'JSON data'"
-								class="w-100" />
+								class="w-100"
+							/>
 							<v-spacer v-else />
 							<v-btn v-if="importText" class="w-100" color="success" @click="importCreatureFromUserInput">
 								Import
@@ -343,8 +354,10 @@ const importCreature = async (creature: Statblock) => {
 				<v-row>
 					<v-col :cols="store.isMobile ? 12 : 6">
 						<v-sheet elevation="2" color="surface-1">
-							<v-tabs v-model="tab" color="primary" style="background-color: rgb(var(--v-theme-surface))"
-								:grow="!store.isMobile" :show-arrows="store.isMobile">
+							<v-tabs
+								v-model="tab" color="primary" style="background-color: rgb(var(--v-theme-surface))"
+								:grow="!store.isMobile" :show-arrows="store.isMobile"
+							>
 								<v-tab :value="1">
 									Description
 								</v-tab>
@@ -403,8 +416,10 @@ const importCreature = async (creature: Statblock) => {
 					</v-col>
 
 					<v-col :cols="store.isMobile ? 12 : 6">
-						<v-skeleton-loader type="heading, divider, text, text, sentences, heading, text"
-							v-if="rawInfo === null" />
+						<v-skeleton-loader
+							v-if="rawInfo === null"
+							type="heading, divider, text, text, sentences, heading, text"
+						/>
 						<StatblockRenderer v-else :data="data" />
 					</v-col>
 				</v-row>
@@ -412,6 +427,7 @@ const importCreature = async (creature: Statblock) => {
 		</div>
 	</div>
 </template>
+
 <style lang="less">
 @import url("@/components/StatblockEditor/styles/statblock-editor.less");
 </style>

@@ -7,7 +7,7 @@ import SimpleNumberInput from "../FormInputs/SimpleNumberInput.vue";
 import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
 
 const { data } = defineProps<{ data: Statblock }>();
-const { addToast } = useToast()
+const { addToast } = useToast();
 
 const deleteSkill = (index: number) => {
 	data.abilities.skills?.splice(index, 1);
@@ -54,15 +54,19 @@ const addNewSkill = (newSkillName: string) => {
 							{{ store.isMobile ? stat : name }}
 						</th>
 						<td>
-							<SimpleNumberInput v-model="data.abilities.stats[stat]" :min="0" :label="name"
-								:label-id="stat" />
+							<SimpleNumberInput
+								v-model="data.abilities.stats[stat]" :min="0" :label="name"
+								:label-id="stat"
+							/>
 						</td>
 						<td>
 							<input v-model="data.abilities.saves[stat].isProficient" type="checkbox">
 						</td>
 						<td>
-							<select v-model="data.abilities.saves[stat].adv" class="ghost"
-								title="Select advantage or disadvantage for this save">
+							<select
+								v-model="data.abilities.saves[stat].adv" class="ghost"
+								title="Select advantage or disadvantage for this save"
+							>
 								<option :value="null">
 									None
 								</option>
@@ -74,14 +78,18 @@ const addNewSkill = (newSkillName: string) => {
 								</option>
 							</select>
 						</td>
-						<td v-if="data.abilities.saves[stat].override === null" style="cursor: pointer;"
-							@click="data.abilities.saves[stat].override = 1">
+						<td
+							v-if="data.abilities.saves[stat].override === null" style="cursor: pointer;"
+							@click="data.abilities.saves[stat].override = 1"
+						>
 							-
 						</td>
 						<td v-else>
-							<SimpleNumberInput v-model="data.abilities.saves[stat].override"
+							<SimpleNumberInput
+								v-model="data.abilities.saves[stat].override"
 								:label="`${name} save override`" :label-id="`${stat}Override`" is-clearable
-								:min="Number.NEGATIVE_INFINITY" />
+								:min="Number.NEGATIVE_INFINITY"
+							/>
 						</td>
 					</tr>
 				</tbody>
@@ -106,17 +114,25 @@ const addNewSkill = (newSkillName: string) => {
 						</th>
 						<td>
 							<div style="display: flex; gap: .5rem; justify-content: center; align-items: center;">
-								<input v-model="skill.isProficient" type="checkbox" :is-clearable="true" class="round"
-									@click="skill.isExpertise = false; skill.isHalfProficient = false">
-								<input v-model="skill.isExpertise" type="checkbox" :is-clearable="true" class="round"
-									@click="skill.isProficient = false; skill.isHalfProficient = false">
-								<input v-model="skill.isHalfProficient" type="checkbox" :is-clearable="true"
-									class="round" @click="skill.isExpertise = false; skill.isProficient = false">
+								<input
+									v-model="skill.isProficient" type="checkbox" :is-clearable="true" class="round"
+									@click="skill.isExpertise = false; skill.isHalfProficient = false"
+								>
+								<input
+									v-model="skill.isExpertise" type="checkbox" :is-clearable="true" class="round"
+									@click="skill.isProficient = false; skill.isHalfProficient = false"
+								>
+								<input
+									v-model="skill.isHalfProficient" type="checkbox" :is-clearable="true"
+									class="round" @click="skill.isExpertise = false; skill.isProficient = false"
+								>
 							</div>
 						</td>
 						<td>
-							<select v-model="skill.adv" class="ghost"
-								title="Select advantage or disadvantage for this save">
+							<select
+								v-model="skill.adv" class="ghost"
+								title="Select advantage or disadvantage for this save"
+							>
 								<option :value="null">
 									None
 								</option>
@@ -132,12 +148,14 @@ const addNewSkill = (newSkillName: string) => {
 							-
 						</td>
 						<td v-else>
-							<SimpleNumberInput v-model="skill.override" :label="`${skill.skillName} save override`"
-								:label-id="`${skill.skillName}Override`" is-clearable :min="Number.NEGATIVE_INFINITY" />
+							<SimpleNumberInput
+								v-model="skill.override" :label="`${skill.skillName} save override`"
+								:label-id="`${skill.skillName}Override`" is-clearable :min="Number.NEGATIVE_INFINITY"
+							/>
 						</td>
 						<td>
 							<div>
-								<v-icon size="22" icon="mdi:delete" @click="deleteSkill(idx)" color="primary" />
+								<v-icon size="22" icon="mdi:delete" color="primary" @click="deleteSkill(idx)" />
 							</div>
 						</td>
 					</tr>
@@ -145,9 +163,11 @@ const addNewSkill = (newSkillName: string) => {
 			</table>
 			<v-row>
 				<v-col cols="6">
-					<v-select label="Add a skill" class="mt-4"
+					<v-select
+						label="Add a skill" class="mt-4"
 						:items="['Acrobatics', 'Animal Handling', 'Arcana', 'Athletics', 'Charisma', 'Constitution', 'Deception', 'Dexterity', 'History', 'Initiative', 'Insight', 'Intelligence', 'Intimidation', 'Investigation', 'Medicine', 'Nature', 'Perception', 'Performance', 'Persuasion', 'Religion', 'Sleight of Hand', 'Stealth', 'Strength', 'Survival', 'Wisdom']"
-						@update:model-value="(selected) => (addNewSkill(selected || ''))" />
+						@update:model-value="(selected) => (addNewSkill(selected || ''))"
+					/>
 				</v-col>
 			</v-row>
 		</div>

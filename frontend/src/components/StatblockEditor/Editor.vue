@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type * as Monaco from "monaco-editor";
 import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
-import { nextTick, shallowRef, useTemplateRef, watch } from "vue";
 import { useElementSize, watchDebounced } from "@vueuse/core";
+import { shallowRef, useTemplateRef } from "vue";
 
 const { height = 250 } = defineProps<{ height?: number }>();
 
@@ -46,11 +46,11 @@ function handleMount(
 		}
 	);
 
-	editor.layout()
+	editor.layout();
 
 	setTimeout(() => {
-		editorRef.value?.layout()
-	}, 1000)
+		editorRef.value?.layout();
+	}, 1000);
 }
 
 function toggleMarkdown(
@@ -82,7 +82,7 @@ function toggleMarkdown(
 
 	const hasMarkers
 		= before === marker
-		&& after === marker;
+			&& after === marker;
 
 	if (hasMarkers) {
 		// Remove markers
@@ -355,7 +355,6 @@ function toggleHeading(
 	);
 }
 
-
 function toggleHanging(
 	editor: Monaco.editor.IStandaloneCodeEditor,
 	level: number
@@ -413,12 +412,11 @@ function toggleHanging(
 	);
 }
 
-const wrapper = useTemplateRef("wrapper")
-const { width } = useElementSize(wrapper)
+const wrapper = useTemplateRef("wrapper");
+const { width } = useElementSize(wrapper);
 watchDebounced(width, async () => {
-	editorRef.value?.layout()
-}, { debounce: 500, maxWait: 1000 },
-)
+	editorRef.value?.layout();
+}, { debounce: 500, maxWait: 1000 },);
 </script>
 
 <template>
@@ -430,22 +428,30 @@ watchDebounced(width, async () => {
 			<v-icon-btn size="20" icon="mdi:format-italic" text="Italic" @click="toggleMarkdown(editorRef!, '*')" />
 			<v-divider vertical />
 
-			<v-icon-btn size="20" icon="mdi:format-list-bulleted" text="List"
-				@click="toggleLinePrefix(editorRef!, '* ')" />
-			<v-icon-btn size="20" icon="mdi:format-list-numbered" text="Ordered list"
-				@click="toggleOrderedList(editorRef!)" />
-			<v-icon-btn size="20" icon="mdi-format-indent-increase" text="Ordered list"
+			<v-icon-btn
+				size="20" icon="mdi:format-list-bulleted" text="List"
+				@click="toggleLinePrefix(editorRef!, '* ')"
+			/>
+			<v-icon-btn
+				size="20" icon="mdi:format-list-numbered" text="Ordered list"
+				@click="toggleOrderedList(editorRef!)"
+			/>
+			<v-icon-btn
+				v-tooltip="'Makes everything but the first line indented as a \'hanging\' list.'" size="20" icon="mdi-format-indent-increase"
+				text="Ordered list"
 				@click="toggleLineSuffix(editorRef!, ' {.hanging}')"
-				v-tooltip="'Makes everything but the first line indented as a \'hanging\' list.'" />
+			/>
 			<v-divider vertical />
 			<v-icon-btn size="20" icon="mdi:format-header-1" text="Heading 1" @click="toggleHeading(editorRef!, 1)" />
 			<v-icon-btn size="20" icon="mdi:format-header-2" text="Heading 2" @click="toggleHeading(editorRef!, 2)" />
 			<v-icon-btn size="20" icon="mdi:format-header-3" text="Heading 3" @click="toggleHeading(editorRef!, 3)" />
 			<v-icon-btn size="20" icon="mdi:format-header-4" text="Heading 4" @click="toggleHeading(editorRef!, 4)" />
 		</div>
-		<VueMonacoEditor ref="editor" v-model:value="model" theme="vs-dark"
+		<VueMonacoEditor
+			ref="editor" v-model:value="model" theme="vs-dark"
 			:options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false, lineNumbers: 'off' }"
-			class="description-editor" :height="`${height}px`" width="100%" language="markdown" @mount="handleMount" />
+			class="description-editor" :height="`${height}px`" width="100%" language="markdown" @mount="handleMount"
+		/>
 	</div>
 </template>
 
@@ -457,7 +463,7 @@ watchDebounced(width, async () => {
 	border-top-left-radius: 6px;
 	border-top-right-radius: 6px;
 	font-size: smaller;
-	padding: .4rem
+	padding: 0.4rem;
 }
 </style>
 
@@ -465,7 +471,6 @@ watchDebounced(width, async () => {
 .monaco-wrapper-thing {
 	.monaco-editor {
 		min-height: 100px;
-
 	}
 
 	.monaco-editor,

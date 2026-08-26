@@ -22,9 +22,11 @@ const rules = useRules();
 	<div>
 		<v-row>
 			<v-col cols="6">
-				<v-text-field v-model="data.description.name" label="Name" :maxlength="store.limits?.nameLength"
+				<v-text-field
+					v-model="data.description.name" label="Name" :maxlength="store.limits?.nameLength"
 					:min-length="store.limits?.nameMin"
-					:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]" />
+					:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]"
+				/>
 			</v-col>
 			<v-col cols="6">
 				<v-text-field v-model="data.description.image" label="Image URL" :rules="[rules.imageLink()]" />
@@ -57,12 +59,13 @@ const rules = useRules();
 				<v-text-field v-model="data.description.faction" label="Faction" />
 			</v-col>
 			<v-col cols="4">
-				<v-checkbox v-model="data.description.isProperNoun" label="Proper noun" color="primary"
+				<v-checkbox
+					v-model="data.description.isProperNoun" label="Proper noun" color="primary"
 					density="compact"
 					:hint="`Toggles display as '${data.description.name}' instead of 'the ${data.description.name}'`"
-					persistent-hint />
+					persistent-hint
+				/>
 			</v-col>
 		</v-row>
-
 	</div>
 </template>

@@ -29,20 +29,28 @@ const { data } = defineProps<{ data: Statblock }>();
 		<SectionHeader title="Resistances" />
 		<v-row class="mt-4">
 			<v-col cols="6">
-				<v-combobox v-model="data.defenses.vulnerabilities" label="Vulnerabilities" multiple chips
-					closable-chips :items="resistanceList" hint="Supports custom input" persistent-hint />
+				<v-combobox
+					v-model="data.defenses.vulnerabilities" label="Vulnerabilities" multiple chips
+					closable-chips :items="resistanceList" hint="Supports custom input" persistent-hint
+				/>
 			</v-col>
 			<v-col cols="6">
-				<v-combobox v-model="data.defenses.resistances" label="Resistances" multiple chips closable-chips
-					:items="resistanceList" hint="Supports custom input" persistent-hint />
+				<v-combobox
+					v-model="data.defenses.resistances" label="Resistances" multiple chips closable-chips
+					:items="resistanceList" hint="Supports custom input" persistent-hint
+				/>
 			</v-col>
 			<v-col cols="6">
-				<v-combobox v-model="data.defenses.immunities" label="Immunities" multiple chips closable-chips
-					:items="resistanceList" hint="Supports custom input" persistent-hint />
+				<v-combobox
+					v-model="data.defenses.immunities" label="Immunities" multiple chips closable-chips
+					:items="resistanceList" hint="Supports custom input" persistent-hint
+				/>
 			</v-col>
 			<v-col cols="6">
-				<v-combobox v-model="data.defenses.conditionImmunities" label="Condition Immunities" multiple chips
-					closable-chips :items="conditionList" hint="Supports custom input" persistent-hint />
+				<v-combobox
+					v-model="data.defenses.conditionImmunities" label="Condition Immunities" multiple chips
+					closable-chips :items="conditionList" hint="Supports custom input" persistent-hint
+				/>
 			</v-col>
 		</v-row>
 	</div>
