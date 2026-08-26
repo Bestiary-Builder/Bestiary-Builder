@@ -43,7 +43,8 @@
 		"ts-interface-checker": "^1.0.2",
 		"uuid": "^14.0.0",
 		"vue-codemirror6": "^1.6.1",
-		"winston": "^3.17.0"
+		"winston": "^3.17.0",
+		"yaml": "^2.4.2"
 	},
 	"optionalDependencies": {
 		"@esbuild/win32-x64": "^0.28.1"
