@@ -145,7 +145,7 @@ async function exportHomebrewery() {
 }
 
 async function exportBestiary(asFile: boolean) {
-	const creatures = await getAllItems();
+	const creatures = await getAllFullCreatures();
 	if (!creatures) {
 		addToast("Failed to export bestiary: no creatures found.", { color: "error" });
 		return;
@@ -198,7 +198,7 @@ const copyCurrentBestiary = async () => {
 	if (!items.value || !collection.value)
 		return;
 
-	const creatures = await getAllItems();
+	const creatures = await getAllFullCreatures();
 	if (!creatures) {
 		addToast("Failed to copy bestiary: no creatures found.", { color: "error" });
 		return;
@@ -214,6 +214,45 @@ const copyCurrentBestiary = async () => {
 };
 
 // misc
+const fullCreatureCache = new Map<string, Promise<CreatureWithStats | undefined>>();
+const getFullCreature = async (creatureId: string) => {
+	const cachedCreature = fullCreatureCache.get(creatureId);
+	if (cachedCreature)
+		return cachedCreature;
+
+	const creatureRequest = getItem(creatureId);
+	fullCreatureCache.set(creatureId, creatureRequest);
+	void creatureRequest.then((creature) => {
+		if (!creature)
+			fullCreatureCache.delete(creatureId);
+	}, () => fullCreatureCache.delete(creatureId));
+	return creatureRequest;
+};
+
+const getAllFullCreatures = async () => {
+	if (!items.value)
+		return undefined;
+
+	const cachedRequests: Promise<CreatureWithStats | undefined>[] = [];
+	for (const creature of items.value) {
+		const cachedRequest = fullCreatureCache.get(creature.id);
+		if (!cachedRequest)
+			break;
+		cachedRequests.push(cachedRequest);
+	}
+
+	if (cachedRequests.length === items.value.length) {
+		const cachedCreatures = await Promise.all(cachedRequests);
+		if (cachedCreatures.every((creature): creature is CreatureWithStats => creature !== undefined))
+			return cachedCreatures;
+	}
+
+	const creatures = await getAllItems();
+	for (const creature of creatures ?? [])
+		fullCreatureCache.set(creature.id, Promise.resolve(creature));
+	return creatures;
+};
+
 const lastHoveredCreature = ref<CreatureWithStats | null>(null);
 const lastClickedCreature = ref<CreatureWithStats | null>(null);
 const hasPinnedBefore = ref(false);
@@ -230,7 +269,7 @@ watch(lastClickedCreature, (): void => {
 });
 
 const pinCreature = async (creature: CreatureMetaData) => {
-	const fullCreature = (await getItem(creature.id));
+	const fullCreature = await getFullCreature(creature.id);
 	if (!fullCreature) {
 		addToast("Failed to pin creature: creature not found.", { color: "error" });
 		return;
@@ -248,7 +287,7 @@ const copyCreature = async (creature: CreatureMetaData) => {
 	if (!collection.value)
 		return;
 
-	const fullCreature = (await getItem(creature.id));
+	const fullCreature = await getFullCreature(creature.id);
 	if (!fullCreature) {
 		addToast("Failed to copy creature: creature not found.", { color: "error" });
 		return;
@@ -259,7 +298,7 @@ const copyCreature = async (creature: CreatureMetaData) => {
 };
 
 const hoverCreature = async (creature: CreatureMetaData) => {
-	lastHoveredCreature.value = (await getItem(creature.id)) ?? null;
+	lastHoveredCreature.value = await getFullCreature(creature.id) ?? null;
 };
 </script>
 
