@@ -88,7 +88,7 @@ jobs:
                   VITE_ERROR_WEBHOOK: ${{ secrets.VITE_ERROR_WEBHOOK }}
             - name: Building the backend
               working-directory: ./backend
-              run: bun run build
+              run: bun build src/server.ts --compile --outfile ../build/server
             # Run tests
             - name: Running backend tests
               working-directory: ./backend
