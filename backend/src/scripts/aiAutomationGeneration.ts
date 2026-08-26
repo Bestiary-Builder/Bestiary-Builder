@@ -5,9 +5,10 @@ import YAML from "yaml";
 import { validateAutomation } from "../logic/external/automationValidation";
 
 import "dotenv/config";
-import { readFileSync } from "node:fs";
 
-const API_URL = "https://inference.hetzner.com/api/v1/chat/completions";
+const USE_OPENCODE = false;
+const OPENCODE_API_URL = "https://opencode.ai/zen/v1/responses";
+const HETZNER_API_URL = "https://inference.hetzner.com/api/v1/chat/completions";
 const MAX_TRIES = 3;
 
 function requireEnv(name: string): string {
@@ -34,6 +35,10 @@ interface ChatMessage {
 
 async function readJson(relativePath: string): Promise<unknown> {
 	return JSON.parse(await readFile(new URL(relativePath, import.meta.url), "utf8"));
+}
+
+async function readText(relativePath: string): Promise<string> {
+	return readFile(new URL(relativePath, import.meta.url), "utf8");
 }
 
 function parseExample(value: unknown, source: string, identifier: string): PromptExample {
@@ -91,31 +96,96 @@ function formatExamples(examples: PromptExample[]): string {
 	].join("\n")).join("\n\n");
 }
 
-async function requestCompletion(apiToken: string, model: string, messages: ChatMessage[]): Promise<string> {
+function extractResponseText(result: unknown): string {
+	if (typeof result !== "object" || result === null)
+		throw new TypeError("LLM Responses API returned an invalid response");
+
+	if ("output_text" in result && typeof result.output_text === "string")
+		return result.output_text.trim();
+
+	if (!("output" in result) || !Array.isArray(result.output))
+		throw new TypeError("LLM Responses API response did not contain output");
+
+	const text = result.output.flatMap((item) => {
+		if (typeof item !== "object" || item === null || !("content" in item) || !Array.isArray(item.content))
+			return [];
+		return item.content.flatMap((part: unknown) => {
+			if (
+				typeof part === "object"
+				&& part !== null
+				&& "type" in part
+				&& part.type === "output_text"
+				&& "text" in part
+				&& typeof part.text === "string"
+			) {
+				return [part.text];
+			}
+			return [];
+		});
+	}).join("");
+
+	if (!text)
+		throw new TypeError("LLM Responses API response did not contain output text");
+	return text.trim();
+}
+
+function extractChatCompletionText(result: unknown): string {
+	if (
+		typeof result !== "object"
+		|| result === null
+		|| !("choices" in result)
+		|| !Array.isArray(result.choices)
+	) {
+		throw new TypeError("LLM Chat Completions API returned an invalid response");
+	}
+
+	const choice: unknown = result.choices[0];
+	if (
+		typeof choice !== "object"
+		|| choice === null
+		|| !("message" in choice)
+		|| typeof choice.message !== "object"
+		|| choice.message === null
+		|| !("content" in choice.message)
+		|| typeof choice.message.content !== "string"
+	) {
+		throw new TypeError("LLM Chat Completions API response did not contain output text");
+	}
+
+	return choice.message.content.trim();
+}
+
+async function requestInference(apiToken: string, model: string, messages: ChatMessage[]): Promise<string> {
+	const apiUrl = USE_OPENCODE ? OPENCODE_API_URL : HETZNER_API_URL;
+	const requestBody = USE_OPENCODE
+		? {
+				model,
+				instructions: messages.find(message => message.role === "system")?.content,
+				input: messages.filter(message => message.role !== "system")
+			}
+		: { model, messages };
 	const startTime = performance.now();
-	const response = await fetch(API_URL, {
+	const response = await fetch(apiUrl, {
 		method: "POST",
 		headers: {
 			"Authorization": `Bearer ${apiToken}`,
 			"Content-Type": "application/json"
 		},
-		body: JSON.stringify({ model, messages })
+		body: JSON.stringify(requestBody)
 	});
 	const responseBody = await response.text();
 	const responseTime = performance.now() - startTime;
 	console.log(`Response time: ${responseTime.toFixed(0)} ms`);
 
-	if (!response.ok)
-		throw new Error(`Hetzner Inference API returned ${response.status} ${response.statusText}:\n${responseBody}`);
+	if (!response.ok) {
+		const provider = USE_OPENCODE ? "OpenCode" : "Hetzner";
+		throw new Error(`${provider} inference API returned ${response.status} ${response.statusText}:\n${responseBody}`);
+	}
 
-	const result = JSON.parse(responseBody) as {
-		choices?: Array<{ message?: { content?: unknown } }>;
-	};
-	const content = result.choices?.[0]?.message?.content;
-	if (typeof content !== "string")
-		throw new TypeError("Hetzner Inference API response did not contain a message");
-
-	return content.trim();
+	const body: unknown = JSON.parse(responseBody);
+	if (typeof body === "object" && body !== null && "usage" in body)
+		console.log(body.usage);
+	return USE_OPENCODE ? extractResponseText(body) : extractChatCompletionText(body);
 }
 
 function parseAutomationResponse(content: string): unknown {
@@ -129,16 +199,16 @@ function formatValidationErrors(result: unknown): string {
 async function main() {
 	const description = process.argv.slice(2).join(" ").trim();
 	if (!description)
-		throw new Error("Usage: npm run prompt:hetzner -- \"<description>\"");
+		throw new Error("Usage: npm run ai:automation -- \"<description>\"");
 
-	const apiToken = requireEnv("HETZNER_API_TOKEN");
-	const model = requireEnv("HETZNER_AI_MODEL");
+	const apiToken = requireEnv(USE_OPENCODE ? "OPENCODE_API_TOKEN" : "HETZNER_API_TOKEN");
+	const model = requireEnv(USE_OPENCODE ? "OPENCODE_AI_MODEL" : "HETZNER_AI_MODEL");
 
-	const [srd2014, srd2024, basicExamples, automationDocumentation] = await Promise.all([
-		readJson("../staticData/2014/SRDAttacks2014.json"),
+	const [srd2024, basicExamples, rstDocumentation, aliasStatblockType] = await Promise.all([
 		readJson("../staticData/2024/SRDAttacks2024.json"),
 		readJson("../staticData/shared/basicExamples.json"),
-		readJson("../staticData/automationDocumentation.json")
+		readText("../staticData/automationDocumentation.rst"),
+		readText("../staticData/aliasStatblockType.txt")
 	]);
 
 	const examples = [
@@ -159,9 +229,6 @@ async function main() {
 	];
 
 	const formattedExamples = formatExamples(examples);
-	const formattedDocumentation = JSON.stringify(automationDocumentation, null, 2);
-	const rstDocumentation = readFileSync("src/staticData/automationDocumentation.rst");
-	const aliasStatblockType = readFileSync("src/staticData/aliasStatblockType.txt");
 
 	const systemPrompt = `You are an Avrae automation generator.
 Generate automation that follows the supplied automation documentation and the patterns demonstrated by the examples.
@@ -186,7 +253,7 @@ ${description}`;
 	];
 
 	for (let retry = 0; retry < MAX_TRIES; retry++) {
-		const content = await requestCompletion(apiToken, model, messages);
+		const content = await requestInference(apiToken, model, messages);
 		let output: unknown;
 		let validationErrors: string;
 
