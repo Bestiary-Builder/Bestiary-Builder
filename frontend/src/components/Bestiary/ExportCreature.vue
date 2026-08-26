@@ -76,7 +76,7 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 	}
 
 	el.style = `width: ${type === "2x1 wide" ? "1200" : "800"}px; column-count: ${type === "1x1" ? "1" : "2"};`;
-	el.classList.add("toPrint");
+	el.classList.add("to-print");
 
 	const canvas = await html2canvas(el, { scale: 2 });
 	const image = canvas.toDataURL("image/jpeg");
@@ -85,7 +85,7 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 	link.download = `${data.description.name} from BestiaryBuilder (${type}).jpg`;
 	link.href = image;
 	link.click();
-	el.classList.remove("toPrint");
+	el.classList.remove("to-print");
 	el.style = "";
 
 	removeToast(toastId);
@@ -96,10 +96,8 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 <template>
 	<v-dialog max-width="400">
 		<template #activator="{ props }">
-			<v-icon-btn
-				v-tooltip="'Export creature'" icon="mdi:export" label="Export Creature" v-bind="props"
-				size="24"
-			/>
+			<v-icon-btn v-tooltip="'Export creature'" icon="mdi:export" label="Export Creature" v-bind="props"
+				size="24" />
 		</template>
 
 		<template #default>

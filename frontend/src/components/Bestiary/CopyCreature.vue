@@ -42,10 +42,8 @@ const importManyCreatures = () => {
 <template>
 	<DropdownMenu>
 		<template #activator="{ dropdownProps }">
-			<v-icon-btn
-				v-tooltip="'Manage copies'" icon="mdi:content-copy" v-bind="dropdownProps" text="Manage copies"
-				size="24"
-			/>
+			<v-icon-btn v-tooltip="'Manage copies'" icon="mdi:content-copy" v-bind="dropdownProps" text="Manage copies"
+				size="24" />
 		</template>
 		<v-card min-width="500" class="text-center pa-4 d-flex justify-center flex-column">
 			<v-card-text>
@@ -66,16 +64,12 @@ const importManyCreatures = () => {
 								<p> {{ creature.bestiaryName }} (CR {{ creature.stats.description.cr }})</p>
 							</th>
 							<td v-if="mayImport">
-								<v-icon-btn
-									icon="mdi:import" size="20" text="Import creature"
-									@click="importCreature(creature)"
-								/>
+								<v-icon-btn icon="mdi:import" size="20" text="Import creature"
+									@click="importCreature(creature)" />
 							</td>
 							<td>
-								<v-icon-btn
-									icon="mdi:delete" size="20" text="Delete creature from list"
-									@click="deleteCreature(idx)"
-								/>
+								<v-icon-btn icon="mdi:delete" size="20" text="Delete creature from list"
+									@click="deleteCreature(idx)" />
 							</td>
 						</tr>
 					</tbody>
@@ -97,28 +91,20 @@ const importManyCreatures = () => {
 				</table>
 			</v-card-text>
 			<v-card-actions class="d-flex justify-center items-center">
-				<v-btn
-					v-if="mayImport && copiedCreatures.length > 0 && !props.noImportAll" prepend-icon="mdi:import"
-					color="success" @click="importManyCreatures"
-				>
+				<v-btn v-if="mayImport && copiedCreatures.length > 0 && !props.noImportAll" prepend-icon="mdi:import"
+					color="success" @click="importManyCreatures">
 					Import all
 				</v-btn>
-				<v-btn
-					v-if="currentCreature" prepend-icon="mdi:content-copy"
-					@click="copiedCreatures.push(currentCreature)"
-				>
+				<v-btn v-if="currentCreature" prepend-icon="mdi:content-copy"
+					@click="copiedCreatures.push(currentCreature)">
 					Copy current creature
 				</v-btn>
-				<v-btn
-					v-if="canCopyCurrentBestiary" prepend-icon="mdi:content-copy"
-					@click="emit('copyCurrentBestiary')"
-				>
+				<v-btn v-if="canCopyCurrentBestiary" prepend-icon="mdi:content-copy"
+					@click="emit('copyCurrentBestiary')">
 					Copy current bestiary
 				</v-btn>
-				<v-btn
-					v-if="copiedCreatures.length > 0" color="error" prepend-icon="mdi:trash"
-					@click="clearCreatures()"
-				>
+				<v-btn v-if="copiedCreatures.length > 0" color="error" prepend-icon="mdi:trash"
+					@click="clearCreatures()">
 					Clear list
 				</v-btn>
 			</v-card-actions>
@@ -127,22 +113,6 @@ const importManyCreatures = () => {
 </template>
 
 <style lang="less" scoped>
-.notice-dot {
-	position: absolute;
-	width: 12px;
-	height: 12px;
-	bottom: -20%;
-	background: none;
-	right: -20%;
-	font-weight: bold;
-	font-size: 0.7em;
-	color: rgb(var(--v-theme-primary)) !important;
-}
-
-.v-popper__custom-menu.with-table {
-	gap: 0;
-}
-
 .list-table {
 	margin: 0 auto;
 	padding: 0.5rem 0.5rem 0;

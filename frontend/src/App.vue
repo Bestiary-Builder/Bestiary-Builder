@@ -43,10 +43,8 @@ const defaults = computed(() => ({
 						<v-icon icon="$bestiaryBuilder" style="opacity: 1; scale: 1.4" />
 					</template>
 					<RouterLink to="/" class="d-flex align-center flex-grow-1 text-decoration-none text-high-emphasis">
-						<v-list-item-title
-							color="primary" class="text-high-emphasis font-weight-bold"
-							style="font-size: larger;"
-						>
+						<v-list-item-title color="primary" class="text-high-emphasis font-weight-bold"
+							style="font-size: larger;">
 							Bestiary
 							Builder
 						</v-list-item-title>
@@ -84,11 +82,9 @@ const defaults = computed(() => ({
 						<v-list-item v-bind="props" prepend-icon="mdi:history" title="Recently Viewed" />
 					</template>
 					<v-list density="compact" class="recent-pages-list">
-						<v-list-item
-							v-for="page in recentPages" :key="page.path" :title="page.label"
+						<v-list-item v-for="page in recentPages" :key="page.path" :title="page.label"
 							:prepend-icon="page.icon" :to="page.path" density="compact" size="small"
-							class="text-caption"
-						/>
+							class="text-caption" />
 					</v-list>
 				</v-list-group>
 			</v-list>
@@ -97,24 +93,18 @@ const defaults = computed(() => ({
 					<v-divider />
 					<v-list-item title="Help" value="help" to="/help" prepend-icon="mdi:frequently-asked-questions" />
 					<v-list-item title="Changelog" value="changelog" to="/changelog" prepend-icon="mdi:history" />
-					<v-list-item
-						title="Discord" value="discord" href="https://discord.gg/a6bwXCSymN" target="_blank"
-						rel="noopener noreferrer" prepend-icon="mdi:discord" link append-icon="mdi:open-in-new"
-					/>
-					<v-list-item
-						title="Patreon" value="patreon" href="https://patreon.com/BestiaryBuilder"
+					<v-list-item title="Discord" value="discord" href="https://discord.gg/a6bwXCSymN" target="_blank"
+						rel="noopener noreferrer" prepend-icon="mdi:discord" link append-icon="mdi:open-in-new" />
+					<v-list-item title="Patreon" value="patreon" href="https://patreon.com/BestiaryBuilder"
 						target="_blank" rel="noopener noreferrer" prepend-icon="mdi:patreon" link
-						append-icon="mdi:open-in-new"
-					/>
+						append-icon="mdi:open-in-new" />
 
 					<v-divider />
 					<v-list-item v-if="store.user" append-icon="mdi:cog" to="/user" :title="store.user.username">
 						<template #prepend>
-							<v-avatar
-								alt="avatar"
+							<v-avatar alt="avatar"
 								:image="store.user.avatar ? `https://cdn.discordapp.com/avatars/${store.user.id}/${store.user.avatar}.png` : 'https://cdn.discordapp.com/embed/avatars/0.png'"
-								size="30" class="mr-3"
-							/>
+								size="30" class="mr-3" />
 						</template>
 					</v-list-item>
 					<v-list-item v-else prepend-icon="mdi:login" @click="sendToLogin($route.path)">
@@ -131,10 +121,8 @@ const defaults = computed(() => ({
 			<template #append />
 		</v-app-bar>
 		<v-main>
-			<v-alert
-				v-if="!dismissed" class="ma-4" closable title="Update 3.0.0 Released" color="primary"
-				@click:close="dismiss"
-			>
+			<v-alert v-if="!dismissed" class="ma-4" closable title="Update 3.0.0 Released" color="primary"
+				@click:close="dismiss">
 				Welcome
 				to
 				Bestiary Builder 3.0.0! See all the changes in the <RouterLink to="/changelog">
@@ -163,6 +151,10 @@ const defaults = computed(() => ({
 </template>
 
 <style scoped>
+a {
+	color: color-mix(in srgb, currentcolor 75%, black 25%);
+}
+
 .recent-pages-list :deep(.v-list-item-title) {
 	font-size: 0.75rem !important;
 }

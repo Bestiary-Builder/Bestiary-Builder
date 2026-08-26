@@ -1,5 +1,5 @@
-body .content .stat-block.MonsterManual,
-body .v-card .stat-block.MonsterManual {
+body .content .statblock.monstermanual,
+body .v-card .statblock.monstermanual {
 	background: #e2dbd5 !important;
 	box-shadow: 0 0 5px #f3f5f9;
 	border: 1px solid #d4d0ce;
@@ -9,16 +9,21 @@ body .v-card .stat-block.MonsterManual {
 	border-radius: 0.5rem;
 	color: #4d1e20;
 
-	.stat-block--name-container {
+	.statblock-name-container {
 		color: #4d1e20;
 		border-color: #4d1e20;
 		margin-bottom: 0.1rem;
 	}
 
+	.statblock-core {
+		color: color-mix(in srgb, rgb(var(--v-theme-surface-bright)) 70%, black 30%);
+	}
+
+
 	.feature-container {
 		color: black;
 
-		.feature-container--title {
+		.feature-container-title {
 			color: #4d1e20;
 			border-color: #4d1e20;
 			margin-bottom: 0.3rem !important;
@@ -76,8 +81,8 @@ body .v-card .stat-block.MonsterManual {
 		}
 	}
 
-	&.toPrint {
-		.feature-container--title {
+	&.to-print {
+		.feature-container-title {
 			margin-bottom: -0.1rem !important;
 			margin-top: 0.2rem !important;
 		}

@@ -233,21 +233,20 @@ const renderFeature = (feature: FeatureEntity) => {
 
 <template>
 	<div class="statblock-outer">
-		<div id="statblock" class="stat-block" :class="[v2024 ? 'v2024' : '', design]">
-			<div class="stat-block--row">
-				<h1 class="stat-block--name-container">
+		<div id="statblock" class="statblock" :class="[v2024 ? 'v2024' : '', design?.toLowerCase()]">
+			<div class="statblock-row">
+				<h1 class="statblock-name-container">
 					{{ data.description.name }}
 				</h1>
 			</div>
-			<span class="stat-block--core"> {{ data.core.size }} {{ data.core.race }}{{ data.description.alignment
+			<span class="statblock-core"> {{ data.core.size }} {{ data.core.race }}{{ data.description.alignment
 				? ',' : '' }} {{ data.description.alignment }}</span>
 
-			<div class="stat-block--row two-wide picture-container">
+			<div class="statblock-row two-wide picture-container">
 				<div>
 					<div>
 						<b> {{ v2024 ? 'AC ' : 'Armor Class ' }} </b><span>{{ data.defenses.ac.ac }}</span><span
-							v-if="data.defenses.ac.acSource" v-html="render(`(${data.defenses.ac.acSource})`, true)"
-						/>
+							v-if="data.defenses.ac.acSource" v-html="render(`(${data.defenses.ac.acSource})`, true)" />
 						<b v-if="v2024" style="padding-left: .45rem"> Initiative </b> <span v-if="v2024"> {{
 							signedNumber(calculatedInitiativeNumber()) }} ({{ calculatePassiveInitiative() }})</span>
 					</div>
@@ -257,12 +256,12 @@ const renderFeature = (feature: FeatureEntity) => {
 						<span v-else> {{ hpCalc(data) }} ({{ data.defenses.hp.numOfHitDie }}d{{
 							data.defenses.hp.sizeOfHitDie }}{{ hitDieBonus }})</span>
 					</div>
-					<div class="stat-block--speed-container">
+					<div class="statblock-speed-container">
 						<b> Speed </b>
 						<span v-html="render(displaySpeedOrSenses(data.core.speed, false, v2024), true) || '—'" />
 					</div>
 				</div>
-				<!-- <img v-if="data.description.image" class="stat-block--image" :src="data.description.image"> -->
+				<!-- <img v-if="data.description.image" class="statblock-image" :src="data.description.image"> -->
 			</div>
 
 			<div class="stat-container-wrapper">
@@ -310,79 +309,72 @@ const renderFeature = (feature: FeatureEntity) => {
 				</div>
 			</div>
 
-			<div v-if="!v2024" class="stat-block--row stat-block--abilities">
+			<div v-if="!v2024" class="statblock-row statblock-abilities">
 				<div v-for="stat in stats" :key="stat">
 					<div> <b> {{ stat.toUpperCase() }} </b></div>
 					<span> {{ data.abilities.stats[stat] }} ({{ signedNumber(statCalc(stat, data)) }})</span>
 				</div>
 			</div>
-			<div class="stat-block--row v2024-no-bottom-border">
+			<div class="statblock-row v2024-no-bottom-border">
 				<template v-if="!v2024">
-					<div
-						v-if="Object.values(data.abilities.saves).some((val) => (val.isProficient === true || val.override !== null))"
-						class="stat-block--save-container"
-					>
+					<div v-if="Object.values(data.abilities.saves).some((val) => (val.isProficient === true || val.override !== null))"
+						class="statblock-save-container">
 						<b> Saving Throws </b>
 						<template v-for="stat in stats" :key="stat">
 							<span
-								v-if="data.abilities.saves[stat].override !== null || data.abilities.saves[stat].isProficient"
-							>
+								v-if="data.abilities.saves[stat].override !== null || data.abilities.saves[stat].isProficient">
 								{{ capitalizeFirstLetter(stat) }} {{
 									signedNumber(calculatedSaveNumber(data.abilities.saves[stat], stat)) }} </span>
 							<span
 								v-if="data.abilities.saves[stat].override !== null || data.abilities.saves[stat].isProficient"
-								class="ending-comma"
-							>, </span>
+								class="ending-comma">, </span>
 						</template>
 					</div>
-					<div v-if="showSkills" class="stat-block--skills-container">
+					<div v-if="showSkills" class="statblock-skills-container">
 						<b> Skills </b>
 						{{ skillOutput }}
 					</div>
 				</template>
 				<template v-if="!v2024">
 					<template v-for="title, resType of resistanceGenerator">
-						<div v-if="data.defenses[resType].length > 0" :key="resType" class="stat-block--res-container">
+						<div v-if="data.defenses[resType].length > 0" :key="resType" class="statblock-res-container">
 							<b> {{ title }} </b>
 							<span v-html="render(alphaSort(data.defenses[resType]).join(', '), true)" />
 						</div>
 					</template>
 				</template>
 				<template v-else>
-					<div v-if="showSkills" class="stat-block--skills-container">
+					<div v-if="showSkills" class="statblock-skills-container">
 						<b> Skills </b>
 						{{ skillOutput }}
 					</div>
-					<div v-if="data.defenses.vulnerabilities.length > 0" class="stat-block--res-container">
+					<div v-if="data.defenses.vulnerabilities.length > 0" class="statblock-res-container">
 						<b> Vulnerabilities </b>
 						<span v-html="render(alphaSort(data.defenses.vulnerabilities).join(', '), true)" />
 					</div>
-					<div v-if="data.defenses.resistances.length > 0" class="stat-block--res-container">
+					<div v-if="data.defenses.resistances.length > 0" class="statblock-res-container">
 						<b> Resistances </b>
 						<span v-html="render(alphaSort(data.defenses.resistances).join(', '), true)" />
 					</div>
-					<div
-						v-if="data.defenses.immunities.length > 0 || data.defenses.conditionImmunities.length > 0"
-						class="stat-block--res-container"
-					>
+					<div v-if="data.defenses.immunities.length > 0 || data.defenses.conditionImmunities.length > 0"
+						class="statblock-res-container">
 						<b> Immunities </b>
 						<span v-html="render(alphaSort(data.defenses.immunities).join(', '), true)" />
 						<span
-							v-if="data.defenses.immunities.length > 0 && data.defenses.conditionImmunities.length > 0"
-						>;
+							v-if="data.defenses.immunities.length > 0 && data.defenses.conditionImmunities.length > 0">;
 						</span>
 						<span v-html="render(alphaSort(data.defenses.conditionImmunities).join(', '), true)" />
 					</div>
 				</template>
 
-				<div ckass="stat-block--senses-container">
+				<div ckass="statblock-senses-container">
 					<b> Senses </b>
 					<span v-html="render(displaySpeedOrSenses(data.core.senses, false, v2024), true)" />{{
 						data.core.senses.length > 0
 							? ';' : '' }}
 					{{ v2024 ? 'P' : 'p' }}assive Perception {{ ppCalc(data) }}
 				</div>
-				<div class="stat-block--language-container">
+				<div class="statblock-language-container">
 					<b> Languages </b>
 					<span v-if="data.core.languages && data.core.languages.length === 0 && !data.misc.telepathy"> —
 					</span>
@@ -401,103 +393,80 @@ const renderFeature = (feature: FeatureEntity) => {
 				</div>
 			</div>
 
-			<div
-				v-if="data.features.features.length > 0 || showCasterCasting || (showInnateCasting && !data.spellcasting.innateSpells.displayAsAction)"
-				id="yes" class="stat-block--row"
-			>
+			<div v-if="data.features.features.length > 0 || showCasterCasting || (showInnateCasting && !data.spellcasting.innateSpells.displayAsAction)"
+				id="yes" class="statblock-row">
 				<div class="feature-container">
-					<h3 v-if="v2024" class="feature-container--title">
+					<h3 v-if="v2024" class="feature-container-title">
 						Traits
 					</h3>
 					<p v-if="data.misc.featureHeaderTexts.features" class="feature-header">
 						<span v-html="render(data.misc.featureHeaderTexts.features)" />
 					</p>
-					<div
-						v-for="(feature, index) in data.features.features" :key="index" class="feature-description"
-						v-html="renderFeature(feature)"
-					/>
+					<div v-for="(feature, index) in data.features.features" :key="index" class="feature-description"
+						v-html="renderFeature(feature)" />
 
-					<p
-						v-if="showInnateCasting && !data.spellcasting.innateSpells.displayAsAction"
-						class="feature-description"
-					>
+					<p v-if="showInnateCasting && !data.spellcasting.innateSpells.displayAsAction"
+						class="feature-description">
 						<b><i>Innate Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics">
-							(Psionics)</span>.</i></b>
-						<span
-							class="feature-container--desc indented"
-							v-html="render(displayInnateCasting(data, v2024))"
-						/>
+									(Psionics)</span>.</i></b>
+						<span class="feature-description-inner indented"
+							v-html="render(displayInnateCasting(data, v2024))" />
 					</p>
 
-					<p
-						v-if="showCasterCasting && data.spellcasting.casterSpells.castingClass && data.spellcasting.casterSpells.casterLevel && data.spellcasting.casterSpells.spellSlotList"
-						class="feature-description"
-					>
+					<p v-if="showCasterCasting && data.spellcasting.casterSpells.castingClass && data.spellcasting.casterSpells.casterLevel && data.spellcasting.casterSpells.spellSlotList"
+						class="feature-description">
 						<b><i>Spellcasting</i></b>
-						<span
-							class="feature-container--desc indented"
-							v-html="render(displayCasterCasting(data, v2024))"
-						/>
+						<span class="feature-description-inner indented"
+							v-html="render(displayCasterCasting(data, v2024))" />
 					</p>
 				</div>
 			</div>
 
-			<div
-				v-if="data.features.actions.length > 0 || (showInnateCasting && data.spellcasting.innateSpells.displayAsAction)"
-				class="stat-block--row"
-			>
+			<div v-if="data.features.actions.length > 0 || (showInnateCasting && data.spellcasting.innateSpells.displayAsAction)"
+				b class="statblock-row">
 				<div class="feature-container">
-					<h3 class="feature-container--title">
+					<h3 class="feature-container-title">
 						Actions
 					</h3>
 					<p v-if="data.misc.featureHeaderTexts.actions" class="feature-header">
 						<span v-html="render(data.misc.featureHeaderTexts.actions)" />
 					</p>
-					<div
-						v-for="(feature, index) in data.features.actions" :key="index" class="feature-description"
-						v-html="renderFeature(feature)"
-					/>
+					<div v-for="(feature, index) in data.features.actions" :key="index" class="feature-description"
+						v-html="renderFeature(feature)" />
 
-					<p
-						v-if="showInnateCasting && data.spellcasting.innateSpells.displayAsAction"
-						class="feature-description"
-					>
+					<p v-if="showInnateCasting && data.spellcasting.innateSpells.displayAsAction"
+						class="feature-description">
 						<b><i>Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics">
-							(Psionics)</span>.</i></b>
-						<span
-							class="feature-container--desc indented"
-							v-html="render(displayInnateCasting(data, v2024))"
-						/>
+									(Psionics)</span>.</i></b>
+						<span class="feature-description-inner indented"
+							v-html="render(displayInnateCasting(data, v2024))" />
 					</p>
 				</div>
 			</div>
 
 			<!-- TODO: Add features and actions to the generator here once they no longer need special handling because of spellcasting -->
 			<template v-for="title, fType of featureGenerator">
-				<div v-if="data.features[fType].length > 0" :key="fType" class="stat-block--row">
+				<div v-if="data.features[fType].length > 0" :key="fType" class="statblock-row">
 					<div class="feature-container">
-						<h3 class="feature-container--title">
+						<h3 class="feature-container-title">
 							{{ title }}
 						</h3>
 						<p v-if="fType === 'legendary' && data.features.legendary.length > 0" class="feature-header">
 							<span
-								v-html="render(data.misc.featureHeaderTexts[fType].replace('$NUM$', data.misc.legActionsPerRound.toString()))"
-							/>
+								v-html="render(data.misc.featureHeaderTexts[fType].replace('$NUM$', data.misc.legActionsPerRound.toString()))" />
 						</p>
 						<p v-else-if="data.misc.featureHeaderTexts[fType]" class="feature-header">
 							<span v-html="render(data.misc.featureHeaderTexts[fType])" />
 						</p>
-						<p
-							v-for="(feature, index) in data.features[fType]" :key="index" class="feature-description"
-							v-html="renderFeature(feature)"
-						/>
+						<p v-for="(feature, index) in data.features[fType]" :key="index" class="feature-description"
+							v-html="renderFeature(feature)" />
 					</div>
 				</div>
 			</template>
 		</div>
 
-		<div v-if="data.description.description" class="feature-container statblock--description px-4">
-			<h2 class="feature-container--title">
+		<div v-if="data.description.description" class="feature-container statblock-description px-4">
+			<h2 class="feature-container-title">
 				Description
 			</h2>
 			<div class="markdown" v-html="render(data.description.description)" />

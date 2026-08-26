@@ -1,5 +1,5 @@
-body .content .stat-block.Beyond,
-body .v-card .stat-block.Beyond {
+body .content .statblock.beyond,
+body .v-card .statblock.beyond {
 	background: #f5f3ee !important;
 	box-shadow: 0 0 5px #f3f5f9;
 	border: 1px solid #d4d0ce;
@@ -9,15 +9,20 @@ body .v-card .stat-block.Beyond {
 	border-radius: 0.5rem;
 	color: #5b160c;
 
-	.stat-block--name-container {
+	.statblock-name-container {
 		color: #5b160c;
 		border-color: #5b160c;
 	}
 
+	.statblock-core {
+		color: color-mix(in srgb, rgb(var(--v-theme-surface-bright)) 70%, black 30%);
+	}
+
+
 	.feature-container {
 		color: black;
 
-		.feature-container--title {
+		.feature-container-title {
 			color: #5b160c;
 			border-color: #5b160c;
 		}

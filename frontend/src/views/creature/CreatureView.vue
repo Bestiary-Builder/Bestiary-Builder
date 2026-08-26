@@ -47,28 +47,24 @@ onMounted(async () => {
 
 <template>
 	<div>
-		<Breadcrumbs
-			v-if="bestiary && (data?.stats.description.name || data?.stats.description.name === '')" :routes="[
-				{
-					path: `/bestiary/view/${bestiary?.id}`,
-					text: bestiary?.name,
-					isCurrent: false
-				},
-				{
-					path: '',
-					text: data?.stats.description.name || 'Unnamed Creature',
-					isCurrent: true
-				}
-			]"
-		>
-			<CopyCreature
-				v-if="data" no-import-all :may-import="false"
-				:current-creature="{ ...data, bestiaryName: bestiary.name }"
-			/>
+		<Breadcrumbs v-if="bestiary && (data?.stats.description.name || data?.stats.description.name === '')" :routes="[
+			{
+				path: `/bestiary/view/${bestiary?.id}`,
+				text: bestiary?.name,
+				isCurrent: false
+			},
+			{
+				path: '',
+				text: data?.stats.description.name || 'Unnamed Creature',
+				isCurrent: true
+			}
+		]">
+			<CopyCreature v-if="data" no-import-all :may-import="false"
+				:current-creature="{ ...data, bestiaryName: bestiary.name }" />
 			<ExportCreature :data="data.stats" />
 		</Breadcrumbs>
 		<div class="content">
-			<div class="content-container--inner">
+			<div class="content-container-inner">
 				<v-skeleton-loader v-if="data === null" type="heading, divider, text, text, sentences, heading, text" />
 				<StatblockRenderer v-else :data="data.stats" is2024 statblock-design="BestiaryBuilder" />
 			</div>
@@ -82,7 +78,7 @@ onMounted(async () => {
 	gap: 2rem;
 	grid-template-columns: 1fr;
 
-	.content-container--inner {
+	.content-container-inner {
 		width: 60%;
 		margin: 0 auto;
 	}
@@ -92,7 +88,7 @@ onMounted(async () => {
 	.content {
 		grid-template-columns: 1fr;
 
-		&.is-statblock-only .content-container--inner {
+		&.is-statblock-only .content-container-inner {
 			width: 100%;
 			margin: unset;
 		}

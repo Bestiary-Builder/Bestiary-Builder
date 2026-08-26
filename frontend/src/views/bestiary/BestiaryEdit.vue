@@ -464,75 +464,59 @@ const hoverCreature = async (creature: CreatureMetaData) => {
 
 <template>
 	<div>
-		<Breadcrumbs
-			v-if="collection" :routes="[
-				{
-					path: isOwner || isEditor ? '/bestiaries/personal' : '/bestiaries/public',
-					text: isOwner || isEditor ? 'My Bestiaries' : 'Bestiaries',
-					isCurrent: false
-				},
-				{
-					path: '',
-					text: collection?.name,
-					isCurrent: true
-				}
-			]"
-		>
-			<v-icon-btn
-				v-tooltip="'Create creature'" text="Create creature" icon="mdi:plus" size="24" class="inverted"
-				@click="newCreatureIsOpen = !newCreatureIsOpen"
-			/>
+		<Breadcrumbs v-if="collection" :routes="[
+			{
+				path: isOwner || isEditor ? '/bestiaries/personal' : '/bestiaries/public',
+				text: isOwner || isEditor ? 'My Bestiaries' : 'Bestiaries',
+				isCurrent: false
+			},
+			{
+				path: '',
+				text: collection?.name,
+				isCurrent: true
+			}
+		]">
+			<v-icon-btn v-tooltip="'Create creature'" text="Create creature" icon="mdi:plus" size="24" class="inverted"
+				@click="newCreatureIsOpen = !newCreatureIsOpen" />
 
-			<CopyCreature
-				:may-import="isOwner || isEditor" :current-creatures="items || []" can-copy-current-bestiary
+			<CopyCreature :may-import="isOwner || isEditor" :current-creatures="items || []" can-copy-current-bestiary
 				@import-creature="(creature) => createItem(creature, false)"
 				@import-all-creatures="createManyItems(copiedCreatures.map(x => x.stats))"
-				@copy-current-bestiary="copyCurrentBestiary"
-			/>
+				@copy-current-bestiary="copyCurrentBestiary" />
 
 			<v-dialog v-if="isOwner" max-width="950">
 				<template #activator="{ props }">
-					<v-icon-btn
-						v-tooltip="'Settings'" text="Collection Settings" icon="mdi:cog" size="24"
-						v-bind="props"
-					/>
+					<v-icon-btn v-tooltip="'Settings'" text="Collection Settings" icon="mdi:cog" size="24"
+						v-bind="props" />
 				</template>
 
 				<template #default="{ isActive }">
 					<v-card title="Bestiary Settings" class="pa-4">
 						<v-row>
 							<v-col cols="6">
-								<v-text-field
-									v-model="collection.name" label="Name"
+								<v-text-field v-model="collection.name" label="Name"
 									:maxlength="store.limits?.nameLength" :min-length="store.limits?.nameMin"
 									:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]"
-									class="mb-4"
-								/>
+									class="mb-4" />
 							</v-col>
 							<v-col cols="6">
 								<v-text-field v-model="collection.image" label="Image" class="mb-4" />
 							</v-col>
 
 							<v-col cols="12">
-								<v-textarea
-									v-model="collection.description"
+								<v-textarea v-model="collection.description"
 									:max-length="store.limits?.descriptionLength"
 									:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]"
-									label="Description" class="mb-4" hint="Supports Markdown" persistent-hint counter
-								/>
+									label="Description" class="mb-4" hint="Supports Markdown" persistent-hint counter />
 							</v-col>
 
 							<v-col cols="6">
-								<v-select
-									v-model="collection.status" label="Status"
-									:items="[{ value: 'private', title: 'Private' }, { value: 'unlisted', title: 'Unlisted' }, { value: 'public', title: 'Public' }]"
-								/>
+								<v-select v-model="collection.status" label="Status"
+									:items="[{ value: 'private', title: 'Private' }, { value: 'unlisted', title: 'Unlisted' }, { value: 'public', title: 'Public' }]" />
 							</v-col>
 							<v-col cols="6">
-								<v-select
-									v-model="collection.tags" multiple :items="store.tags || []" label="Tags"
-									chips closable-chips
-								/>
+								<v-select v-model="collection.tags" multiple :items="store.tags || []" label="Tags"
+									chips closable-chips />
 							</v-col>
 
 							<v-col cols="12" class="px-4">
@@ -552,11 +536,9 @@ const hoverCreature = async (creature: CreatureMetaData) => {
 								</p>
 							</v-col>
 							<v-col cols="6">
-								<v-text-field
-									v-model="editorToAdd" inputmode="numeric" label="Discord user ID"
+								<v-text-field v-model="editorToAdd" inputmode="numeric" label="Discord user ID"
 									:rules="[rules.integer('This must be a numeric Discord User ID.')]"
-									pattern="[0-9]*"
-								/>
+									pattern="[0-9]*" />
 							</v-col>
 							<v-col cols="6">
 								<v-btn class="w-100" size="large" @click="addEditor(editorToAdd)">
@@ -590,28 +572,22 @@ const hoverCreature = async (creature: CreatureMetaData) => {
 			</v-dialog>
 			<DropdownMenu>
 				<template #activator="{ props }">
-					<v-icon-btn
-						v-tooltip="'Search creatures'" text="Search creatures" icon="mdi:tag" size="24"
-						v-bind="props"
-					/>
+					<v-icon-btn v-tooltip="'Search creatures'" text="Search creatures" icon="mdi:tag" size="24"
+						v-bind="props" />
 				</template>
 				<v-card max-width="400" class="pa-4" title="Search bestiary">
 					<v-row>
 						<v-col cols="12">
-							<v-select
-								v-model="sortMode"
+							<v-select v-model="sortMode"
 								:items="['Custom', 'Alphabetically', 'CR Ascending', 'CR Descending', 'Creature Type']"
-								label="Bestiary sort type" hide-details
-							/>
+								label="Bestiary sort type" hide-details />
 						</v-col>
 						<v-col cols="6">
 							<v-text-field v-model="searchText" label="Name" />
 						</v-col>
 						<v-col cols="6">
-							<v-select
-								v-model="searchOptions.tags" :items="creatureTypes" label="Creature type" multiple
-								chips closable-chips
-							/>
+							<v-select v-model="searchOptions.tags" :items="creatureTypes" label="Creature type" multiple
+								chips closable-chips />
 						</v-col>
 						<v-col cols="6">
 							<CRInput v-model="searchOptions.minCr" label="Minimum CR" />
@@ -631,31 +607,25 @@ const hoverCreature = async (creature: CreatureMetaData) => {
 
 			<v-dialog v-if="isOwner" max-width="750">
 				<template #activator="{ props }">
-					<v-icon-btn
-						v-tooltip="'Import creatures'" text="Import creatures" icon="mdi:import" size="24"
-						v-bind="props"
-					/>
+					<v-icon-btn v-tooltip="'Import creatures'" text="Import creatures" icon="mdi:import" size="24"
+						v-bind="props" />
 				</template>
 
 				<template #default="{ isActive }">
 					<v-card title="Import bestiary" max-width="800" class="pa-4">
 						<v-row>
 							<v-col cols="6">
-								<v-text-field
-									v-model="importFields.critterDbId" label="CritterDB Bestiary link"
+								<v-text-field v-model="importFields.critterDbId" label="CritterDB Bestiary link"
 									hint="Make sure the Bestiary is public or has link-sharing enabled"
-									persistent-hint
-								/>
+									persistent-hint />
 								<v-btn size="large" class="w-100 mt-4" @click="importBestiaryFromCritterDB()">
 									Import CritterDB
 								</v-btn>
 							</v-col>
 							<v-col>
-								<v-file-input
-									v-model="importFields.bestiaryBuilderJson" label="Bestiary Builder JSON"
+								<v-file-input v-model="importFields.bestiaryBuilderJson" label="Bestiary Builder JSON"
 									hint="JSON (.json/.txt) describing a bestiary gotten from clicking export elsewhere on BB"
-									persistent-hint accept=".txt,.json"
-								/>
+									persistent-hint accept=".txt,.json" />
 
 								<v-btn size="large" class="w-100 mt-4" @click="importCreaturesFromBestiaryBuilder()">
 									Import BB
@@ -706,14 +676,10 @@ const hoverCreature = async (creature: CreatureMetaData) => {
 				<div class="left-side-container">
 					<div class="content-tile header-tile">
 						<h2>{{ collection.name ? collection.name : "..." }}</h2>
-						<Markdown
-							class="description" :class="{ expanded: isExpanded }"
-							:text="collection.description || 'No description set.'" tag="p"
-						/>
-						<button
-							v-if="collection.description.length > 0" v-tooltip="'Expand description'"
-							class="expand-btn" aria-label="Expand description" @click="isExpanded = !isExpanded"
-						>
+						<Markdown class="description" :class="{ expanded: isExpanded }"
+							:text="collection.description || 'No description set.'" tag="p" />
+						<button v-if="collection.description.length > 0" v-tooltip="'Expand description'"
+							class="expand-btn" aria-label="Expand description" @click="isExpanded = !isExpanded">
 							{{ isExpanded ? "▲" : "▼" }}
 						</button>
 						<hr>
@@ -723,33 +689,19 @@ const hoverCreature = async (creature: CreatureMetaData) => {
 								<StatusIcon :icon="collection.status" />
 							</div>
 							<div>{{ items?.length }}<v-icon icon="mdi:paw" size="20" /></div>
-							<div
-								v-if="!isOwner" role="button" aria-label="Toggle bookmark status" class="bookmark"
-								@click.prevent="toggleBookmark"
-							>
-								<span
-									v-if="bookmarked" v-tooltip="'Unbookmark this bestiary'"
-									class="bookmark-enabled"
-								><v-icon size="20" icon="mdi-star" /></span>
-								<span v-else v-tooltip="'Bookmark this bestiary'" class="bookmark-disabled"><v-icon
-									size="20" icon="mdi-star"
-								/></span>
-							</div>
+							<v-icon-btn v-if="!isOwner" @click="toggleBookmark" icon="mdi:star" size="20"
+								:icon-color="bookmarked ? 'primary' : 'grey'" />
 						</div>
 					</div>
 					<v-skeleton-loader v-if="items === null" type="heading, text, text" />
-					<VueDraggable
-						v-else v-model="sortedCreatures" :animation="500" class="tile-container list-tiles"
-						:disabled="sortMode !== 'Custom'" @update="saveOrder"
-					>
+					<VueDraggable v-else v-model="sortedCreatures" :animation="500" class="tile-container list-tiles"
+						:disabled="sortMode !== 'Custom'" @update="saveOrder">
 						<template v-for="element in sortedCreatures">
-							<CreatureListItem
-								v-if="filterCreature(element)" :id="element.id" :key="element.id" :data="element"
-								:can-edit="isOwner || isEditor" :is-pinned="lastClickedCreature?.id === element.id"
-								@mouseover="hoverCreature(element)"
+							<CreatureListItem v-if="filterCreature(element)" :id="element.id" :key="element.id"
+								:data="element" :can-edit="isOwner || isEditor"
+								:is-pinned="lastClickedCreature?.id === element.id" @mouseover="hoverCreature(element)"
 								@delete-creature="(id) => deleteItem(id)" @pin-creature="pinCreature(element)"
-								@copy-creature="copyCreature(element)"
-							/>
+								@copy-creature="copyCreature(element)" />
 						</template>
 					</VueDraggable>
 
@@ -761,16 +713,13 @@ const hoverCreature = async (creature: CreatureMetaData) => {
 				</div>
 				<div v-if="items && lastHoveredCreature" class="statblock-container">
 					<span v-if="lastClickedCreature" class="pin-notice">
-						<v-btn
-							class="unpin-button" variant="text" density="compact" append-icon="mdi:pin-off"
-							@click="lastClickedCreature = null"
-						><b>unpin</b></v-btn>
+						<v-btn class="unpin-button" variant="text" density="compact" append-icon="mdi:pin-off"
+							@click="lastClickedCreature = null"><b>unpin</b></v-btn>
 					</span>
 					<Transition name="fade" mode="out-in">
 						<StatblockRenderer
 							:key="lastClickedCreature?.stats.description.name || lastHoveredCreature.stats.description.name"
-							:data="lastClickedCreature?.stats || lastHoveredCreature.stats"
-						/>
+							:data="lastClickedCreature?.stats || lastHoveredCreature.stats" />
 					</Transition>
 				</div>
 				<div v-else class="statblock-container">
@@ -799,10 +748,8 @@ const hoverCreature = async (creature: CreatureMetaData) => {
 						</div>
 					</v-col>
 					<v-col cols="12">
-						<v-autocomplete
-							:items="srdCreatures" label="Select SRD creature"
-							@update:model-value="item => importSrdCreature(item)"
-						>
+						<v-autocomplete :items="srdCreatures" label="Select SRD creature"
+							@update:model-value="item => importSrdCreature(item)">
 							<template #item="{ props, item }">
 								<v-list-item v-bind="props" density="compact" style="min-height: 28px">
 									{{ (item as any).title }}
@@ -877,6 +824,7 @@ const hoverCreature = async (creature: CreatureMetaData) => {
 			justify-content: space-between;
 
 			.left-side {
+
 				span,
 				p {
 					font-style: italic;
@@ -1093,30 +1041,6 @@ const hoverCreature = async (creature: CreatureMetaData) => {
 	margin-top: 1rem;
 }
 
-.bookmark {
-	cursor: pointer;
-	font-size: 1.2rem;
-	color: goldenrod;
-
-	.bookmark-disabled {
-		filter: rgb(var(--v-theme-surface-bright)) scale(100%);
-		transition: filter 0.3s ease;
-
-		&:hover {
-			filter: rgb(var(--v-theme-surface-bright)) scale(0%);
-		}
-	}
-
-	.bookmark-enabled {
-		filter: rgb(var(--v-theme-surface-bright)) scale(0%);
-		transition: filter 0.3s ease;
-
-		&:hover {
-			filter: rgb(var(--v-theme-surface-bright)) scale(100%);
-		}
-	}
-}
-
 .slide-fade-enter-active {
 	transition: all 0.3s ease-out;
 }
@@ -1162,11 +1086,5 @@ const hoverCreature = async (creature: CreatureMetaData) => {
 .editor-container {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
-}
-
-.v-select.drop-up.vs--open {
-	border-radius: 0 0 4px 4px;
-	border-top-color: transparent;
-	border-bottom: 1px solid var(--vs-border-color);
 }
 </style>

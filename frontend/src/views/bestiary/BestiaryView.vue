@@ -304,51 +304,41 @@ const hoverCreature = async (creature: CreatureMetaData) => {
 
 <template>
 	<div>
-		<Breadcrumbs
-			v-if="collection" :routes="[
-				{
-					path: isOwner || isEditor ? '/bestiaries/personal' : '/bestiaries/public',
-					text: isOwner || isEditor ? 'My Bestiaries' : 'Bestiaries',
-					isCurrent: false
-				},
-				{
-					path: '',
-					text: collection?.name,
-					isCurrent: true
-				}
-			]"
-		>
-			<CopyCreature
-				:may-import="false" :current-creatures="items || []" can-copy-current-bestiary
+		<Breadcrumbs v-if="collection" :routes="[
+			{
+				path: isOwner || isEditor ? '/bestiaries/personal' : '/bestiaries/public',
+				text: isOwner || isEditor ? 'My Bestiaries' : 'Bestiaries',
+				isCurrent: false
+			},
+			{
+				path: '',
+				text: collection?.name,
+				isCurrent: true
+			}
+		]">
+			<CopyCreature :may-import="false" :current-creatures="items || []" can-copy-current-bestiary
 				@import-creature="(creature) => createItem(creature, false)"
 				@import-all-creatures="createManyItems(copiedCreatures.map(x => x.stats))"
-				@copy-current-bestiary="copyCurrentBestiary"
-			/>
+				@copy-current-bestiary="copyCurrentBestiary" />
 
 			<DropdownMenu>
 				<template #activator="{ props }">
-					<v-icon-btn
-						v-tooltip="'Search creatures'" text="Search creatures" icon="mdi:tag" size="24"
-						v-bind="props"
-					/>
+					<v-icon-btn v-tooltip="'Search creatures'" text="Search creatures" icon="mdi:tag" size="24"
+						v-bind="props" />
 				</template>
 				<v-card max-width="400" class="pa-4" title="Search bestiary">
 					<v-row>
 						<v-col cols="12">
-							<v-select
-								v-model="sortMode"
+							<v-select v-model="sortMode"
 								:items="['Custom', 'Alphabetically', 'CR Ascending', 'CR Descending', 'Creature Type']"
-								label="Bestiary sort type" hide-details
-							/>
+								label="Bestiary sort type" hide-details />
 						</v-col>
 						<v-col cols="6">
 							<v-text-field v-model="searchText" label="Name" />
 						</v-col>
 						<v-col cols="6">
-							<v-select
-								v-model="searchOptions.tags" :items="creatureTypes" label="Creature type" multiple
-								chips closable-chips
-							/>
+							<v-select v-model="searchOptions.tags" :items="creatureTypes" label="Creature type" multiple
+								chips closable-chips />
 						</v-col>
 						<v-col cols="6">
 							<CRInput v-model="searchOptions.minCr" label="Minimum CR" />
@@ -368,10 +358,8 @@ const hoverCreature = async (creature: CreatureMetaData) => {
 
 			<DropdownMenu>
 				<template #activator="{ props }">
-					<v-icon-btn
-						v-tooltip="'Export bestiary'" text="Export Bestiary" icon="mdi:export" size="24"
-						v-bind="props"
-					/>
+					<v-icon-btn v-tooltip="'Export bestiary'" text="Export Bestiary" icon="mdi:export" size="24"
+						v-bind="props" />
 				</template>
 				<v-card min-width="300" class="text-center pb-2 pa-4" title="Export bestiary">
 					<v-card-actions class="d-flex flex-column align-center justify-center" min-width="200">
@@ -393,14 +381,10 @@ const hoverCreature = async (creature: CreatureMetaData) => {
 				<div class="left-side-container">
 					<div class="content-tile header-tile">
 						<h2>{{ collection.name ? collection.name : "..." }}</h2>
-						<Markdown
-							class="description" :class="{ expanded: isExpanded }"
-							:text="collection.description || 'No description set.'" tag="p"
-						/>
-						<button
-							v-if="collection.description.length > 0" v-tooltip="'Expand description'"
-							class="expand-btn" aria-label="Expand description" @click="isExpanded = !isExpanded"
-						>
+						<Markdown class="description" :class="{ expanded: isExpanded }"
+							:text="collection.description || 'No description set.'" tag="p" />
+						<button v-if="collection.description.length > 0" v-tooltip="'Expand description'"
+							class="expand-btn" aria-label="Expand description" @click="isExpanded = !isExpanded">
 							{{ isExpanded ? "▲" : "▼" }}
 						</button>
 						<hr>
@@ -410,48 +394,31 @@ const hoverCreature = async (creature: CreatureMetaData) => {
 								<StatusIcon :icon="collection.status" />
 							</div>
 							<div>{{ items?.length }}<v-icon icon="mdi:paw" size="20" /></div>
-							<div
-								v-if="!isOwner" role="button" aria-label="Toggle bookmark status" class="bookmark"
-								@click.prevent="toggleBookmark"
-							>
-								<span
-									v-if="bookmarked" v-tooltip="'Unbookmark this bestiary'"
-									class="bookmark-enabled"
-								><v-icon size="20" icon="mdi-star" /></span>
-								<span v-else v-tooltip="'Bookmark this bestiary'" class="bookmark-disabled"><v-icon
-									size="20" icon="mdi-star"
-								/></span>
-							</div>
+							<v-icon-btn v-if="!isOwner" @click="toggleBookmark" icon="mdi:star" size="20"
+								:icon-color="bookmarked ? 'primary' : 'grey'" />
 						</div>
 					</div>
 					<v-skeleton-loader v-if="items === null" type="heading, text, text" />
 					<div class="tile-container list-tiles">
 						<template v-for="element, idx in sortCreatures()">
-							<CreatureListItem
-								v-if="element !== null && filterCreature(element)" :id="element.id" :key="idx"
-								:data="element" :can-edit="isOwner || isEditor"
-								:is-pinned="lastClickedCreature?.id === element.id"
-								@mouseover="hoverCreature(element)"
-								@delete-creature="(id) => deleteItem(id)"
-								@pin-creature="pinCreature(element)"
-								@copy-creature="copyCreature(element)"
-							/>
+							<CreatureListItem v-if="element !== null && filterCreature(element)" :id="element.id"
+								:key="idx" :data="element" :can-edit="isOwner || isEditor"
+								:is-pinned="lastClickedCreature?.id === element.id" @mouseover="hoverCreature(element)"
+								@delete-creature="(id) => deleteItem(id)" @pin-creature="pinCreature(element)"
+								@copy-creature="copyCreature(element)" />
 						</template>
 					</div>
 				</div>
 				<div v-if="items && lastHoveredCreature" class="statblock-container">
 					<span v-if="lastClickedCreature" class="pin-notice">
-						<v-btn
-							class="unpin-button" variant="text" density="compact" append-icon="mdi:pin-off"
-							@click="lastClickedCreature = null"
-						><b>unpin</b></v-btn>
+						<v-btn class="unpin-button" variant="text" density="compact" append-icon="mdi:pin-off"
+							@click="lastClickedCreature = null"><b>unpin</b></v-btn>
 					</span>
 					<Transition name="fade" mode="out-in">
 						<StatblockRenderer
 							:key="lastClickedCreature?.stats.description.name || lastHoveredCreature.stats.description.name"
 							:data="lastClickedCreature?.stats || lastHoveredCreature?.stats" is2024
-							statblock-design="BestiaryBuilder"
-						/>
+							statblock-design="BestiaryBuilder" />
 					</Transition>
 				</div>
 				<div v-else class="statblock-container">
@@ -523,6 +490,7 @@ const hoverCreature = async (creature: CreatureMetaData) => {
 			justify-content: space-between;
 
 			.left-side {
+
 				span,
 				p {
 					font-style: italic;
@@ -699,7 +667,6 @@ const hoverCreature = async (creature: CreatureMetaData) => {
 		padding: 0;
 
 		.content-tile.creature-tile:hover {
-			background-color: #464343;
 			scale: 1;
 		}
 	}
@@ -737,30 +704,6 @@ const hoverCreature = async (creature: CreatureMetaData) => {
 	font-size: 1.3rem;
 	text-align: center;
 	margin-top: 1rem;
-}
-
-.bookmark {
-	cursor: pointer;
-	font-size: 1.2rem;
-	color: goldenrod;
-
-	.bookmark-disabled {
-		filter: rgb(var(--v-theme-surface-bright)) scale(100%);
-		transition: filter 0.3s ease;
-
-		&:hover {
-			filter: rgb(var(--v-theme-surface-bright)) scale(0%);
-		}
-	}
-
-	.bookmark-enabled {
-		filter: rgb(var(--v-theme-surface-bright)) scale(0%);
-		transition: filter 0.3s ease;
-
-		&:hover {
-			filter: rgb(var(--v-theme-surface-bright)) scale(100%);
-		}
-	}
 }
 
 .slide-fade-enter-active {
@@ -808,11 +751,5 @@ const hoverCreature = async (creature: CreatureMetaData) => {
 .editor-container {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
-}
-
-.v-select.drop-up.vs--open {
-	border-radius: 0 0 4px 4px;
-	border-top-color: transparent;
-	border-bottom: 1px solid var(--vs-border-color);
 }
 </style>

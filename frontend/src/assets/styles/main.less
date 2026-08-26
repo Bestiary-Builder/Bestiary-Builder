@@ -18,7 +18,10 @@ hr {
 }
 
 a {
-	color: rgb(205 205 205);
+	color: inherit;
+}
+
+a {
 	text-decoration: underline 0.1em rgb(0 0 0 / 0%);
 
 	&:hover {
@@ -35,7 +38,7 @@ select {
 	outline: none;
 
 	& option {
-		background-color: var(--color-surface-0);
+		background-color: rgb(var(--v-theme-surface));
 		color: rgb(var(--v-theme-primary));
 	}
 
@@ -45,7 +48,7 @@ select {
 	}
 
 	& optgroup {
-		background-color: var(--color-surface-1);
+		background-color: rgb(var(--v-theme-surface-light));
 	}
 }
 
@@ -54,7 +57,7 @@ select {
 	min-height: 100vh;
 
 	& .markdown {
-		:not(.stat-block) h2 {
+		:not(.statblock) h2 {
 			text-align: left;
 			margin-bottom: 1rem;
 			font-size: 2rem;
@@ -67,10 +70,9 @@ select {
 
 		a:not(.header-anchor) {
 			color: rgb(var(--v-theme-primary));
-			text-decoration-color: rgb(255 69 0 / 0%);
 
 			&:hover {
-				text-decoration-color: rgb(255 69 0 / 100%);
+				text-decoration-color: color-mix(in srgb, currentcolor 75%, white 25%);
 			}
 		}
 
@@ -98,8 +100,11 @@ b.indent {
 }
 
 .patreon {
-	background-color: #f1465a;
-	color: white !important;
+	--patreon: #f1465a;
+	--font: white;
+
+	background-color: var(--patreon);
+	color: var(--font) !important;
 	display: block;
 	width: 240px;
 	padding: 1rem;
@@ -119,15 +124,17 @@ b.indent {
 	}
 
 	&:hover {
-		background-color: #ed2139;
+		background-color: color-mix(in srgb, var(--patreon) 75%, white 25%);
 	}
 }
 
 .discord {
-	background-color: #5865f2;
+	--discord: #5865f2;
+
+	background-color: var(--discord);
 
 	&:hover {
-		background-color: #434fd3;
+		background-color: color-mix(in srgb, var(--discord) 75%, white 25%);
 	}
 }
 
@@ -144,12 +151,12 @@ p:has(img[src="/Beholder.webp"]) {
 		width: 50%;
 	}
 
-	+ p {
+	+p {
 		text-align: center;
 	}
 }
 
-blockquote:has(p img[src="/Beholder.webp"]) ~ p {
+blockquote:has(p img[src="/Beholder.webp"])~p {
 	text-align: center;
 	display: block;
 	margin: auto;
@@ -161,7 +168,7 @@ blockquote:has(p img[src="/Beholder.webp"]) ~ p {
 	grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 	gap: 1rem;
 
-	& > a {
+	&>a {
 		text-decoration: none;
 	}
 }

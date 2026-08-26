@@ -97,10 +97,8 @@ const isDeleteOpen = ref(false);
 
 					<DropdownMenu v-if="store.user?.id === data.ownerId" v-model="isDeleteOpen">
 						<template #activator="{ props }">
-							<v-icon-btn
-								text="Delete Collection" size="20" color="currentColor" v-bind="props"
-								icon="mdi:delete" @click.stop.prevent="props.onClick?.($event)"
-							/>
+							<v-icon-btn text="Delete Collection" size="20" color="currentColor" v-bind="props"
+								icon="mdi:delete" @click.stop.prevent="props.onClick?.($event)" />
 						</template>
 						<v-card min-width="300" class="text-center pb-2">
 							<v-card-text>
@@ -108,10 +106,8 @@ const isDeleteOpen = ref(false);
 								<br> This action cannot be undone.
 							</v-card-text>
 							<v-card-actions>
-								<v-btn
-									size="large" class="w-100" color="red"
-									@click.stop.prevent="$emit('deleteCollectionItem', data.id); isDeleteOpen = false"
-								>
+								<v-btn size="large" class="w-100" color="red"
+									@click.stop.prevent="$emit('deleteCollectionItem', data.id); isDeleteOpen = false">
 									Confirm
 								</v-btn>
 							</v-card-actions>
@@ -140,7 +136,7 @@ const isDeleteOpen = ref(false);
 
 .collection {
 	border-radius: 0.5rem;
-	background-color: var(--color-surface-0);
+	background-color: rgb(var(--v-theme-surface));
 	height: 100%;
 	display: flex;
 	flex-direction: column;

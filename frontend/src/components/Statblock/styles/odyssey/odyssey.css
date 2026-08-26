@@ -3,8 +3,8 @@
 	src: url("TrajanOdyssey-Regular.otf") format("opentype");
 }
 
-body .content .stat-block.Odyssey,
-body .v-card .stat-block.Odyssey {
+body .content .statblock.odyssey,
+body .v-card .statblock.odyssey {
 	color: #095471;
 	background-color: #fff;
 	background-size: 100% 100%;
@@ -16,8 +16,8 @@ body .v-card .stat-block.Odyssey {
 	border-radius: 0.5rem;
 	padding: 15px;
 
-	.stat-block--name-container {
-		font-family: Odyssey Roboto;
+	.statblock-name-container {
+		font-family: "Odyssey Roboto";
 		color: #095471;
 		border-bottom: 0 solid #095471;
 		background-image: url("hr.svg");
@@ -42,6 +42,10 @@ body .v-card .stat-block.Odyssey {
 		}
 	}
 
+	.statblock-core {
+		color: color-mix(in srgb, rgb(var(--v-theme-surface-bright)) 70%, black 30%);
+	}
+
 	h1,
 	h2,
 	h3,
@@ -59,7 +63,7 @@ body .v-card .stat-block.Odyssey {
 		color: #095471;
 	}
 
-	.stat-block--row {
+	.statblock-row {
 		border-bottom: 0 solid white;
 	}
 
@@ -68,7 +72,7 @@ body .v-card .stat-block.Odyssey {
 		border-bottom: 0 solid white;
 	}
 
-	.feature-container--title {
+	.feature-container-title {
 		font-family: Odyssey;
 		color: #095471;
 		border-bottom: 0 solid white;
@@ -78,10 +82,6 @@ body .v-card .stat-block.Odyssey {
 		background-position-y: bottom;
 		padding-bottom: 0.2rem;
 		margin-bottom: 0.2rem;
-	}
-
-	.stat-block--core {
-		color: rgb(var(--v-theme-surface-bright));
 	}
 
 	.stat-table:first-of-type {
@@ -112,7 +112,7 @@ body .v-card .stat-block.Odyssey {
 }
 
 @media screen and (width <= 1400px) {
-	.stat-block {
+	.statblock {
 		h1 {
 			background-size: 100%;
 

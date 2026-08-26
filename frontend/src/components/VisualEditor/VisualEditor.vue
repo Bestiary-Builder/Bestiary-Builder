@@ -56,10 +56,8 @@ provide("showControls", showControls);
 			<div v-if="!currentEffect && currentContext.length === 0">
 				<SectionHeader title="No Effect Selected" />
 				Select or create a node in the Effect Tree to get started.
-				<img
-					:src="['/Devourer.png', '/Beholder.webp', '/Flumph.png'][Math.floor(Math.random() * 3)]"
-					style="max-width: 200px; transform: scale(-1, 1); margin-top: 2rem"
-				>
+				<img :src="['/Devourer.png', '/Beholder.webp', '/Flumph.png'][Math.floor(Math.random() * 3)]"
+					style="max-width: 200px; transform: scale(-1, 1); margin-top: 2rem">
 			</div>
 			<template v-else>
 				<Transition>
@@ -97,7 +95,7 @@ h3 {
 }
 
 section {
-	background-color: var(--color-surface-1);
+	background-color: rgb(var(--v-theme-surface-light));
 	min-height: 800px;
 	padding: 1rem;
 	border-radius: 6px;
@@ -108,7 +106,7 @@ section {
 	min-height: 800px;
 	border-radius: 6px;
 	box-shadow: rgb(0 0 0 / 24%) 0 3px 8px;
-	background-color: var(--color-surface-0);
+	background-color: rgb(var(--v-theme-surface));
 }
 
 .two-wide.uneven {
@@ -119,7 +117,7 @@ section {
 	grid-template-columns: 1fr 2fr;
 }
 
-@media screen and (width <= 1200px) {
+@media screen and (width <=1200px) {
 	.two-wide.two-wide.uneven {
 		grid-template-columns: 1fr;
 	}

@@ -87,7 +87,7 @@ const firstLetters = computed(() => {
 	height: 100%;
 	display: flex;
 	flex-direction: column;
-	background-color: var(--color-surface-0);
+	background-color: rgb(var(--v-theme-surface));
 	transition: scale ease-in-out 0.2s;
 
 	&:hover {
@@ -118,7 +118,7 @@ const firstLetters = computed(() => {
 				place-items: center;
 				font-size: xx-large;
 				border: unset;
-				background: var(--color-surface-0);
+				background: rgb(var(--v-theme-surface));
 			}
 		}
 	}

@@ -123,18 +123,12 @@ function clear() {
 
 <template>
 	<div class="simple-quantity" :class="{ clearable: isClearable }">
-		<v-icon-btn
-			icon="mdi:minus" :text="`Decrease ${label}`" size="small" color="white" variant="plain"
-			@click.prevent="decrease"
-		/>
-		<input
-			:id="labelId" ref="input" :value="isNaN(value) ? '' : value" type="number" :name="label" :min="min"
-			:max="max" inputmode="numeric" @change="change"
-		>
-		<v-icon-btn
-			icon="mdi:plus" :text="`Increase ${label}`" size="small" color="white" variant="plain"
-			@click.prevent="increase"
-		/>
+		<v-icon-btn icon="mdi:minus" :text="`Decrease ${label}`" size="small" color="white" variant="plain"
+			@click.prevent="decrease" />
+		<input :id="labelId" ref="input" :value="isNaN(value) ? '' : value" type="number" :name="label" :min="min"
+			:max="max" inputmode="numeric" @change="change">
+		<v-icon-btn icon="mdi:plus" :text="`Increase ${label}`" size="small" color="white" variant="plain"
+			@click.prevent="increase" />
 		<v-icon-btn v-if="isClearable" icon="mdi:delete" text="clear" @click="clear" />
 	</div>
 </template>
@@ -154,7 +148,7 @@ function clear() {
 }
 
 .simple-quantity input {
-	background-color: var(--color-surface-0);
+	background-color: rgb(var(--v-theme-surface));
 	height: 32px;
 	line-height: 1.25;
 	font-size: 0.9rem;
@@ -162,8 +156,7 @@ function clear() {
 	text-align: center;
 	padding: 0;
 	margin: auto;
-	border: 1px solid rgb(60 63 68);
-	color: white;
+	border: 1px solid rgb(var(--v-theme-surface-light));
 	max-width: 90vw;
 	width: 4rem;
 }

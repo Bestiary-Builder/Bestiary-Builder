@@ -17,26 +17,18 @@ onMounted(async () => {
 <template>
 	<div class="container">
 		<div v-if="user" class="user">
-			<img
-				class="img" alt=""
-				:src="user.avatar ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` : 'https://cdn.discordapp.com/embed/avatars/0.png'"
-			>
+			<img class="img" alt=""
+				:src="user.avatar ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` : 'https://cdn.discordapp.com/embed/avatars/0.png'">
 			by
-			<span
-				v-if="user.id === '303857638171607040' || user.id === '307900989455859723'"
-				v-tooltip="'This user is a developer of Bestiary Builder'" class="developer"
-			> {{ user.username }}
+			<span v-if="user.id === '303857638171607040' || user.id === '307900989455859723'"
+				v-tooltip="'This user is a developer of Bestiary Builder'" class="developer"> {{ user.username }}
 			</span>
 			<span v-else-if="user.supporter === SupporterStatus.none">{{ user.username }}</span>
-			<span
-				v-else-if="user.supporter === SupporterStatus.wirmling"
-				v-tooltip="'This user is a Wyrmling Patreon Supporter!'" class="supporter-tier-1"
-			> {{ user.username }}
+			<span v-else-if="user.supporter === SupporterStatus.wirmling"
+				v-tooltip="'This user is a Wyrmling Patreon Supporter!'" class="supporter-tier-1"> {{ user.username }}
 			</span>
-			<span
-				v-else-if="user.supporter === SupporterStatus.greatwyrm"
-				v-tooltip="'This user is a Greatwyrm Patreon Supporter!'" class="supporter-tier-2"
-			> {{ user.username }}
+			<span v-else-if="user.supporter === SupporterStatus.greatwyrm"
+				v-tooltip="'This user is a Greatwyrm Patreon Supporter!'" class="supporter-tier-2"> {{ user.username }}
 			</span>
 		</div>
 	</div>
@@ -60,21 +52,25 @@ onMounted(async () => {
 		scale: 2.5;
 		padding: 0 0.5em;
 	}
+
+	--tier1: #29cf29;
+	--tier2: #ca2020;
+	--dev: #ff4500;
 }
 
 .supporter-tier-1 {
-	color: #29cf29;
-	text-shadow: var(--color-surface-0) 2px 2px;
+	color: var(--tier1);
+	text-shadow: rgb(var(--v-theme-surface)) 2px 2px;
 }
 
 .supporter-tier-2 {
-	color: #ca2020;
-	text-shadow: var(--color-surface-0) 2px 2px;
+	color: var(--tier2);
+	text-shadow: rgb(var(--v-theme-surface)) 2px 2px;
 }
 
 .developer {
-	color: rgb(var(--v-theme-primary));
-	text-shadow: var(--color-surface-0) 2px 2px;
+	color: var(--dev);
+	text-shadow: rgb(var(--v-theme-surface)) 2px 2px;
 }
 
 .loading {

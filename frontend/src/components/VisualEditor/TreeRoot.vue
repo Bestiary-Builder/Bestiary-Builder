@@ -49,23 +49,18 @@ const showControls = inject<Ref<boolean>>("showControls");
 	<section :class="{ container: rootType === 'root' }">
 		<template v-if="Array.isArray(data)">
 			<template v-for="auto, index in data" :key="index">
-				<p
-					v-if="rootType === 'root'" class="add root tree-row"
-					@click="currentEffect = data[index]; currentContext = [index.toString(), ...context]"
-				>
+				<p v-if="rootType === 'root'" class="add root tree-row"
+					@click="currentEffect = data[index]; currentContext = [index.toString(), ...context]">
 					<Icon
 						:icon="JSON.stringify(currentContext) === JSON.stringify([index.toString(), ...context]) ? 'material-symbols:asterisk' : 'material-symbols:swords'"
 						:inline="true" width="1em"
-						:color="JSON.stringify(currentContext) === JSON.stringify([index.toString(), ...context]) ? 'rgb(var(--v-theme-success))' : 'rgb(var(--v-theme-surface-bright))'"
-					/>
+						:color="JSON.stringify(currentContext) === JSON.stringify([index.toString(), ...context]) ? 'rgb(var(--v-theme-success))' : 'rgb(var(--v-theme-surface-bright))'" />
 					{{ auto.name }}
 					<span v-if="showControls" class="tree-buttons" @click.stop>
 						<DropdownMenu>
 							<template #activator="{ props }">
-								<Icon
-									icon="mdi:trash" inline width=".75em" role="button" class="trigger"
-									color="rgb(var(--v-theme-surface-bright))" v-bind="props"
-								/>
+								<Icon icon="mdi:trash" inline width=".75em" role="button" class="trigger"
+									color="rgb(var(--v-theme-surface-bright))" v-bind="props" />
 							</template>
 							<v-card min-width="300" class="text-center pb-2">
 								<v-card-text>
@@ -81,38 +76,29 @@ const showControls = inject<Ref<boolean>>("showControls");
 					</span>
 				</p>
 				<VueDraggable v-model="auto.automation" v-bind="draggingProps" :style="`--depth: ${depth}`">
-					<TreeNode
-						v-for="(node, idx) in auto.automation ?? []" :key="(node as any)" :data="node"
-						:depth="depth" :parent-type="parentType" :context="[...context, idx.toString()]"
-					/>
+					<TreeNode v-for="(node, idx) in auto.automation ?? []" :key="(node as any)" :data="node"
+						:depth="depth" :parent-type="parentType" :context="[...context, idx.toString()]" />
 					<EffectAdder :context="[index.toString(), ...context]" />
 				</VueDraggable>
 			</template>
-			<p
-				v-if="!noListAttack && rootType === 'root' && showControls" style="--depth: 0" class="tree-row"
-				@click="addListAttack()"
-			>
+			<p v-if="!noListAttack && rootType === 'root' && showControls" style="--depth: 0" class="tree-row"
+				@click="addListAttack()">
 				Add Attack to this feature
 			</p>
 		</template>
 		<template v-else>
-			<p
-				v-if="rootType === 'root'" class="add root tree-row"
-				@click="currentEffect = data; currentContext = [...context]"
-			>
+			<p v-if="rootType === 'root'" class="add root tree-row"
+				@click="currentEffect = data; currentContext = [...context]">
 				<Icon
 					:icon="JSON.stringify(currentContext) === JSON.stringify(context) ? 'material-symbols:asterisk' : 'material-symbols:swords'"
 					:inline="true" width="1em"
-					:color="JSON.stringify(currentContext) === JSON.stringify(context) ? 'rgb(var(--v-theme-success))' : 'rgb(var(--v-theme-surface-bright))'"
-				/>
+					:color="JSON.stringify(currentContext) === JSON.stringify(context) ? 'rgb(var(--v-theme-success))' : 'rgb(var(--v-theme-surface-bright))'" />
 				{{ data.name }}
 				<span v-if="showControls" class="tree-buttons" @click.stop>
 					<DropdownMenu>
 						<template #activator="{ props }">
-							<Icon
-								icon="mdi:trash" inline width=".75em" role="button" class="trigger"
-								color="rgb(var(--v-theme-surface-bright))" v-bind="props"
-							/>
+							<Icon icon="mdi:trash" inline width=".75em" role="button" class="trigger"
+								color="rgb(var(--v-theme-surface-bright))" v-bind="props" />
 						</template>
 						<v-card min-width="300" class="text-center pb-2">
 							<v-card-text>
@@ -128,16 +114,12 @@ const showControls = inject<Ref<boolean>>("showControls");
 				</span>
 			</p>
 			<VueDraggable v-model="data.automation" v-bind="draggingProps" :style="`--depth: ${depth}`">
-				<TreeNode
-					v-for="(node, idx) in data.automation ?? []" :key="(node as any)" :data="node" :depth="depth"
-					:parent-type="parentType" :context="[...context, idx.toString()]"
-				/>
+				<TreeNode v-for="(node, idx) in data.automation ?? []" :key="(node as any)" :data="node" :depth="depth"
+					:parent-type="parentType" :context="[...context, idx.toString()]" />
 				<EffectAdder :context="context" :depth="depth" />
 			</VueDraggable>
-			<p
-				v-if="!noListAttack && rootType === 'root' && showControls" style="--depth: 0" class="tree-row"
-				@click="makeListAttack()"
-			>
+			<p v-if="!noListAttack && rootType === 'root' && showControls" style="--depth: 0" class="tree-row"
+				@click="makeListAttack()">
 				Add Attack to this feature
 			</p>
 		</template>
@@ -147,7 +129,7 @@ const showControls = inject<Ref<boolean>>("showControls");
 <style scoped lang="less">
 .container:first-of-type {
 	padding: 0.4rem;
-	background-color: var(--color-surface-0);
+	background-color: rgb(var(--v-theme-surface));
 	max-height: 55vh;
 	overflow-y: scroll;
 }
