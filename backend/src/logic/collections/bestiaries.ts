@@ -1,10 +1,10 @@
 import type { CollectionWithEditors } from "./collections";
-import type { CreatureMetaData, Statblock, User } from "~/shared";
+import type { Statblock, User } from "~/shared";
 import type { Bestiary, BestiaryCreateInput, BestiaryStatus, Creature } from "~/shared/src/prisma-types";
 import bestiaryTags from "@/staticData/bestiaryTags.json";
 import { checkBadwords } from "@/utilities/badwords";
 import { app, checkBestiaryLimits, checkCreatureAmountLimit, checkImageUrl, limits } from "@/utilities/constants";
-import { addBestiaryEditor, addBookmark, createBestiary, createCreatures, deleteBestiary, getBestiariesByOwner, getBestiariesByUser, getBestiary, getBestiaryCreatureCount, getBestiaryCreatureIds, getOwnedBestiaryIds, getPrismaClient, getPublicBestiariesByOwner, incrementBestiaryViewCount, isBestiaryBookmarked, removeBestiaryEditor, removeBookmark, updateBestiary, updateBestiaryCreatureIndexes, updateUserBestiaryIndexes } from "@/utilities/database";
+import { addBestiaryEditor, addBookmark, createBestiary, createCreatures, deleteBestiary, getBestiariesByOwner, getBestiariesByUser, getBestiary, getBestiaryCreatureCount, getBestiaryCreatureIds, getBestiaryFull, getOwnedBestiaryIds, getPrismaClient, getPublicBestiariesByOwner, incrementBestiaryViewCount, isBestiaryBookmarked, removeBestiaryEditor, removeBookmark, updateBestiary, updateBestiaryCreatureIndexes, updateUserBestiaryIndexes } from "@/utilities/database";
 import { log } from "@/utilities/logger";
 
 import { prepareCreatureStats } from "../creatures/creaturePreparation";
@@ -14,7 +14,7 @@ import { possibleUser, requireUser } from "../main/login";
 import { createCollectionService } from "./collections";
 
 type BestiaryWithEditors = Bestiary & CollectionWithEditors & { _count: { bookmarkedBy: number } };
-type BestiaryForUser = BestiaryWithEditors & { creatures: CreatureMetaData[]; orderedBy: { index: number }[] };
+type BestiaryForUser = BestiaryWithEditors & { creatureCount: number; orderedBy: { index: number }[] };
 
 export const bestiaryCollections = createCollectionService<BestiaryWithEditors, BestiaryForUser>({
 	getById: getBestiary,
@@ -45,7 +45,7 @@ app.get("/api/bestiary/:id", possibleUser, async (req, res) => {
 	const _id = req.params.id;
 	if (!_id)
 		return res.status(400).json({ error: "Bestiary id not valid." });
-	const bestiary = await getBestiary(_id);
+	const bestiary = await getBestiaryFull(_id);
 	if (!bestiary)
 		return res.status(404).json({ error: "No bestiary with that id found." });
 

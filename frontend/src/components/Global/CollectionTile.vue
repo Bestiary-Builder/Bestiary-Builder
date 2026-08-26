@@ -5,7 +5,7 @@ import { store } from "@/utils/store.js";
 import StatusIcon from "../Bestiary/StatusIcon.vue";
 import UserBanner from "../Bestiary/UserBanner.vue";
 
-const { data } = defineProps<{ data: AutomationCollectionExtended | BestiaryExtended }>();
+const { data } = defineProps<{ data: AutomationCollectionExtended | (BestiaryExtended & { creatureCount: number }) }>();
 
 defineEmits<{
 	(e: "deleteCollectionItem", collectionId: string): void;
@@ -87,8 +87,8 @@ const isDeleteOpen = ref(false);
 					<b>{{ data.automations.length }}</b>
 					<v-icon icon="mdi:sword-cross" size="20" />
 				</span>
-				<span v-if="'creatures' in data" class="d-flex justify-content align-items">
-					<b>{{ data.creatures.length }} </b>
+				<span v-if="'creatureCount' in data" class="d-flex justify-content align-items">
+					<b>{{ data.creatureCount }} </b>
 					<v-icon icon="mdi:paw" size="20" />
 				</span>
 				<div class="info-buttons">

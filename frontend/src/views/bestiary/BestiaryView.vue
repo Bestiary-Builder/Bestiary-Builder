@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { CreatureWithStats, Statblock } from "~/shared";
+import type { CreatureMetaData, CreatureWithStats } from "~/shared";
 import { refDebounced, useLocalStorage } from "@vueuse/core";
 import { onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
@@ -24,6 +24,8 @@ const {
 	bookmarked,
 	getCollection,
 	toggleBookmark,
+	getItem,
+	getAllItems,
 	createItem,
 	createManyItems,
 	deleteItem
@@ -65,8 +67,8 @@ const sortCreatures = () => {
 	}
 	if (sortMode.value === "Alphabetically") {
 		items.value.sort((a, b) => {
-			const nameA = a.stats.description.name.toLowerCase();
-			const nameB = b.stats.description.name.toLowerCase();
+			const nameA = a.name.toLowerCase();
+			const nameB = b.name.toLowerCase();
 			if (nameA < nameB)
 				return -1;
 			if (nameA > nameB)
@@ -76,8 +78,8 @@ const sortCreatures = () => {
 	}
 	else if (sortMode.value === "Creature Type") {
 		items.value.sort((a, b) => {
-			const nameA = a.stats.core.race.toLowerCase();
-			const nameB = b.stats.core.race.toLowerCase();
+			const nameA = a.race.toLowerCase();
+			const nameB = b.race.toLowerCase();
 			if (nameA < nameB)
 				return -1;
 			if (nameA > nameB)
@@ -87,34 +89,34 @@ const sortCreatures = () => {
 	}
 	else if (sortMode.value === "CR Descending") {
 		items.value.sort((a, b) => {
-			return b.stats.description.cr - a.stats.description.cr;
+			return b.cr - a.cr;
 		});
 	}
 	else if (sortMode.value === "CR Ascending") {
 		items.value.sort((a, b) => {
-			return a.stats.description.cr - b.stats.description.cr;
+			return a.cr - b.cr;
 		});
 	}
 
 	return items.value;
 };
 
-function filterCreature(data: CreatureWithStats) {
+function filterCreature(data: CreatureMetaData) {
 	const filterChecks: boolean[] = [];
 	if (searchTextDebounced.value !== "")
-		filterChecks.push(data.stats.description.name.toLowerCase().includes(searchTextDebounced.value.toLowerCase().trim()));
+		filterChecks.push(data.name.toLowerCase().includes(searchTextDebounced.value.toLowerCase().trim()));
 
 	if (searchOptions.value.env !== "")
-		filterChecks.push(data.stats.description.environment.toLowerCase().includes(searchOptions.value.env.toLowerCase().trim()));
+		filterChecks.push(data.environment.toLowerCase().includes(searchOptions.value.env.toLowerCase().trim()));
 
 	if (searchOptions.value.faction !== "")
-		filterChecks.push(data.stats.description.faction.toLowerCase().includes(searchOptions.value.faction.toLowerCase().trim()));
+		filterChecks.push(data.faction.toLowerCase().includes(searchOptions.value.faction.toLowerCase().trim()));
 
 	if (searchOptions.value.tags.length > 0)
-		filterChecks.push(searchOptions.value.tags.some(item => data.stats.core.race.toLowerCase().includes(item.toLowerCase())));
+		filterChecks.push(searchOptions.value.tags.some(item => data.race.toLowerCase().includes(item.toLowerCase())));
 
 	if (searchOptions.value.minCr !== 0 || searchOptions.value.maxCr !== 30)
-		filterChecks.push(searchOptions.value.minCr <= data.stats.description.cr && data.stats.description.cr <= searchOptions.value.maxCr);
+		filterChecks.push(searchOptions.value.minCr <= data.cr && data.cr <= searchOptions.value.maxCr);
 
 	return filterChecks.every(_ => _);
 }
@@ -143,11 +145,17 @@ async function exportHomebrewery() {
 }
 
 async function exportBestiary(asFile: boolean) {
+	const creatures = await getAllItems();
+	if (!creatures) {
+		addToast("Failed to export bestiary: no creatures found.", { color: "error" });
+		return;
+	}
+
 	if (asFile) {
 		const file = new File(
 			[
 				JSON.stringify(
-					items.value?.map(obj => obj.stats),
+					creatures?.map(obj => obj.stats),
 					null,
 					2
 				)
@@ -173,7 +181,7 @@ async function exportBestiary(asFile: boolean) {
 	else {
 		await navigator.clipboard.writeText(
 			JSON.stringify(
-				items.value?.map(obj => obj.stats),
+				creatures?.map(obj => obj.stats),
 				null,
 				2
 			)
@@ -186,11 +194,18 @@ async function exportBestiary(asFile: boolean) {
 type CopiedCreature = CreatureWithStats & { bestiaryName: string };
 const copiedCreatures = useLocalStorage<CopiedCreature[]>("copiedCreatures", []);
 
-const copyCurrentBestiary = () => {
+const copyCurrentBestiary = async () => {
 	if (!items.value || !collection.value)
 		return;
+
+	const creatures = await getAllItems();
+	if (!creatures) {
+		addToast("Failed to copy bestiary: no creatures found.", { color: "error" });
+		return;
+	}
+
 	const toAdd: CopiedCreature[] = [];
-	for (const creature of items.value)
+	for (const creature of creatures)
 		toAdd.push({ ...creature, bestiaryName: collection.value.name });
 
 	copiedCreatures.value = copiedCreatures.value.concat(toAdd);
@@ -199,8 +214,8 @@ const copyCurrentBestiary = () => {
 };
 
 // misc
-const lastHoveredCreature = ref<Statblock | null>(null);
-const lastClickedCreature = ref<Statblock | null>(null);
+const lastHoveredCreature = ref<CreatureWithStats | null>(null);
+const lastClickedCreature = ref<CreatureWithStats | null>(null);
 const hasPinnedBefore = ref(false);
 const isExpanded = ref(false);
 
@@ -214,13 +229,37 @@ watch(lastClickedCreature, (): void => {
 	void getUmami()?.track("Pinned creature");
 });
 
-const pinCreature = (creature: Statblock) => {
-	if (creature === lastClickedCreature.value) {
+const pinCreature = async (creature: CreatureMetaData) => {
+	const fullCreature = (await getItem(creature.id));
+	if (!fullCreature) {
+		addToast("Failed to pin creature: creature not found.", { color: "error" });
+		return;
+	}
+
+	if (fullCreature === lastClickedCreature.value) {
 		lastClickedCreature.value = null;
 	}
 	else {
-		lastClickedCreature.value = creature;
+		lastClickedCreature.value = fullCreature;
 	}
+};
+
+const copyCreature = async (creature: CreatureMetaData) => {
+	if (!collection.value)
+		return;
+
+	const fullCreature = (await getItem(creature.id));
+	if (!fullCreature) {
+		addToast("Failed to copy creature: creature not found.", { color: "error" });
+		return;
+	}
+
+	copiedCreatures.value.push({ ...fullCreature, bestiaryName: collection.value?.name });
+	addToast("Copied Successfully!");
+};
+
+const hoverCreature = async (creature: CreatureMetaData) => {
+	lastHoveredCreature.value = (await getItem(creature.id)) ?? null;
 };
 </script>
 
@@ -350,12 +389,13 @@ const pinCreature = (creature: Statblock) => {
 					<div class="tile-container list-tiles">
 						<template v-for="element, idx in sortCreatures()">
 							<CreatureListItem
-								v-if="filterCreature(element)" :id="element.id" :key="idx"
-								:data="element.stats" :can-edit="isOwner || isEditor"
-								:is-pinned="lastClickedCreature === element.stats"
-								@mouseover="lastHoveredCreature = element.stats"
-								@delete-creature="(id) => deleteItem(id)" @pin-creature="pinCreature(element.stats)"
-								@copy-creature="copiedCreatures.push({ ...element, bestiaryName: collection.name }); addToast('Copied Successfully!')"
+								v-if="element !== null && filterCreature(element)" :id="element.id" :key="idx"
+								:data="element" :can-edit="isOwner || isEditor"
+								:is-pinned="lastClickedCreature?.id === element.id"
+								@mouseover="hoverCreature(element)"
+								@delete-creature="(id) => deleteItem(id)"
+								@pin-creature="pinCreature(element)"
+								@copy-creature="copyCreature(element)"
 							/>
 						</template>
 					</div>
@@ -369,8 +409,8 @@ const pinCreature = (creature: Statblock) => {
 					</span>
 					<Transition name="fade" mode="out-in">
 						<StatblockRenderer
-							:key="lastClickedCreature?.description.name || lastHoveredCreature.description.name"
-							:data="lastClickedCreature || lastHoveredCreature" is2024
+							:key="lastClickedCreature?.stats.description.name || lastHoveredCreature.stats.description.name"
+							:data="lastClickedCreature?.stats || lastHoveredCreature?.stats" is2024
 							statblock-design="BestiaryBuilder"
 						/>
 					</Transition>

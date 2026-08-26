@@ -17,12 +17,13 @@ export type AutomationCollectionEditor = Prisma.AutomationCollectionEditorModel;
 export type UserAutomationCollectionBookmark = Prisma.UserAutomationCollectionBookmarkModel;
 
 export type CreatureWithStats = Omit<Creature, "stats"> & { stats: Statblock };
-export interface CreatureMetaData { id: Id; name: string; race: string; size: string; alignment: string | null; cr: number };
-export type BestiaryExtended = Bestiary & { creatures: CreatureMetaData[]; editors: { userId: Id }[] };
+export interface CreatureMetaData { id: Id; index: number; name: string; race: string; size: string; alignment: string | null; cr: number; environment: string; faction: string };
+export type BestiaryExtended = Bestiary & { editors: { userId: Id }[] };
+export type BestiaryFull = BestiaryExtended & { creatures: CreatureMetaData[] };
 export type BestiaryWithCount = Bestiary & { creatureCount: number };
 export type AutomationCollectionExtended = AutomationCollection & { automations: Automation[]; editors: { userId: Id }[] };
 export type AutomationCollectionWithCount = AutomationCollection & { automationCount: number };
-export type BestiaryResponse = BestiaryExtended & { permissionLevel: CollectionPermission };
+export type BestiaryResponse = BestiaryFull & { permissionLevel: CollectionPermission };
 export type CreatureResponse = CreatureWithStats & { permissionLevel: CollectionPermission };
 export type AutomationCollectionResponse = AutomationCollectionExtended & { permissionLevel: CollectionPermission };
 

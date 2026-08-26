@@ -1,5 +1,5 @@
 // types/collection.ts
-import type { AutomationCollectionResponse, AutomationWithType, BestiaryResponse, CreatureWithStats, User } from "~/shared";
+import type { AutomationCollectionResponse, AutomationWithType, BestiaryResponse, CreatureMetaData, CreatureWithStats, Id, User } from "~/shared";
 import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
@@ -20,12 +20,14 @@ interface ItemBase {
 interface CollectionTypeMap {
 	bestiary: {
 		collection: BestiaryResponse;
-		item: CreatureWithStats;
+		item: CreatureMetaData;
+		itemFull: CreatureWithStats;
 		itemRaw: CreatureWithStats["stats"];
 	};
 	automations: {
 		collection: AutomationCollectionResponse;
 		item: AutomationWithType;
+		itemFull: AutomationWithType;
 		itemRaw: Partial<AutomationWithType>;
 	};
 }
@@ -69,6 +71,7 @@ const collectionConfigs: Record<CollectionType, CollectionConfig> = {
 export const useCollection = <T extends CollectionType>(type: T) => {
 	type Collection = CollectionTypeMap[T]["collection"] & CollectionBase;
 	type Item = CollectionTypeMap[T]["item"] & ItemBase;
+	type ItemFull = CollectionTypeMap[T]["itemFull"];
 	type ItemRaw = CollectionTypeMap[T]["itemRaw"];
 
 	const config = collectionConfigs[type];
@@ -110,15 +113,12 @@ export const useCollection = <T extends CollectionType>(type: T) => {
 		initialLoading.value = false;
 
 		// Fetch items
-		await useFetch<Item[]>(`/api/${config.apiRoute}/${collection.value.id.toString()}/${config.itemsKey}`).then(async (itemResult) => {
-			if (itemResult.success) {
-				items.value = itemResult.data;
-			}
-			else {
-				items.value = null;
-				addToast(itemResult.error, { color: "error" });
-			}
-		});
+		if (type === "bestiary") {
+			items.value = (collection.value as CollectionTypeMap["bestiary"]["collection"]).creatures;
+		}
+		else if (type === "automations") {
+			items.value = (collection.value as CollectionTypeMap["automations"]["collection"]).automations;
+		}
 
 		// Fetch editors
 		editors.value = [] as User[];
@@ -211,6 +211,29 @@ export const useCollection = <T extends CollectionType>(type: T) => {
 		await getCollection();
 	};
 
+	const getItem = async (id: Id) => {
+		const { success, data: resultData, error } = await useFetch<ItemFull>(`/api/${config.itemRoute}/${id}`, "GET");
+		if (success) {
+			return resultData;
+		}
+		else {
+			addToast(error, { color: "error" });
+		}
+	};
+
+	const getAllItems = async () => {
+		if (!collection.value)
+			return undefined;
+
+		const { success, data: resultData, error } = await useFetch<ItemFull[]>(`/api/${config.apiRoute}/${collection.value.id.toString()}/${config.itemsKey}`);
+		if (success) {
+			return resultData;
+		}
+		else {
+			addToast(error, { color: "error" });
+		}
+	};
+
 	const createItem = async (data: ItemRaw, openPage = true) => {
 		const payload = {
 			[config.itemRawKey]: data,
@@ -287,6 +310,8 @@ export const useCollection = <T extends CollectionType>(type: T) => {
 		toggleBookmark,
 		addEditor,
 		removeEditor,
+		getItem,
+		getAllItems,
 		createItem,
 		createManyItems,
 		deleteItem,

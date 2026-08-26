@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { Statblock } from "~/shared";
+import type { CreatureMetaData } from "~/shared";
 import { crAsString } from "~/shared";
 
-const { data, canEdit, id, isPinned } = defineProps<{ data: Statblock; canEdit: boolean; id: string; isPinned: boolean }>();
+const { data, canEdit, id, isPinned } = defineProps<{ data: CreatureMetaData; canEdit: boolean; id: string; isPinned: boolean }>();
 const emit = defineEmits<{
 	(e: "deleteCreature", id: string): void;
 	(e: "pinCreature"): void;
@@ -14,13 +14,13 @@ const emit = defineEmits<{
 	<div class="content-tile creature-tile">
 		<div class="left-side">
 			<h3 style="color: rgb(var(--v-theme-primary))" class="font-weight">
-				{{ data.description?.name }} <span> CR {{ crAsString(data.description.cr) }}
+				{{ data.name }} <span> CR {{ crAsString(data.cr) }}
 				</span>
 			</h3>
 
-			<p>{{ data?.core?.size }} {{ data?.core?.race }}</p>
-			<p v-if="data.description.alignment">
-				{{ data?.description?.alignment }}
+			<p>{{ data.size }} {{ data.race }}</p>
+			<p v-if="data.alignment">
+				{{ data.alignment }}
 			</p>
 		</div>
 		<div class="right-side">
@@ -29,7 +29,7 @@ const emit = defineEmits<{
 				@click="emit('pinCreature')"
 			/>
 			<v-icon-btn
-				:text="`Copy ${data.description.name}`" icon="mdi:content-copy" size="24"
+				:text="`Copy ${data.name}`" icon="mdi:content-copy" size="24"
 				@click="emit('copyCreature')"
 			/>
 			<DropdownMenu v-if="canEdit">

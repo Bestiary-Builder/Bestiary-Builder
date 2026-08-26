@@ -18,14 +18,14 @@ onMounted(async () => {
 	await getBestiaries();
 });
 
-const bestiaries = ref<BestiaryExtended[]>([]);
+const bestiaries = ref<(BestiaryExtended & { creatureCount: number })[]>([]);
 
 const getBestiaries = async (shouldNotify = true) => {
 	const toastId = addToast("Loading...", { loading: true, show: shouldNotify });
-	const { success, data, error } = await useFetch(`/api/my-bestiaries`);
+	const { success, data, error } = await useFetch<(BestiaryExtended & { creatureCount: number })[]>(`/api/my-bestiaries`);
 	if (success) {
 		removeToast(toastId);
-		bestiaries.value = data as BestiaryExtended[];
+		bestiaries.value = data;
 	}
 	else {
 		bestiaries.value = [];

@@ -6,11 +6,6 @@ import { getPrismaClient } from ".";
 import { withDatabaseFallback } from "./operations";
 
 const defaultIncludes = {
-	creatures: {
-		select: {
-			id: true
-		}
-	},
 	editors: {
 		select: {
 			userId: true
@@ -18,18 +13,63 @@ const defaultIncludes = {
 	},
 	_count: {
 		select: {
+			creatures: true,
 			bookmarkedBy: true
 		}
 	}
 };
 
 // Bestiary functions
-export async function getBestiary(id: Id, includeCreatures = false) {
+export async function getBestiary(id: Id) {
 	if (!id)
 		return null;
 	return await withDatabaseFallback(async () => {
 		log.log("database", `Reading bestiary with the id ${id}.`);
-		return await getPrismaClient().bestiary.findUnique({ where: { id }, include: includeCreatures ? { ...defaultIncludes, creatures: includeCreatures } : defaultIncludes });
+		return await getPrismaClient().bestiary.findUnique({
+			where: {
+				id
+			},
+			include: defaultIncludes
+		});
+	}, null);
+}
+export async function getBestiaryFull(id: Id) {
+	if (!id)
+		return null;
+	return await withDatabaseFallback(async () => {
+		log.log("database", `Reading bestiary with the id ${id}.`);
+		return await getPrismaClient().bestiary.findUnique({
+			where: {
+				id
+			},
+			include: {
+				...defaultIncludes,
+				creatures: {
+					select: {
+						id: true,
+						index: true,
+						stats: true,
+					}
+				}
+			}
+		}).then(bestiary => (bestiary != null
+			? {
+					...bestiary,
+					creatures: bestiary?.creatures.map(creature =>
+						({
+							id: creature.id,
+							name: creature.stats.description.name,
+							alignment: creature.stats.description.alignment,
+							cr: creature.stats.description.cr,
+							size: creature.stats.core.size,
+							race: creature.stats.core.race,
+							environment: creature.stats.description.environment,
+							faction: creature.stats.description.faction,
+						})
+					)
+				}
+			: null
+		));
 	}, null);
 }
 export async function getBestiaryMetaData(id: Id) {
@@ -105,29 +145,9 @@ export async function getBestiariesByUser(userId: string) {
 			include: {
 				...defaultIncludes,
 				orderedBy: { where: { userId } },
-				creatures: {
-					select: {
-						id: true,
-						stats: true
-					}
-				},
 			},
 		});
-	}, [])).map(bestiary => (
-		{
-			...bestiary,
-			creatures: bestiary.creatures.map(creature =>
-				({
-					id: creature.id,
-					name: creature.stats.description.name,
-					alignment: creature.stats.description.alignment,
-					cr: creature.stats.description.cr,
-					size: creature.stats.core.size,
-					race: creature.stats.core.race
-				})
-			)
-		}
-	));
+	}, [])).map(bestiary => ({ ...bestiary, creatureCount: bestiary._count.creatures }));
 }
 
 export async function getBestiariesByOwner(userId: string) {
