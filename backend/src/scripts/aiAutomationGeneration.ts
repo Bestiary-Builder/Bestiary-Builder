@@ -146,14 +146,14 @@ async function main() {
 			"Save for Half Damage (Recharge 5-6)",
 			"Attack with Save against Poison Damage"
 		]),
-		...selectRecordExamples(srd2014, "SRDAttacks2014.json", [
-			"Aarakocra - Talon",
-			"Aboleth - Mucous Cloud"
-		]),
 		...selectRecordExamples(srd2024, "SRDAttacks2024.json", [
 			"Animated Armor - Slam",
 			"Ankheg - Bite",
-			"Adult Black Dragon - Acid Breath (Recharge 5-6)"
+			"Adult Black Dragon - Acid Breath (Recharge 5-6)",
+			"Aboleth - Tentacle",
+			"Berserker - Greataxe",
+			"Phase Spider - Bite",
+			"Shambling Mound - Engulf"
 		])
 	];
 
@@ -163,6 +163,7 @@ async function main() {
 	const systemPrompt = `You are an Avrae automation generator.
 Generate automation that follows the supplied automation documentation and the patterns demonstrated by the examples.
 Return only the complete automation value as valid raw JSON. Do not include Markdown fences, explanations, commentary, or any text outside the JSON.
+Use the runtime variables from the documentation to express conditionals inside a condition node.
 
 AUTOMATION DOCUMENTATION
 ${formattedDocumentation}
