@@ -36,7 +36,7 @@ onMounted(async () => {
 	const toastId = addToast("Loading...", { loading: true });
 	await getCollection();
 	if (collection.value && (isOwner.value || isEditor.value))
-		$router.push(`/bestiary/edit/${collection.value.id}`);
+		await $router.push(`/bestiary/edit/${collection.value.id}`);
 	removeToast(toastId);
 
 	if (collection.value?.name)
@@ -348,12 +348,13 @@ const pinCreature = (creature: Statblock) => {
 					</div>
 					<v-skeleton-loader v-if="items === null" type="heading, text, text" />
 					<div class="tile-container list-tiles">
-						<template v-for="element in sortCreatures()">
+						<template v-for="element, idx in sortCreatures()">
 							<CreatureListItem
-								v-if="filterCreature(element)" :id="element.id" :data="element.stats"
-								:can-edit="isOwner || isEditor" :is-pinned="lastClickedCreature === element.stats"
-								@mouseover="lastHoveredCreature = element.stats" @delete-creature="(id) => deleteItem(id)"
-								@pin-creature="pinCreature(element.stats)"
+								v-if="filterCreature(element)" :id="element.id" :key="idx"
+								:data="element.stats" :can-edit="isOwner || isEditor"
+								:is-pinned="lastClickedCreature === element.stats"
+								@mouseover="lastHoveredCreature = element.stats"
+								@delete-creature="(id) => deleteItem(id)" @pin-creature="pinCreature(element.stats)"
 								@copy-creature="copiedCreatures.push({ ...element, bestiaryName: collection.name }); addToast('Copied Successfully!')"
 							/>
 						</template>

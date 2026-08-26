@@ -87,9 +87,9 @@ const fetchCharacters = async () => {
 	loading.value = false;
 };
 
-const handleMenuOpen = (isOpen: boolean) => {
+const handleMenuOpen = async (isOpen: boolean) => {
 	if (isOpen && !hasFetched.value) {
-		fetchCharacters();
+		await fetchCharacters();
 		hasFetched.value = true;
 	}
 };
@@ -99,7 +99,6 @@ const selectedCharacterData = ref<null | AvraeCharacter>(null);
 watch(() => selectedCharacter.value, async () => {
 	if (selectedCharacter.value)
 		selectedCharacterData.value = await getAvraeCharacterByUpstream(selectedCharacter.value);
-	console.log(selectedCharacterData.value);
 });
 
 const selectedAttack = ref();
@@ -118,9 +117,9 @@ watch(() => selectedAttack.value, () => {
 		<v-card class="text-center pa-4">
 			<v-card-text>
 				<v-autocomplete
-					:items="loadedAutomation.srdFeatures" label="Import SRD Feature"
-					variant="solo-filled"
-					class="w-100" clearable @update:model-value="selected => (selectAndLoad(`srd-features/${store.user?.SRDVersion === 'SRD_2024' ? '2024' : '2014'}`, selected || ''))"
+					:items="loadedAutomation.srdFeatures" label="Import SRD Feature" variant="solo-filled"
+					class="w-100" clearable
+					@update:model-value="selected => (selectAndLoad(`srd-features/${store.user?.SRDVersion === 'SRD_2024' ? '2024' : '2014'}`, selected || ''))"
 				>
 					<template #item="{ props, item }">
 						<v-list-item v-bind="props" density="compact" style="min-height: 28px">
@@ -142,8 +141,7 @@ watch(() => selectedAttack.value, () => {
 				</v-autocomplete>
 				<v-autocomplete
 					:items="loadedAutomation.myAutomation" item-title="name" item-value="id"
-					label="Select From subscribed Automations " return-object
-					variant="solo-filled"
+					label="Select From subscribed Automations " return-object variant="solo-filled"
 					@update:model-value="(selected) => selected && selectAndLoad('automation', selected.name, selected.id)"
 				>
 					<template #item="{ props, item }">
@@ -174,8 +172,8 @@ watch(() => selectedAttack.value, () => {
 				</div>
 				<v-select
 					v-if="selectedCharacterData" v-model="selectedAttack" variant="solo-filled"
-					:items="selectedCharacterData.overrides.attacks" class="mt-4" item-title="name" label="Choose Character Attack"
-					return-object
+					:items="selectedCharacterData.overrides.attacks" class="mt-4" item-title="name"
+					label="Choose Character Attack" return-object
 					@update:model-value="(selected) => selected && emit('loadFeature', { name: selected.name, description: '', automation: selected }, 'automation')"
 				/>
 			</v-card-text>

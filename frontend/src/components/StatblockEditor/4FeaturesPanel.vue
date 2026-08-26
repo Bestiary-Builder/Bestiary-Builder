@@ -51,7 +51,7 @@ const createNewFeature = (type: keyof Features) => {
 					v-model="data.features[fType]" group="features" :animation="150" tag="tbody"
 					handle=".handle"
 				>
-					<tr v-for="element, index in data.features[fType]">
+					<tr v-for="element, index in data.features[fType]" :key="index">
 						<td>
 							<v-icon icon="material-symbols:drag-indicator" class="handle" size="24" />
 						</td>
@@ -59,8 +59,8 @@ const createNewFeature = (type: keyof Features) => {
 						<td class="edit-buttons">
 							<div>
 								<v-icon-btn
-									icon="mdi:pencil" text="Edit this feature"
-									size="20" @click="openFeature(`${rawInfo?.id}/${fType}/${index}`)"
+									icon="mdi:pencil" text="Edit this feature" size="20"
+									@click="openFeature(`${rawInfo?.id}/${fType}/${index}`)"
 								/>
 								<DropdownMenu>
 									<template #activator="{ props }">

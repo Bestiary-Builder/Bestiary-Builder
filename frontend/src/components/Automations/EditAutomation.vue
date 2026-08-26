@@ -186,8 +186,8 @@ const currentDocu = computed(() => docu.value[currentContext.value]);
 				<hr>
 				<h4>Options</h4>
 				<ul>
-					<li v-for="(info, name) in currentDocu.opt" :key="name">
-						<span class="highlight">{{ name }}</span>
+					<li v-for="(info, title) in currentDocu.opt" :key="title">
+						<span class="highlight">{{ title }}</span>
 						<Markdown :text="info" />
 					</li>
 				</ul>
@@ -196,8 +196,8 @@ const currentDocu = computed(() => docu.value[currentContext.value]);
 				<hr>
 				<h4>Exposed Variables</h4>
 				<ul>
-					<li v-for="(info, name) in currentDocu.variables" :key="name">
-						<span class="highlight">{{ name }}</span>
+					<li v-for="(info, title) in currentDocu.variables" :key="title">
+						<span class="highlight">{{ title }}</span>
 						[<code>{{ info.type }}</code>]
 						<Markdown :text="info.desc" />
 					</li>

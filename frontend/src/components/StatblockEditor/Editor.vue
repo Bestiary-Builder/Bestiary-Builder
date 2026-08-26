@@ -355,63 +355,6 @@ function toggleHeading(
 	);
 }
 
-function toggleHanging(
-	editor: Monaco.editor.IStandaloneCodeEditor,
-	level: number
-) {
-	const model = editor.getModel();
-	const selection = editor.getSelection();
-
-	if (!model || !selection)
-		return;
-
-	const startLine = selection.startLineNumber;
-	const endLine = selection.endLineNumber;
-
-	const prefix = `${"#".repeat(level)} `;
-
-	const edits = [];
-
-	for (let line = startLine; line <= endLine; line++) {
-		const text = model.getLineContent(line);
-
-		// Match existing heading
-		const match = text.match(/^#{1,4}\s+/);
-
-		let newText: string;
-
-		if (match) {
-			const existingPrefix = match[0];
-
-			// Same heading level -> remove heading
-			if (existingPrefix === prefix)
-				newText = text.slice(existingPrefix.length);
-			// Different level -> replace heading
-			else
-				newText = prefix + text.slice(existingPrefix.length);
-		}
-		// No heading -> add one
-		else {
-			newText = prefix + text;
-		}
-
-		edits.push({
-			range: {
-				startLineNumber: line,
-				startColumn: 1,
-				endLineNumber: line,
-				endColumn: model.getLineMaxColumn(line),
-			},
-			text: newText,
-		});
-	}
-
-	editor.executeEdits(
-		"toggle-heading",
-		edits
-	);
-}
-
 const wrapper = useTemplateRef("wrapper");
 const { width } = useElementSize(wrapper);
 watchDebounced(width, async () => {
@@ -437,8 +380,8 @@ watchDebounced(width, async () => {
 				@click="toggleOrderedList(editorRef!)"
 			/>
 			<v-icon-btn
-				v-tooltip="'Makes everything but the first line indented as a \'hanging\' list.'" size="20" icon="mdi-format-indent-increase"
-				text="Ordered list"
+				v-tooltip="'Makes everything but the first line indented as a \'hanging\' list.'" size="20"
+				icon="mdi-format-indent-increase" text="Ordered list"
 				@click="toggleLineSuffix(editorRef!, ' {.hanging}')"
 			/>
 			<v-divider vertical />
@@ -448,7 +391,7 @@ watchDebounced(width, async () => {
 			<v-icon-btn size="20" icon="mdi:format-header-4" text="Heading 4" @click="toggleHeading(editorRef!, 4)" />
 		</div>
 		<VueMonacoEditor
-			ref="editor" v-model:value="model" theme="vs-dark"
+			v-model:value="model" theme="vs-dark"
 			:options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false, lineNumbers: 'off' }"
 			class="description-editor" :height="`${height}px`" width="100%" language="markdown" @mount="handleMount"
 		/>

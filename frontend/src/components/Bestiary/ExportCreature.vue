@@ -102,7 +102,7 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 			/>
 		</template>
 
-		<template #default="{ isActive }">
+		<template #default>
 			<v-card class="text-center pa-4" title="Export bestiary">
 				<v-card-actions class="d-flex flex-column align-center justify-center" min-width="200">
 					<v-btn class="w-100" color="success" size="large" @click="exportStatblockToClipBoard()">

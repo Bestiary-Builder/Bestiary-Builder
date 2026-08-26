@@ -41,9 +41,9 @@ const importManyCreatures = () => {
 
 <template>
 	<DropdownMenu>
-		<template #activator="{ props }">
+		<template #activator="{ dropdownProps }">
 			<v-icon-btn
-				v-tooltip="'Manage copies'" icon="mdi:content-copy" v-bind="props" text="Manage copies"
+				v-tooltip="'Manage copies'" icon="mdi:content-copy" v-bind="dropdownProps" text="Manage copies"
 				size="24"
 			/>
 		</template>

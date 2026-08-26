@@ -244,7 +244,7 @@ const importCritterDB = async () => {
 
 const importCreatureFromUserInput = async () => {
 	if (importType.value === "5e Tools JSON")
-		import5etools();
+		await import5etools();
 	if (importType.value === "Bestiary Builder JSON")
 		await importBestiaryBuilder();
 	if (importType.value === "CritterDB Creature link")
@@ -281,8 +281,8 @@ const importCreature = async (creature: Statblock) => {
 			]"
 		>
 			<v-icon-btn
-				v-if="madeChanges && (isOwner || isEditor)" v-tooltip="'Save Creature (CTRL+S)'" icon="mdi:content-save"
-				text="Save creature" :class="{ inverted: !isSavingStatblock }" size="24"
+				v-if="madeChanges && (isOwner || isEditor)" v-tooltip="'Save Creature (CTRL+S)'"
+				icon="mdi:content-save" text="Save creature" :class="{ inverted: !isSavingStatblock }" size="24"
 				:loading="isSavingStatblock" @click="saveStatblock()"
 			/>
 
@@ -393,7 +393,7 @@ const importCreature = async (creature: Statblock) => {
 									<v-tabs-window-item :value="3">
 										<v-sheet color="surface-1" class="pa-4">
 											<StatsPanel :data="data" />
-										</v-sheet color="surface-1">
+										</v-sheet>
 									</v-tabs-window-item>
 									<v-tabs-window-item :value="4">
 										<v-sheet color="surface-1" class="pa-4">

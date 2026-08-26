@@ -232,7 +232,7 @@ async function importBestiaryFromCritterDB() {
 			return;
 		}
 	}
-	catch (e) {
+	catch {
 		addToast("Something went wrong...", { color: "error" });
 		return;
 	}
@@ -279,7 +279,6 @@ async function importBestiaryFromCritterDB() {
 
 async function importCreaturesFromBestiaryBuilder() {
 	let creaturesToImport;
-	console.log(importFields.bestiaryBuilderJson);
 	if (!importFields.bestiaryBuilderJson) {
 		addToast("No JSON given", { color: "error" });
 		return;
@@ -287,7 +286,6 @@ async function importCreaturesFromBestiaryBuilder() {
 	try {
 		const reader = new FileReader();
 		reader.onload = async () => {
-			console.log(reader.result);
 			creaturesToImport = JSON.parse(reader.result as string || "");
 
 			if (!Array.isArray(creaturesToImport))
@@ -315,7 +313,7 @@ async function importCreaturesFromBestiaryBuilder() {
 		};
 		reader.readAsText(importFields.bestiaryBuilderJson);
 	}
-	catch (e) {
+	catch {
 		addToast("Something is wrong with the format of your JSON", { color: "error" });
 	}
 }
@@ -675,8 +673,8 @@ const pinCreature = (creature: Statblock) => {
 							<CreatureListItem
 								v-if="filterCreature(element)" :id="element.id" :data="element.stats"
 								:can-edit="isOwner || isEditor" :is-pinned="lastClickedCreature === element.stats"
-								@mouseover="lastHoveredCreature = element.stats" @delete-creature="(id) => deleteItem(id)"
-								@pin-creature="pinCreature(element.stats)"
+								@mouseover="lastHoveredCreature = element.stats"
+								@delete-creature="(id) => deleteItem(id)" @pin-creature="pinCreature(element.stats)"
 								@copy-creature="copiedCreatures.push({ ...element, bestiaryName: collection.name }); addToast('Copied Successfully!')"
 							/>
 						</template>
@@ -744,10 +742,7 @@ const pinCreature = (creature: Statblock) => {
 		</v-card>
 	</v-dialog>
 
-	<v-fab
-		icon="mdi:plus" location="bottom end" app color="primary" size="large"
-		@click="newCreatureIsOpen = true"
-	/>
+	<v-fab icon="mdi:plus" location="bottom end" app color="primary" size="large" @click="newCreatureIsOpen = true" />
 </template>
 
 <style lang="less">

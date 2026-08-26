@@ -5,7 +5,7 @@ import { computed, ref, watchEffect } from "vue";
 import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 
-const { isLessWide = false, routes } = defineProps<{ routes: links; isLessWide?: boolean }>();
+const { routes } = defineProps<{ routes: links }>();
 
 const { addToast } = useToast();
 

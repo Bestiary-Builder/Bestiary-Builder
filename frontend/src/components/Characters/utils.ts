@@ -28,7 +28,6 @@ export const getAvraeCharacters = async () => {
 		});
 	}
 	else {
-		console.log(error);
 		if (error === "invalid credentials")
 			updateToast(toasterId, { text: "No Avrae Token Set", color: "error" });
 		else

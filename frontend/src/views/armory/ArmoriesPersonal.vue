@@ -2,7 +2,6 @@
 import type { AutomationCollectionExtended } from "~/shared";
 import { onMounted, reactive, ref, toValue } from "vue";
 import { VueDraggable } from "vue-draggable-plus";
-import { useRouter } from "vue-router";
 import { useRules } from "vuetify/labs/rules";
 import CollectionTile from "@/components/Global/CollectionTile.vue";
 import { getUmami } from "@/utils/app/analytics";
@@ -10,7 +9,6 @@ import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 
-const $router = useRouter();
 const { addToast } = useToast();
 
 const automationCollections = ref<AutomationCollectionExtended[]>([]);
@@ -19,8 +17,6 @@ const getMyCollections = async () => {
 	if (success)
 		automationCollections.value = data;
 	else addToast(error, { color: "error" });
-
-	console.log(success, data, error);
 };
 
 const createOptions = reactive({
@@ -39,7 +35,7 @@ const resetCreateInput = () => {
 };
 
 const createAutomationCollection = async () => {
-	const { success, data, error } = await useFetch<AutomationCollectionExtended>("/api/automation-collection/add", "POST", toValue(createOptions));
+	const { success, error } = await useFetch<AutomationCollectionExtended>("/api/automation-collection/add", "POST", toValue(createOptions));
 
 	if (success) {
 		addToast("Created automation collection", { color: "success" });
@@ -66,7 +62,7 @@ const deleteAutomationCollection = async (id: AutomationCollectionExtended["id"]
 
 	if (success) {
 		addToast("Deleted automation collection");
-		getUmami()?.track("Delete automation collection");
+		void getUmami()?.track("Delete automation collection");
 		await getMyCollections();
 	}
 	else {
@@ -98,8 +94,8 @@ const newCollectionIsOpen = ref(false);
 		]"
 	>
 		<v-icon-btn
-			v-tooltip="'Create new Automation Collection'" icon="mdi:plus" label="Create new Automation Collection"
-			class="inverted" size="24" @click="newCollectionIsOpen = true"
+			v-tooltip="'Create new Automation Collection'" icon="mdi:plus"
+			label="Create new Automation Collection" class="inverted" size="24" @click="newCollectionIsOpen = true"
 		/>
 	</Breadcrumbs>
 	<div class="content">
@@ -107,11 +103,8 @@ const newCollectionIsOpen = ref(false);
 			v-model="automationCollections" :animation="150" class="tile-container"
 			:handle="store.isMobile ? '.handle' : ''" @update="saveOrder"
 		>
-			<RouterLink v-for="element, idx, in automationCollections" :to="`/armory/edit/${element.id}`">
-				<CollectionTile
-					:key="idx" :data="element"
-					@delete-collection-item="(id) => deleteAutomationCollection(id)"
-				/>
+			<RouterLink v-for="element, idx, in automationCollections" :key="idx" :to="`/armory/edit/${element.id}`">
+				<CollectionTile :data="element" @delete-collection-item="(id) => deleteAutomationCollection(id)" />
 			</RouterLink>
 		</VueDraggable>
 		<v-fab

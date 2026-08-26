@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { AttackModel, AutomationWithType } from "~/shared";
-import { refDebounced, useLocalStorage } from "@vueuse/core";
+import { useLocalStorage } from "@vueuse/core";
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useRules } from "vuetify/labs/rules";
 import StatusIcon from "@/components/Bestiary/StatusIcon.vue";
@@ -21,19 +21,16 @@ const {
 	editors,
 	isOwner,
 	isEditor,
-	bookmarked,
 	notices,
 	getCollection,
 	updateCollection,
-	toggleBookmark,
 	addEditor,
 	removeEditor,
 	createItem,
-	createManyItems,
 	deleteItem
 } = useCollection("automations");
 
-const { addToast, updateToast, removeToast } = useToast();
+const { addToast, removeToast } = useToast();
 const rules = useRules();
 
 onMounted(async () => {
@@ -45,7 +42,6 @@ onMounted(async () => {
 });
 
 const searchText = ref("");
-const searchTextDebounced = refDebounced(searchText, 500, { maxWait: 1000 });
 
 const searchOptions = ref({
 	tags: [] as string[],
@@ -56,47 +52,6 @@ const searchOptions = ref({
 });
 
 const sortMode = useLocalStorage("sortModeForAutomations", "Alphabetically");
-
-const sortAutomations = () => {
-	if (!items.value)
-		return;
-	if (sortMode.value === "Custom") {
-		// Do nothing, order as recieved
-		return items.value;
-	}
-	if (sortMode.value === "Alphabetically") {
-		items.value.sort((a, b) => {
-			const nameA = a.name.toLowerCase();
-			const nameB = b.name.toLowerCase();
-			if (nameA < nameB)
-				return -1;
-			if (nameA > nameB)
-				return 1;
-			return 0;
-		});
-	}
-	else if (sortMode.value === "Creature Type") {
-		items.value.sort((a, b) => {
-			const nameA = (Array.isArray(a.automation) ? a.automation[0]?.activation_type : a.automation?.activation_type) ?? 0;
-			const nameB = (Array.isArray(b.automation) ? b.automation[0]?.activation_type : b.automation?.activation_type) ?? 0;
-			if (nameA < nameB)
-				return -1;
-			if (nameA > nameB)
-				return 1;
-			return 0;
-		});
-	}
-
-	return items.value;
-};
-
-function filterAutomations(data: AutomationWithType) {
-	const filterChecks: boolean[] = [];
-	if (searchTextDebounced.value !== "")
-		filterChecks.push(data.name.toLowerCase().includes(searchTextDebounced.value.toLowerCase().trim()));
-
-	return filterChecks.every(_ => _);
-}
 
 async function exportCollection(asFile: boolean) {
 	if (asFile) {
@@ -154,17 +109,6 @@ watch(() => collection.value?.name, (): void => {
 	if (collection.value?.name)
 		document.title = `${collection.value?.name.substring(0, 16)} | Bestiary Builder`;
 });
-
-const getAutomationInformation = (data: AutomationWithType["automation"], key: keyof AttackModel, fallback: string | number) => {
-	if (!data)
-		return fallback;
-
-	if (Array.isArray(data)) {
-		data = data[0];
-	}
-
-	return data[key] ?? fallback;
-};
 
 const getActivationType = (automation: AttackModel | AttackModel[] | null): number => {
 	if (automation === null)
@@ -232,8 +176,8 @@ const activationTypeOptions = computed(() => {
 			]"
 		>
 			<v-icon-btn
-				v-tooltip="'Create creature'" text="Create creature" icon="mdi:plus"
-				size="24" class="inverted" @click="createNewActionOpen = !createNewActionOpen"
+				v-tooltip="'Create creature'" text="Create creature" icon="mdi:plus" size="24" class="inverted"
+				@click="createNewActionOpen = !createNewActionOpen"
 			/>
 
 			<v-dialog v-if="isOwner" max-width="950">
@@ -524,8 +468,7 @@ const activationTypeOptions = computed(() => {
 				<v-row>
 					<v-col>
 						<v-text-field
-							v-model="createOptions.name"
-							label="Name"
+							v-model="createOptions.name" label="Name"
 							:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 3)]"
 						/>
 					</v-col>
@@ -550,10 +493,7 @@ const activationTypeOptions = computed(() => {
 			</v-card-actions>
 		</v-card>
 	</v-dialog>
-	<v-fab
-		icon="mdi:plus" location="bottom end" app color="primary" size="large"
-		@click="createNewActionOpen = true"
-	/>
+	<v-fab icon="mdi:plus" location="bottom end" app color="primary" size="large" @click="createNewActionOpen = true" />
 </template>
 
 <style lang="less" scoped>

@@ -95,7 +95,7 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 		}
 
 		else {
-			// @ts-ignore
+			// @ts-expect-error TS Magic
 			(currentEffect!.value as any).effects[key] = typeof val === "string" ? val : val?.value ?? null;
 		}
 	},
@@ -200,8 +200,8 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 			<v-col cols="6">
 				<v-autocomplete
 					:items="filteredPassiveEffects" item-title="label" label="New Passive Effect"
-					return-object prepend-icon="mdi:plus"
-					icon-color="primary" item-color="primary" @update:model-value="(e: PassiveEffectDef | null) => addNewPassiveEffect(e)"
+					return-object prepend-icon="mdi:plus" icon-color="primary" item-color="primary"
+					@update:model-value="(e: PassiveEffectDef | null) => addNewPassiveEffect(e)"
 				/>
 			</v-col>
 		</v-row>

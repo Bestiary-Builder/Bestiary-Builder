@@ -68,7 +68,7 @@ const deleteBestiary = async (id: BestiaryExtended["id"]) => {
 	const { success, error } = await useFetch(`/api/bestiary/${id}/delete`);
 	if (success) {
 		addToast("Deleted bestiary succesfully", { color: "success" });
-		getUmami()?.track("Delete bestiary");
+		void getUmami()?.track("Delete bestiary");
 	}
 	else {
 		addToast(error, { color: "error" });
@@ -106,8 +106,8 @@ const newBestiaryIsOpen = ref(false);
 			v-if="bestiaries.length > 0" v-model="bestiaries" :animation="150" class="tile-container"
 			:handle="store.isMobile ? '.handle' : ''" @update="saveOrder"
 		>
-			<RouterLink v-for="element, idx, in bestiaries" :to="`/bestiary/edit/${element.id}`">
-				<CollectionTile :key="idx" :data="element" @delete-collection-item="(id) => deleteBestiary(id)" />
+			<RouterLink v-for="element, idx, in bestiaries" :key="idx" :to="`/bestiary/edit/${element.id}`">
+				<CollectionTile :data="element" @delete-collection-item="(id) => deleteBestiary(id)" />
 			</RouterLink>
 		</VueDraggable>
 		<div v-else class="zero-found">

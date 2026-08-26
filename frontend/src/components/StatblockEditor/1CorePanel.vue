@@ -56,7 +56,7 @@ const addNewSense = (newSenseName: string) => {
 				</tr>
 			</thead>
 			<VueDraggable v-model="data.core.speed" :animation="150" tag="tbody" handle=".handle">
-				<tr v-for="element, idx in data.core.speed">
+				<tr v-for="element, idx in data.core.speed" :key="idx">
 					<td>
 						<v-icon icon="material-symbols:drag-indicator" class="handle" size="24" />
 					</td>
@@ -100,8 +100,8 @@ const addNewSense = (newSenseName: string) => {
 								</v-card>
 							</DropdownMenu>
 							<v-icon-btn
-								icon="mdi:delete" text="Remove this speed" size="20"
-								color="primary" @click="data.core.speed.splice(idx, 1)"
+								icon="mdi:delete" text="Remove this speed" size="20" color="primary"
+								@click="data.core.speed.splice(idx, 1)"
 							/>
 						</div>
 					</td>
@@ -139,7 +139,7 @@ const addNewSense = (newSenseName: string) => {
 				</tr>
 			</thead>
 			<VueDraggable v-model="data.core.senses" :animation="150" tag="tbody" handle=".handle">
-				<tr v-for="element, idx in data.core.senses">
+				<tr v-for="element, idx in data.core.senses" :key="idx">
 					<td>
 						<v-icon icon="material-symbols:drag-indicator" class="handle" size="24" />
 					</td>
@@ -183,8 +183,8 @@ const addNewSense = (newSenseName: string) => {
 								</v-card>
 							</DropdownMenu>
 							<v-icon-btn
-								icon="mdi:delete" text="Remove this sense" size="20"
-								color="primary" @click="data.core.senses.splice(idx, 1)"
+								icon="mdi:delete" text="Remove this sense" size="20" color="primary"
+								@click="data.core.senses.splice(idx, 1)"
 							/>
 						</div>
 					</td>
@@ -195,9 +195,8 @@ const addNewSense = (newSenseName: string) => {
 		<v-row class="my-8">
 			<v-col>
 				<v-combobox
-					v-model="newSense"
-					:items="['Darkvision', 'Blindsight', 'Truesight', 'Tremorsense']" label="Select sense to add" hint="Supports custom senses" persistent-hint
-					density="compact"
+					v-model="newSense" :items="['Darkvision', 'Blindsight', 'Truesight', 'Tremorsense']"
+					label="Select sense to add" hint="Supports custom senses" persistent-hint density="compact"
 				/>
 			</v-col>
 			<v-col>

@@ -26,7 +26,7 @@ const currentDocu = computed(() => {
 		<p> Select documentation to view:</p>
 		<div>
 			<select v-model="selectedDocu" class="ghost">
-				<option v-for="key of Object.keys(defaultNodes)">
+				<option v-for="key of Object.keys(defaultNodes)" :key="key">
 					{{ key }}
 				</option>
 			</select>

@@ -39,8 +39,8 @@ const rules = useRules();
 			</v-col>
 			<v-col cols="4">
 				<v-combobox v-model="data.core.race" :items="creatureTypes" label="Type" />
-			</v-col cols="4">
-			<v-col>
+			</v-col>
+			<v-col cols="4">
 				<v-combobox v-model="data.description.alignment" :items="alignments" label="Alignment" />
 			</v-col>
 			<v-col cols="4">

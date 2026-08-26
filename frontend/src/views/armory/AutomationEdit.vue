@@ -16,8 +16,6 @@ import { parseDescIntoAutomation } from "~/shared";
 
 const $router = useRouter();
 const $route = useRoute();
-const type = $route.params.type as keyof Features;
-const aid = $route.params.aid as any;
 const data = ref<AutomationWithType>();
 const collection = ref<AutomationCollectionExtended | null>(null);
 
@@ -270,9 +268,8 @@ const updateFeatureDescFromAutomationDesc = () => {
 		return;
 	for (let i = (auto.automation || []).length - 1; i >= 0; i--) {
 		const field = auto.automation[i];
-		if (field.type === "text" && data.value) {
-			// @ts-ignore
-			data.value.features[type][aid].description = field.text;
+		if (field.type === "text" && data.value && typeof (field.text) === "string") {
+			data.value.description = field.text;
 			return;
 		}
 	}
@@ -301,8 +298,7 @@ const getAutomationDescription = (): string | boolean => {
 		return false;
 	for (let i = auto.automation.length - 1; i >= 0; i--) {
 		const field = auto.automation[i];
-		if (field?.type === "text") {
-			// @ts-ignore
+		if (field?.type === "text" && typeof (field.text) === "string") {
 			return field.text;
 		}
 	}
@@ -374,6 +370,7 @@ const setDesc = (setDesc: string) => {
 provide("setActionName", setName);
 provide("setActionDescription", setDesc);
 
+// TODO
 const makeGvar = async () => {
 	console.log("run this");
 	const { success, data: aAdata, error } = await useFetch("/api/character/makeattackgvar", "POST", data.value?.automation);
@@ -382,74 +379,57 @@ const makeGvar = async () => {
 </script>
 
 <template>
-	<Breadcrumbs
-		:routes="[
-			{
-				path: isOwner || isEditor ? `/armory/edit/${collection?.id}` : `/armory/view/${collection?.id}`,
-				text: collection?.name || '',
-				isCurrent: false
-			},
-			{
-				path: '',
-				text: data?.name,
-				isCurrent: true
-			}
-		]"
-	>
-		<v-icon-btn
-			v-if="madeChanges && (isOwner || isEditor)" v-tooltip="'Save feature (CTRL+S)'" icon="mdi:content-save"
-			text="Save creature" :class="{ inverted: !isSavingCreature }" size="24" :loading="isSavingCreature"
-			@click="saveAutomation(true)"
-		/>
+	<Breadcrumbs :routes="[
+		{
+			path: isOwner || isEditor ? `/armory/edit/${collection?.id}` : `/armory/view/${collection?.id}`,
+			text: collection?.name || '',
+			isCurrent: false
+		},
+		{
+			path: '',
+			text: data?.name,
+			isCurrent: true
+		}
+	]">
+		<v-icon-btn v-if="madeChanges && (isOwner || isEditor)" v-tooltip="'Save feature (CTRL+S)'"
+			icon="mdi:content-save" text="Save creature" :class="{ inverted: !isSavingCreature }" size="24"
+			:loading="isSavingCreature" @click="saveAutomation(true)" />
 		<v-icon-btn
 			v-tooltip="'Generate automation from description. May be incomplete or inaccurate. Only works for basic, to hit attacks.'"
 			icon="fa7-solid:wand-sparkles"
-			text="Generate automation from description. May be incomplete or inaccurate. Only works for basic, to hit attacks." size="24"
-			@click="generateAutomation"
-		/>
-		<v-icon-btn
-			v-tooltip="'Change editor'" size="24" icon="mdi:code-block-braces"
-			text="Change editor" @click="EditAutomationRef?.toggleEditor()"
-		/>
+			text="Generate automation from description. May be incomplete or inaccurate. Only works for basic, to hit attacks."
+			size="24" @click="generateAutomation" />
+		<v-icon-btn v-tooltip="'Change editor'" size="24" icon="mdi:code-block-braces" text="Change editor"
+			@click="EditAutomationRef?.toggleEditor()" />
 		<ImportAutomationUtil @load-feature="(feature, apiPath) => loadFeature(feature, apiPath)" />
 		<ImportToCharacter :automation="data?.automation || null" />
-		<v-icon-btn
-			v-if="data && store.isMobile" v-tooltip="'Clear automation'" icon="mdi:delete"
-			text="Clear automation" size="24" @click="data.automation = null"
-		/>
-		<v-icon-btn
-			v-if="data && store.isMobile" v-tooltip="'Copy automation'" icon="mdi:content-copy"
-			text="Copy automation" size="24" @click="EditAutomationRef?.copyAutomation()"
-		/>
+		<v-icon-btn v-if="data && store.isMobile" v-tooltip="'Clear automation'" icon="mdi:delete"
+			text="Clear automation" size="24" @click="data.automation = null" />
+		<v-icon-btn v-if="data && store.isMobile" v-tooltip="'Copy automation'" icon="mdi:content-copy"
+			text="Copy automation" size="24" @click="EditAutomationRef?.copyAutomation()" />
 	</Breadcrumbs>
 	<div v-if="data" class="content">
 		<div class="pa-0">
 			<v-row>
 				<v-col cols="4">
-					<v-text-field
-						v-model="data.name" type="text" label="Feature name"
+					<v-text-field v-model="data.name" type="text" label="Feature name"
 						:minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength" variant="outlined"
-						hide-details
-					/>
+						hide-details />
 					<span v-if="isVisualEditor">
 						<input v-model="parityOptions.updateName" type="checkbox" style="scale: .7; translate: 0 4px">
 						<small style="font-size: x-small;"> <i>Updates the name of the first action in the automation
-							structure to this text while enabled.</i> </small>
+								structure to this text while enabled.</i> </small>
 					</span>
 
 					<div v-if="!isVisualEditor && showDescriptionButtons" class="mt-4">
 						<b class="mt-4"> Descriptions: </b>
 						<span style="color: rgb(var(--v-theme-error))"> Don't match. </span>
-						<p
-							style="text-decoration: underline; font-size: smaller; cursor: pointer;"
-							@click="updateAutomationDescFromFeatureDesc"
-						>
+						<p style="text-decoration: underline; font-size: smaller; cursor: pointer;"
+							@click="updateAutomationDescFromFeatureDesc">
 							Update from feature
 						</p>
-						<p
-							style="text-decoration: underline; font-size: smaller; cursor: pointer"
-							@click="updateFeatureDescFromAutomationDesc"
-						>
+						<p style="text-decoration: underline; font-size: smaller; cursor: pointer"
+							@click="updateFeatureDescFromAutomationDesc">
 							Update from automation
 						</p>
 					</div>
@@ -459,18 +439,16 @@ const makeGvar = async () => {
 					<span v-if="isVisualEditor" class="sub-action">
 						<input v-model="parityOptions.updateDescription" type="checkbox">
 						<small> <i>Updates the last text node of the first action in the automation structure to this
-							text
-							while
-							enabled.</i> </small>
+								text
+								while
+								enabled.</i> </small>
 					</span>
 				</v-col>
 			</v-row>
 		</div>
 
-		<EditAutomation
-			ref="EditAutomationRef" v-model="data.automation" v-model:is-visual-editor="isVisualEditor"
-			:name="data.name"
-		/>
+		<EditAutomation ref="EditAutomationRef" v-model="data.automation" v-model:is-visual-editor="isVisualEditor"
+			:name="data.name" />
 	</div>
 </template>
 

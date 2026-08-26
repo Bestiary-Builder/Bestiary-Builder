@@ -189,8 +189,8 @@ const handleNewCustomInnateSpell = () => {
 									<v-row>
 										<v-col>
 											<v-number-input
-												v-model="newDailyAmount" label="Add new daily amount" :min="4"
-												clearable
+												v-model="newDailyAmount" label="Add new daily amount"
+												:min="4" clearable
 											/>
 										</v-col>
 										<v-col>
@@ -226,13 +226,13 @@ const handleNewCustomInnateSpell = () => {
 					</template>
 				</v-dialog>
 			</v-col>
-			<v-col v-for="_, times in data.spellcasting.innateSpells.spellList" cols="6">
-				<div :key="times" :class="{ 'select-with-delete': parseInt(times.toString()) > 3 }">
+			<v-col v-for="_, times in data.spellcasting.innateSpells.spellList" :key="times" cols="6">
+				<div :class="{ 'select-with-delete': parseInt(times.toString()) > 3 }">
 					<v-combobox
 						v-model="data.spellcasting.innateSpells.spellList[times]" item-title="spell"
 						:items="spellListFlattened" multiple chips closable-chips return-object
-						hint="Supports custom spells" :label="times === '0' ? 'At will' : `${times}/day`"
-						class="w-100" persistent-hint @update:model-value="handleNewCustomInnateSpell"
+						hint="Supports custom spells" :label="times === '0' ? 'At will' : `${times}/day`" class="w-100"
+						persistent-hint @update:model-value="handleNewCustomInnateSpell"
 					>
 						<template #append>
 							<v-icon-btn

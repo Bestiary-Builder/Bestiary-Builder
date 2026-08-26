@@ -284,8 +284,7 @@ const updateFeatureDescFromAutomationDesc = () => {
 	for (let i = (auto.automation || []).length - 1; i >= 0; i--) {
 		const field = auto.automation[i];
 		if (field.type === "text" && data.value) {
-			// @ts-ignore
-			data.value.features[type][aid].description = field.text;
+			data.value.features[type][aid].description = field.text as string;
 			return;
 		}
 	}
@@ -310,8 +309,7 @@ const getAutomationDescription = (): string | boolean => {
 		return false;
 	for (let i = auto.automation.length - 1; i >= 0; i--) {
 		const field = auto.automation[i];
-		if (field?.type === "text") {
-			// @ts-ignore
+		if (field?.type === "text" && typeof (field.text) === "string") {
 			return field.text;
 		}
 	}
@@ -416,19 +414,19 @@ provide("setActionDescription", setDesc);
 		]"
 	>
 		<v-icon-btn
-			v-if="madeChanges && (isOwner || isEditor)" v-tooltip="'Save feature (CTRL+S)'" icon="mdi:content-save"
-			text="Save creature" :class="{ inverted: !isSavingCreature }" size="24" :loading="isSavingCreature"
-			@click="saveStatblock2(true)"
+			v-if="madeChanges && (isOwner || isEditor)" v-tooltip="'Save feature (CTRL+S)'"
+			icon="mdi:content-save" text="Save creature" :class="{ inverted: !isSavingCreature }" size="24"
+			:loading="isSavingCreature" @click="saveStatblock2(true)"
 		/>
 		<v-icon-btn
 			v-tooltip="'Generate automation from description. May be incomplete or inaccurate. Only works for basic, to hit attacks.'"
 			icon="fa7-solid:wand-sparkles"
-			text="Generate automation from description. May be incomplete or inaccurate. Only works for basic, to hit attacks." size="24"
-			@click="generateAutomation"
+			text="Generate automation from description. May be incomplete or inaccurate. Only works for basic, to hit attacks."
+			size="24" @click="generateAutomation"
 		/>
 		<v-icon-btn
-			v-tooltip="'Change editor'" size="24" icon="mdi:code-block-braces"
-			text="Change editor" @click="EditAutomationRef?.toggleEditor()"
+			v-tooltip="'Change editor'" size="24" icon="mdi:code-block-braces" text="Change editor"
+			@click="EditAutomationRef?.toggleEditor()"
 		/>
 		<ImportAutomationUtil @load-feature="(feature, apiPath) => loadFeature(feature, apiPath)" />
 		<ImportToCharacter :automation="data?.features[type][aid].automation ?? null" />

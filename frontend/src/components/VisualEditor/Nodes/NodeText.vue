@@ -28,9 +28,10 @@ watch(() => descIsText.value, () => {
 
 useDataCleanup(currentEffect, ["title"]);
 
+// eslint-disable-next-line ts/no-unsafe-function-type
 const setDesc = inject<false | Function>("setActionDescription");
 
-const abilityTitle = (item: Record<string, unknown>) => {
+const abilityTitle = (item: Record<string, any>) => {
 	return `${item.name} (${item.type})`;
 };
 </script>

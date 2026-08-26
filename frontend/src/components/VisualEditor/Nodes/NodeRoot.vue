@@ -10,6 +10,7 @@ const currentEffect = inject<Ref<AttackModel>>("currentEffect");
 
 useDataCleanup(currentEffect, ["thumb", "verb", "proper", "phrase", "criton", "extra_crit_damage", "activation_type", "list_display_override"]);
 
+// eslint-disable-next-line ts/no-unsafe-function-type
 const setName = inject<false | Function>("setActionName");
 
 const rules = useRules();

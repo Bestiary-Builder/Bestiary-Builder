@@ -24,9 +24,9 @@ const fetchCharacters = async () => {
 	loading.value = false;
 };
 
-const handleMenuOpen = (isOpen: boolean) => {
+const handleMenuOpen = async (isOpen: boolean) => {
 	if (isOpen && !hasFetched.value) {
-		fetchCharacters();
+		await fetchCharacters();
 		hasFetched.value = true;
 	}
 };
@@ -42,7 +42,7 @@ const confirmImport = async () => {
 		return;
 	}
 	const toastId = addToast("Waiting on the Avrae API", { loading: true });
-	const { success, data, error } = await useFetch(`/api/character/${selectedCharacter.value}/attacks/add`, "POST", toArray(automation));
+	const { error } = await useFetch(`/api/character/${selectedCharacter.value}/attacks/add`, "POST", toArray(automation));
 
 	if (error) {
 		updateToast(toastId, { text: error, color: "error" });
@@ -59,14 +59,14 @@ const copyCommand = async () => {
 		return;
 	}
 	const toastId = addToast("Waiting on the Avrae API", { loading: true });
-	const { success, data, error } = await useFetch<{ gvarId: string }>(`/api/character/makeattackgvar`, "POST", toArray(automation));
+	const { data, error } = await useFetch<{ gvarId: string }>(`/api/character/makeattackgvar`, "POST", toArray(automation));
 
 	if (error) {
 		updateToast(toastId, { text: error, color: "error" });
 	}
 	else if (data) {
 		updateToast(toastId, { color: "success", prependIcon: "mdi:check", text: "Copied Avrae Command to Discord!" });
-		navigator.clipboard.writeText(`!alias importactionfrombb multiline
+		await navigator.clipboard.writeText(`!alias importactionfrombb multiline
 !a import {{get_gvar("${data.gvarId}")}}
 !alias delete importactionfrombb
 # NOW RUN \`!importactionfrombb\` to import your Action.`);
@@ -85,7 +85,7 @@ const toArray = <T>(input: T | T[]): T[] => {
 			<v-icon-btn v-tooltip="'Import to Avrae'" icon="$avrae" v-bind="props" size="24" />
 		</template>
 
-		<template #default="{ isActive }">
+		<template #default>
 			<v-card
 				class="text-center pa-4" title="Import this attack to your character."
 				subtitle="Use to test your attack or if your character wants this action."
@@ -94,8 +94,8 @@ const toArray = <T>(input: T | T[]): T[] => {
 					<div v-if="AvraeToken">
 						<v-select
 							v-model="selectedCharacter" :items="characters || []" :loading="loading"
-							item-title="name" item-value="upstream" label="Select a character"
-							class="mt-4" hide-details @update:menu="handleMenuOpen"
+							item-title="name" item-value="upstream" label="Select a character" class="mt-4" hide-details
+							@update:menu="handleMenuOpen"
 						>
 							<template #no-data>
 								<v-list-item>

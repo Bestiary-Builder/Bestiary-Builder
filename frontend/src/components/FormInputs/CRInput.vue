@@ -21,7 +21,7 @@ function formatValue(value: number) {
 }
 
 const internalValue = computed<number | string | null>({
-	// @ts-ignore
+	// @ts-expect-error Type
 	get() {
 		return model.value;
 	},
@@ -47,8 +47,5 @@ const rules = [
 </script>
 
 <template>
-	<v-combobox
-		v-model="internalValue" :items="values" :item-title="formatValue" :rules="rules"
-		type="number" :label
-	/>
+	<v-combobox v-model="internalValue" :items="values" :item-title="formatValue" :rules="rules" type="number" :label />
 </template>
