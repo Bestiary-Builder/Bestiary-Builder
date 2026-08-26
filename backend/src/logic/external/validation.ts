@@ -2,21 +2,13 @@ import type { Response } from "express";
 import type { Checker } from "ts-interface-checker";
 
 import type { Statblock } from "~/shared";
-import fetch from "node-fetch";
-// Validate input
 import { createCheckers } from "ts-interface-checker";
 import { app } from "@/utilities/constants";
 import { interfaceValidation, typeInterface } from "~/shared";
+import { validateAutomation } from "./automationValidation";
 
 app.post("/api/validate/automation", async (req, res) => {
-	const automation = req.body.data;
-	const result = await fetch("https://api.avrae.io/characters/attacks/validate", {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json"
-		},
-		body: JSON.stringify(automation)
-	}).then(response => response.json());
+	const result = await validateAutomation(req.body.data);
 
 	if (result.success)
 		return res.json(result);

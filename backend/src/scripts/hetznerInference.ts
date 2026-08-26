@@ -2,9 +2,12 @@ import { readFile } from "node:fs/promises";
 
 import YAML from "yaml";
 
+import { validateAutomation } from "../logic/external/automationValidation";
+
 import "dotenv/config";
 
 const API_URL = "https://inference.hetzner.com/api/v1/chat/completions";
+const MAX_TRIES = 3;
 
 function requireEnv(name: string): string {
 	const value = process.env[name]?.trim();
@@ -21,6 +24,11 @@ interface AutomationExample {
 
 interface PromptExample extends AutomationExample {
 	source: string;
+}
+
+interface ChatMessage {
+	role: "system" | "user" | "assistant";
+	content: string;
 }
 
 async function readJson(relativePath: string): Promise<unknown> {
@@ -82,7 +90,46 @@ function formatExamples(examples: PromptExample[]): string {
 	].join("\n")).join("\n\n");
 }
 
+async function requestCompletion(apiToken: string, model: string, messages: ChatMessage[]): Promise<string> {
+	const startTime = performance.now();
+	const response = await fetch(API_URL, {
+		method: "POST",
+		headers: {
+			"Authorization": `Bearer ${apiToken}`,
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify({ model, messages })
+	});
+	const responseBody = await response.text();
+	const responseTime = performance.now() - startTime;
+	console.log(`Response time: ${responseTime.toFixed(0)} ms`);
+
+	if (!response.ok)
+		throw new Error(`Hetzner Inference API returned ${response.status} ${response.statusText}:\n${responseBody}`);
+
+	const result = JSON.parse(responseBody) as {
+		choices?: Array<{ message?: { content?: unknown } }>;
+	};
+	const content = result.choices?.[0]?.message?.content;
+	if (typeof content !== "string")
+		throw new TypeError("Hetzner Inference API response did not contain a message");
+
+	return content.trim();
+}
+
+function parseAutomationResponse(content: string): unknown {
+	return JSON.parse(content);
+}
+
+function formatValidationErrors(result: unknown): string {
+	return JSON.stringify(result, null, 2) ?? String(result);
+}
+
 async function main() {
+	const description = process.argv.slice(2).join(" ").trim();
+	if (!description)
+		throw new Error("Usage: npm run prompt:hetzner -- \"<description>\"");
+
 	const apiToken = requireEnv("HETZNER_API_TOKEN");
 	const model = requireEnv("HETZNER_AI_MODEL");
 
@@ -123,55 +170,62 @@ ${formattedDocumentation}
 VALID EXAMPLES
 ${formattedExamples}`;
 
-	const newDescription = `*Melee Weapon Attack:* +4 to hit, reach 5 ft., one target. *Hit:* 5 (1d6 + 2) slashing damage.`;
 	const prompt = `Generate the automation for the following description:
-${newDescription}`;
-	const startTime = performance.now();
+${description}`;
 
-	const response = await fetch(API_URL, {
-		method: "POST",
-		headers: {
-			"Authorization": `Bearer ${apiToken}`,
-			"Content-Type": "application/json"
-		},
-		body: JSON.stringify({
-			model,
-			messages: [
-				{
-					role: "system",
-					content: systemPrompt
-				},
+	const messages: ChatMessage[] = [
+		{ role: "system", content: systemPrompt },
+		{ role: "user", content: prompt }
+	];
+
+	for (let retry = 0; retry < MAX_TRIES; retry++) {
+		const content = await requestCompletion(apiToken, model, messages);
+		let output: unknown;
+		let validationErrors: string;
+
+		try {
+			output = parseAutomationResponse(content);
+		}
+		catch (error) {
+			validationErrors = `The response was not valid JSON: ${error instanceof Error ? error.message : String(error)}`;
+			if (retry === MAX_TRIES - 1) {
+				console.error("Failed");
+				return;
+			}
+			messages.push(
+				{ role: "assistant", content },
 				{
 					role: "user",
-					content: prompt
+					content: `The previous response was invalid. Fix it using the original instructions and description.\n\nErrors:\n${validationErrors}\n\nReturn only the corrected raw JSON.`
 				}
-			]
-		})
-	});
-
-	const responseBody = await response.text();
-	const responseTime = performance.now() - startTime;
-	console.log(`Response time: ${responseTime.toFixed(0)} ms`);
-
-	if (!response.ok) {
-		throw new Error(`Hetzner Inference API returned ${response.status} ${response.statusText}:\n${responseBody}`);
-	}
-
-	try {
-		const response = JSON.parse(responseBody);
-		// console.dir(response, { depth: null });
-
-		for (const choice of response.choices) {
-			const output = JSON.parse(choice.message.content.trim());
-
-			console.log(`Response ${choice.index} (JSON):`);
-			console.log(output);
-			console.log(`Response ${choice.index} (YAML):`);
-			console.log(YAML.stringify(output));
+			);
+			console.log("Failed to parse response, retrying...");
+			continue;
 		}
-	}
-	catch {
-		console.log(responseBody);
+
+		const validationResult = await validateAutomation(output);
+		if (validationResult.success) {
+			console.log("Response (JSON):");
+			console.log(output);
+			console.log("Response (YAML):");
+			console.log(YAML.stringify(output));
+			return;
+		}
+
+		validationErrors = formatValidationErrors(validationResult);
+		if (retry === MAX_TRIES - 1) {
+			console.error("Failed");
+			return;
+		}
+
+		messages.push(
+			{ role: "assistant", content },
+			{
+				role: "user",
+				content: `The previous automation failed validation. Fix it using the original instructions and description.\n\nValidator errors:\n${validationErrors}\n\nReturn only the corrected raw JSON.`
+			}
+		);
+		console.log("Response was invalid, retrying...");
 	}
 }
 
