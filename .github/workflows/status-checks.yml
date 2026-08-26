@@ -15,7 +15,8 @@ jobs:
             - name: Installing dependencies
               run: bun install
             - name: Generate prisma types
-              run: bun run prisma:generate
+              working-directory: ./backend
+              run: bun run generate
             - name: Run Type check
               run: bun run type-check
             - name: Run ESLint
