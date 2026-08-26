@@ -44,23 +44,23 @@ body .v-card .stat-block.Beyond {
 	}
 
 	.stat-table:first-of-type {
-		tbody>tr>td {
+		tbody > tr > td {
 			background-color: #ded4cc;
 		}
 
-		tbody>tr>th,
-		tbody>tr>td:first-of-type {
+		tbody > tr > th,
+		tbody > tr > td:first-of-type {
 			background-color: #ede6d9;
 		}
 	}
 
 	.stat-table:nth-of-type(2) {
-		tbody>tr>td {
+		tbody > tr > td {
 			background-color: #d0caca;
 		}
 
-		tbody>tr>th,
-		tbody>tr>td:first-of-type {
+		tbody > tr > th,
+		tbody > tr > td:first-of-type {
 			background-color: #d8dad1;
 		}
 	}

@@ -17,11 +17,11 @@ const props = defineProps({
 	},
 });
 
+const emit = defineEmits(["update:modelValue"]);
+
 const { smAndDown } = useDisplay();
 
 const isOpen = ref(props.modelValue);
-const emit = defineEmits(["update:modelValue"]);
-
 watch(
 	() => props.modelValue,
 	(value) => {
@@ -36,8 +36,10 @@ const updateOpen = (value: boolean) => {
 </script>
 
 <template>
-	<v-menu v-if="!smAndDown" :model-value="isOpen" v-bind="menuProps" :close-on-content-click="false"
-		location="bottom center" origin="top center" :scrim="true" offset="0 -50%" @update:model-value="updateOpen">
+	<v-menu
+		v-if="!smAndDown" :model-value="isOpen" v-bind="menuProps" :close-on-content-click="false"
+		location="bottom center" origin="top center" :scrim="true" offset="0 -50%" @update:model-value="updateOpen"
+	>
 		<template #activator="{ props: activatorProps }">
 			<slot name="activator" v-bind="{ props: activatorProps }" />
 		</template>

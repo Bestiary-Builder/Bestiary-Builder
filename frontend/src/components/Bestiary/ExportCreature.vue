@@ -7,7 +7,7 @@ import { useToast } from "@/utils/app/toast";
 import { useFetch } from "@/utils/utils";
 
 const { data } = defineProps<{ data: Statblock }>();
-const { addToast, removeToast, updateToast } = useToast()
+const { addToast, removeToast, updateToast } = useToast();
 const $route = useRoute();
 
 const exportStatblockToClipBoard = async () => {
@@ -67,9 +67,9 @@ const exportHomebrewery = async () => {
 const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 	if (!data)
 		return;
-	const toastId = addToast("Exporting...", { loading: true })
+	const toastId = addToast("Exporting...", { loading: true });
 
-	let el = document.getElementById("statblock");
+	const el = document.getElementById("statblock");
 	if (!el) {
 		updateToast(toastId, { text: "Uh oh! No statblock element found", color: "error" });
 		return;
@@ -88,7 +88,7 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 	el.classList.remove("toPrint");
 	el.style = "";
 
-	removeToast(toastId)
+	removeToast(toastId);
 	void getUmami()?.track("Export statblock to image");
 };
 </script>
@@ -96,8 +96,10 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 <template>
 	<v-dialog max-width="400">
 		<template #activator="{ props }">
-			<v-icon-btn icon="mdi:export" label="Export Creature" v-bind="props" size="24"
-				v-tooltip="'Export creature'" />
+			<v-icon-btn
+				v-tooltip="'Export creature'" icon="mdi:export" label="Export Creature" v-bind="props"
+				size="24"
+			/>
 		</template>
 
 		<template #default="{ isActive }">

@@ -32,10 +32,12 @@ useDataCleanup(currentEffect, ["level", "attackBonus", "castingMod", "parent"]);
 		<SectionHeader title="Additional Options" />
 
 		<div class="two-wide">
-			<v-select v-model="currentEffect.level" label="Level" :items="[
-				{ title: '(default level)', value: null },
-				...Array.from({ length: 10 }, (_, i) => ({ title: i.toString(), value: i })),
-			]" />
+			<v-select
+				v-model="currentEffect.level" label="Level" :items="[
+					{ title: '(default level)', value: null },
+					...Array.from({ length: 10 }, (_, i) => ({ title: i.toString(), value: i })),
+				]"
+			/>
 			<v-text-field v-model="currentEffect.parent" label="Parent Effect" />
 		</div>
 

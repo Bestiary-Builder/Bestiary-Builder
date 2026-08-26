@@ -4,17 +4,17 @@ import { refDebounced } from "@vueuse/core";
 import { onMounted, ref, watch } from "vue";
 import CollectionTile from "@/components/Global/CollectionTile.vue";
 import { getUmami } from "@/utils/app/analytics";
+import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
-import { useToast } from "@/utils/app/toast";
 
 onMounted(async () => {
-	const toastId = addToast("Loading...", { loading: true })
+	const toastId = addToast("Loading...", { loading: true });
 	await searchBestiaries();
-	removeToast(toastId)
+	removeToast(toastId);
 });
 
-const { addToast, removeToast } = useToast()
+const { addToast, removeToast } = useToast();
 const bestiaries = ref<BestiaryExtended[]>([]);
 
 const selectedPage = ref(1);
@@ -62,29 +62,33 @@ watch(selectedPage, async () => searchBestiaries());
 watch(selectedTags, async () => searchBestiaries());
 watch(viewMode, async (newValue) => {
 	if (newValue !== "Bookmarked") {
-		const toastId = addToast("Loading...", { loading: true })
+		const toastId = addToast("Loading...", { loading: true });
 		await searchBestiaries();
-		removeToast(toastId)
+		removeToast(toastId);
 	}
 	else {
-		const toastId = addToast("Loading...", { loading: true })
+		const toastId = addToast("Loading...", { loading: true });
 		await getBookmarkedBestiaries();
-		removeToast(toastId)
+		removeToast(toastId);
 	}
 });
 watch(debouncedSearch, async () => searchBestiaries());
 </script>
 
 <template>
-	<Breadcrumbs :routes="[
-		{
-			path: '',
-			text: 'Public Bestiaries',
-			isCurrent: true
-		}
-	]">
-		<select v-model="viewMode" aria-label="Select public bestiary list mode"
-			name="Select public bestiary list mode">
+	<Breadcrumbs
+		:routes="[
+			{
+				path: '',
+				text: 'Public Bestiaries',
+				isCurrent: true
+			}
+		]"
+	>
+		<select
+			v-model="viewMode" aria-label="Select public bestiary list mode"
+			name="Select public bestiary list mode"
+		>
 			<option>Recent</option>
 			<option>Popular</option>
 			<option>Bookmarked</option>
@@ -92,19 +96,22 @@ watch(debouncedSearch, async () => searchBestiaries());
 
 		<DropdownMenu>
 			<template #activator="{ props }">
-				<v-icon-btn icon="mdi:magnify" v-bind="props" text="Search bestiaries" size="24"
-					v-tooltip="'Search bestiaries'" />
+				<v-icon-btn
+					v-tooltip="'Search bestiaries'" icon="mdi:magnify" v-bind="props" text="Search bestiaries"
+					size="24"
+				/>
 			</template>
 			<v-card min-width="300" class="text-center pb-2" title="Search bestiaries">
 				<v-spacer />
 				<v-card-text>
-					<v-text-field label="Search text" v-model="search" />
-					<v-select v-model="selectedTags" label="Select Tags" multiple :items="store.tags || []" chips
-						closable-chips />
+					<v-text-field v-model="search" label="Search text" />
+					<v-select
+						v-model="selectedTags" label="Select Tags" multiple :items="store.tags || []" chips
+						closable-chips
+					/>
 				</v-card-text>
 			</v-card>
 		</DropdownMenu>
-
 	</Breadcrumbs>
 	<div class="content">
 		<div v-if="bestiaries.length > 0" class="tile-container">

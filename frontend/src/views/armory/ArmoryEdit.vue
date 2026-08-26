@@ -4,16 +4,16 @@ import { refDebounced, useLocalStorage } from "@vueuse/core";
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useRules } from "vuetify/labs/rules";
 import StatusIcon from "@/components/Bestiary/StatusIcon.vue";
+import { useCollection } from "@/components/Bestiary/useCollection";
 import UserBanner from "@/components/Bestiary/UserBanner.vue";
+import ImportToCharacter from "@/components/Characters/ImportToCharacter.vue";
 import Markdown from "@/components/Global/Markdown.vue";
+import SectionHeader from "@/components/VisualEditor/Nodes/shared/SectionHeader.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { useToast } from "@/utils/app/toast";
 import { creatureTypes } from "@/utils/constants";
 import { store } from "@/utils/store";
-import { useCollection } from "@/components/Bestiary/useCollection";
 import { ACTION_TYPE_MAP, getActionTypeLabel } from "./utils";
-import ImportToCharacter from "@/components/Characters/ImportToCharacter.vue";
-import SectionHeader from "@/components/VisualEditor/Nodes/shared/SectionHeader.vue";
 
 const {
 	collection,
@@ -31,22 +31,21 @@ const {
 	createItem,
 	createManyItems,
 	deleteItem
-} = useCollection("automations")
+} = useCollection("automations");
 
-const { addToast, updateToast, removeToast } = useToast()
+const { addToast, updateToast, removeToast } = useToast();
 const rules = useRules();
 
 onMounted(async () => {
-	const toastId = addToast("Loading...", { loading: true })
-	await getCollection()
-	removeToast(toastId)
+	const toastId = addToast("Loading...", { loading: true });
+	await getCollection();
+	removeToast(toastId);
 	if (collection.value?.name)
 		document.title = `${collection.value?.name.substring(0, 16)} | Bestiary Builder`;
 });
 
-const searchText = ref("")
-const searchTextDebounced = refDebounced(searchText, 500, { maxWait: 1000 })
-
+const searchText = ref("");
+const searchTextDebounced = refDebounced(searchText, 500, { maxWait: 1000 });
 
 const searchOptions = ref({
 	tags: [] as string[],
@@ -55,7 +54,6 @@ const searchOptions = ref({
 	env: "",
 	faction: ""
 });
-
 
 const sortMode = useLocalStorage("sortModeForAutomations", "Alphabetically");
 
@@ -89,7 +87,6 @@ const sortAutomations = () => {
 		});
 	}
 
-
 	return items.value;
 };
 
@@ -100,7 +97,6 @@ function filterAutomations(data: AutomationWithType) {
 
 	return filterChecks.every(_ => _);
 }
-
 
 async function exportCollection(asFile: boolean) {
 	if (asFile) {
@@ -143,13 +139,9 @@ async function exportCollection(asFile: boolean) {
 	}
 }
 
-
 // misc
 const editorToAdd = ref("");
 const showWarning = ref(false);
-
-
-
 
 watch(() => collection.value?.status, (newValue): void => {
 	if (newValue === "private" || newValue === "public")
@@ -164,32 +156,35 @@ watch(() => collection.value?.name, (): void => {
 });
 
 const getAutomationInformation = (data: AutomationWithType["automation"], key: keyof AttackModel, fallback: string | number) => {
-	if (!data) return fallback
+	if (!data)
+		return fallback;
 
 	if (Array.isArray(data)) {
-		data = data[0]
+		data = data[0];
 	}
 
-	return data[key] ?? fallback
-}
+	return data[key] ?? fallback;
+};
 
 const getActivationType = (automation: AttackModel | AttackModel[] | null): number => {
-	if (automation === null) return 0
-	const attack = Array.isArray(automation) ? automation[0] : automation
-	return attack?.activation_type ?? 0
-}
+	if (automation === null)
+		return 0;
+	const attack = Array.isArray(automation) ? automation[0] : automation;
+	return attack?.activation_type ?? 0;
+};
 
 const groupByActivationType = (items: AutomationWithType[]): Record<number, AutomationWithType[]> => {
 	return items.reduce((groups, item) => {
-		const key = getActivationType(item.automation)
-		if (!groups[key]) groups[key] = []
-		groups[key].push(item)
-		return groups
-	}, {} as Record<number, AutomationWithType[]>)
-}
+		const key = getActivationType(item.automation);
+		if (!groups[key])
+			groups[key] = [];
+		groups[key].push(item);
+		return groups;
+	}, {} as Record<number, AutomationWithType[]>);
+};
 
 const groupedItems = computed(() => {
-	const grouped = groupByActivationType(items.value || [])
+	const grouped = groupByActivationType(items.value || []);
 
 	return Object.entries(grouped)
 		.map(([type, items]) => ({
@@ -197,18 +192,18 @@ const groupedItems = computed(() => {
 			label: getActionTypeLabel(Number(type)),
 			items,
 		}))
-		.sort((a, b) => a.type - b.type)
-})
+		.sort((a, b) => a.type - b.type);
+});
 
-const openedGroups = ref<number[]>(Object.keys(ACTION_TYPE_MAP).map(x => parseInt(x)))
+const openedGroups = ref<number[]>(Object.keys(ACTION_TYPE_MAP).map(x => parseInt(x)));
 
-const createNewActionOpen = ref(false)
+const createNewActionOpen = ref(false);
 
 const createOptions = reactive({
 	name: "",
 	description: "",
 	activation_type: null
-})
+});
 
 const activationTypeOptions = computed(() => {
 	return Object.entries(ACTION_TYPE_MAP)
@@ -216,64 +211,74 @@ const activationTypeOptions = computed(() => {
 			title,
 			value: Number(key) === 0 ? null : Number(key),
 		}))
-		.sort((a, b) => (a.value ?? 0) - (b.value ?? 0))
-})
-
-
+		.sort((a, b) => (a.value ?? 0) - (b.value ?? 0));
+});
 </script>
 
 <template>
 	<div>
-		<Breadcrumbs v-if="collection" :routes="[
-			{
-				path: isOwner || isEditor ? '/armories/personal' : '/armories/public',
-				text: isOwner || isEditor ? 'My Automations' : 'Automations',
-				isCurrent: false
-			},
-			{
-				path: '',
-				text: collection?.name,
-				isCurrent: true
-			}
-		]">
-			<v-icon-btn text="Create creature" icon="mdi:plus" size="24"
-				@click="createNewActionOpen = !createNewActionOpen" class="inverted" v-tooltip="'Create creature'" />
-
+		<Breadcrumbs
+			v-if="collection" :routes="[
+				{
+					path: isOwner || isEditor ? '/armories/personal' : '/armories/public',
+					text: isOwner || isEditor ? 'My Automations' : 'Automations',
+					isCurrent: false
+				},
+				{
+					path: '',
+					text: collection?.name,
+					isCurrent: true
+				}
+			]"
+		>
+			<v-icon-btn
+				v-tooltip="'Create creature'" text="Create creature" icon="mdi:plus"
+				size="24" class="inverted" @click="createNewActionOpen = !createNewActionOpen"
+			/>
 
 			<v-dialog v-if="isOwner" max-width="950">
 				<template #activator="{ props }">
-					<v-icon-btn text="Collection Settings" icon="mdi:cog" size="24" v-bind="props"
-						v-tooltip="'Settings'" />
+					<v-icon-btn
+						v-tooltip="'Settings'" text="Collection Settings" icon="mdi:cog" size="24"
+						v-bind="props"
+					/>
 				</template>
 
 				<template #default="{ isActive }">
 					<v-card title="Collection Settings" class="pa-4">
 						<v-row>
 							<v-col cols="6">
-								<v-text-field v-model="collection.name" label="Name"
+								<v-text-field
+									v-model="collection.name" label="Name"
 									:maxlength="store.limits?.nameLength" :min-length="store.limits?.nameMin"
 									:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]"
-									class="mb-4" />
+									class="mb-4"
+								/>
 							</v-col>
 							<v-col cols="6">
 								<v-text-field v-model="collection.image" label="Image" class="mb-4" />
-
 							</v-col>
 
 							<v-col cols="12">
-								<v-textarea v-model="collection.description"
+								<v-textarea
+									v-model="collection.description"
 									:max-length="store.limits?.descriptionLength"
 									:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]"
-									label="Description" class="mb-4" hint="Supports Markdown" persistent-hint counter />
+									label="Description" class="mb-4" hint="Supports Markdown" persistent-hint counter
+								/>
 							</v-col>
 
 							<v-col cols="6">
-								<v-select v-model="collection.status" label="Status"
-									:items="[{ value: 'private', title: 'Private' }, { value: 'unlisted', title: 'Unlisted' }, { value: 'public', title: 'Public' }]" />
+								<v-select
+									v-model="collection.status" label="Status"
+									:items="[{ value: 'private', title: 'Private' }, { value: 'unlisted', title: 'Unlisted' }, { value: 'public', title: 'Public' }]"
+								/>
 							</v-col>
 							<v-col cols="6">
-								<v-select v-model="collection.tags" multiple :items="store.tags || []" label="Tags"
-									chips closable-chips />
+								<v-select
+									v-model="collection.tags" multiple :items="store.tags || []" label="Tags"
+									chips closable-chips
+								/>
 							</v-col>
 
 							<v-col cols="12" class="px-4">
@@ -285,7 +290,6 @@ const activationTypeOptions = computed(() => {
 										Editors cannot add other editors. The owner can remove editors at any time.
 									</p>
 								</div>
-
 							</v-col>
 							<v-col v-for="editor in editors" :key="editor.id" cols="4">
 								<p>
@@ -294,12 +298,14 @@ const activationTypeOptions = computed(() => {
 								</p>
 							</v-col>
 							<v-col cols="6">
-								<v-text-field v-model="editorToAdd" inputmode="numeric" label="Discord user ID"
+								<v-text-field
+									v-model="editorToAdd" inputmode="numeric" label="Discord user ID"
 									:rules="[rules.integer('This must be a numeric Discord User ID.')]"
-									pattern="[0-9]*" />
+									pattern="[0-9]*"
+								/>
 							</v-col>
 							<v-col cols="6">
-								<v-btn class="w-100" @click="addEditor(editorToAdd)" size="large">
+								<v-btn class="w-100" size="large" @click="addEditor(editorToAdd)">
 									Add
 								</v-btn>
 							</v-col>
@@ -330,23 +336,28 @@ const activationTypeOptions = computed(() => {
 			</v-dialog>
 			<DropdownMenu>
 				<template #activator="{ props }">
-					<v-icon-btn text="Search automations" icon="mdi:tag" size="24" v-bind="props"
-						v-tooltip="'Search automations'" />
+					<v-icon-btn
+						v-tooltip="'Search automations'" text="Search automations" icon="mdi:tag" size="24"
+						v-bind="props"
+					/>
 				</template>
 				<v-card min-width="400" class="pa-4" title="Search collection">
 					<v-row>
 						<v-col cols="12">
-							<v-select v-model="sortMode"
+							<v-select
+								v-model="sortMode"
 								:items="['Custom', 'Alphabetically', 'CR Ascending', 'CR Descending', 'Creature Type']"
-								label="Collection sort type" width="100%" />
+								label="Collection sort type" width="100%"
+							/>
 						</v-col>
 						<v-col cols="6">
 							<v-text-field v-model="searchText" label="Name" />
-
 						</v-col>
 						<v-col cols="6">
-							<v-select v-model="searchOptions.tags" :items="creatureTypes" label="Creature type" multiple
-								chips closable-chips />
+							<v-select
+								v-model="searchOptions.tags" :items="creatureTypes" label="Creature type" multiple
+								chips closable-chips
+							/>
 						</v-col>
 					</v-row>
 				</v-card>
@@ -354,8 +365,10 @@ const activationTypeOptions = computed(() => {
 
 			<v-dialog v-if="isOwner" max-width="750">
 				<template #activator="{ props }">
-					<v-icon-btn text="Import automations" icon="mdi:import" size="24" v-bind="props"
-						v-tooltip="'Import automations'" />
+					<v-icon-btn
+						v-tooltip="'Import automations'" text="Import automations" icon="mdi:import" size="24"
+						v-bind="props"
+					/>
 				</template>
 
 				<template #default="{ isActive }">
@@ -414,7 +427,6 @@ const activationTypeOptions = computed(() => {
 								<v-row>
 									<v-col class="d-flex justify-start align-center">
 										<UserBanner :id="collection.ownerId" class="mt-2 mb-4" />
-
 									</v-col>
 									<v-col class="d-flex justify-center align-center">
 										<div>
@@ -429,36 +441,38 @@ const activationTypeOptions = computed(() => {
 
 								<v-col cols="12">
 									<v-chip-group v-if="collection.tags.length">
-										<v-chip v-for="tag in [...collection.tags].sort()" :key="tag" size="small"
-											variant="tonal">
+										<v-chip
+											v-for="tag in [...collection.tags].sort()" :key="tag" size="small"
+											variant="tonal"
+										>
 											{{ tag }}
 										</v-chip>
 									</v-chip-group>
 								</v-col>
 
 								<v-col cols="12">
-									<Markdown class="description "
-										:text="collection.description || 'No description set.'" tag="p" />
-
+									<Markdown
+										class="description "
+										:text="collection.description || 'No description set.'" tag="p"
+									/>
 								</v-col>
 							</v-col>
 							<v-col cols="8">
 								<v-img :src="collection.image" max-height="200" />
-
 							</v-col>
-
 						</v-row>
-
 					</v-card-text>
 				</v-card>
 
 				<v-divider class="my-4" />
-				<v-skeleton-loader type="heading, text, text" v-if="items === null" />
+				<v-skeleton-loader v-if="items === null" type="heading, text, text" />
 				<v-list v-else v-model:opened="openedGroups">
 					<v-list-group v-for="group in groupedItems" :key="group.type" :value="group.type">
 						<template #activator="{ props }">
-							<v-list-item v-bind="props" :title="group.label"
-								:subtitle="`${group.items.length} action${group.items.length > 1 ? 's' : ''}`" />
+							<v-list-item
+								v-bind="props" :title="group.label"
+								:subtitle="`${group.items.length} action${group.items.length > 1 ? 's' : ''}`"
+							/>
 						</template>
 
 						<v-list-item v-for="item in group.items" :key="item.id">
@@ -471,10 +485,11 @@ const activationTypeOptions = computed(() => {
 								</v-list-item-subtitle>
 							</template>
 
-
 							<template #append>
-								<v-icon-btn icon="mdi-pencil" variant="text"
-									@click="$router.push(`/automation/edit/${item.id}`)" />
+								<v-icon-btn
+									icon="mdi-pencil" variant="text"
+									@click="$router.push(`/automation/edit/${item.id}`)"
+								/>
 								<ImportToCharacter :automation="item.automation" />
 								<DropdownMenu>
 									<template #activator="{ props }">
@@ -485,8 +500,10 @@ const activationTypeOptions = computed(() => {
 											Are you sure you want to delete <br><b>{{ item.name }}</b>?
 										</v-card-text>
 										<v-card-actions>
-											<v-btn color="red" size="large" @click="deleteItem(item.id)"
-												class="mx-auto">
+											<v-btn
+												color="red" size="large" class="mx-auto"
+												@click="deleteItem(item.id)"
+											>
 												Confirm
 											</v-btn>
 										</v-card-actions>
@@ -501,38 +518,42 @@ const activationTypeOptions = computed(() => {
 		</div>
 	</div>
 
-	<v-dialog max-width="750" v-model="createNewActionOpen">
+	<v-dialog v-model="createNewActionOpen" max-width="750">
 		<v-card title="New Action" class="pa-4">
 			<v-card-text>
 				<v-row>
 					<v-col>
-						<v-text-field label="Name"
+						<v-text-field
+							v-model="createOptions.name"
+							label="Name"
 							:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 3)]"
-							v-model="createOptions.name" />
-
+						/>
 					</v-col>
 					<v-col>
-						<v-select label="Type" :items="activationTypeOptions" v-model="createOptions.activation_type">
-
-						</v-select>
+						<v-select v-model="createOptions.activation_type" label="Type" :items="activationTypeOptions" />
 					</v-col>
 					<v-col cols="12">
-						<v-textarea label="Description" v-model="createOptions.description"
-							:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]" counter />
+						<v-textarea
+							v-model="createOptions.description" label="Description"
+							:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]" counter
+						/>
 					</v-col>
 				</v-row>
-
 			</v-card-text>
 			<v-card-actions>
 				<v-spacer />
-				<v-btn text="Create" color="success" size="large"
-					@click="createItem({ name: createOptions.name, description: createOptions.description, automation: { _v: 2, activation_type: createOptions.activation_type || 0, name: createOptions.name, automation: [] } }, false); createNewActionOpen = false" />
+				<v-btn
+					text="Create" color="success" size="large"
+					@click="createItem({ name: createOptions.name, description: createOptions.description, automation: { _v: 2, activation_type: createOptions.activation_type || 0, name: createOptions.name, automation: [] } }, false); createNewActionOpen = false"
+				/>
 				<v-btn text="Cancel" size="large" @click="createNewActionOpen = false" />
 			</v-card-actions>
 		</v-card>
 	</v-dialog>
-	<v-fab icon="mdi:plus" location="bottom end" app color="primary" @click="createNewActionOpen = true"
-		size="large"></v-fab>
+	<v-fab
+		icon="mdi:plus" location="bottom end" app color="primary" size="large"
+		@click="createNewActionOpen = true"
+	/>
 </template>
 
 <style lang="less" scoped>

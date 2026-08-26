@@ -9,7 +9,7 @@
 		color: color-mix(in srgb, currentcolor, white) !important;
 	}
 
-	&>svg {
+	& > svg {
 		color: currentcolor;
 		cursor: pointer;
 	}
@@ -77,16 +77,22 @@
 
 .tree-row {
 	&::before {
-		content: '';
+		content: "";
 		width: calc(var(--depth, 0) * 15px);
 		height: calc(1rem + 4.2px);
 		display: inline-block;
 		vertical-align: middle;
-		background: repeating-linear-gradient(to right,
-				rgb(var(--v-theme-surface-bright)),
-				rgb(var(--v-theme-surface-bright)) 1px,
-				var(--color-surface-0) 1px,
-				var(--color-surface-0) 15px);
+		background: repeating-linear-gradient(
+			to right,
+			rgb(var(--v-theme-surface-bright)),
+			rgb(var(--v-theme-surface-bright)) 1px,
+			var(--color-surface-0) 1px,
+			var(--color-surface-0) 15px
+		);
 		background-position: -9px;
 	}
+}
+
+.tree-node.is-current-node {
+	background-color: red !important;
 }

@@ -39,7 +39,8 @@ onMounted(async () => {
 				<ul class="right">
 					<li>
 						Welcome to Bestiary Builder, <i>the</i> convenient Bestiary Creator for <span
-							style="display: inline-block"><b>D&D 5e</b>,</span> designed for incredible integration with
+							style="display: inline-block"
+						><b>D&D 5e</b>,</span> designed for incredible integration with
 						<b><a href="https://avrae.io/"> Avrae</a></b> and convenience of use!
 					</li>
 				</ul>

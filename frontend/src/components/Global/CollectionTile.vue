@@ -51,7 +51,7 @@ const lastUpdated = computed(() => {
 	return `${years}y`;
 });
 
-const isDeleteOpen = ref(false)
+const isDeleteOpen = ref(false);
 </script>
 
 <template>
@@ -78,7 +78,6 @@ const isDeleteOpen = ref(false)
 				<p v-if="data.description" class="description mt-1 mb-1">
 					{{ data.description }}
 				</p>
-
 			</div>
 			<div class="collection-footer">
 				<div class="d-flex justify-content align-items">
@@ -93,14 +92,15 @@ const isDeleteOpen = ref(false)
 					<v-icon icon="mdi:paw" size="20" />
 				</span>
 				<div class="info-buttons">
-					<v-icon icon="material-symbols:drag-indicator" v-if="store.isMobile" class="handle" size="20" />
+					<v-icon v-if="store.isMobile" icon="material-symbols:drag-indicator" class="handle" size="20" />
 					<StatusIcon :icon="data.status" />
 
 					<DropdownMenu v-if="store.user?.id === data.ownerId" v-model="isDeleteOpen">
 						<template #activator="{ props }">
-							<v-icon-btn text="Delete Collection" size="20" color="currentColor" v-bind="props"
-								@click.stop.prevent="props.onClick?.($event)" icon="mdi:delete">
-							</v-icon-btn>
+							<v-icon-btn
+								text="Delete Collection" size="20" color="currentColor" v-bind="props"
+								icon="mdi:delete" @click.stop.prevent="props.onClick?.($event)"
+							/>
 						</template>
 						<v-card min-width="300" class="text-center pb-2">
 							<v-card-text>
@@ -108,8 +108,10 @@ const isDeleteOpen = ref(false)
 								<br> This action cannot be undone.
 							</v-card-text>
 							<v-card-actions>
-								<v-btn size="large" class="w-100" color="red"
-									@click.stop.prevent="$emit('deleteCollectionItem', data.id); isDeleteOpen = false">
+								<v-btn
+									size="large" class="w-100" color="red"
+									@click.stop.prevent="$emit('deleteCollectionItem', data.id); isDeleteOpen = false"
+								>
 									Confirm
 								</v-btn>
 							</v-card-actions>
@@ -182,8 +184,6 @@ const isDeleteOpen = ref(false)
 			overflow: hidden;
 			font-size: smaller;
 		}
-
-
 	}
 
 	.collection-footer {

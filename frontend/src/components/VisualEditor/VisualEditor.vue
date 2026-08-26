@@ -36,8 +36,8 @@ const currentNode = computed(() => {
 	return "";
 });
 
-const showControls = ref(true)
-provide("showControls", showControls)
+const showControls = ref(true);
+provide("showControls", showControls);
 </script>
 
 <template>
@@ -48,7 +48,7 @@ provide("showControls", showControls)
 			<p v-else class="container" style="padding: 6px">
 				<EffectAdder :context="['root']" :name="name" />
 			</p>
-			<v-btn @click="showControls = !showControls" class="pl-2" variant="text" size="x-small">
+			<v-btn class="pl-2" variant="text" size="x-small" @click="showControls = !showControls">
 				<small> <i>{{ showControls ? 'Hide' : 'Show' }} controls</i></small>
 			</v-btn>
 		</div>
@@ -56,8 +56,10 @@ provide("showControls", showControls)
 			<div v-if="!currentEffect && currentContext.length === 0">
 				<SectionHeader title="No Effect Selected" />
 				Select or create a node in the Effect Tree to get started.
-				<img :src="['/Devourer.png', '/Beholder.webp', '/Flumph.png'][Math.floor(Math.random() * 3)]"
-					style="max-width: 200px; transform: scale(-1, 1); margin-top: 2rem">
+				<img
+					:src="['/Devourer.png', '/Beholder.webp', '/Flumph.png'][Math.floor(Math.random() * 3)]"
+					style="max-width: 200px; transform: scale(-1, 1); margin-top: 2rem"
+				>
 			</div>
 			<template v-else>
 				<Transition>

@@ -2,10 +2,10 @@
 import type { Ref } from "vue";
 import type { AbilityReference, Text } from "~/shared";
 import { inject, onMounted, ref, watch } from "vue";
+import Editor from "@/components/StatblockEditor/Editor.vue";
 import { useFetch } from "@/utils/utils";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
-import Editor from "@/components/StatblockEditor/Editor.vue";
 
 const currentEffect = inject<Ref<Text>>("currentEffect");
 
@@ -31,32 +31,36 @@ useDataCleanup(currentEffect, ["title"]);
 const setDesc = inject<false | Function>("setActionDescription");
 
 const abilityTitle = (item: Record<string, unknown>) => {
-	return `${item.name} (${item.type})`
-}
-
-
+	return `${item.name} (${item.type})`;
+};
 </script>
 
 <template>
 	<template v-if="currentEffect">
 		<SectionHeader title="Text" />
 		<div class="two-wide">
-			<v-text-field label="Title" v-model="currentEffect.title" />
+			<v-text-field v-model="currentEffect.title" label="Title" />
 		</div>
 
 		<div v-if="typeof (currentEffect!.text) === 'string'" class="mb-4">
 			<Editor v-model="currentEffect.text" />
-			<small v-if="setDesc" style="font-size: x-small; cursor: pointer" role="button"
-				@click="setDesc(currentEffect.text)"> <i>Set the description of the statblock trait to this text.</i>
+			<small
+				v-if="setDesc" style="font-size: x-small; cursor: pointer" role="button"
+				@click="setDesc(currentEffect.text)"
+			> <i>Set the description of the statblock trait to this text.</i>
 			</small>
 		</div>
-		<v-autocomplete v-else v-model="currentEffect.text" :items="abilities" :item-title="abilityTitle" return-object
-			label="Ability Reference" />
+		<v-autocomplete
+			v-else v-model="currentEffect.text" :items="abilities" :item-title="abilityTitle" return-object
+			label="Ability Reference"
+		/>
 
-		<v-select v-model="descIsText" :items="[
-			{ title: 'Text', value: true },
-			{ title: 'Ability Reference', value: false },
-		]" label="Text type" />
+		<v-select
+			v-model="descIsText" :items="[
+				{ title: 'Text', value: true },
+				{ title: 'Ability Reference', value: false },
+			]" label="Text type"
+		/>
 	</template>
 </template>
 

@@ -4,7 +4,6 @@ body {
 	text-rendering: optimizespeed;
 }
 
-
 h1,
 h2,
 h3,
@@ -85,7 +84,6 @@ select {
 	.content {
 		padding: 1rem 5vw;
 		max-width: 92vw;
-
 	}
 }
 
@@ -146,12 +144,12 @@ p:has(img[src="/Beholder.webp"]) {
 		width: 50%;
 	}
 
-	+p {
+	+ p {
 		text-align: center;
 	}
 }
 
-blockquote:has(p img[src="/Beholder.webp"])~p {
+blockquote:has(p img[src="/Beholder.webp"]) ~ p {
 	text-align: center;
 	display: block;
 	margin: auto;
@@ -163,7 +161,7 @@ blockquote:has(p img[src="/Beholder.webp"])~p {
 	grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 	gap: 1rem;
 
-	&>a {
+	& > a {
 		text-decoration: none;
 	}
 }

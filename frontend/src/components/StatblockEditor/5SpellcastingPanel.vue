@@ -8,7 +8,7 @@ import { defaultStatblock, getSpellSlots } from "~/shared";
 import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
 
 const { data, rawInfo } = defineProps<{ data: Statblock; rawInfo: CreatureWithStats | null }>();
-const { addToast } = useToast()
+const { addToast } = useToast();
 
 const spellList = ref<{ [key: number]: string[] }>();
 const spellListFlattened = ref<InnateSpellsEntity[]>();
@@ -20,7 +20,7 @@ onMounted(async () => {
 		for (const list of Object.values(spellList.value))
 			spellListFlattenedTemp = spellListFlattenedTemp.concat(list);
 		spellListFlattenedTemp.sort();
-		spellListFlattened.value = [...spellListFlattenedTemp.map((sp) => ({ spell: sp, comment: '' }))];
+		spellListFlattened.value = [...spellListFlattenedTemp.map(sp => ({ spell: sp, comment: "" }))];
 	}
 });
 
@@ -35,7 +35,6 @@ watch(selectedSpell, () => {
 	for (const x in selectedSpell.value)
 		selectedSpell.value[x] = null;
 }, { deep: true });
-
 
 const spellLevelList = computed((): number[] => {
 	const sClass = data.spellcasting.casterSpells.castingClass;
@@ -108,15 +107,15 @@ const addNewDaily = () => {
 };
 
 const handleNewCustomInnateSpell = () => {
-	const spells = data.spellcasting.innateSpells.spellList
+	const spells = data.spellcasting.innateSpells.spellList;
 	for (const times in spells) {
 		for (const idx in spells[times]) {
-			if (typeof (spells[times][idx]) === 'string') {
-				spells[times][idx] = { "spell": spells[times][idx], comment: '' }
+			if (typeof (spells[times][idx]) === "string") {
+				spells[times][idx] = { spell: spells[times][idx], comment: "" };
 			}
 		}
 	}
-}
+};
 </script>
 
 <template>
@@ -124,20 +123,28 @@ const handleNewCustomInnateSpell = () => {
 		<SectionHeader title="Daily Spells" />
 		<v-row class="my-4">
 			<v-col cols="6">
-				<v-select v-model="data.spellcasting.innateSpells.spellCastingAbility" :items="stats"
-					label="Casting ability" input-id="castingability" hide-details />
+				<v-select
+					v-model="data.spellcasting.innateSpells.spellCastingAbility" :items="stats"
+					label="Casting ability" input-id="castingability" hide-details
+				/>
 			</v-col>
 			<v-col cols="6">
-				<v-select v-model="data.spellcasting.innateSpells.noComponentsOfType"
+				<v-select
+					v-model="data.spellcasting.innateSpells.noComponentsOfType"
 					:items="['Material', 'Verbal', 'Somatic']" multiple chips closable-chips
-					label="Not these components" hide-details />
+					label="Not these components" hide-details
+				/>
 			</v-col>
 			<v-col cols="6">
 				<div>
-					<v-checkbox v-model="data.spellcasting.innateSpells.displayAsAction" label="Display as Action"
-						color="primary" density="compact" hide-details />
-					<v-checkbox v-model="data.spellcasting.innateSpells.isPsionics" label="Display as Psionics"
-						color="primary" density="compact" hide-details />
+					<v-checkbox
+						v-model="data.spellcasting.innateSpells.displayAsAction" label="Display as Action"
+						color="primary" density="compact" hide-details
+					/>
+					<v-checkbox
+						v-model="data.spellcasting.innateSpells.isPsionics" label="Display as Psionics"
+						color="primary" density="compact" hide-details
+					/>
 				</div>
 			</v-col>
 			<v-col cols="6">
@@ -149,35 +156,45 @@ const handleNewCustomInnateSpell = () => {
 					</template>
 
 					<template #default="{ isActive }">
-						<v-card title="Customize daily spellcasting defaults"
-							subtitle="The options here allow you to customize the defaults inferred from the statblock and default rules">
+						<v-card
+							title="Customize daily spellcasting defaults"
+							subtitle="The options here allow you to customize the defaults inferred from the statblock and default rules"
+						>
 							<v-sheet class="pa-4">
 								<v-container class="pa-0">
 									<v-row>
 										<v-col>
-											<v-number-input v-model="data.spellcasting.innateSpells.spellDcOverride"
-												label="DC Override" clearable />
+											<v-number-input
+												v-model="data.spellcasting.innateSpells.spellDcOverride"
+												label="DC Override" clearable
+											/>
 										</v-col>
 										<v-col>
-											<v-number-input v-model="data.spellcasting.innateSpells.spellBonusOverride"
-												label="Attack Bonus Override" clearable />
+											<v-number-input
+												v-model="data.spellcasting.innateSpells.spellBonusOverride"
+												label="Attack Bonus Override" clearable
+											/>
 										</v-col>
 									</v-row>
 								</v-container>
 								<div>
-									<v-textarea v-model="data.spellcasting.innateSpells.customDescription"
-										label="Description override" />
+									<v-textarea
+										v-model="data.spellcasting.innateSpells.customDescription"
+										label="Description override"
+									/>
 								</div>
 								<v-divider />
 								<v-card-text> Add a new daily amount of casts here. </v-card-text>
 								<v-container class="pa-0">
 									<v-row>
 										<v-col>
-											<v-number-input label="Add new daily amount" :min="4" clearable
-												v-model="newDailyAmount" />
+											<v-number-input
+												v-model="newDailyAmount" label="Add new daily amount" :min="4"
+												clearable
+											/>
 										</v-col>
 										<v-col>
-											<v-btn @click="addNewDaily()" class="w-100" size="large">
+											<v-btn class="w-100" size="large" @click="addNewDaily()">
 												Add
 											</v-btn>
 										</v-col>
@@ -188,9 +205,11 @@ const handleNewCustomInnateSpell = () => {
 								<v-container class="pa-0">
 									<v-card-text> Add a (comment) to each spell here. </v-card-text>
 									<v-row>
-										<template v-for="times, idx in data.spellcasting.innateSpells.spellList"
-											:key="idx">
-											<v-col v-for="(spell, index) of times" cols="4" :key="index">
+										<template
+											v-for="times, idx in data.spellcasting.innateSpells.spellList"
+											:key="idx"
+										>
+											<v-col v-for="(spell, index) of times" :key="index" cols="4">
 												<v-text-field v-model="spell.comment" :label="spell.spell" />
 											</v-col>
 										</template>
@@ -207,15 +226,19 @@ const handleNewCustomInnateSpell = () => {
 					</template>
 				</v-dialog>
 			</v-col>
-			<v-col cols="6" v-for="_, times in data.spellcasting.innateSpells.spellList">
-				<div :class="{ 'select-with-delete': parseInt(times.toString()) > 3 }" :key="times">
-					<v-combobox v-model="data.spellcasting.innateSpells.spellList[times]" item-title="spell"
+			<v-col v-for="_, times in data.spellcasting.innateSpells.spellList" cols="6">
+				<div :key="times" :class="{ 'select-with-delete': parseInt(times.toString()) > 3 }">
+					<v-combobox
+						v-model="data.spellcasting.innateSpells.spellList[times]" item-title="spell"
 						:items="spellListFlattened" multiple chips closable-chips return-object
-						hint="Supports custom spells" @update:modelValue="handleNewCustomInnateSpell"
-						:label="times === '0' ? 'At will' : `${times}/day`" class="w-100" persistent-hint>
+						hint="Supports custom spells" :label="times === '0' ? 'At will' : `${times}/day`"
+						class="w-100" persistent-hint @update:model-value="handleNewCustomInnateSpell"
+					>
 						<template #append>
-							<v-icon-btn v-if="parseInt(times.toString()) > 3" v-tooltip="'Delete this daily amount'"
-								icon="mdi:delete" @click="delete data.spellcasting.innateSpells.spellList[times]" />
+							<v-icon-btn
+								v-if="parseInt(times.toString()) > 3" v-tooltip="'Delete this daily amount'"
+								icon="mdi:delete" @click="delete data.spellcasting.innateSpells.spellList[times]"
+							/>
 						</template>
 					</v-combobox>
 				</div>
@@ -224,22 +247,30 @@ const handleNewCustomInnateSpell = () => {
 		<SectionHeader title="Class Spellcasting" />
 		<v-row class="mt-4">
 			<v-col cols="6">
-				<v-select v-model="data.spellcasting.casterSpells.castingClass" :items="classes" label="Class" clearable
-					hide-details />
+				<v-select
+					v-model="data.spellcasting.casterSpells.castingClass" :items="classes" label="Class" clearable
+					hide-details
+				/>
 			</v-col>
 			<v-col cols="6">
-				<v-select v-model="data.spellcasting.casterSpells.casterLevel" :items="classLevels" label="Caster level"
-					hide-details />
+				<v-select
+					v-model="data.spellcasting.casterSpells.casterLevel" :items="classLevels" label="Caster level"
+					hide-details
+				/>
 			</v-col>
 			<template v-if="data.spellcasting.casterSpells.castingClass">
-				<v-col cols="6" v-if="!['Ranger', 'Paladin'].includes(data.spellcasting.casterSpells.castingClass)">
-					<v-combobox v-model="data.spellcasting.casterSpells.spellList[0]" :items="spellList![0]" multiple
-						chips closable-chips label="Cantrips" hint="Supports custom spells" persistent-hint />
+				<v-col v-if="!['Ranger', 'Paladin'].includes(data.spellcasting.casterSpells.castingClass)" cols="6">
+					<v-combobox
+						v-model="data.spellcasting.casterSpells.spellList[0]" :items="spellList![0]" multiple
+						chips closable-chips label="Cantrips" hint="Supports custom spells" persistent-hint
+					/>
 				</v-col>
 				<v-col v-for="level in spellLevelList" :key="level" cols="6">
-					<v-combobox v-model="data.spellcasting.casterSpells.spellList[level]"
+					<v-combobox
+						v-model="data.spellcasting.casterSpells.spellList[level]"
 						:items="getSpellsByLevel(level)" multiple chips closable-chips :label="`Level ${level} spells`"
-						hint="Supports custom spells" persistent-hint />
+						hint="Supports custom spells" persistent-hint
+					/>
 				</v-col>
 			</template>
 			<v-col cols="6">
@@ -251,38 +282,49 @@ const handleNewCustomInnateSpell = () => {
 					</template>
 
 					<template #default="{ isActive }">
-						<v-card title="Customize class spellcasting defaults"
-							subtitle="The options here allow you to customize the defaults inferred from the statblock and default rules">
+						<v-card
+							title="Customize class spellcasting defaults"
+							subtitle="The options here allow you to customize the defaults inferred from the statblock and default rules"
+						>
 							<v-sheet class="pa-4">
 								<v-container class="pa-0">
 									<v-row>
 										<v-col>
-											<v-number-input v-model="data.spellcasting.casterSpells.spellDcOverride"
-												label="DC Override" clearable />
+											<v-number-input
+												v-model="data.spellcasting.casterSpells.spellDcOverride"
+												label="DC Override" clearable
+											/>
 										</v-col>
 										<v-col>
-											<v-number-input v-model="data.spellcasting.casterSpells.spellBonusOverride"
-												label="Attack Bonus Override" clearable />
+											<v-number-input
+												v-model="data.spellcasting.casterSpells.spellBonusOverride"
+												label="Attack Bonus Override" clearable
+											/>
 										</v-col>
 									</v-row>
 								</v-container>
 								<div>
-									<v-textarea v-model="data.spellcasting.casterSpells.customDescription"
-										label="Description override" />
+									<v-textarea
+										v-model="data.spellcasting.casterSpells.customDescription"
+										label="Description override"
+									/>
 								</div>
 								<v-spacer />
 								<v-divider />
 
 								<v-container v-if="data.spellcasting.casterSpells.spellSlotList" class="pa-0">
-									<v-card-text> Override the number of spell slots granted at each level
-										here.</v-card-text>
+									<v-card-text>
+										Override the number of spell slots granted at each level
+										here.
+									</v-card-text>
 									<v-row>
 										<v-col v-for="x in 9" :key="x" cols="4">
-											<v-number-input v-model="data.spellcasting.casterSpells.spellSlotList[x]"
-												:label="`Level ${x}`" :min="0" size="small" variant="solo" clearable />
+											<v-number-input
+												v-model="data.spellcasting.casterSpells.spellSlotList[x]"
+												:label="`Level ${x}`" :min="0" size="small" variant="solo" clearable
+											/>
 										</v-col>
 									</v-row>
-
 								</v-container>
 							</v-sheet>
 							<v-card-actions>

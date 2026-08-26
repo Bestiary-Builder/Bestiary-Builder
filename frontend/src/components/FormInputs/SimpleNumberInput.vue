@@ -123,13 +123,19 @@ function clear() {
 
 <template>
 	<div class="simple-quantity" :class="{ clearable: isClearable }">
-		<v-icon-btn icon="mdi:minus" :text="`Decrease ${label}`" @click.prevent="decrease" size="small" color="white"
-			variant="plain" />
-		<input :id="labelId" ref="input" :value="isNaN(value) ? '' : value" type="number" :name="label" :min="min"
-			:max="max" inputmode="numeric" @change="change">
-		<v-icon-btn icon="mdi:plus" :text="`Increase ${label}`" @click.prevent="increase" size="small" color="white"
-			variant="plain" />
-		<v-icon-btn icon="mdi:delete" text="clear" @click="clear" v-if="isClearable" />
+		<v-icon-btn
+			icon="mdi:minus" :text="`Decrease ${label}`" size="small" color="white" variant="plain"
+			@click.prevent="decrease"
+		/>
+		<input
+			:id="labelId" ref="input" :value="isNaN(value) ? '' : value" type="number" :name="label" :min="min"
+			:max="max" inputmode="numeric" @change="change"
+		>
+		<v-icon-btn
+			icon="mdi:plus" :text="`Increase ${label}`" size="small" color="white" variant="plain"
+			@click.prevent="increase"
+		/>
+		<v-icon-btn v-if="isClearable" icon="mdi:delete" text="clear" @click="clear" />
 	</div>
 </template>
 

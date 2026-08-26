@@ -41,11 +41,14 @@ const currentDocu = computed(() => {
 				<h4>Overview</h4>
 				See full documentation <a
 					:href="`https://avrae.readthedocs.io/en/stable/automation_ref.html#${currentDocu.url}`"
-					target="_blank">here</a>.
-				<VueMonacoEditor v-if="currentDocu?.ts"
+					target="_blank"
+				>here</a>.
+				<VueMonacoEditor
+					v-if="currentDocu?.ts"
 					:value="`// Values denoted with an ? are optional.\n${currentDocu.ts}`" theme="vs-dark"
 					:options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, automaticLayout: true, readOnly: true, scrollBeyondLastLine: false }"
-					language="typescript" height="200px" />
+					language="typescript" height="200px"
+				/>
 			</div>
 			<div v-if="currentDocu?.opt">
 				<hr>

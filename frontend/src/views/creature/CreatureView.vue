@@ -11,7 +11,7 @@ import { useFetch } from "@/utils/utils";
 const $route = useRoute();
 const $router = useRouter();
 
-const { addToast } = useToast()
+const { addToast } = useToast();
 const data = ref<CreatureResponse | null>(null);
 const bestiary = ref<BestiaryResponse | null>(null);
 const isOwner = ref(false);
@@ -29,7 +29,7 @@ onMounted(async () => {
 			isOwner.value = bData.permissionLevel === "owner";
 			isEditor.value = bData.permissionLevel === "editor";
 			if (bestiary.value && data.value && (isOwner.value || isEditor.value))
-				void $router.push(`/creature/edit/${data.value.id}`)
+				void $router.push(`/creature/edit/${data.value.id}`);
 		}
 		else {
 			addToast(error, { color: "error" });
@@ -38,7 +38,7 @@ onMounted(async () => {
 		}
 	}
 	else {
-		addToast(error, { color: "error" })
+		addToast(error, { color: "error" });
 		if (status === 401 || status === 404)
 			await $router.replace("/404");
 	}
@@ -47,25 +47,29 @@ onMounted(async () => {
 
 <template>
 	<div>
-		<Breadcrumbs v-if="bestiary && (data?.stats.description.name || data?.stats.description.name === '')" :routes="[
-			{
-				path: `/bestiary/view/${bestiary?.id}`,
-				text: bestiary?.name,
-				isCurrent: false
-			},
-			{
-				path: '',
-				text: data?.stats.description.name || 'Unnamed Creature',
-				isCurrent: true
-			}
-		]">
-			<CopyCreature v-if="data" no-import-all :may-import="false"
-				:current-creature="{ ...data, bestiaryName: bestiary.name }" />
+		<Breadcrumbs
+			v-if="bestiary && (data?.stats.description.name || data?.stats.description.name === '')" :routes="[
+				{
+					path: `/bestiary/view/${bestiary?.id}`,
+					text: bestiary?.name,
+					isCurrent: false
+				},
+				{
+					path: '',
+					text: data?.stats.description.name || 'Unnamed Creature',
+					isCurrent: true
+				}
+			]"
+		>
+			<CopyCreature
+				v-if="data" no-import-all :may-import="false"
+				:current-creature="{ ...data, bestiaryName: bestiary.name }"
+			/>
 			<ExportCreature :data="data.stats" />
 		</Breadcrumbs>
 		<div class="content">
 			<div class="content-container--inner">
-				<v-skeleton-loader type="heading, divider, text, text, sentences, heading, text" v-if="data === null" />
+				<v-skeleton-loader v-if="data === null" type="heading, divider, text, text, sentences, heading, text" />
 				<StatblockRenderer v-else :data="data.stats" is2024 statblock-design="BestiaryBuilder" />
 			</div>
 		</div>

@@ -1,5 +1,5 @@
-import { ref } from "vue";
 import type { EffectWithTarget, Features } from "~/shared";
+import { ref } from "vue";
 
 export const displayNames: Record<string, { label: string; icon: string }> = {
 	variable: { label: "Set Variable", icon: "proicons:braces-variable" },
@@ -101,7 +101,7 @@ export const deepKeys = ["effects", "hit", "miss", "fail", "success", "onTrue", 
 
 type activation_types = {
 	[id in keyof Features]: number;
-};;
+}; ;
 export const activation_type: activation_types = {
 	features: 2,
 	actions: 1,
@@ -112,9 +112,6 @@ export const activation_type: activation_types = {
 	lair: 11,
 	regional: 8
 };
-
-
-
 
 const dragState = ref<{
 	originalDepth: number;
@@ -127,7 +124,8 @@ const collectDepthNodes = (root: HTMLElement) => {
 
 	for (const el of all) {
 		const raw = el.style.getPropertyValue("--depth");
-		if (raw) nodes.push({ el, originalDepth: Number.parseFloat(raw) });
+		if (raw)
+			nodes.push({ el, originalDepth: Number.parseFloat(raw) });
 	}
 
 	return nodes;
@@ -135,7 +133,8 @@ const collectDepthNodes = (root: HTMLElement) => {
 
 const onGhostStart = (evt: any) => {
 	const item = evt.item as HTMLElement | null;
-	if (!item) return;
+	if (!item)
+		return;
 
 	const originalDepth = Number.parseFloat(getComputedStyle(item).getPropertyValue("--depth"));
 	dragState.value = { originalDepth, ghostNodes: [] };
@@ -145,19 +144,22 @@ const onGhostMove = (evt: any) => {
 	const related = evt.related as HTMLElement | null;
 	const to = evt.to as HTMLElement | null;
 
-	const depthSource =
-		related?.querySelector<HTMLElement>(".tree-row")
-		?? related
-		?? to;
-	if (!depthSource || !dragState.value) return true;
+	const depthSource
+		= related?.querySelector<HTMLElement>(".tree-row")
+			?? related
+			?? to;
+	if (!depthSource || !dragState.value)
+		return true;
 
 	const targetDepthRaw = getComputedStyle(depthSource).getPropertyValue("--depth").trim();
-	if (!targetDepthRaw) return true;
+	if (!targetDepthRaw)
+		return true;
 	const targetDepth = Number.parseFloat(targetDepthRaw);
 
 	const ghostClass = (draggingProps as any).ghostClass ?? "sortable-ghost";
 	const ghostEl = to?.querySelector<HTMLElement>(`.${ghostClass}`);
-	if (!ghostEl) return true;
+	if (!ghostEl)
+		return true;
 
 	// Lazily snapshot the ghost's own inline-depth nodes the first time we see it,
 	// since SortableJS creates the ghost clone slightly after onStart fires.
@@ -177,17 +179,16 @@ const onGhostEnd = () => {
 	dragState.value = null;
 };
 
-
 export const draggingProps = {
-	'group': 'tree-group',
-	'handle': ".drag-handle",
-	'ghost-class': "drag-ghost",
-	'class': "draggable-list",
-	'animation': 200,
-	'swap-treshold': 0.65,
-	'invert-swap': true,
-	'inverted-swap-treshold': 0.65,
-	'on-move': onGhostMove,
-	'on-start': onGhostStart,
-	'on-end': onGhostEnd
-}
+	"group": "tree-group",
+	"handle": ".drag-handle",
+	"ghost-class": "drag-ghost",
+	"class": "draggable-list",
+	"animation": 200,
+	"swap-treshold": 0.65,
+	"invert-swap": true,
+	"inverted-swap-treshold": 0.65,
+	"on-move": onGhostMove,
+	"on-start": onGhostStart,
+	"on-end": onGhostEnd
+};

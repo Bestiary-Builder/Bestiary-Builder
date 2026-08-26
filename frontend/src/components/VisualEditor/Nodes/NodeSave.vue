@@ -23,19 +23,23 @@ useDataCleanup(currentEffect, ["dc"]);
 	<template v-if="currentEffect">
 		<SectionHeader title="Saving Throw" />
 		<div class="two-wide">
-			<v-select v-model="currentEffect.stat" label="Save Stat" title="Saving throw stat"
-				:items="Object.entries(fullStatNames).map(([value, label]) => ({ title: label, value }))" />
+			<v-select
+				v-model="currentEffect.stat" label="Save Stat" title="Saving throw stat"
+				:items="Object.entries(fullStatNames).map(([value, label]) => ({ title: label, value }))"
+			/>
 		</div>
 		<SectionHeader title="Additional Options" />
 		<div>
 			<v-text-field v-model="currentEffect.dc" label="DC (optional)" hint="IntExpression" />
 		</div>
 		<div class="two-wide">
-			<v-select v-model="currentEffect.adv" label="Advantage (optional)" :items="[
-				{ title: 'Flat', value: 0 },
-				{ title: 'Advantage', value: 1 },
-				{ title: 'Disadvantage', value: -1 },
-			]" />
+			<v-select
+				v-model="currentEffect.adv" label="Advantage (optional)" :items="[
+					{ title: 'Flat', value: 0 },
+					{ title: 'Advantage', value: 1 },
+					{ title: 'Disadvantage', value: -1 },
+				]"
+			/>
 		</div>
 	</template>
 </template>
