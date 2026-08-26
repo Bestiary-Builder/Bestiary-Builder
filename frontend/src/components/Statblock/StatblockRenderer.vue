@@ -465,7 +465,7 @@ const renderFeature = (feature: FeatureEntity) => {
 			</template>
 		</div>
 
-		<div v-if="data.description.description" class="feature-container statblock-description px-4">
+		<div v-if="data.description.description" class="feature-container statblock-description py-4 px-2">
 			<h2 class="feature-container-title">
 				Description
 			</h2>

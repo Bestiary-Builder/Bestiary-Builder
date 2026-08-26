@@ -261,58 +261,46 @@ const importCreature = async (creature: Statblock) => {
 
 <template>
 	<div>
-		<Breadcrumbs
-			:routes="[
-				{
-					path: '/bestiaries/personal',
-					text: 'My Bestiaries',
-					isCurrent: false
-				},
-				{
-					path: `/bestiary/edit/${bestiary?.id}`,
-					text: bestiary?.name || 'Bestiary',
-					isCurrent: false
-				},
-				{
-					path: '',
-					text: data?.description.name || 'Creature',
-					isCurrent: true
-				}
-			]"
-		>
-			<v-icon-btn
-				v-if="madeChanges && (isOwner || isEditor)" v-tooltip="'Save Creature (CTRL+S)'"
+		<Breadcrumbs :routes="[
+			{
+				path: '/bestiaries/personal',
+				text: 'My Bestiaries',
+				isCurrent: false
+			},
+			{
+				path: `/bestiary/edit/${bestiary?.id}`,
+				text: bestiary?.name || 'Bestiary',
+				isCurrent: false
+			},
+			{
+				path: '',
+				text: data?.description.name || 'Creature',
+				isCurrent: true
+			}
+		]">
+			<v-icon-btn v-if="madeChanges && (isOwner || isEditor)" v-tooltip="'Save Creature (CTRL+S)'"
 				icon="mdi:content-save" text="Save creature" :class="{ inverted: !isSavingStatblock }" size="24"
-				:loading="isSavingStatblock" @click="saveStatblock()"
-			/>
+				:loading="isSavingStatblock" @click="saveStatblock()" />
 
-			<CopyCreature
-				v-if="rawInfo" no-import-all :may-import="isOwner || isEditor"
+			<CopyCreature v-if="rawInfo" no-import-all :may-import="isOwner || isEditor"
 				:current-creature="{ ...rawInfo, bestiaryName: bestiary?.name || '' }"
-				@import-creature="(creature) => importCreature(creature)"
-			/>
+				@import-creature="(creature) => importCreature(creature)" />
 
 			<v-dialog v-if="isOwner || isEditor" width="600">
 				<template #activator="{ props }">
-					<v-icon-btn
-						v-tooltip="'Import creature'" text="Import Creature" icon="mdi:import" size="24"
-						v-bind="props"
-					/>
+					<v-icon-btn v-tooltip="'Import creature'" text="Import Creature" icon="mdi:import" size="24"
+						v-bind="props" />
 				</template>
 
 				<template #default="{ isActive }">
 					<v-card class="text-center pb-2 pa-4" title="Import Creature">
 						<v-card-actions class="d-flex flex-column align-center justify-center" min-width="200">
-							<v-select
-								v-model="importType" label="Choose import type"
+							<v-select v-model="importType" label="Choose import type"
 								:items="['Bestiary Builder JSON', '5e Tools JSON', 'CritterDB Creature link']"
-								class="w-100"
-							/>
-							<v-text-field
-								v-if="importType" v-model="importText"
+								class="w-100" />
+							<v-text-field v-if="importType" v-model="importText"
 								:label="importType === 'CritterDB Creature link' ? 'Link' : 'JSON data'"
-								class="w-100"
-							/>
+								class="w-100" />
 							<v-spacer v-else />
 							<v-btn v-if="importText" class="w-100" color="success" @click="importCreatureFromUserInput">
 								Import
@@ -353,11 +341,9 @@ const importCreature = async (creature: Statblock) => {
 			<v-container class="pa-0">
 				<v-row>
 					<v-col :cols="store.isMobile ? 12 : 6">
-						<v-sheet elevation="2" color="surface-1">
-							<v-tabs
-								v-model="tab" color="primary" style="background-color: rgb(var(--v-theme-surface))"
-								:grow="!store.isMobile" :show-arrows="store.isMobile"
-							>
+						<v-sheet elevation="2">
+							<v-tabs v-model="tab" color="primary" style="background-color: rgb(var(--v-theme-surface))"
+								:grow="!store.isMobile" :show-arrows="store.isMobile">
 								<v-tab :value="1">
 									Description
 								</v-tab>
@@ -378,35 +364,35 @@ const importCreature = async (creature: Statblock) => {
 								</v-tab>
 							</v-tabs>
 							<v-divider />
-							<v-sheet color="surface-1">
+							<v-sheet>
 								<v-tabs-window v-model="tab" class="editor-content">
 									<v-tabs-window-item :value="1">
-										<v-sheet color="surface-1" class="pa-4">
+										<v-sheet class="pa-4" color="surface-light">
 											<DescriptionPanel :data="data" />
 										</v-sheet>
 									</v-tabs-window-item>
 									<v-tabs-window-item :value="2">
-										<v-sheet color="surface-1" class="pa-4">
+										<v-sheet color="surface-light" class="pa-4">
 											<CorePanel :data="data" />
 										</v-sheet>
 									</v-tabs-window-item>
 									<v-tabs-window-item :value="3">
-										<v-sheet color="surface-1" class="pa-4">
+										<v-sheet color="surface-light" class="pa-4">
 											<StatsPanel :data="data" />
 										</v-sheet>
 									</v-tabs-window-item>
 									<v-tabs-window-item :value="4">
-										<v-sheet color="surface-1" class="pa-4">
+										<v-sheet color="surface-light" class="pa-4">
 											<DefensesPanel :data="data" />
 										</v-sheet>
 									</v-tabs-window-item>
 									<v-tabs-window-item :value="5">
-										<v-sheet color="surface-1" class="pa-4">
+										<v-sheet color="surface-light" class="pa-4">
 											<FeaturesPanel :data="data" :raw-info="rawInfo" />
 										</v-sheet>
 									</v-tabs-window-item>
 									<v-tabs-window-item :value="6">
-										<v-sheet color="surface-1" class="pa-4">
+										<v-sheet color="surface-light" class="pa-4">
 											<SpellcastingPanel :data="data" :raw-info="rawInfo" />
 										</v-sheet>
 									</v-tabs-window-item>
@@ -416,10 +402,8 @@ const importCreature = async (creature: Statblock) => {
 					</v-col>
 
 					<v-col :cols="store.isMobile ? 12 : 6">
-						<v-skeleton-loader
-							v-if="rawInfo === null"
-							type="heading, divider, text, text, sentences, heading, text"
-						/>
+						<v-skeleton-loader v-if="rawInfo === null"
+							type="heading, divider, text, text, sentences, heading, text" />
 						<StatblockRenderer v-else :data="data" />
 					</v-col>
 				</v-row>

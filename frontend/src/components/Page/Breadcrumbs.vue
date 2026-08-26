@@ -4,7 +4,7 @@ import { isClient } from "@vueuse/shared";
 import { computed, ref, watchEffect } from "vue";
 import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
-import { useTheme } from "vuetify/lib/composables/theme.mjs";
+import { useTheme } from "vuetify";
 
 const { routes } = defineProps<{ routes: links }>();
 

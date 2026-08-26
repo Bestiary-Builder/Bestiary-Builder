@@ -161,68 +161,54 @@ const activationTypeOptions = computed(() => {
 
 <template>
 	<div>
-		<Breadcrumbs
-			v-if="collection" :routes="[
-				{
-					path: isOwner || isEditor ? '/armories/personal' : '/armories/public',
-					text: isOwner || isEditor ? 'My Automations' : 'Automations',
-					isCurrent: false
-				},
-				{
-					path: '',
-					text: collection?.name,
-					isCurrent: true
-				}
-			]"
-		>
-			<v-icon-btn
-				v-tooltip="'Create creature'" text="Create creature" icon="mdi:plus" size="24" class="inverted"
-				@click="createNewActionOpen = !createNewActionOpen"
-			/>
+		<Breadcrumbs v-if="collection" :routes="[
+			{
+				path: isOwner || isEditor ? '/armories/personal' : '/armories/public',
+				text: isOwner || isEditor ? 'My Automations' : 'Automations',
+				isCurrent: false
+			},
+			{
+				path: '',
+				text: collection?.name,
+				isCurrent: true
+			}
+		]">
+			<v-icon-btn v-tooltip="'Create creature'" text="Create creature" icon="mdi:plus" size="24" class="inverted"
+				@click="createNewActionOpen = !createNewActionOpen" />
 
 			<v-dialog v-if="isOwner" max-width="950">
 				<template #activator="{ props }">
-					<v-icon-btn
-						v-tooltip="'Settings'" text="Collection Settings" icon="mdi:cog" size="24"
-						v-bind="props"
-					/>
+					<v-icon-btn v-tooltip="'Settings'" text="Collection Settings" icon="mdi:cog" size="24"
+						v-bind="props" />
 				</template>
 
 				<template #default="{ isActive }">
 					<v-card title="Collection Settings" class="pa-4">
 						<v-row>
 							<v-col cols="6">
-								<v-text-field
-									v-model="collection.name" label="Name"
+								<v-text-field v-model="collection.name" label="Name"
 									:maxlength="store.limits?.nameLength" :min-length="store.limits?.nameMin"
 									:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]"
-									class="mb-4"
-								/>
+									class="mb-4" />
 							</v-col>
 							<v-col cols="6">
 								<v-text-field v-model="collection.image" label="Image" class="mb-4" />
 							</v-col>
 
 							<v-col cols="12">
-								<v-textarea
-									v-model="collection.description"
+								<v-textarea v-model="collection.description"
 									:max-length="store.limits?.descriptionLength"
 									:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]"
-									label="Description" class="mb-4" hint="Supports Markdown" persistent-hint counter
-								/>
+									label="Description" class="mb-4" hint="Supports Markdown" persistent-hint counter />
 							</v-col>
 
 							<v-col cols="6">
-								<v-select
-									v-model="collection.status" label="Status"
-									:items="[{ value: 'private', title: 'Private' }, { value: 'unlisted', title: 'Unlisted' }, { value: 'public', title: 'Public' }]"
-								/>
+								<v-select v-model="collection.status" label="Status"
+									:items="[{ value: 'private', title: 'Private' }, { value: 'unlisted', title: 'Unlisted' }, { value: 'public', title: 'Public' }]" />
 							</v-col>
 							<v-col cols="6">
-								<v-select
-									v-model="collection.tags" multiple :items="store.tags || []" label="Tags"
-									chips closable-chips
-								/>
+								<v-select v-model="collection.tags" multiple :items="store.tags || []" label="Tags"
+									chips closable-chips />
 							</v-col>
 
 							<v-col cols="12" class="px-4">
@@ -242,11 +228,9 @@ const activationTypeOptions = computed(() => {
 								</p>
 							</v-col>
 							<v-col cols="6">
-								<v-text-field
-									v-model="editorToAdd" inputmode="numeric" label="Discord user ID"
+								<v-text-field v-model="editorToAdd" inputmode="numeric" label="Discord user ID"
 									:rules="[rules.integer('This must be a numeric Discord User ID.')]"
-									pattern="[0-9]*"
-								/>
+									pattern="[0-9]*" />
 							</v-col>
 							<v-col cols="6">
 								<v-btn class="w-100" size="large" @click="addEditor(editorToAdd)">
@@ -280,28 +264,22 @@ const activationTypeOptions = computed(() => {
 			</v-dialog>
 			<DropdownMenu>
 				<template #activator="{ props }">
-					<v-icon-btn
-						v-tooltip="'Search automations'" text="Search automations" icon="mdi:tag" size="24"
-						v-bind="props"
-					/>
+					<v-icon-btn v-tooltip="'Search automations'" text="Search automations" icon="mdi:tag" size="24"
+						v-bind="props" />
 				</template>
 				<v-card min-width="400" class="pa-4" title="Search collection">
 					<v-row>
 						<v-col cols="12">
-							<v-select
-								v-model="sortMode"
+							<v-select v-model="sortMode"
 								:items="['Custom', 'Alphabetically', 'CR Ascending', 'CR Descending', 'Creature Type']"
-								label="Collection sort type" width="100%"
-							/>
+								label="Collection sort type" width="100%" />
 						</v-col>
 						<v-col cols="6">
 							<v-text-field v-model="searchText" label="Name" />
 						</v-col>
 						<v-col cols="6">
-							<v-select
-								v-model="searchOptions.tags" :items="creatureTypes" label="Creature type" multiple
-								chips closable-chips
-							/>
+							<v-select v-model="searchOptions.tags" :items="creatureTypes" label="Creature type" multiple
+								chips closable-chips />
 						</v-col>
 					</v-row>
 				</v-card>
@@ -309,10 +287,8 @@ const activationTypeOptions = computed(() => {
 
 			<v-dialog v-if="isOwner" max-width="750">
 				<template #activator="{ props }">
-					<v-icon-btn
-						v-tooltip="'Import automations'" text="Import automations" icon="mdi:import" size="24"
-						v-bind="props"
-					/>
+					<v-icon-btn v-tooltip="'Import automations'" text="Import automations" icon="mdi:import" size="24"
+						v-bind="props" />
 				</template>
 
 				<template #default="{ isActive }">
@@ -361,7 +337,7 @@ const activationTypeOptions = computed(() => {
 		</Breadcrumbs>
 		<div class="content">
 			<div v-if="collection">
-				<v-card class="pa-2" color="surface-1" elevation="0">
+				<v-card class="pa-2" color="surface" elevation="0">
 					<v-card-title class="pb-0">
 						{{ collection.name }}
 					</v-card-title>
@@ -385,20 +361,16 @@ const activationTypeOptions = computed(() => {
 
 								<v-col cols="12">
 									<v-chip-group v-if="collection.tags.length">
-										<v-chip
-											v-for="tag in [...collection.tags].sort()" :key="tag" size="small"
-											variant="tonal"
-										>
+										<v-chip v-for="tag in [...collection.tags].sort()" :key="tag" size="small"
+											variant="tonal">
 											{{ tag }}
 										</v-chip>
 									</v-chip-group>
 								</v-col>
 
 								<v-col cols="12">
-									<Markdown
-										class="description "
-										:text="collection.description || 'No description set.'" tag="p"
-									/>
+									<Markdown class="description "
+										:text="collection.description || 'No description set.'" tag="p" />
 								</v-col>
 							</v-col>
 							<v-col cols="8">
@@ -413,10 +385,8 @@ const activationTypeOptions = computed(() => {
 				<v-list v-else v-model:opened="openedGroups">
 					<v-list-group v-for="group in groupedItems" :key="group.type" :value="group.type">
 						<template #activator="{ props }">
-							<v-list-item
-								v-bind="props" :title="group.label"
-								:subtitle="`${group.items.length} action${group.items.length > 1 ? 's' : ''}`"
-							/>
+							<v-list-item v-bind="props" :title="group.label"
+								:subtitle="`${group.items.length} action${group.items.length > 1 ? 's' : ''}`" />
 						</template>
 
 						<v-list-item v-for="item in group.items" :key="item.id">
@@ -430,10 +400,8 @@ const activationTypeOptions = computed(() => {
 							</template>
 
 							<template #append>
-								<v-icon-btn
-									icon="mdi-pencil" variant="text"
-									@click="$router.push(`/automation/edit/${item.id}`)"
-								/>
+								<v-icon-btn icon="mdi-pencil" variant="text"
+									@click="$router.push(`/automation/edit/${item.id}`)" />
 								<ImportToCharacter :automation="item.automation" />
 								<DropdownMenu>
 									<template #activator="{ props }">
@@ -444,10 +412,8 @@ const activationTypeOptions = computed(() => {
 											Are you sure you want to delete <br><b>{{ item.name }}</b>?
 										</v-card-text>
 										<v-card-actions>
-											<v-btn
-												color="red" size="large" class="mx-auto"
-												@click="deleteItem(item.id)"
-											>
+											<v-btn color="red" size="large" class="mx-auto"
+												@click="deleteItem(item.id)">
 												Confirm
 											</v-btn>
 										</v-card-actions>
@@ -467,28 +433,22 @@ const activationTypeOptions = computed(() => {
 			<v-card-text>
 				<v-row>
 					<v-col>
-						<v-text-field
-							v-model="createOptions.name" label="Name"
-							:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 3)]"
-						/>
+						<v-text-field v-model="createOptions.name" label="Name"
+							:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 3)]" />
 					</v-col>
 					<v-col>
 						<v-select v-model="createOptions.activation_type" label="Type" :items="activationTypeOptions" />
 					</v-col>
 					<v-col cols="12">
-						<v-textarea
-							v-model="createOptions.description" label="Description"
-							:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]" counter
-						/>
+						<v-textarea v-model="createOptions.description" label="Description"
+							:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]" counter />
 					</v-col>
 				</v-row>
 			</v-card-text>
 			<v-card-actions>
 				<v-spacer />
-				<v-btn
-					text="Create" color="success" size="large"
-					@click="createItem({ name: createOptions.name, description: createOptions.description, automation: { _v: 2, activation_type: createOptions.activation_type || 0, name: createOptions.name, automation: [] } }, false); createNewActionOpen = false"
-				/>
+				<v-btn text="Create" color="success" size="large"
+					@click="createItem({ name: createOptions.name, description: createOptions.description, automation: { _v: 2, activation_type: createOptions.activation_type || 0, name: createOptions.name, automation: [] } }, false); createNewActionOpen = false" />
 				<v-btn text="Cancel" size="large" @click="createNewActionOpen = false" />
 			</v-card-actions>
 		</v-card>

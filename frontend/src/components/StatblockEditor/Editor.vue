@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type * as Monaco from "monaco-editor";
 import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
-import { useElementSize, watchDebounced } from "@vueuse/core";
-import { shallowRef, useTemplateRef } from "vue";
+import { useElementSize, useLocalStorage, watchDebounced } from "@vueuse/core";
+import { onMounted, shallowRef, useTemplateRef, watch } from "vue";
+import { useTheme } from "vuetify";
 
 const { height = 250 } = defineProps<{ height?: number }>();
 
@@ -14,16 +15,7 @@ function handleMount(
 ) {
 	editorRef.value = editor;
 
-	monaco.editor.defineTheme("my-dark-theme", {
-		base: "vs-dark",
-		inherit: true,
-		rules: [],
-		colors: {
-			"editor.background": "#1a1919",
-		},
-	});
-
-	monaco.editor.setTheme("my-dark-theme");
+	monaco.editor.setTheme(theme.name.value === 'dark' ? 'vs-dark' : 'vs-light');
 
 	editor.addCommand(
 		monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyB,
@@ -82,7 +74,7 @@ function toggleMarkdown(
 
 	const hasMarkers
 		= before === marker
-			&& after === marker;
+		&& after === marker;
 
 	if (hasMarkers) {
 		// Remove markers
@@ -360,6 +352,11 @@ const { width } = useElementSize(wrapper);
 watchDebounced(width, async () => {
 	editorRef.value?.layout();
 }, { debounce: 500, maxWait: 1000 },);
+
+const theme = useTheme()
+watch(() => theme, () => {
+	editorRef.value?.updateOptions({ theme: theme.name.value === 'dark' ? 'vs-dark' : 'vs-light' })
+})
 </script>
 
 <template>
@@ -371,30 +368,22 @@ watchDebounced(width, async () => {
 			<v-icon-btn size="20" icon="mdi:format-italic" text="Italic" @click="toggleMarkdown(editorRef!, '*')" />
 			<v-divider vertical />
 
-			<v-icon-btn
-				size="20" icon="mdi:format-list-bulleted" text="List"
-				@click="toggleLinePrefix(editorRef!, '* ')"
-			/>
-			<v-icon-btn
-				size="20" icon="mdi:format-list-numbered" text="Ordered list"
-				@click="toggleOrderedList(editorRef!)"
-			/>
-			<v-icon-btn
-				v-tooltip="'Makes everything but the first line indented as a \'hanging\' list.'" size="20"
+			<v-icon-btn size="20" icon="mdi:format-list-bulleted" text="List"
+				@click="toggleLinePrefix(editorRef!, '* ')" />
+			<v-icon-btn size="20" icon="mdi:format-list-numbered" text="Ordered list"
+				@click="toggleOrderedList(editorRef!)" />
+			<v-icon-btn v-tooltip="'Makes everything but the first line indented as a \'hanging\' list.'" size="20"
 				icon="mdi-format-indent-increase" text="Ordered list"
-				@click="toggleLineSuffix(editorRef!, ' {.hanging}')"
-			/>
+				@click="toggleLineSuffix(editorRef!, ' {.hanging}')" />
 			<v-divider vertical />
 			<v-icon-btn size="20" icon="mdi:format-header-1" text="Heading 1" @click="toggleHeading(editorRef!, 1)" />
 			<v-icon-btn size="20" icon="mdi:format-header-2" text="Heading 2" @click="toggleHeading(editorRef!, 2)" />
 			<v-icon-btn size="20" icon="mdi:format-header-3" text="Heading 3" @click="toggleHeading(editorRef!, 3)" />
 			<v-icon-btn size="20" icon="mdi:format-header-4" text="Heading 4" @click="toggleHeading(editorRef!, 4)" />
 		</div>
-		<VueMonacoEditor
-			v-model:value="model" theme="vs-dark"
-			:options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false, lineNumbers: 'off' }"
-			class="description-editor" :height="`${height}px`" width="100%" language="markdown" @mount="handleMount"
-		/>
+		<VueMonacoEditor v-model:value="model" theme="vs-dark"
+			:options="{ wordWrap: 'on', theme: theme.name.value === 'dark' ? 'vs-dark' : 'vs-light', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false, lineNumbers: 'off' }"
+			class="description-editor" :height="`${height}px`" width="100%" language="markdown" @mount="handleMount" />
 	</div>
 </template>
 
@@ -412,8 +401,10 @@ watchDebounced(width, async () => {
 
 <style lang="less">
 .monaco-wrapper-thing {
+
 	.monaco-editor {
 		min-height: 100px;
+
 	}
 
 	.monaco-editor,
@@ -424,5 +415,10 @@ watchDebounced(width, async () => {
 	.margin {
 		width: 0;
 	}
+}
+
+.description-editor {
+	border: 1px solid rgb(var(--v-theme-surface));
+
 }
 </style>

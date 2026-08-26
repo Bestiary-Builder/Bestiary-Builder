@@ -71,13 +71,14 @@ export const vuetify = createVuetify({
 				dark: true,
 				colors: {
 					"primary": "#ff4500",
-					"surface-1": "#3b3736"
 				},
 			},
 			light: {
 				dark: false,
 				colors: {
 					"primary": "#ff4500",
+					"surface": "#dfdfdf",
+					"surface-bright": "#707070"
 				},
 			}
 		}
