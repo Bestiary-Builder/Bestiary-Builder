@@ -12,7 +12,8 @@
 		"test": "vitest run",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
-		"type-check": "tsc --noEmit -p tsconfig.json"
+		"type-check": "tsc --noEmit -p tsconfig.json",
+		"prompt:hetzner": "tsx src/scripts/hetznerInference.ts"
 	},
 	"dependencies": {
 		"@prisma/adapter-pg": "^7.7.0",
