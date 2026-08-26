@@ -13,8 +13,8 @@
     "lint": "npm run lint -w shared && npm run lint -w backend && npm run lint -w frontend",
     "lint:fix": "npm run lint:fix -w shared ; npm run lint:fix -w backend ; npm run lint:fix -w frontend",
     "type-check": "npm run type-check -w shared && npm run type-check -w backend && npm run type-check -w frontend",
-    "prisma:generate": "npm run prisma:generate -w backend",
-    "prisma:migrate": "npm run prisma:migrate -w backend"
+    "prisma:generate": "npm run generate -w backend",
+    "prisma:migrate": "npm run migrate -w backend"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^9.2.0",

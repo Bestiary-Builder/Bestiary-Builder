@@ -7,6 +7,7 @@
 	},
 	"scripts": {
 		"generate": "prisma generate",
+		"migrate": "prisma migrate dev",
 		"dev": "npm run generate && npx nodemon",
 		"test": "vitest run",
 		"lint": "eslint .",
