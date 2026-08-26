@@ -214,7 +214,7 @@ const copyCurrentBestiary = async () => {
 };
 
 // misc
-const fullCreatureCache = new Map<string, Promise<CreatureWithStats | undefined>>();
+const fullCreatureCache = new Map<CreatureWithStats["id"], Promise<CreatureWithStats | undefined>>();
 const getFullCreature = async (creatureId: string) => {
 	const cachedCreature = fullCreatureCache.get(creatureId);
 	if (cachedCreature)
@@ -469,8 +469,7 @@ const hoverCreature = async (creature: CreatureMetaData) => {
 
 	.content-tile {
 		height: fit-content !important;
-		background: var(--color-surface-1);
-		color: white;
+		background: rgb(var(--v-theme-surface-light));
 		padding: 1rem;
 		box-shadow:
 			rgb(0 0 0 / 19%) 0 10px 20px,
@@ -531,7 +530,7 @@ const hoverCreature = async (creature: CreatureMetaData) => {
 			}
 
 			&:hover {
-				background-color: #484544;
+				background-color: color-mix(in srgb, rgb(var(--v-theme-surface-light)) 80%, white 20%);
 			}
 		}
 	}
