@@ -13,7 +13,7 @@
 
 
         <v-list density="compact" v-if="flattenedItems.length > 0">
-            <v-virtual-scroll max-height="500" :items="flattenedItems" item-height="50" item-key="key"
+            <v-virtual-scroll max-height="500" :items="flattenedItems" item-height="65" item-key="key"
                 ref="virtualScroll">
                 <template #default="{ item }">
                     <v-list-item v-if="item.type === 'header'" :title="item.label" class="group-header"
@@ -100,16 +100,18 @@ watch(debouncedHoveredCreature, () => {
 // --- Grouping ---
 
 type SortMode = 'Custom' | 'Alphabetical' | 'race' | 'size' | 'cr-asc' | 'cr-desc'
-const sortMode = useLocalStorage<SortMode>('sortModeForBestiaries', 'Custom')
+const sortMode = canEdit ? useLocalStorage<SortMode>('sortModeForBestiaries', 'Alphabetical') : ref<SortMode>('Alphabetical')
 const searchText = ref('')
 
 const sortModeOptions: { title: string; value: SortMode }[] = [
-    { title: 'Custom order', value: 'Custom' },
     { title: 'Alphabetically', value: 'Alphabetical' },
-    { title: 'Creature type', value: 'race' },
+    { title: 'Creature Type', value: 'race' },
     { title: 'Size', value: 'size' },
-    { title: 'CR (ascending)', value: 'cr-asc' },
-    { title: 'CR (descending)', value: 'cr-desc' },]
+    { title: 'CR Ascending', value: 'cr-asc' },
+    { title: 'CR Descending', value: 'cr-desc' },]
+
+if (canEdit)
+    sortModeOptions.unshift({ title: 'Custom order', value: 'Custom' })
 
 type FlatEntry =
     | { type: 'header'; key: string; label: string; groupKey: string; collapsed: boolean }
@@ -207,7 +209,7 @@ const initDraggable = async () => {
     draggableControls.value = useDraggable(ref(innerContainerEl), model, {
         animation: 250,
         handle: '.drag-handle',
-
+        disabled: !canEdit,
         scroll: outerScrollEl,
         bubbleScroll: false,
         scrollSensitivity: 500,
@@ -229,13 +231,22 @@ const saveOrder = async () => {
 };
 </script>
 <style scoped>
-.creature-item {
+.creature-item,
+.group-header {
     transition: background-color 0.1s ease;
 
     &:hover {
         background-color: rgba(var(--v-theme-on-surface), 0.06);
     }
 }
+
+.group-header:deep(.v-list-item-title) {
+    font-weight: bold;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
 
 .multiline-subtitle :deep(.v-list-item-subtitle) {
     white-space: pre-line;
@@ -252,17 +263,5 @@ const saveOrder = async () => {
     &:active {
         cursor: grabbing;
     }
-}
-
-.group-header:deep(.v-list-item-title) {
-    font-weight: bold;
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-}
-
-
-.group-header:hover {
-    background-color: rgba(var(--v-theme-primary), 0.1);
 }
 </style>
