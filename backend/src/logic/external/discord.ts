@@ -69,8 +69,8 @@ async function checkUserStatuses(guild: discord.Guild) {
 	const prisma = getPrismaClient();
 	await prisma.user.updateMany({ data: { supporter: SupporterStatus.none } });
 	await prisma.$transaction([
-		...tier1Ids.map(id => prisma.user.update({ where: { id }, data: { supporter: SupporterStatus.wirmling } })),
-		...tier2Ids.map(id => prisma.user.update({ where: { id }, data: { supporter: SupporterStatus.greatwyrm } })),
+		...tier1Ids.map(id => prisma.user.updateMany({ where: { id }, data: { supporter: SupporterStatus.wirmling } })),
+		...tier2Ids.map(id => prisma.user.updateMany({ where: { id }, data: { supporter: SupporterStatus.greatwyrm } })),
 	]);
 	clearUserCache();
 }
