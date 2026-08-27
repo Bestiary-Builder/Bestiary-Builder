@@ -15,7 +15,7 @@ onMounted(async () => {
 });
 
 const { addToast, removeToast } = useToast();
-const bestiaries = ref<BestiaryExtended[]>([]);
+const bestiaries = ref<(BestiaryWithCount & BestiaryExtended)[]>([]);
 
 const selectedPage = ref(1);
 const selectedTags = ref<string[]>([]);
@@ -34,7 +34,7 @@ const searchBestiaries = async () => {
 	// Request bestiary info
 	const { success, data, error } = await useFetch<{ results: BestiaryWithCount[]; pageAmount: number }>(`/api/search`, "POST", searchData);
 	if (success) {
-		bestiaries.value = data.results.map(bestiary => ({ ...bestiary, creatures: Array(bestiary.creatureCount), editors: [] }));
+		bestiaries.value = data.results.map(bestiary => ({ ...bestiary, editors: [] }));
 		totalPages.value = data.pageAmount;
 		void getUmami()?.track("Search bestiary", searchData);
 	}
@@ -47,9 +47,9 @@ const searchBestiaries = async () => {
 
 const getBookmarkedBestiaries = async () => {
 	// Request bestiary info
-	const { success, data, error } = await useFetch<BestiaryExtended[]>(`/api/user/bookmarks`);
+	const { success, data, error } = await useFetch<(BestiaryWithCount)[]>(`/api/user/bookmarks`);
 	if (success) {
-		bestiaries.value = data;
+		bestiaries.value = data.map(bestiary => ({ ...bestiary, editors: [] }));
 		void getUmami()?.track("View bookmarked bestiaries");
 	}
 	else {
