@@ -2,16 +2,13 @@ import type { User } from "~/shared";
 import { Buffer } from "node:buffer";
 import discord from "discord.js";
 import { isProduction } from "@/utilities/constants";
-import { clearUserCache, getPrismaClient } from "@/utilities/database";
 import { log } from "@/utilities/logger";
-import { SupporterStatus } from "~/shared";
 
 const client = new discord.Client({
 	intents: [discord.IntentsBitField.Flags.Guilds, discord.IntentsBitField.Flags.GuildMessages, discord.IntentsBitField.Flags.GuildMembers]
 });
 export default client;
 
-let guild: discord.Guild | null;
 const channels = {} as {
 	errorLogs?: discord.TextChannel;
 	publicLogs?: discord.TextChannel;
@@ -21,16 +18,9 @@ client.on("clientReady", async () => {
 	client.user?.setPresence({
 		status: "invisible"
 	});
-	guild = await client.guilds.fetch("1187499852221911111");
+	const guild = await client.guilds.fetch("1187499852221911111");
 	if (!guild)
 		return;
-	checkUserStatuses(guild);
-	// Interval check:
-	setInterval(() => {
-		if (!guild)
-			return;
-		checkUserStatuses(guild);
-	}, 60 * 60 * 1000); // Once an hour
 
 	channels.errorLogs = (await guild.channels.fetch("1188133661208477806")) as discord.TextChannel;
 	channels.publicLogs = (await guild.channels.fetch("1188139329642565722")) as discord.TextChannel;
@@ -49,30 +39,6 @@ if (isProduction) {
 			channels.errorLogs?.sendTyping();
 		}
 	});
-}
-
-async function checkUserStatuses(guild: discord.Guild) {
-	const supporterTier1Role = await guild.roles.fetch("1187500073836367965");
-	const supporterTier2Role = await guild.roles.fetch("1189343430820778055");
-	if (!supporterTier1Role || !supporterTier2Role) {
-		log.error("Failed to fetch supporter roles");
-		return;
-	}
-	// Fetch all member info
-	await guild.members.fetch();
-	// Find supporters
-	const tier1Ids = supporterTier1Role.members.map(m => m.id);
-	const tier2Ids = supporterTier2Role.members.map(m => m.id);
-	log.info(`Tier 1: ${tier1Ids}`);
-	log.info(`Tier 2: ${tier2Ids}`);
-	// Update database
-	const prisma = getPrismaClient();
-	await prisma.user.updateMany({ data: { supporter: SupporterStatus.none } });
-	await prisma.$transaction([
-		...tier1Ids.map(id => prisma.user.updateMany({ where: { id }, data: { supporter: SupporterStatus.wirmling } })),
-		...tier2Ids.map(id => prisma.user.updateMany({ where: { id }, data: { supporter: SupporterStatus.greatwyrm } })),
-	]);
-	clearUserCache();
 }
 
 // Public discord logging

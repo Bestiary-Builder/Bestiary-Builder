@@ -10,6 +10,7 @@ import { errorHandler } from "@/utilities/middleware";
 import { routes } from "~/shared";
 
 import discord from "./logic/external/discord";
+import { startPatreonSync } from "./logic/external/patreon";
 
 // Import logic files
 import "./logic";
@@ -17,7 +18,7 @@ import "./logic";
 // Import badwords
 import "./utilities/badwords";
 
-startConnection();
+void startConnection().then(startPatreonSync);
 
 // API 404
 app.get(/\/api\/.*/, (req, res) => res.status(404).json({ error: "Path not found." }));
