@@ -8,6 +8,7 @@ import Pages from "vite-plugin-pages";
 import generateSitemap from "vite-plugin-pages-sitemap";
 import rawloader from "vite-raw-plugin";
 import svgLoader from "vite-svg-loader";
+import vuetify from 'vite-plugin-vuetify'
 
 // @ts-expect-error Magic
 import { routes } from "../shared/";
@@ -16,6 +17,7 @@ import { routes } from "../shared/";
 export default defineConfig({
 	plugins: [
 		vue(),
+		vuetify(),
 		svgLoader(),
 		Pages({
 			dirs: "src/views",

@@ -1,6 +1,4 @@
 import { createVuetify } from "vuetify";
-import * as components from "vuetify/components";
-import * as directives from "vuetify/directives";
 import { createRulesPlugin } from "vuetify/labs/rules";
 
 import AvraeLogo from "@/assets/svg/Avrae_Logo.svg";
@@ -12,8 +10,6 @@ import "vuetify/styles";
 
 const savedTheme = localStorage.getItem('app-theme')
 export const vuetify = createVuetify({
-	components,
-	directives,
 	defaults: {
 		VTextField: {
 			autocomplete: "off",
