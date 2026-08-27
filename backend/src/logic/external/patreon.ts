@@ -1,10 +1,13 @@
+import { Buffer } from "node:buffer";
+import crypto from "node:crypto";
+import { app } from "@/utilities/constants";
 import { clearUserCache, getPrismaClient } from "@/utilities/database";
 import { log } from "@/utilities/logger";
 import { SupporterStatus } from "~/shared";
 
 const PATREON_API_URL = "https://www.patreon.com/api/oauth2/v2";
 const PATREON_TOKEN_URL = "https://www.patreon.com/api/oauth2/token";
-const SYNC_INTERVAL_MS = 60 * 60 * 1000;
+const SYNC_INTERVAL_MS = 6 * 60 * 60 * 1000; // Every 6 hours, or on webhooks
 const USER_AGENT = "Bestiary Builder - Supporter Sync";
 
 type PatreonResourceType = "campaign" | "member" | "tier" | "user";
@@ -62,7 +65,7 @@ interface SupporterSyncData {
 
 let accessToken = process.env.PATREON_ACCESS_TOKEN;
 let refreshToken = process.env.PATREON_REFRESH_TOKEN;
-let syncInProgress = false;
+let activeSync: Promise<void> | null = null;
 
 function getDiscordId(user: PatreonResource | undefined): string | null {
 	const discord = user?.attributes?.social_connections?.discord;
@@ -236,42 +239,75 @@ async function fetchSupporters(campaignId: string, tierStatuses: Map<string, Sup
 	return result;
 }
 
-export async function syncPatreonSupporters(): Promise<void> {
-	if (syncInProgress) {
-		log.warning("Skipping Patreon supporter sync because the previous sync is still running.");
-		return;
+async function performPatreonSupporterSync(): Promise<void> {
+	const { campaignId, tierStatuses } = await getCampaignAndTiers();
+	const syncData = await fetchSupporters(campaignId, tierStatuses);
+	const wirmlingIds: string[] = [];
+	const greatwyrmIds: string[] = [];
+	for (const [discordId, status] of syncData.supporters) {
+		if (status === SupporterStatus.greatwyrm)
+			greatwyrmIds.push(discordId);
+		else
+			wirmlingIds.push(discordId);
 	}
 
-	syncInProgress = true;
+	const prisma = getPrismaClient();
+	const [, wirmlingUpdate, greatwyrmUpdate] = await prisma.$transaction([
+		prisma.user.updateMany({ data: { supporter: SupporterStatus.none } }),
+		prisma.user.updateMany({ where: { id: { in: wirmlingIds } }, data: { supporter: SupporterStatus.wirmling } }),
+		prisma.user.updateMany({ where: { id: { in: greatwyrmIds } }, data: { supporter: SupporterStatus.greatwyrm } })
+	]);
+	clearUserCache();
+
+	log.info(`Patreon supporter sync complete: ${syncData.memberCount} members, ${syncData.activeMemberCount} active, ${syncData.missingDiscordCount} without Discord, ${syncData.unknownTierCount} on unknown tiers, ${wirmlingUpdate.count} wirmlings, ${greatwyrmUpdate.count} greatwyrms.`);
+}
+
+export function syncPatreonSupporters(): Promise<void> {
+	if (activeSync)
+		return activeSync;
+
+	activeSync = performPatreonSupporterSync().finally(() => {
+		activeSync = null;
+	});
+	return activeSync;
+}
+
+async function runBackgroundSync(): Promise<void> {
 	try {
-		const { campaignId, tierStatuses } = await getCampaignAndTiers();
-		const syncData = await fetchSupporters(campaignId, tierStatuses);
-		const wirmlingIds: string[] = [];
-		const greatwyrmIds: string[] = [];
-		for (const [discordId, status] of syncData.supporters) {
-			if (status === SupporterStatus.greatwyrm)
-				greatwyrmIds.push(discordId);
-			else
-				wirmlingIds.push(discordId);
-		}
-
-		const prisma = getPrismaClient();
-		const [, wirmlingUpdate, greatwyrmUpdate] = await prisma.$transaction([
-			prisma.user.updateMany({ data: { supporter: SupporterStatus.none } }),
-			prisma.user.updateMany({ where: { id: { in: wirmlingIds } }, data: { supporter: SupporterStatus.wirmling } }),
-			prisma.user.updateMany({ where: { id: { in: greatwyrmIds } }, data: { supporter: SupporterStatus.greatwyrm } })
-		]);
-		clearUserCache();
-
-		log.info(`Patreon supporter sync complete: ${syncData.memberCount} members, ${syncData.activeMemberCount} active, ${syncData.missingDiscordCount} without Discord, ${syncData.unknownTierCount} on unknown tiers, ${wirmlingUpdate.count} wirmlings, ${greatwyrmUpdate.count} greatwyrms.`);
+		await syncPatreonSupporters();
 	}
 	catch (error) {
 		log.error("Patreon supporter sync failed; existing supporter statuses were not changed.", error);
 	}
-	finally {
-		syncInProgress = false;
-	}
 }
+
+function hasValidWebhookSignature(rawBody: Buffer | undefined, signature: string | undefined, secret: string): boolean {
+	if (!rawBody || !signature || !/^[a-f\d]{32}$/i.test(signature))
+		return false;
+
+	const expectedSignature = Buffer.from(crypto.createHmac("md5", secret).update(rawBody).digest("hex"), "hex");
+	const receivedSignature = Buffer.from(signature, "hex");
+	return receivedSignature.length === expectedSignature.length
+		&& crypto.timingSafeEqual(receivedSignature, expectedSignature);
+}
+
+app.post("/api/patreon/webhook", async (req, res) => {
+	const webhookSecret = process.env.PATREON_WEBHOOK_SECRET;
+	if (!webhookSecret)
+		return res.status(503).json({ error: "Patreon webhook secret is not configured." });
+	const rawBody = (req as typeof req & { rawBody?: Buffer }).rawBody;
+	if (!hasValidWebhookSignature(rawBody, req.get("X-Patreon-Signature"), webhookSecret))
+		return res.status(401).json({ error: "Invalid Patreon webhook signature." });
+
+	try {
+		await syncPatreonSupporters();
+		return res.status(200).json({});
+	}
+	catch (error) {
+		log.error("Patreon webhook supporter sync failed.", error);
+		return res.status(500).json({ error: error instanceof Error ? error.message : "Patreon supporter sync failed." });
+	}
+});
 
 export function startPatreonSync(): void {
 	if (!accessToken) {
@@ -279,6 +315,6 @@ export function startPatreonSync(): void {
 		return;
 	}
 
-	void syncPatreonSupporters();
-	setInterval(() => void syncPatreonSupporters(), SYNC_INTERVAL_MS);
+	void runBackgroundSync();
+	setInterval(() => void runBackgroundSync(), SYNC_INTERVAL_MS);
 }
