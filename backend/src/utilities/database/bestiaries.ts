@@ -49,7 +49,8 @@ export async function getBestiaryFull(id: Id) {
 						id: true,
 						index: true,
 						stats: true,
-					}
+					},
+					orderBy: { index: "asc" }
 				}
 			}
 		}).then(bestiary => (bestiary != null
