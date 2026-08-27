@@ -5,31 +5,22 @@
 	src: url("ScalaSans.woff2") format("woff2");
 }
 
-.statblock {
-	width: 100%;
-	background-color: rgb(var(--v-theme-surface-light));
-	box-shadow:
-		rgb(0 0 0 / 19%) 0 10px 20px,
-		rgb(0 0 0 / 23%) 0 6px 6px;
-	font-family: "Scala Sans Offc", Roboto, Helvetica, sans-serif;
-	line-height: 1.4rem;
-	font-size: 0.9rem;
-	padding: 15px;
+.statblock-outer {
+	.statblock {
+		width: 100%;
+		background-color: rgb(var(--v-theme-surface-light));
+		box-shadow:
+			rgb(0 0 0 / 19%) 0 10px 20px,
+			rgb(0 0 0 / 23%) 0 6px 6px;
+		font-family: "Scala Sans Offc", Roboto, Helvetica, sans-serif;
+		line-height: 1.4rem;
+		font-size: 0.9rem;
+		padding: 15px;
+	}
+
 
 	.picture-container {
 		position: relative;
-	}
-
-	.statblock-image {
-		position: absolute;
-		max-height: 100px;
-		top: -1.6rem;
-		right: 0.25em;
-		translate: 0 -0.4rem;
-
-		&:hover {
-			scale: 3;
-		}
 	}
 
 	.statblock-row {
@@ -182,14 +173,20 @@
 			margin-bottom: 0.25rem;
 		}
 	}
-}
 
-.statblock.v2024 {
-	column-count: 2;
-
-	.v2024-no-bottom-border {
-		border-bottom: 0 solid;
+	.statblock-image {
+		max-height: 300px;
+		margin: auto;
 	}
+
+	.v2024 {
+		column-count: 2;
+
+		.v2024-no-bottom-border {
+			border-bottom: 0 solid;
+		}
+	}
+
 }
 
 @media screen and (width <=1400px) {

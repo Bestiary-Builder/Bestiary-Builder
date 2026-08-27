@@ -1,13 +1,16 @@
-body .content .statblock.monstermanual,
-body .v-card .statblock.monstermanual {
-	background: #e2dbd5 !important;
-	box-shadow: 0 0 5px #f3f5f9;
-	border: 1px solid #d4d0ce;
-	padding: 15px;
-	outline: 1px solid #afa47a;
-	outline-offset: -0.25rem;
-	border-radius: 0.5rem;
-	color: #4d1e20;
+body .content .statblock-outer.monstermanual,
+body .v-card .statblock-outer.monstermanual {
+	.statblock {
+		background: #e2dbd5 !important;
+		box-shadow: 0 0 5px #f3f5f9;
+		border: 1px solid #d4d0ce;
+		padding: 15px;
+		outline: 1px solid #afa47a;
+		outline-offset: -0.25rem;
+		border-radius: 0.5rem;
+		color: #4d1e20;
+	}
+
 
 	.statblock-name-container {
 		color: #4d1e20;
@@ -31,6 +34,21 @@ body .v-card .statblock.monstermanual {
 
 		.feature-description {
 			margin-bottom: 5px;
+		}
+	}
+
+	.feature-container.statblock-description {
+		color: unset;
+
+		.feature-container-title {
+			color: color-mix(in srgb, #4d1e20 30%, red 70%);
+			border-color: color-mix(in srgb, #4d1e20 30%, red 70%);
+		}
+		h1,h2,h3,h4,h5, a {
+			color: color-mix(in srgb, #4d1e20 30%, red 70%);
+		}
+		hr {
+			border-color: color-mix(in srgb, #4d1e20 30%, red 70%);
 		}
 	}
 

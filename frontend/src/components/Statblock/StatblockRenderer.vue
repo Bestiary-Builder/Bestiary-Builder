@@ -232,8 +232,8 @@ const renderFeature = (feature: FeatureEntity) => {
 </script>
 
 <template>
-	<div class="statblock-outer">
-		<div id="statblock" class="statblock" :class="[v2024 ? 'v2024' : '', design?.toLowerCase()]">
+	<div class="statblock-outer" :class="design?.toLowerCase()">
+		<div id="statblock" class="statblock" :class="[v2024 ? 'v2024' : '']">
 			<div class="statblock-row">
 				<h1 class="statblock-name-container">
 					{{ data.description.name }}
@@ -261,7 +261,6 @@ const renderFeature = (feature: FeatureEntity) => {
 						<span v-html="render(displaySpeedOrSenses(data.core.speed, false, v2024), true) || '—'" />
 					</div>
 				</div>
-				<!-- <img v-if="data.description.image" class="statblock-image" :src="data.description.image"> -->
 			</div>
 
 			<div class="stat-container-wrapper">
@@ -469,6 +468,7 @@ const renderFeature = (feature: FeatureEntity) => {
 		</div>
 
 		<div v-if="data.description.description" class="feature-container statblock-description py-4 px-2">
+			<img v-if="data.description.image" class="statblock-image" :src="data.description.image">
 			<h2 class="feature-container-title">
 				Description
 			</h2>

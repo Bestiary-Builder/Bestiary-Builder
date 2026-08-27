@@ -3,18 +3,21 @@
 	src: url("TrajanOdyssey-Regular.otf") format("opentype");
 }
 
-body .content .statblock.odyssey,
-body .v-card .statblock.odyssey {
-	color: #095471;
-	background-color: #fff;
-	background-size: 100% 100%;
-	background-repeat: no-repeat;
-	box-shadow: 0 0 3px #f3f5f9;
-	border: 1px solid #cfac8d;
-	outline: 1px solid #cfac8d;
-	outline-offset: -0.25rem;
-	border-radius: 0.5rem;
-	padding: 15px;
+body .content .statblock-outer.odyssey,
+body .v-card .statblock-outer.odyssey {
+	.statblock {
+		color: #095471;
+		background-color: #fff;
+		background-size: 100% 100%;
+		background-repeat: no-repeat;
+		box-shadow: 0 0 3px #f3f5f9;
+		border: 1px solid #cfac8d;
+		outline: 1px solid #cfac8d;
+		outline-offset: -0.25rem;
+		border-radius: 0.5rem;
+		padding: 15px;
+	}
+
 
 	.statblock-name-container {
 		font-family: "Odyssey Roboto";
@@ -67,7 +70,7 @@ body .v-card .statblock.odyssey {
 		border-bottom: 0 solid white;
 	}
 
-	.feature-container {
+	.feature-container:not(.statblock-description) {
 		color: black;
 		border-bottom: 0 solid white;
 	}

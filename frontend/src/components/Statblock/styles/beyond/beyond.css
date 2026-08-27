@@ -1,13 +1,16 @@
-body .content .statblock.beyond,
-body .v-card .statblock.beyond {
-	background: #f5f3ee !important;
-	box-shadow: 0 0 5px #f3f5f9;
-	border: 1px solid #d4d0ce;
-	padding: 15px;
-	outline: 1px solid #afa47a;
-	outline-offset: -0.25rem;
-	border-radius: 0.5rem;
-	color: #5b160c;
+body .content .statblock-outer.beyond,
+body .v-card .statblock-outer.beyond {
+	.statblock {
+		background: #f5f3ee !important;
+		box-shadow: 0 0 5px #f3f5f9;
+		border: 1px solid #d4d0ce;
+		padding: 15px;
+		outline: 1px solid #afa47a;
+		outline-offset: -0.25rem;
+		border-radius: 0.5rem;
+		color: #5b160c;
+	}
+
 
 	.statblock-name-container {
 		color: #5b160c;
@@ -25,6 +28,21 @@ body .v-card .statblock.beyond {
 		.feature-container-title {
 			color: #5b160c;
 			border-color: #5b160c;
+		}
+	}
+
+	.feature-container.statblock-description {
+		color: unset;
+
+		.feature-container-title {
+			color: color-mix(in srgb, #5b160c 30%, red 70%);
+			border-color: color-mix(in srgb, #5b160c 30%, red 70%);
+		}
+		h1,h2,h3,h4,h5, a {
+			color: color-mix(in srgb, #5b160c 30%, red 70%);
+		}
+		hr {
+			border-color: color-mix(in srgb, #5b160c 30%, red 70%);
 		}
 	}
 
