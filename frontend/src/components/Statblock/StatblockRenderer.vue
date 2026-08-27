@@ -382,12 +382,15 @@ const renderFeature = (feature: FeatureEntity) => {
 					<span v-if="data.misc.telepathy"> telepathy {{ data.misc.telepathy }} ft.</span>
 				</div>
 				<div v-if="v2024" class="challenge-prof">
-					<span> <b> CR</b> {{ crAsString(data.description.cr) }} (XP {{ data.description.xp }}; PB {{
-						signedNumber(data.core.proficiencyBonus) }})
+					<span> <b> CR</b> {{ crAsString(data.description.cr) }} (XP {{
+						data.description.xp.toLocaleString('en')
+					}}; PB {{
+							signedNumber(data.core.proficiencyBonus) }})
 					</span>
 				</div>
 				<div v-else class="challenge-prof">
-					<span> <b> Challenge </b> {{ crAsString(data.description.cr) }} ({{ data.description.xp }} XP)
+					<span> <b> Challenge </b> {{ crAsString(data.description.cr) }} ({{
+						data.description.xp.toLocaleString('en') }} XP)
 					</span>
 					<span> <b> Proficiency Bonus </b> +{{ data.core.proficiencyBonus }}</span>
 				</div>

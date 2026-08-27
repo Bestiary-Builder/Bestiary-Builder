@@ -195,7 +195,7 @@ export const XPbyCR = [
 	105000,
 	120000,
 	135000,
-	255000,
+	155000,
 ];
 
 export function getXPbyCR(cr: number) {
