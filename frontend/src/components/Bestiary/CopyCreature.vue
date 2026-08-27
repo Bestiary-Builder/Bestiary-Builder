@@ -1,17 +1,19 @@
 <script lang="ts" setup>
 import type { CreatureWithStats, Statblock } from "~/shared";
 import { useLocalStorage } from "@vueuse/core";
+import { ref } from "vue";
 
-const props = withDefaults(
-	defineProps<{
-		noImportAll?: boolean;
-		mayImport?: boolean;
-		currentCreature?:
-		CopiedCreature | undefined;
-		canCopyCurrentBestiary?: boolean;
-	}>(),
-	{ noImportAll: false, mayImport: false, currentCreature: undefined, canCopyCurrentBestiary: false }
-);
+const {
+	noImportAll = false,
+	mayImport = false,
+	currentCreature = undefined,
+	canCopyCurrentBestiary = false,
+} = defineProps<{
+	noImportAll?: boolean
+	mayImport?: boolean
+	currentCreature?: CopiedCreature | undefined
+	canCopyCurrentBestiary?: boolean
+}>()
 
 const emit = defineEmits<{
 	(e: "importCreature", data: Statblock): void;
@@ -37,12 +39,13 @@ const importCreature = (creature: CopiedCreature) => {
 const importManyCreatures = () => {
 	emit("importAllCreatures");
 };
+
 </script>
 
 <template>
 	<DropdownMenu>
-		<template #activator="{ dropdownProps }">
-			<v-icon-btn v-tooltip="'Manage copies'" icon="mdi:content-copy" v-bind="dropdownProps" text="Manage copies"
+		<template #activator="{ props }">
+			<v-icon-btn v-tooltip="'Manage copies'" icon="mdi:content-copy" v-bind="props" text="Manage copies"
 				size="24" />
 		</template>
 		<v-card min-width="500" class="text-center pa-4 d-flex justify-center flex-column">
@@ -91,7 +94,7 @@ const importManyCreatures = () => {
 				</table>
 			</v-card-text>
 			<v-card-actions class="d-flex justify-center items-center">
-				<v-btn v-if="mayImport && copiedCreatures.length > 0 && !props.noImportAll" prepend-icon="mdi:import"
+				<v-btn v-if="mayImport && copiedCreatures.length > 0 && !noImportAll" prepend-icon="mdi:import"
 					color="success" @click="importManyCreatures">
 					Import all
 				</v-btn>

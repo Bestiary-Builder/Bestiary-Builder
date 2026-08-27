@@ -35,6 +35,10 @@ body .v-card .statblock-outer.monstermanual {
 		.feature-description {
 			margin-bottom: 5px;
 		}
+
+		.feature-header {
+			color: rgb(72, 72, 72)
+		}
 	}
 
 	.feature-container.statblock-description {

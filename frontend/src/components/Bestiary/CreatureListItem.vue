@@ -24,14 +24,9 @@ const emit = defineEmits<{
 			</p>
 		</div>
 		<div class="right-side">
-			<v-icon-btn
-				text="Pin creature" :icon="isPinned ? 'mdi:pin-off' : 'mdi:pin'" size="24"
-				@click="emit('pinCreature')"
-			/>
-			<v-icon-btn
-				:text="`Copy ${data.name}`" icon="mdi:content-copy" size="24"
-				@click="emit('copyCreature')"
-			/>
+			<v-icon-btn text="Pin creature" :icon="isPinned ? 'mdi:pin-off' : 'mdi:pin'" size="24"
+				@click="emit('pinCreature')" />
+			<v-icon-btn :text="`Copy ${data.name}`" icon="mdi:content-copy" size="24" @click="emit('copyCreature')" />
 			<DropdownMenu v-if="canEdit">
 				<template #activator="{ props }">
 					<v-icon-btn text="Delete creature" icon="mdi:delete" v-bind="props" size="24" />
@@ -41,17 +36,15 @@ const emit = defineEmits<{
 						Are you sure you want to<br> delete this creature?
 					</v-card-text>
 					<v-card-actions>
-						<v-btn size="large" color="red" class="mx-auto" @click.stop="emit('deleteCreature', id)">
+						<v-btn size="large" color="error" class="mx-auto" @click.stop="emit('deleteCreature', id)">
 							Confirm
 						</v-btn>
 					</v-card-actions>
 				</v-card>
 			</DropdownMenu>
 
-			<RouterLink
-				class="creature" :to="`/creature/${canEdit ? 'edit' : 'view'}/${id}`"
-				:aria-label="`${canEdit ? 'Edit' : 'View'} creature`" size="24"
-			>
+			<RouterLink class="creature" :to="`/creature/${canEdit ? 'edit' : 'view'}/${id}`"
+				:aria-label="`${canEdit ? 'Edit' : 'View'} creature`" size="24">
 				<v-icon-btn v-if="canEdit" icon="mdi:pencil" size="24" />
 				<v-icon-btn v-else icon="mdi:eye" size="24" />
 			</RouterLink>

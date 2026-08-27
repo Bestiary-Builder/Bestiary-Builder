@@ -90,8 +90,8 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 		if (getEffectData(key)?.isList) {
 			const arr = Array.isArray(val) ? val : []
 				; (currentEffect!.value as any).effects[key] = arr.map(item =>
-				typeof item === "string" ? item : item.value,
-			);
+					typeof item === "string" ? item : item.value,
+				);
 		}
 
 		else {
@@ -107,10 +107,8 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 		<SectionHeader title="Initiative Effect" />
 		<v-row>
 			<v-col cols="6">
-				<v-text-field
-					v-model="currentEffect.name" label="Name" :rules="[rules.required()]"
-					hint="AnnotatedString"
-				/>
+				<v-text-field v-model="currentEffect.name" label="Name" :rules="[rules.required()]"
+					hint="AnnotatedString" />
 			</v-col>
 		</v-row>
 
@@ -123,16 +121,12 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 				<v-checkbox v-model="currentEffect.end" label="Ticks on end of turn." hide-details density="compact" />
 			</v-col>
 			<v-col cols="6">
-				<v-checkbox
-					v-model="currentEffect.tick_on_caster" label="Ticks on Caster rather than the Target."
-					hide-details density="compact"
-				/>
+				<v-checkbox v-model="currentEffect.tick_on_caster" label="Ticks on Caster rather than the Target."
+					hide-details density="compact" />
 			</v-col>
 			<v-col cols="6">
-				<v-checkbox
-					v-model="currentEffect.conc" label="Requires concentration." hide-details
-					density="compact"
-				/>
+				<v-checkbox v-model="currentEffect.conc" label="Requires concentration." hide-details
+					density="compact" />
 			</v-col>
 		</v-row>
 
@@ -140,11 +134,9 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 		<v-row>
 			<v-col v-for="effect, key in currentEffect.effects" :key="key" cols="6">
 				<div v-if="getInputType(key) !== 'list'">
-					<v-text-field
-						:id="key" v-model="(currentEffect as any).effects[key]"
+					<v-text-field :id="key" v-model="(currentEffect as any).effects[key]"
 						:label="getEffectData(key)?.label || ''"
-						:hint="getInputType(key) === 'annotatedstring' ? 'AnnotatedString' : 'IntExpression'"
-					>
+						:hint="getInputType(key) === 'annotatedstring' ? 'AnnotatedString' : 'IntExpression'">
 						<template #append>
 							<DropdownMenu>
 								<template #activator="{ props }">
@@ -155,10 +147,8 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 										Are you sure you want to delete<br> <b>{{ getEffectData(key)?.label }}</b>?
 									</v-card-text>
 									<v-card-actions>
-										<v-btn
-											size="large" color="red" class="w-100"
-											@click="delete currentEffect.effects![key]"
-										>
+										<v-btn size="large" color="error" class="w-100"
+											@click="delete currentEffect.effects![key]">
 											Delete
 										</v-btn>
 									</v-card-actions>
@@ -168,12 +158,10 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 					</v-text-field>
 				</div>
 				<div v-else>
-					<v-combobox
-						v-model="effectValueFor(key).value" :label="getEffectData(key)?.label || ''"
+					<v-combobox v-model="effectValueFor(key).value" :label="getEffectData(key)?.label || ''"
 						:items="getEffectData(key)?.defaultOptions" item-title="label" item-value="value"
 						:multiple="getEffectData(key)?.isList" :chips="getEffectData(key)?.isList"
-						:closable-chips="getEffectData(key)?.isList" variant="solo-filled"
-					>
+						:closable-chips="getEffectData(key)?.isList" variant="solo-filled">
 						<template #append>
 							<DropdownMenu>
 								<template #activator="{ props }">
@@ -184,10 +172,8 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 										Are you sure you want to delete<br> <b>{{ getEffectData(key)?.label }}</b>?
 									</v-card-text>
 									<v-card-actions>
-										<v-btn
-											size="large" color="red" class="w-100"
-											@click="delete currentEffect.effects![key]"
-										>
+										<v-btn size="large" color="error" class="w-100"
+											@click="delete currentEffect.effects![key]">
 											Delete
 										</v-btn>
 									</v-card-actions>
@@ -198,11 +184,9 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 				</div>
 			</v-col>
 			<v-col cols="6">
-				<v-autocomplete
-					:items="filteredPassiveEffects" item-title="label" label="New Passive Effect"
+				<v-autocomplete :items="filteredPassiveEffects" item-title="label" label="New Passive Effect"
 					return-object prepend-icon="mdi:plus" icon-color="primary" item-color="primary"
-					@update:model-value="(e: PassiveEffectDef | null) => addNewPassiveEffect(e)"
-				/>
+					@update:model-value="(e: PassiveEffectDef | null) => addNewPassiveEffect(e)" />
 			</v-col>
 		</v-row>
 		<SectionHeader title="Buttons & Attacks" />
@@ -236,10 +220,8 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 				<v-text-field v-model="currentEffect.parent" label="Parent" hide-details />
 			</v-col>
 			<v-col cols="6">
-				<v-checkbox
-					v-model="currentEffect.stacking" label="Ticks on end of turn." hide-details
-					density="compact"
-				/>
+				<v-checkbox v-model="currentEffect.stacking" label="Ticks on end of turn." hide-details
+					density="compact" />
 			</v-col>
 			<v-col cols="6">
 				<v-checkbox v-model="currentEffect.target_self" label="Target Self" hide-details density="compact" />

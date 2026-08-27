@@ -67,7 +67,7 @@ const showControls = inject<Ref<boolean>>("showControls");
 									Are you sure you want to delete <br><b>{{ auto.name }}</b>?
 								</v-card-text>
 								<v-card-actions>
-									<v-btn color="red" size="large" class="mx-auto" @click="deleteListAttack(index)">
+									<v-btn color="error" size="large" class="mx-auto" @click="deleteListAttack(index)">
 										Confirm
 									</v-btn>
 								</v-card-actions>
@@ -105,7 +105,7 @@ const showControls = inject<Ref<boolean>>("showControls");
 								Are you sure you want to delete <br><b>{{ data.name }}</b>?
 							</v-card-text>
 							<v-card-actions>
-								<v-btn color="red" size="large" class="mx-auto" @click="setAutomationEmpty">
+								<v-btn color="error" size="large" class="mx-auto" @click="setAutomationEmpty">
 									Confirm
 								</v-btn>
 							</v-card-actions>

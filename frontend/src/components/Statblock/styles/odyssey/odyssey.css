@@ -87,6 +87,11 @@ body .v-card .statblock-outer.odyssey {
 		margin-bottom: 0.2rem;
 	}
 
+	.feature-header {
+		color: rgb(139, 139, 139);
+	}
+		
+
 	.stat-table:first-of-type {
 		tbody > th {
 			font-weight: bold;

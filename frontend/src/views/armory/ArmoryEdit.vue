@@ -412,7 +412,7 @@ const activationTypeOptions = computed(() => {
 											Are you sure you want to delete <br><b>{{ item.name }}</b>?
 										</v-card-text>
 										<v-card-actions>
-											<v-btn color="red" size="large" class="mx-auto"
+											<v-btn color="error" size="large" class="mx-auto"
 												@click="deleteItem(item.id)">
 												Confirm
 											</v-btn>

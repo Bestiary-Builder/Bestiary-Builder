@@ -106,7 +106,7 @@ const isDeleteOpen = ref(false);
 								<br> This action cannot be undone.
 							</v-card-text>
 							<v-card-actions>
-								<v-btn size="large" class="w-100" color="red"
+								<v-btn size="large" class="w-100" color="error"
 									@click.stop.prevent="$emit('deleteCollectionItem', data.id); isDeleteOpen = false">
 									Confirm
 								</v-btn>

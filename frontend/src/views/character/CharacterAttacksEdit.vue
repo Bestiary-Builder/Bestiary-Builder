@@ -105,36 +105,28 @@ const isVisualEditor = ref(store.user?.preferredEditor === "Visual");
 </script>
 
 <template>
-	<Breadcrumbs
-		:routes="[
-			{
-				path: '/characters',
-				text: 'My Characters',
-				isCurrent: false
-			},
-			{
-				path: '',
-				text: character ? character.name : 'Character',
-				isCurrent: true
-			}
-		]"
-	>
-		<v-icon-btn
-			v-tooltip="'Save attacks (CTRL+S)'" icon="mdi:content-save" text="Save attacks"
-			:class="{ inverted: !isSavingAttacks }" size="24" :loading="isSavingAttacks" @click="saveAttacks"
-		/>
+	<Breadcrumbs :routes="[
+		{
+			path: '/characters',
+			text: 'My Characters',
+			isCurrent: false
+		},
+		{
+			path: '',
+			text: character ? character.name : 'Character',
+			isCurrent: true
+		}
+	]">
+		<v-icon-btn v-tooltip="'Save attacks (CTRL+S)'" icon="mdi:content-save" text="Save attacks"
+			:class="{ inverted: !isSavingAttacks }" size="24" :loading="isSavingAttacks" @click="saveAttacks" />
 		<v-icon-btn v-tooltip="'Add attack'" icon="mdi:plus" text="Add attack" size="24" @click="addAttack" />
-		<v-icon-btn
-			v-tooltip="'Change editor'" size="24" icon="mdi:code-block-braces"
-			text="Change editor" @click="EditAutomationRef?.toggleEditor()"
-		/>
+		<v-icon-btn v-tooltip="'Change editor'" size="24" icon="mdi:code-block-braces" text="Change editor"
+			@click="EditAutomationRef?.toggleEditor()" />
 		<ImportAutomationUtil @load-feature="(feature: FeatureEntity) => loadFeature(feature)" />
 	</Breadcrumbs>
 	<div v-if="!AvraeToken" class="content">
-		No Avrae Connection made. Please see <RouterLink
-			to="/user-settings#avrae-token"
-			style="color: rgb(var(--v-theme-primary))"
-		>
+		No Avrae Connection made. Please see <RouterLink to="/user-settings#avrae-token"
+			style="color: rgb(var(--v-theme-primary))">
 			your user settings
 		</RouterLink> for how to enable this.
 	</div>
@@ -150,17 +142,15 @@ const isVisualEditor = ref(store.user?.preferredEditor === "Visual");
 			</select>
 			<DropdownMenu v-model="isDeleteOpen">
 				<template #activator="{ props }">
-					<v-icon-btn
-						icon="mdi:trash" text="Delete currently selected attack" v-bind="props"
-						:disabled="activeAttackIndex < 0"
-					/>
+					<v-icon-btn icon="mdi:trash" text="Delete currently selected attack" v-bind="props"
+						:disabled="activeAttackIndex < 0" />
 				</template>
 				<v-card min-width="300" class="text-center pb-2">
 					<v-card-text>
 						Are you sure you want to delete <br>{{ character.overrides.attacks[activeAttackIndex].name }}?
 					</v-card-text>
 					<v-card-actions>
-						<v-btn size="large" color="red" class="mx-auto" @click="deleteAttack(activeAttackIndex)">
+						<v-btn size="large" color="error" class="mx-auto" @click="deleteAttack(activeAttackIndex)">
 							Confirm
 						</v-btn>
 					</v-card-actions>
@@ -168,11 +158,9 @@ const isVisualEditor = ref(store.user?.preferredEditor === "Visual");
 			</DropdownMenu>
 		</div>
 		<div class="mt-8">
-			<EditAutomation
-				v-if="activeAttackIndex > -1" ref="EditAutomationRef"
-				v-model="character.overrides.attacks[activeAttackIndex]" v-model:is-visual-editor="isVisualEditor" :name="character.name"
-				no-list-attack
-			/>
+			<EditAutomation v-if="activeAttackIndex > -1" ref="EditAutomationRef"
+				v-model="character.overrides.attacks[activeAttackIndex]" v-model:is-visual-editor="isVisualEditor"
+				:name="character.name" no-list-attack />
 			<div v-else>
 				No attack selected.
 			</div>
