@@ -24,6 +24,7 @@ _???, 2026_
 - Added more image export options: 1 column, 2 column, 2 column extra wide
 - Updated the available default spells to choose from when editing spellcasting on a creature to all currently published spells.
 - Added CMD/CTRL+S hotkeys for saving creatures / collections
+- Patreon Supporters will be able to customize the theme of the site and the theme of the statblocks.
 
 ### Fixes
 - Improved the accuracy of the 2014 SRD Creatures and Actions data.
