@@ -3,10 +3,12 @@ import type { AutomationDocumentation } from "~/shared";
 import { computed, onMounted, ref } from "vue";
 import { useFetch } from "@/utils/utils";
 import { defaultNodes } from "../VisualEditor/util";
+import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
+import Markdown from "../Global/Markdown.vue";
 
 // Documentation helpers
 const docu = ref<AutomationDocumentation>({});
-const selectedDocu = ref("");
+const model = defineModel<string>();
 onMounted(async () => {
 	const { success, data } = await useFetch<AutomationDocumentation>("/api/automationDocumentation");
 	if (success)
@@ -14,9 +16,9 @@ onMounted(async () => {
 });
 
 const currentDocu = computed(() => {
-	if (!selectedDocu.value)
+	if (!model.value)
 		return;
-	return docu.value[selectedDocu.value];
+	return docu.value[model.value];
 });
 </script>
 
@@ -25,7 +27,7 @@ const currentDocu = computed(() => {
 		<h3> Documentation</h3>
 		<p> Select documentation to view:</p>
 		<div>
-			<select v-model="selectedDocu" class="ghost">
+			<select v-model="model" class="ghost">
 				<option v-for="key of Object.keys(defaultNodes)" :key="key">
 					{{ key }}
 				</option>
@@ -33,7 +35,7 @@ const currentDocu = computed(() => {
 		</div>
 		<div v-if="currentDocu" class="docs">
 			<hr>
-			<h3>Documentation: {{ selectedDocu }}</h3>
+			<h3>Documentation: {{ model }}</h3>
 			<Markdown class="small" :text="currentDocu.desc" />
 
 			<div>
@@ -41,14 +43,11 @@ const currentDocu = computed(() => {
 				<h4>Overview</h4>
 				See full documentation <a
 					:href="`https://avrae.readthedocs.io/en/stable/automation_ref.html#${currentDocu.url}`"
-					target="_blank"
-				>here</a>.
-				<VueMonacoEditor
-					v-if="currentDocu?.ts"
+					target="_blank">here</a>.
+				<VueMonacoEditor v-if="currentDocu?.ts"
 					:value="`// Values denoted with an ? are optional.\n${currentDocu.ts}`" theme="vs-dark"
 					:options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, automaticLayout: true, readOnly: true, scrollBeyondLastLine: false }"
-					language="typescript" height="200px"
-				/>
+					language="typescript" height="200px" />
 			</div>
 			<div v-if="currentDocu?.opt">
 				<hr>

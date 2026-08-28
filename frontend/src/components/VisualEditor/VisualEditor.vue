@@ -7,6 +7,7 @@ import AutomationDocumentation from "./Nodes/shared/AutomationDocumentation.vue"
 import EffectAsRaw from "./Nodes/shared/EffectAsRaw.vue";
 import SectionHeader from "./Nodes/shared/SectionHeader.vue";
 import TreeRoot from "./TreeRoot.vue";
+import { useRoute } from "vuetify/lib/composables/router.mjs";
 
 const { name, noListAttack = false } = defineProps<{ name: string; noListAttack?: boolean }>();
 const currentEffect = ref<EffectWithTarget | AttackModel | ButtonInteraction | null>(null);
@@ -36,7 +37,8 @@ const currentNode = computed(() => {
 	return "";
 });
 
-const showControls = ref(true);
+const $route = useRoute()
+const showControls = ref();
 provide("showControls", showControls);
 </script>
 
@@ -72,7 +74,6 @@ provide("showControls", showControls);
 				</Transition>
 			</template>
 		</div>
-		<div id="effectAdderContainer" />
 	</section>
 </template>
 

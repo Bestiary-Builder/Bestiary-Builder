@@ -4,10 +4,10 @@ import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
 import { watchDebounced } from "@vueuse/core";
 import { computed, onMounted, onUnmounted, ref, shallowRef, useTemplateRef, watch } from "vue";
 import YAML from "yaml";
-import Markdown from "@/components/Global/Markdown.vue";
 import VisualEditor from "@/components/VisualEditor/VisualEditor.vue";
 import { useToast } from "@/utils/app/toast";
 import { useFetch } from "@/utils/utils";
+import AutomationDocumentationView from "./AutomationDocumentation.vue";
 
 type AutomationValue = AttackModel | AttackModel[] | null;
 
@@ -156,60 +156,16 @@ const currentDocu = computed(() => docu.value[currentContext.value]);
 
 <template>
 	<div v-if="!isVisualEditor" class="editor pt-4">
-		<VueMonacoEditor
-			v-model:value="automationString" theme="vs-dark"
+		<VueMonacoEditor v-model:value="automationString" theme="vs-dark"
 			:options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false }"
-			height="800px" language="yaml" @mount="handleMount"
-		/>
+			height="800px" language="yaml" @mount="handleMount" />
 		<small v-if="yamlError" style="color: rgb(var(--v-theme-error))">{{ yamlError }}</small>
 
-		<div v-if="currentDocu" class="docs">
-			<hr>
-			<h3>Documentation: {{ currentContext }}</h3>
-			<Markdown class="small" :text="currentDocu.desc" />
-
-			<div>
-				<hr>
-				<h4>Overview</h4>
-				See full documentation <a
-					:href="`https://avrae.readthedocs.io/en/stable/automation_ref.html#${currentDocu.url}`"
-					target="_blank"
-				>here</a>.
-				<VueMonacoEditor
-					v-if="currentDocu?.ts"
-					:value="`// Values denoted with an ? are optional.\n${currentDocu.ts}`" theme="vs-dark"
-					:options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, automaticLayout: true, readOnly: true, scrollBeyondLastLine: false }"
-					language="typescript" height="200px"
-				/>
-			</div>
-			<div v-if="currentDocu?.opt">
-				<hr>
-				<h4>Options</h4>
-				<ul>
-					<li v-for="(info, title) in currentDocu.opt" :key="title">
-						<span class="highlight">{{ title }}</span>
-						<Markdown :text="info" />
-					</li>
-				</ul>
-			</div>
-			<div v-if="currentDocu?.variables">
-				<hr>
-				<h4>Exposed Variables</h4>
-				<ul>
-					<li v-for="(info, title) in currentDocu.variables" :key="title">
-						<span class="highlight">{{ title }}</span>
-						[<code>{{ info.type }}</code>]
-						<Markdown :text="info.desc" />
-					</li>
-				</ul>
-			</div>
-		</div>
+		<AutomationDocumentationView v-model="currentContext" />
 	</div>
 	<div v-else style="margin-top: 2rem">
-		<VisualEditor
-			ref="VisualEditorRef" v-model="visualEditorModel" :name="name || ''"
-			:no-list-attack="noListAttack"
-		/>
+		<VisualEditor ref="VisualEditorRef" v-model="visualEditorModel" :name="name || ''"
+			:no-list-attack="noListAttack" />
 	</div>
 </template>
 

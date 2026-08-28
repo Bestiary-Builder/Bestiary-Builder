@@ -17,7 +17,7 @@
                 ref="virtualScroll">
                 <template #default="{ item }">
                     <v-list-item v-if="item.type === 'header'" :title="item.label" class="group-header"
-                        @click="toggleGroup(item.groupKey)">
+                        @click="toggleGroup(item.groupKey)" >
                         <template #append>
                             <v-icon :icon="item.collapsed ? 'mdi-chevron-right' : 'mdi-chevron-down'" />
                         </template>

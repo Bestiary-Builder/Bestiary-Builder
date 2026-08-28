@@ -115,7 +115,8 @@ const showControls = inject<Ref<boolean>>("showControls");
 <template>
 	<DropdownMenu v-if="displayNames && showControls" v-model="isOpen" location="bottom center">
 		<template #activator="{ dropdownProps }">
-			<p class="tree-row" v-bind="dropdownProps" :style="`--depth: ${depth}`">
+			<p class="tree-row" v-bind="dropdownProps" :style="`--depth: ${depth}`"
+				style="color: rgb(var(--v-theme-surface-bright));">
 				<span class="icon">
 					<Icon icon="material-symbols:add-circle" width="1em" color="rgb(var(--v-theme-primary))" />
 				</span><span>{{ automation === null ? 'Create Automation' : 'Add Effect' }}</span>
@@ -125,10 +126,8 @@ const showControls = inject<Ref<boolean>>("showControls");
 			<v-card-actions>
 				<v-row density="compact">
 					<v-col v-for="node in availableNodes" :key="node" cols="12">
-						<v-btn
-							:key="node" :prepend-icon="displayNames![node]?.icon" size="small"
-							@click="addAndSelect(node)"
-						>
+						<v-btn :key="node" :prepend-icon="displayNames![node]?.icon" size="small"
+							@click="addAndSelect(node)">
 							{{ displayNames[node]?.label }}
 						</v-btn>
 					</v-col>
