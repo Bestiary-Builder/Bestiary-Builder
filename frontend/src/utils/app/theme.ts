@@ -1,5 +1,5 @@
 import { useLocalStorage } from "@vueuse/core"
-import { watch } from "vue"
+import { computed, watch } from "vue"
 import { useTheme } from "vuetify"
 import { store } from "../store"
 export const useThemePersistence = () => {
@@ -22,5 +22,16 @@ export const useThemePersistence = () => {
         savedTheme.value = newName
     })
 
-    return { savedTheme, isAllowedCustomTheme }
+    const themeOptions = computed(() => [
+        { title: 'Light', value: 'light' },
+        { title: 'Dark', value: 'dark' },
+        {
+            title: isAllowedCustomTheme ? 'Custom' : 'Custom (supporters only)',
+            value: 'custom',
+            props: { disabled: !isAllowedCustomTheme }
+        },
+    ])
+
+
+    return { savedTheme, isAllowedCustomTheme, themeOptions }
 }

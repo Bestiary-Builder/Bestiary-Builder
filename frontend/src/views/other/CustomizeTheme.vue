@@ -1,22 +1,17 @@
 <script setup lang="ts">
-import { useCustomThemeColors } from '@/utils/app/customTheme'
+import StatblockRenderer from '@/components/Statblock/StatblockRenderer.vue'
+import { useCustomThemeColors, useStatblockColors } from '@/utils/app/customTheme'
 import { useThemePersistence } from '@/utils/app/theme'
 import { computed } from 'vue'
 import { useTheme } from 'vuetify'
+import { capitalizeFirstLetter, defaultInterestingStatblock } from '~/shared'
 
 const theme = useTheme()
-const { isAllowedCustomTheme } = useThemePersistence()
-const themeOptions = computed(() => [
-    { title: 'Light', value: 'light' },
-    { title: 'Dark', value: 'dark' },
-    {
-        title: isAllowedCustomTheme ? 'Custom' : 'Custom (supporters only)',
-        value: 'custom',
-        props: { disabled: !isAllowedCustomTheme }
-    },
-])
-const { customColors, resetColor } = useCustomThemeColors()
+const { isAllowedCustomTheme, themeOptions } = useThemePersistence()
 
+const { customColors, resetColor, resetAll } = useCustomThemeColors()
+
+const { statblockColors, resetColor: resetStatblockColor, resetAll: resetAllStatblockColors } = useStatblockColors()
 </script>
 
 <template>
@@ -35,7 +30,7 @@ const { customColors, resetColor } = useCustomThemeColors()
 
     <div class="content">
 
-        <v-row>
+        <v-row :class="{ 'text-disabled': !isAllowedCustomTheme }">
             <v-col cols="12" v-if="!isAllowedCustomTheme">
                 <v-alert icon="$bestiaryBuilder" icon-size="48">
                     This feature is only available to Patreon Supporters.<br>
@@ -47,8 +42,9 @@ const { customColors, resetColor } = useCustomThemeColors()
             <v-divider v-if="!isAllowedCustomTheme" />
 
             <v-col cols="12">
+                <h2> Site Theme </h2>
                 <v-select v-model="theme.global.name.value" :items="themeOptions" label="Theme" item-props="props"
-                    max-width="400" hide-details />
+                    max-width="400" hide-details class="mt-3" :disabled="!isAllowedCustomTheme" />
             </v-col>
             <v-divider />
             <v-col cols="12">
@@ -60,6 +56,12 @@ const { customColors, resetColor } = useCustomThemeColors()
                                 <v-icon-btn @click="resetColor(key)" icon="mdi:restore" color="primary" />
                             </template>
                         </v-color-input>
+                    </v-col>
+                    <v-col>
+                        <v-btn @click="resetAll" color="error" size="large" class="w-100" prepend-icon="mdi:restore"
+                            :disabled="!isAllowedCustomTheme">
+                            Reset all
+                        </v-btn>
                     </v-col>
                 </v-row>
             </v-col>
@@ -81,6 +83,35 @@ const { customColors, resetColor } = useCustomThemeColors()
                 <p>
                     Surface-light is a variant colour for some site sections.
                 </p>
+            </v-col>
+            <v-divider />
+            <v-col cols="12">
+                <h2> Statblock Theme </h2>
+            </v-col>
+            <v-col cols="6">
+                <v-row>
+                    <v-col v-for="(color, key) in statblockColors" :key="key" cols="6">
+                        <v-color-input v-model="statblockColors[key]" mode="rgba" hide-actions density="comfortable"
+                            :label="capitalizeFirstLetter(key.replace('--', ''))" color-pip
+                            :disabled="!isAllowedCustomTheme">
+                            <template #append>
+                                <v-icon-btn @click="resetStatblockColor(key)" icon="mdi:restore" color="primary" />
+                            </template>
+                        </v-color-input>
+                    </v-col>
+                    <v-col>
+                        <v-btn @click="resetAllStatblockColors" color="error" size="large" class="w-100"
+                            prepend-icon="mdi:restore" :disabled="!isAllowedCustomTheme">
+                            Reset all
+                        </v-btn>
+                    </v-col>
+                </v-row>
+
+
+            </v-col>
+            <v-col cols="6">
+                <StatblockRenderer :data="defaultInterestingStatblock" statblock-design="Custom"
+                    :style="`opacity: ${isAllowedCustomTheme ? 1 : 'var(--v-disabled-opacity)'}`" />
             </v-col>
         </v-row>
     </div>

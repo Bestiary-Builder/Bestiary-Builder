@@ -11,9 +11,7 @@ import { sendToLogin, useFetch } from "@/utils/utils";
 import { SupporterStatus } from "~/shared";
 import { useTheme } from "vuetify";
 import { useThemePersistence } from "@/utils/app/theme";
-
-
-
+import { useStatblockColors } from "@/utils/app/customTheme";
 
 const { addToast } = useToast();
 const logoutClick = async () => {
@@ -289,28 +287,14 @@ const creatureData = {
 const AvraeToken = useLocalStorage("AvraeToken", "");
 
 const theme = useTheme()
-const { isAllowedCustomTheme } = useThemePersistence()
-const themeOptions = computed(() => [
-	{ title: 'Light', value: 'light' },
-	{ title: 'Dark', value: 'dark' },
-	{
-		title: isAllowedCustomTheme ? 'Custom' : 'Custom (supporters only)',
-		value: 'custom',
-		props: { disabled: !isAllowedCustomTheme }
-	},
-])
+const { themeOptions } = useThemePersistence()
+const { statblockDesignOptions } = useStatblockColors()
 
 const layoutOptions = [
 	{ title: "2024 (OneD&D / Default)", value: "SL_2024" },
 	{ title: "2014 (5e2014)", value: "SL_2014" },
 ];
 
-const statblockDesignOptions = [
-	{ title: "Bestiary Builder (Default)", value: "BestiaryBuilder" },
-	{ title: "Beyond", value: "Beyond" },
-	{ title: "Odyssey", value: "Odyssey" },
-	{ title: "Monster Manual (Compact)", value: "MonsterManual" },
-];
 
 const preferredEditorOptions = [
 	{ title: "Visual (Default)", value: "Visual" },
@@ -409,7 +393,13 @@ const srdOptions = [
 					<div class="setting-container">
 						<div>
 							<v-select v-model="preferences.statblockDesign" :items="statblockDesignOptions"
-								label="Statblock Design" width="400" hide-details />
+								label="Statblock Theme" width="400" hide-details />
+							<p class="pt-4">
+								Custom statblock theme is available to Patreon Supporters.
+								<br> You can create your custom statblock theme
+								<RouterLink to="./user/theme" style="color: rgb(var(--v-theme-primary))"> on this page
+								</RouterLink>.
+							</p>
 						</div>
 						<v-icon-btn
 							v-tooltip="'Change the visual design of the statblock. This changes its appearance only.'"

@@ -1,0 +1,96 @@
+body .content .statblock-outer.custom,
+body .v-card .statblock-outer.custom {
+	.statblock {
+		background: var(--background) !important;
+		box-shadow: 0 0 5px var(--box-shadow);
+		border: 1px solid var(--border);
+		padding: 15px;
+		outline: 1px solid var(--outline);
+		outline-offset: -0.25rem;
+		border-radius: 0.5rem;
+		color: var(--primary);
+	}
+
+
+	.statblock-name-container {
+		color: var(--primary);
+		border-color: var(--primary);
+	}
+
+	.statblock-core {
+		color: var(--subtle);
+	}
+
+
+	.feature-container {
+		color: var(--text-color);
+
+		.feature-container-title {
+			color: var(--primary);
+			border-color: var(--primary);
+		}
+	}
+
+	.feature-container.statblock-description {
+		color: unset;
+
+		.feature-container-title {
+			color: var(--primary);
+			border-color: var(--primary);
+		}
+		h1,h2,h3,h4,h5, a {
+			color: var(--primary);
+		}
+		hr {
+			border-color: var(--primary);
+		}
+	}
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5 {
+		font-family: "Scala Sans Offc", Roboto, Helvetica, sans-serif;
+		color: var(--primary);
+		line-height: 1.1;
+		font-variant: small-caps;
+		letter-spacing: 0.07rem;
+	}
+
+	hr {
+		border-color: var(--primary);
+	}
+
+	a {
+		color: var(--primary);
+	}
+
+	.stat-table:first-of-type {
+        thead th {
+            color: var(--subtle)
+        }
+		tbody > tr > td {
+			background-color: var(--table-1)
+		}
+
+		tbody > tr > th,
+		tbody > tr > td:first-of-type {
+			background-color: var(--table-2);
+		}
+	}
+
+	.stat-table:nth-of-type(2) {
+        thead th {
+            color: var(--subtle)
+        }
+		tbody > tr > td {
+			background-color: var(--table-3);
+		}
+
+		tbody > tr > th,
+		tbody > tr > td:first-of-type {
+			background-color: var(--table-4);
+		}
+	}
+}

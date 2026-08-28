@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { FeatureEntity, SaveEntity, SkillsEntity, Stat, Statblock } from "~/shared";
-import type { StatblockDesign } from "~/shared/prisma/enums";
 import MarkdownIt from "markdown-it";
 
 import markdownItAttrs from "markdown-it-attrs";
@@ -9,6 +8,9 @@ import { featureGenerator, resistanceGenerator, stats } from "@/utils/constants"
 import { store } from "@/utils/store";
 
 import { capitalizeFirstLetter, crAsString, displayCasterCasting, displayInnateCasting, displaySpeedOrSenses, hpCalc, ppCalc, signedNumber, SKILLS_BY_STAT, statCalc } from "~/shared";
+import type { StatblockDesign } from "~/shared/src/prisma-types";
+import { useThemePersistence } from "@/utils/app/theme";
+import { useStatblockColors } from "@/utils/app/customTheme";
 
 const { data, statblockDesign = null, is2024 = null } = defineProps<{ data: Statblock; statblockDesign?: StatblockDesign; is2024?: boolean }>();
 
@@ -158,6 +160,8 @@ const calculatePassiveInitiative = () => {
 	return value + calculatedInitiativeNumber();
 };
 
+const { isAllowedCustomTheme } = useThemePersistence()
+
 onMounted(async () => {
 	if (design === "Odyssey")
 		await import("./styles/odyssey/odyssey.css");
@@ -167,6 +171,9 @@ onMounted(async () => {
 
 	if (design === "MonsterManual")
 		await import("./styles/monstermanual/mm.css");
+
+	if (design === "Custom" && isAllowedCustomTheme)
+		await import("./styles/custom/custom.css");
 });
 
 const md = new MarkdownIt({
@@ -229,10 +236,13 @@ const renderFeature = (feature: FeatureEntity) => {
 	output += feature.description;
 	return render(output);
 };
+
+const { statblockColors } = useStatblockColors()
 </script>
 
 <template>
-	<div class="statblock-outer" :class="design?.toLowerCase()">
+	<div class="statblock-outer" :class="design?.toLowerCase()"
+		:style="design === 'Custom' && isAllowedCustomTheme ? statblockColors : ''">
 		<div id="statblock" class="statblock" :class="[v2024 ? 'v2024' : '']">
 			<div class="statblock-row">
 				<h1 class="statblock-name-container">

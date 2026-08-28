@@ -163,6 +163,416 @@ export const defaultStatblock: Statblock = {
 		},
 	},
 };
+
+export const defaultInterestingStatblock: Statblock = {
+	"core": {
+		"race": "Dragon (Chromatic)",
+		"size": "Huge",
+		"speed": [
+			{
+				"name": "Walk",
+				"unit": "ft",
+				"value": 40,
+				"comment": ""
+			},
+			{
+				"name": "Fly",
+				"unit": "ft",
+				"value": 80,
+				"comment": ""
+			},
+			{
+				"name": "Climb",
+				"unit": "ft",
+				"value": 40,
+				"comment": ""
+			}
+		],
+		"senses": [
+			{
+				"name": "Blindsight",
+				"unit": "ft",
+				"value": 60,
+				"comment": ""
+			},
+			{
+				"name": "Darkvision",
+				"unit": "ft",
+				"value": 120,
+				"comment": ""
+			}
+		],
+		"languages": [
+			"Common",
+			"Draconic"
+		],
+		"proficiencyBonus": 6
+	},
+	"misc": {
+		"telepathy": 0,
+		"featureHeaderTexts": {
+			"lair": "On initiative count 20, choose one lair action below; it can't take the same lair action two rounds in a row",
+			"bonus": "",
+			"mythic": "",
+			"actions": "",
+			"features": "",
+			"regional": "The region containing the creatures lair can be transformed by its presence, creating one or more of the following effects:",
+			"legendary": "Legendary Action Uses: $NUM$",
+			"reactions": ""
+		},
+		"legActionsPerRound": 3,
+		"passivePerceptionOverride": null
+	},
+	"defenses": {
+		"ac": {
+			"ac": 19,
+			"acSource": ""
+		},
+		"hp": {
+			"override": null,
+			"numOfHitDie": 19,
+			"sizeOfHitDie": 12
+		},
+		"immunities": [
+			"Fire"
+		],
+		"resistances": [],
+		"vulnerabilities": [],
+		"conditionImmunities": []
+	},
+	"features": {
+		"lair": [],
+		"bonus": [],
+		"mythic": [],
+		"actions": [
+			{
+				"name": "Multiattack",
+				"automation": null,
+				"description": "The dragon makes three Rend attacks. It can replace one attack with a use of Spellcasting to cast Scorching Ray."
+			},
+			{
+				"name": "Rend",
+				"automation": {
+					"_v": 2,
+					"name": "Rend",
+					"automation": [
+						{
+							"text": "*Melee Attack Roll:* +14, reach 10 ft. *Hit:* 13 (1d10 + 8) Slashing damage plus 5 (2d4) Fire damage.",
+							"type": "text",
+							"title": "Effect"
+						},
+						{
+							"type": "target",
+							"target": "each",
+							"effects": [
+								{
+									"adv": "0",
+									"hit": [
+										{
+											"type": "damage",
+											"damage": "(1d10 + 8 [slashing]) + (2d4 [fire])"
+										}
+									],
+									"miss": [],
+									"type": "attack",
+									"attackBonus": "14"
+								}
+							]
+						}
+					],
+					"activation_type": 1
+				},
+				"description": "*Melee Attack Roll:* +14, reach 10 ft. *Hit:* 13 (1d10 + 8) Slashing damage plus 5 (2d4) Fire damage."
+			},
+			{
+				"name": "Fire Breath (Recharge 5-6)",
+				"automation": {
+					"_v": 2,
+					"name": "Fire Breath (Recharge 5-6)",
+					"automation": [
+						{
+							"text": "*Dexterity Saving Throw:* DC 21, each creature in a 60-foot Cone. *Failure:* 59 (17d6) Fire damage. *Success:* Half damage.",
+							"type": "text",
+							"title": "Effect"
+						},
+						{
+							"type": "target",
+							"target": "self",
+							"effects": [
+								{
+									"name": "Fire Breath Used",
+									"type": "ieffect2",
+									"buttons": [
+										{
+											"verb": "attempts to recharge their Fire Breath",
+											"label": "Recharge Fire Breath",
+											"style": "3",
+											"automation": [
+												{
+													"dice": "1d6",
+													"name": "recharge",
+													"type": "roll",
+													"fixedValue": true
+												},
+												{
+													"type": "condition",
+													"onTrue": [
+														{
+															"type": "remove_ieffect"
+														},
+														{
+															"text": "{{caster.name}} recharges their Fire Breath!",
+															"type": "text",
+															"title": "Effect"
+														}
+													],
+													"onFalse": [
+														{
+															"text": "{{caster.name}} doesn't recharge their Fire Breath!",
+															"type": "text",
+															"title": "Effect"
+														}
+													],
+													"condition": "int(recharge) >= 5",
+													"errorBehaviour": "false"
+												}
+											]
+										}
+									],
+									"duration": -1,
+									"stacking": true
+								}
+							]
+						},
+						{
+							"dice": "17d6 [fire]",
+							"name": "damage",
+							"type": "roll"
+						},
+						{
+							"type": "target",
+							"target": "each",
+							"effects": [
+								{
+									"dc": "21",
+									"fail": [
+										{
+											"type": "damage",
+											"damage": "{damage}"
+										}
+									],
+									"stat": "dex",
+									"type": "save",
+									"success": [
+										{
+											"type": "damage",
+											"damage": "{damage}/2"
+										}
+									]
+								}
+							]
+						}
+					],
+					"activation_type": 1
+				},
+				"description": "*Dexterity Saving Throw:* DC 21, each creature in a 60-foot Cone. *Failure:* 59 (17d6) Fire damage. *Success:* Half damage."
+			}
+		],
+		"features": [
+			{
+				"name": "Legendary Resistance (3/Day, or 4/Day in Lair)",
+				"automation": null,
+				"description": "If the dragon fails a saving throw, it can choose to succeed instead."
+			},
+			{
+				"name": "Pounce",
+				"automation": {
+					"_v": 2,
+					"name": "Pounce",
+					"automation": [
+						{
+							"text": "The dragon moves up to half its Speed, and it makes one Rend attack.",
+							"type": "text",
+							"title": "Effect"
+						},
+						{
+							"type": "target",
+							"target": "each",
+							"effects": [
+								{
+									"adv": "0",
+									"hit": [
+										{
+											"type": "damage",
+											"damage": "(1d10 + 8 [slashing]) + (2d4 [fire])"
+										}
+									],
+									"miss": [],
+									"type": "attack",
+									"attackBonus": "14"
+								}
+							]
+						}
+					],
+					"activation_type": 8
+				},
+				"description": "The dragon moves up to half its Speed, and it makes one Rend attack."
+			}
+		],
+		"regional": [],
+		"legendary": [
+			{
+				"name": "Commanding Presence",
+				"automation": null,
+				"description": "The dragon uses Spellcasting to cast Command (level 2 version). The dragon can't take this action again until the start of its next turn."
+			},
+			{
+				"name": "Fiery Rays",
+				"automation": null,
+				"description": "The dragon uses Spellcasting to cast Scorching Ray. The dragon can't take this action again until the start of its next turn."
+			},
+			{
+				"name": "Pounce",
+				"automation": null,
+				"description": "The dragon moves up to half its Speed, and it makes one Rend attack."
+			}
+		],
+		"reactions": []
+	},
+	"abilities": {
+		"saves": {
+			"cha": {
+				"adv": null,
+				"override": null,
+				"isProficient": false
+			},
+			"con": {
+				"adv": null,
+				"override": null,
+				"isProficient": false
+			},
+			"dex": {
+				"adv": null,
+				"override": null,
+				"isProficient": true
+			},
+			"int": {
+				"adv": null,
+				"override": null,
+				"isProficient": false
+			},
+			"str": {
+				"adv": null,
+				"override": null,
+				"isProficient": false
+			},
+			"wis": {
+				"adv": null,
+				"override": null,
+				"isProficient": true
+			}
+		},
+		"stats": {
+			"cha": 23,
+			"con": 25,
+			"dex": 10,
+			"int": 16,
+			"str": 27,
+			"wis": 13
+		},
+		"skills": [
+			{
+				"adv": null,
+				"override": null,
+				"skillName": "Perception",
+				"isExpertise": true,
+				"isProficient": false,
+				"isHalfProficient": false
+			},
+			{
+				"adv": null,
+				"override": null,
+				"skillName": "Stealth",
+				"isExpertise": false,
+				"isProficient": true,
+				"isHalfProficient": false
+			}
+		]
+	},
+	"description": {
+		"cr": 17,
+		"xp": 18000,
+		"name": "Adult Red Dragon",
+		"image": "",
+		"faction": "",
+		"alignment": "Chaotic Evil",
+		"description": "",
+		"environment": "hill, mountain",
+		"isProperNoun": false
+	},
+	"spellcasting": {
+		"casterSpells": {
+			"spellList": [
+				[],
+				[],
+				[],
+				[],
+				[],
+				[],
+				[],
+				[],
+				[],
+				[]
+			],
+			"casterLevel": null,
+			"castingClass": null,
+			"spellSlotList": {},
+			"displayAsAction": false,
+			"spellDcOverride": null,
+			"customDescription": "",
+			"spellBonusOverride": null,
+			"spellCastingAbility": "cha",
+			"spellCastingAbilityOverride": null
+		},
+		"innateSpells": {
+			"spellList": {
+				"0": [
+					{
+						"spell": "Command",
+						"comment": "level 2 version"
+					},
+					{
+						"spell": "Detect Magic",
+						"comment": ""
+					},
+					{
+						"spell": "Scorching Ray",
+						"comment": ""
+					}
+				],
+				"1": [
+					{
+						"spell": "Fireball",
+						"comment": ""
+					}
+				],
+				"2": [],
+				"3": []
+			},
+			"isPsionics": false,
+			"displayAsAction": true,
+			"spellDcOverride": null,
+			"customDescription": "",
+			"noComponentsOfType": [
+				"Material",
+				"Somatic",
+				"Verbal"
+			],
+			"spellBonusOverride": null,
+			"spellCastingAbility": "cha"
+		}
+	}
+}
 export const XPbyCR = [
 	// skips 1/8 1/4 1/2
 	0,

@@ -225,6 +225,7 @@ enum StatblockDesign {
   Beyond
   Odyssey
   MonsterManual
+  Custom
 }
 
 enum SRDVersion {
