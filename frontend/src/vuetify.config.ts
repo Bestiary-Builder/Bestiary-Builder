@@ -77,7 +77,17 @@ export const vuetify = createVuetify({
 					"surface": "#d5dbd6",
 					"surface-bright": "#707070"
 				},
-			}
+			},
+			custom: {
+				dark: true,
+				colors: {
+					"primary": "#FF46A2",
+					'background': '#121212',
+					'surface': '#212121',
+					"surface-bright": "#8b8b8b",
+					"surface-light": "#424242"
+				},
+			},
 		}
 	},
 	icons: {

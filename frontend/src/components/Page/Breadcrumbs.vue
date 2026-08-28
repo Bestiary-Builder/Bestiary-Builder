@@ -4,7 +4,6 @@ import { isClient } from "@vueuse/shared";
 import { computed, ref, watchEffect } from "vue";
 import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
-import { useTheme } from "vuetify";
 
 const { routes } = defineProps<{ routes: links }>();
 
@@ -45,15 +44,6 @@ const { height } = useElementSize(breadcrumbs);
 watchEffect(() => {
 	document.body.style.setProperty("--breadcrumbs-height", `${height.value}px`);
 });
-
-const theme = useTheme()
-
-const toggleTheme = (e: any) => {
-	// passing target element will make it work for both clicks and keyboard interactions
-	theme.setTransitionOrigin(e.target)
-	theme.toggle()
-}
-
 </script>
 
 <template>
@@ -77,8 +67,6 @@ const toggleTheme = (e: any) => {
 	<Teleport to="#navbar .v-toolbar__append">
 		<div class="right-buttons">
 			<slot />
-			<v-icon-btn @click="toggleTheme" text="Toggle Light / Dark"
-				:icon="theme.name.value === 'dark' ? 'mdi:weather-sunny' : 'mdi-weather-night'" size="24"></v-icon-btn>
 			<v-icon-btn text="Share this page" icon="mdi:share" size="24" @click="startShare" />
 		</div>
 	</Teleport>

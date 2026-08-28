@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Bestiary, Statblock } from "~/shared";
 import { useLocalStorage } from "@vueuse/core";
-import { reactive, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
 import SectionHeader from "@/components/VisualEditor/Nodes/shared/SectionHeader.vue";
 import { getUmami } from "@/utils/app/analytics";
@@ -9,6 +9,11 @@ import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { sendToLogin, useFetch } from "@/utils/utils";
 import { SupporterStatus } from "~/shared";
+import { useTheme } from "vuetify";
+import { useThemePersistence } from "@/utils/app/theme";
+
+
+
 
 const { addToast } = useToast();
 const logoutClick = async () => {
@@ -283,6 +288,18 @@ const creatureData = {
 
 const AvraeToken = useLocalStorage("AvraeToken", "");
 
+const theme = useTheme()
+const { isAllowedCustomTheme } = useThemePersistence()
+const themeOptions = computed(() => [
+	{ title: 'Light', value: 'light' },
+	{ title: 'Dark', value: 'dark' },
+	{
+		title: isAllowedCustomTheme ? 'Custom' : 'Custom (supporters only)',
+		value: 'custom',
+		props: { disabled: !isAllowedCustomTheme }
+	},
+])
+
 const layoutOptions = [
 	{ title: "2024 (OneD&D / Default)", value: "SL_2024" },
 	{ title: "2014 (5e2014)", value: "SL_2014" },
@@ -336,8 +353,7 @@ const srdOptions = [
 					online.
 				</p>
 				<span
-					v-if="!(store.user.supporter === SupporterStatus.wirmling || store.user.supporter === SupporterStatus.greatwyrm)"
-					class="center">
+					v-if="!(store.user.supporter === SupporterStatus.wirmling || store.user.supporter === SupporterStatus.greatwyrm)">
 					<a href="https://www.patreon.com/join/BestiaryBuilder" class="patreon">
 						<v-icon icon="mdi:patreon" size="small" />
 						<span> Become a patreon </span>
@@ -359,8 +375,22 @@ const srdOptions = [
 				<div class="preferences mt-4">
 					<div class="setting-container">
 						<div>
+							<v-select v-model="theme.global.name.value" :items="themeOptions" label="Theme"
+								item-props="props" width="400" hide-details />
+							<p class="pt-4">
+								Custom theme is available to Patreon Supporters.
+								<br> You can create your custom theme
+								<RouterLink to="./user/theme" style="color: rgb(var(--v-theme-primary))"> on this page
+								</RouterLink>.
+							</p>
+						</div>
+
+
+					</div>
+					<div class="setting-container">
+						<div>
 							<v-select v-model="preferences.statblockLayout" label="Statblock Layout"
-								:items="layoutOptions" variant="outlined" density="comfortable" width="400" />
+								:items="layoutOptions" width="400" hide-details />
 						</div>
 
 						<v-icon-btn v-tooltip="'Set statblock layout to 2024 or 2014. This is appearance only.'"
@@ -379,7 +409,7 @@ const srdOptions = [
 					<div class="setting-container">
 						<div>
 							<v-select v-model="preferences.statblockDesign" :items="statblockDesignOptions"
-								label="Statblock Design" variant="outlined" density="comfortable" width="400" />
+								label="Statblock Design" width="400" hide-details />
 						</div>
 						<v-icon-btn
 							v-tooltip="'Change the visual design of the statblock. This changes its appearance only.'"
@@ -399,7 +429,7 @@ const srdOptions = [
 					<div class="setting-container">
 						<div>
 							<v-select v-model="preferences.preferredEditor" :items="preferredEditorOptions"
-								label="Preferred Editor" variant="outlined" density="comfortable" width="400" />
+								label="Preferred Editor" width="400" hide-details />
 						</div>
 
 						<v-icon-btn
@@ -410,7 +440,7 @@ const srdOptions = [
 					<div class="setting-container">
 						<div>
 							<v-select v-model="preferences.SRDVersion" :items="srdOptions" label="SRD Version"
-								variant="outlined" density="comfortable" width="400" />
+								width="400" hide-details />
 						</div>
 						<v-icon-btn
 							v-tooltip="'Set whether creating Creatures and Features from the SRD should use the 2024 or 2014 list of options.'"
@@ -423,39 +453,42 @@ const srdOptions = [
 						</v-btn>
 					</div>
 
-					<SectionHeader title="Avrae Integration" />
-					<v-container class="pa-0">
-						<small> With this setting you can edit character attacks and import attacks to characters
-							directly within BB. <br>To enable it, set your Avrae Token below. Bestiary Builder does not
-							store this
-							token, it is only saved in your browser.
-						</small>
-						<v-text-field v-model="AvraeToken" label="Token" variant="outlined" class="mt-4"
-							max-width="600" />
+					<div>
+						<SectionHeader title="Avrae Integration" />
+						<v-container class="pa-0">
+							<small> With this setting you can edit character attacks and import attacks to characters
+								directly within BB. <br>To enable it, set your Avrae Token below. Bestiary Builder does
+								not
+								store this
+								token, it is only saved in your browser.
+							</small>
+							<v-text-field v-model="AvraeToken" label="Token" class="mt-4" max-width="600" />
 
-						<small> To get the Token:
-							<ol>
-								<li>
-									Log in on the <a href="https://avrae.io/dashboard/characters"
-										style="color: rgb(var(--v-theme-primary))"> Avrae Dashboard
-									</a>
-								</li>
-								<li>
-									Open developer console (CTRL-SHIFT-I or Right click -> Inspect)
-								</li>
-								<li>
-									Open the <code> Application </code> Tab.
-								</li>
-								<li>
-									Choose Local Storage (https://avrae.io)
-								</li>
-								<li>
-									Copy the entire value of the
-									<code> avrae-token</code> key and paste it into the field above.
-								</li>
-							</ol>
-						</small>
-					</v-container>
+							<small> To get the Token:
+								<ol>
+									<li>
+										Log in on the <a href="https://avrae.io/dashboard/characters"
+											style="color: rgb(var(--v-theme-primary))"> Avrae Dashboard
+										</a>
+									</li>
+									<li>
+										Open developer console (CTRL-SHIFT-I or Right click -> Inspect)
+									</li>
+									<li>
+										Open the <code> Application </code> Tab.
+									</li>
+									<li>
+										Choose Local Storage (https://avrae.io)
+									</li>
+									<li>
+										Copy the entire value of the
+										<code> avrae-token</code> key and paste it into the field above.
+									</li>
+								</ol>
+							</small>
+						</v-container>
+					</div>
+
 				</div>
 			</div>
 			<SectionHeader title="Log out" />
@@ -503,31 +536,14 @@ const srdOptions = [
 		.preferences {
 			display: flex;
 			flex-direction: column;
-			gap: 1rem;
+			gap: 2rem;
 			padding: 0 0.5rem;
-
-			.container {
-				display: flex;
-				flex-direction: column;
-				gap: 0.6rem;
-			}
-
-			select {
-				width: 300px;
-			}
-
-			.btn {
-				margin-left: 0;
-			}
 
 			.setting-container {
 				display: flex;
 				flex-direction: row;
 				gap: 0.5rem;
-
-				&>div {
-					margin: auto 0;
-				}
+				align-items: center;
 			}
 		}
 	}

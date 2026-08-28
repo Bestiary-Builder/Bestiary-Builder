@@ -124,11 +124,11 @@ useThemePersistence()
 			<template #append />
 		</v-app-bar>
 		<v-main>
-			<v-alert v-if="!dismissed" class="ma-4" closable title="Update 3.0.0 Released" color="primary"
-				@click:close="dismiss">
-				Welcome
-				to
-				Bestiary Builder 3.0.0! See all the changes in the <RouterLink to="/changelog">
+			<v-alert v-if="!dismissed" class="ma-4" closable title="Update 3.0.0 Released" @click:close="dismiss"
+				icon="$bestiaryBuilder" icon-size="48">
+				Welcome to Bestiary Builder 3.0.0, the biggest and best update to BestiaryBuilder ever.<br>
+				See all the changes in the
+				<RouterLink to="/changelog">
 					Changelog
 				</RouterLink>
 			</v-alert>
