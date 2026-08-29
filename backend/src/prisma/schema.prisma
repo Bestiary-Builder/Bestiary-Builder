@@ -94,6 +94,9 @@ model Automation {
   /// [DbAutomation]
   automation Json?
 
+  /// [DbAutomationConsumables]
+  consumables Json?
+
   collection AutomationCollection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
 
   @@index([collectionId])

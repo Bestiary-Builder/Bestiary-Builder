@@ -40,6 +40,22 @@ export interface AutomationDocumentationEntity {
 }
 export interface AutomationDocumentation { [key: string]: AutomationDocumentationEntity }
 
+export interface AutomationConsumable {
+	name: string;
+	minv: string | null;
+	maxv: string | null;
+	display_type: "bubble" | "square" | "hex" | "star" | "default" | null;
+	reset: "short" | "long" | "none" | null;
+	reset_to: string | null;
+	reset_by: string | null;
+	title: string | null;
+	desc: string | null;
+	value: number | null;
+	ddb_source_feature_id: null;
+	ddb_source_feature_type: null;
+	live_id: null;
+}
+
 export type AutomationWithType = Omit<Automation, "automation"> & { automation: null | AttackModel | AttackModel[] };
 export type AutomationResponse = AutomationWithType & { permissionLevel: CollectionPermission };
 
