@@ -1,4 +1,4 @@
-import type { Automation, Id } from "~/shared";
+import type { Automation, AutomationConsumables, Id } from "~/shared";
 import type { AutomationCreateInput } from "~/shared/src/prisma-types";
 import { checkBadwords } from "@/utilities/badwords";
 import { app, checkAutomationLimits } from "@/utilities/constants";
@@ -6,6 +6,7 @@ import { createAutomation, deleteAutomation, getAutomation, updateAutomation } f
 import { log } from "@/utilities/logger";
 import { Prisma } from "~/shared/src/prisma-types";
 import { automationCollections, getOrCreateDefaultAutomationCollection } from "../collections/automationCollections";
+import { validateAutomationConsumablesInput } from "../external/validation";
 import { possibleUser, requireUser } from "../main/login";
 
 async function canEditAutomation(automation: Automation, userId: Id) {
@@ -78,10 +79,16 @@ app.post("/api/automation/:id/update", requireUser, async (req, res) => {
 	if (!req.body.data)
 		return res.status(400).json({ error: "Automation data not found." });
 	const input = req.body.data as Partial<Automation>;
+	const hasConsumables = Object.hasOwn(input, "consumables");
+	if (hasConsumables && !validateAutomationConsumablesInput(input.consumables as AutomationConsumables, res))
+		return;
+	const consumablesData = hasConsumables
+		? { consumables: input.consumables as AutomationConsumables }
+		: {};
 	const preparedInput = prepareAutomationInput(input, "New automation");
 	if ("error" in preparedInput)
 		return res.status(400).json({ error: preparedInput.error });
-	const data = { id, ...preparedInput.data };
+	const data = { id, ...preparedInput.data, ...consumablesData };
 	const automation = await getAutomation(id);
 	if (!automation)
 		return res.status(404).json({ error: "No automation with that id found." });
@@ -90,7 +97,8 @@ app.post("/api/automation/:id/update", requireUser, async (req, res) => {
 	const updatedId = await updateAutomation({
 		name: data.name,
 		automation: preparedInput.automationData,
-		description: data.description
+		description: data.description,
+		...consumablesData
 	}, id);
 	if (!updatedId)
 		return res.status(500).json({ error: "Failed to update automation." });

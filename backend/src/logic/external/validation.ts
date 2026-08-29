@@ -1,7 +1,7 @@
 import type { Response } from "express";
 import type { Checker } from "ts-interface-checker";
 
-import type { Statblock } from "~/shared";
+import type { AutomationConsumables, Statblock } from "~/shared";
 import fetch from "node-fetch";
 // Validate input
 import { createCheckers } from "ts-interface-checker";
@@ -23,9 +23,13 @@ app.post("/api/validate/automation", async (req, res) => {
 	else
 		return res.status(400).json(result);
 });
-const { SearchOptions: SearchOptionsChecker, Statblock: StatblockChecker } = createCheckers(typeInterface);
+const {
+	AutomationConsumables: AutomationConsumablesChecker,
+	SearchOptions: SearchOptionsChecker,
+	Statblock: StatblockChecker
+} = createCheckers(typeInterface);
 
-export { SearchOptionsChecker, StatblockChecker };
+export { AutomationConsumablesChecker, SearchOptionsChecker, StatblockChecker };
 
 export function validateInput(input: unknown, checker: Checker, res: Response, dataName: string) {
 	if (checker.test(input))
@@ -37,6 +41,10 @@ export function validateInput(input: unknown, checker: Checker, res: Response, d
 
 export function validateCreatureInput(input: Statblock, res: Response) {
 	return validateInput(input, StatblockChecker, res, "Creature");
+}
+
+export function validateAutomationConsumablesInput(input: AutomationConsumables, res: Response) {
+	return validateInput(input, AutomationConsumablesChecker, res, "Automation consumables");
 }
 
 app.post("/api/validate/creature", async (req, res) => {
