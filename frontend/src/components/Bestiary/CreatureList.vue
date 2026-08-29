@@ -214,7 +214,6 @@ const initDraggable = async () => {
         bubbleScroll: false,
         scrollSensitivity: 500,
         scrollSpeed: 5,
-        onUpdate: saveOrder,
     })
 
     if (!canDrag.value) draggableControls.value.pause()
@@ -222,12 +221,12 @@ const initDraggable = async () => {
 
 onMounted(initDraggable)
 
+watch(model, saveOrder);
 const saveOrder = async () => {
     if (model.value && collection) {
         const orderIds = model.value.map(creature => creature.id);
-        const { success, data, error } = await useFetch(`/api/bestiary/${collection.id}/creatures/order`, "POST", orderIds);
-        console.log(success, data, error)
-    }
+        await useFetch(`/api/bestiary/${collection.id}/creatures/order`, "POST", orderIds);
+	}
 };
 </script>
 <style scoped>
