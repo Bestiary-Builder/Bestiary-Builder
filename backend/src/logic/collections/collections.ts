@@ -146,7 +146,7 @@ export function createCollectionService<C extends CollectionWithEditors, ListedC
 	async function reorderForUser(userId: Id, collectionIds: Id[]): Promise<CollectionOperationResult> {
 		if (new Set(collectionIds).size !== collectionIds.length)
 			return { ok: false, reason: "duplicate-collections" };
-		const existingCollectionIds = await repository.getOwnedCollectionIds(userId);
+		const existingCollectionIds = (await repository.getForUser(userId)).map(c => c.id);
 		if (collectionIds.some(id => !existingCollectionIds.includes(id)))
 			return { ok: false, reason: "collections-not-owned" };
 		const orderedCollectionIds = [...collectionIds, ...existingCollectionIds.filter(id => !collectionIds.includes(id))];
