@@ -119,7 +119,19 @@ export async function createBestiary(data: Omit<BestiaryCreateInput, "id" | "own
 }
 export async function incrementBestiaryViewCount(id: Id) {
 	log.log("database", `Incrementing viewcount of bestiary with the id ${id}.`);
-	await getPrismaClient().bestiary.update({ where: { id }, data: { viewCount: { increment: 1 } } });
+	await getPrismaClient().$transaction(async (prisma) => {
+		const { lastUpdated } = await prisma.bestiary.findUniqueOrThrow({
+			where: { id },
+			select: { lastUpdated: true }
+		});
+		await prisma.bestiary.update({
+			where: { id },
+			data: {
+				viewCount: { increment: 1 },
+				lastUpdated
+			}
+		});
+	});
 }
 export async function deleteBestiary(bestiaryId: Id) {
 	return await withDatabaseFallback(async () => {

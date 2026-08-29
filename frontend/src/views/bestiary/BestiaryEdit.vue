@@ -4,6 +4,7 @@ import { useLocalStorage } from "@vueuse/core";
 import { onMounted, reactive, ref, watch } from "vue";
 import { useRules } from "vuetify/labs/rules";
 import CopyCreature from "@/components/Bestiary/CopyCreature.vue";
+import CreatureList from "@/components/Bestiary/CreatureList.vue";
 import StatusIcon from "@/components/Bestiary/StatusIcon.vue";
 import { useCollection } from "@/components/Bestiary/useCollection";
 import UserBanner from "@/components/Bestiary/UserBanner.vue";
@@ -15,7 +16,6 @@ import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { defaultStatblock } from "~/shared";
-import CreatureList from "@/components/Bestiary/CreatureList.vue";
 
 const {
 	collection,
@@ -56,7 +56,6 @@ onMounted(async () => {
 			addToast(error, { color: "error" });
 	});
 });
-
 
 async function exportHomebrewery() {
 	const toastId = addToast("Exporting...", { loading: true });
