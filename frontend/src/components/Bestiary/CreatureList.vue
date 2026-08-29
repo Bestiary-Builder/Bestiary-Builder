@@ -221,13 +221,13 @@ const initDraggable = async () => {
 
 onMounted(initDraggable)
 
-watch(model, saveOrder);
 const saveOrder = async () => {
     if (model.value && collection) {
         const orderIds = model.value.map(creature => creature.id);
         await useFetch(`/api/bestiary/${collection.id}/creatures/order`, "POST", orderIds);
 	}
 };
+watch(model, saveOrder);
 </script>
 <style scoped>
 .creature-item,
