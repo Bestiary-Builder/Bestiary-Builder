@@ -1,8 +1,9 @@
 import type { User } from "~/shared";
 import { Buffer } from "node:buffer";
 import discord from "discord.js";
-import { isProduction } from "@/utilities/constants";
+import { app, isProduction } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
+import { possibleUser } from "../main/login";
 
 const client = new discord.Client({
 	intents: [discord.IntentsBitField.Flags.Guilds, discord.IntentsBitField.Flags.GuildMessages, discord.IntentsBitField.Flags.GuildMembers]
@@ -12,6 +13,7 @@ export default client;
 const channels = {} as {
 	errorLogs?: discord.TextChannel;
 	publicLogs?: discord.TextChannel;
+	privateFeedback?: discord.TextChannel;
 };
 client.on("clientReady", async () => {
 	log.info("Discord bot is ready");
@@ -24,6 +26,7 @@ client.on("clientReady", async () => {
 
 	channels.errorLogs = (await guild.channels.fetch("1188133661208477806")) as discord.TextChannel;
 	channels.publicLogs = (await guild.channels.fetch("1188139329642565722")) as discord.TextChannel;
+	channels.privateFeedback = (await guild.channels.fetch("1543368742736760942")) as discord.TextChannel;
 });
 
 if (isProduction) {
@@ -55,3 +58,33 @@ export async function publicLog(title: string, description: string, link: string
 		.setTimestamp();
 	channels.publicLogs?.send({ embeds: [embed] });
 }
+
+// Feedback form
+app.post("/api/feedback", possibleUser, async (req, res) => {
+	// Get message from request body
+	const { message, type } = req.body.data as { message?: string; type?: "idea" | "issue" };
+	if (!message || !type)
+		return res.status(400).json({ error: "Message and feedback type are both required" });
+
+	if (type !== "issue" && type !== "idea")
+		return res.status(400).json({ error: "Invalid feedback type" });
+
+	// Get user from request
+	const user = req.user;
+
+	// Send feedback to private feedback channel
+	if (!channels.privateFeedback)
+		return res.status(500).json({ error: "Feedback channel not found" });
+
+	channels.privateFeedback.send({
+		embeds: [
+			new discord.EmbedBuilder()
+				.setAuthor(user ? { name: user.username, iconURL: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` } : { name: "Anonymous" })
+				.setTitle(type === "idea" ? "Idea" : "Issue")
+				.setDescription(message)
+				.setTimestamp()
+		]
+	});
+
+	res.status(200).json({ message: "Feedback submitted" });
+});

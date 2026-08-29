@@ -2,11 +2,12 @@
 import { useLocalStorage } from "@vueuse/core";
 import { computed, ref } from "vue";
 import { RouterView } from "vue-router";
+import FeedbackForm from "./components/Global/FeedbackForm.vue";
 import ToastHost from "./components/Page/ToastHost.vue";
+import { useThemePersistence } from "./utils/app/theme.js";
 import { useRecentPages } from "./utils/app/useRecentPages.js";
 import { store } from "./utils/store.js";
 import { sendToLogin } from "./utils/utils.js";
-import { useThemePersistence } from "./utils/app/theme.js";
 
 const { recentPages } = useRecentPages();
 
@@ -34,7 +35,9 @@ const defaults = computed(() => ({
 	},
 }));
 
-useThemePersistence()
+const isFeedbackFormOpen = ref(false);
+
+useThemePersistence();
 </script>
 
 <template>
@@ -144,6 +147,8 @@ useThemePersistence()
 			<v-btn text="Patreon" variant="plain" href="https://patreon.com/BestiaryBuilder" target="_blank" />
 			<v-btn to="/privacy-policy" text="Privacy Policy" variant="plain" />
 			<v-btn to="/terms-and-conditions" text="Terms and Conditions" variant="plain" />
+			<v-btn text="Feedback" variant="plain" @click="isFeedbackFormOpen = true" />
+			<FeedbackForm v-model="isFeedbackFormOpen" />
 
 			<div class="flex-1-0-100 text-center mt-2">
 				{{ new Date().getFullYear() }} — <strong>Bestiary Builder</strong>

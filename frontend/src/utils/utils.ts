@@ -33,7 +33,8 @@ export async function useFetch<Type>(url: string, method: "GET" | "POST" = "GET"
 		}).then(async response => handleApiResponse<Type>(response));
 		return result;
 	}
-	catch {
+	catch (e) {
+		console.error(e);
 		return { success: false, error: "Connection to backend failed.", data: undefined, status: undefined } as { success: false; data: undefined; error: string; status: undefined };
 	}
 }
