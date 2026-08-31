@@ -17,7 +17,7 @@
                 ref="virtualScroll">
                 <template #default="{ item }">
                     <v-list-item v-if="item.type === 'header'" :title="item.label" class="group-header"
-                        @click="toggleGroup(item.groupKey)" >
+                        @click="toggleGroup(item.groupKey)">
                         <template #append>
                             <v-icon :icon="item.collapsed ? 'mdi-chevron-right' : 'mdi-chevron-down'" />
                         </template>
@@ -26,7 +26,7 @@
                     <v-list-item v-else :title="item.data.name" @mouseover="hoveredCreature = item.data.id"
                         :subtitle="`${item.data.size} ${item.data.race}\nCR ${item.data.cr}`" lines="two"
                         class="multiline-subtitle creature-item">
-                        <template #prepend v-if="sortMode === 'Custom'">
+                        <template #prepend v-if="sortMode === 'Custom' && canEdit">
                             <v-icon icon="material-symbols:drag-indicator" class="drag-handle"
                                 :class="{ 'drag-handle--disabled': !canDrag }" color="primary" />
                         </template>
@@ -105,13 +105,12 @@ const searchText = ref('')
 
 const sortModeOptions: { title: string; value: SortMode }[] = [
     { title: 'Alphabetically', value: 'Alphabetical' },
+    { title: 'Custom order', value: 'Custom' },
     { title: 'Creature Type', value: 'race' },
     { title: 'Size', value: 'size' },
     { title: 'CR Ascending', value: 'cr-asc' },
     { title: 'CR Descending', value: 'cr-desc' },]
 
-if (canEdit)
-    sortModeOptions.unshift({ title: 'Custom order', value: 'Custom' })
 
 type FlatEntry =
     | { type: 'header'; key: string; label: string; groupKey: string; collapsed: boolean }
@@ -225,10 +224,11 @@ const saveOrder = async () => {
     if (model.value && collection) {
         const orderIds = model.value.map(creature => creature.id);
         await useFetch(`/api/bestiary/${collection.id}/creatures/order`, "POST", orderIds);
-	}
+    }
 };
 watch(model, saveOrder);
 </script>
+
 <style scoped>
 .creature-item,
 .group-header {
