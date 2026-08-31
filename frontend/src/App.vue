@@ -50,7 +50,7 @@ useThemePersistence();
 					</template>
 					<RouterLink to="/" class="d-flex align-center flex-grow-1 text-decoration-none text-high-emphasis">
 						<v-list-item-title color="primary" class="text-high-emphasis font-weight-bold"
-							style="font-size: larger;">
+							style="font-size: larger; line-height: 2rem;">
 							Bestiary
 							Builder
 						</v-list-item-title>
@@ -66,7 +66,6 @@ useThemePersistence();
 
 					<v-list-item title="My Bestiaries" value="personalBestiaries" to="/bestiaries/personal" link />
 					<v-list-item title="Explore" value="publicBestiaries" to="/bestiaries/public" link />
-					<!-- <v-list-item title="Bookmarked" value="savedBestiaries" to="/bestiaries/public/saved" link /> -->
 				</v-list-group>
 				<v-divider />
 				<v-list-group value="automations">
@@ -76,7 +75,6 @@ useThemePersistence();
 
 					<v-list-item title="My Automations" value="personalAutomations" to="/armory/personal" link />
 					<v-list-item title="Explore" value="publicAutomations" to="/armory/public" link />
-					<!-- <v-list-item title="Subscribed" value="savedAutomations" to="/automations/public/saved" link /> -->
 				</v-list-group>
 				<v-divider />
 
