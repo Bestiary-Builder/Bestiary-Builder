@@ -80,6 +80,7 @@ app.post("/api/automation/:id/update", requireUser, async (req, res) => {
 		return res.status(400).json({ error: "Automation data not found." });
 	const input = req.body.data as Partial<Automation>;
 	const hasConsumables = Object.hasOwn(input, "consumables");
+	console.log(input.consumables)
 	if (hasConsumables && !validateAutomationConsumablesInput(input.consumables as AutomationConsumables, res))
 		return;
 	const consumablesData = hasConsumables

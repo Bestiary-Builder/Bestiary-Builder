@@ -37,8 +37,7 @@ const currentNode = computed(() => {
 	return "";
 });
 
-const $route = useRoute()
-const showControls = ref();
+const showControls = ref(true);
 provide("showControls", showControls);
 </script>
 

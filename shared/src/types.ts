@@ -1,5 +1,5 @@
 import type * as Prisma from "../prisma/internal/prismaNamespace";
-import type { Statblock } from "./build-types";
+import type { AutomationConsumables, Statblock } from "./build-types";
 
 export type Id = string;
 export type CollectionPermission = "none" | "view" | "editor" | "owner";
@@ -40,7 +40,7 @@ export interface AutomationDocumentationEntity {
 }
 export interface AutomationDocumentation { [key: string]: AutomationDocumentationEntity }
 
-export type AutomationWithType = Omit<Automation, "automation"> & { automation: null | AttackModel | AttackModel[] };
+export type AutomationWithType = Omit<Automation, "automation" | "consumables"> & { automation: null | AttackModel | AttackModel[], consumables: AutomationConsumables | null };
 export type AutomationResponse = AutomationWithType & { permissionLevel: CollectionPermission };
 
 // Built types

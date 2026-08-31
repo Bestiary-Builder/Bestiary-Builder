@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AttackModel, AutomationCollectionExtended, AutomationWithType, FeatureEntity, Features } from "~/shared";
+import type { AttackModel, AutomationCollectionExtended, AutomationWithType, FeatureEntity } from "~/shared";
 import { useLocalStorage } from "@vueuse/core";
 import { computed, nextTick, onMounted, onUnmounted, provide, ref, useTemplateRef, watch } from "vue";
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
@@ -13,6 +13,7 @@ import { useRecentPages } from "@/utils/app/useRecentPages";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { parseDescIntoAutomation } from "~/shared";
+import { useRules } from "vuetify/labs/rules";
 
 const $router = useRouter();
 const $route = useRoute();
@@ -182,7 +183,7 @@ const saveAutomation = async (shouldNotify: boolean): Promise<boolean> => {
 		);
 
 		if (toastId)
-			setTimeout(updateToast, 500, toastId, { text: "Saved action!", prependIcon: "mdi-check" });
+			setTimeout(updateToast, 500, toastId, { text: "Saved Action.", prependIcon: "mdi:check" });
 		isSavingCreature.value = false;
 		updateLabel($route.path, data.value.name);
 		return true;
@@ -370,12 +371,46 @@ const setDesc = (setDesc: string) => {
 provide("setActionName", setName);
 provide("setActionDescription", setDesc);
 
-// TODO
-const makeGvar = async () => {
-	console.log("run this");
-	const { success, data: aAdata, error } = await useFetch("/api/character/makeattackgvar", "POST", data.value?.automation);
-	console.log(success, aAdata, error);
-};
+const isCounterDialogOpen = ref(false)
+
+const addConsumable = () => {
+	if (data.value?.consumables === null)
+		data.value.consumables = []
+	data.value?.consumables.push({
+		name: 'New Counter',
+		title: null,
+		minv: '0',
+		maxv: null,
+		value: null,
+		display_type: 'default',
+		reset: null,
+		reset_to: null,
+		reset_by: null,
+		desc: null,
+		live_id: null,
+		ddb_source_feature_id: null,
+		ddb_source_feature_type: null,
+	})
+}
+
+const rules = useRules()
+
+const displayTypeOptions = [
+	{ title: '〇◉ Default', value: 'default' },
+	{ title: '〇◉ Bubble', value: 'bubble' },
+	{ title: '▢▣ Square', value: 'square' },
+	{ title: '⬡⬢ Hex', value: 'hex' },
+	{ title: '☆★ Star', value: 'star' },
+	{ title: 'None', value: null },
+]
+
+const resetOnOptions = [
+	{ title: 'Default', value: null },
+	{ title: 'Short Rest ', value: 'short' },
+	{ title: 'Long Rest', value: 'long' },
+	{ title: 'None (never)', value: 'none' },
+]
+
 </script>
 
 <template>
@@ -421,6 +456,7 @@ const makeGvar = async () => {
 								structure to this text while enabled.</i> </small>
 					</span>
 
+					<v-btn class="mt-6 w-100" @click="isCounterDialogOpen = true"> Counters </v-btn>
 					<div v-if="!isVisualEditor && showDescriptionButtons" class="mt-4">
 						<b class="mt-4"> Descriptions: </b>
 						<span style="color: rgb(var(--v-theme-error))"> Don't match. </span>
@@ -449,6 +485,116 @@ const makeGvar = async () => {
 
 		<EditAutomation ref="EditAutomationRef" v-model="data.automation" v-model:is-visual-editor="isVisualEditor"
 			:name="data.name" />
+
+		<v-dialog v-model="isCounterDialogOpen" max-width="800" height="600">
+			<v-card title="Custom Counters" class="pa-4 text-center d-flex flex-column">
+				<v-card-text class="flex-grow-1">
+					<p>
+						<small style="color: rgb(var(--v-theme-surface-bright))">
+							You can define Custom Counters.
+							<b>
+								These apply to Avrae Characters only. </b>
+							<br> Importing this action will import this Custom Counter too.
+						</small>
+					</p>
+					<v-list density="compact" class="text-left my-4" bg-color="surface-light">
+						<v-list-group v-for="consumable, idx of data.consumables">
+							<template #activator="{ props, isOpen }">
+								<v-list-item v-bind="props" :title="consumable.name" :subtitle="consumable.desc || ''">
+									<template #append>
+										<v-icon-btn text="Delete counter" icon="mdi:delete"
+											@click.stop="data.consumables?.splice(idx, 1)">
+
+										</v-icon-btn>
+										<v-icon icon="mdi:chevron-down" :class="{ 'rotate-180': isOpen }"
+											class="transition-transform" />
+									</template>
+								</v-list-item>
+							</template>
+							<v-container class="pa-4">
+								<v-row density="comfortable">
+									<v-col cols="6">
+										<v-text-field v-model="consumable.name"
+											:rules="[rules.required(), rules.minLength(1)]" label="Name"
+											variant="outlined"></v-text-field>
+									</v-col>
+									<v-col cols="6">
+										<v-spacer />
+									</v-col>
+									<p class="pb-2">
+										<small>
+											The following fields may use CVARS from the
+											<a href="https://avrae.readthedocs.io/en/stable/aliasing/api.html#cvar-table"
+												target="_blank">
+												CVAR
+												table
+											</a>
+											and math expressions.
+										</small>
+									</p>
+									<v-col cols="6">
+										<v-select v-model="consumable.display_type" variant="outlined"
+											label="Display Type" :items="displayTypeOptions" hide-details>
+										</v-select>
+									</v-col>
+									<v-col cols="6">
+										<v-select v-model="consumable.reset" variant="outlined" label="Reset On"
+											:items="resetOnOptions" hide-details>
+										</v-select>
+									</v-col>
+									<v-col cols="6">
+										<v-text-field v-model="consumable.minv" label="Minimum" variant="outlined"
+											hide-details></v-text-field>
+									</v-col>
+									<v-col cols="6">
+										<v-text-field v-model="consumable.maxv" label="Maximum" variant="outlined"
+											hide-details></v-text-field>
+									</v-col>
+
+									<v-col cols="6">
+										<v-text-field v-model="consumable.reset_by" label="Reset By" variant="outlined"
+											hide-details></v-text-field>
+									</v-col>
+									<v-col cols="6">
+										<v-text-field v-model="consumable.reset_to" label="Reset To" variant="outlined"
+											hide-details></v-text-field>
+									</v-col>
+									<v-col cols="6">
+										<v-text-field v-model="consumable.value" label="Initial Value"
+											variant="outlined" hide-details></v-text-field>
+									</v-col>
+									<v-col cols="6">
+										<v-text-field v-model="consumable.title" label="Title" variant="outlined"
+											hide-details></v-text-field>
+									</v-col>
+									<v-col cols="12">
+										<v-textarea v-model="consumable.desc" label="Description" variant="outlined"
+											hide-details></v-textarea>
+									</v-col>
+								</v-row>
+
+							</v-container>
+							<v-divider />
+
+						</v-list-group>
+						<v-list-item v-if="!data.consumables" title="No consumables set..."></v-list-item>
+						<v-divider />
+
+						<v-list-item title="Add Consumable" prepend-icon="mdi:plus" @click="addConsumable"
+							v-if="!data.consumables || data.consumables.length < 16" />
+					</v-list>
+				</v-card-text>
+				<v-card-actions class="d-flex ga-2 pa-4 mx-8">
+					<v-btn color="success" class="flex-grow-1" @click="saveAutomation" prepend-icon="mdi:content-save">
+						Save
+					</v-btn>
+
+					<v-btn @click="isCounterDialogOpen = false" prepend-icon="mdi:close" class="flex-grow-1">
+						Close
+					</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
 	</div>
 </template>
 
@@ -479,5 +625,17 @@ a {
 		scale: 0.7;
 		translate: 0 4px;
 	}
+}
+
+:deep(.v-card-item) {
+	padding: 0;
+}
+
+.transition-transform {
+	transition: transform 0.2s ease;
+}
+
+.rotate-180 {
+	transform: rotate(180deg);
 }
 </style>
