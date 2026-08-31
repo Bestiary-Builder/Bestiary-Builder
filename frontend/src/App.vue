@@ -95,7 +95,7 @@ useThemePersistence();
 			<template #append>
 				<v-list nav density="compact">
 					<v-divider />
-					<v-list-item title="Feedback" value="feedback" prepend-icon="mdi:bug"
+					<v-list-item title="Feedback" value="feedback" prepend-icon="mdi:comment-text"
 						@click="isFeedbackFormOpen = true" />
 					<v-list-item title="Help" value="help" to="/help" prepend-icon="mdi:frequently-asked-questions" />
 					<v-list-item title="Changelog" value="changelog" to="/changelog" prepend-icon="mdi:history" />
