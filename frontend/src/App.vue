@@ -95,6 +95,8 @@ useThemePersistence();
 			<template #append>
 				<v-list nav density="compact">
 					<v-divider />
+					<v-list-item title="Feedback" value="feedback" prepend-icon="mdi:bug"
+						@click="isFeedbackFormOpen = true" />
 					<v-list-item title="Help" value="help" to="/help" prepend-icon="mdi:frequently-asked-questions" />
 					<v-list-item title="Changelog" value="changelog" to="/changelog" prepend-icon="mdi:history" />
 					<v-list-item title="Discord" value="discord" href="https://discord.gg/a6bwXCSymN" target="_blank"
@@ -145,19 +147,21 @@ useThemePersistence();
 			<v-btn text="Patreon" variant="plain" href="https://patreon.com/BestiaryBuilder" target="_blank" />
 			<v-btn to="/privacy-policy" text="Privacy Policy" variant="plain" />
 			<v-btn to="/terms-and-conditions" text="Terms and Conditions" variant="plain" />
-			<v-btn text="Feedback" variant="plain" @click="isFeedbackFormOpen = true" />
-			<FeedbackForm v-model="isFeedbackFormOpen" />
 
 			<div class="flex-1-0-100 text-center mt-2">
 				{{ new Date().getFullYear() }} — <strong>Bestiary Builder</strong>
 			</div>
 		</v-footer>
+
+		<FeedbackForm v-model="isFeedbackFormOpen" />
+
+
 		<ToastHost />
 	</v-app>
 </template>
 
 <style scoped>
-a {
+.v-list-item:not(.v-list-group__header) {
 	color: color-mix(in srgb, currentcolor 75%, black 25%);
 }
 
