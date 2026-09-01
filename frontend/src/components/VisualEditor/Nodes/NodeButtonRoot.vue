@@ -52,7 +52,7 @@ watch(() => currentEffect!.value?.style, () => {
 				<TypeHintedEditor v-model="(currentEffect.defaultDC as string)" label="Default DC (spell_dc)" />
 			</div>
 			<div>
-				<TypeHintedEditor v-model="(currentEffect.defaultDC as string)"
+				<TypeHintedEditor v-model="(currentEffect.defaultAttackBonus as string)"
 					label="Default Attack Bonus (spell_attack_bonus)" />
 			</div>
 			<div>
