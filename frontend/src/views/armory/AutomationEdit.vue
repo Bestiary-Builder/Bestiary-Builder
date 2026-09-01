@@ -560,8 +560,8 @@ const resetOnOptions = [
 											hide-details></v-text-field>
 									</v-col>
 									<v-col cols="6">
-										<v-text-field v-model="consumable.value" label="Initial Value"
-											variant="outlined" hide-details></v-text-field>
+										<v-number-input v-model="consumable.value" label="Initial Value"
+											variant="outlined" hide-details></v-number-input>
 									</v-col>
 									<v-col cols="6">
 										<v-text-field v-model="consumable.title" label="Title" variant="outlined"
