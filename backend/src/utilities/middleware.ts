@@ -41,7 +41,7 @@ app.use(
 				"script-src": ["'self'", "'sha256-reBsRZd5I88opZSwT59Ir+QlBhrEhdRJ1aQUr4GXhyw='", "https://analytics.bestiarybuilder.com/", "https://cdn.jsdelivr.net"],
 				"style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdn.jsdelivr.net"],
 				"font-src": ["'self'", "data: https://fonts.gstatic.com", "https://cdn.jsdelivr.net"],
-				"connect-src": ["'self'", "https://discord.com", "https://analytics.bestiarybuilder.com/", "https://cdn.jsdelivr.net", "https://api.iconify.design"],
+				"connect-src": ["'self'", "https://discord.com", "https://analytics.bestiarybuilder.com/", "https://cdn.jsdelivr.net", "https://api.iconify.design", "https://api.avrae.io"],
 				"worker-src": ["'self'", "blob:"]
 			},
 			useDefaults: true
