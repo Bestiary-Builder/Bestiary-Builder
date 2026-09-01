@@ -4,6 +4,7 @@ import type { Attack } from "~/shared";
 import { inject, onUnmounted, ref, watch } from "vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
+import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 
 const currentEffect = inject<Ref<Attack>>("currentEffect");
 
@@ -38,23 +39,21 @@ useDataCleanup(currentEffect, ["attackBonus"]);
 <template>
 	<template v-if="currentEffect">
 		<SectionHeader title="Attack" />
-		<v-text-field v-model="currentEffect.attackBonus" label="Attack Bonus" hint="IntExpression" />
+		<TypeHintedEditor v-model="currentEffect.attackBonus" label="Attack Bonus" />
 
 		<SectionHeader title="Additional Options" />
 		<div class="two-wide">
-			<v-select
-				v-model="currentEffect.adv" label="Advantage (optional)" title="Advantage" :items="[
-					{ title: 'Flat', value: '0' },
-					{ title: 'Advantage', value: '1' },
-					{ title: 'Elven Advantage', value: '2' },
-					{ title: 'Disadvantage', value: '-1' },
-					isCustom
-						? { title: 'Custom', value: currentEffect.adv }
-						: { title: 'Custom', value: 'custom' },
-				]" @update:model-value="handleChange"
-			/>
+			<v-select v-model="currentEffect.adv" label="Advantage (optional)" title="Advantage" :items="[
+				{ title: 'Flat', value: '0' },
+				{ title: 'Advantage', value: '1' },
+				{ title: 'Elven Advantage', value: '2' },
+				{ title: 'Disadvantage', value: '-1' },
+				isCustom
+					? { title: 'Custom', value: currentEffect.adv }
+					: { title: 'Custom', value: 'custom' },
+			]" @update:model-value="handleChange" />
 			<template v-if="isCustom">
-				<v-text-field v-model="currentEffect.adv" label="Custom Advantage" hint="IntExpression" />
+				<TypeHintedEditor v-model="currentEffect.adv" label="Custom Advantage" />
 			</template>
 		</div>
 	</template>

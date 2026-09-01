@@ -8,6 +8,7 @@ import Editor from "@/components/StatblockEditor/Editor.vue";
 import SectionHeader from "../shared/SectionHeader.vue";
 import { useDataCleanup } from "../shared/utils";
 import { PASSIVE_EFFECTS } from "./passiveEffect";
+import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 
 const currentEffect = inject<Ref<IEffect>>("currentEffect");
 
@@ -107,15 +108,14 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 		<SectionHeader title="Initiative Effect" />
 		<v-row>
 			<v-col cols="6">
-				<v-text-field v-model="currentEffect.name" label="Name" :rules="[rules.required()]"
-					hint="AnnotatedString" />
+				<TypeHintedEditor v-model="currentEffect.name" label="Name" is-annotated-string />
 			</v-col>
 		</v-row>
 
 		<SectionHeader title="Duration Options" />
 		<v-row>
 			<v-col cols="6">
-				<v-text-field v-model="currentEffect.duration" label="Duration" hint="IntExpression" hide-details />
+				<TypeHintedEditor v-model="(currentEffect.duration as string)" label="Duration" />
 			</v-col>
 			<v-col cols="6">
 				<v-checkbox v-model="currentEffect.end" label="Ticks on end of turn." hide-details density="compact" />

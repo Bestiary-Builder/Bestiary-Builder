@@ -5,7 +5,7 @@ import { inject, onMounted, ref } from "vue";
 import { useFetch } from "@/utils/utils";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
-
+import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 const currentEffect = inject<Ref<Spell>>("currentEffect");
 
 type Spells = { label: string; id: number }[];
@@ -32,20 +32,18 @@ useDataCleanup(currentEffect, ["level", "attackBonus", "castingMod", "parent"]);
 		<SectionHeader title="Additional Options" />
 
 		<div class="two-wide">
-			<v-select
-				v-model="currentEffect.level" label="Level" :items="[
-					{ title: '(default level)', value: null },
-					...Array.from({ length: 10 }, (_, i) => ({ title: i.toString(), value: i })),
-				]"
-			/>
+			<v-select v-model="currentEffect.level" label="Level" :items="[
+				{ title: '(default level)', value: null },
+				...Array.from({ length: 10 }, (_, i) => ({ title: i.toString(), value: i })),
+			]" />
 			<v-text-field v-model="currentEffect.parent" label="Parent Effect" />
 		</div>
 
 		<SectionHeader title="Caster Spellcasting Override" />
 		<div class="two-wide">
-			<v-text-field v-model="currentEffect.dc" label="DC" hint="IntExpression" />
-			<v-text-field v-model="currentEffect.attackBonus" label="Attack Bonus" hint="IntExpression" />
-			<v-text-field v-model="currentEffect.castingMod" label="Casting Modifier" hint="IntExpression" />
+			<TypeHintedEditor v-model="currentEffect.dc" label="DC" />
+			<TypeHintedEditor v-model="currentEffect.attackBonus" label="Attack Bonus" />
+			<TypeHintedEditor v-model="currentEffect.castingMod" label="Casting Modifier" />
 		</div>
 	</template>
 </template>

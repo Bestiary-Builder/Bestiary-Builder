@@ -114,7 +114,7 @@ const showControls = inject<Ref<boolean>>("showControls");
 
 <template>
 	<DropdownMenu v-if="displayNames && showControls" v-model="isOpen" location="bottom center">
-		<template #activator="{ dropdownProps }">
+		<template #activator="{ props: dropdownProps }">
 			<p class="tree-row" v-bind="dropdownProps" :style="`--depth: ${depth}`"
 				style="color: rgb(var(--v-theme-surface-bright));">
 				<span class="icon">

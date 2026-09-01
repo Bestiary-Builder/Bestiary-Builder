@@ -5,7 +5,7 @@ import { inject, onBeforeUnmount, watch } from "vue";
 import HigherLevels from "./shared/HigherLevels.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
-
+import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 const currentEffect = inject<Ref<TempHP>>("currentEffect");
 
 watch(() => currentEffect!.value?.higher, () => {
@@ -31,14 +31,12 @@ useDataCleanup(currentEffect, ["cantripScale"]);
 	<template v-if="currentEffect">
 		<SectionHeader title="Temp HP" />
 		<div>
-			<v-text-field v-model="currentEffect.amount" label="Amount" hint="AnnotatedString" />
+			<TypeHintedEditor v-model="currentEffect.amount" label="Amount" is-annotated-string />
 		</div>
 		<SectionHeader title="Additional Options" />
 		<div class="two-wide">
-			<v-checkbox
-				v-model="currentEffect.cantripScale" label="Whether this roll should scale like a cantrip."
-				hide-details
-			/>
+			<v-checkbox v-model="currentEffect.cantripScale" label="Whether this roll should scale like a cantrip."
+				hide-details />
 			<div>
 				<div>At higher levels</div>
 				<HigherLevels v-model="(currentEffect.higher as Record<number, string>)" />

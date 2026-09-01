@@ -3,6 +3,7 @@ import { computed, ref } from "vue";
 import { useToast } from "@/utils/app/toast";
 import { useFetch } from "@/utils/utils";
 import { useRules } from "vuetify/labs/rules";
+import { useRoute } from "vue-router";
 
 const model = defineModel<boolean>();
 
@@ -11,8 +12,9 @@ const toast = useToast();
 const type = ref("");
 const message = ref("");
 
+const route = useRoute()
 async function submit() {
-	const { success, error } = await useFetch("/api/feedback", "POST", { type: type.value, message: message.value });
+	const { success, error } = await useFetch("/api/feedback", "POST", { type: type.value, message: message.value, route: route.path });
 	if (success) {
 		toast.addToast("Feedback submitted successfully.", { color: "success" });
 		message.value = "";
@@ -39,23 +41,29 @@ const title = computed(() => {
 	<v-dialog v-model="model" max-width="500" :activator-props="{ variant: 'plain' }" min-height="400">
 		<v-card :title class="pa-4 pb-6 text-center d-flex flex-column" style="min-height: 375px;"
 			subtitle="Feedback is directly submitted to the developers.">
-			<div class="position-relative flex-grow-1 d-flex">
+			<div class="">
 				<v-slide-x-transition mode="out-in" class="w-100">
-					<v-sheet class="d-flex justify-center align-center w-100 h-100 ga-4 my-5" v-if="!type" :key="1">
-						<v-btn variant="outlined" min-width="200" min-height="200" :ripple="false"
-							class="border border-md rounded" elevation="3" @click="type = 'idea'" stacked>
-							<template #prepend>
-								<v-icon size="48" icon="mdi:lightbulb" color="primary" />
-							</template>
-							Idea
-						</v-btn>
-						<v-btn variant="outlined" min-width="200" min-height="200" :ripple="false"
-							class="border border-md rounded" elevation="3" @click="type = 'issue'" stacked>
-							<template #prepend>
-								<v-icon size="48" icon="mdi:bug" color="success" />
-							</template>
-							Issue
-						</v-btn>
+					<v-sheet class="d-flex justify-center align-center ga-4 my-5" v-if="!type" :key="1">
+						<v-responsive :aspect-ratio="1 / 1">
+							<v-btn variant="outlined" :ripple="false" class="border border-md rounded w-100 h-100"
+								elevation="3" @click="type = 'idea'" stacked>
+								<template #prepend>
+									<v-icon size="48" icon="mdi:lightbulb" color="primary" />
+								</template>
+								Idea
+							</v-btn>
+						</v-responsive>
+
+						<v-responsive :aspect-ratio="1 / 1">
+							<v-btn variant="outlined" :ripple="false" class="border border-md rounded w-100 h-100"
+								elevation="3" @click="type = 'issue'" stacked>
+								<template #prepend>
+									<v-icon size="48" icon="mdi:bug" color="success" />
+								</template>
+								Issue
+							</v-btn>
+						</v-responsive>
+
 					</v-sheet>
 					<v-sheet v-else :key="2" class="w-100 h-100">
 						<v-card-text>

@@ -38,17 +38,14 @@ const rules = useRules();
 			<v-text-field v-model="currentEffect.name" label="Name" :rules="[rules.required()]" />
 		</div>
 		<div>
-			<v-text-field
-				v-model="currentEffect.value" label="Value" :rules="[rules.required()]"
-				hint="IntExpression"
-			/>
+			<TypeHintedEditor v-model="currentEffect.value" label="Value" />
 		</div>
 
 		<SectionHeader title="Additional Options" />
 
 		<div class="two-wide">
 			<div>
-				<v-text-field v-model="currentEffect.onError" label="On Error" hint="IntExpression" />
+				<TypeHintedEditor v-model="currentEffect.onError" label="On Error" />
 			</div>
 			<div v-if="currentEffect.higher">
 				<div>At higher levels</div>

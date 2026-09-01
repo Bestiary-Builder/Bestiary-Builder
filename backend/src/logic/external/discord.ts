@@ -62,7 +62,7 @@ export async function publicLog(title: string, description: string, link: string
 // Feedback form
 app.post("/api/feedback", possibleUser, async (req, res) => {
 	// Get message from request body
-	const { message, type } = req.body.data as { message?: string; type?: "idea" | "issue" };
+	const { message, type, route } = req.body.data as { message?: string; type?: "idea" | "issue", route?: string };
 	if (!message || !type)
 		return res.status(400).json({ error: "Message and feedback type are both required" });
 
@@ -82,6 +82,7 @@ app.post("/api/feedback", possibleUser, async (req, res) => {
 				.setAuthor(user ? { name: user.username, iconURL: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` } : { name: "Anonymous" })
 				.setTitle(type === "idea" ? "Idea" : "Issue")
 				.setDescription(message)
+				.setFooter({ text: route || '' })
 				.setTimestamp()
 		]
 	});

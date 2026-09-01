@@ -542,7 +542,7 @@ const resetOnOptions = [
 											:items="resetOnOptions" hide-details>
 										</v-select>
 									</v-col>
-									<v-col cols="6">
+									<v-col cols="12">
 										<v-text-field v-model="consumable.minv" label="Minimum" variant="outlined"
 											hide-details></v-text-field>
 									</v-col>

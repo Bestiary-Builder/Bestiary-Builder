@@ -4,6 +4,7 @@ import type { Condition } from "~/shared";
 import { computed, inject } from "vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
+import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 
 const currentEffect = inject<Ref<Condition>>("currentEffect");
 
@@ -29,24 +30,19 @@ useDataCleanup(currentEffect, ["errorBehaviour"]);
 	<template v-if="currentEffect">
 		<SectionHeader title="Branch" />
 		<div>
-			<v-text-field
-				v-model="currentEffect.condition" label="Condition"
-				:messages="isWarning ? ['Equality checks should use double ==.'] : []" hint="IntExpression"
-				:color="isWarning ? 'warning' : undefined"
-			/>
+			<TypeHintedEditor v-model="currentEffect.condition" label="Condition" />
+			<p v-if="isWarning" class="pt-1 text-warning"> <small>Equality checks should use double ==.</small></p>
 		</div>
 
 		<SectionHeader title="Additional Options" />
 		<div class="two-wide">
-			<v-select
-				v-model="currentEffect.errorBehaviour" label="Error Behaviour" title="Error Behaviour" :items="[
-					{ title: 'Treat as True', value: 'true' },
-					{ title: 'Treat as False', value: 'false' },
-					{ title: 'Run both', value: 'both' },
-					{ title: 'Neither', value: 'neither' },
-					{ title: 'Raise', value: 'raise' },
-				]"
-			/>
+			<v-select v-model="currentEffect.errorBehaviour" label="Error Behaviour" title="Error Behaviour" :items="[
+				{ title: 'Treat as True', value: 'true' },
+				{ title: 'Treat as False', value: 'false' },
+				{ title: 'Run both', value: 'both' },
+				{ title: 'Neither', value: 'neither' },
+				{ title: 'Raise', value: 'raise' },
+			]" />
 		</div>
 	</template>
 </template>
