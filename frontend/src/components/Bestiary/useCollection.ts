@@ -34,6 +34,7 @@ interface CollectionTypeMap {
 
 interface CollectionConfig {
 	apiRoute: string; // /api/{apiRoute}
+	pageRoute: string;
 	itemRoute: string; // /api/{itemRoute}/add, /delete, etc
 	itemsKey: string; // /api/{apiRoute}/{id}/{itemsKey}
 	itemRawKey: string;
@@ -49,6 +50,7 @@ interface CollectionConfig {
 const collectionConfigs: Record<CollectionType, CollectionConfig> = {
 	bestiary: {
 		apiRoute: "bestiary",
+		pageRoute: "bestiary",
 		itemRoute: "creature",
 		itemsKey: "creatures",
 		itemRawKey: "stats",
@@ -58,6 +60,7 @@ const collectionConfigs: Record<CollectionType, CollectionConfig> = {
 	},
 	automations: {
 		apiRoute: "automation-collection",
+		pageRoute: "armory",
 		itemRoute: "automation",
 		itemsKey: "automations",
 		itemRawKey: "automation",
@@ -107,8 +110,8 @@ export const useCollection = <T extends CollectionType>(type: T) => {
 
 		updateLabel($route.path, collection.value.name);
 
-		if (!isOwner.value && !isEditor.value)
-			await $router.push(`/${config.apiRoute}/view/${collection.value.id}`);
+		if (!isOwner.value && !isEditor.value && !$route.path.includes("/view"))
+			await $router.push(`/${config.pageRoute}/view/${collection.value.id}`);
 
 		initialLoading.value = false;
 
