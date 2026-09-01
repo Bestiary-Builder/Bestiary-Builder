@@ -255,7 +255,8 @@ const openedGroups = ref<number[]>(Object.keys(ACTION_TYPE_MAP).map(x => parseIn
 							<template #append>
 								<v-icon-btn icon="mdi:eye" variant="text"
 									@click="$router.push(`/automation/view/${item.id}`)" />
-								<ImportToCharacter :automation="item.automation" />
+								<ImportToCharacter :automation="item.automation"
+									:consumables="item?.consumables || null" />
 							</template>
 						</v-list-item>
 					</v-list-group>

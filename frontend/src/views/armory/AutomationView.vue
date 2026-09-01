@@ -84,7 +84,7 @@ const makeGvar = async () => {
 	]">
 		<v-icon-btn v-tooltip="'Change editor'" size="24" icon="mdi:code-block-braces" text="Change editor"
 			@click="EditAutomationRef?.toggleEditor()" />
-		<ImportToCharacter :automation="data?.automation || null" />
+		<ImportToCharacter :automation="data?.automation || null" :consumables="data?.consumables || null" />
 		<v-icon-btn v-if="data && store.isMobile" v-tooltip="'Copy automation'" icon="mdi:content-copy"
 			text="Copy automation" size="24" @click="EditAutomationRef?.copyAutomation()" />
 	</Breadcrumbs>

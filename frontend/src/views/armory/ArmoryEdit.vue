@@ -402,7 +402,8 @@ const activationTypeOptions = computed(() => {
 							<template #append>
 								<v-icon-btn icon="mdi-pencil" variant="text"
 									@click="$router.push(`/automation/edit/${item.id}`)" />
-								<ImportToCharacter :automation="item.automation" />
+								<ImportToCharacter :automation="item.automation"
+									:consumables="item?.consumables || null" />
 								<DropdownMenu>
 									<template #activator="{ props }">
 										<v-icon-btn icon="mdi:trash" v-bind="props" />

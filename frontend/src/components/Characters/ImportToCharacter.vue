@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import type { AvraeCharacter } from "./utils";
-import type { AttackModel } from "~/shared";
+import type { AttackModel, AutomationConsumables } from "~/shared";
 import { ref } from "vue";
 import { getUmami } from "@/utils/app/analytics";
 import { useToast } from "@/utils/app/toast";
 import { useFetch } from "@/utils/utils";
 import { getAvraeCharacters } from "./utils";
 
-const { automation } = defineProps<{ automation: AttackModel | AttackModel[] | null }>();
+const { automation, consumables = null } = defineProps<{ automation: AttackModel | AttackModel[] | null, consumables?: AutomationConsumables | null }>();
 const { addToast, updateToast } = useToast();
 const AvraeToken = localStorage.getItem("AvraeToken");
 const isMenuOpen = ref(false);
@@ -66,14 +66,31 @@ const copyCommand = async () => {
 	}
 	else if (data) {
 		updateToast(toastId, { color: "success", prependIcon: "mdi:check", text: "Copied Avrae Command to Discord!" });
-		await navigator.clipboard.writeText(`!alias importactionfrombb multiline
-!a import {{get_gvar("${data.gvarId}")}}
+		let text = `!alias importactionfrombb multiline
+!a import {{get_gvar("${data.gvarId}")}}${buildCounterCopyCommand(consumables)}
 !alias delete importactionfrombb
-# NOW RUN \`!importactionfrombb\` to import your Action.`);
+# NOW RUN \`!importactionfrombb\` to import your Action.`
+		await navigator.clipboard.writeText(text);
 		isMenuOpen.value = false;
 	}
 };
 
+const buildCounterCopyCommand = (consumables: AutomationConsumables | null) => {
+	let output = "";
+	for (const consumable of consumables || []) {
+		output += `\n!cc create "${consumable.name}"`
+		output += consumable.minv ? ` -min "${consumable.minv}"` : ''
+		output += consumable.maxv ? ` -max "${consumable.maxv}"` : ''
+		output += consumable.desc ? ` -desc "${consumable.desc}"` : ''
+		output += consumable.title ? ` -title "${consumable.title}"` : ''
+		output += consumable.value ? ` -value "${consumable.value}"` : ''
+		output += consumable.reset ? ` -reset "${consumable.reset}"` : ''
+		output += consumable.reset_to ? ` -resetto "${consumable.reset_to}"` : ''
+		output += consumable.reset_by ? ` -resetby "${consumable.reset_by}"` : ''
+		output += consumable.display_type ? ` -type "${consumable.display_type}"` : ''
+	}
+	return output
+}
 const toArray = <T>(input: T | T[]): T[] => {
 	return Array.isArray(input) ? input : [input];
 };
@@ -86,17 +103,13 @@ const toArray = <T>(input: T | T[]): T[] => {
 		</template>
 
 		<template #default>
-			<v-card
-				class="text-center pa-4" title="Import this attack to your character."
-				subtitle="Use to test your attack or if your character wants this action."
-			>
+			<v-card class="text-center pa-4" title="Import this attack to your character."
+				subtitle="Use to test your attack or if your character wants this action.">
 				<v-card-text>
 					<div v-if="AvraeToken">
-						<v-select
-							v-model="selectedCharacter" :items="characters || []" :loading="loading"
+						<v-select v-model="selectedCharacter" :items="characters || []" :loading="loading"
 							item-title="name" item-value="upstream" label="Select a character" class="mt-4" hide-details
-							@update:menu="handleMenuOpen"
-						>
+							@update:menu="handleMenuOpen">
 							<template #no-data>
 								<v-list-item>
 									<v-list-item-title>
@@ -108,10 +121,8 @@ const toArray = <T>(input: T | T[]): T[] => {
 						<p v-if="selectedCharacter !== null" class="py-5 text-error">
 							Warning: this will override existing attacks of the same name.
 						</p>
-						<v-btn
-							v-if="selectedCharacter !== null" class="w-100" size="large" color="success"
-							prepend-icon="mdi:import" @click="confirmImport"
-						>
+						<v-btn v-if="selectedCharacter !== null" class="w-100" size="large" color="success"
+							prepend-icon="mdi:import" @click="confirmImport">
 							Confirm import
 						</v-btn>
 					</div>

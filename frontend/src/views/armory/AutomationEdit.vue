@@ -437,7 +437,7 @@ const resetOnOptions = [
 		<v-icon-btn v-tooltip="'Change editor'" size="24" icon="mdi:code-block-braces" text="Change editor"
 			@click="EditAutomationRef?.toggleEditor()" />
 		<ImportAutomationUtil @load-feature="(feature, apiPath) => loadFeature(feature, apiPath)" />
-		<ImportToCharacter :automation="data?.automation || null" />
+		<ImportToCharacter :automation="data?.automation || null" :consumables="data?.consumables || null" />
 		<v-icon-btn v-if="data && store.isMobile" v-tooltip="'Clear automation'" icon="mdi:delete"
 			text="Clear automation" size="24" @click="data.automation = null" />
 		<v-icon-btn v-if="data && store.isMobile" v-tooltip="'Copy automation'" icon="mdi:content-copy"
@@ -486,7 +486,7 @@ const resetOnOptions = [
 		<EditAutomation ref="EditAutomationRef" v-model="data.automation" v-model:is-visual-editor="isVisualEditor"
 			:name="data.name" />
 
-		<v-dialog v-model="isCounterDialogOpen" max-width="800" height="600">
+		<v-dialog v-model="isCounterDialogOpen" max-width="800" max-height="900">
 			<v-card title="Custom Counters" class="pa-4 text-center d-flex flex-column">
 				<v-card-text class="flex-grow-1">
 					<p>
@@ -497,7 +497,7 @@ const resetOnOptions = [
 							<br> Importing this action will import this Custom Counter too.
 						</small>
 					</p>
-					<v-list density="compact" class="text-left my-4" bg-color="surface-light">
+					<v-list density="compact" class="text-left my-4" bg-color="surface-light" max-height="600">
 						<v-list-group v-for="consumable, idx of data.consumables">
 							<template #activator="{ props, isOpen }">
 								<v-list-item v-bind="props" :title="consumable.name" :subtitle="consumable.desc || ''">
@@ -542,7 +542,7 @@ const resetOnOptions = [
 											:items="resetOnOptions" hide-details>
 										</v-select>
 									</v-col>
-									<v-col cols="12">
+									<v-col cols="6">
 										<v-text-field v-model="consumable.minv" label="Minimum" variant="outlined"
 											hide-details></v-text-field>
 									</v-col>
@@ -572,7 +572,6 @@ const resetOnOptions = [
 											hide-details></v-textarea>
 									</v-col>
 								</v-row>
-
 							</v-container>
 							<v-divider />
 
