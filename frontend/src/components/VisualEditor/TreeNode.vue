@@ -103,6 +103,7 @@ const additionalText = computed(() => {
 });
 
 const showControls = inject<Ref<boolean>>("showControls");
+
 </script>
 
 <template>
@@ -176,6 +177,27 @@ const showControls = inject<Ref<boolean>>("showControls");
 								<NodeHeader :type="key"
 									:additional-text="(button as any as ButtonInteraction).label.trim()"
 									:is-current="JSON.stringify(currentContext) === JSON.stringify([...context, 'buttons', index.toString()])" />
+								<span class="tree-buttons">
+									<DropdownMenu>
+										<template #activator="{ props: menuProps }">
+											<v-tooltip text="Delete this node">
+												<template #activator="{ props: tooltipProps }">
+													<Icon icon="mdi:trash" inline width=".75em"
+														v-bind="mergeProps(menuProps, tooltipProps)"
+														class="no-focus-outline" />
+												</template>
+											</v-tooltip>
+										</template>
+										<v-card class="text-center pb-2"
+											:subtitle="`Are you sure you want to delete ${(button as ButtonInteraction).label}?`">
+											<v-card-text>
+												<v-btn color="error" class="w-100"
+													@click="(data as IEffect).buttons?.splice(index as number, 1)">
+													Delete </v-btn>
+											</v-card-text>
+										</v-card>
+									</DropdownMenu>
+								</span>
 							</p>
 							<TreeRoot :data="(button as any as AttackModel)" :depth="depth + 2" root-type="button"
 								:context="[...context, 'buttons', index.toString(), 'automation']" />
@@ -191,6 +213,29 @@ const showControls = inject<Ref<boolean>>("showControls");
 								<NodeHeader :type="key"
 									:additional-text="(attack as any as AttackInteraction).attack.name.trim()"
 									:is-current="JSON.stringify(currentContext) === JSON.stringify([...context, 'attacks', index.toString()])" />
+
+								<span class="tree-buttons">
+									<DropdownMenu>
+										<template #activator="{ props: menuProps }">
+											<v-tooltip text="Delete this node">
+												<template #activator="{ props: tooltipProps }">
+													<Icon icon="mdi:trash" inline width=".75em"
+														v-bind="mergeProps(menuProps, tooltipProps)"
+														class="no-focus-outline" />
+												</template>
+											</v-tooltip>
+										</template>
+										<v-card class="text-center pb-2"
+											:subtitle="`Are you sure you want to delete ${(attack as AttackInteraction).attack.name}?`">
+											<v-card-text>
+												<v-btn color="error" class="w-100"
+													@click="(data as IEffect).attacks?.splice(index as number, 1)">
+													Delete </v-btn>
+											</v-card-text>
+										</v-card>
+									</DropdownMenu>
+								</span>
+
 							</p>
 							<TreeRoot :data="(attack as any as AttackModel)" :depth="depth + 2" root-type="attack"
 								:context="[...context, 'attacks', index.toString(), 'automation']" />
