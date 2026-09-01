@@ -127,9 +127,9 @@ const toArray = <T>(input: T | T[]): T[] => {
 							Confirm import
 						</v-btn>
 					</div>
-					<div v-else class="text-primary">
+					<div v-else>
 						You can set up importing to your characters with just a button press!
-						Set it up in <RouterLink to="/user">
+						Set it up in <RouterLink to="/user" class="text-primary">
 							your user settings.
 						</RouterLink>
 					</div>
