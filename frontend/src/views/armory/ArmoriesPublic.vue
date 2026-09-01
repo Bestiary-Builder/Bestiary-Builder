@@ -32,7 +32,7 @@ const searchCollections = async () => {
 		mode: viewMode.value.toLowerCase()
 	};
 	// Request bestiary info
-	const { success, data, error } = await useFetch<{ results: AutomationCollectionWithCount[]; pageAmount: number }>(`/api/search`, "POST", searchData);
+	const { success, data, error } = await useFetch<{ results: AutomationCollectionWithCount[]; pageAmount: number }>(`/api/search/automations`, "POST", searchData);
 	if (success) {
 		collections.value = data.results.map(collection => ({ ...collection, automations: Array(collection.automationCount), editors: [] }));
 		totalPages.value = data.pageAmount;
@@ -76,19 +76,15 @@ watch(debouncedSearch, async () => searchCollections());
 </script>
 
 <template>
-	<Breadcrumbs
-		:routes="[
-			{
-				path: '',
-				text: 'Public Automation Collections',
-				isCurrent: true
-			}
-		]"
-	>
-		<select
-			v-model="viewMode" aria-label="Select public collections list mode"
-			name="Select public collections list mode"
-		>
+	<Breadcrumbs :routes="[
+		{
+			path: '',
+			text: 'Public Automation Collections',
+			isCurrent: true
+		}
+	]">
+		<select v-model="viewMode" aria-label="Select public collections list mode"
+			name="Select public collections list mode">
 			<option>Recent</option>
 			<option>Popular</option>
 			<option>Bookmarked</option>
@@ -96,19 +92,15 @@ watch(debouncedSearch, async () => searchCollections());
 
 		<DropdownMenu>
 			<template #activator="{ props }">
-				<v-icon-btn
-					v-tooltip="'Search collections'" icon="mdi:magnify" v-bind="props" text="Search collections"
-					size="24"
-				/>
+				<v-icon-btn v-tooltip="'Search collections'" icon="mdi:magnify" v-bind="props" text="Search collections"
+					size="24" />
 			</template>
 			<v-card min-width="300" class="text-center pb-2" title="Search collections">
 				<v-spacer />
 				<v-card-text>
 					<v-text-field v-model="search" label="Search text" />
-					<v-select
-						v-model="selectedTags" label="Select Tags" multiple :items="store.tags || []" chips
-						closable-chips
-					/>
+					<v-select v-model="selectedTags" label="Select Tags" multiple :items="store.tags || []" chips
+						closable-chips />
 				</v-card-text>
 			</v-card>
 		</DropdownMenu>
