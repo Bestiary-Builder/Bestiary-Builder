@@ -1,8 +1,9 @@
-import type { AttackModel } from "~/shared";
+import type { AttackModel, AutomationConsumables } from "~/shared";
 import fetch from "node-fetch";
 import { app } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
 import "@/utilities/env";
+import type { AutomationConsumable } from "~/shared";
 
 const API = "https://api.avrae.io";
 
@@ -33,7 +34,10 @@ const mergeByName = <T extends AttackModel>(firstList: T[], secondList: T[]): T[
 };
 
 app.post("/api/character/:upstream/attacks/add", async (req, res) => {
-	const automationList = req.body.data as AttackModel[];
+	const body: { automationList: AttackModel[], consumables: AutomationConsumables } = req.body.data
+	const automationList = body.automationList
+	const consumables = body.consumables
+
 	const upstream = req.params.upstream;
 
 	if (!upstream)
@@ -62,6 +66,41 @@ app.post("/api/character/:upstream/attacks/add", async (req, res) => {
 
 		if (putAttacks?.error)
 			return res.status(500).json({ error: putAttacks.error });
+
+		if (consumables.length > 0) {
+			const currentConsumables = await fetch(`${API}/characters/${upstream}/consumables`, {
+				method: "GET",
+				headers: {
+					"Content-Type": "application/json",
+					"Authorization": req.headers["avrae-token"] || ""
+				}
+			}).then(response => response.json());
+
+			if (currentConsumables?.error)
+				return res.status(500).json({ error: currentAttacks.error });
+
+			for (const consumable of consumables) {
+				if (!currentConsumables.map((c: AutomationConsumable) => c.name).includes(consumable.name)) {
+					if (consumable.value === null) {
+						consumable.value = 0
+					}
+
+					const addConsumable = await fetch(`${API}/characters/${upstream}/consumables`, {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+							"Authorization": req.headers["avrae-token"] || ""
+						},
+						body: JSON.stringify(consumable)
+					}).then(response => response.json());
+
+					if (addConsumable.error) {
+						return res.status(500).json({ error: addConsumable.error });
+					}
+				}
+			}
+		}
+
 		return res.json(putAttacks);
 	}
 	catch (err) {

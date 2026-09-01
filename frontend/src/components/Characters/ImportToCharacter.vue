@@ -42,7 +42,8 @@ const confirmImport = async () => {
 		return;
 	}
 	const toastId = addToast("Waiting on the Avrae API", { loading: true });
-	const { error } = await useFetch(`/api/character/${selectedCharacter.value}/attacks/add`, "POST", toArray(automation));
+	const body: { automationList: AttackModel[], consumables: AutomationConsumables } = { automationList: toArray(automation), consumables: consumables || [] }
+	const { error } = await useFetch(`/api/character/${selectedCharacter.value}/attacks/add`, "POST", body);
 
 	if (error) {
 		updateToast(toastId, { text: error, color: "error" });
