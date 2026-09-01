@@ -17,7 +17,7 @@ async function getAutomationsForUser(userId: Id) {
 	return automationCollections.getItemsForUser(userId, collection => collection.automations);
 }
 
-function prepareAutomationInput(input: Partial<Automation>, defaultName: string) {
+export function prepareAutomationInput(input: Partial<Automation>, defaultName: string) {
 	const data = {
 		automation: input.automation ?? null,
 		name: input.name ?? defaultName,
@@ -25,13 +25,13 @@ function prepareAutomationInput(input: Partial<Automation>, defaultName: string)
 	};
 	const limitError = checkAutomationLimits(data);
 	if (limitError)
-		return { error: limitError };
+		return { data, error: limitError };
 	const nameError = checkBadwords(data.name);
 	if (nameError)
-		return { error: `Automation name ${nameError}` };
+		return { data, error: `Automation name ${nameError}` };
 	const descriptionError = checkBadwords(data.description);
 	if (descriptionError)
-		return { error: `Automation description ${descriptionError}` };
+		return { data, error: `Automation description ${descriptionError}` };
 	return {
 		data,
 		automationData: data.automation === null
@@ -80,7 +80,6 @@ app.post("/api/automation/:id/update", requireUser, async (req, res) => {
 		return res.status(400).json({ error: "Automation data not found." });
 	const input = req.body.data as Partial<Automation>;
 	const hasConsumables = Object.hasOwn(input, "consumables");
-	console.log(input.consumables)
 	if (hasConsumables && !validateAutomationConsumablesInput(input.consumables || [], res))
 		return;
 	const consumablesData = hasConsumables

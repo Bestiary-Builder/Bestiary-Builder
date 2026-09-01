@@ -1,5 +1,5 @@
 // types/collection.ts
-import type { AutomationCollectionResponse, AutomationWithType, BestiaryResponse, CreatureMetaData, CreatureWithStats, Id, User } from "~/shared";
+import type { Automation, AutomationCollectionResponse, BestiaryResponse, CreatureMetaData, CreatureWithStats, Id, User } from "~/shared";
 import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
@@ -26,9 +26,9 @@ interface CollectionTypeMap {
 	};
 	automations: {
 		collection: AutomationCollectionResponse;
-		item: AutomationWithType;
-		itemFull: AutomationWithType;
-		itemRaw: Partial<AutomationWithType>;
+		item: Automation;
+		itemFull: Automation;
+		itemRaw: Partial<Automation>;
 	};
 }
 

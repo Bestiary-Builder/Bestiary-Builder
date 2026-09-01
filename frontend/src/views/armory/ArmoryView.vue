@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AttackModel, AutomationWithType } from "~/shared";
+import type { AttackModel, Automation } from "~/shared";
 import { useLocalStorage } from "@vueuse/core";
 import { computed, onMounted, ref, watch } from "vue";
 import { useRules } from "vuetify/labs/rules";
@@ -109,14 +109,14 @@ const getActivationType = (automation: AttackModel | AttackModel[] | null): numb
 	return attack?.activation_type ?? 0;
 };
 
-const groupByActivationType = (items: AutomationWithType[]): Record<number, AutomationWithType[]> => {
+const groupByActivationType = (items: Automation[]): Record<number, Automation[]> => {
 	return items.reduce((groups, item) => {
 		const key = getActivationType(item.automation);
 		if (!groups[key])
 			groups[key] = [];
 		groups[key].push(item);
 		return groups;
-	}, {} as Record<number, AutomationWithType[]>);
+	}, {} as Record<number, Automation[]>);
 };
 
 const groupedItems = computed(() => {

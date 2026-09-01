@@ -1,5 +1,5 @@
 import type { Id } from "~/shared";
-import type { AutomationCollectionCreateInput, AutomationCollectionUpdateInput, AutomationCreateInput, AutomationOrderByWithRelationInput, AutomationUpdateInput } from "~/shared/src/prisma-types";
+import type { AutomationCollectionCreateInput, AutomationCollectionUpdateInput, AutomationCreateInput, AutomationCreateManyInput, AutomationOrderByWithRelationInput, AutomationUpdateInput } from "~/shared/src/prisma-types";
 import { log } from "@/utilities/logger";
 import { getPrismaClient } from ".";
 import { withDatabaseFallback } from "./operations";
@@ -70,6 +70,13 @@ export async function deleteAutomation(id: Id) {
 		await getPrismaClient().automation.delete({ where: { id } });
 		return true;
 	}, false);
+}
+export async function createAutomations(data: AutomationCreateManyInput[]) {
+	return await withDatabaseFallback(async () => {
+		const now = new Date(Date.now());
+		log.log("database", `Creating ${data.length} automations.`);
+		return await getPrismaClient().automation.createMany({ data: data.map(automation => ({ ...automation, lastUpdated: now })) });
+	}, null);
 }
 
 export async function getAutomationsByCollectionIds(collectionIds: Id[]) {

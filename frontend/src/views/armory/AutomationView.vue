@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AutomationCollectionExtended, AutomationWithType } from "~/shared";
+import type { Automation, AutomationCollectionExtended } from "~/shared";
 import { onMounted, provide, ref, useTemplateRef } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import EditAutomation from "@/components/Automations/EditAutomation.vue";
@@ -13,7 +13,7 @@ import type { VAutocomplete } from "vuetify/components";
 
 const $router = useRouter();
 const $route = useRoute();
-const data = ref<AutomationWithType>();
+const data = ref<Automation>();
 const collection = ref<AutomationCollectionExtended | null>(null);
 
 const { addToast, removeToast } = useToast();
@@ -23,7 +23,7 @@ const EditAutomationRef = useTemplateRef("EditAutomationRef");
 // load creature data
 onMounted(async () => {
 	const toastId = addToast("Loading...", { loading: true });
-	const { success, data: aData, error } = await useFetch<AutomationWithType>(`/api/automation/${$route.params.id.toString()}`);
+	const { success, data: aData, error } = await useFetch<Automation>(`/api/automation/${$route.params.id.toString()}`);
 	if (success) {
 		data.value = aData;
 		await getCollection();

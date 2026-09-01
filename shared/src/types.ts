@@ -40,8 +40,7 @@ export interface AutomationDocumentationEntity {
 }
 export interface AutomationDocumentation { [key: string]: AutomationDocumentationEntity }
 
-export type AutomationWithType = Omit<Automation, "automation" | "consumables"> & { automation: null | AttackModel | AttackModel[], consumables: AutomationConsumables | null };
-export type AutomationResponse = AutomationWithType & { permissionLevel: CollectionPermission };
+export type AutomationResponse = Automation & { permissionLevel: CollectionPermission };
 
 // Built types
 export * from "./build-types";

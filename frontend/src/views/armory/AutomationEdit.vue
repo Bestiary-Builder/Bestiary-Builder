@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AttackModel, AutomationCollectionExtended, AutomationWithType, FeatureEntity } from "~/shared";
+import type { AttackModel, AutomationCollectionExtended, FeatureEntity } from "~/shared";
 import { useLocalStorage } from "@vueuse/core";
 import { computed, nextTick, onMounted, onUnmounted, provide, ref, useTemplateRef, watch } from "vue";
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
@@ -17,7 +17,7 @@ import { useRules } from "vuetify/labs/rules";
 
 const $router = useRouter();
 const $route = useRoute();
-const data = ref<AutomationWithType>();
+const data = ref<Automation>();
 const collection = ref<AutomationCollectionExtended | null>(null);
 
 const { addToast, updateToast, removeToast } = useToast();
@@ -27,7 +27,7 @@ const EditAutomationRef = useTemplateRef("EditAutomationRef");
 // load creature data
 onMounted(async () => {
 	const toastId = addToast("Loading...", { loading: true });
-	const { success, data: aData, error } = await useFetch<AutomationWithType>(`/api/automation/${$route.params.id.toString()}`);
+	const { success, data: aData, error } = await useFetch<Automation>(`/api/automation/${$route.params.id.toString()}`);
 	if (success) {
 		data.value = aData;
 		await nextTick(() => madeChanges.value = false);

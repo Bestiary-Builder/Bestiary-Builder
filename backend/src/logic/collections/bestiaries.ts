@@ -271,9 +271,9 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 	const data = inputData.map(a => ({ stats: a } as Omit<Creature, "id">));
 	const now = new Date(Date.now());
 	// Make sure all fields are present in all creatures
-	const ignoredCreatures = [] as { creature: string; error: string }[];
+	const ignoredItems = [] as { item: string; error: string }[];
 	const fixedData = [];
-	let creatureIndex = (await getPrismaClient().creature.findFirst({ where: { bestiaryId: bestiary.id }, orderBy: { index: "desc" } }))?.index ?? (await getBestiaryCreatureCount(bestiary.id));
+	let creatureIndex = ((await getPrismaClient().creature.findFirst({ where: { bestiaryId: bestiary.id }, orderBy: { index: "desc" } }))?.index ?? (await getBestiaryCreatureCount(bestiary.id) - 1)) + 1;
 	for (const creature of data) {
 		if (!creature)
 			continue;
@@ -285,7 +285,7 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 		creature.index = creatureIndex++;
 		const prepared = prepareCreatureStats(creature.stats, bestiary.status);
 		if (prepared.error) {
-			ignoredCreatures.push({ creature: prepared.stats.description.name, error: prepared.error });
+			ignoredItems.push({ item: prepared.stats.description.name, error: prepared.error });
 			continue;
 		}
 		// Push data
@@ -293,8 +293,8 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 	}
 	let error = "";
 	// Failed creatures:
-	if (ignoredCreatures.length > 0)
-		error += `Failed to add ${ignoredCreatures.length} creatures, due to invalid data.`;
+	if (ignoredItems.length > 0)
+		error += `Failed to add ${ignoredItems.length} creatures, due to invalid data.`;
 
 	// Check amount of creatures:
 	const existingCount = await getBestiaryCreatureCount(_id);
@@ -305,12 +305,14 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 	// Add all creatures
 	if (fixedData.length > 0) {
 		const result = await createCreatures(fixedData);
-		log.info(`Added ${result?.count} creatures to bestiary with the id: ${_id}`);
+		if (!result)
+			return res.status(500).json({ error: "Unexpected server error occured." });
+		log.info(`Added ${result.count} creatures to bestiary with the id: ${_id}`);
 	}
 	else {
 		error += "0 valid creatures found.";
 	}
-	return res.status(201).json({ error, ignoredCreatures });
+	return res.status(201).json({ error, ignoredItems });
 });
 
 // Change editors

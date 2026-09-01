@@ -1,10 +1,12 @@
 import type { CollectionWithEditors } from "./collections";
-import type { Automation, AutomationCollection, Id } from "~/shared";
+import type { AttackModel, Automation, AutomationCollection, Id } from "~/shared";
 import type { BestiaryStatus } from "~/shared/src/prisma-types";
 import automationTags from "@/staticData/automationTags.json";
 import { checkBadwords } from "@/utilities/badwords";
-import { app, checkBestiaryLimits, checkImageUrl } from "@/utilities/constants";
-import { addAutomationCollectionBookmark, addAutomationCollectionEditor, createAutomationCollection, deleteAutomationCollection, getAutomationCollection, getAutomationCollectionAutomationCount, getAutomationCollectionsByOwner, getAutomationCollectionsByUser, getAutomationIds, getAutomationsByCollection, getOwnedAutomationCollectionIds, getPublicAutomationCollectionsByOwner, incrementAutomationCollectionViewCount, isAutomationCollectionBookmarked, removeAutomationCollectionBookmark, removeAutomationCollectionEditor, updateAutomationCollection, updateAutomationIndexes, updateUserAutomationCollectionIndexes } from "@/utilities/database";
+import { app, checkBestiaryLimits, checkImageUrl, limits } from "@/utilities/constants";
+import { addAutomationCollectionBookmark, addAutomationCollectionEditor, createAutomationCollection, createAutomations, deleteAutomationCollection, getAutomationCollection, getAutomationCollectionAutomationCount, getAutomationCollectionsByOwner, getAutomationCollectionsByUser, getAutomationIds, getAutomationsByCollection, getOwnedAutomationCollectionIds, getPrismaClient, getPublicAutomationCollectionsByOwner, incrementAutomationCollectionViewCount, isAutomationCollectionBookmarked, removeAutomationCollectionBookmark, removeAutomationCollectionEditor, updateAutomationCollection, updateAutomationIndexes, updateUserAutomationCollectionIndexes } from "@/utilities/database";
+import { log } from "@/utilities/logger";
+import { prepareAutomationInput } from "../automations/automations";
 import { possibleUser, requireUser } from "../main/login";
 import { createCollectionService } from "./collections";
 
@@ -219,6 +221,102 @@ app.post("/api/automation-collection/:id/automations/order", requireUser, async 
 	if (result.reason === "duplicate-items")
 		return res.status(400).json({ error: "Automation ids must be unique." });
 	return res.status(500).json({ error: "Failed to update automation order." });
+});
+
+// Add many automations
+app.post("/api/automation-collection/:id/addautomations", requireUser, async (req, res) => {
+	// Get collection
+	const id = req.params.id;
+	const _id = id;
+	if (!_id)
+		return res.status(400).json({ error: "Automation collection id not valid." });
+	const collection = await getAutomationCollection(_id);
+	if (!collection)
+		return res.status(404).json({ error: "Automation collection not found" });
+	// Check owner
+	const user = req.user!;
+	if (!automationCollections.canPerform("edit", automationCollections.getPermission(collection, user.id)))
+		return res.status(401).json({ error: "You don't have permission to add automations to this collection." });
+	// Get automation input
+	const inputData = req.body.data as ((Partial<Automation> & { _v: undefined }) | AttackModel | AttackModel[])[];
+	if (!Array.isArray(inputData))
+		return res.status(400).json({ error: "Failed to parse automation data." });
+	const data: Partial<Automation>[] = inputData.map((a) => {
+		if (Array.isArray(a)) { // AttackModel[]
+			return {
+				name: a[0].name,
+				description: getAutomationDescription(a[0]),
+				automation: a
+			};
+		}
+		else if (a._v !== undefined) { // AttachModel
+			return {
+				name: a.name,
+				description: getAutomationDescription(a),
+				automation: a
+			};
+		}
+		else { // Automation
+			return {
+				name: a.name,
+				description: a.description,
+				automation: a.automation
+			};
+		}
+
+		function getAutomationDescription(automation: AttackModel): string {
+			const auto = automation?.automation;
+			if (!auto)
+				return "";
+			for (let i = auto.length - 1; i >= 0; i--) {
+				const field = auto[i];
+				if (field?.type === "text" && typeof (field.text) === "string") {
+					return field.text;
+				}
+			}
+			return "";
+		}
+	});
+	// Make sure all fields are present in all automations
+	const ignoredItems = [] as { item: string; error: string }[];
+	const fixedData = [];
+	const existingCount = await getAutomationCollectionAutomationCount(collection.id);
+	let automationIndex = ((await getPrismaClient().automation.findFirst({ where: { collectionId: collection.id }, orderBy: { index: "desc" } }))?.index ?? (existingCount - 1))+ 1;
+	for (const automation of data) {
+		if (!automation)
+			continue;
+		const prepared = prepareAutomationInput(automation, "Automation");
+		if (prepared.error) {
+			ignoredItems.push({ item: prepared.data.name, error: prepared.error });
+			continue;
+		}
+		// Push data
+		fixedData.push({
+			...prepared.data,
+			automation: prepared.automationData,
+			collectionId: _id,
+			index: automationIndex++
+		});
+	}
+	let error = "";
+	// Failed automations:
+	if (ignoredItems.length > 0)
+		error += `Failed to add ${ignoredItems.length} automations, due to invalid data.`;
+
+	// Check amount of automations:
+	if (existingCount + fixedData.length > limits.creatureAmount) {
+		fixedData.length = limits.creatureAmount - existingCount;
+		error += `Number of automations exceeds the limit of ${limits.creatureAmount}, only automations up to this limit was added.\n`;
+	}
+	// Add all automations
+	if (fixedData.length > 0) {
+		const result = await createAutomations(fixedData);
+		log.info(`Added ${result?.count} automations to collection with the id: ${_id}`);
+	}
+	else {
+		error += "0 valid automations found.";
+	}
+	return res.status(201).json({ error, ignoredItems });
 });
 
 app.post("/api/automation-collection/:collectionid/editors/add/:userid", requireUser, async (req, res) => {
