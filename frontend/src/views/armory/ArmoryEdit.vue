@@ -488,7 +488,7 @@ async function importAutomationsFromJson() {
 			<v-card-actions>
 				<v-spacer />
 				<v-btn text="Create" color="success" size="large"
-					@click="createItem({ name: createOptions.name, description: createOptions.description, automation: { _v: 2, activation_type: createOptions.activation_type || 0, name: createOptions.name, automation: [] } }, false); createNewActionOpen = false" />
+					@click="createItem({ name: createOptions.name, description: createOptions.description, automation: { _v: 2, activation_type: createOptions.activation_type || 1, name: createOptions.name, automation: [] } }, false); createNewActionOpen = false" />
 				<v-btn text="Cancel" size="large" @click="createNewActionOpen = false" />
 			</v-card-actions>
 		</v-card>

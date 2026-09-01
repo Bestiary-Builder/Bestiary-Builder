@@ -81,7 +81,7 @@ app.post("/api/automation/:id/update", requireUser, async (req, res) => {
 	const input = req.body.data as Partial<Automation>;
 	const hasConsumables = Object.hasOwn(input, "consumables");
 	console.log(input.consumables)
-	if (hasConsumables && !validateAutomationConsumablesInput(input.consumables as AutomationConsumables, res))
+	if (hasConsumables && !validateAutomationConsumablesInput(input.consumables || [], res))
 		return;
 	const consumablesData = hasConsumables
 		? { consumables: input.consumables as AutomationConsumables }
