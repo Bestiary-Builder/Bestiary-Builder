@@ -14,6 +14,7 @@ import { useToast } from "@/utils/app/toast";
 import { creatureTypes } from "@/utils/constants";
 import { store } from "@/utils/store";
 import { ACTION_TYPE_MAP, getActionTypeLabel } from "./utils";
+import YAML from "yaml";
 
 const {
 	collection,
@@ -27,7 +28,8 @@ const {
 	addEditor,
 	removeEditor,
 	createItem,
-	deleteItem
+	deleteItem,
+	createManyItems
 } = useCollection("automations");
 
 const { addToast, removeToast } = useToast();
@@ -157,13 +159,42 @@ const activationTypeOptions = computed(() => {
 		}))
 		.sort((a, b) => (a.value ?? 0) - (b.value ?? 0));
 });
+
+const importFields = reactive({
+	attackJson: null
+});
+
+
+async function importAutomationsFromJson() {
+	let attacksToImport;
+	if (!importFields.attackJson) {
+		addToast("No JSON given", { color: "error" });
+		return;
+	}
+	try {
+		const reader = new FileReader();
+		reader.onload = async () => {
+			attacksToImport = YAML.parse(reader.result as string || "");
+
+			if (!Array.isArray(attacksToImport))
+				attacksToImport = [attacksToImport];
+
+			console.log(attacksToImport);
+			await createManyItems(attacksToImport)
+		};
+		reader.readAsText(importFields.attackJson);
+	}
+	catch {
+		addToast("Something is wrong with the format of your JSON", { color: "error" });
+	}
+}
 </script>
 
 <template>
 	<div>
 		<Breadcrumbs v-if="collection" :routes="[
 			{
-				path: isOwner || isEditor ? '/armories/personal' : '/armories/public',
+				path: isOwner || isEditor ? '/armory/personal' : '/armory/public',
 				text: isOwner || isEditor ? 'My Automations' : 'Automations',
 				isCurrent: false
 			},
@@ -262,7 +293,7 @@ const activationTypeOptions = computed(() => {
 					</v-card>
 				</template>
 			</v-dialog>
-			<DropdownMenu>
+			<!-- <DropdownMenu>
 				<template #activator="{ props }">
 					<v-icon-btn v-tooltip="'Search automations'" text="Search automations" icon="mdi:tag" size="24"
 						v-bind="props" />
@@ -283,23 +314,31 @@ const activationTypeOptions = computed(() => {
 						</v-col>
 					</v-row>
 				</v-card>
-			</DropdownMenu>
+			</DropdownMenu> -->
 
 			<v-dialog v-if="isOwner" max-width="750">
 				<template #activator="{ props }">
-					<v-icon-btn v-tooltip="'Import automations'" text="Import automations" icon="mdi:import" size="24"
+					<v-icon-btn v-tooltip="'Import actions'" text="Import actions" icon="mdi:import" size="24"
 						v-bind="props" />
 				</template>
 
 				<template #default="{ isActive }">
-					<v-card title="Import Collection">
-						<v-sheet class="pa-4" max-width="1800" rounded="lg" width="100%">
-							<div class="">
-								<!-- TODO -->
-							</div>
-						</v-sheet>
+					<v-card title="Import bestiary" max-width="800" class="pa-4">
+						<v-card-text>
+							<v-row>
+								<v-col>
+									<v-file-input v-model="importFields.attackJson" label="Attack JSON"
+										hint="JSON (.json/.txt) or YAML (.yaml, .txt) formatted as a list of automated actions"
+										persistent-hint accept=".txt,.json,.yaml" />
+								</v-col>
+							</v-row>
+						</v-card-text>
+
 						<v-card-actions>
-							<v-spacer />
+							<v-btn size="large" @click="importAutomationsFromJson"
+								:color="importFields.attackJson ? 'success' : undefined" prepend-icon="mdi:import">
+								Import
+							</v-btn>
 							<v-btn text="Cancel" size="large" @click="isActive.value = false" />
 						</v-card-actions>
 						<v-sheet v-if="JSON.stringify(notices) !== '{}'">
