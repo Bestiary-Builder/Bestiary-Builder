@@ -151,6 +151,7 @@ const importFields = reactive({
 });
 
 
+const importIsOpen = ref(false);
 async function importAutomationsFromJson() {
 	let attacksToImport;
 	if (!importFields.attackJson) {
@@ -165,13 +166,13 @@ async function importAutomationsFromJson() {
 			if (!Array.isArray(attacksToImport))
 				attacksToImport = [attacksToImport];
 
-			console.log(attacksToImport);
 			await createManyItems(attacksToImport)
+			importIsOpen.value = false;
 		};
 		reader.readAsText(importFields.attackJson);
 	}
 	catch {
-		addToast("Something is wrong with the format of your JSON", { color: "error" });
+		addToast("Something is wrong with the format of your Automations", { color: "error" });
 	}
 }
 
@@ -311,7 +312,7 @@ const createAutomation = () => {
 				</v-card>
 			</DropdownMenu> -->
 
-			<v-dialog v-if="isOwner" max-width="750">
+			<v-dialog v-if="isOwner" max-width="750" v-model="importIsOpen">
 				<template #activator="{ props }">
 					<v-icon-btn v-tooltip="'Import actions'" text="Import actions" icon="mdi:import" size="24"
 						v-bind="props" />

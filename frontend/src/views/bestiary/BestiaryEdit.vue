@@ -132,6 +132,8 @@ const importFields = reactive({
 	bestiaryBuilderJson: null
 });
 
+
+const isImportOpen = ref(false);
 async function importBestiaryFromCritterDB() {
 	let link = importFields.critterDbId.trim();
 	if (link.length === 0) {
@@ -174,20 +176,7 @@ async function importBestiaryFromCritterDB() {
 		updateToast(toastId, { text: error, color: "error", timeout: 2500 });
 		return;
 	}
-	updateToast(toastId, { text: "Saving creatures has started. This may take a while." });
-	const { success: cSuccess, data: creatureData, error: cError } = await useFetch<{ error?: string; ignoredCreatures: { creature: string; error: string }[] }>(`/api/bestiary/${collection.value?.id.toString()}/addcreatures`, "POST", data.data.creatures);
-	if (!cSuccess) {
-		notices.value = {};
-		addToast(cError, { color: "error" });
-	}
-	else if (creatureData.error) {
-		updateToast(toastId, { text: "The import was completed with errors.", color: "warn" });
-		notices.value.Errors = creatureData.error;
-		for (const error of creatureData.ignoredCreatures)
-			notices.value[error.creature] = error.error;
-	}
-	await getCollection();
-	addToast("Importing has finished!", { color: "success" });
+	createManyItems(data.data.creatures);
 	void getUmami()?.track("Import bestiary from CritterDB");
 }
 
@@ -205,25 +194,8 @@ async function importCreaturesFromBestiaryBuilder() {
 			if (!Array.isArray(creaturesToImport))
 				creaturesToImport = [creaturesToImport];
 
-			addToast("Importing creatures has started. This may take a while.");
-			const { success, data, error } = await useFetch<{ error?: string; ignoredCreatures: { creature: string; error: string }[] }>(`/api/bestiary/${collection.value?.id.toString()}/addcreatures`, "POST", creaturesToImport);
-
-			if (!success) {
-				notices.value = {};
-				addToast(error, { color: "error" });
-			}
-			else if (data.error) {
-				addToast("The import was completed with errors.", { color: "error" });
-				notices.value.Errors = data.error;
-				for (const error of data.ignoredCreatures)
-					notices.value[error.creature] = error.error;
-			}
-			else {
-				addToast("Importing has finished!", { color: "success" });
-				void getUmami()?.track("Import bestiary from BestiaryBuilder");
-			}
-
-			await getCollection();
+			createManyItems(creaturesToImport);
+			void getUmami()?.track("Import bestiary from Bestiary Builder");
 		};
 		reader.readAsText(importFields.bestiaryBuilderJson);
 	}
@@ -478,7 +450,7 @@ const hoverCreature = async (id: CreatureMetaData["id"]) => {
 			</v-dialog>
 
 
-			<v-dialog v-if="isOwner" max-width="750">
+			<v-dialog v-if="isOwner" max-width="750" v-model="isImportOpen">
 				<template #activator="{ props }">
 					<v-icon-btn v-tooltip="'Import creatures'" text="Import creatures" icon="mdi:import" size="24"
 						v-bind="props" />
