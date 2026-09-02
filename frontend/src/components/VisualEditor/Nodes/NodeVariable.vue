@@ -6,6 +6,7 @@ import { useRules } from "vuetify/labs/rules";
 import HigherLevels from "./shared/HigherLevels.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
+import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 
 const currentEffect = inject<Ref<Variable>>("currentEffect");
 
@@ -37,21 +38,20 @@ const rules = useRules();
 		<div class="two-wide mb-4">
 			<v-text-field v-model="currentEffect.name" label="Name" :rules="[rules.required()]" />
 		</div>
-		<div>
-			<TypeHintedEditor v-model="currentEffect.value" label="Value" />
-		</div>
+		<TypeHintedEditor v-model="currentEffect.value" label="Value" class="mb-4" />
 
 		<SectionHeader title="Additional Options" />
 
-		<div class="two-wide">
+		<div class="two-wide mb-1">
 			<div>
 				<TypeHintedEditor v-model="currentEffect.onError" label="On Error" />
 			</div>
-			<div v-if="currentEffect.higher">
-				<div>At higher levels</div>
-				<HigherLevels v-model="(currentEffect.higher as Record<number, string>)" is-int-expression />
-			</div>
 		</div>
+		<div v-if="currentEffect.higher">
+			<div>At higher levels</div>
+			<HigherLevels v-model="(currentEffect.higher as Record<number, string>)" is-int-expression />
+		</div>
+
 	</template>
 </template>
 

@@ -13,7 +13,8 @@ const model = defineModel<Record<number, string>>({ required: true });
 			<ol>
 				<li v-for="x in 9" :key="x">
 					<div class="input-wrapper">
-						<input v-model="model[x]" type="text"> <IntExpression v-if="isIntExpression" />
+						<input v-model="model[x]" type="text">
+						<IntExpression v-if="isIntExpression" />
 					</div>
 				</li>
 			</ol>
