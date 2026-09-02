@@ -60,13 +60,6 @@ const isVisualEditor = ref(store.user?.preferredEditor === "Visual");
 
 provide("setActionName", false);
 provide("setActionDescription", false);
-
-// TODO
-const makeGvar = async () => {
-	console.log("run this");
-	const { success, data: aAdata, error } = await useFetch("/api/character/makeattackgvar", "POST", data.value?.automation);
-	console.log(success, aAdata, error);
-};
 </script>
 
 <template>

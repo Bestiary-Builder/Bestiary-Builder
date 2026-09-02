@@ -204,7 +204,7 @@ onBeforeUnmount(() => {
 <style scoped lang="less">
 .tree,
 .editor {
-	max-width: min(25rem, calc(100vw - 10vw - 2rem));
+	max-width: calc(100vw - 10vw - 2rem);
 }
 
 .v-enter-active {
