@@ -392,10 +392,12 @@ watch(() => theme, () => {
 	display: flex;
 	gap: 1rem;
 	background-color: rgb(var(--v-theme-surface));
-	border-top-left-radius: 6px;
-	border-top-right-radius: 6px;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
 	font-size: smaller;
 	padding: 0.4rem;
+	overflow-x: scroll;
+	max-width: 90vw
 }
 </style>
 
@@ -409,7 +411,7 @@ watch(() => theme, () => {
 
 	.monaco-editor,
 	.overflow-guard {
-		border-radius: 0 0 6px 6px;
+		border-radius: 0 0 4px 4px;
 	}
 
 	.margin {

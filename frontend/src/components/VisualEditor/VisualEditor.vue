@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { AttackModel, ButtonInteraction, EffectWithTarget } from "~/shared";
-import { computed, onBeforeUnmount, onMounted, provide, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, provide, ref, useTemplateRef } from "vue";
 import EffectAdder from "./EffectAdder.vue";
 import NodeHelper from "./NodeHelper.vue";
 import EffectAsRaw from "./Nodes/shared/EffectAsRaw.vue";
@@ -10,6 +10,7 @@ import type * as Monaco from 'monaco-editor'
 import { loader } from '@guolao/vue-monaco-editor';
 import { automationContextHints, AliasAPIClasses, AliasAPIInstances } from '~/shared'
 import AutomationDocumentation from "../Automations/AutomationDocumentation.vue";
+import { useDisplay } from "vuetify";
 
 const { name, noListAttack = false } = defineProps<{ name: string; noListAttack?: boolean }>();
 const currentEffect = ref<EffectWithTarget | AttackModel | ButtonInteraction | null>(null);
@@ -112,12 +113,56 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
 	providerDisposable?.dispose()
+	observer?.disconnect()
+
 })
+
+const { mobile } = useDisplay()
+
+const topSectionRef = useTemplateRef("tree");
+const bottomSectionRef = useTemplateRef("editor");
+
+const isTopInView = ref(true)
+const isBottomInView = ref(false)
+
+let observer: IntersectionObserver | undefined
+
+const handleIntersect = (entries: IntersectionObserverEntry[]) => {
+	entries.forEach((entry) => {
+		if (entry.target === topSectionRef.value) {
+			isTopInView.value = entry.isIntersecting
+		} else if (entry.target === bottomSectionRef.value) {
+			isBottomInView.value = entry.isIntersecting
+		}
+	})
+}
+
+// If bottom is in view, point up; otherwise default to pointing down
+const scrollTarget = computed(() => (isBottomInView.value ? topSectionRef.value : bottomSectionRef.value))
+const fabIcon = computed(() => (isBottomInView.value ? 'mdi:arrow-up' : 'mdi:arrow-down'))
+
+const scrollToTarget = () => {
+	if (!scrollTarget.value) return;
+	const y = scrollTarget.value.getBoundingClientRect().top - 32
+	window.scrollTo({ top: y, behavior: 'smooth' });
+}
+
+onMounted(() => {
+	observer = new IntersectionObserver(handleIntersect, {
+		threshold: 0.5,
+	})
+	if (topSectionRef.value) observer.observe(topSectionRef.value)
+	if (bottomSectionRef.value) observer.observe(bottomSectionRef.value)
+})
+
+onBeforeUnmount(() => {
+})
+
 </script>
 
 <template>
 	<section class="two-wide uneven">
-		<div class="tree">
+		<div class="tree" ref="tree">
 			<SectionHeader title="Effect Tree" />
 			<TreeRoot v-if="automation" :data="automation" :depth="0" :no-list-attack="noListAttack" />
 			<p v-else class="container" style="padding: 6px">
@@ -127,7 +172,7 @@ onBeforeUnmount(() => {
 				<small> <i>{{ showControls ? 'Hide' : 'Show' }} controls</i></small>
 			</v-btn>
 		</div>
-		<div class="editor">
+		<div class="editor" ref="editor">
 			<div v-if="!currentEffect && currentContext.length === 0">
 				<SectionHeader title="No Effect Selected" />
 				Select or create a node in the Effect Tree to get started.
@@ -150,12 +195,16 @@ onBeforeUnmount(() => {
 				</Transition>
 			</template>
 		</div>
+
 	</section>
+
+	<v-fab location="bottom end" app :icon="fabIcon" @click="scrollToTarget" v-if="mobile" appear color="primary" />
 </template>
 
 <style scoped lang="less">
-.tree {
-	min-width: 25rem;
+.tree,
+.editor {
+	max-width: min(25rem, calc(100vw - 10vw - 2rem));
 }
 
 .v-enter-active {
@@ -175,7 +224,7 @@ section {
 	background-color: rgb(var(--v-theme-surface-light));
 	min-height: 800px;
 	padding: 1rem;
-	border-radius: 6px;
+	border-radius: 2px;
 	box-shadow: rgb(0 0 0 / 24%) 0 3px 8px;
 }
 

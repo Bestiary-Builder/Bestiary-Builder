@@ -482,6 +482,8 @@ provide("setActionDescription", setDesc);
 		<EditAutomation ref="EditAutomationRef" v-model="data.features[type][aid].automation"
 			v-model:is-visual-editor="isVisualEditor" :name="data.features[type][aid].name" :no-list-attack="false" />
 	</div>
+
+
 </template>
 
 <style scoped lang="less">

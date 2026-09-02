@@ -30,7 +30,7 @@ useDataCleanup(currentEffect, ["cantripScale", "hidden", "displayName", "fixedVa
 
 <template>
 	<template v-if="currentEffect">
-		<v-row dense>
+		<v-row density="comfortable">
 			<v-col cols="12">
 				<SectionHeader title="Roll" />
 			</v-col>

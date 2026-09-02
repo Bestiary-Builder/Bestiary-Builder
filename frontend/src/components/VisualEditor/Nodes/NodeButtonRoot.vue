@@ -22,7 +22,7 @@ watch(() => currentEffect!.value?.style, () => {
 
 <template>
 	<template v-if="currentEffect">
-		<v-row dense>
+		<v-row density="comfortable">
 			<v-col cols="12">
 				<SectionHeader :title="`Button (${currentEffect.label.substring(0, 40).trim()})`" />
 			</v-col>

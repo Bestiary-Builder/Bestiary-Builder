@@ -26,7 +26,7 @@ const contestDcWarning = (): boolean | string => {
 
 <template>
 	<template v-if="currentEffect">
-		<v-row dense>
+		<v-row density="comfortable">
 			<v-col cols="12">
 				<SectionHeader title="Ability Check" />
 			</v-col>

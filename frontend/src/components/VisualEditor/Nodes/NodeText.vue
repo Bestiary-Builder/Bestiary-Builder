@@ -38,7 +38,7 @@ const abilityTitle = (item: Record<string, any>) => {
 
 <template>
 	<template v-if="currentEffect">
-		<v-row dense>
+		<v-row density="comfortable">
 			<v-col cols="12">
 				<SectionHeader title="Text" />
 			</v-col>

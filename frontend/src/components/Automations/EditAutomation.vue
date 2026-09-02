@@ -151,7 +151,6 @@ onMounted(async () => {
 		docu.value = data;
 });
 
-const currentDocu = computed(() => docu.value[currentContext.value]);
 </script>
 
 <template>
@@ -163,10 +162,11 @@ const currentDocu = computed(() => docu.value[currentContext.value]);
 
 		<AutomationDocumentationView v-model="currentContext" />
 	</div>
-	<div v-else style="margin-top: 2rem">
+	<div v-else class="mt-4">
 		<VisualEditor ref="VisualEditorRef" v-model="visualEditorModel" :name="name || ''"
 			:no-list-attack="noListAttack" />
 	</div>
+
 </template>
 
 <style scoped lang="less">

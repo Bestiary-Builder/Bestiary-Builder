@@ -12,7 +12,7 @@ useDataCleanup(currentEffect, ["defaultAttackBonus", "defaultCastingMod", "defau
 
 <template>
 	<template v-if="currentEffect">
-		<v-row dense>
+		<v-row density="comfortable">
 			<v-col cols="12">
 				<SectionHeader :title="`Attack (${currentEffect.attack.name})`" />
 			</v-col>
