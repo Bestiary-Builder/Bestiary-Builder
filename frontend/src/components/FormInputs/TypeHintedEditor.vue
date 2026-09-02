@@ -133,7 +133,7 @@ watch(() => theme, () => {
 
 <template>
   <v-field :variant="variant" :density="density" :color="color" :label="usesCustomLabel ? undefined : label"
-    :error="error" :disabled="$route.path.startsWith('/automation/view') || $route.path.startsWith('/creature/edit')"
+    :error="error" :disabled="$route.path.startsWith('/automation/view') || $route.path.startsWith('/creature/view')"
     :dirty="isDirty" :focused="isFocused" :active="isFocused" class="code-field" @click="focusEditor"
     :append-inner-icon="isAnnotatedString ? 'tabler:braces' : 'tabler:braces-off'">
     <template #default="{ props: fieldSlotProps }">

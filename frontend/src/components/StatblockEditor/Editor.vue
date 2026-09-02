@@ -364,7 +364,7 @@ const $route = useRoute()
 
 <template>
 	<div ref="wrapper" class="monaco-wrapper-thing"
-		:style="$route.path.startsWith('/automation/view') || $route.path.startsWith('/creature/edit') ? { opacity: 'var(--v-disabled-opacity)' } : {}">
+		:style="$route.path.startsWith('/automation/view') || $route.path.startsWith('/creature/view') ? { opacity: 'var(--v-disabled-opacity)' } : {}">
 		<div class="button-container">
 			<span> <b> Description</b></span>
 			<v-divider vertical />
