@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import type { AttackModel, ButtonInteraction, EffectWithTarget } from "~/shared";
-import { computed, provide, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, provide, ref } from "vue";
 import EffectAdder from "./EffectAdder.vue";
 import NodeHelper from "./NodeHelper.vue";
 import AutomationDocumentation from "./Nodes/shared/AutomationDocumentation.vue";
 import EffectAsRaw from "./Nodes/shared/EffectAsRaw.vue";
 import SectionHeader from "./Nodes/shared/SectionHeader.vue";
 import TreeRoot from "./TreeRoot.vue";
-import { useRoute } from "vuetify/lib/composables/router.mjs";
+import type * as Monaco from 'monaco-editor'
+import { loader } from '@guolao/vue-monaco-editor';
+import { automationContextHints, AliasAPIClasses, AliasAPIInstances } from '~/shared'
+
 
 const { name, noListAttack = false } = defineProps<{ name: string; noListAttack?: boolean }>();
 const currentEffect = ref<EffectWithTarget | AttackModel | ButtonInteraction | null>(null);
@@ -39,6 +42,78 @@ const currentNode = computed(() => {
 
 const showControls = ref(true);
 provide("showControls", showControls);
+
+
+
+let providerDisposable: Monaco.IDisposable | undefined
+
+const registerProvider = (monaco: typeof Monaco) => {
+	providerDisposable = monaco.languages.registerCompletionItemProvider('python', {
+		triggerCharacters: ['.'],
+		provideCompletionItems: (model, position) => {
+			const word = model.getWordUntilPosition(position)
+			const range = {
+				startLineNumber: position.lineNumber,
+				endLineNumber: position.lineNumber,
+				startColumn: word.startColumn,
+				endColumn: word.endColumn,
+			}
+
+			const textBeforeCursor = model.getValueInRange({
+				startLineNumber: position.lineNumber,
+				startColumn: 1,
+				endLineNumber: position.lineNumber,
+				endColumn: position.column,
+			})
+
+			const memberAccessMatch = textBeforeCursor.match(/([A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*)\.\w*$/)
+
+			if (memberAccessMatch) {
+				const [rootName, ...path] = memberAccessMatch[1].split('.')
+				let currentClassName: string | undefined = AliasAPIInstances[rootName]
+
+				for (const propName of path) {
+					const propDef: any = currentClassName && AliasAPIClasses[currentClassName]?.properties.find((p) => p.name === propName)
+					currentClassName = propDef && AliasAPIClasses[propDef.type] ? propDef.type : undefined
+				}
+
+				const classDef = currentClassName ? AliasAPIClasses[currentClassName] : undefined
+				if (!classDef) return { suggestions: [] }
+
+				const suggestions = classDef.properties.map((prop) => ({
+					label: prop.name,
+					kind: monaco.languages.CompletionItemKind.Property,
+					detail: `${currentClassName}.${prop.name}: ${prop.type}`,
+					documentation: prop.doc,
+					insertText: prop.name,
+					range,
+				}))
+
+				return { suggestions }
+			}
+
+			const suggestions = automationContextHints.map((v) => ({
+				label: v.name,
+				kind: monaco.languages.CompletionItemKind.Variable,
+				detail: `${v.detail}`,
+				documentation: v.doc,
+				insertText: v.name,
+				range,
+			}))
+
+			return { suggestions }
+		},
+	})
+}
+
+onMounted(async () => {
+	const monaco = await loader.init()
+	registerProvider(monaco)
+})
+
+onBeforeUnmount(() => {
+	providerDisposable?.dispose()
+})
 </script>
 
 <template>

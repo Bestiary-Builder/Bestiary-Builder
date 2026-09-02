@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AttackModel, AutomationCollectionExtended, FeatureEntity } from "~/shared";
+import type { AttackModel, Automation, AutomationCollectionExtended, FeatureEntity } from "~/shared";
 import { useLocalStorage } from "@vueuse/core";
 import { computed, nextTick, onMounted, onUnmounted, provide, ref, useTemplateRef, watch } from "vue";
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
@@ -448,8 +448,7 @@ const resetOnOptions = [
 			<v-row>
 				<v-col cols="4">
 					<v-text-field v-model="data.name" type="text" label="Feature name"
-						:minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength" variant="outlined"
-						hide-details />
+						:minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength" hide-details />
 					<span v-if="isVisualEditor">
 						<input v-model="parityOptions.updateName" type="checkbox" style="scale: .7; translate: 0 4px">
 						<small style="font-size: x-small;"> <i>Updates the name of the first action in the automation

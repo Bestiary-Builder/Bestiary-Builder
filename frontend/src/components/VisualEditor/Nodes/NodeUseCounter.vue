@@ -71,7 +71,7 @@ const rules = useRules();
 
 			<div v-if="typeof (currentEffect.counter) === 'string'">
 				<v-text-field v-model="currentEffect.counter" label="Counter Name"
-					hint="Leave empty and set Error Behaviour to Ignore to takearbitrary -amt # input. "
+					hint="Leave empty and set Error Behaviour to Ignore to take arbitrary -amt # input. "
 					persistent-hint />
 			</div>
 			<div

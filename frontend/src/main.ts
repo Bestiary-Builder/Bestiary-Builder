@@ -18,16 +18,18 @@ import "./utils/app/analytics";
 
 export const app = createApp(App as Component<any>);
 
-app.use(router);
-app.use(vuetify);
-app.use(vuetifyRulesPlugin);
-app.component("DropdownMenu", DropdownMenu);
-app.component("Breadcrumbs", Breadcrumbs);
 loader.config({
 	paths: {
 		vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.54.0/min/vs"
 	}
 });
+
+app.use(router);
+app.use(vuetify);
+app.use(vuetifyRulesPlugin);
+app.component("DropdownMenu", DropdownMenu);
+app.component("Breadcrumbs", Breadcrumbs);
+
 
 // error handling
 if (import.meta.env.MODE === "production")

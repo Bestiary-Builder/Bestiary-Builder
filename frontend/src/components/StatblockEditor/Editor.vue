@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type * as Monaco from "monaco-editor";
 import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
-import { useElementSize, useLocalStorage, watchDebounced } from "@vueuse/core";
-import { onMounted, shallowRef, useTemplateRef, watch } from "vue";
+import { useElementSize, watchDebounced } from "@vueuse/core";
+import { shallowRef, useTemplateRef, watch } from "vue";
 import { useTheme } from "vuetify";
 
 const { height = 250 } = defineProps<{ height?: number }>();

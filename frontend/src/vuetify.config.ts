@@ -34,27 +34,31 @@ export const vuetify = createVuetify({
 				variant: "tonal"
 			}
 		},
-		VTabsWindowItem: {
-			VTextField: {
-				variant: "outlined"
-			},
-			VSelect: {
-				variant: "outlined"
-			},
-			VCombobox: {
-				variant: "outlined"
-			},
-			VNumberInput: {
-				variant: "outlined"
-			},
-		},
+		// VTabsWindowItem: {
+		// 	VTextField: {
+		// 		variant: "outlined"
+		// 	},
+		// 	VSelect: {
+		// 		variant: "outlined"
+		// 	},
+		// 	VCombobox: {
+		// 		variant: "outlined"
+		// 	},
+		// 	VNumberInput: {
+		// 		variant: "outlined"
+		// 	},
+		// },
 		VCheckbox: {
 			color: "primary"
 		},
 		VNumberInput: {
-			controlVariant: "stacked"
+			controlVariant: "stacked",
+			variant: "solo-filled"
 		},
 		VAutocomplete: {
+			variant: "solo-filled"
+		},
+		VCombobox: {
 			variant: "solo-filled"
 		},
 

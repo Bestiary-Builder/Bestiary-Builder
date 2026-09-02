@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { AttackModel, Automation } from "~/shared";
-import { useLocalStorage } from "@vueuse/core";
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useRules } from "vuetify/labs/rules";
 import StatusIcon from "@/components/Bestiary/StatusIcon.vue";
@@ -11,7 +10,6 @@ import Markdown from "@/components/Global/Markdown.vue";
 import SectionHeader from "@/components/VisualEditor/Nodes/shared/SectionHeader.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { useToast } from "@/utils/app/toast";
-import { creatureTypes } from "@/utils/constants";
 import { store } from "@/utils/store";
 import { ACTION_TYPE_MAP, getActionTypeLabel } from "./utils";
 import YAML from "yaml";
@@ -42,18 +40,6 @@ onMounted(async () => {
 	if (collection.value?.name)
 		document.title = `${collection.value?.name.substring(0, 16)} | Bestiary Builder`;
 });
-
-const searchText = ref("");
-
-const searchOptions = ref({
-	tags: [] as string[],
-	minCr: 0,
-	maxCr: 30,
-	env: "",
-	faction: ""
-});
-
-const sortMode = useLocalStorage("sortModeForAutomations", "Alphabetically");
 
 async function exportCollection(asFile: boolean) {
 	if (asFile) {
@@ -145,7 +131,7 @@ const openedGroups = ref<number[]>(Object.keys(ACTION_TYPE_MAP).map(x => parseIn
 
 const createNewActionOpen = ref(false);
 
-const createOptions = reactive({
+const createOptions = reactive<{ name: string, description: string, activation_type: null | number }>({
 	name: "",
 	description: "",
 	activation_type: null
@@ -187,6 +173,15 @@ async function importAutomationsFromJson() {
 	catch {
 		addToast("Something is wrong with the format of your JSON", { color: "error" });
 	}
+}
+
+const createAutomation = () => {
+	const data: Partial<Automation> = { name: createOptions.name, description: createOptions.description, automation: { _v: 2, name: createOptions.name, automation: [] } }
+	if (createOptions.activation_type !== 0 && createOptions.activation_type !== null && !Array.isArray(data.automation))
+		data.automation!.activation_type = createOptions.activation_type
+	createItem(data, false)
+	createNewActionOpen.value = false
+
 }
 </script>
 
@@ -487,8 +482,7 @@ async function importAutomationsFromJson() {
 			</v-card-text>
 			<v-card-actions>
 				<v-spacer />
-				<v-btn text="Create" color="success" size="large"
-					@click="createItem({ name: createOptions.name, description: createOptions.description, automation: { _v: 2, activation_type: createOptions.activation_type || 1, name: createOptions.name, automation: [] } }, false); createNewActionOpen = false" />
+				<v-btn text="Create" color="success" size="large" @click="createAutomation" />
 				<v-btn text="Cancel" size="large" @click="createNewActionOpen = false" />
 			</v-card-actions>
 		</v-card>

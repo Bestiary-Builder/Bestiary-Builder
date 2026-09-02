@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref, computed, shallowRef, onBeforeUnmount } from 'vue'
+import { ref, computed, shallowRef, onBeforeUnmount, watch } from 'vue'
 import { VueMonacoEditor } from '@guolao/vue-monaco-editor'
-import type * as Monaco from 'monaco-editor'
-import { automationContextHints, characterContextHints } from '~/shared'
+import type * as Monaco from 'monaco-editor';
+import { useTheme } from 'vuetify';
 
 type Variant = 'outlined' | 'filled' | 'underlined' | 'solo' | 'solo-filled' | 'solo-inverted' | 'plain'
 type Density = 'default' | 'comfortable' | 'compact'
@@ -66,6 +66,7 @@ const editorOptions = computed(() => ({
   overviewRulerLanes: 0,
   hideCursorInOverviewRuler: true,
   scrollBeyondLastLine: false,
+  scrollBeyondLastColumn: 0,
   scrollbar: {
     vertical: 'hidden' as const,
     horizontal: 'auto' as const,
@@ -86,25 +87,10 @@ const editorOptions = computed(() => ({
   }
 }))
 
-let providerDisposable: Monaco.IDisposable;
-
-
 const handleMount = (editor: Monaco.editor.IStandaloneCodeEditor, monaco: typeof Monaco) => {
   editorRef.value = editor
+  monaco.editor.setTheme(theme.name.value === 'dark' ? 'vs-dark' : 'vs-light');
 
-  monaco.editor.defineTheme('vuetify-code-field', {
-    base: 'vs-dark',
-    inherit: true,
-    rules: [],
-    colors: {
-      'editor.background': '#00000000',
-      'editor.lineHighlightBackground': '#00000000',
-    },
-  })
-
-
-  // Monaco isn't a native <input>, so VField gets no free focus tracking -
-  // drive its `focused` prop from Monaco's own focus events instead.
   editor.onDidFocusEditorWidget(() => {
     isFocused.value = true
   })
@@ -113,28 +99,20 @@ const handleMount = (editor: Monaco.editor.IStandaloneCodeEditor, monaco: typeof
     isFocused.value = false
   })
 
-  providerDisposable = monaco.languages.registerCompletionItemProvider('python', {
-    provideCompletionItems: (a, position) => {
-      const word = a.getWordUntilPosition(position)
-      const range = {
-        startLineNumber: position.lineNumber,
-        endLineNumber: position.lineNumber,
-        startColumn: word.startColumn,
-        endColumn: word.endColumn,
+  let isFixing = false
+  editor.onDidChangeModelContent(() => {
+    const model = editor.getModel()
+    if (!model) return
+    if (model.getLineCount() > 1) {
+      isFixing = true
+      const flattened = model.getValue().replace(/\r?\n/g, ' ')
+      const pos = editor.getPosition()
+      model.setValue(flattened)
+      if (pos) {
+        editor.setPosition({ lineNumber: 1, column: Math.min(pos.column, model.getLineMaxColumn(1)) })
       }
-
-      const suggestions = (props.isCharacterContext ? characterContextHints : automationContextHints).map((v) => ({
-        label: v.name,
-        kind: monaco.languages.CompletionItemKind.Variable,
-        detail: `${v.detail}`,
-        documentation: v.doc,
-        insertText: v.name,
-        sortText: `0_${v.name}`, // float cvars above builtin python suggestions
-        range,
-      }))
-
-      return { suggestions }
-    },
+      isFixing = false
+    }
   })
 }
 
@@ -142,11 +120,10 @@ const focusEditor = () => {
   editorRef.value?.focus()
 }
 
-onBeforeUnmount(() => {
-  providerDisposable?.dispose()
+const theme = useTheme()
+watch(() => theme, () => {
+  editorRef.value?.updateOptions({ theme: theme.name.value === 'dark' ? 'vs-dark' : 'vs-light' })
 })
-
-
 
 </script>
 
@@ -161,8 +138,8 @@ onBeforeUnmount(() => {
         {{ label }}
       </label>
       <div v-bind="fieldSlotProps" class="code-field__editor" :style="{ height: `${height}px` }">
-        <VueMonacoEditor v-model:value="code" language="python" theme="vuetify-code-field" :options="editorOptions"
-          @mount="handleMount" style="color: red !important" />
+        <VueMonacoEditor v-model:value="code" language="python" theme="vs-dark" :options="editorOptions"
+          @mount="handleMount" />
       </div>
     </template>
     <template #append-inner>
@@ -229,5 +206,14 @@ onBeforeUnmount(() => {
 
 .code-field :deep(.monaco-editor.focused) {
   outline: none !important;
+}
+
+.code-field :deep(.monaco-editor .suggest-widget) {
+  z-index: 3000 !important;
+}
+
+.code-field :deep(.monaco-editor .overflowingContentWidgets) {
+  z-index: 3000 !important;
+
 }
 </style>

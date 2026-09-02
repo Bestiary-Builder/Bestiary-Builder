@@ -93,8 +93,8 @@ const makeGvar = async () => {
 			<v-row>
 				<v-col cols="4">
 					<v-text-field v-model="data.name" type="text" label="Feature name"
-						:minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength" variant="outlined"
-						hide-details disabled />
+						:minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength" hide-details
+						disabled />
 				</v-col>
 				<v-col cols="8">
 					<Editor v-model="data.description" :height="100" />
