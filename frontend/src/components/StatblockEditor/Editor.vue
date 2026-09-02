@@ -400,8 +400,7 @@ const $route = useRoute()
 	border-top-right-radius: 4px;
 	font-size: smaller;
 	padding: 0.4rem;
-	padding-bottom: 0;
-	overflow-x: scroll;
+	overflow-x: auto;
 	max-width: 90vw
 }
 </style>
