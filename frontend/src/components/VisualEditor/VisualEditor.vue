@@ -3,14 +3,13 @@ import type { AttackModel, ButtonInteraction, EffectWithTarget } from "~/shared"
 import { computed, onBeforeUnmount, onMounted, provide, ref } from "vue";
 import EffectAdder from "./EffectAdder.vue";
 import NodeHelper from "./NodeHelper.vue";
-import AutomationDocumentation from "./Nodes/shared/AutomationDocumentation.vue";
 import EffectAsRaw from "./Nodes/shared/EffectAsRaw.vue";
 import SectionHeader from "./Nodes/shared/SectionHeader.vue";
 import TreeRoot from "./TreeRoot.vue";
 import type * as Monaco from 'monaco-editor'
 import { loader } from '@guolao/vue-monaco-editor';
 import { automationContextHints, AliasAPIClasses, AliasAPIInstances } from '~/shared'
-
+import AutomationDocumentation from "../Automations/AutomationDocumentation.vue";
 
 const { name, noListAttack = false } = defineProps<{ name: string; noListAttack?: boolean }>();
 const currentEffect = ref<EffectWithTarget | AttackModel | ButtonInteraction | null>(null);
@@ -141,7 +140,10 @@ onBeforeUnmount(() => {
 				</Transition>
 				<hr>
 				<Transition>
-					<AutomationDocumentation :key="currentContext.toString()" :node-type="currentNode" />
+					<details>
+						<summary style="font-size: smaller"> Show documentation</summary>
+						<AutomationDocumentation v-model="currentNode" />
+					</details>
 				</Transition>
 				<Transition>
 					<EffectAsRaw :current-effect />

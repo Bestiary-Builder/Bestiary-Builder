@@ -55,7 +55,7 @@ const showControls = inject<Ref<boolean>>("showControls");
 						:icon="JSON.stringify(currentContext) === JSON.stringify([index.toString(), ...context]) ? 'material-symbols:asterisk' : 'material-symbols:swords'"
 						:inline="true" width="1em"
 						:color="JSON.stringify(currentContext) === JSON.stringify([index.toString(), ...context]) ? 'rgb(var(--v-theme-success))' : 'rgb(var(--v-theme-surface-bright))'" />
-					{{ auto.name }}
+					{{ auto.name || "Unnamed Attack" }}
 					<span v-if="showControls" class="tree-buttons" @click.stop>
 						<DropdownMenu>
 							<template #activator="{ props }">
@@ -93,7 +93,7 @@ const showControls = inject<Ref<boolean>>("showControls");
 					:icon="JSON.stringify(currentContext) === JSON.stringify(context) ? 'material-symbols:asterisk' : 'material-symbols:swords'"
 					:inline="true" width="1em"
 					:color="JSON.stringify(currentContext) === JSON.stringify(context) ? 'rgb(var(--v-theme-success))' : 'rgb(var(--v-theme-surface-bright))'" />
-				{{ data.name }}
+				{{ data.name || "Unnamed Attack" }}
 				<span v-if="showControls" class="tree-buttons" @click.stop>
 					<DropdownMenu>
 						<template #activator="{ props }">
