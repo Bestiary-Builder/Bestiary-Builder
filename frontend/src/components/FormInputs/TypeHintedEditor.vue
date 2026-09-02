@@ -8,7 +8,7 @@ type Variant = 'outlined' | 'filled' | 'underlined' | 'solo' | 'solo-filled' | '
 type Density = 'default' | 'comfortable' | 'compact'
 
 interface Props {
-  modelValue: string
+  modelValue?: string
   label?: string
   variant?: Variant
   density?: Density
@@ -21,7 +21,6 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  modelValue: '',
   variant: 'solo-filled',
   density: 'default',
   height: 40,
@@ -37,8 +36,8 @@ const isFocused = ref(false)
 const editorRef = shallowRef<Monaco.editor.IStandaloneCodeEditor>()
 
 const code = computed({
-  get: () => props.modelValue,
-  set: (value) => emit('update:modelValue', value ?? ''),
+  get: () => props.modelValue ?? '',
+  set: (value) => emit('update:modelValue', value),
 })
 
 // Drives VField's floating-label state, same as VTextField does internally.
@@ -93,6 +92,9 @@ const handleMount = (editor: Monaco.editor.IStandaloneCodeEditor, monaco: typeof
 
   editor.onDidFocusEditorWidget(() => {
     isFocused.value = true
+    if (props.modelValue === undefined) {
+      emit('update:modelValue', '')
+    }
   })
 
   editor.onDidBlurEditorWidget(() => {

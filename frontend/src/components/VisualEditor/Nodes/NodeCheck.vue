@@ -26,31 +26,43 @@ const contestDcWarning = (): boolean | string => {
 
 <template>
 	<template v-if="currentEffect">
-		<SectionHeader title="Ability Check" />
-		<div class="two-wide">
-			<v-select v-model="currentEffect.ability" label="Ability" :items="skills" item-title="label" multiple
-				:clearable="false" chips closable-chips />
-			<v-select v-model="currentEffect.contestAbility" label="Contest Ability" :items="skills" item-title="label"
-				multiple chips closable-chips :rules="[contestDcWarning]" persistent-hint />
-		</div>
+		<v-row dense>
+			<v-col cols="12">
+				<SectionHeader title="Ability Check" />
+			</v-col>
 
-		<SectionHeader title="Additional Options" />
-		<div class="two-wide">
-			<div>
+			<v-col cols="6">
+				<v-select v-model="currentEffect.ability" label="Ability" :items="skills" item-title="label" multiple
+					:clearable="false" chips closable-chips />
+			</v-col>
+			<v-col cols="6">
+				<v-select v-model="currentEffect.contestAbility" label="Contest Ability" :items="skills"
+					item-title="label" multiple chips closable-chips :rules="[contestDcWarning]" persistent-hint />
+			</v-col>
+
+			<v-col cols="12">
+				<SectionHeader title="Additional Options" />
+			</v-col>
+
+			<v-col cols="6">
 				<TypeHintedEditor v-model="currentEffect.dc" label="DC (optional)" />
-			</div>
-			<v-select v-model="currentEffect.contestTie" label="Contest Tie Behaviour (optional)" title="Contest Tie"
-				:items="[
-					{ title: 'Success (default)', value: 'success' },
-					{ title: 'Fail', value: 'fail' },
-					{ title: 'Neither', value: 'neither' },
+			</v-col>
+			<v-col cols="6">
+				<v-select v-model="currentEffect.contestTie" label="Contest Tie Behaviour (optional)"
+					title="Contest Tie" :items="[
+						{ title: 'Success (default)', value: 'success' },
+						{ title: 'Fail', value: 'fail' },
+						{ title: 'Neither', value: 'neither' },
+					]" />
+			</v-col>
+			<v-col cols="6">
+				<v-select v-model="currentEffect.adv" label="Advantage (optional)" title="Advantage" :items="[
+					{ title: 'Flat', value: 0 },
+					{ title: 'Advantage', value: 1 },
+					{ title: 'Disadvantage', value: -1 },
 				]" />
-			<v-select v-model="currentEffect.adv" label="Advantage (optional)" title="Advantage" :items="[
-				{ title: 'Flat', value: 0 },
-				{ title: 'Advantage', value: 1 },
-				{ title: 'Disadvantage', value: -1 },
-			]" />
-		</div>
+			</v-col>
+		</v-row>
 	</template>
 </template>
 

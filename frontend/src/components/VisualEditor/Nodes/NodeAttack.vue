@@ -38,24 +38,37 @@ useDataCleanup(currentEffect, ["attackBonus"]);
 
 <template>
 	<template v-if="currentEffect">
-		<SectionHeader title="Attack" />
-		<TypeHintedEditor v-model="currentEffect.attackBonus" label="Attack Bonus" />
+		<v-row dense>
+			<v-col cols="12">
+				<SectionHeader title="Attack" />
+			</v-col>
 
-		<SectionHeader title="Additional Options" />
-		<div class="two-wide">
-			<v-select v-model="currentEffect.adv" label="Advantage (optional)" title="Advantage" :items="[
-				{ title: 'Flat', value: '0' },
-				{ title: 'Advantage', value: '1' },
-				{ title: 'Elven Advantage', value: '2' },
-				{ title: 'Disadvantage', value: '-1' },
-				isCustom
-					? { title: 'Custom', value: currentEffect.adv }
-					: { title: 'Custom', value: 'custom' },
-			]" @update:model-value="handleChange" />
-			<template v-if="isCustom">
-				<TypeHintedEditor v-model="currentEffect.adv" label="Custom Advantage" />
-			</template>
-		</div>
+			<v-col cols="6">
+				<TypeHintedEditor v-model="currentEffect.attackBonus" label="Attack Bonus" />
+			</v-col>
+
+			<v-col cols="12">
+				<SectionHeader title="Additional Options" />
+			</v-col>
+
+			<v-col cols="6">
+				<v-select v-model="currentEffect.adv" label="Advantage (optional)" title="Advantage" :items="[
+					{ title: 'Flat', value: '0' },
+					{ title: 'Advantage', value: '1' },
+					{ title: 'Elven Advantage', value: '2' },
+					{ title: 'Disadvantage', value: '-1' },
+					isCustom
+						? { title: 'Custom', value: currentEffect.adv }
+						: { title: 'Custom', value: 'custom' },
+				]" @update:model-value="handleChange" />
+			</v-col>
+
+			<v-col cols="6">
+				<template v-if="isCustom">
+					<TypeHintedEditor v-model="currentEffect.adv" label="Custom Advantage" />
+				</template>
+			</v-col>
+		</v-row>
 	</template>
 </template>
 

@@ -38,30 +38,35 @@ const abilityTitle = (item: Record<string, any>) => {
 
 <template>
 	<template v-if="currentEffect">
-		<SectionHeader title="Text" />
-		<div class="two-wide">
-			<v-text-field v-model="currentEffect.title" label="Title" />
-		</div>
+		<v-row dense>
+			<v-col cols="12">
+				<SectionHeader title="Text" />
+			</v-col>
 
-		<div v-if="typeof (currentEffect!.text) === 'string'" class="mb-4">
-			<Editor v-model="currentEffect.text" />
-			<small
-				v-if="setDesc" style="font-size: x-small; cursor: pointer" role="button"
-				@click="setDesc(currentEffect.text)"
-			> <i>Set the description of the statblock trait to this text.</i>
-			</small>
-		</div>
-		<v-autocomplete
-			v-else v-model="currentEffect.text" :items="abilities" :item-title="abilityTitle" return-object
-			label="Ability Reference"
-		/>
+			<v-col cols="6">
+				<v-text-field v-model="currentEffect.title" label="Title" />
+			</v-col>
 
-		<v-select
-			v-model="descIsText" :items="[
-				{ title: 'Text', value: true },
-				{ title: 'Ability Reference', value: false },
-			]" label="Text type"
-		/>
+			<v-col cols="12" v-if="typeof (currentEffect!.text) === 'string'">
+				<Editor v-model="currentEffect.text" />
+				<small v-if="setDesc" style="font-size: x-small; cursor: pointer" role="button"
+					@click="setDesc(currentEffect.text)"> <i>Set the description of the statblock trait to this
+						text.</i>
+				</small>
+			</v-col>
+
+			<v-col cols="12" v-else>
+				<v-autocomplete v-model="currentEffect.text" :items="abilities" :item-title="abilityTitle" return-object
+					label="Ability Reference" />
+			</v-col>
+
+			<v-col cols="6">
+				<v-select v-model="descIsText" :items="[
+					{ title: 'Text', value: true },
+					{ title: 'Ability Reference', value: false },
+				]" label="Text type" />
+			</v-col>
+		</v-row>
 	</template>
 </template>
 

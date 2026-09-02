@@ -28,22 +28,30 @@ useDataCleanup(currentEffect, ["errorBehaviour"]);
 
 <template>
 	<template v-if="currentEffect">
-		<SectionHeader title="Branch" />
-		<div>
-			<TypeHintedEditor v-model="currentEffect.condition" label="Condition" />
-			<p v-if="isWarning" class="pt-1 text-warning"> <small>Equality checks should use double ==.</small></p>
-		</div>
+		<v-row dense>
+			<v-col cols="12">
+				<SectionHeader title="Branch" />
+			</v-col>
 
-		<SectionHeader title="Additional Options" />
-		<div class="two-wide">
-			<v-select v-model="currentEffect.errorBehaviour" label="Error Behaviour" title="Error Behaviour" :items="[
-				{ title: 'Treat as True', value: 'true' },
-				{ title: 'Treat as False', value: 'false' },
-				{ title: 'Run both', value: 'both' },
-				{ title: 'Neither', value: 'neither' },
-				{ title: 'Raise', value: 'raise' },
-			]" />
-		</div>
+			<v-col cols="6">
+				<TypeHintedEditor v-model="currentEffect.condition" label="Condition" />
+				<p v-if="isWarning" class="pt-1 text-warning"> <small>Equality checks should use double ==.</small></p>
+			</v-col>
+
+			<v-col cols="12">
+				<SectionHeader title="Additional Options" />
+			</v-col>
+
+			<v-col cols="6">
+				<v-select v-model="currentEffect.errorBehaviour" label="Error Behaviour" title="Error Behaviour" :items="[
+					{ title: 'Treat as True', value: 'true' },
+					{ title: 'Treat as False', value: 'false' },
+					{ title: 'Run both', value: 'both' },
+					{ title: 'Neither', value: 'neither' },
+					{ title: 'Raise', value: 'raise' },
+				]" />
+			</v-col>
+		</v-row>
 	</template>
 </template>
 

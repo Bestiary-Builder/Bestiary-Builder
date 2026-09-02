@@ -26,25 +26,44 @@ useDataCleanup(currentEffect, ["level", "attackBonus", "castingMod", "parent"]);
 
 <template>
 	<template v-if="currentEffect">
-		<SectionHeader title="Cast Spell" />
-		<v-autocomplete v-model="currentEffect.id" label="Spell" :items="spells" item-title="label" item-value="id" />
+		<v-row dense>
+			<v-col cols="12">
+				<SectionHeader title="Cast Spell" />
+			</v-col>
 
-		<SectionHeader title="Additional Options" />
+			<v-col cols="6">
+				<v-autocomplete v-model="currentEffect.id" label="Spell" :items="spells" item-title="label"
+					item-value="id" />
+			</v-col>
 
-		<div class="two-wide">
-			<v-select v-model="currentEffect.level" label="Level" :items="[
-				{ title: '(default level)', value: null },
-				...Array.from({ length: 10 }, (_, i) => ({ title: i.toString(), value: i })),
-			]" />
-			<v-text-field v-model="currentEffect.parent" label="Parent Effect" />
-		</div>
+			<v-col cols="12">
+				<SectionHeader title="Additional Options" />
+			</v-col>
 
-		<SectionHeader title="Caster Spellcasting Override" />
-		<div class="two-wide">
-			<TypeHintedEditor v-model="currentEffect.dc" label="DC" />
-			<TypeHintedEditor v-model="currentEffect.attackBonus" label="Attack Bonus" />
-			<TypeHintedEditor v-model="currentEffect.castingMod" label="Casting Modifier" />
-		</div>
+			<v-col cols="6">
+				<v-select v-model="currentEffect.level" label="Level" :items="[
+					{ title: '(default level)', value: null },
+					...Array.from({ length: 10 }, (_, i) => ({ title: i.toString(), value: i })),
+				]" />
+			</v-col>
+			<v-col cols="6">
+				<v-text-field v-model="currentEffect.parent" label="Parent Effect" />
+			</v-col>
+
+			<v-col cols="12">
+				<SectionHeader title="Caster Spellcasting Override" />
+			</v-col>
+
+			<v-col cols="6">
+				<TypeHintedEditor v-model="currentEffect.dc" label="DC" />
+			</v-col>
+			<v-col cols="6">
+				<TypeHintedEditor v-model="currentEffect.attackBonus" label="Attack Bonus" />
+			</v-col>
+			<v-col cols="6">
+				<TypeHintedEditor v-model="currentEffect.castingMod" label="Casting Modifier" />
+			</v-col>
+		</v-row>
 	</template>
 </template>
 

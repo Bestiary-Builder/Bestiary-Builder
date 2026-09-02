@@ -22,44 +22,60 @@ watch(() => currentEffect!.value?.style, () => {
 
 <template>
 	<template v-if="currentEffect">
-		<SectionHeader :title="`Button (${currentEffect.label.substring(0, 40).trim()})`" />
-		<div class="two-wide">
-			<v-text-field v-model="currentEffect.label" label="Button Label"
-				:class="{ required: currentEffect.label.length === 0 }" />
-			<v-text-field v-model="currentEffect.verb" label="Verb" placeholder="attacks with" />
-			<v-select v-model="currentEffect.style" label="Button Style" :items="[
-				{ title: 'Blurple (default)', value: null, props: { style: 'color: #3865F2' } },
-				{ title: 'Grey', value: '2', props: { style: 'color: #aaaaaa' } },
-				{ title: 'Green', value: '3', props: { style: 'color: #248045' } },
-				{ title: 'Red', value: '4', props: { style: 'color: #DA373C' } },
-				{ title: 'Custom Expression', value: 'custom' },
-			]" />
-			<template v-if="isCustom">
-				<TypeHintedEditor v-model="(currentEffect.style as string)" label="Custom Style Expression" />
-			</template>
-		</div>
+		<v-row dense>
+			<v-col cols="12">
+				<SectionHeader :title="`Button (${currentEffect.label.substring(0, 40).trim()})`" />
+			</v-col>
 
-		<SectionHeader title="Casting Overrides" />
-		<small>
-			Use these options to pass casting information about the caster to the button, or arbritary number variables
-			you can
-			use for anything, such as a number of dice. Use the variables below in your button automation to access the
-			values
-			you set here.
-		</small>
-		<div class="two-wide mt-2">
-			<div>
+			<v-col cols="6">
+				<v-text-field v-model="currentEffect.label" label="Button Label"
+					:class="{ required: currentEffect.label.length === 0 }" />
+			</v-col>
+			<v-col cols="6">
+				<v-text-field v-model="currentEffect.verb" label="Verb" placeholder="attacks with" />
+
+
+			</v-col>
+			<v-col cols="6">
+				<v-select v-model="currentEffect.style" label="Button Style" :items="[
+					{ title: 'Blurple (default)', value: null, props: { style: 'color: #3865F2' } },
+					{ title: 'Grey', value: '2', props: { style: 'color: #aaaaaa' } },
+					{ title: 'Green', value: '3', props: { style: 'color: #248045' } },
+					{ title: 'Red', value: '4', props: { style: 'color: #DA373C' } },
+					{ title: 'Custom Expression', value: 'custom' },
+				]" />
+			</v-col>
+			<v-col cols="6">
+				<template v-if="isCustom">
+					<TypeHintedEditor v-model="(currentEffect.style as string)" label="Custom Style Expression" />
+				</template>
+			</v-col>
+
+			<v-col cols="12">
+				<SectionHeader title="Casting Overrides" />
+				<small>
+					Use these options to pass casting information about the caster to the button, or arbritary number
+					variables
+					you can
+					use for anything, such as a number of dice. Use the variables below in your button automation to
+					access the
+					values
+					you set here.
+				</small>
+			</v-col>
+
+			<v-col cols="6">
 				<TypeHintedEditor v-model="(currentEffect.defaultDC as string)" label="Default DC (spell_dc)" />
-			</div>
-			<div>
+			</v-col>
+			<v-col cols="6">
 				<TypeHintedEditor v-model="(currentEffect.defaultAttackBonus as string)"
 					label="Default Attack Bonus (spell_attack_bonus)" />
-			</div>
-			<div>
+			</v-col>
+			<v-col cols="6">
 				<TypeHintedEditor v-model="(currentEffect.defaultCastingMod as string)"
 					label="Default Casting Modifier (spell)" />
-			</div>
-		</div>
+			</v-col>
+		</v-row>
 	</template>
 </template>
 

@@ -12,18 +12,25 @@ useDataCleanup(currentEffect, ["removeParent"]);
 
 <template>
 	<template v-if="currentEffect">
-		<SectionHeader title="Remove IEffect" />
-		<p>Remove IEffect only has optional options.</p>
-		<SectionHeader title="Additional Options" />
-		<div class="two-wide">
-			<v-select
-				v-model="currentEffect.removeParent" label="Remove Parent" :items="[
+		<v-row dense>
+			<v-col cols="12">
+				<SectionHeader title="Remove IEffect" />
+				<p>Remove IEffect only has optional options.</p>
+
+			</v-col>
+
+			<v-col cols="12">
+				<SectionHeader title="Additional Options" />
+			</v-col>
+
+			<v-col cols="6">
+				<v-select v-model="currentEffect.removeParent" label="Remove Parent" :items="[
 					{ title: 'Never', value: null },
 					{ title: 'Always', value: 'always' },
 					{ title: 'If No Children', value: 'if_no_children' },
-				]"
-			/>
-		</div>
+				]" />
+			</v-col>
+		</v-row>
 	</template>
 </template>
 

@@ -34,23 +34,32 @@ const rules = useRules();
 
 <template>
 	<template v-if="currentEffect">
-		<SectionHeader title="Set Variable" />
-		<div class="two-wide mb-4">
-			<v-text-field v-model="currentEffect.name" label="Name" :rules="[rules.required()]" />
-		</div>
-		<TypeHintedEditor v-model="currentEffect.value" label="Value" class="mb-4" />
+		<v-row dense>
+			<v-col cols="12">
+				<SectionHeader title="Set Variable" />
+			</v-col>
 
-		<SectionHeader title="Additional Options" />
+			<v-col cols="6">
+				<v-text-field v-model="currentEffect.name" label="Name" :rules="[rules.required()]" />
+			</v-col>
 
-		<div class="two-wide mb-1">
-			<div>
+			<v-col cols="6">
+				<TypeHintedEditor v-model="currentEffect.value" label="Value" class="mb-4" />
+			</v-col>
+
+			<v-col cols="12">
+				<SectionHeader title="Additional Options" />
+			</v-col>
+
+			<v-col cols="6">
 				<TypeHintedEditor v-model="currentEffect.onError" label="On Error" />
-			</div>
-		</div>
-		<div v-if="currentEffect.higher">
-			<div>At higher levels</div>
-			<HigherLevels v-model="(currentEffect.higher as Record<number, string>)" is-int-expression />
-		</div>
+			</v-col>
+
+			<v-col cols="12" v-if="currentEffect.higher">
+				<div>At higher levels</div>
+				<HigherLevels v-model="(currentEffect.higher as Record<number, string>)" is-int-expression />
+			</v-col>
+		</v-row>
 
 	</template>
 </template>

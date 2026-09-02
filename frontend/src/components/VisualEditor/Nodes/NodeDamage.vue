@@ -30,24 +30,39 @@ useDataCleanup(currentEffect, ["overheal", "cantripScale", "fixedValue"]);
 
 <template>
 	<template v-if="currentEffect">
-		<SectionHeader title="Damage" />
-		<TypeHintedEditor v-model="currentEffect.damage" label="Damage" is-annotated-string />
-		<SectionHeader title="Additional Options" />
-		<div class="two-wide">
-			<v-checkbox v-model="currentEffect.fixedValue" label="Whether this roll should ignore the -d argument and
+		<v-row dense>
+			<v-col cols="12">
+				<SectionHeader title="Damage" />
+			</v-col>
+
+			<v-col cols="6">
+				<TypeHintedEditor v-model="currentEffect.damage" label="Damage" is-annotated-string />
+			</v-col>
+
+			<v-col cols="12">
+				<SectionHeader title="Additional Options" />
+			</v-col>
+
+			<v-col cols="6">
+				<v-checkbox v-model="currentEffect.fixedValue" label="Whether this roll should ignore the -d argument and
 					damage bonus effects." hide-details />
+			</v-col>
 
-			<v-checkbox v-model="currentEffect.overheal"
-				label="Whether this damage should go through if it exceeds the targets hit point maximum."
-				hide-details />
-			<v-checkbox v-model="currentEffect.cantripScale" label="Whether this roll should scale like a cantrip."
-				hide-details />
+			<v-col cols="6">
+				<v-checkbox v-model="currentEffect.overheal"
+					label="Whether this damage should go through if it exceeds the targets hit point maximum."
+					hide-details />
+			</v-col>
+			<v-col cols="6">
+				<v-checkbox v-model="currentEffect.cantripScale" label="Whether this roll should scale like a cantrip."
+					hide-details />
+			</v-col>
 
-			<div>
+			<v-col cols="6">
 				<div>At higher levels</div>
 				<HigherLevels v-model="(currentEffect!.higher as Record<number, string>)" />
-			</div>
-		</div>
+			</v-col>
+		</v-row>
 	</template>
 </template>
 

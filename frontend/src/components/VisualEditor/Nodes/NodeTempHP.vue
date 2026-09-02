@@ -29,19 +29,28 @@ useDataCleanup(currentEffect, ["cantripScale"]);
 
 <template>
 	<template v-if="currentEffect">
-		<SectionHeader title="Temp HP" />
-		<div>
-			<TypeHintedEditor v-model="currentEffect.amount" label="Amount" is-annotated-string />
-		</div>
-		<SectionHeader title="Additional Options" />
-		<div class="two-wide">
-			<v-checkbox v-model="currentEffect.cantripScale" label="Whether this roll should scale like a cantrip."
-				hide-details />
-			<div>
+		<v-row dense>
+			<v-col cols="12">
+				<SectionHeader title="Temp HP" />
+			</v-col>
+
+			<v-col cols="6">
+				<TypeHintedEditor v-model="currentEffect.amount" label="Amount" is-annotated-string />
+			</v-col>
+
+			<v-col cols="12">
+				<SectionHeader title="Additional Options" />
+			</v-col>
+
+			<v-col cols="6">
+				<v-checkbox v-model="currentEffect.cantripScale" label="Whether this roll should scale like a cantrip."
+					hide-details />
+			</v-col>
+			<v-col cols="6">
 				<div>At higher levels</div>
 				<HigherLevels v-model="(currentEffect.higher as Record<number, string>)" />
-			</div>
-		</div>
+			</v-col>
+		</v-row>
 	</template>
 </template>
 

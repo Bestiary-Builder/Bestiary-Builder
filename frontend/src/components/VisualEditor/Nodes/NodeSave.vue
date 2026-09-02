@@ -22,22 +22,32 @@ useDataCleanup(currentEffect, ["dc"]);
 
 <template>
 	<template v-if="currentEffect">
-		<SectionHeader title="Saving Throw" />
-		<div class="two-wide">
-			<v-select v-model="currentEffect.stat" label="Save Stat" title="Saving throw stat"
-				:items="Object.entries(fullStatNames).map(([value, label]) => ({ title: label, value }))" />
-		</div>
-		<SectionHeader title="Additional Options" />
-		<div>
-			<TypeHintedEditor v-model="currentEffect.dc" label="DC (optional)" />
-		</div>
-		<div class="two-wide">
-			<v-select v-model="currentEffect.adv" label="Advantage (optional)" :items="[
-				{ title: 'Flat', value: 0 },
-				{ title: 'Advantage', value: 1 },
-				{ title: 'Disadvantage', value: -1 },
-			]" />
-		</div>
+		<v-row dense>
+			<v-col cols="12">
+				<SectionHeader title="Saving Throw" />
+			</v-col>
+
+			<v-col cols="6">
+				<v-select v-model="currentEffect.stat" label="Save Stat" title="Saving throw stat"
+					:items="Object.entries(fullStatNames).map(([value, label]) => ({ title: label, value }))" />
+			</v-col>
+
+			<v-col cols="12">
+				<SectionHeader title="Additional Options" />
+			</v-col>
+
+			<v-col cols="6">
+				<TypeHintedEditor v-model="currentEffect.dc" label="DC (optional)" />
+			</v-col>
+
+			<v-col cols="6">
+				<v-select v-model="currentEffect.adv" label="Advantage (optional)" :items="[
+					{ title: 'Flat', value: 0 },
+					{ title: 'Advantage', value: 1 },
+					{ title: 'Disadvantage', value: -1 },
+				]" />
+			</v-col>
+		</v-row>
 	</template>
 </template>
 
