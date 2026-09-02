@@ -338,10 +338,10 @@ const srdOptions = [
 				</p>
 				<span
 					v-if="!(store.user.supporter === SupporterStatus.wirmling || store.user.supporter === SupporterStatus.greatwyrm)">
-					<a href="https://www.patreon.com/join/BestiaryBuilder" class="patreon">
-						<v-icon icon="mdi:patreon" size="small" />
-						<span> Become a patreon </span>
-					</a>
+					<v-btn color="#f1465a" size="x-large" prepend-icon="mdi:patreon" class="mt-4 rounded"
+						variant="elevated" href="https://www.patreon.com/join/BestiaryBuilder">
+						Support us on Patreon
+					</v-btn>
 				</span>
 				<p v-if="store.user.supporter === SupporterStatus.wirmling">
 					You support us on Patreon as a <b> Wyrmling </b> Tier supporter. Thank you so much for your pledge!
