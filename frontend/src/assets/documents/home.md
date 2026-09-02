@@ -1,4 +1,11 @@
+--- 
+## Features
 
+1. Create creatures to use in Avrae easily and quickly. A complete list of SRD creatures speeds up your work so you can get back to the game.
+2. Write Avrae Automation with a complete and advanced editor.
+3. Edit all your automation in one place, including characters.
+4. Create collections of automations you can share with your server, including custom counters.
+5. Publish and explore the creations of others.
 ---
 ## Getting started
 

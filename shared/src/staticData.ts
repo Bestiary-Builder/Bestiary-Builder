@@ -211,6 +211,7 @@ export const exposedAutomationVariables = [
 
 
 export const automationContextHints = [...editorHintsGlobal, ...automationGlobalHints, ...exposedAutomationVariables, ...editorHintsCharacter];
+export const consumableContextHints = [...editorHintsCharacter, ...editorHintsGlobal];
 
 export type AliasAPIPropertyDef = { name: string; type: string; doc: string }
 export type AliasAPIClassDef = { properties: AliasAPIPropertyDef[] }

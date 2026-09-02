@@ -333,9 +333,16 @@ const srdOptions = [
 				<p> You have created <b>{{ bestiaryCount }}</b> bestiaries since then.</p>
 				<p v-if="store.user.supporter === SupporterStatus.none">
 					If you enjoy using our site, consider supporting us on Patreon!
-					As a Patreon, you will have several benefits and your support will help Bestiary Builder stay
-					online.
+					As a Patreon Supporter, you will have several benefits and you will support the active development
+					of Bestiary Builder.
+
+				<ul>
+					<li> You can create your own custom theme for the statblock and the website. </li>
+					<li> You can create your own custom statblock theme. </li>
+					<li> You can make feature requests directly to the developers. </li>
+				</ul>
 				</p>
+
 				<span
 					v-if="!(store.user.supporter === SupporterStatus.wirmling || store.user.supporter === SupporterStatus.greatwyrm)">
 					<v-btn color="#f1465a" size="x-large" prepend-icon="mdi:patreon" class="mt-4 rounded"
@@ -361,16 +368,18 @@ const srdOptions = [
 						<div>
 							<v-select v-model="theme.global.name.value" :items="themeOptions" label="Theme"
 								item-props="props" width="400" hide-details />
-							<p class="pt-4">
-								Custom theme is available to Patreon Supporters.
-								<br> You can create your custom theme
-								<RouterLink to="./user/theme" style="color: rgb(var(--v-theme-primary))"> on this page
-								</RouterLink>.
-							</p>
+
 						</div>
 
 
 					</div>
+					<span style="font-size: smaller" class="pt-2">
+						Custom theme is available to Patreon Supporters.
+						<br> You can create your custom theme
+						<RouterLink to="./user/theme" style="color: rgb(var(--v-theme-primary))"> on this page.
+						</RouterLink>
+					</span>
+
 					<div class="setting-container">
 						<div>
 							<v-select v-model="preferences.statblockLayout" label="Statblock Layout"
@@ -394,13 +403,9 @@ const srdOptions = [
 						<div>
 							<v-select v-model="preferences.statblockDesign" :items="statblockDesignOptions"
 								label="Statblock Theme" width="400" hide-details />
-							<p class="pt-4">
-								Custom statblock theme is available to Patreon Supporters.
-								<br> You can create your custom statblock theme
-								<RouterLink to="./user/theme" style="color: rgb(var(--v-theme-primary))"> on this page
-								</RouterLink>.
-							</p>
+
 						</div>
+
 						<v-icon-btn
 							v-tooltip="'Change the visual design of the statblock. This changes its appearance only.'"
 							icon="mdi:information" title="Setting information" />
@@ -415,7 +420,12 @@ const srdOptions = [
 							</v-card>
 						</DropdownMenu>
 					</div>
-
+					<span style="font-size: smaller" class="pt-2">
+						Custom statblock theme is available to Patreon Supporters.
+						<br> You can create your custom statblock theme
+						<RouterLink to="./user/theme" style="color: rgb(var(--v-theme-primary))"> on this page.
+						</RouterLink>
+					</span>
 					<div class="setting-container">
 						<div>
 							<v-select v-model="preferences.preferredEditor" :items="preferredEditorOptions"
@@ -436,8 +446,7 @@ const srdOptions = [
 							v-tooltip="'Set whether creating Creatures and Features from the SRD should use the 2024 or 2014 list of options.'"
 							icon="mdi:information" />
 					</div>
-
-					<div>
+					<div class="my-6">
 						<v-btn color="success" size="large" @click.prevent="saveSettings">
 							Save Preferences
 						</v-btn>
@@ -526,7 +535,6 @@ const srdOptions = [
 		.preferences {
 			display: flex;
 			flex-direction: column;
-			gap: 2rem;
 			padding: 0 0.5rem;
 
 			.setting-container {
@@ -534,6 +542,7 @@ const srdOptions = [
 				flex-direction: row;
 				gap: 0.5rem;
 				align-items: center;
+				margin-top: 2rem;
 			}
 		}
 	}

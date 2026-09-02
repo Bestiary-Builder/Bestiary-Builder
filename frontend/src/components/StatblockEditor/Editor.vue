@@ -4,6 +4,7 @@ import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
 import { useElementSize, watchDebounced } from "@vueuse/core";
 import { shallowRef, useTemplateRef, watch } from "vue";
 import { useTheme } from "vuetify";
+import { useRoute } from "vue-router";
 
 const { height = 250 } = defineProps<{ height?: number }>();
 
@@ -357,10 +358,13 @@ const theme = useTheme()
 watch(() => theme, () => {
 	editorRef.value?.updateOptions({ theme: theme.name.value === 'dark' ? 'vs-dark' : 'vs-light' })
 })
+
+const $route = useRoute()
 </script>
 
 <template>
-	<div ref="wrapper" class="monaco-wrapper-thing">
+	<div ref="wrapper" class="monaco-wrapper-thing"
+		:style="$route.path.startsWith('/automation/view') || $route.path.startsWith('/creature/edit') ? { opacity: 'var(--v-disabled-opacity)' } : {}">
 		<div class="button-container">
 			<span> <b> Description</b></span>
 			<v-divider vertical />
@@ -396,6 +400,7 @@ watch(() => theme, () => {
 	border-top-right-radius: 4px;
 	font-size: smaller;
 	padding: 0.4rem;
+	padding-bottom: 0;
 	overflow-x: scroll;
 	max-width: 90vw
 }

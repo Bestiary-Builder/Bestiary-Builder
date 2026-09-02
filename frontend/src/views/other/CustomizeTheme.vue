@@ -87,6 +87,8 @@ const { statblockColors, resetColor: resetStatblockColor, resetAll: resetAllStat
             <v-divider />
             <v-col cols="12">
                 <h2> Statblock Theme </h2>
+                <small> Remember to set Statblock Theme as "Custom" to see your changes elsewhere.</small>
+
             </v-col>
             <v-col cols="6">
                 <v-row>

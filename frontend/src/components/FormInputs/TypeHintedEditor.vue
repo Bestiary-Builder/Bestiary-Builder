@@ -3,6 +3,7 @@ import { ref, computed, shallowRef, onBeforeUnmount, watch } from 'vue'
 import { VueMonacoEditor } from '@guolao/vue-monaco-editor'
 import type * as Monaco from 'monaco-editor';
 import { useTheme } from 'vuetify';
+import { useRoute } from 'vue-router';
 
 type Variant = 'outlined' | 'filled' | 'underlined' | 'solo' | 'solo-filled' | 'solo-inverted' | 'plain'
 type Density = 'default' | 'comfortable' | 'compact'
@@ -14,18 +15,19 @@ interface Props {
   density?: Density
   color?: string
   error?: boolean
-  disabled?: boolean
   height?: number
   isCharacterContext?: boolean
   isAnnotatedString?: boolean
 }
 
+const $route = useRoute()
 const props = withDefaults(defineProps<Props>(), {
   variant: 'solo-filled',
   density: 'default',
   height: 40,
   isCharacterContext: false,
-  isAnnotatedString: false
+  isAnnotatedString: false,
+  disabled: false
 })
 
 const emit = defineEmits<{
@@ -131,8 +133,9 @@ watch(() => theme, () => {
 
 <template>
   <v-field :variant="variant" :density="density" :color="color" :label="usesCustomLabel ? undefined : label"
-    :error="error" :disabled="disabled" :dirty="isDirty" :focused="isFocused" :active="isFocused" class="code-field"
-    @click="focusEditor" :append-inner-icon="isAnnotatedString ? 'tabler:braces' : 'tabler:braces-off'">
+    :error="error" :disabled="$route.path.startsWith('/automation/view') || $route.path.startsWith('/creature/edit')"
+    :dirty="isDirty" :focused="isFocused" :active="isFocused" class="code-field" @click="focusEditor"
+    :append-inner-icon="isAnnotatedString ? 'tabler:braces' : 'tabler:braces-off'">
     <template #default="{ props: fieldSlotProps }">
       <label v-if="usesCustomLabel && label" class="code-field__label"
         :class="{ 'code-field__label--floating': isActive }" :style="{ color: labelColor }"

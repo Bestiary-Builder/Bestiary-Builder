@@ -91,51 +91,12 @@ select {
 
 @media screen and (width >=1081px) {
 	.content.less-wide {
-		padding: 2rem 10vw;
+		padding: 2rem 15vw;
 	}
 }
 
 b.indent {
 	margin-left: 1.5rem;
-}
-
-.patreon {
-	--patreon: #f1465a;
-	--font: white;
-
-	background-color: var(--patreon);
-	color: var(--font) !important;
-	display: block;
-	width: 240px;
-	padding: 1rem;
-	margin: 1rem 0;
-	border-radius: 0.5rem;
-	font-weight: bold;
-	text-decoration: unset;
-	transition: background-color 300ms ease;
-
-	svg {
-		color: white !important;
-		translate: 0 3px;
-	}
-
-	span {
-		margin-left: 0.6rem;
-	}
-
-	&:hover {
-		background-color: color-mix(in srgb, var(--patreon) 75%, white 25%);
-	}
-}
-
-.discord {
-	--discord: #5865f2;
-
-	background-color: var(--discord);
-
-	&:hover {
-		background-color: color-mix(in srgb, var(--discord) 75%, white 25%);
-	}
 }
 
 p:has(img[src="/Beholder.webp"]) {

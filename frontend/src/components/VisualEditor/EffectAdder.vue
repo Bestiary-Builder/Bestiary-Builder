@@ -118,7 +118,7 @@ const showControls = inject<Ref<boolean>>("showControls");
 			<p class="tree-row" v-bind="dropdownProps" :style="`--depth: ${depth}`"
 				style="color: rgb(var(--v-theme-surface-bright));">
 				<span class="icon">
-					<Icon icon="material-symbols:add-circle" width="1em" color="rgb(var(--v-theme-primary))" />
+					<Icon icon="mdi:plus-circle" width="1em" color="rgb(var(--v-theme-primary))" />
 				</span><span>{{ automation === null ? 'Create Automation' : 'Add Effect' }}</span>
 			</p>
 		</template>

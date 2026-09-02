@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { AttackModel, Automation, AutomationCollectionExtended, FeatureEntity } from "~/shared";
 import { useLocalStorage } from "@vueuse/core";
-import { computed, nextTick, onMounted, onUnmounted, provide, ref, useTemplateRef, watch } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, onUnmounted, provide, ref, useTemplateRef, watch } from "vue";
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
 import { useHotkey } from "vuetify";
 import EditAutomation from "@/components/Automations/EditAutomation.vue";
@@ -12,8 +12,11 @@ import { useToast } from "@/utils/app/toast";
 import { useRecentPages } from "@/utils/app/useRecentPages";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
-import { parseDescIntoAutomation } from "~/shared";
+import { consumableContextHints, parseDescIntoAutomation } from "~/shared";
 import { useRules } from "vuetify/labs/rules";
+import type * as Monaco from 'monaco-editor'
+import { loader } from '@guolao/vue-monaco-editor';
+import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 
 const $router = useRouter();
 const $route = useRoute();
@@ -411,6 +414,44 @@ const resetOnOptions = [
 	{ title: 'None (never)', value: 'none' },
 ]
 
+
+let providerDisposable: Monaco.IDisposable | undefined
+
+const registerProvider = (monaco: typeof Monaco) => {
+	providerDisposable = monaco.languages.registerCompletionItemProvider('python', {
+		triggerCharacters: ['.'],
+		provideCompletionItems: (model, position) => {
+			const word = model.getWordUntilPosition(position)
+			const range = {
+				startLineNumber: position.lineNumber,
+				endLineNumber: position.lineNumber,
+				startColumn: word.startColumn,
+				endColumn: word.endColumn,
+			}
+
+
+			const suggestions = consumableContextHints.map((v) => ({
+				label: v.name,
+				kind: monaco.languages.CompletionItemKind.Variable,
+				detail: `${v.detail}`,
+				documentation: v.doc,
+				insertText: v.name,
+				range,
+			}))
+
+			return { suggestions }
+		},
+	})
+}
+
+onMounted(async () => {
+	const monaco = await loader.init()
+	registerProvider(monaco)
+})
+
+onBeforeUnmount(() => {
+	providerDisposable?.dispose()
+})
 </script>
 
 <template>
@@ -485,42 +526,34 @@ const resetOnOptions = [
 		<EditAutomation ref="EditAutomationRef" v-model="data.automation" v-model:is-visual-editor="isVisualEditor"
 			:name="data.name" />
 
-		<v-dialog v-model="isCounterDialogOpen" max-width="800" max-height="900">
-			<v-card title="Custom Counters" class="pa-4 text-center d-flex flex-column">
-				<v-card-text class="flex-grow-1">
-					<p>
-						<small style="color: rgb(var(--v-theme-surface-bright))">
-							You can define Custom Counters.
-							<b>
-								These apply to Avrae Characters only. </b>
-							<br> Importing this action will import this Custom Counter too.
-						</small>
-					</p>
-					<v-list density="compact" class="text-left my-4" bg-color="surface-light" max-height="600">
-						<v-list-group v-for="consumable, idx of data.consumables">
-							<template #activator="{ props, isOpen }">
-								<v-list-item v-bind="props" :title="consumable.name" :subtitle="consumable.desc || ''">
-									<template #append>
-										<v-icon-btn text="Delete counter" icon="mdi:delete"
-											@click.stop="data.consumables?.splice(idx, 1)">
+		<v-card title="Custom Counters" class="pa-4 d-flex flex-column"
+			subtitle="You can define Custom Counters for Avrae Characters here. Importing this action will import this Custom Counter too."
+			bg-color="surface-light" color="surface-light">
+			<v-card-text class="flex-grow-1" bg-color="surface-light">
+				<v-list density="compact" class="text-left my-4" max-height="1000">
+					<v-list-group v-for="consumable, idx of data.consumables">
+						<template #activator="{ props, isOpen }">
+							<v-list-item v-bind="props" :title="consumable.name" :subtitle="consumable.desc || ''">
+								<template #append>
+									<v-icon-btn text="Delete counter" icon="mdi:delete"
+										@click.stop="data.consumables?.splice(idx, 1)">
 
-										</v-icon-btn>
-										<v-icon icon="mdi:chevron-down" :class="{ 'rotate-180': isOpen }"
-											class="transition-transform" />
-									</template>
-								</v-list-item>
-							</template>
-							<v-container class="pa-4">
-								<v-row density="comfortable">
-									<v-col cols="6">
-										<v-text-field v-model="consumable.name"
-											:rules="[rules.required(), rules.minLength(1)]" label="Name"
-											variant="outlined"></v-text-field>
-									</v-col>
-									<v-col cols="6">
-										<v-spacer />
-									</v-col>
-									<p class="pb-2">
+									</v-icon-btn>
+									<v-icon icon="mdi:chevron-down" :class="{ 'rotate-180': isOpen }"
+										class="transition-transform" />
+								</template>
+							</v-list-item>
+						</template>
+						<v-container class="pa-4">
+							<v-row density="comfortable">
+								<v-col cols="6">
+									<v-text-field v-model="consumable.name"
+										:rules="[rules.required(), rules.minLength(1)]" label="Name"></v-text-field>
+								</v-col>
+
+
+								<v-col cols="12">
+									<p class="">
 										<small>
 											The following fields may use CVARS from the
 											<a href="https://avrae.readthedocs.io/en/stable/aliasing/api.html#cvar-table"
@@ -531,83 +564,62 @@ const resetOnOptions = [
 											and math expressions.
 										</small>
 									</p>
-									<v-col cols="6">
-										<v-select v-model="consumable.display_type" variant="outlined"
-											label="Display Type" :items="displayTypeOptions" hide-details>
-										</v-select>
-									</v-col>
-									<v-col cols="6">
-										<v-select v-model="consumable.reset" variant="outlined" label="Reset On"
-											:items="resetOnOptions" hide-details>
-										</v-select>
-									</v-col>
-									<v-col cols="6">
-										<v-text-field v-model="consumable.minv" label="Minimum" variant="outlined"
-											hide-details></v-text-field>
-									</v-col>
-									<v-col cols="6">
-										<v-text-field v-model="consumable.maxv" label="Maximum" variant="outlined"
-											hide-details></v-text-field>
-									</v-col>
+								</v-col>
 
-									<v-col cols="6">
-										<v-text-field v-model="consumable.reset_by" label="Reset By" variant="outlined"
-											hide-details></v-text-field>
-									</v-col>
-									<v-col cols="6">
-										<v-text-field v-model="consumable.reset_to" label="Reset To" variant="outlined"
-											hide-details></v-text-field>
-									</v-col>
-									<v-col cols="6">
-										<v-number-input v-model="consumable.value" label="Initial Value"
-											variant="outlined" hide-details></v-number-input>
-									</v-col>
-									<v-col cols="6">
-										<v-text-field v-model="consumable.title" label="Title" variant="outlined"
-											hide-details></v-text-field>
-									</v-col>
-									<v-col cols="12">
-										<v-textarea v-model="consumable.desc" label="Description" variant="outlined"
+
+								<v-col cols="6">
+									<v-select v-model="consumable.display_type" label="Display Type"
+										:items="displayTypeOptions" hide-details>
+									</v-select>
+								</v-col>
+								<v-col cols="6">
+									<v-select v-model="consumable.reset" label="Reset On" :items="resetOnOptions"
+										hide-details>
+									</v-select>
+								</v-col>
+								<v-col cols="6">
+									<TypeHintedEditor v-model="consumable.minv" label="Minimum" />
+								</v-col>
+								<v-col cols="6">
+									<TypeHintedEditor v-model="consumable.maxv" label="Maximum" />
+								</v-col>
+
+								<v-col cols="6">
+									<TypeHintedEditor v-model="consumable.reset_by" label="Reset By"
+										is-annotated-string />
+								</v-col>
+								<v-col cols="6">
+									<TypeHintedEditor v-model="consumable.reset_to" label="Reset To" />
+								</v-col>
+								<v-col cols="6">
+									<v-number-input v-model="consumable.value" label="Initial Value"
+										hide-details></v-number-input>
+								</v-col>
+								<v-col cols="6">
+									<v-text-field v-model="consumable.title" label="Title" "
+										hide-details></v-text-field>
+								</v-col>
+								<v-col cols=" 12">
+										<v-textarea v-model="consumable.desc" label="Description"
 											hide-details></v-textarea>
-									</v-col>
-								</v-row>
-							</v-container>
-							<v-divider />
-
-						</v-list-group>
-						<v-list-item v-if="!data.consumables" title="No consumables set..."></v-list-item>
+								</v-col>
+							</v-row>
+						</v-container>
 						<v-divider />
 
-						<v-list-item title="Add Consumable" prepend-icon="mdi:plus" @click="addConsumable"
-							v-if="!data.consumables || data.consumables.length < 16" />
-					</v-list>
-				</v-card-text>
-				<v-card-actions class="d-flex ga-2 pa-4 mx-8">
-					<v-btn color="success" class="flex-grow-1" @click="saveAutomation" prepend-icon="mdi:content-save">
-						Save
-					</v-btn>
+					</v-list-group>
+					<v-list-item v-if="!data.consumables" title="No consumables set..."></v-list-item>
+					<v-divider />
 
-					<v-btn @click="isCounterDialogOpen = false" prepend-icon="mdi:close" class="flex-grow-1">
-						Close
-					</v-btn>
-				</v-card-actions>
-			</v-card>
-		</v-dialog>
+					<v-list-item title="Add Consumable" prepend-icon="mdi:plus" @click="addConsumable"
+						v-if="!data.consumables || data.consumables.length < 16" />
+				</v-list>
+			</v-card-text>
+		</v-card>
 	</div>
 </template>
 
 <style scoped lang="less">
-.two-wide {
-	display: grid;
-	gap: 2rem;
-	grid-template-columns: 1fr 1fr;
-
-	&.uneven {
-		grid-template-columns: 1fr 2fr;
-		max-width: 100%;
-	}
-}
-
 a {
 	color: rgb(var(--v-theme-primary));
 }

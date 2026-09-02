@@ -43,8 +43,6 @@ const currentNode = computed(() => {
 const showControls = ref(true);
 provide("showControls", showControls);
 
-
-
 let providerDisposable: Monaco.IDisposable | undefined
 
 const registerProvider = (monaco: typeof Monaco) => {
@@ -114,7 +112,6 @@ onMounted(async () => {
 onBeforeUnmount(() => {
 	providerDisposable?.dispose()
 	observer?.disconnect()
-
 })
 
 const { mobile } = useDisplay()
@@ -154,10 +151,6 @@ onMounted(() => {
 	if (topSectionRef.value) observer.observe(topSectionRef.value)
 	if (bottomSectionRef.value) observer.observe(bottomSectionRef.value)
 })
-
-onBeforeUnmount(() => {
-})
-
 </script>
 
 <template>
@@ -224,7 +217,7 @@ section {
 	background-color: rgb(var(--v-theme-surface-light));
 	min-height: 800px;
 	padding: 1rem;
-	border-radius: 2px;
+	border-radius: 4px;
 	box-shadow: rgb(0 0 0 / 24%) 0 3px 8px;
 }
 
