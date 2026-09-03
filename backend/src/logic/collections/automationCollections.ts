@@ -29,23 +29,6 @@ export const automationCollections = createCollectionService<AutomationCollectio
 	removeBookmark: removeAutomationCollectionBookmark
 });
 
-export async function getOrCreateDefaultAutomationCollection(ownerId: Id) {
-	const id = `default-${ownerId}`;
-	const existing = await getAutomationCollection(id);
-	if (existing)
-		return existing.id;
-	const created = await createAutomationCollection({
-		id,
-		name: "My Automations",
-		status: "private",
-		description: "",
-		image: "",
-		tags: [],
-		owner: { connect: { id: ownerId } }
-	}, ownerId);
-	return created ?? (await getAutomationCollection(id))?.id;
-}
-
 interface AutomationCollectionData {
 	name: string;
 	description: string;

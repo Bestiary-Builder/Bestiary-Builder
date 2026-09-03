@@ -5,7 +5,7 @@ import { app, checkAutomationLimits } from "@/utilities/constants";
 import { createAutomation, deleteAutomation, getAutomation, updateAutomation } from "@/utilities/database";
 import { log } from "@/utilities/logger";
 import { Prisma } from "~/shared/src/prisma-types";
-import { automationCollections, getOrCreateDefaultAutomationCollection } from "../collections/automationCollections";
+import { automationCollections } from "../collections/automationCollections";
 import { validateAutomationConsumablesInput } from "../external/validation";
 import { possibleUser, requireUser } from "../main/login";
 
@@ -115,20 +115,15 @@ app.post("/api/automation/add", requireUser, async (req, res) => {
 	const preparedInput = prepareAutomationInput(input.automation, "");
 	if ("error" in preparedInput)
 		return res.status(400).json({ error: preparedInput.error });
-	let collectionId = input.collectionId;
-	if (collectionId) {
-		const authorization = await automationCollections.authorize(collectionId, user.id, "edit");
-		if (!authorization.ok) {
-			if (authorization.reason === "collection-not-found")
-				return res.status(404).json({ error: "Automation collection not found." });
-			return res.status(401).json({ error: "You don't have permission to add an automation to this collection." });
-		}
-	}
-	else {
-		const collection = await getOrCreateDefaultAutomationCollection(user.id);
-		if (!collection)
-			return res.status(500).json({ error: "Failed to create the default automation collection." });
-		collectionId = collection;
+	const collectionId = input.collectionId;
+	if (!collectionId)
+		return res.status(404).json({ error: "Automation collection id not present." });
+
+	const authorization = await automationCollections.authorize(collectionId, user.id, "edit");
+	if (!authorization.ok) {
+		if (authorization.reason === "collection-not-found")
+			return res.status(404).json({ error: "Automation collection not found." });
+		return res.status(401).json({ error: "You don't have permission to add an automation to this collection." });
 	}
 
 	const automation = await createAutomation({ ...preparedInput.data, automation: preparedInput.automationData }, collectionId);
