@@ -128,9 +128,7 @@ app.post("/api/automation/add", requireUser, async (req, res) => {
 		const collection = await getOrCreateDefaultAutomationCollection(user.id);
 		if (!collection)
 			return res.status(500).json({ error: "Failed to create the default automation collection." });
-		collectionId = collection.id;
-		if (!automationCollections.canPerform("edit", automationCollections.getPermission(collection, user.id)))
-			return res.status(401).json({ error: "You don't have permission to add an automation to this collection." });
+		collectionId = collection;
 	}
 
 	const automation = await createAutomation({ ...preparedInput.data, automation: preparedInput.automationData }, collectionId);

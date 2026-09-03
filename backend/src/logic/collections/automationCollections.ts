@@ -33,7 +33,7 @@ export async function getOrCreateDefaultAutomationCollection(ownerId: Id) {
 	const id = `default-${ownerId}`;
 	const existing = await getAutomationCollection(id);
 	if (existing)
-		return existing;
+		return existing.id;
 	const created = await createAutomationCollection({
 		id,
 		name: "My Automations",
@@ -43,7 +43,7 @@ export async function getOrCreateDefaultAutomationCollection(ownerId: Id) {
 		tags: [],
 		owner: { connect: { id: ownerId } }
 	}, ownerId);
-	return created ?? await getAutomationCollection(id);
+	return created ?? (await getAutomationCollection(id))?.id;
 }
 
 interface AutomationCollectionData {
