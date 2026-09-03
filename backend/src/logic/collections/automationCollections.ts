@@ -95,7 +95,7 @@ app.post("/api/automation-collection/add", requireUser, async (req, res) => {
 	const validationError = validateAutomationCollectionData(input, 0);
 	if (validationError)
 		return res.status(400).json({ error: validationError });
-	const collection = await createAutomationCollection({
+	const _id = await createAutomationCollection({
 		name: input.name,
 		description: input.description,
 		image: input.image,
@@ -103,9 +103,9 @@ app.post("/api/automation-collection/add", requireUser, async (req, res) => {
 		tags: input.tags,
 		owner: { connect: { id: user.id } }
 	}, user.id);
-	if (!collection)
+	if (!_id)
 		return res.status(500).json({ error: "Failed to create automation collection." });
-	return res.status(201).json(collection);
+	return res.status(201).json({ ...input, id: _id, ownerId: user.id });
 });
 
 app.get("/api/automation-collection/personal", requireUser, async (req, res) => {

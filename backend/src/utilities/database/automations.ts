@@ -184,10 +184,9 @@ export async function createAutomationCollection(data: AutomationCollectionCreat
 			select: { index: true },
 			orderBy: { index: "desc" }
 		}))?.index ?? -1) + 1;
-		return await prisma.automationCollection.create({
+		return (await prisma.automationCollection.create({
 			data: { ...data, orderedBy: { create: { userId: ownerId, index } } },
-			include: collectionIncludes
-		});
+		})).id;
 	}, null);
 }
 
