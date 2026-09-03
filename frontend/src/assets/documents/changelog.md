@@ -1,30 +1,41 @@
 ## v3.0.0
 _???, 2026_
 
-### Features
-- Added a proper automation editor for editing actions.
-  - Supports all types of nodes, attacks, buttons, etc.
-  - Allows you to create automation directly within BB without knowing how to code YAML.
-  - Includes improvements over the avrae dasbhoard editor, such as being able to copy/cut and paste entire sections of automation.
-- Improved styling of the statblock
-- Added 2024 statblock formatting and a toggle in user settings.
-- Added Beyond Odyssey, Monster Manual styling for statblocks, and a toggle in user settings.
-- Added an improved creature copy and pasting system.
+### Major Features
+- Added a complete automation editor where you can edit actions.
+  - Supports all types of nodes, attacks, buttons, etc. 
+  - Allows you to create automation directly within BB without knowing how to code YAML
+  - Includes smart features like dragging to reorder nodes and autocomplete of automation variables.
+- Added the ability to see your Avrae Characters and edit their attacks on BB.
+- Added automation collections, and improvement over "My Automations". Create collections of automations, and import them to anywhere.
+  - You can use this to create collections of shared monster actions, magic items for your server, homebrew (sub)classes, etc.
+  - Users can subscribe to the collection or import the action to their character.
+  - You can add Custom Counters to automations in collections, which will be imported to their character when a user imports an action.
+  - If you previously had automations in My Automations, they have been migrated into a collection for you.
+- Updated the Statblock formatting to 2024 
+  - Added several different themes to choose from
+  - Patreon Supporters can create custom themes with any colours
+  - You may choose 2014 formatting in your settings.
+- Added 2024 SRD monsters and attacks.
+  - You may choose 2014 SRD in your settings.
+- Modernized and improved the entire User Interface - everything has been rewritten.
+- Added Light mode toggle in your settings
+- Patreon Supporters may define custom site themes with any colours.
+
+### Minor Features
+- Minor fields like AC source and speeds, and senses now support markdown formatting, i.e. can be made *italic* or **bold** etc.
+- The Export statblock to Image feature has been improved. It will now look identical to the statblock on the site
+  - Also added 1 column, 2 column, and 2 column extra wide image exports options.
+
+- Added CMD/CTRL+S hotkeys for saving creatures / collections / etc.
+- Updated the available default spells to choose from when editing spellcasting on a creature to all currently published spells.
+- Added a rich text editor for descriptions which supports markdown formatting buttons.
 - Added the ability to import a single creature from CritterDB.
 - Added the ability to import a single creature from BB on the Bestiary page.
-- Added a rich text editor for major text fields like description.
-- Added the ability to edit the attacks of Avrae Characters on BB.
-- Improved UI of many page components with Vuetify -> increased accessibility, hints, and mobile support.
-- Added modal dialogs for creating new collections
-- Improved the statblock editor by modernizing many interfaces.
-- Improved code quality and maintainability.
-- Minor fields like ac source and senses now support markdown formatting, i.e. can be made italic or bold etc.
-- Added 2024 SRD Creature and Actions.
-- Added a user setting to choose between 2024 and 2014 SRD options.
-- Added more image export options: 1 column, 2 column, 2 column extra wide
-- Updated the available default spells to choose from when editing spellcasting on a creature to all currently published spells.
-- Added CMD/CTRL+S hotkeys for saving creatures / collections
-- Patreon Supporters will be able to customize the theme of the site and the theme of the statblocks.
+- Added an improved creature copy and pasting system.
+- Bestiaries and automation collections now have a built in image field which will be displayed as the image for the collection.
+  - The first image in the markdown description of the collection has been automatically migrated to this field.
+
 
 ### Fixes
 - Improved the accuracy of the 2014 SRD Creatures and Actions data.
@@ -35,7 +46,6 @@ _???, 2026_
 - Reactions now import from 5e.tools.
 - Innate spellcasting now displays the different spell amounts in the correct order.
 - Importing text only actions now respects the name of the creature and if it is a proper noun.
-- Improved accuracy of the image export. Spacing and fonts should now be consistent with the site.
 
 ## v2.6.6
 _June 12, 2026_

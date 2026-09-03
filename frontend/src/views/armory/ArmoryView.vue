@@ -154,7 +154,7 @@ async function exportCollection(asFile: boolean) {
 
 				<v-divider class="my-4" />
 				<v-skeleton-loader v-if="items === null" type="heading, text, text" />
-				<AutomationList v-else v-model="items" :can-edit="true" :collection="collection"/>
+				<AutomationList v-else v-model="items" :can-edit="false" :collection="collection"/>
 			</div>
 		</div>
 	</div>
