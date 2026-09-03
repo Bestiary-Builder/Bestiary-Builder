@@ -281,7 +281,7 @@ app.post("/api/automation-collection/:id/addautomations", requireUser, async (re
 	const ignoredItems = [] as { item: string; error: string }[];
 	const fixedData = [];
 	const existingCount = await getAutomationCollectionAutomationCount(collection.id);
-	let automationIndex = ((await getPrismaClient().automation.findFirst({ where: { collectionId: collection.id }, orderBy: { index: "desc" } }))?.index ?? (existingCount - 1))+ 1;
+	let automationIndex = ((await getPrismaClient().automation.findFirst({ where: { collectionId: collection.id }, orderBy: { index: "desc" } }))?.index ?? (existingCount - 1)) + 1;
 	for (const automation of data) {
 		if (!automation)
 			continue;

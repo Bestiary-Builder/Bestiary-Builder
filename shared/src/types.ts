@@ -17,7 +17,7 @@ export type AutomationCollectionEditor = Prisma.AutomationCollectionEditorModel;
 export type UserAutomationCollectionBookmark = Prisma.UserAutomationCollectionBookmarkModel;
 
 export type CreatureWithStats = Omit<Creature, "stats"> & { stats: Statblock };
-export interface CreatureMetaData { id: Id; index: number; name: string; race: string; size: string; alignment: string | null; cr: number; environment: string; faction: string };
+export interface CreatureMetaData { id: Id; index: number; name: string; tag: string; race: string; size: string; alignment: string | null; cr: number; environment: string; faction: string };
 export type BestiaryExtended = Bestiary & { editors: { userId: Id }[] };
 export type BestiaryFull = BestiaryExtended & { creatures: CreatureMetaData[] };
 export type BestiaryWithCount = Bestiary & { creatureCount: number };

@@ -87,6 +87,7 @@ model Automation {
   id           String   @id @default(cuid())
   name         String
   description  String
+  tag          String   @default("")
   collectionId String
   lastUpdated  DateTime @default(now())
   index        Int

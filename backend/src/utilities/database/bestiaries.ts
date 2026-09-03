@@ -1,4 +1,4 @@
-import type { Id, User } from "~/shared";
+import type { CreatureMetaData, Id, User } from "~/shared";
 import type { BestiaryCreateInput, BestiaryUpdateInput } from "~/shared/src/prisma-types";
 import { v4 as uuid } from "uuid";
 import { log } from "@/utilities/logger";
@@ -60,13 +60,14 @@ export async function getBestiaryFull(id: Id) {
 						({
 							id: creature.id,
 							name: creature.stats.description.name,
+							tag: creature.stats.description.tag,
 							alignment: creature.stats.description.alignment,
 							cr: creature.stats.description.cr,
 							size: creature.stats.core.size,
 							race: creature.stats.core.race,
 							environment: creature.stats.description.environment,
 							faction: creature.stats.description.faction,
-						})
+						} as CreatureMetaData)
 					)
 				}
 			: null

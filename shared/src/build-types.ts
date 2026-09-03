@@ -54,6 +54,7 @@ export interface FeatureHeaderTexts {
 }
 export interface Description {
 	name: string;
+	tag: string;
 	isProperNoun: boolean;
 	description: string;
 	image: string;
