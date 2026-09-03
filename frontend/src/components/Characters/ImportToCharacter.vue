@@ -66,7 +66,7 @@ const copyCommand = async () => {
 		updateToast(toastId, { text: error, color: "error" });
 	}
 	else if (data) {
-		updateToast(toastId, { color: "success", prependIcon: "mdi:check", text: "Copied Avrae Command to Discord!" });
+		updateToast(toastId, { color: "success", prependIcon: "mdi:check", text: "Copied Avrae Command to Clipboard!" });
 		let text = `!alias importactionfrombb multiline
 !a import {{get_gvar("${data.gvarId}")}}${buildCounterCopyCommand(consumables)}
 !alias delete importactionfrombb

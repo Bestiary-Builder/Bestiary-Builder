@@ -12,6 +12,7 @@ import { getUmami } from "@/utils/app/analytics";
 import { useToast } from "@/utils/app/toast";
 import { creatureTypes } from "@/utils/constants";
 import { ACTION_TYPE_MAP, getActionTypeLabel } from "./utils";
+import AutomationList from "@/components/Automations/AutomationList.vue";
 
 const {
 	collection,
@@ -32,18 +33,6 @@ onMounted(async () => {
 	if (collection.value?.name)
 		document.title = `${collection.value?.name.substring(0, 16)} | Bestiary Builder`;
 });
-
-const searchText = ref("");
-
-const searchOptions = ref({
-	tags: [] as string[],
-	minCr: 0,
-	maxCr: 30,
-	env: "",
-	faction: ""
-});
-
-const sortMode = useLocalStorage("sortModeForAutomations", "Alphabetically");
 
 async function exportCollection(asFile: boolean) {
 	if (asFile) {
@@ -85,53 +74,6 @@ async function exportCollection(asFile: boolean) {
 		void getUmami()?.track("Export collection to clipboard");
 	}
 }
-
-// misc
-const editorToAdd = ref("");
-const showWarning = ref(false);
-
-watch(() => collection.value?.status, (newValue): void => {
-	if (newValue === "private" || newValue === "public")
-		showWarning.value = false;
-	if (newValue === "public")
-		showWarning.value = true;
-});
-
-watch(() => collection.value?.name, (): void => {
-	if (collection.value?.name)
-		document.title = `${collection.value?.name.substring(0, 16)} | Bestiary Builder`;
-});
-
-const getActivationType = (automation: AttackModel | AttackModel[] | null): number => {
-	if (automation === null)
-		return 0;
-	const attack = Array.isArray(automation) ? automation[0] : automation;
-	return attack?.activation_type ?? 0;
-};
-
-const groupByActivationType = (items: Automation[]): Record<number, Automation[]> => {
-	return items.reduce((groups, item) => {
-		const key = getActivationType(item.automation);
-		if (!groups[key])
-			groups[key] = [];
-		groups[key].push(item);
-		return groups;
-	}, {} as Record<number, Automation[]>);
-};
-
-const groupedItems = computed(() => {
-	const grouped = groupByActivationType(items.value || []);
-
-	return Object.entries(grouped)
-		.map(([type, items]) => ({
-			type: Number(type),
-			label: getActionTypeLabel(Number(type)),
-			items,
-		}))
-		.sort((a, b) => a.type - b.type);
-});
-
-const openedGroups = ref<number[]>(Object.keys(ACTION_TYPE_MAP).map(x => parseInt(x)));
 </script>
 
 <template>
@@ -148,29 +90,6 @@ const openedGroups = ref<number[]>(Object.keys(ACTION_TYPE_MAP).map(x => parseIn
 				isCurrent: true
 			}
 		]">
-
-			<DropdownMenu>
-				<template #activator="{ props }">
-					<v-icon-btn v-tooltip="'Search automations'" text="Search automations" icon="mdi:tag" size="24"
-						v-bind="props" />
-				</template>
-				<v-card min-width="400" class="pa-4" title="Search collection">
-					<v-row>
-						<v-col cols="12">
-							<v-select v-model="sortMode"
-								:items="['Custom', 'Alphabetically', 'CR Ascending', 'CR Descending', 'Creature Type']"
-								label="Collection sort type" width="100%" />
-						</v-col>
-						<v-col cols="6">
-							<v-text-field v-model="searchText" label="Name" />
-						</v-col>
-						<v-col cols="6">
-							<v-select v-model="searchOptions.tags" :items="creatureTypes" label="Creature type" multiple
-								chips closable-chips />
-						</v-col>
-					</v-row>
-				</v-card>
-			</DropdownMenu>
 
 			<DropdownMenu>
 				<template #activator="{ props }">
@@ -235,32 +154,8 @@ const openedGroups = ref<number[]>(Object.keys(ACTION_TYPE_MAP).map(x => parseIn
 
 				<v-divider class="my-4" />
 				<v-skeleton-loader v-if="items === null" type="heading, text, text" />
-				<v-list v-else v-model:opened="openedGroups">
-					<v-list-group v-for="group in groupedItems" :key="group.type" :value="group.type">
-						<template #activator="{ props }">
-							<v-list-item v-bind="props" :title="group.label"
-								:subtitle="`${group.items.length} action${group.items.length > 1 ? 's' : ''}`" />
-						</template>
+				<AutomationList v-else v-model="items" :can-edit="true" :collection="collection"/>
 
-						<v-list-item v-for="item in group.items" :key="item.id">
-							<template #default>
-								<v-list-item-title>
-									{{ item.name }}
-								</v-list-item-title>
-								<v-list-item-subtitle>
-									{{ item.description }}
-								</v-list-item-subtitle>
-							</template>
-
-							<template #append>
-								<v-icon-btn icon="mdi:eye" variant="text"
-									@click="$router.push(`/automation/view/${item.id}`)" />
-								<ImportToCharacter :automation="item.automation"
-									:consumables="item?.consumables || null" />
-							</template>
-						</v-list-item>
-					</v-list-group>
-				</v-list>
 				<span v-if="items?.length === 0"> No automations in this collection.</span>
 			</div>
 		</div>
