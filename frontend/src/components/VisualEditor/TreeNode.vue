@@ -237,8 +237,9 @@ const showControls = inject<Ref<boolean>>("showControls");
 								</span>
 
 							</p>
-							<TreeRoot :data="(attack as any as AttackModel)" :depth="depth + 2" root-type="attack"
-								:context="[...context, 'attacks', index.toString(), 'automation']" />
+							<TreeRoot :data="((attack) as AttackInteraction).attack" :depth="depth + 2"
+								root-type="attack"
+								:context="[...context, 'attacks', index.toString(), 'attack', 'automation']" />
 						</div>
 					</VueDraggable>
 				</template>
