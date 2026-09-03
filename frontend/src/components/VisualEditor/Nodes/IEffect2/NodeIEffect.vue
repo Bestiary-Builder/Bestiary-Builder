@@ -219,9 +219,7 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 			<v-col cols="6">
 				<v-text-field v-model="currentEffect.parent" label="Parent" hide-details />
 			</v-col>
-			<v-col cols="6">
-				<v-checkbox v-model="currentEffect.end" label="Ticks on end of turn." hide-details density="compact" />
-			</v-col>
+
 			<v-col cols="6">
 				<v-checkbox v-model="currentEffect.target_self" label="Target Self" hide-details density="compact" />
 			</v-col>
