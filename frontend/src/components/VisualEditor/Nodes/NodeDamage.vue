@@ -35,7 +35,7 @@ useDataCleanup(currentEffect, ["overheal", "cantripScale", "fixedValue"]);
 				<SectionHeader title="Damage" />
 			</v-col>
 
-			<v-col cols="6">
+			<v-col cols="12">
 				<TypeHintedEditor v-model="currentEffect.damage" label="Damage" is-annotated-string />
 			</v-col>
 

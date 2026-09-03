@@ -244,7 +244,7 @@ const generateAutomation = async () => {
 	let activationType;
 	const automation = data.value.automation;
 	if (automation === null) {
-		activationType = 0;
+		activationType = 1;
 	}
 	else if (Array.isArray(automation)) {
 		activationType = automation[0].activation_type ?? 0;
@@ -374,8 +374,6 @@ const setDesc = (setDesc: string) => {
 provide("setActionName", setName);
 provide("setActionDescription", setDesc);
 
-const isCounterDialogOpen = ref(false)
-
 const addConsumable = () => {
 	if (data.value?.consumables === null)
 		data.value.consumables = []
@@ -496,7 +494,6 @@ onBeforeUnmount(() => {
 								structure to this text while enabled.</i> </small>
 					</span>
 
-					<v-btn class="mt-6 w-100" @click="isCounterDialogOpen = true"> Counters </v-btn>
 					<div v-if="!isVisualEditor && showDescriptionButtons" class="mt-4">
 						<b class="mt-4"> Descriptions: </b>
 						<span style="color: rgb(var(--v-theme-error))"> Don't match. </span>

@@ -9,7 +9,7 @@ import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 
-const { addToast } = useToast();
+const { addToast, updateToast } = useToast();
 
 const automationCollections = ref<AutomationCollectionExtended[]>([]);
 const getMyCollections = async () => {
@@ -35,16 +35,17 @@ const resetCreateInput = () => {
 };
 
 const createAutomationCollection = async () => {
+	const toastId = addToast("Creating automation collection...", { loading: true });
 	const { success, error } = await useFetch<AutomationCollectionExtended>("/api/automation-collection/add", "POST", toValue(createOptions));
 
 	if (success) {
-		addToast("Created automation collection", { color: "success" });
+		updateToast(toastId, {text: "Created automation collection", color: "success" });
 		void getUmami()?.track("Add automation collection");
 		newCollectionIsOpen.value = false;
 		resetCreateInput();
 	}
 	else {
-		addToast(error, { color: "error" });
+		updateToast(toastId, {text: error, color: "error" });
 
 		if (error.includes("includes blocked words or phrases"))
 			void getUmami()?.track("Blocked words", { error });

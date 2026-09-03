@@ -50,16 +50,23 @@ const resetCreateInput = () => {
 };
 
 const createBestiary = async () => {
-	// Send data to server
-	const { success, data, error } = await useFetch<BestiaryExtended>("/api/bestiary/add", "POST", toValue(createOptions));
+	const toastId = addToast("Creating bestiary...", { loading: true });
+	const { success, error } = await useFetch<BestiaryExtended>("/api/bestiary/add", "POST", toValue(createOptions));
+
 	if (success) {
-		addToast("Created bestiary");
+		updateToast(toastId, {text: "Created bestiary", color: "success" });
 		void getUmami()?.track("Add bestiary");
-		await router.push(`/bestiary/edit/${data.id.toString()}`);
+		newBestiaryIsOpen.value = false;
+		resetCreateInput();
 	}
 	else {
-		addToast(error, { color: "error" });
+		updateToast(toastId, {text: error, color: "error" });
+
+		if (error.includes("includes blocked words or phrases"))
+			void getUmami()?.track("Blocked words", { error });
 	}
+
+	await getBestiaries();
 };
 
 const deleteBestiary = async (id: BestiaryExtended["id"]) => {
