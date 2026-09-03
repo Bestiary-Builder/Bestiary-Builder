@@ -36,7 +36,6 @@ _???, 2026_
 - Bestiaries and automation collections now have a built in image field which will be displayed as the image for the collection.
   - The first image in the markdown description of the collection has been automatically migrated to this field.
 
-
 ### Fixes
 - Improved the accuracy of the 2014 SRD Creatures and Actions data.
 - Fixed class based spellcasting to hit not having a + on positive values.

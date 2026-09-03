@@ -18,10 +18,10 @@ onMounted(async () => {
 });
 
 const images = [
-	{ id: 'a', url: 'https://www.dndbeyond.com/avatars/thumbnails/47138/568/1000/1000/638741963706659115.png' },
-	{ id: 'b', url: 'https://www.dndbeyond.com/avatars/thumbnails/47138/665/1000/1000/638741963843965275.png' },
-	{ id: 'c', url: 'https://www.dndbeyond.com/avatars/thumbnails/47139/59/1000/1000/638741964386307797.jpeg' },
-	{ id: 'd', url: 'https://media.dndbeyond.com/compendium-images/mm/hAxSwXnO1TSUruhZ/12-004.litches.png' },
+	{ id: 'a', url: '/hero/a.webp' },
+	{ id: 'b', url: '/hero/b.webp' },
+	{ id: 'c', url: '/hero/c.webp' },
+	{ id: 'd', url: '/hero/d.webp' },
 ];
 
 const activeIndex = ref(0);
@@ -40,12 +40,58 @@ const startTimer = () => {
 onMounted(() => startTimer());
 onUnmounted(() => { if (timerId) clearInterval(timerId); });
 
+
+const loadedUrls = ref(new Set());
+
+const preloadImage = (url: string): Promise<void> => {
+	return new Promise((resolve) => {
+		if (loadedUrls.value.has(url)) return resolve();
+		const img = new Image();
+		img.onload = () => {
+			loadedUrls.value.add(url);
+			resolve();
+		};
+		img.onerror = () => resolve();
+		img.src = url;
+	});
+};
+
+// Load images one at a time, in the background, after the page is idle
+const preloadQueue = async () => {
+	for (const img of images) {
+		await preloadImage(img.url);
+	}
+};
+
+const getBackgroundStyle = (img: { url: string }) => {
+	return loadedUrls.value.has(img.url)
+		? { backgroundImage: `url(${img.url})` }
+		: {};
+};
+
+onMounted(() => {
+	// Load the first (active) image right away
+	preloadImage(images[0].url).then(() => {
+		// Then defer the rest until the browser is idle
+		if ('requestIdleCallback' in window) {
+			requestIdleCallback(() => preloadQueue());
+		} else {
+			setTimeout(preloadQueue, 200);
+		}
+	});
+});
+
 </script>
 
 <template>
 	<section class="hero">
-		<div v-for="(img, index) in images" :key="img.id" class="hero__layer"
-			:class="{ 'is-active': index === activeIndex }" :style="{ backgroundImage: 'url(' + img.url + ')' }"></div>
+	<div
+		v-for="(img, index) in images"
+		:key="img.id"
+		class="hero__layer"
+		:class="{ 'is-active': index === activeIndex }"
+		:style="getBackgroundStyle(img)"
+	></div>
 
 		<!-- <div class="hero__scrim"></div> -->
 
@@ -71,21 +117,24 @@ onUnmounted(() => { if (timerId) clearInterval(timerId); });
 		</div>
 	</section>
 
-	<v-row class="mt-8">
-		<v-col cols="6">
-			<v-btn color="#f1465a" size="x-large" prepend-icon="mdi:patreon" class="rounded float-right"
+	<v-container max-width="600">
+	<v-row class="mt-8" >
+		<v-col cols="6" class="d-flex justify-center">
+			<v-btn color="#f1465a" size="x-large" prepend-icon="mdi:patreon" class="rounded"
 				variant="elevated" href="https://www.patreon.com/join/BestiaryBuilder" width="250">
 				Support us on Patreon
 			</v-btn>
 		</v-col>
 
-		<v-col cols="6">
+		<v-col cols="6" class="d-flex justify-center">
 			<v-btn color="#5865f2" size="x-large" prepend-icon="mdi:discord" class="rounded" variant="elevated"
 				href="https://discord.gg/a6bwXCSymN" width="250">
 				Join our Discord
 			</v-btn>
 		</v-col>
 	</v-row>
+	</v-container>
+
 	<div class="content markdown less-wide front-page">
 		<Markdown :text="dataFile" :options="{ html: true, linkify: true, typographer: true }" />
 	</div>
@@ -148,11 +197,11 @@ onUnmounted(() => { if (timerId) clearInterval(timerId); });
 
 @keyframes zoominout {
 	from {
-		transform: scale(1) translate3d(0, 0, 0);
+		transform: scale(1);
 	}
 
 	to {
-		transform: scale(1.01) translate3d(-1%, -1%, 0);
+		transform: scale(1.25);
 	}
 }
 
@@ -179,6 +228,7 @@ onUnmounted(() => { if (timerId) clearInterval(timerId); });
 	font-size: 1.1rem;
 	letter-spacing: 0.02em;
 	color: var(--paper);
+	text-shadow: 0 2px 3px rgba(0, 0, 0, 0.5);
 }
 
 .hero__brand span {
