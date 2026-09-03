@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AttackModel, Automation, AutomationCollectionExtended, FeatureEntity } from "~/shared";
+import type { AttackModel, Automation, AutomationCollectionExtended, AutomationConsumable, FeatureEntity } from "~/shared";
 import { useLocalStorage } from "@vueuse/core";
 import { computed, nextTick, onBeforeUnmount, onMounted, onUnmounted, provide, ref, useTemplateRef, watch } from "vue";
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
@@ -17,6 +17,8 @@ import { useRules } from "vuetify/labs/rules";
 import type * as Monaco from 'monaco-editor'
 import { loader } from '@guolao/vue-monaco-editor';
 import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
+import { buildCounterOutput } from "@/components/Characters/utils";
+import { getUmami } from "@/utils/app/analytics";
 
 const $router = useRouter();
 const $route = useRoute();
@@ -450,6 +452,13 @@ onMounted(async () => {
 onBeforeUnmount(() => {
 	providerDisposable?.dispose()
 })
+
+const copySingleCounter = (consumable: AutomationConsumable) => {
+	const output = buildCounterOutput(consumable);
+	navigator.clipboard.writeText(output);
+	addToast(`Copied counter "${consumable.name}" to clipboard.`);
+	void getUmami()?.track("Copy single counter");
+}
 </script>
 
 <template>
@@ -532,10 +541,12 @@ onBeforeUnmount(() => {
 						<template #activator="{ props, isOpen }">
 							<v-list-item v-bind="props" :title="consumable.name" :subtitle="consumable.desc || ''">
 								<template #append>
-									<v-icon-btn text="Delete counter" icon="mdi:delete"
-										@click.stop="data.consumables?.splice(idx, 1)">
 
-									</v-icon-btn>
+									<v-icon-btn text="Copy counter" icon="$avrae"
+										@click.stop="copySingleCounter(consumable)" />
+									<v-icon-btn text="Delete counter" icon="mdi:delete"
+										@click.stop="data.consumables?.splice(idx, 1)" />
+
 									<v-icon icon="mdi:chevron-down" :class="{ 'rotate-180': isOpen }"
 										class="transition-transform" />
 								</template>

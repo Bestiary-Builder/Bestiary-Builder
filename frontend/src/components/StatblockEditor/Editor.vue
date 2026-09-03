@@ -385,13 +385,17 @@ const $route = useRoute()
 			<v-icon-btn size="20" icon="mdi:format-header-3" text="Heading 3" @click="toggleHeading(editorRef!, 3)" />
 			<v-icon-btn size="20" icon="mdi:format-header-4" text="Heading 4" @click="toggleHeading(editorRef!, 4)" />
 		</div>
+		<div class="wrapper">
+
 		<VueMonacoEditor v-model:value="model" theme="vs-dark"
 			:options="{ wordWrap: 'on', theme: theme.name.value === 'dark' ? 'vs-dark' : 'vs-light', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false, lineNumbers: 'off' }"
 			class="description-editor" :height="`${height}px`" width="100%" language="markdown" @mount="handleMount" />
 	</div>
+			</div>
+
 </template>
 
-<style lang="less" scoped>
+<style scoped>
 .button-container {
 	display: flex;
 	gap: 1rem;
@@ -403,6 +407,13 @@ const $route = useRoute()
 	overflow-x: auto;
 	max-width: 90vw
 }
+
+.wrapper :deep(.monaco-editor),
+.wrapper :deep(.monaco-editor .margin),
+.wrapper :deep(.monaco-editor-background) {
+  background-color: rgb(var(--v-theme-surface)) !important;
+}
+
 </style>
 
 <style lang="less">
@@ -427,4 +438,6 @@ const $route = useRoute()
 	border: 1px solid rgb(var(--v-theme-surface));
 
 }
+
+
 </style>

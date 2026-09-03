@@ -5,7 +5,7 @@ import { ref } from "vue";
 import { getUmami } from "@/utils/app/analytics";
 import { useToast } from "@/utils/app/toast";
 import { useFetch } from "@/utils/utils";
-import { getAvraeCharacters } from "./utils";
+import { buildCounterCopyCommand, getAvraeCharacters } from "./utils";
 
 const { automation, consumables = null } = defineProps<{ automation: AttackModel | AttackModel[] | null, consumables?: AutomationConsumables | null }>();
 const { addToast, updateToast } = useToast();
@@ -76,22 +76,6 @@ const copyCommand = async () => {
 	}
 };
 
-const buildCounterCopyCommand = (consumables: AutomationConsumables | null) => {
-	let output = "";
-	for (const consumable of consumables || []) {
-		output += `\n!cc create "${consumable.name}"`
-		output += consumable.minv ? ` -min "${consumable.minv}"` : ''
-		output += consumable.maxv ? ` -max "${consumable.maxv}"` : ''
-		output += consumable.desc ? ` -desc "${consumable.desc}"` : ''
-		output += consumable.title ? ` -title "${consumable.title}"` : ''
-		output += consumable.value ? ` -value "${consumable.value}"` : ''
-		output += consumable.reset ? ` -reset "${consumable.reset}"` : ''
-		output += consumable.reset_to ? ` -resetto "${consumable.reset_to}"` : ''
-		output += consumable.reset_by ? ` -resetby "${consumable.reset_by}"` : ''
-		output += consumable.display_type ? ` -type "${consumable.display_type}"` : ''
-	}
-	return output
-}
 const toArray = <T>(input: T | T[]): T[] => {
 	return Array.isArray(input) ? input : [input];
 };

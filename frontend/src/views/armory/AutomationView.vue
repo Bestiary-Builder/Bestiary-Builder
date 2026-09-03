@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Automation, AutomationCollectionExtended } from "~/shared";
+import type { Automation, AutomationCollectionExtended, AutomationConsumable } from "~/shared";
 import { onMounted, provide, ref, useTemplateRef } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import EditAutomation from "@/components/Automations/EditAutomation.vue";
@@ -9,7 +9,8 @@ import { useToast } from "@/utils/app/toast";
 import { useRecentPages } from "@/utils/app/useRecentPages";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
-import type { VAutocomplete } from "vuetify/components";
+import { buildCounterOutput } from "@/components/Characters/utils";
+import { getUmami } from "@/utils/app/analytics";
 
 const $router = useRouter();
 const $route = useRoute();
@@ -79,6 +80,13 @@ const resetOnOptions = [
 ]
 
 
+const copySingleCounter = (consumable: AutomationConsumable) => {
+	const output = buildCounterOutput(consumable);
+	navigator.clipboard.writeText(output);
+	addToast(`Copied counter "${consumable.name}" to clipboard.`);
+	void getUmami()?.track("Copy single counter");
+}
+
 </script>
 
 <template>
@@ -128,10 +136,8 @@ const resetOnOptions = [
 							<template #activator="{ props, isOpen }">
 								<v-list-item v-bind="props" :title="consumable.name" :subtitle="consumable.desc || ''">
 									<template #append>
-										<v-icon-btn text="Delete counter" icon="mdi:delete"
-											@click.stop="data.consumables?.splice(idx, 1)">
-
-										</v-icon-btn>
+										<v-icon-btn text="Copy counter" icon="$avrae"
+											@click.stop="copySingleCounter(consumable)" />
 										<v-icon icon="mdi:chevron-down" :class="{ 'rotate-180': isOpen }"
 											class="transition-transform" />
 									</template>
