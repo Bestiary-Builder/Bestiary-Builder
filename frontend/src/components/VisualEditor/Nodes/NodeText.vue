@@ -50,7 +50,7 @@ const abilityTitle = (item: Record<string, any>) => {
 			<v-col cols="12" v-if="typeof (currentEffect!.text) === 'string'">
 				<Editor v-model="currentEffect.text" />
 				<small v-if="setDesc" style="font-size: x-small; cursor: pointer" role="button"
-					@click="setDesc(currentEffect.text)"> <i>Set the description of the statblock trait to this
+					@click="setDesc(currentEffect.text)"> <i>Set the description of the feature to this
 						text.</i>
 				</small>
 			</v-col>
