@@ -502,6 +502,7 @@ export const defaultInterestingStatblock: Statblock = {
 		"cr": 17,
 		"xp": 18000,
 		"name": "Adult Red Dragon",
+		"tag": "",
 		"image": "",
 		"faction": "",
 		"alignment": "Chaotic Evil",
