@@ -44,7 +44,7 @@ const abilityTitle = (item: Record<string, any>) => {
 			</v-col>
 
 			<v-col cols="6">
-				<v-text-field v-model="currentEffect.title" label="Title" />
+				<v-text-field v-model="currentEffect.title" label="Title" placeholder="Effect" persistent-placeholder/>
 			</v-col>
 
 			<v-col cols="12" v-if="typeof (currentEffect!.text) === 'string'">
