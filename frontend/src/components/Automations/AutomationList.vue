@@ -89,9 +89,6 @@ const emit = defineEmits<{
     (e: 'deleteItem', id: Automation["id"]): void
 }>()
 
-
-
-
 // --- Grouping ---
 
 type SortMode = 'Custom' | 'Alphabetical' | 'activation_type'

@@ -367,7 +367,6 @@ const createAutomation = () => {
 				<v-divider class="my-4" />
 				<v-skeleton-loader v-if="items === null" type="heading, text, text" />
 				<AutomationList v-else v-model="items" :can-edit="true" :collection="collection" @delete-item="(id) => deleteItem(id)"/>
-				<span v-if="items?.length === 0"> No automations in this collection.</span>
 			</div>
 		</div>
 	</div>
