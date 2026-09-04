@@ -1,22 +1,20 @@
 <script setup lang="ts">
 import type { CreatureMetaData, CreatureWithStats, Statblock } from "~/shared";
-import { useLocalStorage } from "@vueuse/core";
 import { onMounted, reactive, ref, useTemplateRef, watch } from "vue";
 import { useRules } from "vuetify/labs/rules";
 import CopyCreature from "@/components/Bestiary/CopyCreature.vue";
 import CreatureList from "@/components/Bestiary/CreatureList.vue";
-import StatusIcon from "@/components/Bestiary/StatusIcon.vue";
 import { useCollection } from "@/components/Bestiary/useCollection";
 import UserBanner from "@/components/Bestiary/UserBanner.vue";
-import Markdown from "@/components/Global/Markdown.vue";
 import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
 import SectionHeader from "@/components/VisualEditor/Nodes/shared/SectionHeader.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
-import { capitalizeFirstLetter, defaultStatblock } from "~/shared";
+import { defaultStatblock } from "~/shared";
 import { useLazyOptions } from "@/utils/app/useLazyOptions";
+import CollectionHeader from "@/components/Collections/CollectionHeader.vue";
 
 const {
 	collection,
@@ -24,11 +22,9 @@ const {
 	editors,
 	isOwner,
 	isEditor,
-	bookmarked,
 	notices,
 	getCollection,
 	updateCollection,
-	toggleBookmark,
 	addEditor,
 	removeEditor,
 	getItem,
@@ -281,7 +277,6 @@ const lastClickedCreature = ref<CreatureWithStats | null>(null);
 const hasPinnedBefore = ref(false);
 const editorToAdd = ref("");
 const showWarning = ref(false);
-const isExpanded = ref(false);
 const newCreatureIsOpen = ref(false);
 
 watch(lastClickedCreature, (): void => {
@@ -507,28 +502,8 @@ const hoverCreature = async (id: CreatureMetaData["id"]) => {
 			<div v-if="collection">
 				<v-row gap="72">
 					<v-col cols="6">
-						<v-sheet class="content-tile header-tile">
-							<h2>{{ collection.name ? collection.name : "..." }}</h2>
-							<Markdown class="description" :class="{ expanded: isExpanded }"
-								:text="collection.description || 'No description set.'" tag="p" />
-							<button v-if="collection.description.length > 0" v-tooltip="'Expand description'"
-								class="expand-btn" aria-label="Expand description" @click="isExpanded = !isExpanded">
-								{{ isExpanded ? "▲" : "▼" }}
-							</button>
-							<hr>
-							<div class="footer" :class="{ 'three-wide': isOwner }">
-								<UserBanner :id="collection.ownerId" />
-								<div v-tooltip="collection.status">
-									<span v-if="!store.isMobile" class="pr-2">{{
-										capitalizeFirstLetter(collection.status) }}
-									</span>
-									<StatusIcon :icon="collection.status" />
-								</div>
-								<div>{{ items?.length }}<v-icon icon="$creature" size="20" /></div>
-								<v-icon-btn v-if="!isOwner" @click="toggleBookmark" icon="mdi:star" size="20"
-									:icon-color="bookmarked ? 'primary' : 'grey'" />
-							</div>
-						</v-sheet>
+						<CollectionHeader :collection :item-count="(items || []).length" can-edit />
+						<v-divider class="my-4" />
 						<v-skeleton-loader v-if="items === null" type="heading, text, text" />
 						<CreatureList v-else v-model="items" @hovered-creature="id => hoverCreature(id)"
 							:pinned-creature="lastClickedCreature?.id || null" @pin-creature="id => pinCreature(id)"
@@ -601,92 +576,8 @@ const hoverCreature = async (id: CreatureMetaData["id"]) => {
 	<v-fab icon="mdi:plus" location="bottom end" app color="primary" size="large" @click="newCreatureIsOpen = true" />
 </template>
 
-<style lang="less">
-.create-tile {
-	padding-top: 1rem;
-	text-align: center;
-	text-decoration: underline;
-
-	span {
-		cursor: pointer;
-	}
-}
-
-.header-tile {
-	background-color: rgb(var(--v-theme-surface-light));
-	margin: 0 0 1rem;
-	padding: 1rem;
-	border-radius: 2px;
-
-	h2 {
-		text-align: center;
-		text-wrap: nowrap;
-		overflow: hidden;
-		max-width: 90vw;
-		color: rgb(var(--v-theme-primary));
-		font-weight: bold;
-	}
-
-	.description {
-		max-height: 8rem;
-		font-size: small;
-		overflow-y: hidden;
-		overflow-wrap: anywhere;
-
-		&.expanded {
-			max-height: unset;
-		}
-	}
-
-	.description:not(.expanded) {
-		mask-image: linear-gradient(180deg, #000 80%, transparent);
-	}
-
-	.footer {
-		display: grid;
-		grid-template-columns: 1fr 1fr 1fr 1fr;
-		font-size: 1rem;
-		margin-top: 0.5rem;
-
-		&.three-wide {
-			grid-template-columns: 1fr 1fr 1fr;
-		}
-
-		div {
-			text-align: center;
-		}
-
-		div:first-of-type {
-			text-align: left;
-		}
-
-		div:last-of-type {
-			text-align: right;
-		}
-	}
-}
-
-@media screen and (width <=842px) {
-	.header-tile {
-		padding: 0.5rem;
-
-		.description {
-			font-size: xx-small;
-		}
-
-		.footer {
-			font-size: 0.7rem;
-			grid-template-columns: 2fr 1fr 1fr 1fr;
-
-			&.three-wide {
-				grid-template-columns: 2fr 1fr 1fr;
-			}
-		}
-	}
-}
-
-.pin-notice,
-.expand-btn {
+<style scoped>
+.pin-notice {
 	float: right;
 	cursor: pointer;
 }
@@ -694,44 +585,6 @@ const hoverCreature = async (id: CreatureMetaData["id"]) => {
 .unpin-button {
 	text-decoration: underline;
 	cursor: pointer;
-}
-
-.expand-btn {
-	border: none;
-	background: none;
-	color: rgb(var(--v-theme-primary));
-	font-size: 1.6rem;
-	translate: 0 -20px;
-	transition: background-color 0.3s ease-in-out;
-
-	&:hover {
-		background-color: var(--color-surface-0);
-	}
-}
-
-.no-creature-text {
-	font-size: 1.3rem;
-	text-align: center;
-	margin-top: 1rem;
-}
-
-
-.fade-enter-from,
-.fade-leave-to {
-	opacity: 0;
-}
-
-.fade-enter-active {
-	transition: all 0.1s ease-out;
-}
-
-.fade-leave-active {
-	transition: all 0.1s ease-out;
-}
-
-.slide-fade-enter-from,
-.slide-fade-leave-to {
-	opacity: 0;
 }
 
 .warning {

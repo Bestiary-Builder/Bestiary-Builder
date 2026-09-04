@@ -2,7 +2,7 @@
 import type { AutomationCollectionExtended, AutomationCollectionWithCount } from "~/shared";
 import { refDebounced } from "@vueuse/core";
 import { onMounted, ref, watch } from "vue";
-import CollectionTile from "@/components/Global/CollectionTile.vue";
+import CollectionTile from "@/components/Collections/CollectionTile.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";

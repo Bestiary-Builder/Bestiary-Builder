@@ -4,6 +4,7 @@ import { computed, ref } from "vue";
 import { store } from "@/utils/store.js";
 import StatusIcon from "../Bestiary/StatusIcon.vue";
 import UserBanner from "../Bestiary/UserBanner.vue";
+import { lastUpdated } from "./utils.js";
 
 const { data } = defineProps<{ data: AutomationCollectionExtended | (BestiaryExtended & { creatureCount: number }) }>();
 
@@ -19,36 +20,6 @@ const firstLetters = computed(() => {
 		.join("")
 		.toUpperCase();
 	return firstLetters;
-});
-
-const lastUpdated = computed(() => {
-	const seconds = Math.floor((Date.now() - new Date(data.lastUpdated).getTime()) / 1000);
-
-	if (seconds < 60)
-		return `${seconds}s`;
-
-	const minutes = Math.floor(seconds / 60);
-	if (minutes < 60)
-		return `${minutes}m`;
-
-	const hours = Math.floor(minutes / 60);
-	if (hours < 24)
-		return `${hours}h`;
-
-	const days = Math.floor(hours / 24);
-	if (days < 7)
-		return `${days}d`;
-
-	const weeks = Math.floor(days / 7);
-	if (days < 30)
-		return `${weeks}w`;
-
-	const months = Math.floor(days / 30);
-	if (days < 365)
-		return `${months}mo`;
-
-	const years = Math.floor(days / 365);
-	return `${years}y`;
 });
 
 const isDeleteOpen = ref(false);
@@ -67,7 +38,7 @@ const isDeleteOpen = ref(false);
 			<div class="meta">
 				<h2> {{ data.name }} </h2>
 				<span>
-					<UserBanner :id="data.ownerId" /> • {{ lastUpdated }}
+					<UserBanner :id="data.ownerId" /> • {{ lastUpdated(data.lastUpdated) }}
 				</span>
 				<v-chip-group v-if="data.tags.length" column>
 					<v-chip v-for="tag in [...data.tags].sort()" :key="tag" size="small" variant="tonal">

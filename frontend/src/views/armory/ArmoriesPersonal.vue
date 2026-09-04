@@ -3,7 +3,7 @@ import type { AutomationCollectionExtended } from "~/shared";
 import { onMounted, reactive, ref, toValue } from "vue";
 import { VueDraggable } from "vue-draggable-plus";
 import { useRules } from "vuetify/labs/rules";
-import CollectionTile from "@/components/Global/CollectionTile.vue";
+import CollectionTile from "@/components/Collections/CollectionTile.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";

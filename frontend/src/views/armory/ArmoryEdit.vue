@@ -14,6 +14,7 @@ import { store } from "@/utils/store";
 import { ACTION_TYPE_MAP, getActionTypeLabel } from "./utils";
 import YAML from "yaml";
 import AutomationList from "@/components/Automations/AutomationList.vue";
+import CollectionHeader from "@/components/Collections/CollectionHeader.vue";
 
 const {
 	collection,
@@ -321,53 +322,7 @@ const createAutomation = () => {
 		</Breadcrumbs>
 		<div class="content">
 			<div v-if="collection">
-				<v-card class="pa-2" color="surface" elevation="0">
-					<v-card-title class="pb-0">
-						{{ collection.name }}
-					</v-card-title>
-					<v-card-text>
-						<v-row density="compact">
-							<v-col cols="4">
-								<v-row>
-									<v-col class="d-flex justify-start align-center">
-										<UserBanner :id="collection.ownerId" class="mt-2 mb-4" />
-									</v-col>
-									<v-col class="d-flex justify-center align-center">
-										<div>
-											{{ items?.length }}
-											<v-icon icon="$automationCollection" size="20" />
-										</div>
-									</v-col>
-									<v-col class="d-flex justify-end align-center">
-										<div v-tooltip="collection.status">
-											<span v-if="!store.isMobile" class="pr-2">{{
-												capitalizeFirstLetter(collection.status) }}
-											</span>
-											<StatusIcon :icon="collection.status" />
-										</div>
-									</v-col>
-								</v-row>
-
-								<v-col cols="12">
-									<v-chip-group v-if="collection.tags.length">
-										<v-chip v-for="tag in [...collection.tags].sort()" :key="tag" size="small"
-											variant="tonal">
-											{{ tag }}
-										</v-chip>
-									</v-chip-group>
-								</v-col>
-
-								<v-col cols="12">
-									<Markdown class="description "
-										:text="collection.description || 'No description set.'" tag="p" />
-								</v-col>
-							</v-col>
-							<v-col cols="8">
-								<v-img :src="collection.image" max-height="200" />
-							</v-col>
-						</v-row>
-					</v-card-text>
-				</v-card>
+				<CollectionHeader :collection can-edit :item-count="(items || []).length" :is-bestiary="false" />
 
 				<v-divider class="my-4" />
 				<v-skeleton-loader v-if="items === null" type="heading, text, text" />
@@ -404,7 +359,7 @@ const createAutomation = () => {
 	<v-fab icon="mdi:plus" location="bottom end" app color="primary" size="large" @click="createNewActionOpen = true" />
 </template>
 
-<style lang="less" scoped>
+<style scoped>
 @media screen and (width >=1200px) {
 	.content {
 		padding-left: 10vw;

@@ -82,6 +82,7 @@ import { computed, nextTick, onMounted, ref, useTemplateRef, watch } from 'vue';
 import { useDraggable } from 'vue-draggable-plus'
 import { type Automation, type Bestiary } from '~/shared';
 import ImportToCharacter from '../Characters/ImportToCharacter.vue';
+import MarkdownIt from "markdown-it";
 
 const model = defineModel<Automation[]>()
 const { collection, canEdit } = defineProps<{ collection: Bestiary, canEdit: boolean }>()
@@ -228,7 +229,6 @@ const saveOrder = async () => {
 };
 watch(model, saveOrder);
 
-import MarkdownIt from "markdown-it";
 
 const md = new MarkdownIt({
     html: false,
