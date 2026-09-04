@@ -39,13 +39,13 @@ const createAutomationCollection = async () => {
 	const { success, error } = await useFetch<AutomationCollectionExtended>("/api/automation-collection/add", "POST", toValue(createOptions));
 
 	if (success) {
-		updateToast(toastId, {text: "Created automation collection", color: "success" });
+		updateToast(toastId, { text: "Created automation collection", color: "success" });
 		void getUmami()?.track("Add automation collection");
 		newCollectionIsOpen.value = false;
 		resetCreateInput();
 	}
 	else {
-		updateToast(toastId, {text: error, color: "error" });
+		updateToast(toastId, { text: error, color: "error" });
 
 		if (error.includes("includes blocked words or phrases"))
 			void getUmami()?.track("Blocked words", { error });
@@ -102,6 +102,7 @@ const newCollectionIsOpen = ref(false);
 				<CollectionTile :data="element" @delete-collection-item="(id) => deleteAutomationCollection(id)" />
 			</RouterLink>
 		</VueDraggable>
+		<p class="text-center" v-if="automationCollections.length === 0"> No automation collections created yet. </p>
 		<v-fab icon="mdi:plus" location="bottom end" app color="primary" size="large"
 			@click="newCollectionIsOpen = true" />
 	</div>

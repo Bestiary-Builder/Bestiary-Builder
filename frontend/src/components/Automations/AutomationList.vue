@@ -42,7 +42,8 @@
                                 <v-icon-btn v-else icon="mdi:eye" size="24" style="scale: 0.9;" />
                             </RouterLink>
 
-                            <ImportToCharacter :automation="item.data.automation" />
+                            <ImportToCharacter :automation="item.data.automation"
+                                :consumables="item.data.consumables" />
                             <DropdownMenu v-if="canEdit">
                                 <template #activator="{ props }">
                                     <v-icon-btn text="Delete automation" icon="mdi:delete" v-bind="props" size="24" />
@@ -68,7 +69,7 @@
             </v-virtual-scroll>
         </v-list>
         <p v-else class="text-center">
-            No automations found
+            No automations found.
         </p>
     </div>
 </template>

@@ -80,7 +80,7 @@ export const defaultNodes: Record<string, EffectWithTarget> = {
 	counter: {
 		type: "counter",
 		counter: "",
-		amount: ""
+		amount: "1"
 	},
 	check: {
 		type: "check",
@@ -101,7 +101,7 @@ export const deepKeys = ["effects", "hit", "miss", "fail", "success", "onTrue", 
 
 type activation_types = {
 	[id in keyof Features]: number;
-}; ;
+};;
 export const activation_type: activation_types = {
 	features: 2,
 	actions: 1,
@@ -146,8 +146,8 @@ const onGhostMove = (evt: any) => {
 
 	const depthSource
 		= related?.querySelector<HTMLElement>(".tree-row")
-			?? related
-			?? to;
+		?? related
+		?? to;
 	if (!depthSource || !dragState.value)
 		return true;
 

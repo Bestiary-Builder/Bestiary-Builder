@@ -43,7 +43,7 @@ const rules = useRules();
 				<v-text-field v-model="currentEffect.name" label="Name" :rules="[rules.required()]" />
 			</v-col>
 
-			<v-col cols="6">
+			<v-col cols="12">
 				<TypeHintedEditor v-model="currentEffect.value" label="Value" class="mb-4" />
 			</v-col>
 

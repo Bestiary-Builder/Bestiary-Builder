@@ -79,8 +79,10 @@ app.post("/api/automation/:id/update", requireUser, async (req, res) => {
 		return res.status(400).json({ error: "Invalid automation id." });
 	if (!req.body.data)
 		return res.status(400).json({ error: "Automation data not found." });
+
 	const input = req.body.data as Partial<Automation>;
 	const hasConsumables = Object.hasOwn(input, "consumables");
+	console.log(input)
 	if (hasConsumables && !validateAutomationConsumablesInput(input.consumables || [], res))
 		return;
 	const consumablesData = hasConsumables
@@ -99,6 +101,7 @@ app.post("/api/automation/:id/update", requireUser, async (req, res) => {
 		name: data.name,
 		automation: preparedInput.automationData,
 		description: data.description,
+		tag: data.tag,
 		...consumablesData
 	}, id);
 	if (!updatedId)

@@ -54,13 +54,13 @@ const createBestiary = async () => {
 	const { success, error } = await useFetch<BestiaryExtended>("/api/bestiary/add", "POST", toValue(createOptions));
 
 	if (success) {
-		updateToast(toastId, {text: "Created bestiary", color: "success" });
+		updateToast(toastId, { text: "Created bestiary", color: "success" });
 		void getUmami()?.track("Add bestiary");
 		newBestiaryIsOpen.value = false;
 		resetCreateInput();
 	}
 	else {
-		updateToast(toastId, {text: error, color: "error" });
+		updateToast(toastId, { text: error, color: "error" });
 
 		if (error.includes("includes blocked words or phrases"))
 			void getUmami()?.track("Blocked words", { error });
@@ -94,36 +94,28 @@ const newBestiaryIsOpen = ref(false);
 </script>
 
 <template>
-	<Breadcrumbs
-		:routes="[
-			{
-				path: '',
-				text: 'My Bestiaries',
-				isCurrent: true
-			}
-		]"
-	>
-		<v-icon-btn
-			v-tooltip="'Create new bestiary'" icon="mdi:plus" label="Create new bestiary" inverted size="24"
-			@click="newBestiaryIsOpen = true"
-		/>
+	<Breadcrumbs :routes="[
+		{
+			path: '',
+			text: 'My Bestiaries',
+			isCurrent: true
+		}
+	]">
+		<v-icon-btn v-tooltip="'Create new bestiary'" icon="mdi:plus" label="Create new bestiary" inverted size="24"
+			@click="newBestiaryIsOpen = true" />
 	</Breadcrumbs>
 	<div class="content">
-		<VueDraggable
-			v-if="bestiaries.length > 0" v-model="bestiaries" :animation="150" class="tile-container"
-			:handle="store.isMobile ? '.handle' : ''" @update="saveOrder"
-		>
+		<VueDraggable v-if="bestiaries.length > 0" v-model="bestiaries" :animation="150" class="tile-container"
+			:handle="store.isMobile ? '.handle' : ''" @update="saveOrder">
 			<RouterLink v-for="element, idx, in bestiaries" :key="idx" :to="`/bestiary/edit/${element.id}`">
 				<CollectionTile :data="element" @delete-collection-item="(id) => deleteBestiary(id)" />
 			</RouterLink>
 		</VueDraggable>
-		<div v-else class="zero-found">
+		<div v-else class="text-center">
 			<p> You do not have any bestiaries. </p>
 		</div>
-		<v-fab
-			icon="mdi:plus" location="bottom end" app color="primary" size="large"
-			@click="newBestiaryIsOpen = true"
-		/>
+		<v-fab icon="mdi:plus" location="bottom end" app color="primary" size="large"
+			@click="newBestiaryIsOpen = true" />
 	</div>
 
 	<v-dialog v-model="newBestiaryIsOpen" max-width="750">
@@ -132,42 +124,32 @@ const newBestiaryIsOpen = ref(false);
 				<v-row>
 					<v-col cols="6">
 						<div>
-							<v-text-field
-								v-model="createOptions.name" label="Name"
+							<v-text-field v-model="createOptions.name" label="Name"
 								:maxlength="store.limits?.nameLength" :min-length="store.limits?.nameMin"
-								:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]"
-							/>
+								:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]" />
 						</div>
 					</v-col>
 					<v-col cols="6">
 						<div>
-							<v-text-field
-								v-model="createOptions.image" label="Image" :rules="[rules.imageLink()]"
-								hide
-							/>
+							<v-text-field v-model="createOptions.image" label="Image" :rules="[rules.imageLink()]"
+								hide />
 						</div>
 					</v-col>
 					<v-col cols="12">
-						<v-textarea
-							v-model="createOptions.description" :max-length="store.limits?.descriptionLength"
+						<v-textarea v-model="createOptions.description" :max-length="store.limits?.descriptionLength"
 							:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]" label="Description"
-							class="mb-4" hint="Supports Markdown" persistent-hint
-						/>
+							class="mb-4" hint="Supports Markdown" persistent-hint />
 					</v-col>
 					<v-col>
 						<div>
-							<v-select
-								v-model="createOptions.status" label="Status"
-								:items="[{ value: 'private', title: 'Private' }, { value: 'unlisted', title: 'Unlisted' }, { value: 'public', title: 'Public' }]"
-							/>
+							<v-select v-model="createOptions.status" label="Status"
+								:items="[{ value: 'private', title: 'Private' }, { value: 'unlisted', title: 'Unlisted' }, { value: 'public', title: 'Public' }]" />
 						</div>
 					</v-col>
 					<v-col>
 						<div>
-							<v-select
-								v-model="createOptions.tags" multiple :items="store.tags || []" label="Tags" chips
-								closable-chips
-							/>
+							<v-select v-model="createOptions.tags" multiple :items="store.tags || []" label="Tags" chips
+								closable-chips />
 						</div>
 					</v-col>
 				</v-row>
