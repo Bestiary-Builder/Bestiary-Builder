@@ -1,18 +1,15 @@
 <script setup lang="ts">
-import type { AttackModel, Automation } from "~/shared";
-import { useLocalStorage } from "@vueuse/core";
-import { computed, onMounted, ref, watch } from "vue";
+import { onMounted } from "vue";
 import { useRules } from "vuetify/labs/rules";
 import StatusIcon from "@/components/Bestiary/StatusIcon.vue";
 import { useCollection } from "@/components/Bestiary/useCollection";
 import UserBanner from "@/components/Bestiary/UserBanner.vue";
-import ImportToCharacter from "@/components/Characters/ImportToCharacter.vue";
 import Markdown from "@/components/Global/Markdown.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { useToast } from "@/utils/app/toast";
-import { creatureTypes } from "@/utils/constants";
-import { ACTION_TYPE_MAP, getActionTypeLabel } from "./utils";
 import AutomationList from "@/components/Automations/AutomationList.vue";
+import { capitalizeFirstLetter } from "~/shared";
+import { store } from "@/utils/store";
 
 const {
 	collection,
@@ -20,11 +17,11 @@ const {
 	isOwner,
 	isEditor,
 	getCollection,
-
+	bookmarked,
+	toggleBookmark
 } = useCollection("automations");
 
 const { addToast, removeToast } = useToast();
-const rules = useRules();
 
 onMounted(async () => {
 	const toastId = addToast("Loading...", { loading: true });
@@ -109,6 +106,14 @@ async function exportCollection(asFile: boolean) {
 		</Breadcrumbs>
 		<div class="content">
 			<div v-if="collection">
+				<v-alert class="mb-4" v-if="store.user"> Bookmark this collection to be able to import its actions
+					anywhere.
+					<template #append>
+						<v-btn prepend-icon="mdi:star" @click="toggleBookmark">
+							Bookmark{{ bookmarked ? 'ed' : '' }}
+						</v-btn>
+					</template>
+				</v-alert>
 				<v-card class="pa-2" color="surface" elevation="0">
 					<v-card-title class="pb-0">
 						{{ collection.name }}
@@ -126,9 +131,18 @@ async function exportCollection(asFile: boolean) {
 											<v-icon icon="material-symbols:automation" size="20" />
 										</div>
 									</v-col>
-									<v-col class="d-flex justify-end align-center">
-										<StatusIcon :icon="collection.status" />
+									<v-col class="d-flex justify-center align-center">
+										<div v-tooltip="collection.status">
+											<span v-if="!store.isMobile" class="pr-2">{{
+												capitalizeFirstLetter(collection.status) }}
+											</span>
+											<StatusIcon :icon="collection.status" />
+										</div>
 									</v-col>
+									<v-col class="d-flex justify-end align-center">
+										<v-icon-btn v-if="!isOwner" @click="toggleBookmark" icon="mdi:star" size="20"
+											:icon-color="bookmarked ? 'primary' : 'grey'" /> </v-col>
+
 								</v-row>
 
 								<v-col cols="12">
@@ -154,7 +168,7 @@ async function exportCollection(asFile: boolean) {
 
 				<v-divider class="my-4" />
 				<v-skeleton-loader v-if="items === null" type="heading, text, text" />
-				<AutomationList v-else v-model="items" :can-edit="false" :collection="collection"/>
+				<AutomationList v-else v-model="items" :can-edit="false" :collection="collection" />
 			</div>
 		</div>
 	</div>

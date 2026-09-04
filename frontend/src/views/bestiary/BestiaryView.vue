@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import type { CreatureMetaData, CreatureWithStats, Statblock } from "~/shared";
-import { useLocalStorage } from "@vueuse/core";
-import { onMounted, reactive, ref, watch } from "vue";
+import type { CreatureMetaData, CreatureWithStats } from "~/shared";
+import { onMounted, reactive, ref, watch, useTemplateRef } from "vue";
 import { useRules } from "vuetify/labs/rules";
 import CopyCreature from "@/components/Bestiary/CopyCreature.vue";
 import StatusIcon from "@/components/Bestiary/StatusIcon.vue";
@@ -9,27 +8,20 @@ import { useCollection } from "@/components/Bestiary/useCollection";
 import UserBanner from "@/components/Bestiary/UserBanner.vue";
 import Markdown from "@/components/Global/Markdown.vue";
 import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
-import SectionHeader from "@/components/VisualEditor/Nodes/shared/SectionHeader.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
-import { defaultStatblock } from "~/shared";
+import { capitalizeFirstLetter } from "~/shared";
 import CreatureList from "@/components/Bestiary/CreatureList.vue";
 
 const {
 	collection,
 	items,
-	editors,
 	isOwner,
 	isEditor,
 	bookmarked,
-	notices,
-	getCollection,
-	updateCollection,
 	toggleBookmark,
-	addEditor,
-	removeEditor,
 	getItem,
 	getAllItems,
 	createItem,
@@ -37,25 +29,8 @@ const {
 	deleteItem
 } = useCollection("bestiary");
 
-const { addToast, updateToast, removeToast } = useToast();
-const rules = useRules();
+const { addToast, updateToast } = useToast();
 
-const srdCreatures = ref<string[]>([]);
-onMounted(async () => {
-	const toastId = addToast("Loading...", { loading: true });
-	await getCollection();
-	removeToast(toastId);
-	if (collection.value?.name)
-		document.title = `${collection.value?.name.substring(0, 16)} | Bestiary Builder`;
-
-	await useFetch<string[]>(`/api/srd-creatures/${store.user?.SRDVersion === "SRD_2024" ? "2024" : "2014"}/list`).then(({ success, data, error }) => {
-		if (success)
-			srdCreatures.value = data;
-
-		if (error)
-			addToast(error, { color: "error" });
-	});
-});
 
 
 async function exportHomebrewery() {
@@ -129,8 +104,7 @@ async function exportBestiary(asFile: boolean) {
 }
 
 
-type CopiedCreature = CreatureWithStats & { bestiaryName: string };
-const copiedCreatures = useLocalStorage<CopiedCreature[]>("copiedCreatures", []);
+const copyManager = useTemplateRef("copyManager")
 
 const copyCurrentBestiary = async () => {
 	if (!items.value || !collection.value)
@@ -142,13 +116,7 @@ const copyCurrentBestiary = async () => {
 		return;
 	}
 
-	const toAdd: CopiedCreature[] = [];
-	for (const creature of creatures)
-		toAdd.push({ ...creature, bestiaryName: collection.value.name });
-
-	copiedCreatures.value = copiedCreatures.value.concat(toAdd);
-	addToast("Copied current Bestiary");
-	void getUmami()?.track("Copy bestiary");
+	copyManager.value?.addManyCreatures(creatures, collection.value.name)
 };
 
 // misc
@@ -189,10 +157,7 @@ const getAllFullCreatures = async () => {
 const lastHoveredCreature = ref<CreatureWithStats | null>(null);
 const lastClickedCreature = ref<CreatureWithStats | null>(null);
 const hasPinnedBefore = ref(false);
-const editorToAdd = ref("");
-const showWarning = ref(false);
 const isExpanded = ref(false);
-const newCreatureIsOpen = ref(false);
 
 watch(lastClickedCreature, (): void => {
 	if (hasPinnedBefore.value)
@@ -241,8 +206,8 @@ const hoverCreature = async (id: CreatureMetaData["id"]) => {
 		]">
 			<CopyCreature :may-import="isOwner || isEditor" :current-creatures="items || []" can-copy-current-bestiary
 				@import-creature="(creature) => createItem(creature, false)"
-				@import-all-creatures="createManyItems(copiedCreatures.map(x => x.stats))"
-				@copy-current-bestiary="copyCurrentBestiary" />
+				@import-all-creatures="createManyItems(copyManager!.copiedCreatures.map(x => x.stats))"
+				@copy-current-bestiary="copyCurrentBestiary" ref="copyManager" />
 
 
 			<DropdownMenu>
@@ -279,7 +244,10 @@ const hoverCreature = async (id: CreatureMetaData["id"]) => {
 							<hr>
 							<div class="footer" :class="{ 'three-wide': isOwner }">
 								<UserBanner :id="collection.ownerId" />
-								<div v-tooltip.left="collection.status">
+								<div v-tooltip="collection.status">
+									<span v-if="!store.isMobile" class="pr-2">{{
+										capitalizeFirstLetter(collection.status) }}
+									</span>
 									<StatusIcon :icon="collection.status" />
 								</div>
 								<div>{{ items?.length }}<v-icon icon="mdi:paw" size="20" /></div>

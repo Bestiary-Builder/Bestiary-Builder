@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { CreatureMetaData, CreatureWithStats, Statblock } from "~/shared";
 import { useLocalStorage } from "@vueuse/core";
-import { onMounted, reactive, ref, watch } from "vue";
+import { onMounted, reactive, ref, useTemplateRef, watch } from "vue";
 import { useRules } from "vuetify/labs/rules";
 import CopyCreature from "@/components/Bestiary/CopyCreature.vue";
 import CreatureList from "@/components/Bestiary/CreatureList.vue";
@@ -15,7 +15,7 @@ import { getUmami } from "@/utils/app/analytics";
 import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
-import { defaultStatblock } from "~/shared";
+import { capitalizeFirstLetter, defaultStatblock } from "~/shared";
 import { useLazyOptions } from "@/utils/app/useLazyOptions";
 
 const {
@@ -226,8 +226,7 @@ async function importSrdCreature(creature: string | null) {
 	}
 }
 
-type CopiedCreature = CreatureWithStats & { bestiaryName: string };
-const copiedCreatures = useLocalStorage<CopiedCreature[]>("copiedCreatures", []);
+const copyManager = useTemplateRef("copyManager")
 
 const copyCurrentBestiary = async () => {
 	if (!items.value || !collection.value)
@@ -239,13 +238,7 @@ const copyCurrentBestiary = async () => {
 		return;
 	}
 
-	const toAdd: CopiedCreature[] = [];
-	for (const creature of creatures)
-		toAdd.push({ ...creature, bestiaryName: collection.value.name });
-
-	copiedCreatures.value = copiedCreatures.value.concat(toAdd);
-	addToast("Copied current Bestiary");
-	void getUmami()?.track("Copy bestiary");
+	copyManager.value?.addManyCreatures(creatures, collection.value.name)
 };
 
 // misc
@@ -352,8 +345,8 @@ const hoverCreature = async (id: CreatureMetaData["id"]) => {
 
 			<CopyCreature :may-import="isOwner || isEditor" :current-creatures="items || []" can-copy-current-bestiary
 				@import-creature="(creature) => createItem(creature, false)"
-				@import-all-creatures="createManyItems(copiedCreatures.map(x => x.stats))"
-				@copy-current-bestiary="copyCurrentBestiary" />
+				@import-all-creatures="createManyItems(copyManager!.copiedCreatures.map(x => x.stats))"
+				@copy-current-bestiary="copyCurrentBestiary" ref="copyManager" />
 
 			<v-dialog v-if="isOwner" max-width="950">
 				<template #activator="{ props }">
@@ -525,7 +518,10 @@ const hoverCreature = async (id: CreatureMetaData["id"]) => {
 							<hr>
 							<div class="footer" :class="{ 'three-wide': isOwner }">
 								<UserBanner :id="collection.ownerId" />
-								<div v-tooltip.left="collection.status">
+								<div v-tooltip="collection.status">
+									<span v-if="!store.isMobile" class="pr-2">{{
+										capitalizeFirstLetter(collection.status) }}
+									</span>
 									<StatusIcon :icon="collection.status" />
 								</div>
 								<div>{{ items?.length }}<v-icon icon="mdi:paw" size="20" /></div>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AttackModel, Automation } from "~/shared";
+import { capitalizeFirstLetter, type AttackModel, type Automation } from "~/shared";
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useRules } from "vuetify/labs/rules";
 import StatusIcon from "@/components/Bestiary/StatusIcon.vue";
@@ -339,7 +339,12 @@ const createAutomation = () => {
 										</div>
 									</v-col>
 									<v-col class="d-flex justify-end align-center">
-										<StatusIcon :icon="collection.status" />
+										<div v-tooltip="collection.status">
+											<span v-if="!store.isMobile" class="pr-2">{{
+												capitalizeFirstLetter(collection.status) }}
+											</span>
+											<StatusIcon :icon="collection.status" />
+										</div>
 									</v-col>
 								</v-row>
 
@@ -366,7 +371,8 @@ const createAutomation = () => {
 
 				<v-divider class="my-4" />
 				<v-skeleton-loader v-if="items === null" type="heading, text, text" />
-				<AutomationList v-else v-model="items" :can-edit="true" :collection="collection" @delete-item="(id) => deleteItem(id)"/>
+				<AutomationList v-else v-model="items" :can-edit="true" :collection="collection"
+					@delete-item="(id) => deleteItem(id)" />
 			</div>
 		</div>
 	</div>
