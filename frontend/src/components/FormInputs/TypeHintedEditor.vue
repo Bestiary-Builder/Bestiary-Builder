@@ -18,11 +18,13 @@ interface Props {
   height?: number
   isCharacterContext?: boolean
   isAnnotatedString?: boolean
+  language?: string
 }
 
 const $route = useRoute()
 const props = withDefaults(defineProps<Props>(), {
   variant: 'solo-filled',
+  language: 'python',
   density: 'default',
   height: 40,
   isCharacterContext: false,
@@ -143,8 +145,7 @@ watch(() => theme, () => {
         {{ label }}
       </label>
       <div v-bind="fieldSlotProps" class="code-field__editor" :style="{ height: `${height}px` }">
-        <VueMonacoEditor v-model:value="code" language="python" theme="vs-dark" :options="editorOptions"
-          @mount="handleMount" />
+        <VueMonacoEditor v-model:value="code" :language theme="vs-dark" :options="editorOptions" @mount="handleMount" />
       </div>
     </template>
     <template #append-inner>

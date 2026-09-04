@@ -418,7 +418,7 @@ const resetOnOptions = [
 let providerDisposable: Monaco.IDisposable | undefined
 
 const registerProvider = (monaco: typeof Monaco) => {
-	providerDisposable = monaco.languages.registerCompletionItemProvider('python', {
+	providerDisposable = monaco.languages.registerCompletionItemProvider('julia', {
 		triggerCharacters: ['.'],
 		provideCompletionItems: (model, position) => {
 			const word = model.getWordUntilPosition(position)
@@ -590,18 +590,18 @@ const copySingleCounter = (consumable: AutomationConsumable) => {
 									</v-select>
 								</v-col>
 								<v-col cols="6">
-									<TypeHintedEditor v-model="consumable.minv" label="Minimum" />
+									<TypeHintedEditor language="julia" v-model="consumable.minv" label="Minimum" />
 								</v-col>
 								<v-col cols="6">
-									<TypeHintedEditor v-model="consumable.maxv" label="Maximum" />
+									<TypeHintedEditor language="julia" v-model="consumable.maxv" label="Maximum" />
 								</v-col>
 
 								<v-col cols="6">
-									<TypeHintedEditor v-model="consumable.reset_by" label="Reset By"
+									<TypeHintedEditor language="julia" v-model="consumable.reset_by" label="Reset By"
 										is-annotated-string />
 								</v-col>
 								<v-col cols="6">
-									<TypeHintedEditor v-model="consumable.reset_to" label="Reset To" />
+									<TypeHintedEditor language="julia" v-model="consumable.reset_to" label="Reset To" />
 								</v-col>
 								<v-col cols="6">
 									<v-number-input v-model="consumable.value" label="Initial Value"
