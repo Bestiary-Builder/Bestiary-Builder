@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import type { AvraeCharacter } from "../Characters/utils";
 import type { FeatureEntity, Id } from "~/shared";
-import { reactive, ref, watch } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { getAvraeCharacterByUpstream, getAvraeCharacters } from "../Characters/utils";
-import { useLazyOptions } from "@/utils/app/useLazyOptions";
+import { useLazyAsync, useLazyOptions } from "@/utils/app/useLazyOptions";
 
 const emit = defineEmits<{
 	(e: "loadFeature", feature: FeatureEntity, apiPath: AutomationTypes): void;
@@ -17,15 +17,23 @@ const isOpen = ref(false);
 const { addToast } = useToast();
 
 type AutomationTypes = "automation" | "basic-example" | "srd-features/2014" | "srd-features/2024";
+type myAutomationSkeletonGroup = {
+	[key: string]: {
+		name: string;
+		id: Id;
+	}[]
+}
+
 interface myAutomationSkeleton {
 	name: string;
 	id: Id;
 }
 
-const fetchList = async <T>(apiPath: string): Promise<T[]> => {
-	const { success, data, error } = await useFetch<T[]>(`/api/${apiPath}`);
+const fetchList = async <T>(apiPath: string): Promise<T> => {
+	const { success, data, error } = await useFetch<T>(`/api/${apiPath}`);
 	if (!success)
 		throw new Error(error);
+
 	return data;
 };
 
@@ -44,8 +52,9 @@ const basicExamples = reactive(useLazyOptions<string>(
 	{ onError: onListError },
 ));
 
-const myAutomation = reactive(useLazyOptions<myAutomationSkeleton>(
-	() => fetchList("my-automations"),
+const myAutomation = reactive(useLazyAsync<myAutomationSkeletonGroup>(
+	() => fetchList("my-automations/list"),
+	{},
 	{ onError: onListError },
 ));
 
@@ -88,6 +97,20 @@ const selectedAttack = ref();
 watch(() => selectedAttack.value, () => {
 	isOpen.value = false;
 });
+
+const groupedAutomatedItems = computed(() => {
+	const output = []
+
+	for (const [collection, items] of Object.entries(myAutomation.data)) {
+		console.log(collection)
+		output.push({ type: 'subheader', title: collection })
+		for (const item of items) {
+			output.push({ title: item.name, id: item.id })
+		}
+	}
+	console.log(output)
+	return output
+})
 </script>
 
 <template>
@@ -106,8 +129,10 @@ watch(() => selectedAttack.value, () => {
 							:hint="`SRD ${store.user?.SRDVersion === 'SRD_2024' ? '2024' : '2014'}. Change in settings.`"
 							persistent-hint>
 							<template #item="{ props, item }">
-								<v-list-item v-bind="props" density="compact" style="min-height: 28px">
-									{{ (item as any).title }}
+								<v-list-item density="compact" style="min-height: 28px">
+									<v-list-item-title v-bind="props">
+										{{ item }}
+									</v-list-item-title>
 								</v-list-item>
 							</template>
 							<template #no-data>
@@ -125,8 +150,10 @@ watch(() => selectedAttack.value, () => {
 							@update:menu="basicExamples.handleMenuOpen"
 							@update:model-value="selected => (selectAndLoad('basic-example', selected || ''))">
 							<template #item="{ props, item }">
-								<v-list-item v-bind="props" density="compact" style="min-height: 28px">
-									{{ (item as any).title }}
+								<v-list-item density="compact" style="min-height: 28px">
+									<v-list-item-title v-bind="props">
+										{{ item }}
+									</v-list-item-title>
 								</v-list-item>
 							</template>
 							<template #no-data>
@@ -139,13 +166,15 @@ watch(() => selectedAttack.value, () => {
 						</v-autocomplete>
 					</v-col>
 					<v-col cols="12">
-						<v-autocomplete :items="myAutomation.items" :loading="myAutomation.loading" item-title="name"
-							item-value="id" label="Select From Automation Collections " return-object
-							variant="solo-filled" @update:menu="myAutomation.handleMenuOpen"
-							@update:model-value="(selected) => selected && selectAndLoad('automation', selected.name, selected.id)">
+						<v-autocomplete :items="groupedAutomatedItems" :loading="myAutomation.loading"
+							item-title="title" label="Select From Automation Collections" variant="solo-filled"
+							@update:menu="myAutomation.handleMenuOpen" return-object
+							@update:model-value="(selected) => selected && selectAndLoad('automation', selected.title, selected.id)">
 							<template #item="{ props, item }">
-								<v-list-item v-bind="props" density="compact" style="min-height: 28px">
-									{{ (item as any).title }}
+								<v-list-item density="compact" style="min-height: 28px">
+									<v-list-item-title v-bind="props">
+										{{ item.title }}
+									</v-list-item-title>
 								</v-list-item>
 							</template>
 							<template #no-data>
@@ -163,6 +192,14 @@ watch(() => selectedAttack.value, () => {
 								:loading="avraeCharacters.loading" item-title="name" item-value="upstream"
 								label="Import From Character" hide-details
 								@update:menu="avraeCharacters.handleMenuOpen">
+								<template #item="{ props, item }">
+									<v-list-item density="compact" style="min-height: 28px">
+										<v-list-item-title v-bind="props">
+											{{ item.name }}
+										</v-list-item-title>
+									</v-list-item>
+								</template>
+
 								<template #no-data>
 									<v-list-item>
 										<v-list-item-title>
