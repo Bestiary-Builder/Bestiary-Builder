@@ -40,8 +40,6 @@ const fetchList = async <T>(apiPath: string): Promise<T> => {
 const onListError = (error: unknown) =>
 	addToast(error instanceof Error ? error.message : String(error), { color: "error" });
 
-// reactive() unwraps the composable's refs so the template (and this
-// script) can use srdFeatures.items / .loading directly, no .value needed
 const srdFeatures = reactive(useLazyOptions<string>(
 	() => fetchList(`srd-features/${store.user?.SRDVersion === "SRD_2024" ? "2024" : "2014"}/list`),
 	{ onError: onListError },
@@ -102,13 +100,11 @@ const groupedAutomatedItems = computed(() => {
 	const output = []
 
 	for (const [collection, items] of Object.entries(myAutomation.data)) {
-		console.log(collection)
 		output.push({ type: 'subheader', title: collection })
 		for (const item of items) {
 			output.push({ title: item.name, id: item.id })
 		}
 	}
-	console.log(output)
 	return output
 })
 </script>
