@@ -463,7 +463,8 @@ const hoverCreature = async (id: CreatureMetaData["id"]) => {
 							<v-col>
 								<v-file-input v-model="importFields.bestiaryBuilderJson" label="Bestiary Builder JSON"
 									hint="JSON (.json/.txt) describing a bestiary gotten from clicking export elsewhere on BB"
-									persistent-hint accept=".txt,.json" />
+									persistent-hint accept=".txt,.json" prepend-inner-icon="mdi:attachment" prepe
+									prepend-icon="" />
 
 								<v-btn size="large" class="w-100 mt-4" @click="importCreaturesFromBestiaryBuilder()">
 									Import BB
@@ -562,7 +563,7 @@ const hoverCreature = async (id: CreatureMetaData["id"]) => {
 	</div>
 
 	<v-dialog v-model="newCreatureIsOpen" max-width="500">
-		<v-card min-width="400" class="text-center pa-4" title="Create creature">
+		<v-card min-width="400" class="text-center pa-4" title="New Creature">
 			<v-card-actions>
 				<v-row>
 					<v-col cols="12">
@@ -580,7 +581,8 @@ const hoverCreature = async (id: CreatureMetaData["id"]) => {
 					<v-col cols="12">
 						<v-autocomplete :items="srdCreatures.items" label="Select SRD creature"
 							@update:model-value="item => importSrdCreature(item)"
-							@update:menu="srdCreatures.handleMenuOpen" :loading="srdCreatures.loading">
+							@update:menu="srdCreatures.handleMenuOpen" :loading="srdCreatures.loading"
+							prepend-inner-icon="mdi:database">
 							<template #item="{ props, item }">
 								<v-list-item v-bind="props" density="compact" style="min-height: 28px">
 									{{ (item as any).title }}

@@ -9,6 +9,7 @@ import generateSitemap from "vite-plugin-pages-sitemap";
 import rawloader from "vite-raw-plugin";
 import svgLoader from "vite-svg-loader";
 import vuetify from 'vite-plugin-vuetify'
+import { visualizer } from 'rollup-plugin-visualizer';
 
 // @ts-expect-error Magic
 import { routes } from "../shared/";
@@ -34,7 +35,8 @@ export default defineConfig({
 		// @ts-expect-error untyped
 		rawloader({
 			fileRegex: /\.md$/
-		})
+		}),
+		visualizer({ open: true, gzipSize: true, template: "sunburst" }),
 	],
 	resolve: {
 		alias: {
