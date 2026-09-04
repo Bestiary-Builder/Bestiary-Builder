@@ -2,7 +2,7 @@ import type { Automation, AutomationConsumables, Id } from "~/shared";
 import type { AutomationCreateInput } from "~/shared/src/prisma-types";
 import { checkBadwords } from "@/utilities/badwords";
 import { app, checkAutomationLimits } from "@/utilities/constants";
-import { createAutomation, deleteAutomation, getAutomation, updateAutomation } from "@/utilities/database";
+import { createAutomation, deleteAutomation, getAutomation, getPrismaClient, updateAutomation } from "@/utilities/database";
 import { log } from "@/utilities/logger";
 import { Prisma } from "~/shared/src/prisma-types";
 import { automationCollections } from "../collections/automationCollections";
@@ -11,10 +11,6 @@ import { possibleUser, requireUser } from "../main/login";
 
 async function canEditAutomation(automation: Automation, userId: Id) {
 	return (await automationCollections.authorize(automation.collectionId, userId, "edit")).ok;
-}
-
-async function getAutomationsForUser(userId: Id) {
-	return automationCollections.getItemsForUser(userId, collection => collection.automations);
 }
 
 export function prepareAutomationInput(input: Partial<Automation>, defaultName: string) {
@@ -57,18 +53,13 @@ app.get("/api/automation/:id", possibleUser, async (req, res) => {
 	return res.json({ ...automation, permissionLevel: authorization.permission });
 });
 
-app.get("/api/my-automations", requireUser, async (req, res) => {
-	const user = req.user!;
-	const automations = await getAutomationsForUser(user.id);
-	log.info(`Retrieved ${automations.length} automations from the current user with the id ${user.id}`);
-	return res.json(automations);
-});
-
 app.get("/api/my-automations/list", requireUser, async (req, res) => {
 	const user = req.user!;
-	const automations = await getAutomationsForUser(user.id);
+	const automations = (await automationCollections.getForUser(user.id)).map(collection => ({
+		[collection.name]: collection.automations.map(item => ({ name: item.name, id: item.id }))
+	})).reduce((a, b) => ({ ...a, ...b }));
 	log.info(`Retrieved all automations in list form from the current user with the id ${user.id}`);
-	return res.json(automations.map(({ id, name }) => ({ id, name })));
+	return res.json(automations);
 });
 
 // Update info
