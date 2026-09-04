@@ -54,9 +54,11 @@ export const defaultStatblock: Statblock = {
 		image: "",
 		faction: "",
 		environment: "",
+		tag: "",
 		alignment: "Unaligned",
 		cr: 0,
 		xp: 0,
+
 	},
 	core: {
 		proficiencyBonus: 2,
