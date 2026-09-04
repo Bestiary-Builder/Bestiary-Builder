@@ -22,11 +22,9 @@ const rules = useRules();
 	<div>
 		<v-row>
 			<v-col cols="6">
-				<v-text-field
-					v-model="data.description.name" label="Name" :maxlength="store.limits?.nameLength"
+				<v-text-field v-model="data.description.name" label="Name" :maxlength="store.limits?.nameLength"
 					:min-length="store.limits?.nameMin"
-					:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]"
-				/>
+					:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]" />
 			</v-col>
 			<v-col cols="6">
 				<v-text-field v-model="data.description.image" label="Image URL" :rules="[rules.imageLink()]" />
@@ -34,37 +32,39 @@ const rules = useRules();
 			<v-col cols="12">
 				<Editor v-model="data.description.description" />
 			</v-col>
-			<v-col cols="4">
+			<v-col cols="6">
 				<v-combobox v-model="data.core.size" :items="sizes" label="Size" />
 			</v-col>
-			<v-col cols="4">
+			<v-col cols="6">
 				<v-combobox v-model="data.core.race" :items="creatureTypes" label="Type" />
 			</v-col>
-			<v-col cols="4">
+			<v-col cols="6">
 				<v-combobox v-model="data.description.alignment" :items="alignments" label="Alignment" />
 			</v-col>
-			<v-col cols="4">
+			<v-col cols="6">
 				<CRInput v-model="data.description.cr" label="Challenge Rating" />
 			</v-col>
-			<v-col cols="4">
+			<v-col cols="6">
 				<v-number-input v-model="data.core.proficiencyBonus" label="Proficiency Bonus" />
 			</v-col>
-			<v-col cols="4">
+			<v-col cols="6">
 				<v-number-input v-model="data.description.xp" label="XP" />
 			</v-col>
-			<v-col cols="4">
+			<v-col cols="6">
 				<v-text-field v-model="data.description.environment" label="Environment" />
 			</v-col>
-			<v-col cols="4">
+			<v-col cols="6">
 				<v-text-field v-model="data.description.faction" label="Faction" />
 			</v-col>
-			<v-col cols="4">
-				<v-checkbox
-					v-model="data.description.isProperNoun" label="Proper noun" color="primary"
+			<v-col cols="6">
+				<v-text-field v-model="data.description.tag" label="Tag"
+					hint="Use this to categorize your creatures on the Bestiary page." />
+			</v-col>
+			<v-col cols="6">
+				<v-checkbox v-model="data.description.isProperNoun" label="Proper noun" color="primary"
 					density="compact"
 					:hint="`Toggles display as '${data.description.name}' instead of 'the ${data.description.name}'`"
-					persistent-hint
-				/>
+					persistent-hint />
 			</v-col>
 		</v-row>
 	</div>

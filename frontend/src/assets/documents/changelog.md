@@ -26,7 +26,6 @@ _???, 2026_
 - Minor fields like AC source and speeds, and senses now support markdown formatting, i.e. can be made *italic* or **bold** etc.
 - The Export statblock to Image feature has been improved. It will now look identical to the statblock on the site
   - Also added 1 column, 2 column, and 2 column extra wide image exports options.
-
 - Added CMD/CTRL+S hotkeys for saving creatures / collections / etc.
 - Updated the available default spells to choose from when editing spellcasting on a creature to all currently published spells.
 - Added a rich text editor for descriptions which supports markdown formatting buttons.
@@ -35,6 +34,7 @@ _???, 2026_
 - Added an improved creature copy and pasting system.
 - Bestiaries and automation collections now have a built in image field which will be displayed as the image for the collection.
   - The first image in the markdown description of the collection has been automatically migrated to this field.
+- Creatures and automations have a tag property which you can use to define custom grouping on the collection page.
 
 ### Fixes
 - Improved the accuracy of the 2014 SRD Creatures and Actions data.

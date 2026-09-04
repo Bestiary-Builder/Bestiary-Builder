@@ -115,6 +115,9 @@ const copySingleCounter = (consumable: AutomationConsumable) => {
 					<v-text-field v-model="data.name" type="text" label="Feature name"
 						:minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength" hide-details
 						disabled />
+
+					<v-text-field v-model="data.tag" label="Tag" class="mt-4" disabled />
+
 				</v-col>
 				<v-col cols="8">
 					<Editor v-model="data.description" :height="100" />

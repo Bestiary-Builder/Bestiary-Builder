@@ -6,7 +6,7 @@ import { shallowRef, useTemplateRef, watch } from "vue";
 import { useTheme } from "vuetify";
 import { useRoute } from "vue-router";
 
-const { height = 250 } = defineProps<{ height?: number }>();
+const { height = 150 } = defineProps<{ height?: number }>();
 
 const model = defineModel<string>();
 const editorRef = shallowRef<Monaco.editor.IStandaloneCodeEditor>();
@@ -387,11 +387,12 @@ const $route = useRoute()
 		</div>
 		<div class="wrapper">
 
-		<VueMonacoEditor v-model:value="model" theme="vs-dark"
-			:options="{ wordWrap: 'on', theme: theme.name.value === 'dark' ? 'vs-dark' : 'vs-light', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false, lineNumbers: 'off' }"
-			class="description-editor" :height="`${height}px`" width="100%" language="markdown" @mount="handleMount" />
+			<VueMonacoEditor v-model:value="model" theme="vs-dark"
+				:options="{ wordWrap: 'on', theme: theme.name.value === 'dark' ? 'vs-dark' : 'vs-light', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false, lineNumbers: 'off' }"
+				class="description-editor" :height="`${height}px`" width="100%" language="markdown"
+				@mount="handleMount" />
+		</div>
 	</div>
-			</div>
 
 </template>
 
@@ -411,9 +412,8 @@ const $route = useRoute()
 .wrapper :deep(.monaco-editor),
 .wrapper :deep(.monaco-editor .margin),
 .wrapper :deep(.monaco-editor-background) {
-  background-color: rgb(var(--v-theme-surface)) !important;
+	background-color: rgb(var(--v-theme-surface)) !important;
 }
-
 </style>
 
 <style lang="less">
@@ -438,6 +438,4 @@ const $route = useRoute()
 	border: 1px solid rgb(var(--v-theme-surface));
 
 }
-
-
 </style>

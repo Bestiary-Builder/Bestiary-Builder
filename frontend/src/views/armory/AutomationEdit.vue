@@ -503,6 +503,10 @@ const copySingleCounter = (consumable: AutomationConsumable) => {
 								structure to this text while enabled.</i> </small>
 					</span>
 
+					<v-text-field v-model="data.tag" label="Tag" class="mt-4"
+						hint="Use this to organize your automations on the collection page." />
+
+
 					<div v-if="!isVisualEditor && showDescriptionButtons" class="mt-4">
 						<b class="mt-4"> Descriptions: </b>
 						<span style="color: rgb(var(--v-theme-error))"> Don't match. </span>
@@ -517,7 +521,7 @@ const copySingleCounter = (consumable: AutomationConsumable) => {
 					</div>
 				</v-col>
 				<v-col cols="8">
-					<Editor v-model="data.description" :height="100" />
+					<Editor v-model="data.description" :height="115" />
 					<span v-if="isVisualEditor" class="sub-action">
 						<input v-model="parityOptions.updateDescription" type="checkbox">
 						<small> <i>Updates the last text node of the first action in the automation structure to this

@@ -23,11 +23,10 @@
                         </template>
                     </v-list-item>
 
-                    <v-list-item v-else :title="item.data.name"
-                        class="multiline-subtitle creature-item">
+                    <v-list-item v-else :title="item.data.name" class="multiline-subtitle creature-item">
 
                         <template #default>
-                            <v-list-item-subtitle v-html="md.renderInline(item.data.description || '&nbsp;')" />
+                            <v-list-item-subtitle v-html="md.renderInline(item.data.description || '')" />
                         </template>
                         <template #prepend v-if="sortMode === 'Custom' && canEdit">
                             <v-icon icon="material-symbols:drag-indicator" class="drag-handle"
@@ -36,7 +35,8 @@
 
 
                         <template #append>
-                            <RouterLink class="creature" :to="`/automation/${canEdit ? 'edit' : 'view'}/${item.data.id}`"
+                            <RouterLink class="creature"
+                                :to="`/automation/${canEdit ? 'edit' : 'view'}/${item.data.id}`"
                                 :aria-label="`${canEdit ? 'Edit' : 'View'} automation`" size="24">
                                 <v-icon-btn v-if="canEdit" icon="mdi:pencil" size="24" />
                                 <v-icon-btn v-else icon="mdi:eye" size="24" style="scale: 0.9;" />
@@ -83,7 +83,7 @@ import { type Automation, type Bestiary } from '~/shared';
 import ImportToCharacter from '../Characters/ImportToCharacter.vue';
 
 const model = defineModel<Automation[]>()
-const { collection, canEdit } = defineProps<{  collection: Bestiary, canEdit: boolean }>()
+const { collection, canEdit } = defineProps<{ collection: Bestiary, canEdit: boolean }>()
 
 const emit = defineEmits<{
     (e: 'deleteItem', id: Automation["id"]): void
@@ -91,7 +91,7 @@ const emit = defineEmits<{
 
 // --- Grouping ---
 
-type SortMode = 'Custom' | 'Alphabetical' | 'activation_type'
+type SortMode = 'Custom' | 'Alphabetical' | 'activation_type' | 'tag'
 const sortMode = canEdit ? useLocalStorage<SortMode>('sortModeForAutomations', 'Alphabetical') : ref<SortMode>('Alphabetical')
 const searchText = ref('')
 
@@ -99,6 +99,8 @@ const sortModeOptions: { title: string; value: SortMode }[] = [
     { title: 'Alphabetically', value: 'Alphabetical' },
     { title: 'Custom order', value: 'Custom' },
     { title: 'Activation Type', value: 'activation_type' },
+    { title: 'Tag', value: 'tag' },
+
 ]
 
 type FlatEntry =
@@ -154,6 +156,7 @@ const flattenedItems = computed<FlatEntry[]>(() => {
 
     for (const item of items) {
         const groupKey = String(getGroupRawValue(item)).replace(/ .*/, '')
+        if (groupKeyProp !== 'tag') groupKey.replace(/ .*/, '')
         if (!groups.has(groupKey)) groups.set(groupKey, [])
         groups.get(groupKey)!.push(item)
     }
@@ -172,7 +175,7 @@ const flattenedItems = computed<FlatEntry[]>(() => {
             {
                 type: 'header' as const,
                 key: `header-${groupKey}`,
-                label: (sortMode.value === 'activation_type' ? ACTION_TYPE_MAP[Number.parseInt(groupKey)] || 'Attack' : groupKey ? groupKey : `No ${sortMode.value}`),
+                label: (sortMode.value === 'activation_type' ? ACTION_TYPE_MAP[Number.parseInt(groupKey)] || 'Attack' : (groupKey ? groupKey : `No ${sortMode.value}`)),
                 groupKey,
                 collapsed: isCollapsed,
             },

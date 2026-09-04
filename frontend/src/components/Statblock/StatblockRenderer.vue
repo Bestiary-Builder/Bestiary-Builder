@@ -256,7 +256,7 @@ const { statblockColors } = useStatblockColors()
 				<div>
 					<div>
 						<b> {{ v2024 ? 'AC ' : 'Armor Class ' }} </b><span>{{ data.defenses.ac.ac }}</span><span
-							v-if="data.defenses.ac.acSource" v-html="render(`(${data.defenses.ac.acSource})`, true)" />
+							v-if="data.defenses.ac.acSource" v-html="render(` (${data.defenses.ac.acSource})`, true)" />
 						<b v-if="v2024" style="padding-left: .45rem"> Initiative </b> <span v-if="v2024"> {{
 							signedNumber(calculatedInitiativeNumber()) }} ({{ calculatePassiveInitiative() }})</span>
 					</div>

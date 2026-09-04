@@ -99,7 +99,7 @@ watch(debouncedHoveredCreature, () => {
 
 // --- Grouping ---
 
-type SortMode = 'Custom' | 'Alphabetical' | 'race' | 'size' | 'cr-asc' | 'cr-desc'
+type SortMode = 'Custom' | 'Alphabetical' | 'race' | 'size' | 'tag' | 'cr-asc' | 'cr-desc'
 const sortMode = canEdit ? useLocalStorage<SortMode>('sortModeForBestiaries', 'Alphabetical') : ref<SortMode>('Alphabetical')
 const searchText = ref('')
 
@@ -108,6 +108,8 @@ const sortModeOptions: { title: string; value: SortMode }[] = [
     { title: 'Custom order', value: 'Custom' },
     { title: 'Creature Type', value: 'race' },
     { title: 'Size', value: 'size' },
+    { title: 'Tag', value: 'tag' },
+
     { title: 'CR Ascending', value: 'cr-asc' },
     { title: 'CR Descending', value: 'cr-desc' },]
 
@@ -146,14 +148,15 @@ const flattenedItems = computed<FlatEntry[]>(() => {
     }
 
 
-    const groupKeyProp: 'race' | 'size' | 'cr' =
+    const groupKeyProp: 'race' | 'size' | 'tag' | 'cr' =
         sortMode.value === 'cr-asc' || sortMode.value === 'cr-desc' ? 'cr' : sortMode.value
     const isCr = groupKeyProp === 'cr'
 
     const groups = new Map<string, CreatureMetaData[]>()
 
     for (const item of items) {
-        const groupKey = String(item[groupKeyProp] ?? 'Unknown').replace(/ .*/, '')
+        const groupKey = String(item[groupKeyProp] ?? 'Unknown')
+        if (groupKeyProp !== 'tag') groupKey.replace(/ .*/, '')
         if (!groups.has(groupKey)) groups.set(groupKey, [])
         groups.get(groupKey)!.push(item)
     }
