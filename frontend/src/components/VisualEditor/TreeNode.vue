@@ -111,7 +111,16 @@ const showControls = inject<Ref<boolean>>("showControls");
 		<p class="drag-area tree-row" :style="`--depth: ${depth}`"
 			@click="currentEffect = data; currentContext = context">
 			<NodeHeader :type="selfType" :additional-text="additionalText" :is-current="isCurrentSelectedContext" />
+
+			<span v-if="['attack', 'condition', 'save', 'ieffect2'].includes(selfType)" class="collapse-button"
+				@click.stop="isCollapsed = !isCollapsed">
+				<Icon icon="solar:alt-arrow-right-bold" inline width=".75em" :rotate="isCollapsed ? 0 : 45" />
+			</span>
+
 			<span v-if="showControls" class="tree-buttons">
+
+
+
 				<v-tooltip text="Drag to move this node">
 					<template #activator="{ props: dropdownProps }">
 						<Icon icon="$drag" inline width=".75em" class="no-focus-outline drag-handle"
@@ -136,11 +145,10 @@ const showControls = inject<Ref<boolean>>("showControls");
 					</v-card>
 				</DropdownMenu>
 
+
+
 			</span>
-			<span v-if="['attack', 'condition', 'save'].includes(selfType)" class="collapse-button"
-				@click.stop="isCollapsed = !isCollapsed">
-				<Icon icon="solar:alt-arrow-right-bold" inline width=".75em" :rotate="isCollapsed ? 0 : 45" />
-			</span>
+
 		</p>
 		<div v-show="!isCollapsed">
 			<!-- Loop through each key in our data, looking for the keys which continue the structure. -->

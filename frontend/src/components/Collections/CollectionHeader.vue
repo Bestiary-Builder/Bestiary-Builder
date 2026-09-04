@@ -28,7 +28,6 @@ const md = new MarkdownIt({
         <template #title>
             <v-card-title>
                 {{ collection.name }}
-
             </v-card-title>
         </template>
 
