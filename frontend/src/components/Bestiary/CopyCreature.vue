@@ -218,4 +218,8 @@ onMounted(() => {
 		font-size: 1rem;
 	}
 }
+
+.v-badge :deep(.v-badge__badge) {
+	pointer-events: none;
+}
 </style>
