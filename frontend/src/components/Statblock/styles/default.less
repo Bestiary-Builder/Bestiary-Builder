@@ -175,10 +175,7 @@
 		}
 	}
 
-	.statblock-image {
-		max-height: 300px;
-		margin: auto;
-	}
+
 
 	.v2024 {
 		column-count: 2;
@@ -188,7 +185,32 @@
 		}
 	}
 
+	.statblock-description {
+		position: relative;
+
+		.faction-env {
+			position: absolute;
+			font-size: 11px;
+			right: 0;
+			top: 6px;
+			text-align: right;
+			font-style: italic;
+		}
+
+		.statblock-image {
+			max-height: 300px;
+			margin: auto;
+		}
+
+		&:has(.faction-env) .statblock-image {
+			margin-top: 1.5rem
+		}
+
+
+	}
 }
+
+
 
 @media screen and (width <=1400px) {
 	.statblock.v2024 {

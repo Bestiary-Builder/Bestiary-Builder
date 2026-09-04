@@ -477,12 +477,17 @@ const { statblockColors } = useStatblockColors()
 			</template>
 		</div>
 
-		<div v-if="data.description.description" class="feature-container statblock-description py-4 px-2">
+		<div class="feature-container statblock-description py-4 px-2">
+			<div class="faction-env" v-if="data.description.environment || data.description.faction">
+				{{ data.description.environment ? `Environment: ${data.description.environment}` : '' }}
+				<br v-if="data.description.environment && data.description.faction">
+				{{ data.description.faction ? `Faction: ${data.description.faction}` : '' }}
+			</div>
 			<img v-if="data.description.image" class="statblock-image" :src="data.description.image">
-			<h2 class="feature-container-title">
+			<h2 class="feature-container-title" v-if="data.description.description">
 				Description
 			</h2>
-			<div class="markdown" v-html="render(data.description.description)" />
+			<div class="markdown" v-if="data.description.description" v-html="render(data.description.description)" />
 		</div>
 	</div>
 </template>
