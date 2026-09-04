@@ -361,7 +361,18 @@ watch(() => theme, () => {
 
 const $route = useRoute()
 
-const editorOptions: Monaco.editor.IStandaloneEditorConstructionOptions = { wordWrap: 'on', theme: theme.name.value === 'dark' ? 'vs-dark' : 'vs-light', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false, lineNumbers: 'off', quickSuggestions: false }
+const editorOptions: Monaco.editor.IStandaloneEditorConstructionOptions = {
+	wordWrap: 'on',
+	theme: theme.name.value === 'dark' ? 'vs-dark' : 'vs-light',
+	minimap: { enabled: false },
+	formatOnPaste: true,
+	formatOnType: true,
+	automaticLayout: true,
+	scrollBeyondLastLine: false,
+	lineNumbers: 'off',
+	quickSuggestions: false,
+	renderLineHighlight: 'none',
+}
 </script>
 
 <template>
