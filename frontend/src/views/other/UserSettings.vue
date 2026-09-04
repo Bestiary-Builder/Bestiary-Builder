@@ -236,6 +236,7 @@ const creatureData = {
 		alignment: "Lawful Evil",
 		description: "",
 		environment: "",
+		tag: "",
 		isProperNoun: false
 	},
 	spellcasting: {
