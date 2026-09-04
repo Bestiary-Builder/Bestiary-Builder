@@ -94,84 +94,107 @@ watch(() => selectedAttack.value, () => {
 	<v-icon-btn v-tooltip="'Import Feature'" icon="mdi:database" text="Import Action" size="24"
 		@click="isOpen = true" />
 
-	<v-dialog v-model="isOpen" max-width="500">
-		<v-card class="text-center pa-4">
+	<v-dialog v-model="isOpen" max-width="700">
+		<v-card class="pa-4" title="Import Action">
 			<v-card-text>
-				<v-autocomplete :items="srdFeatures.items" :loading="srdFeatures.loading" label="Import SRD Feature"
-					variant="solo-filled" class="w-100" clearable @update:menu="srdFeatures.handleMenuOpen"
-					@update:model-value="selected => (selectAndLoad(`srd-features/${store.user?.SRDVersion === 'SRD_2024' ? '2024' : '2014'}`, selected || ''))">
-					<template #item="{ props, item }">
-						<v-list-item v-bind="props" density="compact" style="min-height: 28px">
-							{{ (item as any).title }}
-						</v-list-item>
-					</template>
-					<template #no-data>
-						<v-list-item>
-							<v-list-item-title>
-								{{ srdFeatures.loading ? 'Loading...' : 'No features found' }}
-							</v-list-item-title>
-						</v-list-item>
-					</template>
-				</v-autocomplete>
+				<v-row density="compact">
+					<v-col cols="12">
+						<v-autocomplete :items="srdFeatures.items" :loading="srdFeatures.loading"
+							label="Import SRD Feature" variant="solo-filled" class="w-100" clearable
+							@update:menu="srdFeatures.handleMenuOpen"
+							@update:model-value="selected => (selectAndLoad(`srd-features/${store.user?.SRDVersion === 'SRD_2024' ? '2024' : '2014'}`, selected || ''))"
+							:hint="`SRD ${store.user?.SRDVersion === 'SRD_2024' ? '2024' : '2014'}. Change in settings.`"
+							persistent-hint>
+							<template #item="{ props, item }">
+								<v-list-item v-bind="props" density="compact" style="min-height: 28px">
+									{{ (item as any).title }}
+								</v-list-item>
+							</template>
+							<template #no-data>
+								<v-list-item>
+									<v-list-item-title>
+										{{ srdFeatures.loading ? 'Loading...' : 'No features found' }}
+									</v-list-item-title>
+								</v-list-item>
+							</template>
+						</v-autocomplete>
+					</v-col>
+					<v-col cols="12" class="mt-2">
+						<v-autocomplete :items="basicExamples.items" :loading="basicExamples.loading"
+							label="Import Basic Action" variant="solo-filled"
+							@update:menu="basicExamples.handleMenuOpen"
+							@update:model-value="selected => (selectAndLoad('basic-example', selected || ''))">
+							<template #item="{ props, item }">
+								<v-list-item v-bind="props" density="compact" style="min-height: 28px">
+									{{ (item as any).title }}
+								</v-list-item>
+							</template>
+							<template #no-data>
+								<v-list-item>
+									<v-list-item-title>
+										{{ basicExamples.loading ? 'Loading...' : 'No examples found' }}
+									</v-list-item-title>
+								</v-list-item>
+							</template>
+						</v-autocomplete>
+					</v-col>
+					<v-col cols="12">
+						<v-autocomplete :items="myAutomation.items" :loading="myAutomation.loading" item-title="name"
+							item-value="id" label="Select From Automation Collections " return-object
+							variant="solo-filled" @update:menu="myAutomation.handleMenuOpen"
+							@update:model-value="(selected) => selected && selectAndLoad('automation', selected.name, selected.id)">
+							<template #item="{ props, item }">
+								<v-list-item v-bind="props" density="compact" style="min-height: 28px">
+									{{ (item as any).title }}
+								</v-list-item>
+							</template>
+							<template #no-data>
+								<v-list-item>
+									<v-list-item-title>
+										{{ myAutomation.loading ? 'Loading...' : 'No automations found' }}
+									</v-list-item-title>
+								</v-list-item>
+							</template>
+						</v-autocomplete>
+					</v-col>
+					<v-col cols="12">
+						<div v-if="AvraeToken">
+							<v-select v-model="selectedCharacter" :items="avraeCharacters.items"
+								:loading="avraeCharacters.loading" item-title="name" item-value="upstream"
+								label="Import From Character" hide-details
+								@update:menu="avraeCharacters.handleMenuOpen">
+								<template #no-data>
+									<v-list-item>
+										<v-list-item-title>
+											{{ avraeCharacters.loading ? 'Loading characters...' : 'No characters found'
+											}}
+										</v-list-item-title>
+									</v-list-item>
+								</template>
+							</v-select>
+						</div>
+						<div v-else class="text-primary">
+							You can set up importing from your Avrae characters with just a button press!
+							Set it up in <RouterLink to="/user">
+								your user settings.
+							</RouterLink>
+						</div>
+					</v-col>
+					<v-col cols="12">
+						<v-select v-if="selectedCharacterData" v-model="selectedAttack" variant="solo-filled"
+							:items="selectedCharacterData.overrides.attacks" class="mt-4" item-title="name"
+							label="Choose Character Attack" return-object
+							@update:model-value="(selected) => selected && emit('loadFeature', { name: selected.name, description: '', automation: selected }, 'automation')" />
+					</v-col>
+				</v-row>
 
-				<v-autocomplete :items="basicExamples.items" :loading="basicExamples.loading"
-					label="Import Basic Action" variant="solo-filled" @update:menu="basicExamples.handleMenuOpen"
-					@update:model-value="selected => (selectAndLoad('basic-example', selected || ''))">
-					<template #item="{ props, item }">
-						<v-list-item v-bind="props" density="compact" style="min-height: 28px">
-							{{ (item as any).title }}
-						</v-list-item>
-					</template>
-					<template #no-data>
-						<v-list-item>
-							<v-list-item-title>
-								{{ basicExamples.loading ? 'Loading...' : 'No examples found' }}
-							</v-list-item-title>
-						</v-list-item>
-					</template>
-				</v-autocomplete>
 
-				<v-autocomplete :items="myAutomation.items" :loading="myAutomation.loading" item-title="name"
-					item-value="id" label="Select From subscribed Automations " return-object variant="solo-filled"
-					@update:menu="myAutomation.handleMenuOpen"
-					@update:model-value="(selected) => selected && selectAndLoad('automation', selected.name, selected.id)">
-					<template #item="{ props, item }">
-						<v-list-item v-bind="props" density="compact" style="min-height: 28px">
-							{{ (item as any).title }}
-						</v-list-item>
-					</template>
-					<template #no-data>
-						<v-list-item>
-							<v-list-item-title>
-								{{ myAutomation.loading ? 'Loading...' : 'No automations found' }}
-							</v-list-item-title>
-						</v-list-item>
-					</template>
-				</v-autocomplete>
 
-				<div v-if="AvraeToken">
-					<v-select v-model="selectedCharacter" :items="avraeCharacters.items"
-						:loading="avraeCharacters.loading" item-title="name" item-value="upstream"
-						label="Import From Character" hide-details @update:menu="avraeCharacters.handleMenuOpen">
-						<template #no-data>
-							<v-list-item>
-								<v-list-item-title>
-									{{ avraeCharacters.loading ? 'Loading characters...' : 'No characters found' }}
-								</v-list-item-title>
-							</v-list-item>
-						</template>
-					</v-select>
-				</div>
-				<div v-else class="text-primary">
-					You can set up importing from your Avrae characters with just a button press!
-					Set it up in <RouterLink to="/user">
-						your user settings.
-					</RouterLink>
-				</div>
-				<v-select v-if="selectedCharacterData" v-model="selectedAttack" variant="solo-filled"
-					:items="selectedCharacterData.overrides.attacks" class="mt-4" item-title="name"
-					label="Choose Character Attack" return-object
-					@update:model-value="(selected) => selected && emit('loadFeature', { name: selected.name, description: '', automation: selected }, 'automation')" />
+
+
+
+
+
 			</v-card-text>
 		</v-card>
 	</v-dialog>

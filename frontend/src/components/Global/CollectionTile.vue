@@ -69,7 +69,7 @@ const isDeleteOpen = ref(false);
 				<span>
 					<UserBanner :id="data.ownerId" /> • {{ lastUpdated }}
 				</span>
-				<v-chip-group v-if="data.tags.length">
+				<v-chip-group v-if="data.tags.length" column>
 					<v-chip v-for="tag in [...data.tags].sort()" :key="tag" size="small" variant="tonal">
 						{{ tag }}
 					</v-chip>
