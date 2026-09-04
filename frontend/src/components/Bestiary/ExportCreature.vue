@@ -80,9 +80,8 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 
 	let canvas;
 	const { default: html2canvas } = await import('html2canvas-pro');
-	canvas = await html2canvas(el, { scale: 2 });
+	canvas = await html2canvas(el, { scale: 2, allowTaint: true, logging: false });
 
-	// const canvas = await html2canvas(el, { scale: 2 });
 	const image = canvas.toDataURL("image/jpeg");
 
 	const link = document.createElement("a");
