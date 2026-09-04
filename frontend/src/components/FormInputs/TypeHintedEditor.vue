@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, shallowRef, onBeforeUnmount, watch } from 'vue'
+import { ref, computed, shallowRef, onBeforeUnmount, watch, type ComputedRef } from 'vue'
 import { VueMonacoEditor } from '@guolao/vue-monaco-editor'
 import type * as Monaco from 'monaco-editor';
 import { useTheme } from 'vuetify';
@@ -57,7 +57,7 @@ const labelColor = computed(() => {
   return 'rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity))'
 })
 
-const editorOptions = computed(() => ({
+const editorOptions: ComputedRef<Monaco.editor.IStandaloneEditorConstructionOptions> = computed(() => ({
   minimap: { enabled: false },
   lineNumbers: 'off' as const,
   glyphMargin: false,

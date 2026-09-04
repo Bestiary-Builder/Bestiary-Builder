@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { Statblock } from "~/shared";
-import html2canvas from "html2canvas";
 import { useRoute } from "vue-router";
 import { getUmami } from "@/utils/app/analytics";
 import { useToast } from "@/utils/app/toast";
@@ -78,10 +77,15 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 	el.style = `width: ${type === "2x1 wide" ? "1200" : "800"}px; column-count: ${type === "1x1" ? "1" : "2"};`;
 	el.classList.add("to-print");
 
-	const canvas = await html2canvas(el, { scale: 2 });
-	const image = canvas.toDataURL("image/jpeg");
-	const link = document.createElement("a");
 
+	let canvas;
+	const { default: html2canvas } = await import('html2canvas-pro');
+	canvas = await html2canvas(el, { scale: 2 });
+
+	// const canvas = await html2canvas(el, { scale: 2 });
+	const image = canvas.toDataURL("image/jpeg");
+
+	const link = document.createElement("a");
 	link.download = `${data.description.name} from BestiaryBuilder (${type}).jpg`;
 	link.href = image;
 	link.click();

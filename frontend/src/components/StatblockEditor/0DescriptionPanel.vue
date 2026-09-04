@@ -20,7 +20,7 @@ const rules = useRules();
 
 <template>
 	<div>
-		<v-row>
+		<v-row density="comfortable">
 			<v-col cols="6">
 				<v-text-field v-model="data.description.name" label="Name" :maxlength="store.limits?.nameLength"
 					:min-length="store.limits?.nameMin"

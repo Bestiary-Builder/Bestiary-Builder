@@ -16,6 +16,7 @@ import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { defaultStatblock } from "~/shared";
+import { useLazyOptions } from "@/utils/app/useLazyOptions";
 
 const {
 	collection,
@@ -40,21 +41,27 @@ const {
 const { addToast, updateToast, removeToast } = useToast();
 const rules = useRules();
 
-const srdCreatures = ref<string[]>([]);
+const fetchList = async <T>(apiPath: string): Promise<T[]> => {
+	const { success, data, error } = await useFetch<T[]>(`/api/${apiPath}`);
+	if (!success)
+		throw new Error(error);
+	return data;
+};
+
+const srdCreatures = reactive(useLazyOptions<string>(
+	() => fetchList(`/srd-creatures/${store.user?.SRDVersion === "SRD_2024" ? "2024" : "2014"}/list`),
+	{
+		onError: (error: unknown) =>
+			addToast(error instanceof Error ? error.message : String(error), { color: "error" })
+	},
+));
+
 onMounted(async () => {
 	const toastId = addToast("Loading...", { loading: true });
 	await getCollection();
 	removeToast(toastId);
 	if (collection.value?.name)
 		document.title = `${collection.value?.name.substring(0, 16)} | Bestiary Builder`;
-
-	await useFetch<string[]>(`/api/srd-creatures/${store.user?.SRDVersion === "SRD_2024" ? "2024" : "2014"}/list`).then(({ success, data, error }) => {
-		if (success)
-			srdCreatures.value = data;
-
-		if (error)
-			addToast(error, { color: "error" });
-	});
 });
 
 async function exportHomebrewery() {
@@ -321,20 +328,6 @@ const pinCreature = async (id: CreatureMetaData["id"]) => {
 	lastClickedCreature.value = fullCreature;
 };
 
-const copyCreature = async (id: CreatureMetaData["id"]) => {
-	if (!collection.value)
-		return;
-
-	const fullCreature = await getFullCreature(id);
-	if (!fullCreature) {
-		addToast("Failed to copy creature: creature not found.", { color: "error" });
-		return;
-	}
-
-	copiedCreatures.value.push({ ...fullCreature, bestiaryName: collection.value.name });
-	addToast("Copied Successfully!");
-};
-
 const hoverCreature = async (id: CreatureMetaData["id"]) => {
 	lastHoveredCreature.value = await getFullCreature(id) ?? null;
 };
@@ -585,11 +578,19 @@ const hoverCreature = async (id: CreatureMetaData["id"]) => {
 						</div>
 					</v-col>
 					<v-col cols="12">
-						<v-autocomplete :items="srdCreatures" label="Select SRD creature"
-							@update:model-value="item => importSrdCreature(item)">
+						<v-autocomplete :items="srdCreatures.items" label="Select SRD creature"
+							@update:model-value="item => importSrdCreature(item)"
+							@update:menu="srdCreatures.handleMenuOpen" :loading="srdCreatures.loading">
 							<template #item="{ props, item }">
 								<v-list-item v-bind="props" density="compact" style="min-height: 28px">
 									{{ (item as any).title }}
+								</v-list-item>
+							</template>
+							<template #no-data>
+								<v-list-item>
+									<v-list-item-title>
+										{{ srdCreatures.loading ? 'Loading...' : 'No creatures found' }}
+									</v-list-item-title>
 								</v-list-item>
 							</template>
 						</v-autocomplete>

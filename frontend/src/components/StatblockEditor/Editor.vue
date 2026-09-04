@@ -360,6 +360,8 @@ watch(() => theme, () => {
 })
 
 const $route = useRoute()
+
+const editorOptions: Monaco.editor.IStandaloneEditorConstructionOptions = { wordWrap: 'on', theme: theme.name.value === 'dark' ? 'vs-dark' : 'vs-light', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false, lineNumbers: 'off', quickSuggestions: false }
 </script>
 
 <template>
@@ -387,10 +389,8 @@ const $route = useRoute()
 		</div>
 		<div class="wrapper">
 
-			<VueMonacoEditor v-model:value="model" theme="vs-dark"
-				:options="{ wordWrap: 'on', theme: theme.name.value === 'dark' ? 'vs-dark' : 'vs-light', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false, lineNumbers: 'off' }"
-				class="description-editor" :height="`${height}px`" width="100%" language="markdown"
-				@mount="handleMount" />
+			<VueMonacoEditor v-model:value="model" theme="vs-dark" :options="editorOptions" class="description-editor"
+				:height="`${height}px`" width="100%" language="markdown" @mount="handleMount" />
 		</div>
 	</div>
 
