@@ -56,7 +56,7 @@ export async function getFrontendHtml(route: routes.Route, req: Request) {
 				}
 				else {
 					title = `${armory.name} | Bestiary Builder`;
-					description = `${armory.automationCount} automation${armory.automationCount !== 1 ? "s" : ""} created by${armory.owner.username}.\n${armory.description?.length > 0 ? armory.description : "No description set."}`;
+					description = `${armory.automationCount} automation${armory.automationCount !== 1 ? "s" : ""} created by ${armory.owner.username}.\n${armory.description?.length > 0 ? armory.description : "No description set."}`;
 					image = armory.image?.length > 0 ? armory.image : null;
 				}
 			}
