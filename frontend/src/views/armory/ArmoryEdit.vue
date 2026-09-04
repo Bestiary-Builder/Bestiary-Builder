@@ -335,7 +335,7 @@ const createAutomation = () => {
 									<v-col class="d-flex justify-center align-center">
 										<div>
 											{{ items?.length }}
-											<v-icon icon="material-symbols:automation" size="20" />
+											<v-icon icon="$automationCollection" size="20" />
 										</div>
 									</v-col>
 									<v-col class="d-flex justify-end align-center">

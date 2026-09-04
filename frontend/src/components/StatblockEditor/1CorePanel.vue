@@ -58,7 +58,7 @@ const addNewSense = (newSenseName: string) => {
 			<VueDraggable v-model="data.core.speed" :animation="150" tag="tbody" handle=".handle">
 				<tr v-for="element, idx in data.core.speed" :key="idx">
 					<td>
-						<v-icon icon="material-symbols:drag-indicator" class="handle" size="24" />
+						<v-icon icon="$drag" class="handle" size="24" />
 					</td>
 					<th> {{ element.name }}</th>
 					<td>
@@ -68,10 +68,8 @@ const addNewSense = (newSenseName: string) => {
 						<div>
 							<DropdownMenu>
 								<template #activator="{ props }">
-									<v-icon-btn
-										icon="mdi:ruler" text="Set unit for this speed" size="20" v-bind="props"
-										color="primary"
-									/>
+									<v-icon-btn icon="mdi:ruler" text="Set unit for this speed" size="20" v-bind="props"
+										color="primary" />
 								</template>
 								<v-card min-width="300" class="text-center pb-2" subtitle="Set unit for this speed">
 									<select v-model="element.unit" class="ghost" title="Select speed unit">
@@ -85,24 +83,18 @@ const addNewSense = (newSenseName: string) => {
 							</DropdownMenu>
 							<DropdownMenu>
 								<template #activator="{ props }">
-									<v-icon-btn
-										icon="mdi:comment" text="Set comment for this speed" size="20"
-										v-bind="props" color="primary"
-									/>
+									<v-icon-btn icon="mdi:comment" text="Set comment for this speed" size="20"
+										v-bind="props" color="primary" />
 								</template>
-								<v-card
-									min-width="300" class="text-center pb-2"
-									subtitle="Set (comment) for this speed"
-								>
+								<v-card min-width="300" class="text-center pb-2"
+									subtitle="Set (comment) for this speed">
 									<v-card-actions>
 										<v-text-field v-model="element.comment" type="text" label="comment" />
 									</v-card-actions>
 								</v-card>
 							</DropdownMenu>
-							<v-icon-btn
-								icon="mdi:delete" text="Remove this speed" size="20" color="primary"
-								@click="data.core.speed.splice(idx, 1)"
-							/>
+							<v-icon-btn icon="mdi:delete" text="Remove this speed" size="20" color="primary"
+								@click="data.core.speed.splice(idx, 1)" />
 						</div>
 					</td>
 				</tr>
@@ -110,10 +102,8 @@ const addNewSense = (newSenseName: string) => {
 		</table>
 		<v-row class="my-8">
 			<v-col>
-				<v-combobox
-					v-model="newSpeed" :items="['Walk', 'Swim', 'Fly', 'Climb', 'Burrow']"
-					label="Select speed to add" hint="Supports custom speeds" persistent-hint density="compact"
-				/>
+				<v-combobox v-model="newSpeed" :items="['Walk', 'Swim', 'Fly', 'Climb', 'Burrow']"
+					label="Select speed to add" hint="Supports custom speeds" persistent-hint density="compact" />
 			</v-col>
 			<v-col>
 				<v-btn size="large" class="w-100" @click="addNewSpeed(newSpeed)">
@@ -141,7 +131,7 @@ const addNewSense = (newSenseName: string) => {
 			<VueDraggable v-model="data.core.senses" :animation="150" tag="tbody" handle=".handle">
 				<tr v-for="element, idx in data.core.senses" :key="idx">
 					<td>
-						<v-icon icon="material-symbols:drag-indicator" class="handle" size="24" />
+						<v-icon icon="$drag" class="handle" size="24" />
 					</td>
 					<th> {{ element.name }}</th>
 					<td>
@@ -151,10 +141,8 @@ const addNewSense = (newSenseName: string) => {
 						<div>
 							<DropdownMenu>
 								<template #activator="{ props }">
-									<v-icon-btn
-										icon="mdi:ruler" text="Set unit for this speed" size="20" v-bind="props"
-										color="primary"
-									/>
+									<v-icon-btn icon="mdi:ruler" text="Set unit for this speed" size="20" v-bind="props"
+										color="primary" />
 								</template>
 								<v-card min-width="300" class="text-center pb-2" subtitle="Set unit for this sense">
 									<select v-model="element.unit" class="ghost" title="Select sense unit">
@@ -168,24 +156,18 @@ const addNewSense = (newSenseName: string) => {
 							</DropdownMenu>
 							<DropdownMenu>
 								<template #activator="{ props }">
-									<v-icon-btn
-										icon="mdi:comment" text="Set comment for this sense" size="20"
-										v-bind="props" color="primary"
-									/>
+									<v-icon-btn icon="mdi:comment" text="Set comment for this sense" size="20"
+										v-bind="props" color="primary" />
 								</template>
-								<v-card
-									min-width="300" class="text-center pb-2"
-									subtitle="Set (comment) for this sense"
-								>
+								<v-card min-width="300" class="text-center pb-2"
+									subtitle="Set (comment) for this sense">
 									<v-card-actions>
 										<v-text-field v-model="element.comment" type="text" label="comment" />
 									</v-card-actions>
 								</v-card>
 							</DropdownMenu>
-							<v-icon-btn
-								icon="mdi:delete" text="Remove this sense" size="20" color="primary"
-								@click="data.core.senses.splice(idx, 1)"
-							/>
+							<v-icon-btn icon="mdi:delete" text="Remove this sense" size="20" color="primary"
+								@click="data.core.senses.splice(idx, 1)" />
 						</div>
 					</td>
 				</tr>
@@ -194,10 +176,8 @@ const addNewSense = (newSenseName: string) => {
 
 		<v-row class="my-8">
 			<v-col>
-				<v-combobox
-					v-model="newSense" :items="['Darkvision', 'Blindsight', 'Truesight', 'Tremorsense']"
-					label="Select sense to add" hint="Supports custom senses" persistent-hint density="compact"
-				/>
+				<v-combobox v-model="newSense" :items="['Darkvision', 'Blindsight', 'Truesight', 'Tremorsense']"
+					label="Select sense to add" hint="Supports custom senses" persistent-hint density="compact" />
 			</v-col>
 			<v-col>
 				<v-btn size="large" class="w-100" @click="addNewSense(newSense)">
@@ -209,19 +189,15 @@ const addNewSense = (newSenseName: string) => {
 		<SectionHeader title="Miscellaneous" />
 		<v-row class="my-4">
 			<v-col cols="6">
-				<v-combobox
-					v-model="data.core.languages" multiple chips closable-chips label="Languages"
-					:items="languages" hint="Supports custom languages" persistent-hint
-				/>
+				<v-combobox v-model="data.core.languages" multiple chips closable-chips label="Languages"
+					:items="languages" hint="Supports custom languages" persistent-hint />
 			</v-col>
 			<v-col cols="6">
 				<v-number-input v-model="data.misc.telepathy" label="Telepathy" :min="0" :step="5" />
 			</v-col>
 			<v-col cols="6">
-				<v-number-input
-					v-model="data.misc.passivePerceptionOverride" label="Passive perception override"
-					clearable
-				/>
+				<v-number-input v-model="data.misc.passivePerceptionOverride" label="Passive perception override"
+					clearable />
 			</v-col>
 		</v-row>
 	</div>

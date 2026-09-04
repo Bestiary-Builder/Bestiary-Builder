@@ -85,14 +85,14 @@ const isDeleteOpen = ref(false);
 				</div>
 				<span v-if="'automations' in data" class="d-flex justify-content align-items">
 					<b>{{ data.automations.length }}</b>
-					<v-icon icon="mdi:sword-cross" size="20" />
+					<v-icon icon="$automation" size="20" />
 				</span>
 				<span v-if="'creatureCount' in data" class="d-flex justify-content align-items">
 					<b>{{ data.creatureCount }} </b>
-					<v-icon icon="mdi:paw" size="20" />
+					<v-icon icon="$creature" size="20" />
 				</span>
 				<div class="info-buttons">
-					<v-icon v-if="store.isMobile" icon="material-symbols:drag-indicator" class="handle" size="20" />
+					<v-icon v-if="store.isMobile" icon="$drag" class="handle" size="20" />
 					<StatusIcon :icon="data.status" />
 
 					<DropdownMenu v-if="store.user?.id === data.ownerId" v-model="isDeleteOpen">

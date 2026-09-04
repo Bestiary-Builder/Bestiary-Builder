@@ -34,20 +34,6 @@ export const vuetify = createVuetify({
 				variant: "tonal"
 			}
 		},
-		// VTabsWindowItem: {
-		// 	VTextField: {
-		// 		variant: "outlined"
-		// 	},
-		// 	VSelect: {
-		// 		variant: "outlined"
-		// 	},
-		// 	VCombobox: {
-		// 		variant: "outlined"
-		// 	},
-		// 	VNumberInput: {
-		// 		variant: "outlined"
-		// 	},
-		// },
 		VCheckbox: {
 			color: "primary"
 		},
@@ -101,7 +87,13 @@ export const vuetify = createVuetify({
 		},
 		aliases: {
 			bestiaryBuilder: BestiaryBuilderLogo,
-			avrae: AvraeLogo
+			avrae: AvraeLogo,
+			automation: "mdi:sword-cross",
+			automationCollection: "material-symbols:automation",
+			bestiary: "mdi:book-open-page-variant",
+			creature: "mdi:paw",
+			character: "mdi:account",
+			drag: "material-symbols:drag-indicator"
 		}
 	},
 });

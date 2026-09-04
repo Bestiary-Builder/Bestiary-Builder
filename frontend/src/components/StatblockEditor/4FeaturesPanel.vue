@@ -51,7 +51,7 @@ const createNewFeature = (type: keyof Features) => {
 					handle=".handle">
 					<tr v-for="element, index in data.features[fType]" :key="index">
 						<td>
-							<v-icon icon="material-symbols:drag-indicator" class="handle" size="24" />
+							<v-icon icon="$drag" class="handle" size="24" />
 						</td>
 						<th> {{ element.name }}</th>
 						<td class="edit-buttons">

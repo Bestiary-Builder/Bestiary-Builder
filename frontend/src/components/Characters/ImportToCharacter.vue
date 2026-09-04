@@ -94,7 +94,7 @@ const toArray = <T>(input: T | T[]): T[] => {
 					<div v-if="AvraeToken">
 						<v-select v-model="selectedCharacter" :items="characters || []" :loading="loading"
 							item-title="name" item-value="upstream" label="Select a character" class="mt-4" hide-details
-							@update:menu="handleMenuOpen">
+							@update:menu="handleMenuOpen" prepend-inner-icon="$avrae">
 							<template #no-data>
 								<v-list-item>
 									<v-list-item-title>

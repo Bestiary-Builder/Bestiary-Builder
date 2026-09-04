@@ -61,7 +61,7 @@ useThemePersistence();
 
 				<v-list-group value="bestiaries">
 					<template #activator="{ props }">
-						<v-list-item v-bind="props" prepend-icon="mdi:book-open-page-variant" title="Bestiaries" />
+						<v-list-item v-bind="props" prepend-icon="$bestiary" title="Bestiaries" />
 					</template>
 
 					<v-list-item title="My Bestiaries" value="personalBestiaries" to="/bestiaries/personal" link />
@@ -70,7 +70,7 @@ useThemePersistence();
 				<v-divider />
 				<v-list-group value="automations">
 					<template #activator="{ props }">
-						<v-list-item v-bind="props" prepend-icon="material-symbols:automation" title="Automations" />
+						<v-list-item v-bind="props" prepend-icon="$automationCollection" title="Automations" />
 					</template>
 
 					<v-list-item title="My Automations" value="personalAutomations" to="/armory/personal" link />
@@ -78,7 +78,7 @@ useThemePersistence();
 				</v-list-group>
 				<v-divider />
 
-				<v-list-item title="Characters" value="characters" to="/characters" prepend-icon="mdi:account-group" />
+				<v-list-item title="Characters" value="characters" to="/characters" prepend-icon="$avrae" />
 				<v-divider />
 
 				<v-list-group v-if="recentPages.length" value="recentlyViewed">

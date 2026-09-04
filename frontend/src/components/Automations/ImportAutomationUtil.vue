@@ -123,7 +123,7 @@ const groupedAutomatedItems = computed(() => {
 							@update:menu="srdFeatures.handleMenuOpen"
 							@update:model-value="selected => (selectAndLoad(`srd-features/${store.user?.SRDVersion === 'SRD_2024' ? '2024' : '2014'}`, selected || ''))"
 							:hint="`SRD ${store.user?.SRDVersion === 'SRD_2024' ? '2024' : '2014'}. Change in settings.`"
-							persistent-hint>
+							persistent-hint prepend-inner-icon="mdi:database">
 							<template #item="{ props, item }">
 								<v-list-item density="compact" style="min-height: 28px">
 									<v-list-item-title v-bind="props">
@@ -144,7 +144,8 @@ const groupedAutomatedItems = computed(() => {
 						<v-autocomplete :items="basicExamples.items" :loading="basicExamples.loading"
 							label="Import Basic Action" variant="solo-filled"
 							@update:menu="basicExamples.handleMenuOpen"
-							@update:model-value="selected => (selectAndLoad('basic-example', selected || ''))">
+							@update:model-value="selected => (selectAndLoad('basic-example', selected || ''))"
+							prepend-inner-icon="mdi:toy-brick">
 							<template #item="{ props, item }">
 								<v-list-item density="compact" style="min-height: 28px">
 									<v-list-item-title v-bind="props">
@@ -165,7 +166,8 @@ const groupedAutomatedItems = computed(() => {
 						<v-autocomplete :items="groupedAutomatedItems" :loading="myAutomation.loading"
 							item-title="title" label="Select From Automation Collections" variant="solo-filled"
 							@update:menu="myAutomation.handleMenuOpen" return-object
-							@update:model-value="(selected) => selected && selectAndLoad('automation', selected.title, selected.id)">
+							@update:model-value="(selected) => selected && selectAndLoad('automation', selected.title, selected.id)"
+							prepend-inner-icon="$automationCollection">
 							<template #item="{ props, item }">
 								<v-list-item density="compact" style="min-height: 28px">
 									<v-list-item-title v-bind="props">
@@ -186,8 +188,8 @@ const groupedAutomatedItems = computed(() => {
 						<div v-if="AvraeToken">
 							<v-select v-model="selectedCharacter" :items="avraeCharacters.items"
 								:loading="avraeCharacters.loading" item-title="name" item-value="upstream"
-								label="Import From Character" hide-details
-								@update:menu="avraeCharacters.handleMenuOpen">
+								label="Import From Character" hide-details @update:menu="avraeCharacters.handleMenuOpen"
+								prepend-inner-icon="$avrae">
 								<template #item="{ props, item }">
 									<v-list-item density="compact" style="min-height: 28px">
 										<v-list-item-title v-bind="props">

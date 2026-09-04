@@ -27,8 +27,8 @@
                         :subtitle="`${item.data.size} ${item.data.race}\nCR ${item.data.cr}`" lines="two"
                         class="multiline-subtitle creature-item">
                         <template #prepend v-if="sortMode === 'Custom' && canEdit">
-                            <v-icon icon="material-symbols:drag-indicator" class="drag-handle"
-                                :class="{ 'drag-handle--disabled': !canDrag }" color="primary" />
+                            <v-icon icon="$drag" class="drag-handle" :class="{ 'drag-handle--disabled': !canDrag }"
+                                color="primary" />
                         </template>
 
 

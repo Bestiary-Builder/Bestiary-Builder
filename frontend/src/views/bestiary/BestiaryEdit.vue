@@ -524,7 +524,7 @@ const hoverCreature = async (id: CreatureMetaData["id"]) => {
 									</span>
 									<StatusIcon :icon="collection.status" />
 								</div>
-								<div>{{ items?.length }}<v-icon icon="mdi:paw" size="20" /></div>
+								<div>{{ items?.length }}<v-icon icon="$creature" size="20" /></div>
 								<v-icon-btn v-if="!isOwner" @click="toggleBookmark" icon="mdi:star" size="20"
 									:icon-color="bookmarked ? 'primary' : 'grey'" />
 							</div>
