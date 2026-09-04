@@ -186,16 +186,18 @@ app.post("/api/bestiary/:id/update", requireUser, async (req, res) => {
 	};
 	if (permissionLevel === "editor")
 		delete update.status;
-	// Public log
-	if (update.status === "public" && bestiary.status !== "public")
-		publicLog("New public bestiary", `Bestiary "${data.name}" changed to public by ${user.username}.`, `https://${req.hostname}/bestiary-viewer/${bestiary.id}`, user, colors.Blurple);
 
 	// Update:
-	const updatedId = await updateBestiary(update, data.id);
-	if (updatedId) {
-		log.info(`Updated bestiary with the id ${data.id}`);
-		return res.status(200).json(data);
-	}
+	const updatedBestiary = await updateBestiary(update, data.id);
+	if (!updatedBestiary)
+		return res.status(500).json({ error: "Failed to update bestiary." });
+
+	log.info(`Updated bestiary with the id ${data.id}`);
+	// Public log
+	if (updatedBestiary.status === "public" && bestiary.status !== "public")
+		publicLog(updatedBestiary, updatedBestiary.creatures.map(c => ({ name: c.stats.description.name})), `https://${req.hostname}/bestiary/view/${updatedBestiary.id}`, user, "bestiary");
+
+	return res.status(200).json(updatedBestiary);
 });
 app.post("/api/bestiary/add", requireUser, async (req, res) => {
 	const user = req.user!;

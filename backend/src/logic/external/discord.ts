@@ -1,4 +1,4 @@
-import type { User } from "~/shared";
+import type { AutomationCollection, Bestiary, User } from "~/shared";
 import { Buffer } from "node:buffer";
 import discord from "discord.js";
 import { app, isProduction } from "@/utilities/constants";
@@ -46,17 +46,28 @@ if (isProduction) {
 
 // Public discord logging
 export const colors = discord.Colors;
-export async function publicLog(title: string, description: string, link: string, user: User, color?: discord.ColorResolvable) {
+export async function publicLog(collection: (Bestiary | AutomationCollection), items: { name: string }[], link: string, user: User, type: "bestiary" | "automation collection") {
 	if (!isProduction)
 		return;
+	const description = collection.description.trim().length === 0 ? "No description." : (collection.description.trim().length > 4096 ? collection.description.trim().slice(0, 4096) : collection.description.trim());
+
 	const embed = new discord.EmbedBuilder()
-		.setTitle(title)
+		.setTitle(collection.name.length > 256 ? collection.name.slice(0, 256).trim() : collection.name.trim())
 		.setDescription(description)
 		.setAuthor({ name: user.username, iconURL: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` })
-		.setColor(color ?? discord.Colors.Green)
+		.setFooter({ text: `New public ${type}` })
+		.setColor(type === "bestiary" ? colors.Blurple : colors.Fuchsia)
 		.setURL(link)
 		.setTimestamp();
-	channels.publicLogs?.send({ embeds: [embed] });
+	if (collection.image)
+		embed.setImage(collection.image);
+	if (collection.tags.length > 0)
+		embed.addFields({ inline: true, name: "Tags", value: collection.tags.join(", ") });
+	const itemName = type === "bestiary" ? "Creatures" : "Automations";
+	const fieldValue = items.slice(0, 3).map(item => item.name).join(",\n") + (items.length > 3 ? `\nand ${items.length - 3} more ${itemName.toLowerCase()}.` : `.`);
+	embed.addFields({ inline: false, name: itemName, value: fieldValue })
+
+	channels.publicLogs?.send({ embeds: [embed] }).catch(console.error);
 }
 
 // Feedback form

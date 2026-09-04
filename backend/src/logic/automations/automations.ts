@@ -2,7 +2,7 @@ import type { Automation, AutomationConsumables, Id } from "~/shared";
 import type { AutomationCreateInput } from "~/shared/src/prisma-types";
 import { checkBadwords } from "@/utilities/badwords";
 import { app, checkAutomationLimits } from "@/utilities/constants";
-import { createAutomation, deleteAutomation, getAutomation, getPrismaClient, updateAutomation } from "@/utilities/database";
+import { createAutomation, deleteAutomation, getAutomation, updateAutomation } from "@/utilities/database";
 import { log } from "@/utilities/logger";
 import { Prisma } from "~/shared/src/prisma-types";
 import { automationCollections } from "../collections/automationCollections";
@@ -73,7 +73,6 @@ app.post("/api/automation/:id/update", requireUser, async (req, res) => {
 
 	const input = req.body.data as Partial<Automation>;
 	const hasConsumables = Object.hasOwn(input, "consumables");
-	console.log(input)
 	if (hasConsumables && !validateAutomationConsumablesInput(input.consumables || [], res))
 		return;
 	const consumablesData = hasConsumables

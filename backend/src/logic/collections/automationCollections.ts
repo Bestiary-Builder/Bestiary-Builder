@@ -1,5 +1,5 @@
 import type { CollectionWithEditors } from "./collections";
-import type { AttackModel, Automation, AutomationCollection, Id } from "~/shared";
+import type { AttackModel, Automation, AutomationCollection } from "~/shared";
 import type { BestiaryStatus } from "~/shared/src/prisma-types";
 import automationTags from "@/staticData/automationTags.json";
 import { checkBadwords } from "@/utilities/badwords";
@@ -9,6 +9,7 @@ import { log } from "@/utilities/logger";
 import { prepareAutomationInput } from "../automations/automations";
 import { possibleUser, requireUser } from "../main/login";
 import { createCollectionService } from "./collections";
+import { publicLog } from "../external/discord";
 
 export type AutomationCollectionWithEditors = AutomationCollection & CollectionWithEditors & { _count: { bookmarkedBy: number } };
 type AutomationCollectionForUser = AutomationCollectionWithEditors & { automations: Automation[]; orderedBy: { index: number }[] };
@@ -154,16 +155,24 @@ app.post("/api/automation-collection/:id/update", requireUser, async (req, res) 
 	const validationError = validateAutomationCollectionData(input, automationCount);
 	if (validationError)
 		return res.status(400).json({ error: validationError });
-	const collection = await updateAutomationCollection({
+
+	// Update:
+	const updatedCollection = await updateAutomationCollection({
 		name: input.name,
 		description: input.description,
 		image: input.image,
 		tags: input.tags,
 		...(authorization.permission === "owner" ? { status: input.status } : {})
 	}, authorization.collection.id);
-	if (!collection)
+	if (!updatedCollection)
 		return res.status(500).json({ error: "Failed to update automation collection." });
-	return res.json(collection);
+
+	log.info(`Updated automation collection with the id ${updatedCollection.id}`);
+	// Public log
+	if (updatedCollection.status === "public" && authorization.collection.status !== "public")
+		publicLog(updatedCollection, updatedCollection.automations, `https://${req.hostname}/armory/view/${updatedCollection.id}`, user, "automation collection");
+
+	return res.status(200).json(updatedCollection);
 });
 
 app.post("/api/automation-collection/:id/delete", requireUser, async (req, res) => {

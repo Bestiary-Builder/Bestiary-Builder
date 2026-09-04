@@ -104,7 +104,7 @@ export async function updateBestiary(data: BestiaryUpdateInput, id: Id) {
 	return await withDatabaseFallback(async () => {
 		data.lastUpdated = new Date(Date.now());
 		log.log("database", `Updating bestiary with id ${id}`);
-		return (await getPrismaClient().bestiary.update({ where: { id }, data })).id;
+		return await getPrismaClient().bestiary.update({ where: { id }, data, include: { creatures: { select: { stats: true } } } });
 	}, null);
 }
 export async function createBestiary(data: Omit<BestiaryCreateInput, "id" | "owner">, owner: User) {
