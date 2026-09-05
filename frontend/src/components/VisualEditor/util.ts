@@ -29,7 +29,7 @@ export const displayNames: Record<string, { label: string; icon: string }> = {
 export const defaultNodes: Record<string, EffectWithTarget> = {
 	target: {
 		type: "target",
-		target: "all",
+		target: "each",
 		effects: []
 	},
 	attack: {

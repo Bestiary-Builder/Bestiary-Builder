@@ -27,6 +27,10 @@ if (currentEffect?.value.target === "all")
 	currentEffect.value.target = "each";
 
 useDataCleanup(currentEffect, ["sortBy"]);
+
+if (isButton.value && currentEffect?.value.target === 'each') {
+	currentEffect.value.target = 'self'
+}
 </script>
 
 <template>
@@ -40,8 +44,8 @@ useDataCleanup(currentEffect, ["sortBy"]);
 					...(hasAllTarget ? [{ title: 'Each/All', value: 'each' }] : []),
 					{ title: 'Self/Caster', value: 'self' },
 					...(!isButton ? [{ title: 'Position', value: Number(currentEffect.target) ? currentEffect.target : 1 }] : []),
-					...(isIAttack ? [{ title: 'Parent', value: 'parent' }] : []),
-					...(isIAttack ? [{ title: 'Children', value: 'children' }] : []),
+					...(isButton ? [{ title: 'Parent', value: 'parent' }] : []),
+					...(isButton ? [{ title: 'Children', value: 'children' }] : []),
 				]" />
 			</v-col>
 			<v-col cols="6">
