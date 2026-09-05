@@ -134,10 +134,18 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 		<v-row>
 			<v-col v-for="effect, key in currentEffect.effects" :key="key" cols="6">
 				<div v-if="getInputType(key) !== 'list'">
-					<v-text-field :id="key" v-model="(currentEffect as any).effects[key]"
-						:label="getEffectData(key)?.label || ''"
-						:hint="getInputType(key) === 'annotatedstring' ? 'AnnotatedString' : 'IntExpression'">
-						<template #append>
+					<div class="v-input v-input--horizontal v-input--center-affix ">
+						<div class="v-input__control">
+							<TypeHintedEditor :id="key" v-model="(currentEffect as any).effects[key]"
+								:label="getEffectData(key)?.label || ''"
+								:is-annotated-string="getInputType(key) === 'annotatedstring'">
+								<template #append>
+
+								</template>
+							</TypeHintedEditor>
+						</div>
+
+						<div class="v-input__append">
 							<DropdownMenu>
 								<template #activator="{ props }">
 									<v-icon-btn icon="mdi:delete" label="Delete passive effect" v-bind="props" />
@@ -154,8 +162,8 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 									</v-card-actions>
 								</v-card>
 							</DropdownMenu>
-						</template>
-					</v-text-field>
+						</div>
+					</div>
 				</div>
 				<div v-else>
 					<v-combobox v-model="effectValueFor(key).value" :label="getEffectData(key)?.label || ''"
