@@ -123,8 +123,8 @@ const showControls = inject<Ref<boolean>>("showControls");
 
 				<v-tooltip text="Drag to move this node">
 					<template #activator="{ props: dropdownProps }">
-						<Icon icon="$drag" inline width=".75em" class="no-focus-outline drag-handle"
-							v-bind="dropdownProps" @click.stop />
+						<Icon icon="material-symbols:drag-indicator" inline width=".75em"
+							class="no-focus-outline drag-handle" v-bind="dropdownProps" @click.stop />
 					</template>
 				</v-tooltip>
 
