@@ -370,10 +370,10 @@ watch(() => data.value?.features[type][aid].description, (newDesc) => {
 		for (const field of ((auto as AttackModel)?.automation || []).reverse() || []) {
 			if (field.type === "text") {
 				field.text = newDesc || "";
-				(auto as AttackModel).automation.reverse();
 				return;
 			}
 		}
+		(auto as AttackModel).automation.reverse();
 	}
 });
 
