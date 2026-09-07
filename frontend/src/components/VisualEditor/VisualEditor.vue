@@ -235,14 +235,6 @@ section {
 	background-color: rgb(var(--v-theme-surface));
 }
 
-.two-wide.uneven {
-	width: 100%;
-	display: grid;
-	gap: 0 1rem;
-	margin-bottom: 1rem;
-	grid-template-columns: 1fr 2fr;
-}
-
 @media screen and (width <=1200px) {
 
 	section,
