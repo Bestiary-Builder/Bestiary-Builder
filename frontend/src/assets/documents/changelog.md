@@ -15,7 +15,7 @@ _???, 2026_
   - Users can subscribe to the collection or import the action to their character.
   - You can add Custom Counters to automations in collections, which will be imported to their character when a user imports an action.
   - If you previously had automations in My Automations, they have been migrated into a collection for you.
-- You can now reorder your collections and creatures in an
+- You can now reorder your collections and creatures in any order you want, and better sort options have been added for creatures.
 - Updated the Statblock formatting to 2024 
   - Added several different themes to choose from
   - Patreon Supporters can create custom themes with any colours
