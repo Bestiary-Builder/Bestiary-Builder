@@ -1,5 +1,5 @@
 .tree-row {
-	background-color: rgb(var(--v-theme-surface));
+	background-color: var(--bg-color, rgb(var)--v-theme-surface);
 	cursor: pointer;
 	transition: color 150ms ease-out;
 	user-select: none;
@@ -85,12 +85,8 @@
 		background: repeating-linear-gradient(to right,
 				rgb(var(--v-theme-surface-bright)),
 				rgb(var(--v-theme-surface-bright)) 1px,
-				rgb(var(--v-theme-surface)) 1px,
-				rgb(var(--v-theme-surface)) 15px);
+				var(--bg-color, rgb(var(--v-theme-surface))) 1px,
+				var(--bg-color, rgb(var(--v-theme-surface))) 15px);
 		background-position: -9px;
 	}
-}
-
-.tree-node.is-current-node {
-	background-color: red !important;
 }

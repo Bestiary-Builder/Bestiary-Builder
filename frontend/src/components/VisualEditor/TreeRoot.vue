@@ -77,7 +77,8 @@ const showControls = inject<Ref<boolean>>("showControls");
 				</p>
 				<VueDraggable v-model="auto.automation" v-bind="draggingProps" :style="`--depth: ${depth}`">
 					<TreeNode v-for="(node, idx) in auto.automation ?? []" :key="(node as any)" :data="node"
-						:depth="depth" :parent-type="parentType" :context="[index.toString(), ...context, idx.toString()]" />
+						:depth="depth" :parent-type="parentType"
+						:context="[index.toString(), ...context, idx.toString()]" />
 					<EffectAdder :context="[index.toString(), ...context]" />
 				</VueDraggable>
 			</template>
@@ -129,6 +130,7 @@ const showControls = inject<Ref<boolean>>("showControls");
 <style scoped lang="less">
 .container:first-of-type {
 	padding: 0.4rem;
+	padding-right: 0.1rem;
 	background-color: rgb(var(--v-theme-surface));
 	max-height: 55vh;
 	overflow-y: scroll;

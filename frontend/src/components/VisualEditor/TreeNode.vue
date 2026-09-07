@@ -107,7 +107,8 @@ const showControls = inject<Ref<boolean>>("showControls");
 </script>
 
 <template>
-	<div class="tree-node">
+	<div class="tree-node"
+		:style="isCurrentSelectedContext ? '--bg-color: color-mix(in srgb, rgb(var(--v-theme-surface)) 100%, white 0%)' : ''">
 		<p class="drag-area tree-row" :style="`--depth: ${depth}`"
 			@click="currentEffect = data; currentContext = context">
 			<NodeHeader :type="selfType" :additional-text="additionalText" :is-current="isCurrentSelectedContext" />
@@ -118,9 +119,6 @@ const showControls = inject<Ref<boolean>>("showControls");
 			</span>
 
 			<span v-if="showControls" class="tree-buttons">
-
-
-
 				<v-tooltip text="Drag to move this node">
 					<template #activator="{ props: dropdownProps }">
 						<Icon icon="material-symbols:drag-indicator" inline width=".75em"
@@ -144,9 +142,6 @@ const showControls = inject<Ref<boolean>>("showControls");
 						</v-card-text>
 					</v-card>
 				</DropdownMenu>
-
-
-
 			</span>
 
 		</p>
@@ -186,6 +181,15 @@ const showControls = inject<Ref<boolean>>("showControls");
 									:additional-text="(button as any as ButtonInteraction).label.trim()"
 									:is-current="JSON.stringify(currentContext) === JSON.stringify([...context, 'buttons', index.toString()])" />
 								<span class="tree-buttons">
+
+									<v-tooltip text="Drag to move this node">
+										<template #activator="{ props: dropdownProps }">
+											<Icon icon="material-symbols:drag-indicator" inline width=".75em"
+												class="no-focus-outline drag-handle" v-bind="dropdownProps"
+												@click.stop />
+										</template>
+									</v-tooltip>
+
 									<DropdownMenu>
 										<template #activator="{ props: menuProps }">
 											<v-tooltip text="Delete this node">
@@ -223,6 +227,14 @@ const showControls = inject<Ref<boolean>>("showControls");
 									:is-current="JSON.stringify(currentContext) === JSON.stringify([...context, 'attacks', index.toString()])" />
 
 								<span class="tree-buttons">
+									<v-tooltip text="Drag to move this node">
+										<template #activator="{ props: dropdownProps }">
+											<Icon icon="material-symbols:drag-indicator" inline width=".75em"
+												class="no-focus-outline drag-handle" v-bind="dropdownProps"
+												@click.stop />
+										</template>
+									</v-tooltip>
+
 									<DropdownMenu>
 										<template #activator="{ props: menuProps }">
 											<v-tooltip text="Delete this node">
@@ -243,7 +255,6 @@ const showControls = inject<Ref<boolean>>("showControls");
 										</v-card>
 									</DropdownMenu>
 								</span>
-
 							</p>
 							<TreeRoot :data="((attack) as AttackInteraction).attack" :depth="depth + 2"
 								root-type="attack"
