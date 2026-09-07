@@ -154,41 +154,48 @@ onMounted(() => {
 </script>
 
 <template>
-	<section class="two-wide uneven">
-		<div class="tree" ref="tree">
-			<SectionHeader title="Effect Tree" />
-			<TreeRoot v-if="automation" :data="automation" :depth="0" :no-list-attack="noListAttack" />
-			<p v-else class="container" style="padding: 6px">
-				<EffectAdder :context="['root']" :name="name" />
-			</p>
-			<v-btn class="pl-2" variant="text" size="x-small" @click="showControls = !showControls">
-				<small> <i>{{ showControls ? 'Hide' : 'Show' }} controls</i></small>
-			</v-btn>
-		</div>
-		<div class="editor" ref="editor">
-			<div v-if="!currentEffect && currentContext.length === 0">
-				<SectionHeader title="No Effect Selected" />
-				Select or create a node in the Effect Tree to get started.
-				<img :src="['/Devourer.png', '/Beholder.webp', '/Flumph.png'][Math.floor(Math.random() * 3)]"
-					style="max-width: 200px; transform: scale(-1, 1); margin-top: 2rem">
-			</div>
-			<template v-else>
-				<Transition>
-					<NodeHelper v-if="currentEffect" :key="currentContext.toString()" :node="currentNode" />
-				</Transition>
-				<hr>
-				<Transition>
-					<details>
-						<summary style="font-size: smaller"> Show documentation</summary>
-						<AutomationDocumentation v-model="currentNode" />
-					</details>
-				</Transition>
-				<Transition>
-					<EffectAsRaw :current-effect />
-				</Transition>
-			</template>
-		</div>
+	<section>
+		<v-row>
+			<v-col cols="4">
+				<div class="tree" ref="tree">
+					<SectionHeader title="Effect Tree" />
+					<TreeRoot v-if="automation" :data="automation" :depth="0" :no-list-attack="noListAttack" />
+					<p v-else class="container" style="padding: 6px">
+						<EffectAdder :context="['root']" :name="name" />
+					</p>
+					<v-btn class="pl-2" variant="text" size="x-small" @click="showControls = !showControls">
+						<small> <i>{{ showControls ? 'Hide' : 'Show' }} controls</i></small>
+					</v-btn>
+				</div>
 
+			</v-col>
+			<v-col cols="8">
+				<div ref="editor" class="editor">
+					<div v-if="!currentEffect && currentContext.length === 0">
+						<SectionHeader title="No Effect Selected" />
+						Select or create a node in the Effect Tree to get started.
+						<img :src="['/Devourer.png', '/Beholder.webp', '/Flumph.png'][Math.floor(Math.random() * 3)]"
+							style="max-width: 200px; transform: scale(-1, 1); margin-top: 2rem">
+					</div>
+					<template v-else>
+						<Transition>
+							<NodeHelper v-if="currentEffect" :key="currentContext.toString()" :node="currentNode" />
+						</Transition>
+						<hr>
+						<Transition>
+							<details>
+								<summary style="font-size: smaller"> Show documentation</summary>
+								<AutomationDocumentation v-model="currentNode" />
+							</details>
+						</Transition>
+						<Transition>
+							<EffectAsRaw :current-effect />
+						</Transition>
+					</template>
+				</div>
+
+			</v-col>
+		</v-row>
 	</section>
 
 	<v-fab location="bottom end" app :icon="fabIcon" @click="scrollToTarget" v-if="mobile" appear color="primary" />
@@ -237,9 +244,6 @@ section {
 }
 
 @media screen and (width <=1200px) {
-	.two-wide.two-wide.uneven {
-		grid-template-columns: 1fr;
-	}
 
 	section,
 	.container {
