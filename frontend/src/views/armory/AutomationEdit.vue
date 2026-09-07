@@ -39,7 +39,6 @@ onMounted(async () => {
 		await getCollection();
 		updateLabel($route.path, data.value.name);
 		removeToast(toastId);
-		console.log('Data on load:', data.value.automation)
 	}
 	else {
 		addToast(error, { color: "error" });
@@ -156,7 +155,7 @@ const saveAutomation = async (shouldNotify: boolean): Promise<boolean> => {
 
 		if (toastId)
 			updateToast(toastId, { text: "Saving..." });
-		console.log('Data before save:', data.value.automation)
+
 		const { success, data: aData, error } = await useFetch(`/api/automation/${data.value.id}/update`, "POST", data.value);
 		if (!success) {
 			if (toastId) {
@@ -175,7 +174,6 @@ const saveAutomation = async (shouldNotify: boolean): Promise<boolean> => {
 			isSavingCreature.value = false;
 			return false;
 		}
-		console.log('data after save', aData.automation)
 		isSaved.value = true;
 		madeChanges.value = false;
 
@@ -355,10 +353,10 @@ watch(() => data.value?.description, (newDesc) => {
 		for (const field of ((auto as AttackModel)?.automation || []).reverse() || []) {
 			if (field.type === "text") {
 				field.text = newDesc || "";
-				(auto as AttackModel).automation.reverse();
 				return;
 			}
 		}
+		(auto as AttackModel).automation.reverse();
 	}
 });
 

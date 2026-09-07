@@ -4,7 +4,6 @@ async function handleApiResponse<Type>(response: Response): Promise<{ success: t
 		const data = await response.json();
 		if (response.status >= 200 && response.status < 300) {
 			// Succesful
-			console.log(data)
 			return { success: true, data: data as Type, error: undefined, status: response.status };
 		}
 		else {
