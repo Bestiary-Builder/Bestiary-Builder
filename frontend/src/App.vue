@@ -4,10 +4,11 @@ import { computed, ref } from "vue";
 import { RouterView } from "vue-router";
 import FeedbackForm from "./components/Global/FeedbackForm.vue";
 import ToastHost from "./components/Page/ToastHost.vue";
-import { useThemePersistence } from "./utils/app/theme.js";
-import { useRecentPages } from "./utils/app/useRecentPages.js";
-import { store } from "./utils/store.js";
-import { sendToLogin } from "./utils/utils.js";
+import { useThemePersistence } from "./utils/app/theme";
+import { useRecentPages } from "./utils/app/useRecentPages";
+import { store } from "./utils/store";
+import { sendToLogin } from "./utils/utils";
+import { latestChangelogVersion } from "./utils/constants";
 
 const { recentPages } = useRecentPages();
 
@@ -38,6 +39,8 @@ const defaults = computed(() => ({
 const isFeedbackFormOpen = ref(false);
 
 useThemePersistence();
+
+const changeLogVersionLastViewed = useLocalStorage('changeLogVersionLastViewed', '')
 </script>
 
 <template>
@@ -96,15 +99,18 @@ useThemePersistence();
 				<v-list nav density="compact">
 					<v-divider />
 					<v-list-item title="Feedback" value="feedback" prepend-icon="mdi:comment-text"
-						@click="isFeedbackFormOpen = true" />
+						@click="isFeedbackFormOpen = true" link />
 					<v-list-item title="Help" value="help" to="/help" prepend-icon="mdi:frequently-asked-questions" />
-					<v-list-item title="Changelog" value="changelog" to="/changelog" prepend-icon="mdi:history" />
+					<v-list-item title="Changelog" value="changelog" to="/changelog" prepend-icon="mdi:history">
+						<template #append v-if="changeLogVersionLastViewed != latestChangelogVersion">
+							<v-badge inline color="primary" dot></v-badge>
+						</template>
+					</v-list-item>
 					<v-list-item title="Discord" value="discord" href="https://discord.gg/a6bwXCSymN" target="_blank"
 						rel="noopener noreferrer" prepend-icon="mdi:discord" link append-icon="mdi:open-in-new" />
 					<v-list-item title="Patreon" value="patreon" href="https://patreon.com/BestiaryBuilder"
 						target="_blank" rel="noopener noreferrer" prepend-icon="mdi:patreon" link
 						append-icon="mdi:open-in-new" />
-
 					<v-divider />
 					<v-list-item v-if="store.user" append-icon="mdi:cog" to="/user" :title="store.user.username">
 						<template #prepend>

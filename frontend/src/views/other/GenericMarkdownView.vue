@@ -7,6 +7,8 @@ import { nextTick, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import { prefersReducedMotion } from "@/utils/utils";
+import { latestChangelogVersion } from "@/utils/constants";
+import { useLocalStorage } from "@vueuse/core";
 
 const props = defineProps<{ filePath: string }>();
 const dataFile = ref("");
@@ -25,6 +27,9 @@ onMounted(() => {
 		window.scrollTo({ top: 0, behavior: "instant" });
 });
 
+
+const changeLogVersionLastViewed = useLocalStorage('changeLogVersionLastViewed', '')
+
 watch(
 	() => route.fullPath,
 	async () => {
@@ -39,6 +44,11 @@ watch(
 				window.scrollTo({ top: y, behavior: prefersReducedMotion.matches ? "auto" : "smooth" });
 			}
 		}).catch(() => { });
+
+		if (route.path === '/changelog') {
+			changeLogVersionLastViewed.value = latestChangelogVersion;
+		}
+
 	},
 	{ immediate: true }
 );
