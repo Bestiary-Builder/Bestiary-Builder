@@ -338,76 +338,74 @@ const importCreature = async (creature: Statblock) => {
 			<ExportCreature :data="data" />
 		</Breadcrumbs>
 		<div class="content more-wide" :class="{ 'is-statblock-only': !shouldShowEditor }">
-			<v-container class="pa-0">
-				<v-row>
-					<v-col :cols="store.isMobile ? 12 : 6">
-						<v-sheet elevation="2">
-							<v-tabs v-model="tab" color="primary" style="background-color: rgb(var(--v-theme-surface))"
-								:grow="!store.isMobile" :show-arrows="store.isMobile">
-								<v-tab :value="1">
-									Description
-								</v-tab>
-								<v-tab :value="2">
-									Core
-								</v-tab>
-								<v-tab :value="3">
-									Stats
-								</v-tab>
-								<v-tab :value="4">
-									Defenses
-								</v-tab>
-								<v-tab :value="5">
-									Features
-								</v-tab>
-								<v-tab :value="6">
-									Spells
-								</v-tab>
-							</v-tabs>
-							<v-divider />
-							<v-sheet>
-								<v-tabs-window v-model="tab" class="editor-content">
-									<v-tabs-window-item :value="1">
-										<v-sheet class="pa-4" color="surface-light">
-											<DescriptionPanel :data="data" />
-										</v-sheet>
-									</v-tabs-window-item>
-									<v-tabs-window-item :value="2">
-										<v-sheet color="surface-light" class="pa-4">
-											<CorePanel :data="data" />
-										</v-sheet>
-									</v-tabs-window-item>
-									<v-tabs-window-item :value="3">
-										<v-sheet color="surface-light" class="pa-4">
-											<StatsPanel :data="data" />
-										</v-sheet>
-									</v-tabs-window-item>
-									<v-tabs-window-item :value="4">
-										<v-sheet color="surface-light" class="pa-4">
-											<DefensesPanel :data="data" />
-										</v-sheet>
-									</v-tabs-window-item>
-									<v-tabs-window-item :value="5">
-										<v-sheet color="surface-light" class="pa-4">
-											<FeaturesPanel :data="data" :raw-info="rawInfo" />
-										</v-sheet>
-									</v-tabs-window-item>
-									<v-tabs-window-item :value="6">
-										<v-sheet color="surface-light" class="pa-4">
-											<SpellcastingPanel :data="data" :raw-info="rawInfo" />
-										</v-sheet>
-									</v-tabs-window-item>
-								</v-tabs-window>
-							</v-sheet>
+			<v-row>
+				<v-col :cols="store.isMobile ? 12 : 6">
+					<v-sheet elevation="2">
+						<v-tabs v-model="tab" color="primary" style="background-color: rgb(var(--v-theme-surface))"
+							:grow="!store.isMobile" :show-arrows="store.isMobile">
+							<v-tab :value="1">
+								Description
+							</v-tab>
+							<v-tab :value="2">
+								Core
+							</v-tab>
+							<v-tab :value="3">
+								Stats
+							</v-tab>
+							<v-tab :value="4">
+								Defenses
+							</v-tab>
+							<v-tab :value="5">
+								Features
+							</v-tab>
+							<v-tab :value="6">
+								Spells
+							</v-tab>
+						</v-tabs>
+						<v-divider />
+						<v-sheet>
+							<v-tabs-window v-model="tab" class="editor-content">
+								<v-tabs-window-item :value="1">
+									<v-sheet class="pa-4" color="surface-light">
+										<DescriptionPanel :data="data" />
+									</v-sheet>
+								</v-tabs-window-item>
+								<v-tabs-window-item :value="2">
+									<v-sheet color="surface-light" class="pa-4">
+										<CorePanel :data="data" />
+									</v-sheet>
+								</v-tabs-window-item>
+								<v-tabs-window-item :value="3">
+									<v-sheet color="surface-light" class="pa-4">
+										<StatsPanel :data="data" />
+									</v-sheet>
+								</v-tabs-window-item>
+								<v-tabs-window-item :value="4">
+									<v-sheet color="surface-light" class="pa-4">
+										<DefensesPanel :data="data" />
+									</v-sheet>
+								</v-tabs-window-item>
+								<v-tabs-window-item :value="5">
+									<v-sheet color="surface-light" class="pa-4">
+										<FeaturesPanel :data="data" :raw-info="rawInfo" />
+									</v-sheet>
+								</v-tabs-window-item>
+								<v-tabs-window-item :value="6">
+									<v-sheet color="surface-light" class="pa-4">
+										<SpellcastingPanel :data="data" :raw-info="rawInfo" />
+									</v-sheet>
+								</v-tabs-window-item>
+							</v-tabs-window>
 						</v-sheet>
-					</v-col>
+					</v-sheet>
+				</v-col>
 
-					<v-col :cols="store.isMobile ? 12 : 6">
-						<v-skeleton-loader v-if="rawInfo === null"
-							type="heading, divider, text, text, sentences, heading, text" />
-						<StatblockRenderer v-else :data="data" />
-					</v-col>
-				</v-row>
-			</v-container>
+				<v-col :cols="store.isMobile ? 12 : 6">
+					<v-skeleton-loader v-if="rawInfo === null"
+						type="heading, divider, text, text, sentences, heading, text" />
+					<StatblockRenderer v-else :data="data" />
+				</v-col>
+			</v-row>
 		</div>
 	</div>
 </template>
