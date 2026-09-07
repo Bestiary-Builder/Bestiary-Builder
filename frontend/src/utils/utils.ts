@@ -4,6 +4,7 @@ async function handleApiResponse<Type>(response: Response): Promise<{ success: t
 		const data = await response.json();
 		if (response.status >= 200 && response.status < 300) {
 			// Succesful
+			console.log(data)
 			return { success: true, data: data as Type, error: undefined, status: response.status };
 		}
 		else {
@@ -27,8 +28,8 @@ export async function useFetch<Type>(url: string, method: "GET" | "POST" = "GET"
 			},
 			body: body
 				? JSON.stringify({
-						data: body
-					})
+					data: body
+				})
 				: undefined
 		}).then(async response => handleApiResponse<Type>(response));
 		return result;

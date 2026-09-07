@@ -50,6 +50,8 @@ app.get("/api/automation/:id", possibleUser, async (req, res) => {
 		return res.status(401).json({ error: " You don't have access to this automation." });
 
 	log.info(`Retrieved automation with the id ${id}`);
+	console.log(JSON.stringify(automation))
+	console.log(JSON.stringify({ ...automation, permissionLevel: authorization.permission }))
 	return res.json({ ...automation, permissionLevel: authorization.permission });
 });
 
