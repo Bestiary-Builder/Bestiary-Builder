@@ -17,19 +17,6 @@ const user = useFetch<User>("/api/user").then(async (result) => {
 	}
 });
 
-interface limitsType {
-	nameLength: number;
-	nameMin: number;
-	descriptionLength: number;
-	creatureAmount: number;
-	imageFormats: string[];
-}
-
-const asyncLimits = useFetch<limitsType>("/api/limits").then(async (result) => {
-	if (result.success)
-		return result.data;
-	else return null;
-});
 
 const tags = useFetch<string[]>("/api/tags").then(async (result) => {
 	if (result.success)
@@ -53,6 +40,5 @@ export const store = reactive({
 	user: await user,
 	tags: await tags,
 	automationTags: await automationTags,
-	limits: await asyncLimits,
 	isMobile: width.value < 900,
 });

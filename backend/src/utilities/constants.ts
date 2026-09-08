@@ -4,8 +4,7 @@ import crypto from "node:crypto";
 import express from "express";
 
 // Limits
-import l from "@/staticData/limits.json";
-
+import { globalLimits } from "~/shared";
 // Secrets:
 import "@/utilities/env";
 
@@ -17,7 +16,7 @@ export const isProduction = (process.env.NODE_ENV === "production") as boolean;
 export function generateUserSecret(): string {
 	return crypto.randomBytes(64).toString("hex");
 }
-export const limits = l;
+export const limits = globalLimits;
 export function checkCreatureAmountLimit(count: number) {
 	if (count > limits.creatureAmount)
 		return `Number of creatures exceeds the limit of ${limits.creatureAmount}.`;

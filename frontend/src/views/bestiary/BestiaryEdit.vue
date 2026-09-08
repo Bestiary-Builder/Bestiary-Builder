@@ -12,7 +12,7 @@ import { getUmami } from "@/utils/app/analytics";
 import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
-import { defaultStatblock } from "~/shared";
+import { defaultStatblock, globalLimits } from "~/shared";
 import { useLazyOptions } from "@/utils/app/useLazyOptions";
 import CollectionHeader from "@/components/Collections/CollectionHeader.vue";
 
@@ -354,8 +354,8 @@ const hoverCreature = async (id: CreatureMetaData["id"]) => {
 						<v-row>
 							<v-col cols="6">
 								<v-text-field v-model="collection.name" label="Name"
-									:maxlength="store.limits?.nameLength" :min-length="store.limits?.nameMin"
-									:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]"
+									:maxlength="globalLimits.nameLength" :min-length="globalLimits.nameMin"
+									:rules="[rules.required(), rules.minLength(globalLimits.nameMin), rules.maxLength(globalLimits.nameLength)]"
 									class="mb-4" />
 							</v-col>
 							<v-col cols="6">
@@ -364,9 +364,9 @@ const hoverCreature = async (id: CreatureMetaData["id"]) => {
 
 							<v-col cols="12">
 								<v-textarea v-model="collection.description"
-									:max-length="store.limits?.descriptionLength"
-									:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]"
-									label="Description" class="mb-4" hint="Supports Markdown" persistent-hint counter />
+									:max-length="globalLimits.descriptionLength"
+									:rules="[rules.maxLength(globalLimits.descriptionLength)]" label="Description"
+									class="mb-4" hint="Supports Markdown" persistent-hint counter />
 							</v-col>
 
 							<v-col cols="6">

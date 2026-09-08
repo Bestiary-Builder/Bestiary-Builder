@@ -6,7 +6,6 @@ import SRDCreatures2024 from "@/staticData/2024/SRDCreatures2024.json";
 import data from "@/staticData/automationDocumentation.json";
 import automationTags from "@/staticData/automationTags.json";
 import bestiaryTags from "@/staticData/bestiaryTags.json";
-import limits from "@/staticData/limits.json";
 import spells from "@/staticData/shared/spells.json";
 import tOF from "@/staticData/shared/textOnlyFeatures.json";
 import { app } from "@/utilities/constants";
@@ -116,9 +115,7 @@ app.get("/api/tags", async (req, res) => {
 app.get("/api/automationTags", async (req, res) => {
 	res.json(automationTags);
 });
-app.get("/api/limits", async (req, res) => {
-	res.json(limits);
-});
+
 app.get("/api/automationDocumentation", async (req, res) => {
 	res.json(data);
 });

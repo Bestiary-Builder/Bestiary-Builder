@@ -12,7 +12,7 @@ import { useToast } from "@/utils/app/toast";
 import { useRecentPages } from "@/utils/app/useRecentPages";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
-import { parseDescIntoAutomation } from "~/shared";
+import { globalLimits, parseDescIntoAutomation } from "~/shared";
 
 const $router = useRouter();
 const $route = useRoute();
@@ -412,7 +412,7 @@ provide("setActionDescription", setDesc);
 			<v-row>
 				<v-col cols="4">
 					<v-text-field v-model="data.features[type][aid].name" type="text" label="Feature name"
-						:minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength" hide-details />
+						:minlength="globalLimits.nameMin" :maxlength="globalLimits.nameLength" hide-details />
 					<span v-if="isVisualEditor">
 						<input v-model="parityOptions.updateName" type="checkbox" style="scale: .7; translate: 0 4px">
 						<small style="font-size: x-small;"> <i>Updates the name of the first action in the automation

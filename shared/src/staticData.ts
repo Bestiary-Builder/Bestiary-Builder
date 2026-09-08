@@ -331,3 +331,11 @@ export const AliasAPIInstances: Record<string, string> = {
     caster: 'AliasStatBlock',
 
 }
+
+export const globalLimits = {
+    "nameMin": 3,
+    "nameLength": 50,
+    "descriptionLength": 10000,
+    "creatureAmount": 1000,
+    "imageFormats": ["png", "jpg", "jpeg", "webp", "gif", "apng"]
+}

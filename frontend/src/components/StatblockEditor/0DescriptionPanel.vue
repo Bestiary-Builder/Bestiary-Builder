@@ -4,7 +4,7 @@ import { watch } from "vue";
 import { useRules } from "vuetify/labs/rules";
 import { alignments, creatureTypes, sizes } from "@/utils/constants";
 import { store } from "@/utils/store";
-import { getXPbyCR } from "~/shared";
+import { getXPbyCR, globalLimits } from "~/shared";
 import CRInput from "../FormInputs/CRInput.vue";
 import Editor from "./Editor.vue";
 
@@ -22,9 +22,9 @@ const rules = useRules();
 	<div>
 		<v-row density="comfortable">
 			<v-col cols="6">
-				<v-text-field v-model="data.description.name" label="Name" :maxlength="store.limits?.nameLength"
-					:min-length="store.limits?.nameMin"
-					:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]" />
+				<v-text-field v-model="data.description.name" label="Name" :maxlength="globalLimits.nameLength"
+					:min-length="globalLimits.nameMin"
+					:rules="[rules.required(), rules.minLength(globalLimits.nameMin), rules.maxLength(globalLimits.nameLength)]" />
 			</v-col>
 			<v-col cols="6">
 				<v-text-field v-model="data.description.image" label="Image URL" :rules="[rules.imageLink()]" />

@@ -2,7 +2,7 @@
 import type { Ref } from "vue";
 import type { AttackInteraction, AttackModel, ButtonInteraction, EffectWithTarget, Features } from "~/shared";
 import { Icon } from "@iconify/vue";
-import { computed, inject, nextTick, onMounted, ref, useTemplateRef, watch } from "vue";
+import { computed, inject, nextTick, ref, useTemplateRef, watch } from "vue";
 import { useRoute } from "vue-router";
 import { activation_type, defaultNodes, displayNames } from "./util";
 
@@ -230,7 +230,7 @@ const onKeydown = (e: KeyboardEvent) => {
 </script>
 
 <template>
-	<DropdownMenu v-model="menuOpen" :close-on-content-click="false" @update:model-value="onMenuToggle" :scrim="false"
+	<DropdownMenu v-model="menuOpen" :close-on-content-click="false" @update:model-value="onMenuToggle"
 		v-if="showControls">
 		<template #activator="{ props }">
 			<p class="tree-row" v-bind="props" :style="`--depth: ${depth}`"

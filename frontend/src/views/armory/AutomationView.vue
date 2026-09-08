@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Automation, AutomationCollectionExtended, AutomationConsumable } from "~/shared";
+import { globalLimits, type Automation, type AutomationCollectionExtended, type AutomationConsumable } from "~/shared";
 import { onMounted, provide, ref, useTemplateRef } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import EditAutomation from "@/components/Automations/EditAutomation.vue";
@@ -112,9 +112,8 @@ const copySingleCounter = (consumable: AutomationConsumable) => {
 		<div class="pa-0">
 			<v-row>
 				<v-col cols="4">
-					<v-text-field v-model="data.name" type="text" label="Feature name"
-						:minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength" hide-details
-						disabled />
+					<v-text-field v-model="data.name" type="text" label="Feature name" :minlength="globalLimits.nameMin"
+						:maxlength="globalLimits.nameLength" hide-details disabled />
 
 					<v-text-field v-model="data.tag" label="Tag" class="mt-4" disabled />
 

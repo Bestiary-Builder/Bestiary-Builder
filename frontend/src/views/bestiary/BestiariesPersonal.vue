@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { BestiaryExtended } from "~/shared";
+import { globalLimits, type BestiaryExtended } from "~/shared";
 import { onMounted, reactive, ref, toValue } from "vue";
 import { VueDraggable } from "vue-draggable-plus";
 import { useRouter } from "vue-router";
@@ -124,9 +124,9 @@ const newBestiaryIsOpen = ref(false);
 				<v-row>
 					<v-col cols="6">
 						<div>
-							<v-text-field v-model="createOptions.name" label="Name"
-								:maxlength="store.limits?.nameLength" :min-length="store.limits?.nameMin"
-								:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]" />
+							<v-text-field v-model="createOptions.name" label="Name" :maxlength="globalLimits.nameLength"
+								:min-length="globalLimits.nameMin"
+								:rules="[rules.required(), rules.minLength(globalLimits.nameMin), rules.maxLength(globalLimits.nameLength)]" />
 						</div>
 					</v-col>
 					<v-col cols="6">
@@ -136,9 +136,9 @@ const newBestiaryIsOpen = ref(false);
 						</div>
 					</v-col>
 					<v-col cols="12">
-						<v-textarea v-model="createOptions.description" :max-length="store.limits?.descriptionLength"
-							:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]" label="Description"
-							class="mb-4" hint="Supports Markdown" persistent-hint />
+						<v-textarea v-model="createOptions.description" :max-length="globalLimits.descriptionLength"
+							:rules="[rules.maxLength(globalLimits.descriptionLength)]" label="Description" class="mb-4"
+							hint="Supports Markdown" persistent-hint />
 					</v-col>
 					<v-col>
 						<div>

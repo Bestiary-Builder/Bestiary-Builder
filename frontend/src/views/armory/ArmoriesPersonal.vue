@@ -8,7 +8,7 @@ import { getUmami } from "@/utils/app/analytics";
 import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
-
+import { globalLimits } from "~/shared";
 const { addToast, updateToast } = useToast();
 
 const automationCollections = ref<AutomationCollectionExtended[]>([]);
@@ -113,9 +113,9 @@ const newCollectionIsOpen = ref(false);
 				<v-row>
 					<v-col>
 						<div>
-							<v-text-field v-model="createOptions.name" label="Name"
-								:maxlength="store.limits?.nameLength" :min-length="store.limits?.nameMin"
-								:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]"
+							<v-text-field v-model="createOptions.name" label="Name" :maxlength="globalLimits.nameLength"
+								:min-length="globalLimits.nameMin"
+								:rules="[rules.required(), rules.minLength(globalLimits.nameMin), rules.maxLength(globalLimits.nameLength)]"
 								class="mb-4" />
 						</div>
 					</v-col>
@@ -128,8 +128,8 @@ const newCollectionIsOpen = ref(false);
 				</v-row>
 			</v-container>
 
-			<v-textarea v-model="createOptions.description" :max-length="store.limits?.descriptionLength"
-				:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]" label="Description" class="mb-4"
+			<v-textarea v-model="createOptions.description" :max-length="globalLimits.descriptionLength"
+				:rules="[rules.maxLength(globalLimits.descriptionLength)]" label="Description" class="mb-4"
 				hint="Supports Markdown" persistent-hint />
 
 			<v-container class="pa-0">

@@ -12,7 +12,7 @@ import { useToast } from "@/utils/app/toast";
 import { useRecentPages } from "@/utils/app/useRecentPages";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
-import { consumableContextHints, parseDescIntoAutomation } from "~/shared";
+import { consumableContextHints, globalLimits, parseDescIntoAutomation } from "~/shared";
 import { useRules } from "vuetify/labs/rules";
 import type * as Monaco from 'monaco-editor'
 import { loader } from '@guolao/vue-monaco-editor';
@@ -210,7 +210,7 @@ const loadFeature = async (feature: FeatureEntity) => {
 		return;
 
 	data.value.description = feature.description;
-	data.value.name = feature.name.substring(0, store.limits?.nameLength);
+	data.value.name = feature.name.substring(0, globalLimits.nameLength);
 
 	data.value.automation = feature.automation;
 	EditAutomationRef.value?.resetVisualEditorState();
@@ -474,8 +474,8 @@ const copySingleCounter = (consumable: AutomationConsumable) => {
 		<div class="pa-0">
 			<v-row>
 				<v-col cols="4">
-					<v-text-field v-model="data.name" type="text" label="Feature name"
-						:minlength="store.limits?.nameMin" :maxlength="store.limits?.nameLength" hide-details />
+					<v-text-field v-model="data.name" type="text" label="Feature name" :minlength="globalLimits.nameMin"
+						:maxlength="globalLimits.nameLength" hide-details />
 					<span v-if="isVisualEditor">
 						<input v-model="parityOptions.updateName" type="checkbox" style="scale: .7; translate: 0 4px">
 						<small style="font-size: x-small;"> <i>Updates the name of the first action in the automation

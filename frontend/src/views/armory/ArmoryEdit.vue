@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { capitalizeFirstLetter, type AttackModel, type Automation } from "~/shared";
+import { capitalizeFirstLetter, globalLimits, type AttackModel, type Automation } from "~/shared";
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useRules } from "vuetify/labs/rules";
 import StatusIcon from "@/components/Bestiary/StatusIcon.vue";
@@ -185,8 +185,8 @@ const createAutomation = () => {
 						<v-row>
 							<v-col cols="6">
 								<v-text-field v-model="collection.name" label="Name"
-									:maxlength="store.limits?.nameLength" :min-length="store.limits?.nameMin"
-									:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 10000)]"
+									:maxlength="globalLimits.nameLength" :min-length="globalLimits.nameMin"
+									:rules="[rules.required(), rules.minLength(globalLimits.nameMin), rules.maxLength(globalLimits.nameLength)]"
 									class="mb-4" />
 							</v-col>
 							<v-col cols="6">
@@ -195,9 +195,9 @@ const createAutomation = () => {
 
 							<v-col cols="12">
 								<v-textarea v-model="collection.description"
-									:max-length="store.limits?.descriptionLength"
-									:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]"
-									label="Description" class="mb-4" hint="Supports Markdown" persistent-hint counter />
+									:max-length="globalLimits.descriptionLength"
+									:rules="[rules.maxLength(globalLimits.descriptionLength)]" label="Description"
+									class="mb-4" hint="Supports Markdown" persistent-hint counter />
 							</v-col>
 
 							<v-col cols="6">
@@ -338,14 +338,14 @@ const createAutomation = () => {
 				<v-row>
 					<v-col>
 						<v-text-field v-model="createOptions.name" label="Name"
-							:rules="[rules.required(), rules.minLength(store.limits?.nameMin || 3), rules.maxLength(store.limits?.nameLength || 3)]" />
+							:rules="[rules.required(), rules.minLength(globalLimits.nameMin), rules.maxLength(globalLimits.nameLength)]" />
 					</v-col>
 					<v-col>
 						<v-select v-model="createOptions.activation_type" label="Type" :items="activationTypeOptions" />
 					</v-col>
 					<v-col cols="12">
 						<v-textarea v-model="createOptions.description" label="Description"
-							:rules="[rules.maxLength(store.limits?.descriptionLength || 10000)]" counter />
+							:rules="[rules.maxLength(globalLimits.descriptionLength)]" counter />
 					</v-col>
 				</v-row>
 			</v-card-text>
