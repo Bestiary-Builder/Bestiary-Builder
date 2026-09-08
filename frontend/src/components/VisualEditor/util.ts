@@ -24,10 +24,17 @@ export const displayNames: Record<string, { label: string; icon: string }> = {
 	save: { label: "Saving Throw", icon: "fa6-solid:recycle" },
 	temphp: { label: "Temp HP", icon: "material-symbols:shield-with-heart" },
 	check: { label: "Ability Check", icon: "twemoji:man-cartwheeling" },
-	prone: { label: "Prone IEffect", icon: "material-symbols:falling-rounded" }
+	proneButton: { label: "Prone Button", icon: "material-symbols:falling-rounded" },
+	rechargeButton: { label: "Recharge Button", icon: "material-symbols:charger" },
+	damageStartOfTurnButton: { label: "Damage start of turn Button", icon: "mdi:fire" },
+	basicAttack: { label: "Attack and Damage", icon: "mdi:toy-brick" },
+	saveForHalfDamage: { label: "Save for Half Damage", icon: "mdi:content-save-off" },
+	saveForHalfDamageWithRecharge: { label: "Save for Half Damage With Recharge", icon: "material-symbols:battery-4-bar-sharp" },
+	attackWithPoison: { label: "Attack with Poison", icon: "mdi:spider" },
+	attackWithGrappleRestrain: { label: "Attack with Grapple (Restrain)", icon: "game-icons:fist" }
 } as const;
 
-export const defaultNodes: Record<string, EffectWithTarget> = {
+export const defaultNodes: Record<string, EffectWithTarget | EffectWithTarget[]> = {
 	target: {
 		type: "target",
 		target: "each",
@@ -96,20 +103,339 @@ export const defaultNodes: Record<string, EffectWithTarget> = {
 		type: "spell",
 		id: 2102
 	},
-	prone: {
+	basicAttack: [
+		{
+			type: "target",
+			target: "each",
+			effects: [
+				{
+					type: "attack",
+					hit: [
+						{
+							type: "damage",
+							damage: "1d6 [slashing]",
+							overheal: false
+						}
+					],
+					miss: [],
+					attackBonus: "4"
+				}
+			]
+		},
+		{
+			type: "text",
+			text: "*Melee Weapon Attack:* +4 to hit, reach 5 ft., one target. *Hit:* 5 (1d6 + 2) slashing damage.",
+			title: "Effect"
+		}
+	],
+	saveForHalfDamage: [
+		{
+			type: "roll",
+			dice: "8d6 [fire]",
+			name: "damage"
+		},
+		{
+			type: "target",
+			target: "each",
+			effects: [
+				{
+					type: "save",
+					stat: "dex",
+					dc: "19",
+					fail: [
+						{
+							type: "damage",
+							damage: "{damage}"
+						}
+					],
+					success: [
+						{
+							type: "damage",
+							damage: "({damage}) / 2"
+						}
+					]
+				}
+			],
+		},
+		{
+			type: "text",
+			text: "Each creature in a 20-foot-radius sphere centered on that point must make a Dexterity saving throw. A target takes 8d6 fire damage on a failed save, or half as much damage on a successful one."
+		}
+	],
+	saveForHalfDamageWithRecharge:
+		[
+			{
+				type: "target",
+				target: "self",
+				effects: [
+					{
+						type: "ieffect2",
+						name: "Ability Used",
+						stacking: true,
+						buttons: [
+							{
+								automation: [
+									{
+										type: "roll",
+										dice: "1d6",
+										name: "recharge",
+										hidden: false,
+										cantripScale: false
+									},
+									{
+										type: "condition",
+										condition: "int(recharge) >= 5",
+										onTrue: [
+											{
+												type: "remove_ieffect",
+											},
+											{
+												type: "text",
+												text: "{{caster.name}} recharges their Ability!"
+											}
+										],
+										onFalse: [
+											{
+												type: "text",
+												text: "{{caster.name}} doesn't recharge their Ability!"
+											}
+										],
+										errorBehaviour: "false"
+									}
+								],
+								label: "Recharge Ability",
+								verb: "attempts to recharge their Ability",
+								style: "3"
+							}
+						]
+					}
+				],
+			},
+			{
+				type: "roll",
+				dice: "12d8 [fire]",
+				name: "damage"
+			},
+			{
+				type: "target",
+				target: "each",
+				effects: [
+					{
+						type: "save",
+						stat: "dex",
+						dc: "18",
+						fail: [
+							{
+								type: "damage",
+								damage: "{damage}"
+							}
+						],
+						success: [
+							{
+								type: "damage",
+								damage: "{damage}/2"
+							}
+						]
+					}
+				],
+			},
+			{
+				type: "text",
+				text: "The monster spews fire in a 60-foot line that is 5 feet wide. Each creature in that line must make a DC 18 Dexterity saving throw, taking 54 (12d8) fire damage on a failed save, or half as much damage on a successful one."
+			}
+		],
+	attackWithPoison: [{
+		"type": "target",
+		"target": "each",
+		"effects": [
+			{
+				"type": "attack",
+				"hit": [
+					{
+						"type": "damage",
+						"damage": "1d4 + 4 [piercing]"
+					},
+					{
+						"type": "save",
+						"stat": "con",
+						"dc": "10",
+						"fail": [
+							{
+								"type": "damage",
+								"damage": "3d6 [poison]"
+							}
+						],
+						"success": [
+							{
+								"type": "damage",
+								"damage": "(3d6 [poison]) / 2"
+							}
+						],
+					}
+				],
+				"miss": [],
+				"attackBonus": "6"
+			}
+		]
+	},
+	{
+		"type": "text",
+		"text": "*Melee Weapon Attack:* +6 to hit, reach 10 ft., one target. *Hit:* 6 (1d4 + 4) piercing damage, and the target must make a DC 10 Constitution saving throw, taking 10 (3d6) poison damage on a failed save, or half as much damage on a successful one."
+	},],
+	attackWithGrappleRestrain: [
+		{
+			"type": "target",
+			"target": "each",
+			"effects": [
+				{
+					"type": "attack",
+					"hit": [
+						{
+							"type": "damage",
+							"damage": "2d6 + 4 [bludgeoning]"
+						},
+						{
+							"type": "ieffect2",
+							"name": "Grappled",
+							"desc": "Grappled by {{caster.name}}\n - Escape DC 14",
+							"buttons": [
+								{
+									"label": "Escape Grapple",
+									"verb": "tries to escape",
+									"automation": [
+										{
+											"type": "target",
+											"target": "self",
+											"effects": [
+												{
+													"type": "check",
+													"ability": [
+														"acrobatics",
+														"athletics"
+													],
+													"dc": "14",
+													"success": [
+														{
+															"type": "remove_ieffect",
+															"removeParent": "if_no_children"
+														}
+													],
+													"fail": []
+												}
+											]
+										},
+										{
+											"type": "text",
+											"text": "A creature grappled by the monster can use its action to try to escape. To do so, it must succeed on a Strength (Athletics) or Dexterity (Acrobatics) check against the escape DC in the monster's stat block."
+										}
+									]
+								}
+							],
+							"end": false,
+							"conc": false,
+							"stacking": false,
+							"save_as": "grapple"
+						}
+					],
+					"miss": [],
+					"attackBonus": "6"
+				}
+			]
+		},
+		{
+			"type": "text",
+			"text": "*Melee Weapon Attack:* +6 to hit, reach 10 ft., one target. *Hit:* 11 (2d6 + 4) bludgeoning damage. The target is grappled (escape DC 14) if it is a Large or smaller creature and the monster doesn't have two other creatures grappled."
+		}
+	],
+	proneButton: {
 		type: "ieffect2",
 		name: "Prone",
+		effects: {
+			attack_advantage: "-1"
+		},
 		buttons: [
 			{
-				label: "Prone",
+				label: "Stand Up",
 				automation: [
 					{
 						type: "remove_ieffect"
 					}
 				]
 			}
+		],
+		desc: "A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition"
+	},
+
+	rechargeButton: {
+		type: "ieffect2",
+		name: "Ability Used",
+		stacking: true,
+		buttons: [
+			{
+				automation: [
+					{
+						type: "roll",
+						dice: "1d6",
+						name: "recharge",
+						hidden: false,
+						cantripScale: false
+					},
+					{
+						type: "condition",
+						condition: "int(recharge) >= 5",
+						onTrue: [
+							{
+								type: "remove_ieffect",
+							},
+							{
+								type: "text",
+								text: "{{caster.name}} recharges their Ability!"
+							}
+						],
+						onFalse: [
+							{
+								type: "text",
+								text: "{{caster.name}} doesn't recharge their Ability!"
+							}
+						],
+						errorBehaviour: "false"
+					}
+				],
+				label: "Recharge Ability",
+				verb: "attempts to recharge their Ability",
+				style: "3"
+			}
+		]
+	},
+	damageStartOfTurnButton: {
+		"type": "ieffect2",
+		"name": "On Fire",
+		"desc": "Target takes 2d6 fire at the start of its turns",
+		"buttons": [
+			{
+				"label": "On Fire",
+				"verb": "is On Fire",
+				"style": "4",
+				"automation": [
+					{
+						"type": "target",
+						"target": "self",
+						"effects": [
+							{
+								"type": "damage",
+								"damage": "2d6 [fire]"
+							}
+						]
+					},
+					{
+						"type": "text",
+						"text": "While the target is on fire it takes 7 (2d6) fire damage at the start of each of its turns."
+					}
+				]
+			}
 		]
 	}
+
 };
 
 export const deepKeys = ["effects", "hit", "miss", "fail", "success", "onTrue", "onFalse"];
@@ -195,15 +521,15 @@ const onGhostEnd = () => {
 };
 
 export const draggingProps = {
-	"group": "tree-group",
-	"handle": ".drag-handle",
-	"ghost-class": "drag-ghost",
-	"class": "draggable-list",
-	"animation": 200,
-	"swap-treshold": 0.65,
-	"invert-swap": true,
-	"inverted-swap-treshold": 0.65,
-	"on-move": onGhostMove,
-	"on-start": onGhostStart,
-	"on-end": onGhostEnd
+	group: "tree-group",
+	handle: ".drag-handle",
+	'ghost-class': "drag-ghost",
+	class: "draggable-list",
+	animation: 200,
+	'swap-treshold': 0.65,
+	'invert-swap': true,
+	'inverted-swap-treshold': 0.65,
+	'on-move': onGhostMove,
+	'on-start': onGhostStart,
+	'on-end': onGhostEnd
 };

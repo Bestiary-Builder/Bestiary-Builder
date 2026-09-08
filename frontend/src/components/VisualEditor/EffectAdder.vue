@@ -46,18 +46,21 @@ const computedContext = computed(() => {
 
 const availableNodes = computed(() => {
 	const { isTargetContext, contextLevel } = computedContext.value;
+	let output: string[] = []
+	if (!isTargetContext)
+		output = ["target", "roll", "text", "variable", "condition", "counter", "spell"];
+	if (isTargetContext)
+		output = ["attack", "save", "damage", "temphp", "ieffect2", "roll", "text", "variable", "condition", "counter", "check",];
+	if (!isTargetContext && contextLevel !== "buttons")
+		output.push(...["__header__Presets", "basicAttack", "saveForHalfDamage", "saveForHalfDamageWithRecharge", "attackWithPoison", "attackWithGrappleRestrain"])
+	if (isTargetContext && contextLevel !== "buttons")
+		output.push(...["__header__Button Presets", "proneButton", "rechargeButton", "damageStartOfTurnButton"])
+	if (!isTargetContext && contextLevel === "buttons")
+		output.splice(6, 1, "remove_ieffect")
+	if (isTargetContext && contextLevel === "buttons")
+		output.splice(5, 0, "remove_ieffect")
 
-	if (!isTargetContext && contextLevel === "root")
-		return ["target", "roll", "text", "variable", "condition", "counter", "spell"];
-	if (isTargetContext && contextLevel === "root")
-		return ["attack", "save", "damage", "temphp", "ieffect2", "roll", "text", "variable", "condition", "counter", "check", "__header__Button Presets", "prone"];
-
-	if (!isTargetContext && (contextLevel === "attacks" || contextLevel === "buttons"))
-		return ["target", "roll", "text", "variable", "condition", "counter", "remove_ieffect", "spell"];
-	if (isTargetContext && (contextLevel === "attacks" || contextLevel === "buttons"))
-		return ["attack", "save", "damage", "temphp", "ieffect2", "remove_ieffect", "roll", "text", "variable", "condition", "counter", "check"];
-
-	return [];
+	return output;
 });
 
 const automation = inject<Ref<null | AttackModel | AttackModel[]>>("automation");
@@ -100,8 +103,15 @@ const addAndSelect = async (node: string) => {
 		}
 	}
 	try {
-		tree.push(JSON.parse(JSON.stringify(defaultNodes[node])));
-		currentEffect!.value = tree[tree.length - 1];
+		const toAdd = defaultNodes[node]
+		if (Array.isArray(toAdd)) {
+			tree.push(...JSON.parse(JSON.stringify(toAdd)));
+			currentEffect!.value = tree[tree.length - toAdd.length];
+		} else {
+			tree.push(JSON.parse(JSON.stringify(toAdd)));
+			currentEffect!.value = tree[tree.length - 1];
+		}
+
 		isOpen.value = false;
 	}
 	catch (e) {
@@ -231,7 +241,7 @@ const onKeydown = (e: KeyboardEvent) => {
 			</p>
 		</template>
 
-		<v-card>
+		<v-card border class="pa-1">
 			<v-card-text class="pb-0">
 				<v-text-field ref="searchFieldRef" v-model="search" density="compact" variant="plain" hide-details
 					placeholder="Search..." persistent-placeholder @keydown="onKeydown" autofocus />

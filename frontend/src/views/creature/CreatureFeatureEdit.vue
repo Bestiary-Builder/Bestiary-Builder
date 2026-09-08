@@ -227,8 +227,7 @@ const saveStatblock2 = async (shouldNotify: boolean): Promise<boolean> => {
 };
 useHotkey("cmd+s", async () => saveStatblock2(true), { inputs: true });
 
-type AutomationTypes = "automation" | "basic-example" | "srd-features/2014" | "srd-features/2024";
-const loadFeature = async (feature: FeatureEntity, apiPath: AutomationTypes) => {
+const loadFeature = async (feature: FeatureEntity) => {
 	if (!data.value)
 		return;
 
@@ -237,26 +236,6 @@ const loadFeature = async (feature: FeatureEntity, apiPath: AutomationTypes) => 
 
 	data.value.features[type][aid] = feature;
 
-	if (apiPath === "basic-example" && feature.automation) {
-		let lastNode;
-
-		if (Array.isArray(feature.automation))
-			lastNode = feature.automation[0].automation[feature.automation[0].automation.length - 1];
-		else
-			lastNode = feature.automation.automation[feature.automation.automation.length - 1];
-
-		if (lastNode.type === "text") {
-			if (typeof (lastNode.text) === "string")
-				feature.description = lastNode.text;
-			else
-				feature.description = "";
-		}
-		else {
-			feature.description = "";
-		}
-
-		data.value.features[type][aid] = feature;
-	}
 	EditAutomationRef.value?.resetVisualEditorState();
 	addToast(`Successfully loaded ${feature.name}!`);
 	await saveStatblock2(false);
@@ -421,7 +400,7 @@ provide("setActionDescription", setDesc);
 			size="24" @click="generateAutomation" />
 		<v-icon-btn v-tooltip="'Change editor'" size="24" icon="mdi:code-block-braces" text="Change editor"
 			@click="EditAutomationRef?.toggleEditor()" />
-		<ImportAutomationUtil @load-feature="(feature, apiPath) => loadFeature(feature, apiPath)" />
+		<ImportAutomationUtil @load-feature="feature => loadFeature(feature)" />
 		<ImportToCharacter :automation="data?.features[type][aid].automation ?? null" />
 		<v-icon-btn v-if="data && store.isMobile" v-tooltip="'Clear automation'" icon="mdi:delete"
 			text="Clear automation" size="24" @click="data.features[type][aid].automation = {}" />

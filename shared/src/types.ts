@@ -756,7 +756,7 @@ export interface Roll {
 export interface Text {
 	type: "text";
 	text: AnnotatedString | AbilityReference;
-	title: string;
+	title?: string;
 }
 
 export interface AbilityReference {

@@ -132,7 +132,7 @@ const changeLogVersionLastViewed = useLocalStorage('changeLogVersionLastViewed',
 			<div id="app-bar-actions" class="d-flex align-center" />
 			<template #append />
 		</v-app-bar>
-		<v-main>
+		<v-main min-height="100vh">
 			<v-alert v-if="!dismissed" class="ma-4" closable title="Update 3.0.0 Released" @click:close="dismiss"
 				icon="$bestiaryBuilder" icon-size="48">
 				Welcome to Bestiary Builder 3.0.0, the biggest and best update to BestiaryBuilder ever.<br>

@@ -7,25 +7,11 @@ import data from "@/staticData/automationDocumentation.json";
 import automationTags from "@/staticData/automationTags.json";
 import bestiaryTags from "@/staticData/bestiaryTags.json";
 import limits from "@/staticData/limits.json";
-import basicExamples from "@/staticData/shared/basicExamples.json";
 import spells from "@/staticData/shared/spells.json";
 import tOF from "@/staticData/shared/textOnlyFeatures.json";
-
 import { app } from "@/utilities/constants";
 
-// Basic example attacks
-app.get("/api/basic-examples/list", async (req, res) => {
-	const names = basicExamples.map(a => a.name);
-	return res.json(names);
-});
-app.get("/api/basic-example/:name", async (req, res) => {
-	const name = decodeURIComponent(req.params.name);
-	const data = basicExamples.find(a => a.name === name);
-	if (data)
-		return res.json(data);
-	else
-		return res.status(404).json({ error: "No example found with that name" });
-});
+
 
 // Actions
 const textOnlyFeatures = {} as { [key: string]: { name: string; description: string; automation: null } };

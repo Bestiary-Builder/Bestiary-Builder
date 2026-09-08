@@ -9,24 +9,19 @@ import { getAvraeCharacterByUpstream, getAvraeCharacters } from "../Characters/u
 import { useLazyAsync, useLazyOptions } from "@/utils/app/useLazyOptions";
 
 const emit = defineEmits<{
-	(e: "loadFeature", feature: FeatureEntity, apiPath: AutomationTypes): void;
+	(e: "loadFeature", feature: FeatureEntity): void;
 }>();
 
 const isOpen = ref(false);
 
 const { addToast } = useToast();
 
-type AutomationTypes = "automation" | "basic-example" | "srd-features/2014" | "srd-features/2024";
+type AutomationTypes = "automation" | "srd-features/2014" | "srd-features/2024";
 type myAutomationSkeletonGroup = {
 	[key: string]: {
 		name: string;
 		id: Id;
 	}[]
-}
-
-interface myAutomationSkeleton {
-	name: string;
-	id: Id;
 }
 
 const fetchList = async <T>(apiPath: string): Promise<T> => {
@@ -42,11 +37,6 @@ const onListError = (error: unknown) =>
 
 const srdFeatures = reactive(useLazyOptions<string>(
 	() => fetchList(`srd-features/${store.user?.SRDVersion === "SRD_2024" ? "2024" : "2014"}/list`),
-	{ onError: onListError },
-));
-
-const basicExamples = reactive(useLazyOptions<string>(
-	() => fetchList("basic-examples/list"),
 	{ onError: onListError },
 ));
 
@@ -77,7 +67,7 @@ const selectAndLoad = async (apiPath: AutomationTypes, name: string, _id: Id | n
 		return;
 	}
 
-	emit("loadFeature", feature, apiPath);
+	emit("loadFeature", feature);
 	isOpen.value = false;
 };
 
@@ -140,28 +130,6 @@ const groupedAutomatedItems = computed(() => {
 							</template>
 						</v-autocomplete>
 					</v-col>
-					<v-col cols="12" class="mt-2">
-						<v-autocomplete :items="basicExamples.items" :loading="basicExamples.loading"
-							label="Import Basic Action" variant="solo-filled"
-							@update:menu="basicExamples.handleMenuOpen"
-							@update:model-value="selected => (selectAndLoad('basic-example', selected || ''))"
-							prepend-inner-icon="mdi:toy-brick">
-							<template #item="{ props, item }">
-								<v-list-item density="compact" style="min-height: 28px">
-									<v-list-item-title v-bind="props">
-										{{ item }}
-									</v-list-item-title>
-								</v-list-item>
-							</template>
-							<template #no-data>
-								<v-list-item>
-									<v-list-item-title>
-										{{ basicExamples.loading ? 'Loading...' : 'No examples found' }}
-									</v-list-item-title>
-								</v-list-item>
-							</template>
-						</v-autocomplete>
-					</v-col>
 					<v-col cols="12">
 						<v-autocomplete :items="groupedAutomatedItems" :loading="myAutomation.loading"
 							item-title="title" label="Select From Automation Collections" variant="solo-filled"
@@ -219,17 +187,9 @@ const groupedAutomatedItems = computed(() => {
 						<v-select v-if="selectedCharacterData" v-model="selectedAttack" variant="solo-filled"
 							:items="selectedCharacterData.overrides.attacks" class="mt-4" item-title="name"
 							label="Choose Character Attack" return-object
-							@update:model-value="(selected) => selected && emit('loadFeature', { name: selected.name, description: '', automation: selected }, 'automation')" />
+							@update:model-value="(selected) => selected && emit('loadFeature', { name: selected.name, description: '', automation: selected })" />
 					</v-col>
 				</v-row>
-
-
-
-
-
-
-
-
 			</v-card-text>
 		</v-card>
 	</v-dialog>
