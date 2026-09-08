@@ -8,7 +8,7 @@ import { addBestiaryEditor, addBookmark, createBestiary, createCreatures, delete
 import { log } from "@/utilities/logger";
 
 import { prepareCreatureStats } from "../creatures/creaturePreparation";
-import { colors, publicLog } from "../external/discord";
+import { privateLog, publicLog } from "../external/discord";
 import { StatblockChecker } from "../external/validation";
 import { possibleUser, requireUser } from "../main/login";
 import { createCollectionService } from "./collections";
@@ -196,6 +196,8 @@ app.post("/api/bestiary/:id/update", requireUser, async (req, res) => {
 	// Public log
 	if (updatedBestiary.status === "public" && bestiary.status !== "public")
 		publicLog(updatedBestiary, updatedBestiary.creatures.map(c => ({ name: c.stats.description.name})), `https://${req.hostname}/bestiary/view/${updatedBestiary.id}`, user, "bestiary");
+	if (updatedBestiary.status === "public" && bestiary.name !== updatedBestiary.name)
+		privateLog(bestiary, updatedBestiary, `https://${req.hostname}/bestiary/view/${updatedBestiary.id}`, user, "bestiary", "rename");
 
 	return res.status(200).json(updatedBestiary);
 });

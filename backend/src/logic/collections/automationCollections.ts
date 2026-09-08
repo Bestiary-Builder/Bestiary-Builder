@@ -7,9 +7,9 @@ import { app, checkBestiaryLimits, checkImageUrl, limits } from "@/utilities/con
 import { addAutomationCollectionBookmark, addAutomationCollectionEditor, createAutomationCollection, createAutomations, deleteAutomationCollection, getAutomationCollection, getAutomationCollectionAutomationCount, getAutomationCollectionsByOwner, getAutomationCollectionsByUser, getAutomationIds, getAutomationsByCollection, getOwnedAutomationCollectionIds, getPrismaClient, getPublicAutomationCollectionsByOwner, incrementAutomationCollectionViewCount, isAutomationCollectionBookmarked, removeAutomationCollectionBookmark, removeAutomationCollectionEditor, updateAutomationCollection, updateAutomationIndexes, updateUserAutomationCollectionIndexes } from "@/utilities/database";
 import { log } from "@/utilities/logger";
 import { prepareAutomationInput } from "../automations/automations";
+import { privateLog, publicLog } from "../external/discord";
 import { possibleUser, requireUser } from "../main/login";
 import { createCollectionService } from "./collections";
-import { publicLog } from "../external/discord";
 
 export type AutomationCollectionWithEditors = AutomationCollection & CollectionWithEditors & { _count: { bookmarkedBy: number } };
 type AutomationCollectionForUser = AutomationCollectionWithEditors & { automations: Automation[]; orderedBy: { index: number }[] };
@@ -171,6 +171,8 @@ app.post("/api/automation-collection/:id/update", requireUser, async (req, res) 
 	// Public log
 	if (updatedCollection.status === "public" && authorization.collection.status !== "public")
 		publicLog(updatedCollection, updatedCollection.automations, `https://${req.hostname}/armory/view/${updatedCollection.id}`, user, "automation collection");
+	if (updatedCollection.status === "public" && authorization.collection.name !== updatedCollection.name)
+		privateLog(authorization.collection, updatedCollection, `https://${req.hostname}/armory/view/${updatedCollection.id}`, user, "automation collection", "rename");
 
 	return res.status(200).json(updatedCollection);
 });

@@ -127,6 +127,7 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: string]
 		environment: data.flavor.environment,
 		image: data.flavor.imageUrl,
 		alignment: data.stats.alignment,
+		tag: "",
 		cr: data.stats.challengeRating ?? 0,
 		xp: data.stats.experiencePoints ?? 0
 	};

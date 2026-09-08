@@ -13,6 +13,7 @@ export default client;
 const channels = {} as {
 	errorLogs?: discord.TextChannel;
 	publicLogs?: discord.TextChannel;
+	privateLogs?: discord.TextChannel;
 	privateFeedback?: discord.TextChannel;
 };
 client.on("clientReady", async () => {
@@ -26,6 +27,7 @@ client.on("clientReady", async () => {
 
 	channels.errorLogs = (await guild.channels.fetch("1188133661208477806")) as discord.TextChannel;
 	channels.publicLogs = (await guild.channels.fetch("1188139329642565722")) as discord.TextChannel;
+	channels.privateLogs = (await guild.channels.fetch("1546958721467424838")) as discord.TextChannel;
 	channels.privateFeedback = (await guild.channels.fetch("1543368742736760942")) as discord.TextChannel;
 });
 
@@ -33,7 +35,7 @@ if (isProduction) {
 	log.on("data", (info) => {
 		if (info.level === "request")
 			return;
-		let message = `[${info.timestamp}] ${info.level.toUpperCase()}`;
+		let message = `[${info.timestamp}] ${info.level.toUpperCase()} ${info.message.trim().slice(0, 100)}`;
 		if (log.levels[info.level] < log.levels.warning) {
 			const attachment = new discord.AttachmentBuilder(Buffer.from(`${info.message}${info.stack ? `\n${info.stack}` : ""}`)).setName("error.txt");
 			if (info.level === "critical")
@@ -69,6 +71,20 @@ export async function publicLog(collection: (Bestiary | AutomationCollection), i
 
 	channels.publicLogs?.send({ embeds: [embed] }).catch(console.error);
 }
+export async function privateLog(before: (Bestiary | AutomationCollection), after: (Bestiary | AutomationCollection), link: string, user: User, type: "bestiary" | "automation collection", action: "rename") {
+	if (!isProduction)
+		return;
+
+	const embed = new discord.EmbedBuilder()
+		.setTitle(`Public ${type} was ${action}d`)
+		.setDescription(`From "${before.name}" to "${after.name}"`)
+		.setAuthor({ name: user.username, iconURL: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` })
+		.setColor(type === "bestiary" ? colors.Blurple : colors.Fuchsia)
+		.setURL(link)
+		.setTimestamp();
+
+	channels.privateLogs?.send({ embeds: [embed] }).catch(console.error);
+}
 
 // Feedback form
 app.post("/api/feedback", possibleUser, async (req, res) => {
@@ -93,7 +109,7 @@ app.post("/api/feedback", possibleUser, async (req, res) => {
 				.setAuthor(user ? { name: user.username, iconURL: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` } : { name: "Anonymous" })
 				.setTitle(type === "idea" ? "Idea" : "Issue")
 				.setDescription(message)
-				.setFooter({ text: route || '' })
+				.setFooter({ text: route || "" })
 				.setTimestamp()
 		]
 	});

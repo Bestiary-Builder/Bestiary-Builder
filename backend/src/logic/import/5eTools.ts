@@ -94,6 +94,7 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 		isProperNoun: data.isNamedCreature ?? false,
 		environment: (data?.environment ?? []).join(", "),
 		faction: "",
+		tag: "",
 		alignment: (() => {
 			const nameMap = {
 				L: "Lawful",
