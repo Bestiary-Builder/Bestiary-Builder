@@ -2,7 +2,7 @@
 import type { Ref } from "vue";
 import type { AttackInteraction, AttackModel, ButtonInteraction, EffectWithTarget, Features } from "~/shared";
 import { Icon } from "@iconify/vue";
-import { computed, inject, ref } from "vue";
+import { computed, inject, nextTick, onMounted, ref, useTemplateRef, watch } from "vue";
 import { useRoute } from "vue-router";
 import { activation_type, defaultNodes, displayNames } from "./util";
 
@@ -50,7 +50,7 @@ const availableNodes = computed(() => {
 	if (!isTargetContext && contextLevel === "root")
 		return ["target", "roll", "text", "variable", "condition", "counter", "spell"];
 	if (isTargetContext && contextLevel === "root")
-		return ["attack", "save", "damage", "temphp", "ieffect2", "roll", "text", "variable", "condition", "counter", "check"];
+		return ["attack", "save", "damage", "temphp", "ieffect2", "roll", "text", "variable", "condition", "counter", "check", "__header__Button Presets", "prone"];
 
 	if (!isTargetContext && (contextLevel === "attacks" || contextLevel === "buttons"))
 		return ["target", "roll", "text", "variable", "condition", "counter", "remove_ieffect", "spell"];
@@ -110,29 +110,143 @@ const addAndSelect = async (node: string) => {
 };
 
 const showControls = inject<Ref<boolean>>("showControls");
+
+const search = ref('')
+const menuOpen = ref(false)
+const highlightedIndex = ref(0)
+
+const btnRef = useTemplateRef("btnRef")
+const searchFieldRef = useTemplateRef("searchFieldRef")
+const listRef = useTemplateRef("listRef")
+
+
+
+const HEADER_PREFIX = '__header__'
+const DIVIDER_TOKEN = '__divider__'
+
+const isHeader = (node: string) => node.startsWith(HEADER_PREFIX)
+const isDivider = (node: string) => node === DIVIDER_TOKEN
+const isSelectable = (node: string) => !isHeader(node) && !isDivider(node)
+const headerTitle = (node: string) => node.slice(HEADER_PREFIX.length)
+
+const filteredNodes = computed(() => {
+	const q = search.value.toLowerCase()
+	const result = []
+	let pendingHeader = null
+	let pendingDivider = false
+
+	for (const node of availableNodes.value) {
+		if (isHeader(node)) {
+			pendingHeader = node
+			continue
+		}
+		if (isDivider(node)) {
+			pendingDivider = true
+			continue
+		}
+
+		const matches = displayNames[node]?.label.toLowerCase().includes(q)
+		if (!matches) continue
+
+		if (pendingDivider && result.length) {
+			result.push(DIVIDER_TOKEN)
+			pendingDivider = false
+		}
+		if (pendingHeader) {
+			result.push(pendingHeader)
+			pendingHeader = null
+		}
+		result.push(node)
+	}
+	return result
+})
+
+// whenever the filtered results change, the first match becomes highlighted —
+// this is what makes plain "type + Enter" select the top result
+watch(filteredNodes, () => {
+	highlightedIndex.value = 0
+})
+
+const onMenuToggle = (isOpen: boolean) => {
+	if (isOpen) {
+		search.value = ''
+		highlightedIndex.value = 0
+		nextTick(() => searchFieldRef.value?.focus())
+	}
+}
+
+const scrollToHighlighted = () => {
+	nextTick(() => {
+		const activeEl = listRef.value?.$el.querySelector('.v-list-item--active')
+		activeEl?.scrollIntoView({ block: 'nearest' })
+	})
+}
+
+const moveHighlight = (delta: number) => {
+	const max = filteredNodes.value.length - 1
+	if (max < 0) return
+	highlightedIndex.value = Math.min(Math.max(highlightedIndex.value + delta, 0), max)
+	scrollToHighlighted()
+}
+const selectNode = (node: string) => {
+	addAndSelect(node)
+	menuOpen.value = false
+	nextTick(() => btnRef.value?.focus())
+}
+
+const onKeydown = (e: KeyboardEvent) => {
+	switch (e.key) {
+		case 'ArrowDown':
+			e.preventDefault()
+			moveHighlight(1)
+			break
+		case 'ArrowUp':
+			e.preventDefault()
+			moveHighlight(-1)
+			break
+		case 'Enter':
+			e.preventDefault()
+			if (filteredNodes.value[highlightedIndex.value]) {
+				selectNode(filteredNodes.value[highlightedIndex.value])
+			}
+			break
+		case 'Escape':
+			menuOpen.value = false
+			nextTick(() => btnRef.value?.focus())
+			break
+	}
+}
+
 </script>
 
 <template>
-	<DropdownMenu v-if="displayNames && showControls" v-model="isOpen" location="bottom center">
-		<template #activator="{ props: dropdownProps }">
-			<p class="tree-row" v-bind="dropdownProps" :style="`--depth: ${depth}`"
-				style="color: rgb(var(--v-theme-surface-bright));">
+	<DropdownMenu v-model="menuOpen" :close-on-content-click="false" @update:model-value="onMenuToggle" :scrim="false"
+		v-if="showControls">
+		<template #activator="{ props }">
+			<p class="tree-row" v-bind="props" :style="`--depth: ${depth}`"
+				style="color: rgb(var(--v-theme-surface-bright));" ref="btnRef">
 				<span class="icon">
 					<Icon icon="mdi:plus-circle" width="1em" color="rgb(var(--v-theme-primary))" />
 				</span><span>{{ automation === null ? 'Create Automation' : 'Add Effect' }}</span>
 			</p>
 		</template>
-		<v-card max-width="300" subtitle="Choose an effect to add." class="pa-4">
-			<v-card-actions>
-				<v-row density="compact">
-					<v-col v-for="node in availableNodes" :key="node" cols="12">
-						<v-btn :key="node" :prepend-icon="displayNames![node]?.icon" size="small"
-							@click="addAndSelect(node)">
-							{{ displayNames[node]?.label }}
-						</v-btn>
-					</v-col>
-				</v-row>
-			</v-card-actions>
+
+		<v-card>
+			<v-card-text class="pb-0">
+				<v-text-field ref="searchFieldRef" v-model="search" density="compact" variant="plain" hide-details
+					placeholder="Search..." persistent-placeholder @keydown="onKeydown" autofocus />
+			</v-card-text>
+
+			<v-list ref="listRef" max-height="300" class="overflow-y-auto">
+				<template v-for="(node, index) in filteredNodes" :key="node + '-' + index">
+					<v-list-subheader v-if="isHeader(node)">{{ headerTitle(node) }}</v-list-subheader>
+					<v-divider v-else-if="isDivider(node)" />
+					<v-list-item v-else :title="displayNames[node]?.label" :prepend-icon="displayNames[node]?.icon"
+						:active="index === highlightedIndex" @click="selectNode(node)"
+						@mouseenter="highlightedIndex = index" />
+				</template>
+				<v-list-item v-if="!filteredNodes.length" title="No matches" disabled />
+			</v-list>
 		</v-card>
 	</DropdownMenu>
 </template>

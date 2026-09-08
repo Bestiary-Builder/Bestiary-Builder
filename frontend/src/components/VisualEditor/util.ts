@@ -23,7 +23,8 @@ export const displayNames: Record<string, { label: string; icon: string }> = {
 	buttons: { label: "Button", icon: "material-symbols:joystick" },
 	save: { label: "Saving Throw", icon: "fa6-solid:recycle" },
 	temphp: { label: "Temp HP", icon: "material-symbols:shield-with-heart" },
-	check: { label: "Ability Check", icon: "twemoji:man-cartwheeling" }
+	check: { label: "Ability Check", icon: "twemoji:man-cartwheeling" },
+	prone: { label: "Prone IEffect", icon: "material-symbols:falling-rounded" }
 } as const;
 
 export const defaultNodes: Record<string, EffectWithTarget> = {
@@ -94,6 +95,20 @@ export const defaultNodes: Record<string, EffectWithTarget> = {
 	spell: {
 		type: "spell",
 		id: 2102
+	},
+	prone: {
+		type: "ieffect2",
+		name: "Prone",
+		buttons: [
+			{
+				label: "Prone",
+				automation: [
+					{
+						type: "remove_ieffect"
+					}
+				]
+			}
+		]
 	}
 };
 
