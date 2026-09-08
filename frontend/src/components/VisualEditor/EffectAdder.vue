@@ -52,9 +52,9 @@ const availableNodes = computed(() => {
 	if (isTargetContext)
 		output = ["attack", "save", "damage", "temphp", "ieffect2", "roll", "text", "variable", "condition", "counter", "check",];
 	if (!isTargetContext && contextLevel !== "buttons")
-		output.push(...["__header__Presets", "basicAttack", "saveForHalfDamage", "saveForHalfDamageWithRecharge", "attackWithPoison", "attackWithGrappleRestrain"])
+		output.push(...["__divider__", "__header__Presets", "basicAttack", "saveForHalfDamage", "saveForHalfDamageWithRecharge", "attackWithPoison", "attackWithGrappleRestrain"])
 	if (isTargetContext && contextLevel !== "buttons")
-		output.push(...["__header__Button Presets", "proneButton", "rechargeButton", "damageStartOfTurnButton"])
+		output.push(...["__divider__", "__header__Button Presets", "proneButton", "rechargeButton", "damageStartOfTurnButton"])
 	if (!isTargetContext && contextLevel === "buttons")
 		output.splice(6, 1, "remove_ieffect")
 	if (isTargetContext && contextLevel === "buttons")
