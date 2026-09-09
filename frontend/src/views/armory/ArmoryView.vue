@@ -11,6 +11,7 @@ import AutomationList from "@/components/Automations/AutomationList.vue";
 import { capitalizeFirstLetter } from "~/shared";
 import { store } from "@/utils/store";
 import CollectionHeader from "@/components/Collections/CollectionHeader.vue";
+import { downloadFile } from "@/utils/app/export";
 
 const {
 	collection,
@@ -34,42 +35,19 @@ onMounted(async () => {
 
 async function exportCollection(asFile: boolean) {
 	if (asFile) {
-		const file = new File(
-			[
-				JSON.stringify(
-					items.value?.map(obj => obj.automation),
-					null,
-					2
-				)
-			],
-			"items.txt",
-			{
-				type: "text/plain"
-			}
-		);
-
-		// https://javascript.plainenglish.io/javascript-create-file-c36f8bccb3be
-		const link = document.createElement("a");
-		const url = URL.createObjectURL(file);
-
-		link.href = url;
-		link.download = file.name;
-		document.body.appendChild(link);
-		link.click();
-
-		document.body.removeChild(link);
-		window.URL.revokeObjectURL(url);
+		downloadFile(items.value || [], `${collection.value?.name} from Bestiary Builder`)
+		void getUmami()?.track("Export automation collection to file view");
 	}
 	else {
 		await navigator.clipboard.writeText(
 			JSON.stringify(
-				items.value?.map(obj => obj.automation),
+				items.value,
 				null,
 				2
 			)
 		);
 		addToast("Exported this collection to your clipboard.");
-		void getUmami()?.track("Export collection to clipboard");
+		void getUmami()?.track("Export automation collection to clipboard view");
 	}
 }
 </script>

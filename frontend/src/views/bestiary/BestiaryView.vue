@@ -9,6 +9,7 @@ import { useToast } from "@/utils/app/toast";
 import { useFetch } from "@/utils/utils";
 import CreatureList from "@/components/Bestiary/CreatureList.vue";
 import CollectionHeader from "@/components/Collections/CollectionHeader.vue";
+import { downloadFile } from "@/utils/app/export";
 
 const {
 	collection,
@@ -65,43 +66,28 @@ async function exportBestiary(asFile: boolean) {
 		return;
 	}
 
-	if (asFile) {
-		const file = new File(
-			[
+	async function exportBestiary(asFile: boolean) {
+		const creatures = await getAllFullCreatures();
+		if (!creatures) {
+			addToast("Failed to export bestiary: no creatures found.", { color: "error" });
+			return;
+		}
+
+		if (asFile) {
+			downloadFile(creatures.map(creature => creature.stats), `${collection.value?.name} from Bestiary Builder`)
+			void getUmami()?.track("Export bestiary to file view");
+		}
+		else {
+			await navigator.clipboard.writeText(
 				JSON.stringify(
-					creatures.map(obj => obj.stats),
+					items.value,
 					null,
 					2
 				)
-			],
-			`${collection.value?.name || ""} from Bestiary Builder.txt`,
-			{
-				type: "text/plain"
-			}
-		);
-
-		// https://javascript.plainenglish.io/javascript-create-file-c36f8bccb3be
-		const link = document.createElement("a");
-		const url = URL.createObjectURL(file);
-
-		link.href = url;
-		link.download = file.name;
-		document.body.appendChild(link);
-		link.click();
-
-		document.body.removeChild(link);
-		window.URL.revokeObjectURL(url);
-	}
-	else {
-		await navigator.clipboard.writeText(
-			JSON.stringify(
-				creatures.map(obj => obj.stats),
-				null,
-				2
-			)
-		);
-		addToast("Exported this bestiary to your clipboard.");
-		void getUmami()?.track("Export bestiary to clipboard");
+			);
+			addToast("Exported this bestiary to your clipboard.");
+			void getUmami()?.track("Export bestiary to clipboard view");
+		}
 	}
 }
 

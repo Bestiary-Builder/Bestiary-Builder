@@ -4,6 +4,7 @@ import { useRoute } from "vue-router";
 import { getUmami } from "@/utils/app/analytics";
 import { useToast } from "@/utils/app/toast";
 import { useFetch } from "@/utils/utils";
+import { downloadFile } from "@/utils/app/export";
 
 const { data } = defineProps<{ data: Statblock }>();
 const { addToast, removeToast, updateToast } = useToast();
@@ -18,28 +19,7 @@ const exportStatblockToClipBoard = async () => {
 
 const exportStatblockToFile = async () => {
 	void getUmami()?.track("Export statblock to file");
-
-	const file = new File(
-		[
-			JSON.stringify(data)
-		],
-		`${data.description.name} from Bestiary Builder.txt`,
-		{
-			type: "text/plain"
-		}
-	);
-
-	// https://javascript.plainenglish.io/javascript-create-file-c36f8bccb3be
-	const link = document.createElement("a");
-	const url = URL.createObjectURL(file);
-
-	link.href = url;
-	link.download = file.name;
-	document.body.appendChild(link);
-	link.click();
-
-	document.body.removeChild(link);
-	window.URL.revokeObjectURL(url);
+	downloadFile(data, `${data.description.name} from Bestiary Builder`)
 };
 
 const exportHomebrewery = async () => {
@@ -55,7 +35,6 @@ const exportHomebrewery = async () => {
 		}
 		else {
 			addToast(error, { color: "error" });
-			;
 		}
 	}
 	catch (err) {

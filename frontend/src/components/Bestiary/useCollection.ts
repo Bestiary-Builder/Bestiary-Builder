@@ -254,6 +254,7 @@ export const useCollection = <T extends CollectionType>(type: T) => {
 		}
 		else {
 			addToast(error, { color: "error" });
+			throw error
 		}
 	};
 

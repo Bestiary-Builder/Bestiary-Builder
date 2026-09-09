@@ -15,6 +15,7 @@ import { useFetch } from "@/utils/utils";
 import { bestiaryTags, defaultStatblock, globalLimits } from "~/shared";
 import { useLazyOptions } from "@/utils/app/useLazyOptions";
 import CollectionHeader from "@/components/Collections/CollectionHeader.vue";
+import { downloadFile } from "@/utils/app/export";
 
 const {
 	collection,
@@ -91,42 +92,19 @@ async function exportBestiary(asFile: boolean) {
 	}
 
 	if (asFile) {
-		const file = new File(
-			[
-				JSON.stringify(
-					creatures.map(obj => obj.stats),
-					null,
-					2
-				)
-			],
-			`${collection.value?.name || ""} from Bestiary Builder.txt`,
-			{
-				type: "text/plain"
-			}
-		);
-
-		// https://javascript.plainenglish.io/javascript-create-file-c36f8bccb3be
-		const link = document.createElement("a");
-		const url = URL.createObjectURL(file);
-
-		link.href = url;
-		link.download = file.name;
-		document.body.appendChild(link);
-		link.click();
-
-		document.body.removeChild(link);
-		window.URL.revokeObjectURL(url);
+		downloadFile(creatures.map(creature => creature.stats), `${collection.value?.name} from Bestiary Builder`)
+		void getUmami()?.track("Export bestiary to file edit");
 	}
 	else {
 		await navigator.clipboard.writeText(
 			JSON.stringify(
-				creatures.map(obj => obj.stats),
+				items.value,
 				null,
 				2
 			)
 		);
 		addToast("Exported this bestiary to your clipboard.");
-		void getUmami()?.track("Export bestiary to clipboard");
+		void getUmami()?.track("Export bestiary to clipboard edit");
 	}
 }
 

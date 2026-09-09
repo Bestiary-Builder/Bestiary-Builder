@@ -11,6 +11,7 @@ import { ACTION_TYPE_MAP } from "./utils";
 import YAML from "yaml";
 import AutomationList from "@/components/Automations/AutomationList.vue";
 import CollectionHeader from "@/components/Collections/CollectionHeader.vue";
+import { downloadFile } from "@/utils/app/export";
 
 const {
 	collection,
@@ -41,42 +42,19 @@ onMounted(async () => {
 
 async function exportCollection(asFile: boolean) {
 	if (asFile) {
-		const file = new File(
-			[
-				JSON.stringify(
-					items.value,
-					null,
-					2
-				)
-			],
-			"items.txt",
-			{
-				type: "text/plain"
-			}
-		);
-
-		// https://javascript.plainenglish.io/javascript-create-file-c36f8bccb3be
-		const link = document.createElement("a");
-		const url = URL.createObjectURL(file);
-
-		link.href = url;
-		link.download = file.name;
-		document.body.appendChild(link);
-		link.click();
-
-		document.body.removeChild(link);
-		window.URL.revokeObjectURL(url);
+		downloadFile(items.value || [], `${collection.value?.name} from Bestiary Builder`)
+		void getUmami()?.track("Export automation collection to file edit");
 	}
 	else {
 		await navigator.clipboard.writeText(
 			JSON.stringify(
-				items,
+				items.value,
 				null,
 				2
 			)
 		);
 		addToast("Exported this collection to your clipboard.");
-		void getUmami()?.track("Export collection to clipboard");
+		void getUmami()?.track("Export automation collection to clipboard edit");
 	}
 }
 
@@ -143,12 +121,15 @@ async function importAutomationsFromJson() {
 	}
 }
 
-const createAutomation = () => {
+const createAutomation = async () => {
 	const data: Partial<Automation> = { name: createOptions.name, description: createOptions.description, automation: { _v: 2, name: createOptions.name, automation: [] } }
 	if (createOptions.activation_type !== 0 && createOptions.activation_type !== null && !Array.isArray(data.automation))
 		data.automation!.activation_type = createOptions.activation_type
-	createItem(data, false)
-	createNewActionOpen.value = false
+	try {
+		await createItem(data, false)
+		createNewActionOpen.value = false
+	} catch { }
+
 
 }
 </script>
@@ -271,7 +252,8 @@ const createAutomation = () => {
 								<v-col>
 									<v-file-input v-model="importFields.attackJson" label="Attack JSON"
 										hint="JSON (.json/.txt) or YAML (.yaml, .txt) formatted as a list of automated actions"
-										persistent-hint accept=".txt,.json,.yaml" />
+										persistent-hint accept=".txt,.json,.yaml" prepend-inner-icon="mdi:attachment"
+										prepe prepend-icon="" />
 								</v-col>
 							</v-row>
 						</v-card-text>
