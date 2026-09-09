@@ -409,7 +409,7 @@ provide("setActionDescription", setDesc);
 			text="Copy automation" size="24" @click="EditAutomationRef?.copyAutomation()" />
 	</Breadcrumbs>
 	<div v-if="data" class="content">
-		<div class="pa-0">
+		<v-card class="pa-4" color="surface-light">
 			<v-row>
 				<v-col cols="4">
 					<v-text-field v-model="data.features[type][aid].name" type="text" label="Feature name"
@@ -458,7 +458,7 @@ provide("setActionDescription", setDesc);
 					</span>
 				</v-col>
 			</v-row>
-		</div>
+		</v-card>
 		<EditAutomation ref="EditAutomationRef" v-model="data.features[type][aid].automation"
 			v-model:is-visual-editor="isVisualEditor" :name="data.features[type][aid].name" :no-list-attack="false" />
 	</div>

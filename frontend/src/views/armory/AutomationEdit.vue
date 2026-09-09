@@ -19,6 +19,7 @@ import { loader } from '@guolao/vue-monaco-editor';
 import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 import { buildCounterOutput } from "@/components/Characters/utils";
 import { getUmami } from "@/utils/app/analytics";
+import { displayTypeOptions, resetOnOptions } from "./utils";
 
 const $router = useRouter();
 const $route = useRoute();
@@ -378,22 +379,6 @@ const addConsumable = () => {
 
 const rules = useRules()
 
-const displayTypeOptions = [
-	{ title: '0/1 Default', value: null },
-	{ title: '〇◉ Bubble', value: 'bubble' },
-	{ title: '▢▣ Square', value: 'square' },
-	{ title: '⬡⬢ Hex', value: 'hex' },
-	{ title: '☆★ Star', value: 'star' },
-]
-
-const resetOnOptions = [
-	{ title: 'Default', value: null },
-	{ title: 'Short Rest ', value: 'short' },
-	{ title: 'Long Rest', value: 'long' },
-	{ title: 'None (never)', value: 'none' },
-]
-
-
 let providerDisposable: Monaco.IDisposable | undefined
 
 const registerProvider = (monaco: typeof Monaco) => {
@@ -471,7 +456,7 @@ const copySingleCounter = (consumable: AutomationConsumable) => {
 			text="Copy automation" size="24" @click="EditAutomationRef?.copyAutomation()" />
 	</Breadcrumbs>
 	<div v-if="data" class="content">
-		<div class="pa-0">
+		<v-card class="pa-4" color="surface-light">
 			<v-row>
 				<v-col cols="4">
 					<v-text-field v-model="data.name" type="text" label="Feature name" :minlength="globalLimits.nameMin"
@@ -510,14 +495,14 @@ const copySingleCounter = (consumable: AutomationConsumable) => {
 					</span>
 				</v-col>
 			</v-row>
-		</div>
+		</v-card>
 
 		<EditAutomation ref="EditAutomationRef" v-model="data.automation" v-model:is-visual-editor="isVisualEditor"
 			:name="data.name" />
 
 		<v-card title="Custom Counters" class="pa-4 d-flex flex-column mt-4"
 			subtitle="You can define Custom Counters for Avrae Characters here. Importing this action will import this Custom Counter too."
-			bg-color="surface-light" color="surface-light">
+			color="surface-light">
 			<v-card-text class="flex-grow-1" bg-color="surface-light">
 				<v-list density="compact" class="text-left my-4" max-height="1000">
 					<v-list-group v-for="consumable, idx of data.consumables">

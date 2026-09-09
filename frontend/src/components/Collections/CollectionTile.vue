@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import type { AutomationCollectionExtended, BestiaryExtended } from "~/shared";
 import { computed, ref } from "vue";
-import { store } from "@/utils/store.js";
+import { store } from "@/utils/store";
 import StatusIcon from "../Bestiary/StatusIcon.vue";
 import UserBanner from "../Bestiary/UserBanner.vue";
-import { lastUpdated } from "./utils.js";
+import { lastUpdated } from "./utils";
 
 const { data } = defineProps<{ data: AutomationCollectionExtended | (BestiaryExtended & { creatureCount: number }) }>();
 

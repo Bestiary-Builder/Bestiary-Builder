@@ -159,7 +159,8 @@ onMounted(() => {
 			<v-col cols="4">
 				<div class="tree" ref="tree">
 					<SectionHeader title="Effect Tree" />
-					<TreeRoot v-if="automation" :data="automation" :depth="0" :no-list-attack="noListAttack" />
+					<TreeRoot v-if="automation" :data="automation" :depth="0" :no-list-attack="noListAttack"
+						:style="$route.path.startsWith('/automation/view') || $route.path.startsWith('/creature/view') ? { opacity: 'var(--v-disabled-opacity)' } : {}" />
 					<p v-else class="container" style="padding: 6px">
 						<EffectAdder :context="['root']" :name="name" />
 					</p>

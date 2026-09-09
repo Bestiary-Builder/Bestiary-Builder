@@ -3,7 +3,7 @@ import { capitalizeFirstLetter, type AutomationCollectionExtended, type Bestiary
 import StatusIcon from "../Bestiary/StatusIcon.vue";
 import UserBanner from "../Bestiary/UserBanner.vue";
 import { ref } from "vue";
-import { lastUpdated } from "./utils.js";
+import { lastUpdated } from "./utils";
 import MarkdownIt from "markdown-it";
 
 const { collection, canEdit, isBestiary = true, itemCount, bookmarked = false } = defineProps<{ collection: BestiaryExtended | AutomationCollectionExtended, canEdit: boolean, isBestiary?: boolean, itemCount: number, bookmarked?: boolean }>()

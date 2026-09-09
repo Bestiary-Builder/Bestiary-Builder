@@ -11,6 +11,7 @@ import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { buildCounterOutput } from "@/components/Characters/utils";
 import { getUmami } from "@/utils/app/analytics";
+import { displayTypeOptions, resetOnOptions } from "./utils";
 
 const $router = useRouter();
 const $route = useRoute();
@@ -63,20 +64,7 @@ provide("setActionName", false);
 provide("setActionDescription", false);
 
 
-const displayTypeOptions = [
-	{ title: '0/1 Default', value: null },
-	{ title: '〇◉ Bubble', value: 'bubble' },
-	{ title: '▢▣ Square', value: 'square' },
-	{ title: '⬡⬢ Hex', value: 'hex' },
-	{ title: '☆★ Star', value: 'star' },
-]
 
-const resetOnOptions = [
-	{ title: 'Default', value: null },
-	{ title: 'Short Rest ', value: 'short' },
-	{ title: 'Long Rest', value: 'long' },
-	{ title: 'None (never)', value: 'none' },
-]
 
 
 const copySingleCounter = (consumable: AutomationConsumable) => {
@@ -108,7 +96,7 @@ const copySingleCounter = (consumable: AutomationConsumable) => {
 			text="Copy automation" size="24" @click="EditAutomationRef?.copyAutomation()" />
 	</Breadcrumbs>
 	<div v-if="data" class="content">
-		<div class="pa-0">
+		<v-card class="pa-4" color="surface-light">
 			<v-row>
 				<v-col cols="4">
 					<v-text-field v-model="data.name" type="text" label="Feature name" :minlength="globalLimits.nameMin"
@@ -121,7 +109,7 @@ const copySingleCounter = (consumable: AutomationConsumable) => {
 					<Editor v-model="data.description" :height="100" />
 				</v-col>
 			</v-row>
-		</div>
+		</v-card>
 
 		<v-defaults-provider
 			:defaults="{ VTextField: { disabled: true }, VSelect: { disabled: true }, VNumberInput: { disabled: true }, VComboBox: { disabled: true }, VCheckbox: { disabled: true }, VAutocomplete: { disabled: true }, VTextArea: { disabled: true }, VField: { disabled: true } }">

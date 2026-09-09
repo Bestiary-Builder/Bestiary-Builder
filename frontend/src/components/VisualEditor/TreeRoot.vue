@@ -6,7 +6,7 @@ import { inject } from "vue";
 import { VueDraggable } from "vue-draggable-plus";
 import EffectAdder from "./EffectAdder.vue";
 import TreeNode from "./TreeNode.vue";
-import { draggingProps } from "./util.js";
+import { draggingProps } from "./util";
 
 const { data, depth = 0, parentType = "root", rootType = "root", context = ["root"], noListAttack = false } = defineProps<{ data: AttackModel | AttackModel[]; depth?: number; parentType?: string; rootType?: "root" | "button" | "attack"; context?: string[]; noListAttack?: boolean }>();
 
