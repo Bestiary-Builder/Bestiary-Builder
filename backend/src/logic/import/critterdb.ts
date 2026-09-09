@@ -125,6 +125,7 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: string]
 		isProperNoun: data.flavor.nameIsProper,
 		faction: data.flavor.faction,
 		environment: data.flavor.environment,
+		tag: "",
 		image: data.flavor.imageUrl,
 		alignment: data.stats.alignment,
 		tag: "",

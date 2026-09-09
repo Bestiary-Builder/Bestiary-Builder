@@ -1,7 +1,7 @@
 import type { CollectionWithEditors } from "./collections";
-import type { AttackModel, Automation, AutomationCollection } from "~/shared";
+import { automationCollectionTags, type AttackModel, type Automation, type AutomationCollection } from "~/shared";
 import type { BestiaryStatus } from "~/shared/src/prisma-types";
-import automationTags from "@/staticData/automationTags.json";
+
 import { checkBadwords } from "@/utilities/badwords";
 import { app, checkBestiaryLimits, checkImageUrl, limits } from "@/utilities/constants";
 import { addAutomationCollectionBookmark, addAutomationCollectionEditor, createAutomationCollection, createAutomations, deleteAutomationCollection, getAutomationCollection, getAutomationCollectionAutomationCount, getAutomationCollectionsByOwner, getAutomationCollectionsByUser, getAutomationIds, getAutomationsByCollection, getOwnedAutomationCollectionIds, getPrismaClient, getPublicAutomationCollectionsByOwner, incrementAutomationCollectionViewCount, isAutomationCollectionBookmarked, removeAutomationCollectionBookmark, removeAutomationCollectionEditor, updateAutomationCollection, updateAutomationIndexes, updateUserAutomationCollectionIndexes } from "@/utilities/database";
@@ -45,7 +45,7 @@ function normalizeAutomationCollectionData(input: Partial<AutomationCollection>)
 		image: "",
 		status: "private",
 		...input,
-		tags: (input.tags ?? []).filter(tag => automationTags.includes(tag))
+		tags: (input.tags ?? []).filter(tag => automationCollectionTags.includes(tag))
 	};
 }
 
@@ -235,6 +235,8 @@ app.post("/api/automation-collection/:id/addautomations", requireUser, async (re
 	const inputData = req.body.data as ((Partial<Automation> & { _v: undefined }) | AttackModel | AttackModel[])[];
 	if (!Array.isArray(inputData))
 		return res.status(400).json({ error: "Failed to parse automation data." });
+
+	console.log(inputData)
 	const data: Partial<Automation>[] = inputData.map((a) => {
 		if (Array.isArray(a)) { // AttackModel[]
 			return {
@@ -254,7 +256,9 @@ app.post("/api/automation-collection/:id/addautomations", requireUser, async (re
 			return {
 				name: a.name,
 				description: a.description,
-				automation: a.automation
+				automation: a.automation,
+				consumables: a.consumables,
+				tag: a.tag
 			};
 		}
 

@@ -1,7 +1,6 @@
 import type { CollectionWithEditors } from "./collections";
-import type { Statblock, User } from "~/shared";
+import { bestiaryTags, type Statblock, type User } from "~/shared";
 import type { Bestiary, BestiaryCreateInput, BestiaryStatus, Creature } from "~/shared/src/prisma-types";
-import bestiaryTags from "@/staticData/bestiaryTags.json";
 import { checkBadwords } from "@/utilities/badwords";
 import { app, checkBestiaryLimits, checkCreatureAmountLimit, checkImageUrl, limits } from "@/utilities/constants";
 import { addBestiaryEditor, addBookmark, createBestiary, createCreatures, deleteBestiary, getBestiariesByOwner, getBestiariesByUser, getBestiary, getBestiaryCreatureCount, getBestiaryCreatureIds, getBestiaryFull, getOwnedBestiaryIds, getPrismaClient, getPublicBestiariesByOwner, incrementBestiaryViewCount, isBestiaryBookmarked, removeBestiaryEditor, removeBookmark, updateBestiary, updateBestiaryCreatureIndexes, updateUserBestiaryIndexes } from "@/utilities/database";
@@ -195,7 +194,7 @@ app.post("/api/bestiary/:id/update", requireUser, async (req, res) => {
 	log.info(`Updated bestiary with the id ${data.id}`);
 	// Public log
 	if (updatedBestiary.status === "public" && bestiary.status !== "public")
-		publicLog(updatedBestiary, updatedBestiary.creatures.map(c => ({ name: c.stats.description.name})), `https://${req.hostname}/bestiary/view/${updatedBestiary.id}`, user, "bestiary");
+		publicLog(updatedBestiary, updatedBestiary.creatures.map(c => ({ name: c.stats.description.name })), `https://${req.hostname}/bestiary/view/${updatedBestiary.id}`, user, "bestiary");
 	if (updatedBestiary.status === "public" && bestiary.name !== updatedBestiary.name)
 		privateLog(bestiary, updatedBestiary, `https://${req.hostname}/bestiary/view/${updatedBestiary.id}`, user, "bestiary", "rename");
 

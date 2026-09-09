@@ -1,17 +1,13 @@
 <script setup lang="ts">
-import { capitalizeFirstLetter, globalLimits, type AttackModel, type Automation } from "~/shared";
+import { automationCollectionTags, globalLimits, type Automation } from "~/shared";
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useRules } from "vuetify/labs/rules";
-import StatusIcon from "@/components/Bestiary/StatusIcon.vue";
 import { useCollection } from "@/components/Bestiary/useCollection";
 import UserBanner from "@/components/Bestiary/UserBanner.vue";
-import ImportToCharacter from "@/components/Characters/ImportToCharacter.vue";
-import Markdown from "@/components/Global/Markdown.vue";
 import SectionHeader from "@/components/VisualEditor/Nodes/shared/SectionHeader.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { useToast } from "@/utils/app/toast";
-import { store } from "@/utils/store";
-import { ACTION_TYPE_MAP, getActionTypeLabel } from "./utils";
+import { ACTION_TYPE_MAP } from "./utils";
 import YAML from "yaml";
 import AutomationList from "@/components/Automations/AutomationList.vue";
 import CollectionHeader from "@/components/Collections/CollectionHeader.vue";
@@ -48,7 +44,7 @@ async function exportCollection(asFile: boolean) {
 		const file = new File(
 			[
 				JSON.stringify(
-					items.value?.map(obj => obj.automation),
+					items.value,
 					null,
 					2
 				)
@@ -74,7 +70,7 @@ async function exportCollection(asFile: boolean) {
 	else {
 		await navigator.clipboard.writeText(
 			JSON.stringify(
-				items.value?.map(obj => obj.automation),
+				items,
 				null,
 				2
 			)
@@ -171,7 +167,7 @@ const createAutomation = () => {
 				isCurrent: true
 			}
 		]">
-			<v-icon-btn v-tooltip="'Create creature'" text="Create creature" icon="mdi:plus" size="24" class="inverted"
+			<v-icon-btn v-tooltip="'Create action'" text="Create action" icon="mdi:plus" size="24" class="inverted"
 				@click="createNewActionOpen = !createNewActionOpen" />
 
 			<v-dialog v-if="isOwner" max-width="950">
@@ -205,8 +201,8 @@ const createAutomation = () => {
 									:items="[{ value: 'private', title: 'Private' }, { value: 'unlisted', title: 'Unlisted' }, { value: 'public', title: 'Public' }]" />
 							</v-col>
 							<v-col cols="6">
-								<v-select v-model="collection.tags" multiple :items="store.tags || []" label="Tags"
-									chips closable-chips />
+								<v-select v-model="collection.tags" multiple :items="automationCollectionTags"
+									label="Tags" chips closable-chips />
 							</v-col>
 
 							<v-col cols="12" class="px-4">
@@ -269,7 +265,7 @@ const createAutomation = () => {
 				</template>
 
 				<template #default="{ isActive }">
-					<v-card title="Import bestiary" max-width="800" class="pa-4">
+					<v-card title="Import actions" max-width="800" class="pa-4">
 						<v-card-text>
 							<v-row>
 								<v-col>

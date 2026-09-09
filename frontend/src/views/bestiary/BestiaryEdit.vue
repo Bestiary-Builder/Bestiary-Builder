@@ -12,7 +12,7 @@ import { getUmami } from "@/utils/app/analytics";
 import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
-import { defaultStatblock, globalLimits } from "~/shared";
+import { bestiaryTags, defaultStatblock, globalLimits } from "~/shared";
 import { useLazyOptions } from "@/utils/app/useLazyOptions";
 import CollectionHeader from "@/components/Collections/CollectionHeader.vue";
 
@@ -374,8 +374,8 @@ const hoverCreature = async (id: CreatureMetaData["id"]) => {
 									:items="[{ value: 'private', title: 'Private' }, { value: 'unlisted', title: 'Unlisted' }, { value: 'public', title: 'Public' }]" />
 							</v-col>
 							<v-col cols="6">
-								<v-select v-model="collection.tags" multiple :items="store.tags || []" label="Tags"
-									chips closable-chips />
+								<v-select v-model="collection.tags" multiple :items="bestiaryTags" label="Tags" chips
+									closable-chips />
 							</v-col>
 
 							<v-col cols="12" class="px-4">

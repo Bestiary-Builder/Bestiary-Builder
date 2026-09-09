@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { globalLimits, type BestiaryExtended } from "~/shared";
+import { bestiaryTags, globalLimits, type BestiaryExtended } from "~/shared";
 import { onMounted, reactive, ref, toValue } from "vue";
 import { VueDraggable } from "vue-draggable-plus";
 import { useRouter } from "vue-router";
@@ -148,7 +148,7 @@ const newBestiaryIsOpen = ref(false);
 					</v-col>
 					<v-col>
 						<div>
-							<v-select v-model="createOptions.tags" multiple :items="store.tags || []" label="Tags" chips
+							<v-select v-model="createOptions.tags" multiple :items="bestiaryTags" label="Tags" chips
 								closable-chips />
 						</div>
 					</v-col>

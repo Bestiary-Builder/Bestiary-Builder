@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { BestiaryExtended, BestiaryWithCount } from "~/shared";
+import { bestiaryTags, type BestiaryExtended, type BestiaryWithCount } from "~/shared";
 import { refDebounced } from "@vueuse/core";
 import { onMounted, ref, watch } from "vue";
 import CollectionTile from "@/components/Collections/CollectionTile.vue";
@@ -99,7 +99,7 @@ watch(debouncedSearch, async () => searchBestiaries());
 				<v-spacer />
 				<v-card-text>
 					<v-text-field v-model="search" label="Search text" />
-					<v-select v-model="selectedTags" label="Select Tags" multiple :items="store.tags || []" chips
+					<v-select v-model="selectedTags" label="Select Tags" multiple :items="bestiaryTags" chips
 						closable-chips />
 				</v-card-text>
 			</v-card>

@@ -8,7 +8,7 @@ import { getUmami } from "@/utils/app/analytics";
 import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
-import { globalLimits } from "~/shared";
+import { automationCollectionTags, globalLimits } from "~/shared";
 const { addToast, updateToast } = useToast();
 
 const automationCollections = ref<AutomationCollectionExtended[]>([]);
@@ -142,7 +142,7 @@ const newCollectionIsOpen = ref(false);
 					</v-col>
 					<v-col>
 						<div>
-							<v-select v-model="createOptions.tags" multiple :items="store.automationTags || []"
+							<v-select v-model="createOptions.tags" multiple :items="automationCollectionTags"
 								label="Tags" chips closable-chips />
 						</div>
 					</v-col>

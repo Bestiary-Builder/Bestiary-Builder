@@ -64,12 +64,11 @@ provide("setActionDescription", false);
 
 
 const displayTypeOptions = [
-	{ title: '〇◉ Default', value: 'default' },
+	{ title: '0/1 Default', value: null },
 	{ title: '〇◉ Bubble', value: 'bubble' },
 	{ title: '▢▣ Square', value: 'square' },
 	{ title: '⬡⬢ Hex', value: 'hex' },
 	{ title: '☆★ Star', value: 'star' },
-	{ title: 'None', value: null },
 ]
 
 const resetOnOptions = [
@@ -129,7 +128,7 @@ const copySingleCounter = (consumable: AutomationConsumable) => {
 			<EditAutomation ref="EditAutomationRef" v-model="data.automation" v-model:is-visual-editor="isVisualEditor"
 				:name="data.name" />
 
-			<v-card title="Custom Counters" class="pa-4 d-flex flex-column"
+			<v-card title="Custom Counters" class="pa-4 d-flex flex-column mt-4"
 				subtitle="Importing this action to your Avrae Character will import this Custom Counter too."
 				bg-color="surface-light" color="surface-light">
 				<v-card-text class="flex-grow-1" bg-color="surface-light">

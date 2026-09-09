@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import type { AutomationCollectionExtended, AutomationCollectionWithCount } from "~/shared";
+import { automationCollectionTags, type AutomationCollectionExtended, type AutomationCollectionWithCount } from "~/shared";
 import { refDebounced } from "@vueuse/core";
 import { onMounted, ref, watch } from "vue";
 import CollectionTile from "@/components/Collections/CollectionTile.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { useToast } from "@/utils/app/toast";
-import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 
 onMounted(async () => {
@@ -99,8 +98,8 @@ watch(debouncedSearch, async () => searchCollections());
 				<v-spacer />
 				<v-card-text>
 					<v-text-field v-model="search" label="Search text" />
-					<v-select v-model="selectedTags" label="Select Tags" multiple :items="store.tags || []" chips
-						closable-chips />
+					<v-select v-model="selectedTags" label="Select Tags" multiple :items="automationCollectionTags"
+						chips closable-chips />
 				</v-card-text>
 			</v-card>
 		</DropdownMenu>

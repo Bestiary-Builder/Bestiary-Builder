@@ -339,3 +339,36 @@ export const globalLimits = {
     "creatureAmount": 1000,
     "imageFormats": ["png", "jpg", "jpeg", "webp", "gif", "apng"]
 }
+
+export const bestiaryTags = [
+    "Aberrations",
+    "Beasts",
+    "Celestials",
+    "Constructs",
+    "Dragons",
+    "Elementals",
+    "Fey",
+    "Fiends",
+    "Giants",
+    "Humanoids",
+    "Monstrosities",
+    "Oozes",
+    "Plants",
+    "Undead",
+    "Mythic",
+    "Legendary"
+]
+
+export const automationCollectionTags = [
+    "Item",
+    "Monster",
+    "5e2014",
+    "5e2024",
+    "Subclass",
+    "Class",
+    "Race",
+    "Spell",
+    "Feat",
+    "Utility",
+    "Initiative"
+]

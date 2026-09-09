@@ -18,7 +18,8 @@ export function prepareAutomationInput(input: Partial<Automation>, defaultName: 
 		automation: input.automation ?? null,
 		name: input.name ?? defaultName,
 		tag: input.tag ?? "",
-		description: input.description ?? ""
+		description: input.description ?? "",
+		consumables: input.consumables ?? []
 	};
 	const limitError = checkAutomationLimits(data);
 	if (limitError)

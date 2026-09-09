@@ -4,8 +4,6 @@ import SRDCreatures2014 from "@/staticData/2014/SRDCreatures2014.json";
 import SRDAttacks2024 from "@/staticData/2024/SRDAttacks2024.json";
 import SRDCreatures2024 from "@/staticData/2024/SRDCreatures2024.json";
 import data from "@/staticData/automationDocumentation.json";
-import automationTags from "@/staticData/automationTags.json";
-import bestiaryTags from "@/staticData/bestiaryTags.json";
 import spells from "@/staticData/shared/spells.json";
 import tOF from "@/staticData/shared/textOnlyFeatures.json";
 import { app } from "@/utilities/constants";
@@ -108,14 +106,8 @@ getLimitedUse().then(x => limiteduse = x.data);
 app.get("/api/gamedata/limiteduse", async (req, res) => {
 	res.json(limiteduse);
 });
-// json files
-app.get("/api/tags", async (req, res) => {
-	res.json(bestiaryTags);
-});
-app.get("/api/automationTags", async (req, res) => {
-	res.json(automationTags);
-});
 
+// json files
 app.get("/api/automationDocumentation", async (req, res) => {
 	res.json(data);
 });
