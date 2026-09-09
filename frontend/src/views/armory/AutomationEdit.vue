@@ -330,13 +330,14 @@ watch(() => data.value?.description, (newDesc) => {
 		if (Array.isArray(automation))
 			auto = automation[0];
 
-		for (const field of ((auto as AttackModel)?.automation || []).reverse() || []) {
+		const toTraverse = (auto as AttackModel)?.automation || [];
+		for (let i = toTraverse.length - 1; i >= 0; i--) {
+			const field = toTraverse[i];
 			if (field.type === "text") {
 				field.text = newDesc || "";
-				return;
+				break;
 			}
 		}
-		(auto as AttackModel).automation.reverse();
 	}
 });
 
