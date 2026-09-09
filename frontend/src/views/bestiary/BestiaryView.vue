@@ -66,31 +66,22 @@ async function exportBestiary(asFile: boolean) {
 		return;
 	}
 
-	async function exportBestiary(asFile: boolean) {
-		const creatures = await getAllFullCreatures();
-		if (!creatures) {
-			addToast("Failed to export bestiary: no creatures found.", { color: "error" });
-			return;
-		}
-
-		if (asFile) {
-			downloadFile(creatures.map(creature => creature.stats), `${collection.value?.name} from Bestiary Builder`)
-			void getUmami()?.track("Export bestiary to file view");
-		}
-		else {
-			await navigator.clipboard.writeText(
-				JSON.stringify(
-					items.value,
-					null,
-					2
-				)
-			);
-			addToast("Exported this bestiary to your clipboard.");
-			void getUmami()?.track("Export bestiary to clipboard view");
-		}
+	if (asFile) {
+		downloadFile(creatures.map(creature => creature.stats), `${collection.value?.name} from Bestiary Builder`)
+		void getUmami()?.track("Export bestiary to file view");
+	}
+	else {
+		await navigator.clipboard.writeText(
+			JSON.stringify(
+				items.value,
+				null,
+				2
+			)
+		);
+		addToast("Exported this bestiary to your clipboard.");
+		void getUmami()?.track("Export bestiary to clipboard view");
 	}
 }
-
 
 const copyManager = useTemplateRef("copyManager")
 
