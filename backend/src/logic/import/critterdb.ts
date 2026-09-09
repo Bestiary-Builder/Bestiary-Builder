@@ -114,7 +114,7 @@ async function getLinkSharedBestiaryCreatures(id: string, apiBase: string) {
 }
 
 const tData = [{}];
-function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: string]: string[] }] | null {
+export function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: string]: string[] }] | null {
 	const outputData = {} as Statblock;
 	if (!data.flavor || !data.stats)
 		return null;
@@ -128,7 +128,6 @@ function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: string]
 		tag: "",
 		image: data.flavor.imageUrl,
 		alignment: data.stats.alignment,
-		tag: "",
 		cr: data.stats.challengeRating ?? 0,
 		xp: data.stats.experiencePoints ?? 0
 	};

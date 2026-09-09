@@ -226,7 +226,7 @@ exports[`default statblock to be equal to snapshot 1`] = `
       "value": 0,
     },
   },
-  "speed": "30ft.",
+  "speed": "30 ft.",
   "spellcasting": {
     "caster_dc": 10,
     "caster_level": 0,
