@@ -8,7 +8,7 @@ import { getUmami } from "@/utils/app/analytics";
 import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { sendToLogin, useFetch } from "@/utils/utils";
-import { SupporterStatus } from "~/shared";
+import { defaultInterestingStatblock, SupporterStatus } from "~/shared";
 import { useTheme } from "vuetify";
 import { useThemePersistence } from "@/utils/app/theme";
 import { useStatblockColors } from "@/utils/app/customTheme";
@@ -42,248 +42,6 @@ const saveSettings = async () => {
 	}
 };
 
-const creatureData = {
-	core: {
-		race: "Dragon",
-		size: "Medium",
-		speed: [
-			{
-				name: "Walk",
-				unit: "ft",
-				value: 30,
-				comment: ""
-			},
-			{
-				name: "Fly",
-				unit: "ft",
-				value: 60,
-				comment: ""
-			},
-			{
-				name: "Burrow",
-				unit: "ft",
-				value: 15,
-				comment: ""
-			}
-		],
-		senses: [
-			{
-				name: "Blindsight",
-				unit: "ft",
-				value: 10,
-				comment: ""
-			},
-			{
-				name: "Darkvision",
-				unit: "ft",
-				value: 60,
-				comment: ""
-			}
-		],
-		languages: [
-			"Draconic"
-		],
-		proficiencyBonus: 2
-	},
-	misc: {
-		telepathy: 0,
-		featureHeaderTexts: {
-			lair: "On initiative count 20 (losing initiative ties), the creature can take one of the following lair actions; it can't take the same lair action two rounds in a row",
-			bonus: "",
-			mythic: "",
-			actions: "",
-			features: "",
-			regional: "The region containing the creatures lair can be transformed by its presence, creating one or more of the following effects:",
-			legendary: "",
-			reactions: ""
-		},
-		legActionsPerRound: 0,
-		passivePerceptionOverride: null
-	},
-	defenses: {
-		ac: {
-			ac: 17,
-			acSource: "natural armor"
-		},
-		hp: {
-			override: null,
-			numOfHitDie: 8,
-			sizeOfHitDie: 8
-		},
-		immunities: [
-			"Lightning"
-		],
-		resistances: [],
-		vulnerabilities: [],
-		conditionImmunities: []
-	},
-	features: {
-		lair: [],
-		bonus: [],
-		mythic: [],
-		actions: [
-			{
-				name: "Bite",
-				automation: {
-					_v: 2,
-					name: "Bite",
-					automation: [
-						{
-							type: "target",
-							target: "each",
-							effects: [
-								{
-									hit: [
-										{
-											type: "damage",
-											damage: "1d10 + 3 [piercing] + 1d6 [lightning]",
-											overheal: false
-										}
-									],
-									miss: [],
-									type: "attack",
-									attackBonus: "5"
-								}
-							]
-						},
-						{
-							text: "*Melee Weapon Attack:* +5 to hit, reach 5 ft., one target. *Hit:* 8 (1d10 + 3) piercing damage plus 3 (1d6) lightning damage.",
-							type: "text",
-							title: "Effect"
-						}
-					],
-					activation_type: 1
-				},
-				description: "*Melee Weapon Attack:* +5 to hit, reach 5 ft., one target. *Hit:* 8 (1d10 + 3) piercing damage plus 3 (1d6) lightning damage."
-			},
-			{
-				name: "Lightning Breath (Recharge 5-6)",
-				automation: null,
-				description: "The dragon exhales lightning in a 30-foot line that is 5 feet wide. Each creature in that line must make a DC 12 Dexterity saving throw, taking 22 (4d10) lightning damage on a failed save, or half as much damage on a successful one."
-			}
-		],
-		features: [],
-		regional: [],
-		legendary: [],
-		reactions: []
-	},
-	abilities: {
-		saves: {
-			cha: {
-				adv: null,
-				override: null,
-				isProficient: true
-			},
-			con: {
-				adv: null,
-				override: null,
-				isProficient: true
-			},
-			dex: {
-				adv: null,
-				override: null,
-				isProficient: true
-			},
-			int: {
-				adv: null,
-				override: null,
-				isProficient: false
-			},
-			str: {
-				adv: null,
-				override: null,
-				isProficient: false
-			},
-			wis: {
-				adv: null,
-				override: null,
-				isProficient: true
-			}
-		},
-		stats: {
-			cha: 15,
-			con: 15,
-			dex: 10,
-			int: 12,
-			str: 17,
-			wis: 11
-		},
-		skills: [
-			{
-				adv: null,
-				override: null,
-				skillName: "Perception",
-				isExpertise: true,
-				isProficient: false,
-				isHalfProficient: false
-			},
-			{
-				adv: null,
-				override: null,
-				skillName: "Stealth",
-				isExpertise: false,
-				isProficient: true,
-				isHalfProficient: false
-			}
-		]
-	},
-	description: {
-		cr: 3,
-		xp: 700,
-		name: "Blue Dragon Wyrmling",
-		image: "",
-		faction: "",
-		alignment: "Lawful Evil",
-		description: "",
-		environment: "",
-		tag: "",
-		isProperNoun: false
-	},
-	spellcasting: {
-		casterSpells: {
-			spellList: [
-				[],
-				[],
-				[],
-				[],
-				[],
-				[],
-				[],
-				[],
-				[],
-				[]
-			],
-			casterLevel: null,
-			castingClass: null,
-			spellSlotList: {},
-			displayAsAction: false,
-			spellDcOverride: null,
-			customDescription: "",
-			spellBonusOverride: null,
-			spellCastingAbility: null,
-			spellCastingAbilityOverride: null
-		},
-		innateSpells: {
-			spellList: {
-				0: [],
-				1: [],
-				2: [],
-				3: []
-			},
-			isPsionics: false,
-			displayAsAction: false,
-			spellDcOverride: null,
-			customDescription: "",
-			noComponentsOfType: [
-				"Material",
-				"Verbal",
-				"Somatic"
-			],
-			spellBonusOverride: null,
-			spellCastingAbility: null
-		}
-	}
-} as Statblock;
 
 const AvraeToken = useLocalStorage("AvraeToken", "");
 
@@ -394,7 +152,8 @@ const srdOptions = [
 								<v-icon-btn text="Preview statblock style" icon="mdi:eye" v-bind="props" />
 							</template>
 							<v-card min-width="300" class="pa-4">
-								<StatblockRenderer :data="creatureData" :statblock-design="preferences.statblockDesign"
+								<StatblockRenderer :data="defaultInterestingStatblock"
+									:statblock-design="preferences.statblockDesign"
 									:is2024="preferences.statblockLayout === 'SL_2024'" style="max-width: 650px" />
 							</v-card>
 						</DropdownMenu>
@@ -416,7 +175,8 @@ const srdOptions = [
 								<v-icon-btn text="Preview statblock style" icon="mdi:eye" v-bind="props" />
 							</template>
 							<v-card min-width="300" class="pa-4">
-								<StatblockRenderer :data="creatureData" :statblock-design="preferences.statblockDesign"
+								<StatblockRenderer :data="defaultInterestingStatblock"
+									:statblock-design="preferences.statblockDesign"
 									:is2024="preferences.statblockLayout === 'SL_2024'" style="max-width: 650px" />
 							</v-card>
 						</DropdownMenu>
