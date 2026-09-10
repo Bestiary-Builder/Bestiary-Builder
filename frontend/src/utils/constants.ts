@@ -1,4 +1,4 @@
-import type { Stat } from "~/shared";
+import type { Features, Stat } from "~/shared";
 
 // Generators which are used to create UI programmatically in the StatblockRender
 

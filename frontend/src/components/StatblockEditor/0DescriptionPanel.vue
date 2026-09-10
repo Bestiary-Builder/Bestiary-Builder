@@ -33,13 +33,13 @@ const rules = useRules();
 				<Editor v-model="data.description.description" />
 			</v-col>
 			<v-col cols="6">
-				<v-combobox v-model="data.core.size" :items="sizes" label="Size" />
+				<v-combobox v-model="data.core.size" :items="sizes" label="Size" hide-details />
 			</v-col>
 			<v-col cols="6">
-				<v-combobox v-model="data.core.race" :items="creatureTypes" label="Type" />
+				<v-combobox v-model="data.core.race" :items="creatureTypes" label="Type" hide-details />
 			</v-col>
 			<v-col cols="6">
-				<v-combobox v-model="data.description.alignment" :items="alignments" label="Alignment" />
+				<v-combobox v-model="data.description.alignment" :items="alignments" label="Alignment" hide-details />
 			</v-col>
 			<v-col cols="6">
 				<CRInput v-model="data.description.cr" label="Challenge Rating" hide-details />
