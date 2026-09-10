@@ -94,6 +94,24 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 		isProperNoun: data.isNamedCreature ?? false,
 		environment: (data?.environment ?? []).join(", "),
 		faction: "",
+		gear: (() => {
+			try {
+				let output = ""
+				for (const item of data?.gear ?? data?.attachedItems ?? []) {
+					if (typeof (item) === "string") {
+						output += capitalizeFirstLetter((item.split("|")[0] ?? item ?? ""))
+						output += ", "
+					} else if (typeof (item) === "object") {
+						output += `${item.quantity} ${capitalizeFirstLetter((item.item.split("|")[0] ?? item.item ?? ""))}s`
+						output += ", "
+					}
+				}
+				output = output.slice(0, -2)
+				return output
+			} catch (e) {
+				return ""
+			}
+		})(),
 		tag: "",
 		alignment: (() => {
 			const nameMap = {

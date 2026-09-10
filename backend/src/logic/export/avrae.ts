@@ -232,6 +232,7 @@ export function getCreatureData(creature: Statblock) {
 		lair: creature.features.lair,
 		regional: creature.features.regional,
 		la_per_round: creature.misc.legActionsPerRound,
+		gear: creature.description.gear || '',
 		spellcasting,
 		passiveperc: ppCalc(creature)
 	};

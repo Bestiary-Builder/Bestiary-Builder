@@ -61,6 +61,7 @@ export interface Description {
 	faction: string;
 	environment: string;
 	alignment: string | null;
+	gear: string;
 	cr: number;
 	xp: number;
 }

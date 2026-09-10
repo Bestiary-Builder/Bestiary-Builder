@@ -182,7 +182,7 @@ const import5etools = async () => {
 		void getUmami()?.track("Import creature from 5eTools");
 	}
 	catch (err) {
-		addToast(err as string, { color: "error" });
+		addToast(err as string, { color: "error", isHtml: true });
 	}
 };
 
@@ -204,7 +204,8 @@ const importBestiaryBuilder = async () => {
 		else {
 			addToast(error.replaceAll("\n", "<br />"), {
 				timeout: -1,
-				color: "error"
+				color: "error",
+				isHtml: true
 			});
 		}
 	}
@@ -232,8 +233,7 @@ const importCritterDB = async () => {
 
 	const { success, data: cData, error } = await useFetch(`/api/critterdbcreature/${link}`);
 	if (!success) {
-		addToast(error, { color: "error" });
-		;
+		addToast(error, { color: "error", isHtml: true });
 		return;
 	}
 

@@ -42,23 +42,26 @@ const rules = useRules();
 				<v-combobox v-model="data.description.alignment" :items="alignments" label="Alignment" />
 			</v-col>
 			<v-col cols="6">
-				<CRInput v-model="data.description.cr" label="Challenge Rating" />
+				<CRInput v-model="data.description.cr" label="Challenge Rating" hide-details />
 			</v-col>
 			<v-col cols="6">
-				<v-number-input v-model="data.core.proficiencyBonus" label="Proficiency Bonus" />
+				<v-number-input v-model="data.core.proficiencyBonus" label="Proficiency Bonus" hide-details />
 			</v-col>
 			<v-col cols="6">
-				<v-number-input v-model="data.description.xp" label="XP" />
+				<v-number-input v-model="data.description.xp" label="XP" hide-details />
 			</v-col>
 			<v-col cols="6">
-				<v-text-field v-model="data.description.environment" label="Environment" />
+				<v-text-field v-model="data.description.environment" label="Environment" hide-details />
 			</v-col>
 			<v-col cols="6">
-				<v-text-field v-model="data.description.faction" label="Faction" />
+				<v-text-field v-model="data.description.faction" label="Faction" hide-details />
 			</v-col>
 			<v-col cols="6">
 				<v-text-field v-model="data.description.tag" label="Tag"
 					hint="Use this to categorize your creatures on the Bestiary page." />
+			</v-col>
+			<v-col cols="6" v-if="false">
+				<v-text-field v-model="data.description.gear" label="Gear" hide-details />
 			</v-col>
 			<v-col cols="6">
 				<v-checkbox v-model="data.description.isProperNoun" label="Proper noun" color="primary"

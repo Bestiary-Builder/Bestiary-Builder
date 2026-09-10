@@ -56,6 +56,7 @@ export const defaultStatblock: Statblock = {
 		environment: "",
 		tag: "",
 		alignment: "Unaligned",
+		gear: "",
 		cr: 0,
 		xp: 0,
 
@@ -510,6 +511,7 @@ export const defaultInterestingStatblock: Statblock = {
 		"alignment": "Chaotic Evil",
 		"description": "",
 		"environment": "hill, mountain",
+		"gear": "",
 		"isProperNoun": false
 	},
 	"spellcasting": {

@@ -376,6 +376,10 @@ const { statblockColors } = useStatblockColors()
 					</div>
 				</template>
 
+				<div class="statblock-language-container" v-if="data.description.gear">
+					<b> Gear </b>
+					<span v-html="render(data.description.gear, true)" />
+				</div>
 				<div ckass="statblock-senses-container">
 					<b> Senses </b>
 					<span v-html="render(displaySpeedOrSenses(data.core.senses, false, v2024), true)" />{{

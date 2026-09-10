@@ -253,7 +253,7 @@ export const useCollection = <T extends CollectionType>(type: T) => {
 			return resultData;
 		}
 		else {
-			addToast(error, { color: "error" });
+			addToast(error, { color: "error", isHtml: true });
 			throw error
 		}
 	};

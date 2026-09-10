@@ -126,6 +126,7 @@ export function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: 
 		faction: data.flavor.faction,
 		environment: data.flavor.environment,
 		tag: "",
+		gear: "",
 		image: data.flavor.imageUrl,
 		alignment: data.stats.alignment,
 		cr: data.stats.challengeRating ?? 0,
