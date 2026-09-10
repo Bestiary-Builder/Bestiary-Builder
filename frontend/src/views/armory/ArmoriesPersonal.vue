@@ -68,7 +68,6 @@ const deleteAutomationCollection = async (id: AutomationCollectionExtended["id"]
 	}
 	else {
 		addToast(error, { color: "error" });
-		;
 	}
 };
 

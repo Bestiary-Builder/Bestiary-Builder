@@ -19,7 +19,6 @@ const logoutClick = async () => {
 	if (success)
 		location.reload();
 	else addToast(error, { color: "error" });
-	;
 };
 
 const bestiaryCount = ref(0);

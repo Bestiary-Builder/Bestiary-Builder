@@ -7,6 +7,7 @@ import ExportCreature from "@/components/Bestiary/ExportCreature.vue";
 import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
 import { useToast } from "@/utils/app/toast";
 import { useFetch } from "@/utils/utils";
+import { store } from "@/utils/store";
 
 const $route = useRoute();
 const $router = useRouter();
@@ -59,7 +60,7 @@ onMounted(async () => {
 				isCurrent: true
 			}
 		]">
-			<CopyCreature v-if="data" no-import-all :may-import="false"
+			<CopyCreature v-if="data && store.user" no-import-all :may-import="false"
 				:current-creature="{ ...data, bestiaryName: bestiary.name }" />
 			<ExportCreature :data="data.stats" />
 		</Breadcrumbs>

@@ -89,10 +89,10 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 	},
 	set: (val) => {
 		if (getEffectData(key)?.isList) {
-			const arr = Array.isArray(val) ? val : []
-				; (currentEffect!.value as any).effects[key] = arr.map(item =>
-					typeof item === "string" ? item : item.value,
-				);
+			const arr = Array.isArray(val) ? val : [];
+			(currentEffect!.value as any).effects[key] = arr.map(item =>
+				typeof item === "string" ? item : item.value,
+			);
 		}
 
 		else {

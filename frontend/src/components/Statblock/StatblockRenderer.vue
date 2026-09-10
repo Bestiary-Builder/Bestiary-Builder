@@ -16,8 +16,13 @@ const { data, statblockDesign = null, is2024 = null } = defineProps<{ data: Stat
 
 const design = statblockDesign || store.user?.statblockDesign;
 let v2024;
-if (is2024 === null)
-	v2024 = store.user?.statblockLayout === "SL_2024";
+if (is2024 === null) {
+	if (store.user) {
+		v2024 = store.user?.statblockLayout === "SL_2024";
+	} else {
+		v2024 = true
+	}
+}
 else
 	v2024 = is2024;
 

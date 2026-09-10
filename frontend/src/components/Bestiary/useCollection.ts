@@ -81,7 +81,7 @@ export const useCollection = <T extends CollectionType>(type: T) => {
 
 	const $route = useRoute();
 	const $router = useRouter();
-	const { addToast, updateToast } = useToast();
+	const { addToast, updateToast, removeToast } = useToast();
 	const { updateLabel } = useRecentPages();
 
 	const collection = ref<CollectionBase | null>(null);
@@ -242,14 +242,19 @@ export const useCollection = <T extends CollectionType>(type: T) => {
 			[config.itemRawKey]: data,
 			[config.parentIdField]: collection.value?.id,
 		};
+		const toastId = addToast(`Creating ${config.labels.itemName}`, { loading: true })
 
 		const { success, data: resultData, error } = await useFetch<Item>(`/api/${config.itemRoute}/add`, "POST", payload);
 		if (success) {
 			void getUmami()?.track(`Create ${config.labels.itemName}`);
-			if (openPage)
+			if (openPage) {
 				await $router.push(`/${config.itemRoute}/edit/${resultData.id.toString()}`);
-			else
+				removeToast(toastId)
+			}
+			else {
 				await getCollection();
+				updateToast(toastId, { text: `Successfully created ${config.labels.itemName}!`, color: "success" })
+			}
 			return resultData;
 		}
 		else {
