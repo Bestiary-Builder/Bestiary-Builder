@@ -13,6 +13,7 @@ import { useRecentPages } from "@/utils/app/useRecentPages";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { globalLimits, parseDescIntoAutomation } from "~/shared";
+import { has } from "markdown-it/lib/common/utils";
 
 const $router = useRouter();
 const $route = useRoute();
@@ -20,6 +21,7 @@ const type = $route.params.type as keyof Features;
 const aid = $route.params.aid as any;
 const data = ref<Statblock>();
 const rawInfo = ref<CreatureResponse | null>(null);
+let hasImported = false;
 
 const { addToast, updateToast, removeToast } = useToast();
 const { updateLabel } = useRecentPages();
@@ -40,6 +42,7 @@ onMounted(async () => {
 		await getBestiary();
 		updateLabel($route.path, data.value.description.name);
 		removeToast(toastId);
+		hasImported = true;
 	}
 	else {
 		addToast(error, { color: "error" });
@@ -320,12 +323,13 @@ watch(toNavigateTo, async () => {
 	$router.go(0);
 });
 
-const parityOptions = useLocalStorage("featureEditParityOptions", {
+const parityOptions = useLocalStorage("featureEditParityOptionsForCreatures", {
 	updateName: true,
 	updateDescription: true,
 });
 
 watch(() => data.value?.features[type][aid].name, (newName) => {
+	if (!hasImported) return;
 	if (isVisualEditor.value && parityOptions.value.updateName) {
 		const automation = data.value?.features[type][aid].automation as AttackModel | AttackModel[] | null;
 		if (!automation)
@@ -338,6 +342,7 @@ watch(() => data.value?.features[type][aid].name, (newName) => {
 });
 
 watch(() => data.value?.features[type][aid].description, (newDesc) => {
+	if (!hasImported) return;
 	if (isVisualEditor.value && parityOptions.value.updateDescription) {
 		const automation = data.value?.features[type][aid].automation as AttackModel | AttackModel[] | null;
 		if (!automation)
@@ -349,7 +354,7 @@ watch(() => data.value?.features[type][aid].description, (newDesc) => {
 		const toTraverse = (auto as AttackModel)?.automation || [];
 		for (let i = toTraverse.length - 1; i >= 0; i--) {
 			const field = toTraverse[i];
-			if (field.type === "text") {
+			if (field.type === "text" && typeof (field.text) === "string") {
 				field.text = newDesc || "";
 				break;
 			}

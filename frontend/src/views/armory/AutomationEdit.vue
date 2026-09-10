@@ -21,6 +21,7 @@ import { buildCounterOutput } from "@/components/Characters/utils";
 import { getUmami } from "@/utils/app/analytics";
 import { displayTypeOptions, resetOnOptions } from "./utils";
 
+let hasImported = false;
 const $router = useRouter();
 const $route = useRoute();
 const data = ref<Automation>();
@@ -40,6 +41,7 @@ onMounted(async () => {
 		await getCollection();
 		updateLabel($route.path, data.value.name);
 		removeToast(toastId);
+		hasImported = true
 	}
 	else {
 		addToast(error, { color: "error" });
@@ -305,12 +307,13 @@ const showDescriptionButtons = computed(() => {
 
 const isVisualEditor = ref(store.user?.preferredEditor === "Visual");
 
-const parityOptions = useLocalStorage("featureEditParityOptions", {
-	updateName: true,
-	updateDescription: true,
+const parityOptions = useLocalStorage("featureEditParityOptionsForAutomations", {
+	updateName: false,
+	updateDescription: false,
 });
 
 watch(() => data.value?.name, (newName) => {
+	if (!hasImported) return;
 	if (isVisualEditor.value && parityOptions.value.updateName) {
 		const automation = data.value?.automation as AttackModel | AttackModel[] | null;
 		if (!automation)
@@ -323,6 +326,7 @@ watch(() => data.value?.name, (newName) => {
 });
 
 watch(() => data.value?.description, (newDesc) => {
+	if (!hasImported) return;
 	if (isVisualEditor.value && parityOptions.value.updateDescription) {
 		const automation = data.value?.automation as AttackModel | AttackModel[] | null;
 		if (!automation)
@@ -334,7 +338,7 @@ watch(() => data.value?.description, (newDesc) => {
 		const toTraverse = (auto as AttackModel)?.automation || [];
 		for (let i = toTraverse.length - 1; i >= 0; i--) {
 			const field = toTraverse[i];
-			if (field.type === "text") {
+			if (field.type === "text" && typeof (field.text) === "string") {
 				field.text = newDesc || "";
 				break;
 			}
