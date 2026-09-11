@@ -60,7 +60,7 @@ const rules = useRules();
 				<v-text-field v-model="data.description.tag" label="Tag"
 					hint="Use this to categorize your creatures on the Bestiary page." />
 			</v-col>
-			<v-col cols="6" v-if="false">
+			<v-col cols="6">
 				<v-text-field v-model="data.description.gear" label="Gear" hide-details />
 			</v-col>
 			<v-col cols="6">
