@@ -27,3 +27,116 @@
 	text-transform: uppercase;
 	letter-spacing: 0.03em;
 }
+
+
+
+.unit-selector {
+	height: 40px;
+	translate: 0 5px;
+}
+
+
+.list-table {
+	width: 100%;
+	overflow-wrap: break-word;
+	display: table;
+	margin-bottom: 1rem;
+	table-layout: auto;
+	border-collapse: collapse;
+
+	select {
+		font-size: small;
+		max-width: 80%;
+		color: var(--color-base);
+	}
+
+	thead {
+		color: rgb(var(--v-theme-surface-bright));
+		font-weight: 400;
+		padding: 0.3125rem 0.125rem 0;
+		text-transform: uppercase;
+		font-family: Roboto, Helvetica, sans-serif;
+		font-size: 0.6875rem;
+		text-align: center;
+	}
+
+	tbody {
+		th {
+			font-weight: normal;
+			text-align: left;
+			border: 1px solid color-mix(in srgb, (rgb(var(--v-theme-surface-light))) 70%, white 30%);
+			padding-left: 12px !important;
+
+			p {
+				color: rgb(var(--v-theme-surface-bright));
+				font-size: smaller;
+			}
+		}
+
+		td {
+			text-align: center;
+			border: 1px solid color-mix(in srgb, (rgb(var(--v-theme-surface-light))) 70%, white 30%);
+
+			svg {
+				cursor: pointer;
+			}
+		}
+
+		th,
+		td {
+			padding: 2px 4px;
+		}
+	}
+
+	td:has(.handle) {
+		width: 0;
+	}
+
+	td:has(.simple-quantity) {
+		width: 0;
+	}
+
+	.edit-buttons {
+		width: 0;
+	}
+
+	.edit-buttons>div {
+		width: 100%;
+		display: flex;
+		flex-direction: row;
+		gap: 0.3rem;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.edit-buttons button svg {
+		scale: 0.8;
+	}
+
+
+	caption {
+		margin-bottom: 0.5rem;
+		font-size: 1.3rem;
+		min-width: 300px;
+	}
+
+	tr.table-footer {
+		th {
+			color: rgb(var(--v-theme-surface-bright)) !important;
+		}
+	}
+}
+
+@media screen and (width <=450px) {
+	.list-table {
+		font-size: small;
+
+		thead {
+			font-size: 0.5rem;
+		}
+
+		select {
+			appearance: none;
+		}
+	}
+}
