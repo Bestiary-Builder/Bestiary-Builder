@@ -18,7 +18,7 @@ watch(counterType, (newValue: string) => {
 	else if (newValue === "ss")
 		currentEffect!.value.counter = { slot: 1 };
 	else if (newValue === "abi")
-		currentEffect!.value.counter = { id: 0, typeId: 0 };
+		currentEffect!.value.counter = { id: 10292235, typeId: 12168134 };
 });
 
 onMounted(() => {
@@ -44,12 +44,11 @@ watch(() => currentEffect!.value?.errorBehaviour, () => {
 
 const limitedUse = ref();
 
-type ApiAbility = AbilityReference & { type: string; name: string };
 onMounted(async () => {
-	const { data } = await useFetch<{ success: boolean; data: ApiAbility[] }>("https://api.avrae.io/gamedata/limiteduse");
+	const { data } = await useFetch<{ success: boolean; data: AbilityReference[] }>("/api/gamedata/limiteduse");
 	if (!data)
 		return;
-	limitedUse.value = data.data.filter(x => x.type === "Limited Use");
+	limitedUse.value = data
 });
 
 useDataCleanup(currentEffect, ["allowOverflow", "fixedValue"]);
@@ -72,29 +71,28 @@ const rules = useRules();
 				]" />
 			</v-col>
 
-			<v-col cols="6" v-if="typeof (currentEffect.counter) === 'string'">
+			<v-col cols="6" v-if="counterType === 'cc'">
 				<v-text-field v-model="currentEffect.counter" label="Counter Name"
 					hint="Leave empty and set Error Behaviour to Ignore to take arbitrary -amt # input. "
 					persistent-hint />
 			</v-col>
 
-			<v-col cols="6"
-				v-else-if="typeof (currentEffect!.counter) === 'object' && Object.hasOwn(currentEffect!.counter, 'slot')">
+			<v-col cols="6" v-else-if="counterType === 'ss'">
 				<v-text-field v-model="(currentEffect.counter as SpellSlotReference).slot" label="Slot Level"
 					:rules="[rules.required()]" hint="IntExpression" />
 			</v-col>
 
-			<v-col cols="6"
-				v-else-if="typeof (currentEffect!.counter) === 'object' && Object.hasOwn(currentEffect!.counter, 'id') && Object.hasOwn(currentEffect!.counter, 'typeId')">
-				<v-select v-model="currentEffect.counter" label="Ability Reference" :items="limitedUse"
-					item-title="name" :item-value="(x: any) => ({ id: x.id, typeId: x.typeId })" return-object />
+			<v-col cols="6" v-else-if="counterType === 'abi'">
+				<v-autocomplete v-model="currentEffect.counter" label="Ability Reference" :items="limitedUse"
+					item-title="title" item-value="value" :menu-props="{ width: 520 }" clearable
+					:rules="[rules.required()]" />
 			</v-col>
 
 			<v-col cols="6" v-else>
 				<span> Something went wrong with this node. Please delete it and recreate the counter node.</span>
 			</v-col>
 
-			<v-col cols="6">
+			<v-col cols="12">
 				<TypeHintedEditor v-model="currentEffect.amount" label="Amount" />
 			</v-col>
 		</v-row>

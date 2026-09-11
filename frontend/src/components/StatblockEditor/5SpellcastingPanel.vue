@@ -17,7 +17,6 @@ interface RawSpellList {
 
 const spells = reactive(useLazyAsync<RawSpellList>(
 	async () => {
-		console.log('yaya')
 		const { success, data, error } = await useFetch<RawSpellList>(`/api/spells/all`);
 		if (!success)
 			throw new Error(error);

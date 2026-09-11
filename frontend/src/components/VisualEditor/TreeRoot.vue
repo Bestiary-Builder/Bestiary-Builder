@@ -32,14 +32,21 @@ const deleteListAttack = (index: number) => {
 	automation.value.splice(index, 1);
 	if (automation.value.length === 1)
 		automation.value = automation.value[0];
+
+	currentContext!.value = [];
+	currentEffect!.value = null
 };
 
 const setAutomationEmpty = () => {
-	if (automation)
+	if (automation) {
 		automation.value = null;
+
+		currentContext!.value = [];
+		currentEffect!.value = null
+	}
 };
 
-const currentEffect = inject<Ref<EffectWithTarget | AttackModel>>("currentEffect");
+const currentEffect = inject<Ref<EffectWithTarget | AttackModel | null>>("currentEffect");
 const currentContext = inject<Ref<string[]>>("currentContext");
 
 const showControls = inject<Ref<boolean>>("showControls");

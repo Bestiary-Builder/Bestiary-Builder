@@ -17,7 +17,7 @@ const selfType = computed<string>(() => {
 	return props.data.type;
 });
 
-const currentEffect = inject<Ref<EffectWithTarget | ButtonInteraction | AttackInteraction>>("currentEffect");
+const currentEffect = inject<Ref<EffectWithTarget | ButtonInteraction | AttackInteraction | null>>("currentEffect");
 const currentContext = inject<Ref<string[]>>("currentContext");
 const automation = inject<Ref<null | AttackModel | AttackModel[]>>("automation");
 const isCollapsed = ref(false);
@@ -41,6 +41,8 @@ const deleteNode = () => {
 		const indexToRemove = Number.parseInt(props.context[props.context.length - 1] || "0");
 
 		tree.splice(indexToRemove, 1);
+		currentEffect!.value = null
+		currentContext!.value = []
 	}
 };
 
@@ -204,7 +206,7 @@ const showControls = inject<Ref<boolean>>("showControls");
 											:subtitle="`Are you sure you want to delete ${(button as ButtonInteraction).label}?`">
 											<v-card-text>
 												<v-btn color="error" class="w-100"
-													@click="(data as IEffect).buttons?.splice(index as number, 1)">
+													@click="(data as IEffect).buttons?.splice(index as number, 1); currentContext = []; currentEffect = null">
 													Delete </v-btn>
 											</v-card-text>
 										</v-card>
@@ -249,7 +251,7 @@ const showControls = inject<Ref<boolean>>("showControls");
 											:subtitle="`Are you sure you want to delete ${(attack as AttackInteraction).attack.name}?`">
 											<v-card-text>
 												<v-btn color="error" class="w-100"
-													@click="(data as IEffect).attacks?.splice(index as number, 1)">
+													@click="(data as IEffect).attacks?.splice(index as number, 1); currentContext = []; currentEffect = null">
 													Delete </v-btn>
 											</v-card-text>
 										</v-card>

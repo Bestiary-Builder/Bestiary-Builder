@@ -94,14 +94,27 @@ app.get("/api/gamedata/spells", async (req, res) => {
 
 // limiteduse abilities
 let limiteduse: any[] = [];
-const getLimitedUse = async () => await fetch("https://api.avrae.io/gamedata/limiteduse", {
-	method: "GET",
-	headers: {
-		"Content-Type": "application/json"
-	},
-}).then(response => response.json());
+const getLimitedUse = async () => {
 
-getLimitedUse().then(x => limiteduse = x.data);
+	const data = await fetch("https://api.avrae.io/gamedata/limiteduse", {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json"
+		},
+	}).then(response => response.json())
+
+	const transformed = data.data.map((item: any) => {
+		const suffix = item.id < 100000 ? "(2014)" : "(2024)";
+		return {
+			"title": `${item.name} ${suffix}`,
+			"value": { id: item.id, typeId: item.typeId },
+		};
+	});
+	return transformed
+
+};
+
+getLimitedUse().then(x => limiteduse = x);
 
 app.get("/api/gamedata/limiteduse", async (req, res) => {
 	res.json(limiteduse);
