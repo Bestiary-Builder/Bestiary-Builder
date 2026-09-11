@@ -203,7 +203,8 @@ const addNewSense = (newSenseName: string) => {
 					</template>
 					<v-card min-width="300" class="text-center pa-4">
 						<v-card-actions>
-							<v-combobox v-model="newSense" :items="['Walk', 'Swim', 'Fly', 'Climb', 'Burrow']"
+							<v-combobox v-model="newSense"
+								:items="['Darkvision', 'Blindsight', 'Truesight', 'Tremorsense']"
 								hint="Supports custom senses" persistent-hint density="compact"
 								@keydown.enter="addNewSense(newSense)">
 								<template #append>

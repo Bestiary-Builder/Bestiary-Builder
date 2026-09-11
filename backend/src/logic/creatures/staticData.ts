@@ -104,9 +104,8 @@ const getLimitedUse = async () => {
 	}).then(response => response.json())
 
 	const transformed = data.data.map((item: any) => {
-		const suffix = item.id < 100000 ? "(2014)" : "(2024)";
 		return {
-			"title": `${item.name} ${suffix}`,
+			"title": item.name,
 			"value": { id: item.id, typeId: item.typeId },
 		};
 	});

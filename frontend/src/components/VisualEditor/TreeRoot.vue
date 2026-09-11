@@ -40,7 +40,6 @@ const deleteListAttack = (index: number) => {
 const setAutomationEmpty = () => {
 	if (automation) {
 		automation.value = null;
-
 		currentContext!.value = [];
 		currentEffect!.value = null
 	}
