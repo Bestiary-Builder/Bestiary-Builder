@@ -9,6 +9,8 @@ import { useRecentPages } from "./utils/app/useRecentPages";
 import { store } from "./utils/store";
 import { sendToLogin } from "./utils/utils";
 import { latestChangelogVersion } from "./utils/constants";
+import { GlowTourDefault } from "@glowhop/vue-tour";
+import { useOnboardingTour } from "./utils/app/useOnboardingTour.js";
 
 const { recentPages } = useRecentPages();
 
@@ -41,6 +43,8 @@ const isFeedbackFormOpen = ref(false);
 useThemePersistence();
 
 const changeLogVersionLastViewed = useLocalStorage('changeLogVersionLastViewed', '')
+
+const { tour, start } = useOnboardingTour()
 </script>
 
 <template>
@@ -112,14 +116,15 @@ const changeLogVersionLastViewed = useLocalStorage('changeLogVersionLastViewed',
 						target="_blank" rel="noopener noreferrer" prepend-icon="mdi:patreon" link
 						append-icon="mdi:open-in-new" />
 					<v-divider />
-					<v-list-item v-if="store.user" append-icon="mdi:cog" to="/user" :title="store.user.username">
+					<v-list-item v-if="store.user" append-icon="mdi:cog" to="/user" :title="store.user.username"
+						id="user-page">
 						<template #prepend>
 							<v-avatar alt="avatar"
 								:image="store.user.avatar ? `https://cdn.discordapp.com/avatars/${store.user.id}/${store.user.avatar}.png` : 'https://cdn.discordapp.com/embed/avatars/0.png'"
 								size="30" class="mr-3" />
 						</template>
 					</v-list-item>
-					<v-list-item v-else prepend-icon="mdi:login" @click="sendToLogin($route.path)">
+					<v-list-item v-else prepend-icon="mdi:login" @click="sendToLogin($route.path)" id="user-page">
 						Login
 					</v-list-item>
 				</v-list>
@@ -160,9 +165,8 @@ const changeLogVersionLastViewed = useLocalStorage('changeLogVersionLastViewed',
 		</v-footer>
 
 		<FeedbackForm v-model="isFeedbackFormOpen" />
-
-
 		<ToastHost />
+		<GlowTourDefault :tour="tour" />
 	</v-app>
 </template>
 
