@@ -10,6 +10,8 @@ import { useFetch } from "@/utils/utils";
 import CreatureList from "@/components/Bestiary/CreatureList.vue";
 import CollectionHeader from "@/components/Collections/CollectionHeader.vue";
 import { downloadFile } from "@/utils/app/export";
+import { useRecentPages } from "@/utils/app/useRecentPages";
+import { useRoute } from "vue-router";
 
 const {
 	collection,
@@ -27,13 +29,17 @@ const {
 } = useCollection("bestiary");
 
 const { addToast, updateToast, removeToast } = useToast();
+const { trackVisit } = useRecentPages();
+const $route = useRoute();
 
 onMounted(async () => {
 	const toastId = addToast("Loading...", { loading: true });
 	await getCollection();
 	removeToast(toastId);
-	if (collection.value?.name)
-		document.title = `${collection.value?.name.substring(0, 16)} | Bestiary Builder`;
+	if (collection.value?.name) {
+		document.title = `${collection.value?.name} | Bestiary Builder`;
+		trackVisit($route.path, collection.value.name)
+	}
 });
 
 async function exportHomebrewery() {

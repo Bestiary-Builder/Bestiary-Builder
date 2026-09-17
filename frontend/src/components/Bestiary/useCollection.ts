@@ -82,7 +82,6 @@ export const useCollection = <T extends CollectionType>(type: T) => {
 	const $route = useRoute();
 	const $router = useRouter();
 	const { addToast, updateToast, removeToast } = useToast();
-	const { updateLabel } = useRecentPages();
 
 	const collection = ref<CollectionBase | null>(null);
 	const items = ref<Item[] | null>(null);
@@ -107,8 +106,6 @@ export const useCollection = <T extends CollectionType>(type: T) => {
 		collection.value = data;
 		isOwner.value = collection.value.permissionLevel === "owner";
 		isEditor.value = collection.value.permissionLevel === "editor";
-
-		updateLabel($route.path, collection.value.name);
 
 		if (!isOwner.value && !isEditor.value && !$route.path.includes("/view"))
 			await $router.push(`/${config.pageRoute}/view/${collection.value.id}`);

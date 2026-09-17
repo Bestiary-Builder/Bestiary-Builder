@@ -9,6 +9,7 @@ import { useToast } from "@/utils/app/toast";
 import { useFetch } from "@/utils/utils";
 import AutomationDocumentationView from "./AutomationDocumentation.vue";
 import { useOnboardingTour } from "@/utils/app/useOnboardingTour.js";
+import { useRoute } from "vue-router";
 
 type AutomationValue = AttackModel | AttackModel[] | null;
 
@@ -172,6 +173,8 @@ const restore = () => {
 	suppressNextModelSync = true
 	visualEditorModel.value = JSON.parse(localStorage.getItem("automationDataStoredDuringWorkflow") ?? 'null');
 }
+
+const $route = useRoute()
 </script>
 
 <template>
@@ -185,7 +188,8 @@ const restore = () => {
 	</div>
 	<div v-else class="mt-4">
 		<v-alert title="Welcome to the new Automation Editor" class="mb-4" color="primary" icon="mdi:creation-outline"
-			closable v-if="true || !dismissed" @click:close="dismissed = true">
+			closable v-if="!$route.path.includes('/character') && !dismissed" @click:close="dismissed = true"
+			id="automation-workflow-alert">
 			<template #text>
 				With 3.0.0, you can now create Automation directly within Bestiary Builder. The automation editor
 				includes
@@ -201,7 +205,7 @@ const restore = () => {
 			</template>
 		</v-alert>
 		<VisualEditor ref="VisualEditorRef" v-model="visualEditorModel" :name="name || ''"
-			:no-list-attack="noListAttack" @clear-automation="clear" />
+			:no-list-attack="noListAttack" @clear-automation="clear" @take-tour="startAutomationEditorWorkflow" />
 	</div>
 
 	<!-- These buttons allow us to interface with our state from the onboarding workflow without having to globally manage the state. 

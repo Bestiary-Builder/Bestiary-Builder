@@ -50,6 +50,10 @@ export const useOnboardingTour = () => {
         .beforeAdvance(async () => {
             const el = document.getElementById("effect-adder-list");
             if (el) el.scrollTop = el?.scrollHeight
+            setTimeout(() => window.scrollTo({
+                top: 300,
+                behavior: "instant"
+            }), 500)
         })
         .wait(1000)
         .step({ id: "editor-4", target: "#effectAdderbasicAttack", title: "Choose Attack and Damage Option", content: "This Preset allows us to attack and deal damage.", behavior: { allowInteraction: true, disableAutoScroll: true }, popover: { disableAdvanceButton: true, placementTryOrder: ["right"] }, overlay: { opacity: 0.4 } })
@@ -57,18 +61,17 @@ export const useOnboardingTour = () => {
         .step({ id: "editor-6", target: "#automation-tree", title: "Great! You now have several Effects in your Tree", content: "Let's make some changes.", behavior: { disableAutoScroll: true } })
         .step({ id: "editor-7", target: "#attack1", content: "Press an item in the tree to modify it.", title: "Let's open the Attack Options", behavior: { allowInteraction: true }, popover: { disableAdvanceButton: true } })
         .onTargetEvent("click", (event, context) => context.advance())
-        .step({ id: "editor-8", target: "#effect-editor", content: "", title: "You can now edit the Effect Options Here" })
-        .step({ id: "editor-9", target: ".code-field.v-field", content: "Change it from 4 to 6.", title: "Let's change the attack Bonus!", behavior: { allowInteraction: true } })
-        .step({ id: "editor-10", target: "#effect-editor", content: "", title: "Great! Let's go over some other features now." })
-        .step({ id: "editor-11", target: "#showDocumentation", content: "You can see the documentation of every automation effect here.", title: "Show Documentation", popover: { disableAdvanceButton: true }, behavior: { allowInteraction: true } })
-        .onTargetEvent("click", (event, context) => context.advance())
-        .wait(200)
-        .step({ id: "editor-12", target: "#exposedVariables", content: "From here we learn that the Attack Effect exposes a lastAttackDidCrit variable if the attack critted. Let's use this in our attack! ", title: "Exposed Variables", behavior: { scroll: { behavior: "auto" }, disableAutoScroll: false } })
-        .beforeAdvance(() => {
-            console.log("this is happening!")
-            document.getElementById("#exposedVariables").scrollIntoView()
-            return true;
-        }).wait(2000)
+        .step({ id: "editor-8", target: "#effect-editor", content: "All the options for the current Effect will appear here.", title: "You can now edit the Effect Options Here" })
+        .step({ id: "editor-9", target: ".code-field.v-field .monaco-editor", content: "Change it from 4 to `dexterityMod + proficiencyBonus`.", title: "Let's change the attack Bonus!", behavior: { allowInteraction: true }, overlay: { opacity: 0.4, padding: 50 }, popover: { placementTryOrder: ["top", "left", "right", "bottom"] } })
+        .step({ id: "editor-10", target: "#effect-editor", content: "Did you see that? The editor automatically gives you hints for variables and cvars!", title: "Great! Let's go over some other features now." })
+        .step({ id: "editor-11", target: "#showDocumentation", content: "You can see the documentation of every automation effect here. Let's now see some other features", title: "Show Documentation" })
+        .step({ id: "editor-12", target: ".right-buttons", content: "Here are buttons for several different powerful features. Let's go over them.", title: "Additional Options" })
+        .step({ id: "editor-13", target: ".right-buttons button:nth-of-type(2)", content: "The magic generate button reads the description of the attack and then tries to generate automation for it. Works best for simple attacks!", title: "Magic Generate" })
+        .step({ id: "editor-14", target: ".right-buttons button:nth-of-type(3)", content: "The change editor button allows you to edit your automation as YAML!", title: "Change Editor" })
+        .step({ id: "editor-15", target: ".right-buttons button:nth-of-type(4)", content: "The database button allows you to load automation from the SRD, from your (subscribed) Automation Collections, and your Avrae Characters.", title: "Load Feature" })
+        .step({ id: "editor-16", target: ".right-buttons button:nth-of-type(5)", content: "The Avrae button allows you to load this automation onto a character if you want to quickly test it!", title: "Avrae Character" })
+        .step({ id: "editor-17", target: "#automation-workflow-alert", content: "Congratulations! You've finished the tour of the new editor, but there's still more to discover. Don't hesitate to join our Discord Server if you need help.", title: "Tour Finished" })
+
         .build()
 
     const startAutomationEditorWorkflow = () => {

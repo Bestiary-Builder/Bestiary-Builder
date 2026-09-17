@@ -166,59 +166,6 @@ onMounted(() => {
 </template>
 
 <style lang="less" scoped>
-.list-table {
-	margin: 0 auto;
-	padding: 0.5rem 0.5rem 0;
-	padding-bottom: 0;
-	border-collapse: collapse;
-	align-self: center;
-	overflow-y: scroll;
-	max-height: 500px;
-
-	td,
-	th {
-		padding: 2px 1rem;
-		border-radius: 1px;
-	}
-
-	thead {
-		color: rgb(var(--v-theme-surface-bright));
-		font-weight: 400;
-		padding: 0.3125rem 0.125rem 0;
-		text-transform: uppercase;
-		font-family: Roboto, Helvetica, sans-serif;
-		font-size: 0.6875rem;
-		text-align: center;
-	}
-
-	tbody {
-		th {
-			font-weight: normal;
-			text-align: left;
-			border: 1px solid rgb(var(--v-theme-surface-bright));
-
-			p {
-				color: rgb(var(--v-theme-surface-bright));
-				font-size: smaller;
-			}
-		}
-
-		td {
-			text-align: center;
-			border: 1px solid rgb(var(--v-theme-surface-bright));
-
-			svg {
-				cursor: pointer;
-			}
-		}
-	}
-
-	caption {
-		margin-bottom: 0.5rem;
-		font-size: 1rem;
-	}
-}
-
 .v-badge :deep(.v-badge__badge) {
 	pointer-events: none;
 }

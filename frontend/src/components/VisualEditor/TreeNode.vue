@@ -148,8 +148,7 @@ const DragHandle = () => h(
 				<template v-if="deepKeys.includes(key) && selfType !== 'ieffect2'">
 					<!--- E.g. hit, Miss, on False text -->
 					<p v-if="!['root', 'effects'].includes(key)" :key="key" :style="`--depth: ${depth + 1}`"
-						style="color: rgb(var(--v-theme-surface-bright));" class="tree-row section-node"
-						@click.stop="toggleBranch(key)">
+						class="tree-row section-node text-medium-emphasis" @click.stop="toggleBranch(key)">
 						<NodeHeader :type="key" />
 						<span v-if="['onTrue', 'onFalse', 'hit', 'miss', 'fail', 'success'].includes(key)"
 							class="collapse-button">

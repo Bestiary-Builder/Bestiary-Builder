@@ -27,6 +27,7 @@ export const displayNames: Record<string, { label: string; icon: string }> = {
 	proneButton: { label: "Prone Button", icon: "material-symbols:falling-rounded" },
 	rechargeButton: { label: "Recharge Button", icon: "material-symbols:charger" },
 	damageStartOfTurnButton: { label: "Damage start of turn Button", icon: "mdi:fire" },
+	grappleButton: { label: "Grapple Button", icon: "at-icons:fist" },
 	basicAttack: { label: "Attack and Damage", icon: "mdi:toy-brick" },
 	saveForHalfDamage: { label: "Save for Half Damage", icon: "mdi:content-save-off" },
 	saveForHalfDamageWithRecharge: { label: "Save for Half Damage With Recharge", icon: "material-symbols:battery-4-bar-sharp" },
@@ -434,7 +435,44 @@ export const defaultNodes: Record<string, EffectWithTarget | EffectWithTarget[]>
 				]
 			}
 		]
-	}
+	},
+	grappleButton: [{
+		"type": "ieffect2",
+		"name": "Grappled by {{caster.name}}",
+		"buttons": [
+			{
+				"label": "Escape {{caster.name}}'s grapple",
+				"automation": [
+					{
+						"type": "target",
+						"target": "self",
+						"effects": [
+							{
+								"type": "check",
+								"ability": [
+									"athletics",
+									"acrobatics"
+								],
+								"dc": "13",
+								"success": [
+									{
+										"type": "remove_ieffect",
+										"removeParent": "if_no_children"
+									}
+								],
+								fail: []
+							}
+						]
+					}
+				],
+				"verb": "tries to escape from {{caster.name}}'s grapple",
+				"style": "1"
+			}
+		],
+		"desc": "Escape DC 13",
+		"save_as": "grapple",
+		"effects": {}
+	}]
 
 };
 

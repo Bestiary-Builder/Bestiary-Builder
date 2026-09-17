@@ -54,7 +54,7 @@ const availableNodes = computed(() => {
 	if (!isTargetContext && contextLevel !== "buttons")
 		output.push(...["__divider__", "__header__Presets", "basicAttack", "saveForHalfDamage", "saveForHalfDamageWithRecharge", "attackWithPoison", "attackWithGrappleRestrain"])
 	if (isTargetContext && contextLevel !== "buttons")
-		output.push(...["__divider__", "__header__Button Presets", "proneButton", "rechargeButton", "damageStartOfTurnButton"])
+		output.push(...["__divider__", "__header__Button Presets", "proneButton", "rechargeButton", "grappleButton", "damageStartOfTurnButton"])
 	if (!isTargetContext && contextLevel === "buttons")
 		output.splice(6, 1, "remove_ieffect")
 	if (isTargetContext && contextLevel === "buttons")
@@ -70,9 +70,15 @@ const addAndSelect = async (node: string) => {
 	if (!automation)
 		return;
 	if (!automation.value) {
-		automation.value = { _v: 2, name: props.name || "New Attack", automation: [JSON.parse(JSON.stringify(defaultNodes[node]))], activation_type: activation_type[type] };
+		const toAdd = defaultNodes[node]
+		if (Array.isArray(toAdd))
+			automation.value = { _v: 2, name: props.name || "New Attack", automation: [...JSON.parse(JSON.stringify(toAdd))], activation_type: activation_type[type] };
+		else
+			automation.value = { _v: 2, name: props.name || "New Attack", automation: [JSON.parse(JSON.stringify(defaultNodes[node]))], activation_type: activation_type[type] };
 		return;
 	}
+
+
 
 	let tree: any;
 	if (Array.isArray(automation.value))
@@ -233,8 +239,8 @@ const onKeydown = (e: KeyboardEvent) => {
 	<DropdownMenu v-model="menuOpen" :close-on-content-click="false" @update:model-value="onMenuToggle"
 		v-if="showControls">
 		<template #activator="{ props }">
-			<p class="tree-row" v-bind="props" :style="`--depth: ${depth}`"
-				style="color: rgb(var(--v-theme-surface-bright));" ref="btnRef" id="add-effect">
+			<p class="tree-row text-medium-emphasis" v-bind="props" :style="`--depth: ${depth}`" ref="btnRef"
+				id="add-effect">
 				<span class="icon">
 					<Icon icon="mdi:plus-circle" width="1em" color="rgb(var(--v-theme-primary))" />
 				</span><span>{{ automation === null ? 'Create Automation' : 'Add Effect' }}</span>

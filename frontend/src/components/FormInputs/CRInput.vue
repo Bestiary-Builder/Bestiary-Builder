@@ -4,6 +4,7 @@ import { computed } from "vue";
 const { label } = defineProps<{ label: string }>();
 const model = defineModel<number | null>();
 const values = [
+	0,
 	0.125,
 	0.25,
 	0.5,

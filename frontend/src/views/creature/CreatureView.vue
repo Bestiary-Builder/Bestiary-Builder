@@ -8,11 +8,13 @@ import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
 import { useToast } from "@/utils/app/toast";
 import { useFetch } from "@/utils/utils";
 import { store } from "@/utils/store";
+import { useRecentPages } from "@/utils/app/useRecentPages";
 
 const $route = useRoute();
 const $router = useRouter();
 
 const { addToast } = useToast();
+const { trackVisit } = useRecentPages()
 const data = ref<CreatureResponse | null>(null);
 const bestiary = ref<BestiaryResponse | null>(null);
 const isOwner = ref(false);
@@ -31,6 +33,7 @@ onMounted(async () => {
 			isEditor.value = bData.permissionLevel === "editor";
 			if (bestiary.value && data.value && (isOwner.value || isEditor.value))
 				void $router.push(`/creature/edit/${data.value.id}`);
+			trackVisit($route.path, data.value.stats.description.name)
 		}
 		else {
 			addToast(error, { color: "error" });

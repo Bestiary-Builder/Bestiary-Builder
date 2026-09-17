@@ -16,6 +16,11 @@ import { bestiaryTags, defaultStatblock, globalLimits } from "~/shared";
 import { useLazyOptions } from "@/utils/app/useLazyOptions";
 import CollectionHeader from "@/components/Collections/CollectionHeader.vue";
 import { downloadFile } from "@/utils/app/export";
+import { useRoute } from "vue-router";
+import { useRecentPages } from "@/utils/app/useRecentPages";
+
+const $route = useRoute()
+const { trackVisit } = useRecentPages()
 
 const {
 	collection,
@@ -57,8 +62,10 @@ onMounted(async () => {
 	const toastId = addToast("Loading...", { loading: true });
 	await getCollection();
 	removeToast(toastId);
-	if (collection.value?.name)
-		document.title = `${collection.value?.name.substring(0, 16)} | Bestiary Builder`;
+	if (collection.value?.name) {
+		document.title = `${collection.value?.name} | Bestiary Builder`;
+		trackVisit($route.path, collection.value.name)
+	}
 });
 
 async function exportHomebrewery() {
@@ -276,7 +283,7 @@ watch(() => collection.value?.status, (newValue): void => {
 
 watch(() => collection.value?.name, (): void => {
 	if (collection.value?.name)
-		document.title = `${collection.value?.name.substring(0, 16)} | Bestiary Builder`;
+		document.title = `${collection.value?.name} | Bestiary Builder`;
 });
 
 const pinCreature = async (id: CreatureMetaData["id"]) => {

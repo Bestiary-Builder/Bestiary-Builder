@@ -101,8 +101,8 @@
 			line-height: 1.3;
 			font-size: 15px;
 			font-weight: 700;
-			color: rgb(var(--v-theme-surface-bright));
 			padding-bottom: 5px;
+			color: color-mix(in srgb, rgb(var(--v-theme-on-surface-bright)) calc(var(--v-medium-emphasis-opacity) * 100%), transparent);
 		}
 
 		.feature-description {
@@ -140,7 +140,7 @@
 		min-width: 142px;
 
 		thead>tr>th {
-			color: rgb(var(--v-theme-surface-bright));
+			color: color-mix(in srgb, rgb(var(--v-theme-on-surface-bright)) calc(var(--v-medium-emphasis-opacity) * 100%), transparent);
 			font-weight: 400;
 			padding: 0.3125rem 0.125rem 0;
 			text-transform: uppercase;

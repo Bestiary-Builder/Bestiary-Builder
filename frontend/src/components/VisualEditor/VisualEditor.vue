@@ -22,7 +22,7 @@ defineExpose<{ currentEffect: any; currentContext: any }>({ currentEffect, curre
 
 const automation = defineModel<null | AttackModel | AttackModel[]>();
 provide("automation", ref(automation));
-const emit = defineEmits(['clearAutomation'])
+const emit = defineEmits(['clearAutomation', 'takeTour'])
 const currentNode = computed(() => {
 	if (!currentEffect.value)
 		return null;
@@ -176,6 +176,9 @@ const empty = () => {
 					</p>
 					<v-btn class="pl-2" variant="text" size="x-small" @click="showControls = !showControls">
 						<small> <i>{{ showControls ? 'Hide' : 'Show' }} controls</i></small>
+					</v-btn>
+					<v-btn class="p3-2 float-right" variant="text" size="x-small" @click="emit('takeTour')">
+						<small> <i>Take tour</i></small>
 					</v-btn>
 				</div>
 

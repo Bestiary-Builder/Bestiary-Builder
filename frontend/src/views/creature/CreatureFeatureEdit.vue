@@ -13,7 +13,6 @@ import { useRecentPages } from "@/utils/app/useRecentPages";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { globalLimits, parseDescIntoAutomation } from "~/shared";
-import { has } from "markdown-it/lib/common/utils";
 
 const $router = useRouter();
 const $route = useRoute();
@@ -24,7 +23,7 @@ const rawInfo = ref<CreatureResponse | null>(null);
 let hasImported = false;
 
 const { addToast, updateToast, removeToast } = useToast();
-const { updateLabel } = useRecentPages();
+const { trackVisit } = useRecentPages();
 const EditAutomationRef = useTemplateRef("EditAutomationRef");
 
 // load creature data
@@ -40,7 +39,7 @@ onMounted(async () => {
 			return;
 		}
 		await getBestiary();
-		updateLabel($route.path, data.value.description.name);
+		trackVisit($route.path, data.value.description.name)
 		removeToast(toastId);
 		hasImported = true;
 	}
@@ -84,9 +83,6 @@ const unwatch = watch(() => data.value, () => {
 }, { deep: true });
 
 onBeforeRouteUpdate(() => {
-	if (isVisualEditor.value)
-		return;
-
 	if (madeChanges.value && (isOwner.value || isEditor.value)) {
 		const answer = window.confirm("Do you really want to leave? you have unsaved changes!");
 		if (!answer)
@@ -94,9 +90,7 @@ onBeforeRouteUpdate(() => {
 	}
 });
 onBeforeRouteLeave(() => {
-	if (isVisualEditor.value)
-		return;
-
+	;
 	if (madeChanges.value && (isOwner.value || isEditor.value)) {
 		const answer = window.confirm("Do you really want to leave? you have unsaved changes!");
 		if (!answer)
@@ -105,8 +99,6 @@ onBeforeRouteLeave(() => {
 });
 
 const beforeUnLoad = (event: Event) => {
-	if (isVisualEditor.value)
-		return;
 	if (madeChanges.value && (isOwner.value || isEditor.value)) {
 		event.preventDefault();
 		event.returnValue = true;
@@ -214,7 +206,7 @@ const saveStatblock2 = async (shouldNotify: boolean): Promise<boolean> => {
 		if (toastId)
 			setTimeout(updateToast, 500, toastId, { text: "Saved action!", prependIcon: "mdi-check" });
 		isSavingCreature.value = false;
-		updateLabel($route.path, data.value.description.name);
+		trackVisit($route.path, data.value.description.name)
 		return true;
 	}
 	catch (err) {

@@ -28,7 +28,7 @@ const data = ref<Automation>();
 const collection = ref<AutomationCollectionExtended | null>(null);
 
 const { addToast, updateToast, removeToast } = useToast();
-const { updateLabel } = useRecentPages();
+const { trackVisit } = useRecentPages();
 const EditAutomationRef = useTemplateRef("EditAutomationRef");
 
 // load creature data
@@ -39,7 +39,7 @@ onMounted(async () => {
 		data.value = aData;
 		await nextTick(() => madeChanges.value = false);
 		await getCollection();
-		updateLabel($route.path, data.value.name);
+		trackVisit($route.path, data.value.name);
 		removeToast(toastId);
 		hasImported = true
 	}
@@ -192,7 +192,7 @@ const saveAutomation = async (shouldNotify: boolean): Promise<boolean> => {
 		if (toastId)
 			setTimeout(updateToast, 500, toastId, { text: "Saved Action.", prependIcon: "mdi:check" });
 		isSavingCreature.value = false;
-		updateLabel($route.path, data.value.name);
+		trackVisit($route.path, data.value.name);
 		return true;
 	}
 	catch (err) {

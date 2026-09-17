@@ -18,14 +18,14 @@ import { useFetch } from "@/utils/utils";
 const character = ref<AvraeCharacter | null>(null);
 const AvraeToken = useLocalStorage("AvraeToken", "");
 const $route = useRoute();
-const { updateLabel } = useRecentPages();
+const { trackVisit } = useRecentPages();
 
 const { addToast, updateToast } = useToast();
 onMounted(async () => {
 	if (AvraeToken) {
 		character.value = await getAvraeCharacterByUpstream($route.params.upstream as string);
 		if (character.value)
-			updateLabel($route.path, character.value.name);
+			trackVisit($route.path, character.value.name);
 	}
 });
 

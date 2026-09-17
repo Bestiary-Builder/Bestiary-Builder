@@ -1,18 +1,15 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { useRules } from "vuetify/labs/rules";
-import StatusIcon from "@/components/Bestiary/StatusIcon.vue";
 import { useCollection } from "@/components/Bestiary/useCollection";
-import UserBanner from "@/components/Bestiary/UserBanner.vue";
-import Markdown from "@/components/Global/Markdown.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { useToast } from "@/utils/app/toast";
 import AutomationList from "@/components/Automations/AutomationList.vue";
-import { capitalizeFirstLetter } from "~/shared";
-import { store } from "@/utils/store";
 import CollectionHeader from "@/components/Collections/CollectionHeader.vue";
 import { downloadFile } from "@/utils/app/export";
+import { useRoute } from "vue-router";
+import { useRecentPages } from "@/utils/app/useRecentPages";
 
+const $route = useRoute()
 const {
 	collection,
 	items,
@@ -24,13 +21,16 @@ const {
 } = useCollection("automations");
 
 const { addToast, removeToast } = useToast();
+const { trackVisit } = useRecentPages()
 
 onMounted(async () => {
 	const toastId = addToast("Loading...", { loading: true });
 	await getCollection();
 	removeToast(toastId);
-	if (collection.value?.name)
-		document.title = `${collection.value?.name.substring(0, 16)} | Bestiary Builder`;
+	if (collection.value?.name) {
+		trackVisit($route.path, collection.value.name)
+		document.title = `${collection.value?.name} | Bestiary Builder`;
+	}
 });
 
 async function exportCollection(asFile: boolean) {

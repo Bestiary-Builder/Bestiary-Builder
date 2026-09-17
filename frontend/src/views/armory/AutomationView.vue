@@ -19,7 +19,7 @@ const data = ref<Automation>();
 const collection = ref<AutomationCollectionExtended | null>(null);
 
 const { addToast, removeToast } = useToast();
-const { updateLabel } = useRecentPages();
+const { trackVisit } = useRecentPages();
 const EditAutomationRef = useTemplateRef("EditAutomationRef");
 
 // load creature data
@@ -29,7 +29,7 @@ onMounted(async () => {
 	if (success) {
 		data.value = aData;
 		await getCollection();
-		updateLabel($route.path, data.value.name);
+		trackVisit($route.path, data.value.name);
 		removeToast(toastId);
 	}
 	else {

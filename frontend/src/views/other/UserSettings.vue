@@ -9,7 +9,7 @@ import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { sendToLogin, useFetch } from "@/utils/utils";
 import { defaultInterestingStatblock, SupporterStatus } from "~/shared";
-import { useTheme } from "vuetify";
+import { useHotkey, useTheme } from "vuetify";
 import { useThemePersistence } from "@/utils/app/theme";
 import { useStatblockColors } from "@/utils/app/customTheme";
 
@@ -41,6 +41,7 @@ const saveSettings = async () => {
 	}
 };
 
+useHotkey("cmd+s", async () => saveSettings(), { inputs: true });
 
 const AvraeToken = useLocalStorage("AvraeToken", "");
 

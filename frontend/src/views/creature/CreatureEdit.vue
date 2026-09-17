@@ -28,7 +28,7 @@ const data = ref<Statblock>(defaultStatblock);
 const rawInfo = ref<CreatureResponse | null>(null);
 
 const { addToast, removeToast } = useToast();
-const { updateLabel } = useRecentPages();
+const { trackVisit } = useRecentPages();
 
 // load creature data
 onMounted(async () => {
@@ -39,7 +39,7 @@ onMounted(async () => {
 		await nextTick(() => madeChanges.value = false);
 		rawInfo.value = cData;
 		if (await loadRawInfo())
-			updateLabel($route.path, data.value.description.name);
+			trackVisit($route.path, data.value.description.name);
 		removeToast(toastId);
 	}
 	else {
@@ -92,7 +92,7 @@ const saveStatblock = async (shouldNotify = true): Promise<boolean> => {
 		if (shouldNotify)
 			addToast("Saved stat block", { color: "success" });
 		madeChanges.value = false;
-		updateLabel($route.path, data.value.description.name);
+		trackVisit($route.path, data.value.description.name);
 
 		// watch data only once, as traversing the object deeply is expensive.
 		const unwatch = watch(
@@ -258,6 +258,8 @@ const importCreature = async (creature: Statblock) => {
 	await saveStatblock(false);
 	addToast(`Successfully imported ${data.value.description.name}`);
 };
+
+const isCollapsed = ref(false)
 </script>
 
 <template>
@@ -339,8 +341,8 @@ const importCreature = async (creature: Statblock) => {
 			<ExportCreature :data="data" />
 		</Breadcrumbs>
 		<div class="content more-wide" :class="{ 'is-statblock-only': !shouldShowEditor }">
-			<v-row>
-				<v-col :cols="store.isMobile ? 12 : 6">
+			<v-row style="position: relative;">
+				<v-col :cols="6" v-if="!isCollapsed">
 					<v-sheet elevation="2">
 						<v-tabs v-model="tab" color="primary" style="background-color: rgb(var(--v-theme-surface))"
 							:grow="!store.isMobile" :show-arrows="store.isMobile">
@@ -364,7 +366,7 @@ const importCreature = async (creature: Statblock) => {
 							</v-tab>
 						</v-tabs>
 						<v-divider />
-						<v-sheet>
+						<v-sheet style="position: relative;">
 							<v-tabs-window v-model="tab" class="editor-content">
 								<v-tabs-window-item :value="1">
 									<v-sheet class="pa-4" color="surface-light">
@@ -401,14 +403,17 @@ const importCreature = async (creature: Statblock) => {
 					</v-sheet>
 				</v-col>
 
-				<v-col :cols="store.isMobile ? 12 : 6">
+				<v-col :cols="isCollapsed ? 8 : 6" style="margin: auto; max-width: 850px">
 					<v-skeleton-loader v-if="rawInfo === null"
 						type="heading, divider, text, text, sentences, heading, text" />
 					<StatblockRenderer v-else :data="data" />
 				</v-col>
+
 			</v-row>
 		</div>
 	</div>
+	<v-fab v-if="!store.isMobile" :icon="isCollapsed ? 'mdi:chevron-double-right' : 'mdi:chevron-double-left'" absolute
+		@click="isCollapsed = !isCollapsed" location="top right" size="40" app></v-fab>
 </template>
 
 <style lang="less">

@@ -19,7 +19,7 @@ body .v-card .statblock-outer.monstermanual {
 	}
 
 	.statblock-core {
-		color: color-mix(in srgb, rgb(var(--v-theme-surface-bright)) 70%, black 30%);
+		color: rgb(72, 72, 72)
 	}
 
 

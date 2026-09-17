@@ -44,17 +44,9 @@ const trackVisit = (path: string, label?: string) => {
 	].slice(0, MAX_RECENT);
 };
 
-// call this once the real name is fetched, to patch the existing entry in place
-const updateLabel = (path: string, label: string) => {
-	const entry = recentPages.value.find(p => p.path === path);
-	if (entry)
-		entry.label = label;
-};
-
 export const useRecentPages = () => {
 	return {
 		recentPages,
-		trackVisit,
-		updateLabel
+		trackVisit
 	};
 };

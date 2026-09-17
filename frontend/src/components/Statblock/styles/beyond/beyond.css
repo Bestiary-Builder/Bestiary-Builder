@@ -18,7 +18,7 @@ body .v-card .statblock-outer.beyond {
 	}
 
 	.statblock-core {
-		color: color-mix(in srgb, rgb(var(--v-theme-surface-bright)) 70%, black 30%);
+		color: rgb(139, 139, 139);
 	}
 
 
@@ -29,6 +29,10 @@ body .v-card .statblock-outer.beyond {
 			color: #5b160c;
 			border-color: #5b160c;
 		}
+	}
+
+	.feature-header {
+		color: rgb(139, 139, 139);
 	}
 
 	.feature-container.statblock-description {

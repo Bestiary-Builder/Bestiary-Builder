@@ -88,9 +88,13 @@ const toArray = <T>(input: T | T[]): T[] => {
 		</template>
 
 		<template #default>
-			<v-card class="text-center pa-4" title="Import this attack to your character."
-				subtitle="Importing this attack will add it to your character. Attacks from automation collections will also load its counters.">
+			<v-card class="text-center pa-4" title="Import this attack to your character.">
 				<v-card-text>
+					<span class="text-medium-emphasis">
+						Importing this attack will add it to your character. Attacks from automation collections will
+						also
+						load its counters.
+					</span>
 					<div v-if="AvraeToken">
 						<v-select v-model="selectedCharacter" :items="characters || []" :loading="loading"
 							item-title="name" item-value="upstream" label="Select a character" class="mt-4" hide-details

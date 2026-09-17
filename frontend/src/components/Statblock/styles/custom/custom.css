@@ -46,6 +46,10 @@ body .v-card .statblock-outer.custom {
 		}
 	}
 
+	.feature-header {
+		color: var(--subtle)
+	}
+
 	h1,
 	h2,
 	h3,

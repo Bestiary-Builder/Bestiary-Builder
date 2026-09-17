@@ -12,6 +12,8 @@ import YAML from "yaml";
 import AutomationList from "@/components/Automations/AutomationList.vue";
 import CollectionHeader from "@/components/Collections/CollectionHeader.vue";
 import { downloadFile } from "@/utils/app/export";
+import { useRecentPages } from "@/utils/app/useRecentPages";
+import { useRoute } from "vue-router";
 
 const {
 	collection,
@@ -30,14 +32,18 @@ const {
 } = useCollection("automations");
 
 const { addToast, removeToast } = useToast();
+const { trackVisit } = useRecentPages();
+const $route = useRoute();
 const rules = useRules();
 
 onMounted(async () => {
 	const toastId = addToast("Loading...", { loading: true });
 	await getCollection();
 	removeToast(toastId);
-	if (collection.value?.name)
-		document.title = `${collection.value?.name.substring(0, 16)} | Bestiary Builder`;
+	if (collection.value?.name) {
+		document.title = `${collection.value?.name} | Bestiary Builder`;
+		trackVisit($route.path, collection.value.name)
+	}
 });
 
 async function exportCollection(asFile: boolean) {
@@ -71,7 +77,7 @@ watch(() => collection.value?.status, (newValue): void => {
 
 watch(() => collection.value?.name, (): void => {
 	if (collection.value?.name)
-		document.title = `${collection.value?.name.substring(0, 16)} | Bestiary Builder`;
+		document.title = `${collection.value?.name} | Bestiary Builder`;
 });
 
 const createNewActionOpen = ref(false);
@@ -253,7 +259,7 @@ const createAutomation = async () => {
 									<v-file-input v-model="importFields.attackJson" label="Attack JSON"
 										hint="JSON (.json/.txt) or YAML (.yaml, .txt) formatted as a list of automated actions"
 										persistent-hint accept=".txt,.json,.yaml" prepend-inner-icon="mdi:attachment"
-										prepe prepend-icon="" />
+										prepend-icon="" />
 								</v-col>
 							</v-row>
 						</v-card-text>

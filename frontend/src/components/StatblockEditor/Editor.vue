@@ -352,6 +352,23 @@ function toggleHeading(
 	);
 }
 
+
+const replaceNewlinesWithSpaces = (editor: Monaco.editor.IStandaloneCodeEditor) => {
+	const model = editor.getModel();
+	if (!model) return;
+
+	const fullRange = model.getFullModelRange();
+	const newText = model.getValue().replace(/\r\n|\r|\n/g, ' ');
+
+	editor.executeEdits('replace-newlines', [
+		{
+			range: fullRange,
+			text: newText,
+		},
+	]);
+};
+
+
 const wrapper = useTemplateRef("wrapper");
 const { width } = useElementSize(wrapper);
 watchDebounced(width, async () => {
@@ -441,6 +458,10 @@ const editorOptions: Monaco.editor.IStandaloneEditorConstructionOptions = {
 			<v-icon-btn size="20" icon="mdi:format-header-2" text="Heading 2" @click="toggleHeading(editorRef!, 2)" />
 			<v-icon-btn size="20" icon="mdi:format-header-3" text="Heading 3" @click="toggleHeading(editorRef!, 3)" />
 			<v-icon-btn size="20" icon="mdi:format-header-4" text="Heading 4" @click="toggleHeading(editorRef!, 4)" />
+			<v-divider vertical />
+			<v-icon-btn size="20" icon="octicon:no-newline" text="Remove newlines"
+				v-tooltip="'Replace all new lines with spaces. Helpful when copying from PDFs!'"
+				@click="replaceNewlinesWithSpaces(editorRef!)" />
 		</div>
 		<v-divider />
 		<div class="wrapper">
