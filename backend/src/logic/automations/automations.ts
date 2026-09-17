@@ -56,9 +56,10 @@ app.get("/api/automation/:id", possibleUser, async (req, res) => {
 
 app.get("/api/my-automations/list", requireUser, async (req, res) => {
 	const user = req.user!;
-	const automations = (await automationCollections.getForUser(user.id)).map(collection => ({
+	const collections = (await automationCollections.getForUser(user.id)).map(collection => ({
 		[collection.name]: collection.automations.map(item => ({ name: item.name, id: item.id }))
-	})).reduce((a, b) => ({ ...a, ...b }));
+	}));
+	const automations = collections.length > 0 ? collections.reduce((a, b) => ({ ...a, ...b })) : {};
 	log.info(`Retrieved all automations in list form from the current user with the id ${user.id}`);
 	return res.json(automations);
 });
