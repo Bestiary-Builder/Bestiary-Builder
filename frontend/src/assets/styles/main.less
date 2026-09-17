@@ -137,3 +137,17 @@ blockquote:has(p img[src="/Beholder.webp"])~p {
 .content.markdown *+* {
 	margin-top: 1em;
 }
+
+@import "@glowhop/styles-tour/default.css";
+
+:where([data-glow-tour-root]) {
+	--glow-tour-color-accent: rgb(var(--v-theme-primary));
+	--glow-tour-color-accent-hover: color-mix(in srgb, rgb(var(--v-theme-primary)) 80%, white 20%);
+	--glow-tour-color-accent-active: color-mix(in srgb, rgb(var(--v-theme-primary) 80%, white 20%));
+	--glow-tour-color-surface: rgb(var(--v-theme-surface));
+	--glow-tour-color-text: rgb(var(--v-theme-on-surface));
+	--glow-tour-color-text-muted: color-mix(in srgb, rgb(var(--v-theme-surface-bright)) 70%, white 30%);
+	--glow-tour-color-border: rgba(var(--v-border-color) var(--v-border-opacity));
+	--glow-tour-radius: 12px;
+	--glow-tour-spacing: 12px;
+}

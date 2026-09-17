@@ -2,7 +2,7 @@
 import type * as Monaco from "monaco-editor";
 import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
 import { useElementSize, watchDebounced } from "@vueuse/core";
-import { shallowRef, useTemplateRef, watch } from "vue";
+import { onBeforeMount, shallowRef, useTemplateRef, watch } from "vue";
 import { useTheme } from "vuetify";
 import { useRoute } from "vue-router";
 
@@ -10,7 +10,8 @@ const { height = 150 } = defineProps<{ height?: number }>();
 
 const model = defineModel<string>();
 const editorRef = shallowRef<Monaco.editor.IStandaloneCodeEditor>();
-function handleMount(
+
+async function handleMount(
 	editor: Monaco.editor.IStandaloneCodeEditor,
 	monaco: typeof Monaco
 ) {
@@ -40,6 +41,9 @@ function handleMount(
 	);
 
 	editor.layout();
+	await document.fonts.load('400 15px Roboto');
+	await document.fonts.ready;
+	monaco.editor.remeasureFonts()
 
 	setTimeout(() => {
 		editorRef.value?.layout();
@@ -362,20 +366,60 @@ watch(() => theme, () => {
 const $route = useRoute()
 
 const editorOptions: Monaco.editor.IStandaloneEditorConstructionOptions = {
-	wordWrap: 'on',
-	theme: theme.name.value === 'dark' ? 'vs-dark' : 'vs-light',
-	minimap: { enabled: false },
-	formatOnPaste: true,
-	formatOnType: true,
-	automaticLayout: true,
-	scrollBeyondLastLine: false,
+	// Highlighting (from before)
+	selectionHighlight: false,
+	occurrencesHighlight: 'off',
+
+	// Chrome / gutter
 	lineNumbers: 'off',
-	quickSuggestions: false,
+	folding: false,
+	lineNumbersMinChars: 0,
+	overviewRulerLanes: 0,
+	hideCursorInOverviewRuler: true,
+	overviewRulerBorder: false,
+	minimap: { enabled: false },
+	scrollBeyondLastLine: false,
 	renderLineHighlight: 'none',
+
+	// Wrapping (markdown should wrap like prose)
+	wordWrap: 'on',
+	wrappingIndent: 'none',
+
+	// Autocomplete / IntelliSense noise
+	quickSuggestions: false,
+	suggestOnTriggerCharacters: false,
+	wordBasedSuggestions: 'off',
+	parameterHints: { enabled: false },
+	hover: { enabled: "off" },
+	codeLens: false,
+
+	// Code-editor auto-behaviors that feel wrong in prose
+	autoClosingBrackets: 'never',
+	autoClosingQuotes: 'never',
+	autoSurround: 'never',
+	matchBrackets: 'never',
+	bracketPairColorization: { enabled: false },
+	guides: { indentation: false, bracketPairs: false },
+
+	// Visual noise
+	renderWhitespace: 'none',
+	renderControlCharacters: false,
+	unicodeHighlight: { ambiguousCharacters: false, invisibleCharacters: false },
+
+	// Misc
+	contextmenu: true,
+	scrollbar: { vertical: 'auto', horizontal: 'hidden' },
+
+
+
+	fontFamily: "'Roboto Mono'",
+	disableMonospaceOptimizations: true,
+	fontSize: 13,
 }
 </script>
 
 <template>
+
 	<div ref="wrapper" class="monaco-wrapper-thing"
 		:style="$route.path.startsWith('/automation/view') || $route.path.startsWith('/creature/view') ? { opacity: 'var(--v-disabled-opacity)' } : {}">
 		<div class="button-container">
@@ -398,6 +442,7 @@ const editorOptions: Monaco.editor.IStandaloneEditorConstructionOptions = {
 			<v-icon-btn size="20" icon="mdi:format-header-3" text="Heading 3" @click="toggleHeading(editorRef!, 3)" />
 			<v-icon-btn size="20" icon="mdi:format-header-4" text="Heading 4" @click="toggleHeading(editorRef!, 4)" />
 		</div>
+		<v-divider />
 		<div class="wrapper">
 
 			<VueMonacoEditor v-model:value="model" theme="vs-dark" :options="editorOptions" class="description-editor"
@@ -408,6 +453,8 @@ const editorOptions: Monaco.editor.IStandaloneEditorConstructionOptions = {
 </template>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+
 .button-container {
 	display: flex;
 	gap: 1rem;
@@ -417,7 +464,7 @@ const editorOptions: Monaco.editor.IStandaloneEditorConstructionOptions = {
 	font-size: smaller;
 	padding: 0.4rem;
 	overflow-x: auto;
-	max-width: 90vw
+	max-width: 90vw;
 }
 
 .wrapper :deep(.monaco-editor),

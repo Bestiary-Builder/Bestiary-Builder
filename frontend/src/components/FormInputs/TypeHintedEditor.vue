@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, shallowRef, onBeforeUnmount, watch, type ComputedRef } from 'vue'
+import { ref, computed, shallowRef, watch, type ComputedRef } from 'vue'
 import { VueMonacoEditor } from '@guolao/vue-monaco-editor'
 import type * as Monaco from 'monaco-editor';
 import { useTheme } from 'vuetify';

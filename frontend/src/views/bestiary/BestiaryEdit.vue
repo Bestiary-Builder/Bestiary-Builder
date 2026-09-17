@@ -46,7 +46,7 @@ const fetchList = async <T>(apiPath: string): Promise<T[]> => {
 };
 
 const srdCreatures = reactive(useLazyOptions<string>(
-	() => fetchList(`/srd-creatures/${store.user?.SRDVersion === "SRD_2024" ? "2024" : "2014"}/list`),
+	() => fetchList(`srd-creatures/${store.user?.SRDVersion === "SRD_2024" ? "2024" : "2014"}/list`),
 	{
 		onError: (error: unknown) =>
 			addToast(error instanceof Error ? error.message : String(error), { color: "error" })

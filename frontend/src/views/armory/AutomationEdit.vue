@@ -433,17 +433,17 @@ const copySingleCounter = (consumable: AutomationConsumable) => {
 	<Breadcrumbs :routes="[
 		{
 			path: isOwner || isEditor ? `/armory/edit/${collection?.id}` : `/armory/view/${collection?.id}`,
-			text: collection?.name || '',
+			text: collection?.name || 'Armory',
 			isCurrent: false
 		},
 		{
 			path: '',
-			text: data?.name,
+			text: data?.name || 'Automation',
 			isCurrent: true
 		}
 	]">
 		<v-icon-btn v-if="madeChanges && (isOwner || isEditor)" v-tooltip="'Save feature (CTRL+S)'"
-			icon="mdi:content-save" text="Save creature" :class="{ inverted: !isSavingCreature }" size="24"
+			icon="mdi:content-save" text="Save automation" :class="{ inverted: !isSavingCreature }" size="24"
 			:loading="isSavingCreature" @click="saveAutomation(true)" />
 		<v-icon-btn
 			v-tooltip="'Generate automation from description. May be incomplete or inaccurate. Only works for basic, to hit attacks.'"

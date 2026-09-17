@@ -157,7 +157,7 @@ onMounted(() => {
 	<section>
 		<v-row>
 			<v-col cols="4">
-				<div class="tree" ref="tree">
+				<div class="tree" ref="tree" id="automation-tree">
 					<SectionHeader title="Effect Tree" />
 					<TreeRoot v-if="automation" :data="automation" :depth="0" :no-list-attack="noListAttack"
 						:style="$route.path.startsWith('/automation/view') || $route.path.startsWith('/creature/view') ? { opacity: 'var(--v-disabled-opacity)' } : {}" />

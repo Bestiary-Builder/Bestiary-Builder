@@ -4,6 +4,7 @@ import { onMounted, onUnmounted, ref } from "vue";
 import dataFile from "@/assets/documents/home.md";
 import Markdown from "@/components/Global/Markdown.vue";
 import { useFetch } from "@/utils/utils";
+import { useOnboardingTour } from "@/utils/app/useOnboardingTour";
 
 const stats = ref<null | GlobalStats>(null);
 onMounted(async () => {
@@ -81,19 +82,13 @@ onMounted(() => {
 	});
 });
 
+const { start } = useOnboardingTour()
 </script>
 
 <template>
 	<section class="hero">
-	<div
-		v-for="(img, index) in images"
-		:key="img.id"
-		class="hero__layer"
-		:class="{ 'is-active': index === activeIndex }"
-		:style="getBackgroundStyle(img)"
-	></div>
-
-		<!-- <div class="hero__scrim"></div> -->
+		<div v-for="(img, index) in images" :key="img.id" class="hero__layer"
+			:class="{ 'is-active': index === activeIndex }" :style="getBackgroundStyle(img)"></div>
 
 		<div class="hero__content">
 			<div class="hero__brand">Bestiary Builder <span>&middot;</span> The Ultimate D&D Bestiary Creator for Avrae
@@ -110,7 +105,7 @@ onMounted(() => {
 					Flip through our <b>{{ stats?.bestiaries }}</b> bestiaries!<br>
 					And frighten your players with our <b>{{ stats?.creatures }}</b> creatures!
 				</p>
-				<v-btn size="x-large" to="/changelog" color="primary" variant="elevated">
+				<v-btn size="x-large" @click="start()" color="primary" variant="elevated">
 					See what's new in 3.0.0
 				</v-btn>
 			</div>
@@ -118,21 +113,21 @@ onMounted(() => {
 	</section>
 
 	<v-container max-width="600">
-	<v-row class="mt-8" >
-		<v-col cols="6" class="d-flex justify-center">
-			<v-btn color="#f1465a" size="x-large" prepend-icon="mdi:patreon" class="rounded"
-				variant="elevated" href="https://www.patreon.com/join/BestiaryBuilder" width="250">
-				Support us on Patreon
-			</v-btn>
-		</v-col>
+		<v-row class="mt-8">
+			<v-col cols="6" class="d-flex justify-center">
+				<v-btn color="#f1465a" size="x-large" prepend-icon="mdi:patreon" class="rounded" variant="elevated"
+					href="https://www.patreon.com/join/BestiaryBuilder" width="250">
+					Support us on Patreon
+				</v-btn>
+			</v-col>
 
-		<v-col cols="6" class="d-flex justify-center">
-			<v-btn color="#5865f2" size="x-large" prepend-icon="mdi:discord" class="rounded" variant="elevated"
-				href="https://discord.gg/a6bwXCSymN" width="250">
-				Join our Discord
-			</v-btn>
-		</v-col>
-	</v-row>
+			<v-col cols="6" class="d-flex justify-center">
+				<v-btn color="#5865f2" size="x-large" prepend-icon="mdi:discord" class="rounded" variant="elevated"
+					href="https://discord.gg/a6bwXCSymN" width="250">
+					Join our Discord
+				</v-btn>
+			</v-col>
+		</v-row>
 	</v-container>
 
 	<div class="content markdown less-wide front-page">
