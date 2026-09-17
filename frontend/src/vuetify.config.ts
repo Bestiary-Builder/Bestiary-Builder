@@ -3,7 +3,6 @@ import { createRulesPlugin } from "vuetify/labs/rules";
 
 import AvraeLogo from "@/assets/svg/Avrae_Logo.svg";
 import BestiaryBuilderLogo from "@/assets/svg/logo.svg";
-// import "@mdi/font/css/materialdesignicons.css";
 import iconifyAdapter from "./utils/app/icon";
 import "vuetify/styles";
 
@@ -57,7 +56,6 @@ export const vuetify = createVuetify({
 				dark: true,
 				colors: {
 					"primary": "#ff4500",
-					"surface-bright": "#8b8b8b"
 				},
 			},
 			light: {
@@ -65,7 +63,6 @@ export const vuetify = createVuetify({
 				colors: {
 					"primary": "#ff4500",
 					"surface": "#d5dbd6",
-					"surface-bright": "#707070"
 				},
 			},
 			custom: {
@@ -74,7 +71,6 @@ export const vuetify = createVuetify({
 					"primary": "#FF46A2",
 					'background': '#121212',
 					'surface': '#212121',
-					"surface-bright": "#8b8b8b",
 					"surface-light": "#424242"
 				},
 			},

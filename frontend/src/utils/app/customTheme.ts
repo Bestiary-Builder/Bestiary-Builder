@@ -9,7 +9,6 @@ const defaultColors: Record<string, string> = {
     "primary": "#FF46A2",
     'background': '#121212',
     'surface': '#212121',
-    "surface-bright": "#8b8b8b",
     "surface-light": "#424242"
 }
 export const useCustomThemeColors = () => {

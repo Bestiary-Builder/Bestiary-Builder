@@ -62,13 +62,13 @@ const showControls = inject<Ref<boolean>>("showControls");
 					<Icon
 						:icon="JSON.stringify(currentContext) === JSON.stringify([index.toString(), 'root']) ? 'material-symbols:asterisk' : 'material-symbols:swords'"
 						:inline="true" width="1em"
-						:color="JSON.stringify(currentContext) === JSON.stringify([index.toString(), 'root']) ? 'rgb(var(--v-theme-success))' : 'rgb(var(--v-theme-surface-bright))'" />
+						:color="JSON.stringify(currentContext) === JSON.stringify([index.toString(), 'root']) ? 'rgb(var(--v-theme-success))' : 'rgb(var(--v-theme-primary))'" />
 					{{ auto.name || "Unnamed Attack" }}
 					<span v-if="showControls" class="tree-buttons" @click.stop>
 						<DropdownMenu>
 							<template #activator="{ props }">
-								<Icon icon="mdi:trash" inline width=".75em" role="button" class="trigger"
-									color="rgb(var(--v-theme-surface-bright))" v-bind="props" />
+								<Icon icon="mdi:trash" inline width=".75em" role="button" class="trigger" color="gray"
+									v-bind="props" />
 							</template>
 							<v-card min-width="300" class="text-center pb-2">
 								<v-card-text>
@@ -99,13 +99,13 @@ const showControls = inject<Ref<boolean>>("showControls");
 				<Icon
 					:icon="JSON.stringify(currentContext) === JSON.stringify(['root']) ? 'material-symbols:asterisk' : 'material-symbols:swords'"
 					:inline="true" width="1em"
-					:color="JSON.stringify(currentContext) === JSON.stringify(['root']) ? 'rgb(var(--v-theme-success))' : 'rgb(var(--v-theme-surface-bright))'" />
+					:color="JSON.stringify(currentContext) === JSON.stringify(['root']) ? 'rgb(var(--v-theme-success))' : 'rgb(var(--v-theme-primary))'" />
 				{{ data.name || "Unnamed Attack" }}
 				<span v-if="showControls" class="tree-buttons" @click.stop>
 					<DropdownMenu>
 						<template #activator="{ props }">
-							<Icon icon="mdi:trash" inline width=".75em" role="button" class="trigger"
-								color="rgb(var(--v-theme-surface-bright))" v-bind="props" />
+							<Icon icon="mdi:trash" inline width=".75em" role="button" class="trigger" color="gray"
+								v-bind="props" />
 						</template>
 						<v-card min-width="300" class="text-center pb-2">
 							<v-card-text>

@@ -4,8 +4,11 @@ defineProps<{ title: string }>();
 
 <template>
 	<div class="section-header">
-		<hr class="left"> <span> {{ title }}</span>
-		<hr>
+		<v-divider thickness="2" opacity="0.4" />
+		<span> {{ title }}</span>
+		<v-divider thickness="2" opacity="0.4" />
+		<!-- <hr class="left"> <span> {{ title }}</span>
+		<hr> -->
 	</div>
 </template>
 
@@ -27,7 +30,6 @@ defineProps<{ title: string }>();
 		width: 100%;
 		height: 2px;
 		margin-top: 0.75rem;
-		border-color: rgb(var(--v-theme-surface-bright));
 	}
 }
 

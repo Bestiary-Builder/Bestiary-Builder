@@ -46,7 +46,7 @@ body .v-card .statblock-outer.odyssey {
 	}
 
 	.statblock-core {
-		color: color-mix(in srgb, rgb(var(--v-theme-surface-bright)) 70%, black 30%);
+		color: #616161;
 	}
 
 	h1,

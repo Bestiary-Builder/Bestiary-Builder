@@ -51,9 +51,8 @@ const dismissed = useLocalStorage("update3.0.0dismissed", false);
 					<template #prepend>
 						<v-icon icon="$bestiaryBuilder" style="opacity: 1; scale: 1.4" />
 					</template>
-					<RouterLink to="/" class="d-flex align-center flex-grow-1 text-decoration-none text-high-emphasis">
-						<v-list-item-title color="primary" class="text-high-emphasis font-weight-bold"
-							style="font-size: larger; line-height: 2rem;">
+					<RouterLink to="/">
+						<v-list-item-title class="site-header">
 							Bestiary
 							Builder
 						</v-list-item-title>
@@ -175,6 +174,14 @@ const dismissed = useLocalStorage("update3.0.0dismissed", false);
 </template>
 
 <style scoped>
+.site-header {
+	font-size: larger;
+	line-height: 2rem;
+	opacity: 1;
+	color: color-mix(in srgb, rgb(var(--v-theme-on-surface)) calc(var(--v-high-emphasis-opacity) * 100%), transparent);
+	font-weight: bold;
+}
+
 .v-list-item:not(.v-list-group__header) {
 	color: color-mix(in srgb, currentcolor 75%, black 25%);
 }

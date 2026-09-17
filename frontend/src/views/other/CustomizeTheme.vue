@@ -78,10 +78,10 @@ const { statblockColors, resetColor: resetStatblockColor, resetAll: resetAllStat
                     Surface is the main colour of sections of the page.
                 </p>
                 <p>
-                    Surface-bright is used as a contrasting colour on some surface elements.
+                    Surface-light is a variant colour for some site sections.
                 </p>
                 <p>
-                    Surface-light is a variant colour for some site sections.
+                    Most other colours will inherit from these colours.
                 </p>
             </v-col>
             <v-divider />
