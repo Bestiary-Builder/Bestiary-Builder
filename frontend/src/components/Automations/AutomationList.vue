@@ -229,7 +229,6 @@ const saveOrder = async () => {
 };
 watch(model, saveOrder);
 
-
 const md = new MarkdownIt({
     html: false,
     linkify: false,

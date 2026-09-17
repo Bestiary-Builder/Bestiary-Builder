@@ -10,17 +10,11 @@ import { store } from "./utils/store";
 import { sendToLogin } from "./utils/utils";
 import { latestChangelogVersion } from "./utils/constants";
 import { GlowTourDefault } from "@glowhop/vue-tour";
-import { useOnboardingTour } from "./utils/app/useOnboardingTour.js";
+import { useOnboardingTour } from "./utils/app/useOnboardingTour";
 
 const { recentPages } = useRecentPages();
 
 const openGroups = ref(["bestiaries", "automations", "recentlyViewed"]);
-
-const dismissed = useLocalStorage("update3.0.0dismissed", false);
-
-const dismiss = () => {
-	dismissed.value = true;
-};
 
 const drawer = ref<boolean | null>(null);
 const toggleDrawer = () => {
@@ -44,7 +38,9 @@ useThemePersistence();
 
 const changeLogVersionLastViewed = useLocalStorage('changeLogVersionLastViewed', '')
 
-const { tour, start } = useOnboardingTour()
+const { tour, startOnboardingWorkflow } = useOnboardingTour();
+const dismissed = useLocalStorage("update3.0.0dismissed", false);
+
 </script>
 
 <template>
@@ -105,7 +101,8 @@ const { tour, start } = useOnboardingTour()
 					<v-list-item title="Feedback" value="feedback" prepend-icon="mdi:comment-text"
 						@click="isFeedbackFormOpen = true" link />
 					<v-list-item title="Help" value="help" to="/help" prepend-icon="mdi:frequently-asked-questions" />
-					<v-list-item title="Changelog" value="changelog" to="/changelog" prepend-icon="mdi:history">
+					<v-list-item title="Changelog" value="changelog" to="/changelog" prepend-icon="mdi:history"
+						id="changelog-nav">
 						<template #append v-if="changeLogVersionLastViewed != latestChangelogVersion">
 							<v-badge inline color="primary" dot></v-badge>
 						</template>
@@ -132,19 +129,26 @@ const { tour, start } = useOnboardingTour()
 		</v-navigation-drawer>
 		<v-app-bar id="navbar" scroll-behavior="elevate" class="border-b" app elevation="3" height="64">
 			<template #prepend>
-				<v-app-bar-nav-icon v-model="drawer" @click="toggleDrawer" />
+				<v-app-bar-nav-icon v-model="drawer" @click="toggleDrawer" id="toggle-drawer" />
 			</template>
 			<div id="app-bar-actions" class="d-flex align-center" />
 			<template #append />
 		</v-app-bar>
 		<v-main min-height="100vh">
-			<v-alert v-if="!dismissed" class="ma-4" closable title="Update 3.0.0 Released" @click:close="dismiss"
-				icon="$bestiaryBuilder" icon-size="48">
-				Welcome to Bestiary Builder 3.0.0, the biggest and best update to BestiaryBuilder ever.<br>
-				See all the changes in the
-				<RouterLink to="/changelog">
-					Changelog
-				</RouterLink>
+			<v-alert v-if="!dismissed" class="ma-4" closable title="Update 3.0.0 Released"
+				@click:close="dismissed = true" icon="$bestiaryBuilder" icon-size="48" elevation="3">
+				<template #text>
+					Welcome to Bestiary Builder 3.0.0, the biggest and best update to BestiaryBuilder ever.<br>
+					See all the changes in the
+					<RouterLink to="/changelog">
+						Changelog
+					</RouterLink>
+				</template>
+
+				<template #append>
+					<v-btn color="success" @click="startOnboardingWorkflow()" elevation="3"> See what's new in
+						3.0.0</v-btn>
+				</template>
 			</v-alert>
 			<VDefaultsProvider :defaults="defaults">
 				<RouterView v-slot="{ Component, route }">

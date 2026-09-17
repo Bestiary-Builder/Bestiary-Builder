@@ -82,7 +82,7 @@ onMounted(() => {
 	});
 });
 
-const { start } = useOnboardingTour()
+const { startOnboardingWorkflow } = useOnboardingTour()
 </script>
 
 <template>
@@ -105,7 +105,7 @@ const { start } = useOnboardingTour()
 					Flip through our <b>{{ stats?.bestiaries }}</b> bestiaries!<br>
 					And frighten your players with our <b>{{ stats?.creatures }}</b> creatures!
 				</p>
-				<v-btn size="x-large" @click="start()" color="primary" variant="elevated">
+				<v-btn size="x-large" @click="startOnboardingWorkflow()" color="primary" variant="elevated">
 					See what's new in 3.0.0
 				</v-btn>
 			</div>

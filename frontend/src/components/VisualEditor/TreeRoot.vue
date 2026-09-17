@@ -8,6 +8,10 @@ import EffectAdder from "./EffectAdder.vue";
 import TreeNode from "./TreeNode.vue";
 import { draggingProps } from "./util";
 
+const emit = defineEmits<{
+	'emptyAutomation': []
+}>()
+
 const { data, noListAttack = false } = defineProps<{ data: AttackModel | AttackModel[]; noListAttack?: boolean }>();
 
 const automation = inject<Ref<null | AttackModel | AttackModel[]>>("automation");
@@ -38,11 +42,9 @@ const deleteListAttack = (index: number) => {
 };
 
 const setAutomationEmpty = () => {
-	if (automation) {
-		automation.value = null;
-		currentContext!.value = [];
-		currentEffect!.value = null
-	}
+	emit('emptyAutomation');
+	currentContext!.value = [];
+	currentEffect!.value = null
 };
 
 const currentEffect = inject<Ref<EffectWithTarget | AttackModel | null>>("currentEffect");
@@ -134,10 +136,10 @@ const showControls = inject<Ref<boolean>>("showControls");
 <style scoped lang="less">
 .container:first-of-type {
 	padding: 0.4rem;
-	padding-right: 0.1rem;
 	background-color: rgb(var(--v-theme-surface));
 	max-height: 55vh;
 	overflow-y: scroll;
+	scrollbar-gutter: stable;
 }
 
 .add {

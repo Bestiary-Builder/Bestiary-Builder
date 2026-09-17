@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { AttackModel, ButtonInteraction, EffectWithTarget } from "~/shared";
-import { computed, onBeforeUnmount, onMounted, provide, ref, useTemplateRef } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, provide, ref, useTemplateRef, watch } from "vue";
 import EffectAdder from "./EffectAdder.vue";
 import NodeHelper from "./NodeHelper.vue";
 import EffectAsRaw from "./Nodes/shared/EffectAsRaw.vue";
@@ -22,6 +22,7 @@ defineExpose<{ currentEffect: any; currentContext: any }>({ currentEffect, curre
 
 const automation = defineModel<null | AttackModel | AttackModel[]>();
 provide("automation", ref(automation));
+const emit = defineEmits(['clearAutomation'])
 const currentNode = computed(() => {
 	if (!currentEffect.value)
 		return null;
@@ -151,18 +152,27 @@ onMounted(() => {
 	if (topSectionRef.value) observer.observe(topSectionRef.value)
 	if (bottomSectionRef.value) observer.observe(bottomSectionRef.value)
 })
+
+watch(() => automation, () => console.log(automation))
+const empty = () => {
+	console.log(true)
+	emit('clearAutomation')
+
+	nextTick(() => console.log(automation.value))
+}
 </script>
 
 <template>
-	<section>
+	<section id="visual-editor-container">
 		<v-row>
 			<v-col cols="4">
 				<div class="tree" ref="tree" id="automation-tree">
 					<SectionHeader title="Effect Tree" />
 					<TreeRoot v-if="automation" :data="automation" :depth="0" :no-list-attack="noListAttack"
-						:style="$route.path.startsWith('/automation/view') || $route.path.startsWith('/creature/view') ? { opacity: 'var(--v-disabled-opacity)' } : {}" />
+						:style="$route.path.startsWith('/automation/view') || $route.path.startsWith('/creature/view') ? { opacity: 'var(--v-disabled-opacity)' } : {}"
+						@empty-automation="empty" />
 					<p v-else class="container" style="padding: 6px">
-						<EffectAdder :context="['root']" :name="name" />
+						<EffectAdder :context="['root']" :name="name" id="root-adder" />
 					</p>
 					<v-btn class="pl-2" variant="text" size="x-small" @click="showControls = !showControls">
 						<small> <i>{{ showControls ? 'Hide' : 'Show' }} controls</i></small>
@@ -171,7 +181,7 @@ onMounted(() => {
 
 			</v-col>
 			<v-col cols="8">
-				<div ref="editor" class="editor">
+				<div ref="editor" class="editor" id="effect-editor">
 					<div v-if="!currentEffect && currentContext.length === 0">
 						<SectionHeader title="No Effect Selected" />
 						Select or create a node in the Effect Tree to get started.
@@ -184,7 +194,7 @@ onMounted(() => {
 						</Transition>
 						<hr>
 						<Transition>
-							<details>
+							<details id="showDocumentation">
 								<summary style="font-size: smaller"> Show documentation</summary>
 								<AutomationDocumentation v-model="currentNode" />
 							</details>

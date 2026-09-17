@@ -44,7 +44,7 @@ useDataCleanup(currentEffect, ["attackBonus"]);
 			</v-col>
 
 			<v-col cols="12">
-				<TypeHintedEditor v-model="currentEffect.attackBonus" label="Attack Bonus" />
+				<TypeHintedEditor v-model="currentEffect.attackBonus" label="Attack Bonus" id="attackBonus" />
 			</v-col>
 
 			<v-col cols="12">

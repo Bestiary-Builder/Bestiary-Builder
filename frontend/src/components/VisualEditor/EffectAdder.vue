@@ -234,7 +234,7 @@ const onKeydown = (e: KeyboardEvent) => {
 		v-if="showControls">
 		<template #activator="{ props }">
 			<p class="tree-row" v-bind="props" :style="`--depth: ${depth}`"
-				style="color: rgb(var(--v-theme-surface-bright));" ref="btnRef">
+				style="color: rgb(var(--v-theme-surface-bright));" ref="btnRef" id="add-effect">
 				<span class="icon">
 					<Icon icon="mdi:plus-circle" width="1em" color="rgb(var(--v-theme-primary))" />
 				</span><span>{{ automation === null ? 'Create Automation' : 'Add Effect' }}</span>
@@ -245,15 +245,17 @@ const onKeydown = (e: KeyboardEvent) => {
 			<v-card-text class="pb-0">
 				<v-text-field ref="searchFieldRef" v-model="search" density="compact" variant="plain" hide-details
 					placeholder="Search..." persistent-placeholder @keydown="onKeydown" autofocus />
+				<v-divider />
+
 			</v-card-text>
 
-			<v-list ref="listRef" max-height="300" class="overflow-y-auto">
+			<v-list ref="listRef" max-height="350" class="overflow-y-auto" id="effect-adder-list">
 				<template v-for="(node, index) in filteredNodes" :key="node + '-' + index">
 					<v-list-subheader v-if="isHeader(node)">{{ headerTitle(node) }}</v-list-subheader>
 					<v-divider v-else-if="isDivider(node)" />
 					<v-list-item v-else :title="displayNames[node]?.label" :prepend-icon="displayNames[node]?.icon"
 						:active="index === highlightedIndex" @click="selectNode(node)"
-						@mouseenter="highlightedIndex = index" />
+						@mouseenter="highlightedIndex = index" :id="`effectAdder${node}`" />
 				</template>
 				<v-list-item v-if="!filteredNodes.length" title="No matches" disabled />
 			</v-list>

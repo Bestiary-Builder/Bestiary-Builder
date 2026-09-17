@@ -59,7 +59,7 @@ const currentDocu = computed(() => {
 					</li>
 				</ul>
 			</div>
-			<div v-if="currentDocu?.variables">
+			<div v-if="currentDocu?.variables" id="exposedVariables">
 				<hr>
 				<h4>Exposed Variables</h4>
 				<ul>

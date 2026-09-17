@@ -89,18 +89,17 @@ const srdOptions = [
 						Date(store.user.joinedAt).toDateString() : "Not Found" }}</b>.
 				</p>
 				<p> You have created <b>{{ bestiaryCount }}</b> bestiaries since then.</p>
-				<p v-if="store.user.supporter === SupporterStatus.none">
+				<div v-if="store.user.supporter === SupporterStatus.none">
 					If you enjoy using our site, consider supporting us on Patreon!
 					As a Patreon Supporter, you will have several benefits and you will support the active development
 					of Bestiary Builder.
 
-				<ul>
-					<li> You can create your own custom theme for the statblock and the website. </li>
-					<li> You can create your own custom statblock theme. </li>
-					<li> You can make feature requests directly to the developers. </li>
-				</ul>
-				</p>
-
+					<ul>
+						<li> You can create your own custom theme for the statblock and the website. </li>
+						<li> You can create your own custom statblock theme. </li>
+						<li> You can make feature requests directly to the developers. </li>
+					</ul>
+				</div>
 				<span
 					v-if="!(store.user.supporter === SupporterStatus.wirmling || store.user.supporter === SupporterStatus.greatwyrm)">
 					<v-btn color="#f1465a" size="x-large" prepend-icon="mdi:patreon" class="mt-4 rounded"
@@ -126,10 +125,7 @@ const srdOptions = [
 						<div>
 							<v-select v-model="theme.global.name.value" :items="themeOptions" label="Theme"
 								item-props="props" width="400" hide-details />
-
 						</div>
-
-
 					</div>
 					<span style="font-size: smaller" class="pt-2">
 						Custom theme is available to Patreon Supporters.
@@ -162,7 +158,6 @@ const srdOptions = [
 						<div>
 							<v-select v-model="preferences.statblockDesign" :items="statblockDesignOptions"
 								label="Statblock Theme" width="400" hide-details />
-
 						</div>
 
 						<v-icon-btn
@@ -216,7 +211,7 @@ const srdOptions = [
 						<SectionHeader title="Avrae Integration" />
 						<v-container class="pa-0">
 							<small> With this setting you can edit character attacks and import attacks to characters
-								directly within BB. <br>To enable it, set your Avrae Token below. Bestiary Builder does
+								directly within BB. <br>To use it, set your Avrae Token below. Bestiary Builder does
 								not
 								store this
 								token, it is only saved in your browser.
@@ -234,20 +229,26 @@ const srdOptions = [
 										Open developer console (CTRL-SHIFT-I or Right click -> Inspect)
 									</li>
 									<li>
-										Open the <code> Application </code> Tab.
+										Open the <code> Application </code> Tab (At the top: Press the three dots or the
+										>> button to view
+										the tab menu ).<br />
+										<i>On Firefox: Instead choose the Storage tab.</i>
 									</li>
 									<li>
-										Choose Local Storage (https://avrae.io)
+										Choose <code>Local Storage (https://avrae.io) </code>
 									</li>
 									<li>
 										Copy the entire value of the
 										<code> avrae-token</code> key and paste it into the field above.
 									</li>
+									<li>
+										<b> If you need help with getting the token, please ask on our Discord
+											server.</b>
+									</li>
 								</ol>
 							</small>
 						</v-container>
 					</div>
-
 				</div>
 			</div>
 			<SectionHeader title="Log out" />

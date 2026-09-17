@@ -67,7 +67,7 @@ export const routes: Route[] = [
 	},
 	{
 		path: "/creature/edit/:id/:type/:aid",
-		name: "Feature Editor",
+		name: "Edit Feature",
 		file: "creature/CreatureFeatureEdit.vue",
 		meta: { navbar: false, loggedIn: true, dynamic: true },
 	},

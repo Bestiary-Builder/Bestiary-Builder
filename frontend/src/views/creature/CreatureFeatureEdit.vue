@@ -387,12 +387,12 @@ provide("setActionDescription", setDesc);
 		},
 		{
 			path: `/creature/edit/${$route.params.id}?pane=5`,
-			text: data?.description.name.substring(0, 30) || 'Unnamed Creature',
+			text: data?.description.name.substring(0, store.isMobile ? 30 : Infinity) || 'Creature',
 			isCurrent: false
 		},
 		{
 			path: '',
-			text: data?.features[$route.params.type as keyof Features][$route.params.aid as any].name.substring(0, 30) || 'Action',
+			text: data?.features[$route.params.type as keyof Features][$route.params.aid as any].name.substring(0, store.isMobile ? 30 : Infinity) || 'Action',
 			isCurrent: true
 		}
 	]">

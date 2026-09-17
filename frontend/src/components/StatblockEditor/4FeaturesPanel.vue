@@ -6,6 +6,7 @@ import { useRouter } from "vue-router";
 import { useToast } from "@/utils/app/toast";
 import { newFeatureGenerator } from "@/utils/constants";
 import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
+import MarkdownIt from "markdown-it";
 
 const { data, rawInfo } = defineProps<{ data: Statblock; rawInfo: CreatureWithStats | null }>();
 const $router = useRouter();
@@ -33,6 +34,13 @@ const createNewFeature = (type: keyof Features) => {
 const allFeatureTypes = computed(() =>
 	Object.keys(newFeatureGenerator).filter((fType) => data.features[fType as keyof Features]?.length > 0)
 )
+
+const md = new MarkdownIt({
+	html: false,
+	linkify: false,
+	typographer: false,
+});
+
 </script>
 
 <template>
@@ -47,11 +55,14 @@ const allFeatureTypes = computed(() =>
 
 			<VueDraggable v-model="data.features[fType]" group="features" :animation="150" handle=".handle">
 				<div v-for="element, index in data.features[fType]" :key="index">
-					<v-list-item slim :title="element.name" :subtitle="element.description">
+					<v-list-item slim :title="element.name">
 						<template #prepend>
 							<v-icon icon="$drag" size="24" class="handle" />
 						</template>
 
+						<template #subtitle>
+							<v-list-item-subtitle v-html="md.renderInline(element.description)" />
+						</template>
 						<template #append>
 							<v-icon icon="mdi:pencil" text="Edit this feature" size="22"
 								@click="openFeature(`${rawInfo?.id}/${fType}/${index}`)" color="primary" />

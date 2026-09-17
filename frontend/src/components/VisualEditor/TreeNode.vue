@@ -128,7 +128,7 @@ const DragHandle = () => h(
 	<div class="tree-node"
 		:style="isCurrentSelectedContext ? '--bg-color: color-mix(in srgb, rgb(var(--v-theme-surface)) 100%, white 0%)' : ''">
 		<p class="drag-area tree-row" :style="`--depth: ${depth}`"
-			@click="currentEffect = data; currentContext = context">
+			@click="currentEffect = data; currentContext = context" :id="`${selfType}${depth}`">
 			<NodeHeader :type="selfType" :additional-text="additionalText" :is-current="isCurrentSelectedContext" />
 
 			<span v-if="['attack', 'condition', 'save', 'ieffect2'].includes(selfType)" class="collapse-button"

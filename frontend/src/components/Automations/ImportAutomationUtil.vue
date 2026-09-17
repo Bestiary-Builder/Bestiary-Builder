@@ -109,7 +109,7 @@ const groupedAutomatedItems = computed(() => {
 				<v-row density="compact">
 					<v-col cols="12">
 						<v-autocomplete :items="srdFeatures.items" :loading="srdFeatures.loading"
-							label="Import SRD Feature" variant="solo-filled" class="w-100" clearable
+							label="Import SRD Feature" variant="solo-filled" class="w-100 pb-3" clearable
 							@update:menu="srdFeatures.handleMenuOpen"
 							@update:model-value="selected => (selectAndLoad(`srd-features/${store.user?.SRDVersion === 'SRD_2024' ? '2024' : '2014'}`, selected || ''))"
 							:hint="`SRD ${store.user?.SRDVersion === 'SRD_2024' ? '2024' : '2014'}. Change in settings.`"

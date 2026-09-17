@@ -18,6 +18,7 @@ import { useRecentPages } from "@/utils/app/useRecentPages";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { defaultStatblock } from "~/shared";
+import { refDebounced } from "@vueuse/core";
 
 const $route = useRoute();
 const $router = useRouter();

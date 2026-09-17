@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import type { AttackModel, AutomationDocumentation } from "~/shared";
 import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
-import { watchDebounced } from "@vueuse/core";
+import { useLocalStorage, watchDebounced } from "@vueuse/core";
 import { computed, onMounted, onUnmounted, ref, shallowRef, useTemplateRef, watch } from "vue";
 import YAML from "yaml";
 import VisualEditor from "@/components/VisualEditor/VisualEditor.vue";
 import { useToast } from "@/utils/app/toast";
 import { useFetch } from "@/utils/utils";
 import AutomationDocumentationView from "./AutomationDocumentation.vue";
+import { useOnboardingTour } from "@/utils/app/useOnboardingTour.js";
 
 type AutomationValue = AttackModel | AttackModel[] | null;
 
@@ -151,6 +152,26 @@ onMounted(async () => {
 		docu.value = data;
 });
 
+const clear = () => {
+	console.log("clearing...")
+	resetVisualEditorState()
+	suppressNextModelSync = true
+	visualEditorModel.value = null
+}
+
+const dismissed = useLocalStorage("newAutomationEditorDismissed", false);
+const { startAutomationEditorWorkflow } = useOnboardingTour()
+
+const initialize = () => {
+	localStorage.setItem("automationDataStoredDuringWorkflow", JSON.stringify(visualEditorModel.value))
+	suppressNextModelSync = true;
+	visualEditorModel.value = { name: 'Test attack', '_v': 2, automation: [] };
+}
+
+const restore = () => {
+	suppressNextModelSync = true
+	visualEditorModel.value = JSON.parse(localStorage.getItem("automationDataStoredDuringWorkflow") ?? 'null');
+}
 </script>
 
 <template>
@@ -163,17 +184,35 @@ onMounted(async () => {
 		<AutomationDocumentationView v-model="currentContext" />
 	</div>
 	<div v-else class="mt-4">
+		<v-alert title="Welcome to the new Automation Editor" class="mb-4" color="primary" icon="mdi:creation-outline"
+			closable v-if="true || !dismissed" @click:close="dismissed = true">
+			<template #text>
+				With 3.0.0, you can now create Automation directly within Bestiary Builder. The automation editor
+				includes
+				smart features to make your life easier. If you prefer the old YAML editor, you can toggle it at the top
+				menu or set a default in your <RouterLink to="/user" style="color: white; text-decoration: underline;">
+					User
+					Settings.</RouterLink>
+			</template>
+			<template #append>
+				<div>
+					<v-btn variant="outlined" @click="startAutomationEditorWorkflow"> Take the tour </v-btn>
+				</div>
+			</template>
+		</v-alert>
 		<VisualEditor ref="VisualEditorRef" v-model="visualEditorModel" :name="name || ''"
-			:no-list-attack="noListAttack" />
+			:no-list-attack="noListAttack" @clear-automation="clear" />
 	</div>
 
+	<!-- These buttons allow us to interface with our state from the onboarding workflow without having to globally manage the state. 
+	These are clicked by the tour runner.-->
+	<div style="visibility: hidden;">
+		<button @click="initialize" id="automation-workflow-initialize-data"></button>
+		<button @click="restore" id="automation-workflow-end-data"></button>
+	</div>
 </template>
 
 <style scoped lang="less">
-.editor {
-	margin-top: 1rem;
-}
-
 a {
 	color: rgb(var(--v-theme-primary));
 }
