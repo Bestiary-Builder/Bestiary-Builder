@@ -33,7 +33,7 @@ useDataCleanup(currentEffect, ["errorBehaviour"]);
 				<SectionHeader title="Branch" />
 			</v-col>
 
-			<v-col cols="6">
+			<v-col cols="12">
 				<TypeHintedEditor v-model="currentEffect.condition" label="Condition" />
 				<p v-if="isWarning" class="pt-1 text-warning"> <small>Equality checks should use double ==.</small></p>
 			</v-col>
