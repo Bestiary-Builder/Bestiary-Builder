@@ -8,7 +8,7 @@ export const SKILLS_BY_STAT = {
 	int: ["arcana", "history", "investigation", "nature", "religion", "intelligence"],
 	wis: ["animalHandling", "insight", "medicine", "perception", "survival", "wisdom"],
 	cha: ["deception", "intimidation", "performance", "persuasion", "charisma"],
-} as { [key in Stat]: string[] };
+} as const satisfies Record<Stat, readonly string[]>;
 
 export const statFullName = {
 	str: "Strength",

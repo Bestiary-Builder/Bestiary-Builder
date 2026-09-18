@@ -1,16 +1,22 @@
 import { createGlowTour } from "@glowhop/vue-tour";
 import { store } from "../store";
+import { getUmami } from "./analytics";
 
 const tour = createGlowTour();
 export const useOnboardingTour = () => {
     const onboardingWorkflow = tour
         .create("welcome", {
             onStart() {
+                void getUmami()?.track("Onboarding tour started")
                 if (!document.querySelector(".v-navigation-drawer--left.v-navigation-drawer--active"))
                     document.getElementById("toggle-drawer")?.click()
             },
             onFinish() {
+                void getUmami()?.track("Onboarding tour finished")
                 document.getElementById("changelog-nav")?.click()
+            },
+            onCancel() {
+                void getUmami()?.track("Onboarding tour cancelled")
             }
         })
         .step({ id: "welcome-1", target: ".v-navigation-drawer--left.v-navigation-drawer--active", title: "Welcome to 3.0.0", content: "You can now find all pages in the collapsible navigation window on the left." })
@@ -31,12 +37,18 @@ export const useOnboardingTour = () => {
 
     const automationEditorWorkflow = tour
         .create("editor", {
+            onStart() {
+                void getUmami()?.track("Automation tour started")
+            },
             onCancel() {
                 document.getElementById("automation-workflow-end-data")?.click()
+                void getUmami()?.track("Automation tour cancelled")
+
             },
             onFinish() {
                 document.getElementById("automation-workflow-end-data")?.click()
-            }
+                void getUmami()?.track("Automation tour finished")
+            },
         })
         .step({ id: "editor-1", target: "#visual-editor-container", title: "Automation Editor", content: "This is the new automation editor. Continue the tour to have a walkthrough of its features. Note: it will temporarily change the data of your action. When the tour is finished or cancelled, your automation will automatically restore itself.", behavior: { disableAutoScroll: true }, })
         .beforeAdvance(() => {

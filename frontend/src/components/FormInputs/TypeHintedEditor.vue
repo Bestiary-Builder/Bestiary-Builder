@@ -23,7 +23,7 @@ interface Props {
 
 const $route = useRoute()
 const props = withDefaults(defineProps<Props>(), {
-  variant: 'solo-filled',
+  variant: 'solo',
   language: 'python',
   density: 'default',
   height: 40,

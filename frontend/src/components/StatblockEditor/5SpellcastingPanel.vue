@@ -4,7 +4,7 @@ import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useToast } from "@/utils/app/toast";
 import { classes, classLevels, stats } from "@/utils/constants";
 import { useFetch } from "@/utils/utils";
-import { defaultStatblock, getSpellSlots } from "~/shared";
+import { defaultStatblock, getSpellSlots, statFullName } from "~/shared";
 import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
 import { useLazyAsync } from "@/utils/app/useLazyOptions";
 
@@ -121,6 +121,14 @@ const handleNewCustomInnateSpell = () => {
 		}
 	}
 };
+
+const castingAbilityOptions = computed(() => {
+	const output = []
+	for (const [value, key] of Object.entries(statFullName)) {
+		output.push({ title: key, value })
+	}
+	return output
+})
 </script>
 
 <template>
@@ -128,7 +136,7 @@ const handleNewCustomInnateSpell = () => {
 		<SectionHeader title="Daily Spells" />
 		<v-row class="my-4">
 			<v-col cols="6">
-				<v-select v-model="data.spellcasting.innateSpells.spellCastingAbility" :items="stats"
+				<v-select v-model="data.spellcasting.innateSpells.spellCastingAbility" :items="castingAbilityOptions"
 					label="Casting ability" input-id="castingability" hide-details />
 			</v-col>
 			<v-col cols="6">
@@ -147,7 +155,7 @@ const handleNewCustomInnateSpell = () => {
 			<v-col cols="6">
 				<v-dialog max-width="750">
 					<template #activator="{ props: activatorProps }">
-						<v-btn v-bind="activatorProps" class="w-100">
+						<v-btn v-bind="activatorProps" class="w-100" prepend-icon="mdi:pencil">
 							Customize daily spellcasting
 						</v-btn>
 					</template>
@@ -276,7 +284,7 @@ const handleNewCustomInnateSpell = () => {
 			<v-col cols="6">
 				<v-dialog max-width="750">
 					<template #activator="{ props: activatorProps }">
-						<v-btn v-bind="activatorProps" class="w-100">
+						<v-btn v-bind="activatorProps" class="w-100" prepend-icon="mdi:pencil">
 							Customize class spellcasting
 						</v-btn>
 					</template>

@@ -13,6 +13,7 @@ import { useRecentPages } from "@/utils/app/useRecentPages";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { globalLimits, parseDescIntoAutomation } from "~/shared";
+import { activation_type } from "@/components/VisualEditor/util";
 
 const $router = useRouter();
 const $route = useRoute();
@@ -239,14 +240,19 @@ const loadFeature = async (feature: FeatureEntity) => {
 const generateAutomation = async () => {
 	if (!data.value)
 		return;
-	const result = parseDescIntoAutomation(data.value.features[type][aid].description, data.value.features[type][aid].name, 0)[0];
+
+	const activationType = activation_type[type] ?? 0
+	const result = parseDescIntoAutomation(data.value.features[type][aid].description, data.value.features[type][aid].name, activationType)[0];
 	if (result) {
 		try {
 			data.value.features[type][aid].automation = result;
+			addToast("Generated automation!", { color: "success" })
 		}
 		catch {
 			addToast("Something went wrong when generation automation", { color: "error" });
 		}
+	} else {
+		addToast("Your text could not be parsed into Automation.")
 	}
 };
 

@@ -9,7 +9,7 @@ import { useRecentPages } from "./utils/app/useRecentPages";
 import { store } from "./utils/store";
 import { sendToLogin } from "./utils/utils";
 import { latestChangelogVersion } from "./utils/constants";
-import { GlowTourDefault } from "@glowhop/vue-tour";
+import { GlowTourDefault, GlowTourRoot, GlowTourAdvanceTrigger, GlowTourBackTrigger, GlowTourCancelTrigger, GlowTourContent, GlowTourFooter, GlowTourHeader, GlowTourOverlay, GlowTourPointer, GlowTourPopover } from "@glowhop/vue-tour";
 import { useOnboardingTour } from "./utils/app/useOnboardingTour";
 
 const { recentPages } = useRecentPages();
@@ -121,7 +121,9 @@ const dismissed = useLocalStorage("update3.0.0dismissed", false);
 						</template>
 					</v-list-item>
 					<v-list-item v-else prepend-icon="mdi:login" @click="sendToLogin($route.path)" id="user-page">
-						Login
+						<v-list-item-title>
+							<b> Login </b>
+						</v-list-item-title>
 					</v-list-item>
 				</v-list>
 			</template>
@@ -169,7 +171,19 @@ const dismissed = useLocalStorage("update3.0.0dismissed", false);
 
 		<FeedbackForm v-model="isFeedbackFormOpen" />
 		<ToastHost />
-		<GlowTourDefault :tour="tour" />
+		<GlowTourRoot :tour="tour">
+			<GlowTourOverlay />
+			<GlowTourPointer />
+			<GlowTourPopover>
+				<GlowTourHeader />
+				<GlowTourContent />
+				<GlowTourFooter>
+					<GlowTourCancelTrigger> End </GlowTourCancelTrigger>
+					<GlowTourBackTrigger> Previous </GlowTourBackTrigger>
+					<GlowTourAdvanceTrigger> Next </GlowTourAdvanceTrigger>
+				</GlowTourFooter>
+			</GlowTourPopover>
+		</GlowTourRoot>
 	</v-app>
 </template>
 

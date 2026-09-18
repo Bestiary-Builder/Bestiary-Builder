@@ -103,7 +103,7 @@ export const defaultStatblock: Statblock = {
 		},
 		ac: {
 			ac: 10,
-			acSource: "natural armor",
+			acSource: "",
 		},
 		vulnerabilities: [],
 		resistances: [],

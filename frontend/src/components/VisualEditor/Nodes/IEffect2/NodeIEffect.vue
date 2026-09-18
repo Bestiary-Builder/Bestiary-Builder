@@ -2,7 +2,7 @@
 import type { Ref } from "vue";
 import type { PassiveEffectDef } from "./passiveEffect";
 import type { IEffect } from "~/shared";
-import { computed, inject } from "vue";
+import { computed, inject, ref } from "vue";
 import { useRules } from "vuetify/labs/rules";
 import Editor from "@/components/StatblockEditor/Editor.vue";
 import SectionHeader from "../shared/SectionHeader.vue";
@@ -18,6 +18,7 @@ const filteredPassiveEffects = computed(() => {
 	return PASSIVE_EFFECTS.filter(x => !Object.keys(currentEffect.value.effects as any).includes(x.value));
 });
 
+const newPassiveEffect = ref<null | PassiveEffectDef>()
 const addNewPassiveEffect = (effect: PassiveEffectDef | null) => {
 	if (effect === null)
 		return;
@@ -30,6 +31,8 @@ const addNewPassiveEffect = (effect: PassiveEffectDef | null) => {
 	else if (effect.type === "intexpression" || effect.type === "annotatedstring")
 		// @ts-expect-error already checked for lists..
 		currentEffect!.value.effects[effect.value] = "1";
+
+	newPassiveEffect.value = null
 };
 
 const getEffectData = (value: string) => {
@@ -140,7 +143,6 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 								:label="getEffectData(key)?.label || ''"
 								:is-annotated-string="getInputType(key) === 'annotatedstring'">
 								<template #append>
-
 								</template>
 							</TypeHintedEditor>
 						</div>
@@ -169,7 +171,7 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 					<v-combobox v-model="effectValueFor(key).value" :label="getEffectData(key)?.label || ''"
 						:items="getEffectData(key)?.defaultOptions" item-title="label" item-value="value"
 						:multiple="getEffectData(key)?.isList" :chips="getEffectData(key)?.isList"
-						:closable-chips="getEffectData(key)?.isList" variant="solo-filled">
+						:closable-chips="getEffectData(key)?.isList" variant="solo">
 						<template #append>
 							<DropdownMenu>
 								<template #activator="{ props }">
@@ -193,8 +195,9 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 			</v-col>
 			<v-col cols="6">
 				<v-autocomplete :items="filteredPassiveEffects" item-title="label" label="New Passive Effect"
-					return-object prepend-icon="mdi:plus" icon-color="primary" item-color="primary"
-					@update:model-value="(e: PassiveEffectDef | null) => addNewPassiveEffect(e)" />
+					return-object prepend-inner-icon="mdi:plus" icon-color="primary" item-color="primary"
+					@update:model-value="(e: PassiveEffectDef | null) => addNewPassiveEffect(e)"
+					v-model="newPassiveEffect" />
 			</v-col>
 		</v-row>
 		<SectionHeader title="Buttons & Attacks" />

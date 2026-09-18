@@ -403,7 +403,7 @@ const isCollapsed = ref(false)
 					</v-sheet>
 				</v-col>
 
-				<v-col :cols="isCollapsed ? 8 : 6" style="margin: auto; max-width: 850px">
+				<v-col :cols="isCollapsed ? 8 : 6" class="mx-auto" style="max-width: min(100%, 850px)">
 					<v-skeleton-loader v-if="rawInfo === null"
 						type="heading, divider, text, text, sentences, heading, text" />
 					<StatblockRenderer v-else :data="data" />

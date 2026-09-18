@@ -1,4 +1,4 @@
-import type { Features, Stat } from "~/shared";
+import type { Stat } from "~/shared";
 
 // Generators which are used to create UI programmatically in the StatblockRender
 
@@ -24,7 +24,6 @@ export const featureGenerator = {
 } as const;
 
 // constants for StatblockEditor
-
 export const newFeatureGenerator = {
 	features: "New Feature",
 	actions: "New Action",

@@ -240,10 +240,13 @@ const generateAutomation = async () => {
 	if (result) {
 		try {
 			data.value.automation = result;
+			addToast("Generated automation!", { color: "success" })
 		}
 		catch {
-			addToast("Something went wrong when generation automation", { color: "error" });
+			addToast("Something went wrong when generating automation", { color: "error" });
 		}
+	} else {
+		addToast("Your text could not be parsed into Automation.")
 	}
 };
 

@@ -10,7 +10,7 @@ import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
 const { data } = defineProps<{ data: Statblock }>();
 const { addToast } = useToast();
 
-const newSpeed = ref("");
+const newSpeed = ref<string | null>(null);
 const isAddSpeedOpen = ref(false)
 const addNewSpeed = (newSpeedName: string) => {
 	if (!newSpeedName) {
@@ -24,9 +24,10 @@ const addNewSpeed = (newSpeedName: string) => {
 	}
 	data.core.speed.push({ name: newSpeedName, value: 30, unit: "ft", comment: "" });
 	isAddSpeedOpen.value = false;
+	newSpeed.value = null
 };
 
-const newSense = ref("");
+const newSense = ref<string | null>(null);
 const isAddSensesOpen = ref(false)
 const addNewSense = (newSenseName: string) => {
 	if (!newSenseName) {
@@ -38,6 +39,8 @@ const addNewSense = (newSenseName: string) => {
 		return;
 	}
 	data.core.senses.push({ name: newSenseName, value: 30, unit: "ft", comment: "" });
+	isAddSensesOpen.value = false;
+	newSense.value = null
 };
 
 
@@ -117,10 +120,10 @@ const addNewSense = (newSenseName: string) => {
 					<v-card min-width="300" class="text-center pa-4">
 						<v-card-actions>
 							<v-combobox v-model="newSpeed" :items="['Walk', 'Swim', 'Fly', 'Climb', 'Burrow']"
-								hint="Supports custom speeds" persistent-hint density="compact"
-								@keydown.enter="addNewSpeed(newSpeed)">
+								density="compact" placeholder="Type or choose speed..." persistent-placeholder
+								@keydown.enter="addNewSpeed(newSpeed || '')">
 								<template #append>
-									<v-icon-btn @click="addNewSpeed(newSpeed)" icon="mdi:check"
+									<v-icon-btn @click="addNewSpeed(newSpeed || '')" icon="mdi:plus"
 										:color="newSpeed ? 'primary' : 'grey'" />
 								</template>
 							</v-combobox>
@@ -204,11 +207,11 @@ const addNewSense = (newSenseName: string) => {
 					<v-card min-width="300" class="text-center pa-4">
 						<v-card-actions>
 							<v-combobox v-model="newSense"
-								:items="['Darkvision', 'Blindsight', 'Truesight', 'Tremorsense']"
-								hint="Supports custom senses" persistent-hint density="compact"
-								@keydown.enter="addNewSense(newSense)">
+								:items="['Darkvision', 'Blindsight', 'Truesight', 'Tremorsense']" density="compact"
+								@keydown.enter="addNewSense(newSense || '')" placeholder="Type or choose sense..."
+								persistent-placeholder>
 								<template #append>
-									<v-icon-btn @click="addNewSense(newSense)" icon="mdi:check"
+									<v-icon-btn @click="addNewSense(newSense || '')" icon="mdi:plus"
 										:color="newSense ? 'primary' : 'grey'" />
 								</template>
 							</v-combobox>

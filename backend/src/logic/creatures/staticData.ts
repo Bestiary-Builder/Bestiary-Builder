@@ -1,14 +1,15 @@
 import fetch from "node-fetch";
-import SRDAttacks2014 from "@/staticData/2014/SRDAttacks2014.json";
+import SRDAttacks2014_ from "@/staticData/2014/SRDAttacks2014.json";
 import SRDCreatures2014 from "@/staticData/2014/SRDCreatures2014.json";
-import SRDAttacks2024 from "@/staticData/2024/SRDAttacks2024.json";
+import SRDAttacks2024_ from "@/staticData/2024/SRDAttacks2024.json";
 import SRDCreatures2024 from "@/staticData/2024/SRDCreatures2024.json";
 import data from "@/staticData/automationDocumentation.json";
 import spells from "@/staticData/shared/spells.json";
 import tOF from "@/staticData/shared/textOnlyFeatures.json";
 import { app } from "@/utilities/constants";
 
-
+let SRDAttacks2014 = SRDAttacks2014_
+let SRDAttacks2024 = SRDAttacks2024_
 
 // Actions
 const textOnlyFeatures = {} as { [key: string]: { name: string; description: string; automation: null } };
@@ -17,8 +18,8 @@ for (const [key, value] of Object.entries(tOF)) {
 	textOnlyFeatures[key] = { name: key, description: value, automation: null };
 }
 
-Object.assign(SRDAttacks2014, textOnlyFeatures);
-Object.assign(SRDAttacks2024, textOnlyFeatures);
+SRDAttacks2014 = { ...textOnlyFeatures, ...SRDAttacks2014 };
+SRDAttacks2024 = { ...textOnlyFeatures, ...SRDAttacks2024 };
 
 const registerStaticDataRoutes = (routes: Array<{
 	path: string;

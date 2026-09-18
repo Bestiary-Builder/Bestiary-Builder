@@ -96,7 +96,10 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 					</v-btn>
 					<div class="d-flex align-center no-wrap my-4 w-100">
 						<v-divider class="flex-grow-1" />
-						<span class="mx-4 text-medium-emphasis">Image Options</span>
+						<span class="mx-4 text-medium-emphasis text-no-wrap">
+							Image
+							Options
+						</span>
 						<v-divider class="flex-grow-1" />
 					</div>
 

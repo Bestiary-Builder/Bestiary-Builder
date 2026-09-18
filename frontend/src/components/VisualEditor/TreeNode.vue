@@ -100,7 +100,7 @@ const additionalText = computed(() => {
 		if (!target)
 			return "";
 
-		return target.toString().substring(0, 99).trim().replace("caster.name", "Caster").replace("target.name", "Target");
+		return target.toString().trim().replace("caster.name", "Caster").replace("target.name", "Target").substring(0, 32);
 	}
 	return "";
 });

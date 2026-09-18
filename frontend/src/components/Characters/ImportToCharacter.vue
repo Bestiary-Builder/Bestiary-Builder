@@ -90,7 +90,7 @@ const toArray = <T>(input: T | T[]): T[] => {
 		<template #default>
 			<v-card class="text-center pa-4" title="Import this attack to your character.">
 				<v-card-text>
-					<span class="text-medium-emphasis">
+					<span class="text-medium-emphasis -4">
 						Importing this attack will add it to your character. Attacks from automation collections will
 						also
 						load its counters.
@@ -115,10 +115,10 @@ const toArray = <T>(input: T | T[]): T[] => {
 							Confirm import
 						</v-btn>
 					</div>
-					<div v-else>
+					<div v-else class="mt-4">
 						You can set up importing to your characters with just a button press!
-						Set it up in <RouterLink to="/user" class="text-primary">
-							your user settings.
+						Set it up in <RouterLink to="/user">
+							<span class="text-primary"> your user settings. </span>
 						</RouterLink>
 					</div>
 					<div class="d-flex align-center my-4 w-100">

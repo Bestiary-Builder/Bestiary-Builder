@@ -23,7 +23,7 @@ export const displayNames: Record<string, { label: string; icon: string }> = {
 	buttons: { label: "Button", icon: "material-symbols:joystick" },
 	save: { label: "Saving Throw", icon: "fa6-solid:recycle" },
 	temphp: { label: "Temp HP", icon: "material-symbols:shield-with-heart" },
-	check: { label: "Ability Check", icon: "twemoji:man-cartwheeling" },
+	check: { label: "Ability Check", icon: "material-symbols:sports-gymnastics-rounded" },
 	proneButton: { label: "Prone Button", icon: "material-symbols:falling-rounded" },
 	rechargeButton: { label: "Recharge Button", icon: "material-symbols:charger" },
 	damageStartOfTurnButton: { label: "Damage start of turn Button", icon: "mdi:fire" },

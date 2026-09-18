@@ -12,14 +12,14 @@ export const vuetify = createVuetify({
 	defaults: {
 		VTextField: {
 			autocomplete: "off",
-			variant: "solo-filled"
+			variant: "solo"
 		},
 		VTextarea: {
-			variant: "solo-filled",
+			variant: "solo",
 			autocomplete: "off"
 		},
 		VSelect: {
-			variant: "solo-filled"
+			variant: "solo"
 		},
 		VBtn: {
 			variant: "tonal"
@@ -38,14 +38,54 @@ export const vuetify = createVuetify({
 		},
 		VNumberInput: {
 			controlVariant: "stacked",
-			variant: "solo-filled"
+			variant: "solo"
 		},
 		VAutocomplete: {
-			variant: "solo-filled"
+			variant: "solo"
 		},
 		VCombobox: {
-			variant: "solo-filled"
+			variant: "solo"
 		},
+		VDialog: {
+			VTextField: {
+				variant: "solo-filled"
+			},
+			VTextarea: {
+				variant: "solo-filled",
+			},
+			VSelect: {
+				variant: "solo-filled"
+			},
+			VNumberInput: {
+				variant: "solo-filled"
+			},
+			VAutocomplete: {
+				variant: "solo-filled"
+			},
+			VCombobox: {
+				variant: "solo-filled"
+			},
+		},
+		VCard: {
+			VTextField: {
+				variant: "solo-filled"
+			},
+			VTextarea: {
+				variant: "solo-filled",
+			},
+			VSelect: {
+				variant: "solo-filled"
+			},
+			VNumberInput: {
+				variant: "solo-filled"
+			},
+			VAutocomplete: {
+				variant: "solo-filled"
+			},
+			VCombobox: {
+				variant: "solo-filled"
+			},
+		}
 
 	},
 	theme: {

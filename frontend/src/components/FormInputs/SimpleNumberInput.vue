@@ -129,7 +129,7 @@ function clear() {
 			:max="max" inputmode="numeric" @change="change">
 		<v-icon-btn icon="mdi:plus" :text="`Increase ${label}`" size="small" color="white" variant="plain"
 			@click.prevent="increase" />
-		<v-icon-btn v-if="isClearable" icon="mdi:delete" text="clear" @click="clear" />
+		<v-icon v-if="isClearable" icon="mdi:delete" text="clear" @click="clear" color="primary" size="24" />
 	</div>
 </template>
 
@@ -139,7 +139,7 @@ function clear() {
 	grid-template-columns: 1fr 2fr 1fr;
 
 	&.clearable {
-		grid-template-columns: 1fr 2fr 1fr 1fr;
+		grid-template-columns: 1fr 2fr 1fr .5fr;
 	}
 
 	button {
@@ -150,15 +150,16 @@ function clear() {
 .simple-quantity input {
 	background-color: rgb(var(--v-theme-surface));
 	height: 32px;
-	line-height: 1.25;
+	line-height: 1.20;
 	font-size: 0.9rem;
 	display: block;
 	text-align: center;
 	padding: 0;
 	margin: auto;
-	border: 1px solid rgb(var(--v-theme-surface-light));
+	border: 0px solid rgb(var(--v-theme-surface-light));
 	max-width: 90vw;
-	width: 4rem;
+	width: 2rem;
+	cursor: pointer;
 }
 
 input[type="number"]::-webkit-inner-spin-button,
