@@ -20,7 +20,7 @@ const rules = useRules();
 	<template v-if="currentEffect">
 		<v-row density="comfortable">
 			<v-col cols="12">
-				<SectionHeader :title="`Attack (${currentEffect.name})`" />
+				<SectionHeader :title="`${currentEffect.name}`" />
 			</v-col>
 
 			<v-col cols="6">

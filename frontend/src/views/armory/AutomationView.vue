@@ -30,6 +30,7 @@ onMounted(async () => {
 		data.value = aData;
 		await getCollection();
 		trackVisit($route.path, data.value.name);
+		document.title = `${data.value?.name} | Bestiary Builder`;
 		removeToast(toastId);
 	}
 	else {

@@ -83,6 +83,11 @@ const unwatch = watch(() => data.value, () => {
 	unwatch();
 }, { deep: true });
 
+
+watch(() => data.value?.features[type][aid].name, () => {
+	document.title = `${data.value?.features[type][aid].name} | Bestiary Builder`;
+}, { immediate: true });
+
 onBeforeRouteUpdate(() => {
 	if (madeChanges.value && (isOwner.value || isEditor.value)) {
 		const answer = window.confirm("Do you really want to leave? you have unsaved changes!");
@@ -412,7 +417,7 @@ provide("setActionDescription", setDesc);
 			text="Copy automation" size="24" @click="EditAutomationRef?.copyAutomation()" />
 	</Breadcrumbs>
 	<div v-if="data" class="content">
-		<v-card class="pa-4" color="surface-light">
+		<v-sheet class="pa-4" color="surface-light" rounded>
 			<v-row>
 				<v-col cols="4">
 					<v-text-field v-model="data.features[type][aid].name" type="text" label="Feature name"
@@ -454,14 +459,14 @@ provide("setActionDescription", setDesc);
 					<Editor v-model="data.features[type][aid].description" :height="100" />
 					<span v-if="isVisualEditor" class="sub-action">
 						<input v-model="parityOptions.updateDescription" type="checkbox">
-						<small> <i>Updates the last text node of the first action in the automation structure to this
-								text
-								while
-								enabled.</i> </small>
+						<small> <i>
+								Updates the last text node of the first action in
+								the automation structure to this text while enabled.
+							</i> </small>
 					</span>
 				</v-col>
 			</v-row>
-		</v-card>
+		</v-sheet>
 		<EditAutomation ref="EditAutomationRef" v-model="data.features[type][aid].automation"
 			v-model:is-visual-editor="isVisualEditor" :name="data.features[type][aid].name" :no-list-attack="false" />
 	</div>

@@ -430,6 +430,12 @@ const copySingleCounter = (consumable: AutomationConsumable) => {
 	addToast(`Copied counter "${consumable.name}" to clipboard.`);
 	void getUmami()?.track("Copy single counter");
 }
+
+// doc title
+watch(() => data.value?.name, () => {
+	document.title = `${data.value?.name} | Bestiary Builder`;
+}, { immediate: true });
+
 </script>
 
 <template>
@@ -463,7 +469,7 @@ const copySingleCounter = (consumable: AutomationConsumable) => {
 			text="Copy automation" size="24" @click="EditAutomationRef?.copyAutomation()" />
 	</Breadcrumbs>
 	<div v-if="data" class="content">
-		<v-card class="pa-4" color="surface-light">
+		<v-sheet class="pa-4" color="surface-light">
 			<v-row>
 				<v-col cols="4">
 					<v-text-field v-model="data.name" type="text" label="Feature name" :minlength="globalLimits.nameMin"
@@ -502,7 +508,7 @@ const copySingleCounter = (consumable: AutomationConsumable) => {
 					</span>
 				</v-col>
 			</v-row>
-		</v-card>
+		</v-sheet>
 
 		<EditAutomation ref="EditAutomationRef" v-model="data.automation" v-model:is-visual-editor="isVisualEditor"
 			:name="data.name" />
