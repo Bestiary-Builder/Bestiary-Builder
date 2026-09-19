@@ -39,6 +39,34 @@ const conditionIcons: Record<string, string> = {
 	"Stunned": 'game-icons:sparkles',
 	"Unconscious": 'game-icons:knockout',
 }
+
+const dieSizes = [4, 6, 8, 10, 12, 20]
+const stepUp = () => {
+	const current = data.defenses.hp.sizeOfHitDie
+	const currentIndex = dieSizes.findIndex((x) => x === current)
+	if (currentIndex === -1) {
+		if (data.defenses.hp.sizeOfHitDie % 2 === 1)
+			data.defenses.hp.sizeOfHitDie += 1
+		else
+			data.defenses.hp.sizeOfHitDie += 2
+	} else if (currentIndex === dieSizes.length - 1) {
+		data.defenses.hp.sizeOfHitDie += 2
+	} else {
+		data.defenses.hp.sizeOfHitDie = dieSizes[currentIndex + 1]
+	}
+}
+
+const stepDown = () => {
+	const current = data.defenses.hp.sizeOfHitDie
+	const currentIndex = dieSizes.findIndex((x) => x === current)
+	if (currentIndex === -1) {
+		data.defenses.hp.sizeOfHitDie = Math.max(1, data.defenses.hp.sizeOfHitDie - 2)
+	} else if (currentIndex === 0) {
+		data.defenses.hp.sizeOfHitDie = Math.max(1, data.defenses.hp.sizeOfHitDie - 2)
+	} else {
+		data.defenses.hp.sizeOfHitDie = dieSizes[currentIndex - 1]
+	}
+}
 </script>
 
 <template>
@@ -50,8 +78,20 @@ const conditionIcons: Record<string, string> = {
 					prepend-inner-icon="mdi:pound" />
 			</v-col>
 			<v-col cols="4">
-				<v-number-input v-model="data.defenses.hp.sizeOfHitDie" label="Hit Die Size" :min="1" :step="2"
-					:prepend-inner-icon="`mdi:dice-d${data.defenses.hp.sizeOfHitDie}`" />
+				<v-number-input v-model.number="data.defenses.hp.sizeOfHitDie" hide-details class="no-native-spinners"
+					control-variant="hidden" label="Hit Die Size"
+					:prepend-inner-icon="`mdi:dice-d${data.defenses.hp.sizeOfHitDie}`" :min="1">
+					<template #append-inner>
+						<v-divider vertical />
+						<div class="stacked-controls">
+							<v-btn icon="mdi:chevron-up" size="24" variant="text" density="compact" @click.stop="stepUp"
+								:ripple="false" />
+							<v-divider length="100%" />
+							<v-btn icon="mdi:chevron-down" size="24" variant="text" density="compact"
+								@click.stop="stepDown" :ripple="false" />
+						</div>
+					</template>
+				</v-number-input>
 			</v-col>
 			<v-col cols="4">
 				<v-number-input v-model="data.defenses.hp.override" label="HP Override" :min="0" clearable />
@@ -99,5 +139,36 @@ const conditionIcons: Record<string, string> = {
 
 :deep(.v-list-item__spacer) {
 	width: 4px !important;
+}
+
+
+:deep(.stacked-controls) {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+}
+
+:deep(.stacked-controls .v-btn) {
+	width: 100% !important;
+	height: 28px !important;
+	border-radius: 0;
+}
+
+
+.no-native-spinners :deep(input[type='number']) {
+	-moz-appearance: textfield;
+}
+
+.no-native-spinners :deep(input[type='number']::-webkit-outer-spin-button),
+.no-native-spinners :deep(input[type='number']::-webkit-inner-spin-button) {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+.no-native-spinners :deep(.v-field) {
+	padding-right: 0;
 }
 </style>
