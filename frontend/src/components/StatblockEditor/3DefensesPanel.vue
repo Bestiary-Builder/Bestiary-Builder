@@ -46,19 +46,23 @@ const conditionIcons: Record<string, string> = {
 		<SectionHeader title="HP & AC" />
 		<v-row class="mt-4" density="comfortable">
 			<v-col cols="4">
-				<v-number-input v-model="data.defenses.hp.numOfHitDie" label="Hit Die Number" :min="0" />
+				<v-number-input v-model="data.defenses.hp.numOfHitDie" label="Hit Die Number" :min="0"
+					prepend-inner-icon="mdi:pound" />
 			</v-col>
 			<v-col cols="4">
-				<v-number-input v-model="data.defenses.hp.sizeOfHitDie" label="Hit Die Size" :min="1" :step="2" />
+				<v-number-input v-model="data.defenses.hp.sizeOfHitDie" label="Hit Die Size" :min="1" :step="2"
+					:prepend-inner-icon="`mdi:dice-d${data.defenses.hp.sizeOfHitDie}`" />
 			</v-col>
 			<v-col cols="4">
 				<v-number-input v-model="data.defenses.hp.override" label="HP Override" :min="0" clearable />
 			</v-col>
 			<v-col cols="6">
-				<v-number-input v-model="data.defenses.ac.ac" label="Armor Class" :min="0" />
+				<v-number-input v-model="data.defenses.ac.ac" label="Armor Class" :min="0"
+					prepend-inner-icon="mdi:shield" />
 			</v-col>
 			<v-col cols="6">
-				<v-text-field v-model="data.defenses.ac.acSource" label="Armor source" />
+				<v-text-field v-model="data.defenses.ac.acSource" label="Armor source"
+					prepend-inner-icon="game-icons:fish-scales" />
 			</v-col>
 		</v-row>
 		<SectionHeader title="Resistances" />

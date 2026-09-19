@@ -397,7 +397,9 @@ const { statblockColors } = useStatblockColors()
 					<span v-if="data.core.languages && data.core.languages.length === 0 && !data.misc.telepathy"> —
 					</span>
 					<span v-else> {{ data.core.languages?.sort().join(", ") }} </span>
-					<span v-if="data.misc.telepathy"> telepathy {{ data.misc.telepathy }} ft.</span>
+					<span v-if="data.misc.telepathy"><span v-if="(data.core.languages || []).length > 0">,</span>
+						{{ (data.core.languages || []).length > 0 ? 't' : 'T' }}elepathy {{
+							data.misc.telepathy }} ft.</span>
 				</div>
 				<div v-if="v2024" class="challenge-prof">
 					<span> <b> CR</b> {{ crAsString(data.description.cr) }} (XP {{
