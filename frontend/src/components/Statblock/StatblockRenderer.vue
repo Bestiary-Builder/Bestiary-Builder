@@ -77,7 +77,7 @@ const skillOutput = computed(() => {
 			continue;
 		let bonus = 0;
 		for (const stat in SKILLS_BY_STAT) {
-			if (SKILLS_BY_STAT[stat as Stat].includes(skill.skillName.replaceAll(" ", "").toLowerCase().replace("animalh", "animalH").replace("sleightofh", "sleightOfH"))) {
+			if (SKILLS_BY_STAT[stat as Stat].includes(skill.skillName.replaceAll(" ", "").toLowerCase().replace("animalh", "animalH").replace("sleightofh", "sleightOfH") as never)) {
 				if (v2024 && skill.skillName === "Initiative")
 					continue;
 				if (skill.override && skill.override !== null) {
@@ -436,7 +436,7 @@ const { statblockColors } = useStatblockColors()
 
 					<p v-if="showCasterCasting && data.spellcasting.casterSpells.castingClass && data.spellcasting.casterSpells.casterLevel && data.spellcasting.casterSpells.spellSlotList"
 						class="feature-description">
-						<b><i>Spellcasting</i></b>
+						<b><i>Spellcasting.</i></b>
 						<span class="feature-description-inner indented"
 							v-html="render(displayCasterCasting(data, v2024))" />
 					</p>

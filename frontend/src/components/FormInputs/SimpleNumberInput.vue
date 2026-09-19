@@ -157,8 +157,9 @@ function clear() {
 	padding: 0;
 	margin: auto;
 	border: 0px solid rgb(var(--v-theme-surface-light));
+	border-color: white;
 	max-width: 90vw;
-	width: 2rem;
+	width: 3rem;
 	cursor: pointer;
 }
 

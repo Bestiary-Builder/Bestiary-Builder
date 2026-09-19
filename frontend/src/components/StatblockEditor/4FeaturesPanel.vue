@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import type { CreatureWithStats, Features, Statblock } from "~/shared";
+import { type CreatureWithStats, type Features, type Statblock } from "~/shared";
 import { computed, inject } from "vue";
 import { VueDraggable } from "vue-draggable-plus";
 import { useRouter } from "vue-router";
 import { useToast } from "@/utils/app/toast";
 import { newFeatureGenerator } from "@/utils/constants";
-import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
 import MarkdownIt from "markdown-it";
 
 const { data, rawInfo } = defineProps<{ data: Statblock; rawInfo: CreatureWithStats | null }>();
@@ -23,9 +22,20 @@ const openFeature = async (path: string) => {
 const deleteFeature = (type: keyof Features, index: number) => {
 	data.features[type].splice(index, 1);
 };
+
+const fTypeToFeatureName: Record<keyof Features, string> = {
+	features: "Trait",
+	actions: "Action",
+	bonus: "Bonus Action",
+	reactions: "Reaction",
+	legendary: "Legendary Action",
+	mythic: "Mythic Action",
+	lair: "Lair Action",
+	regional: "Regional Action"
+}
 const createNewFeature = (type: keyof Features) => {
 	data.features[type].push({
-		name: `New ${type} ${data.features[type].length + 1}`,
+		name: `${fTypeToFeatureName[type]} ${data.features[type].length + 1}`,
 		description: "",
 		automation: null
 	});

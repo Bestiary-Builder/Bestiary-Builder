@@ -82,8 +82,8 @@ const skillOptions = computed(() => {
 <template>
 	<div>
 		<SectionHeader title="Ability Scores & Saving Throws" class="pb-2" />
-		<v-table density="compact" hover gridlines>
-			<thead class="text-bold text-center font-weight-bold">
+		<v-table density="compact" hover gridlines class="rounded">
+			<thead class="text-center font-weight-bold">
 				<tr>
 					<th class="text-left font-weight-bold"> Ability </th>
 					<th class="text-center font-weight-bold"> Value </th>
@@ -133,7 +133,7 @@ const skillOptions = computed(() => {
 			</tbody>
 		</v-table>
 		<SectionHeader title="Skills" class="pt-4 pb-2" />
-		<v-table v-if="data.abilities.skills.length > 0" class="text-center" density="compact" hover gridlines>
+		<v-table v-if="data.abilities.skills.length > 0" class="text-center rounded" density="compact" hover gridlines>
 			<thead>
 				<tr class="text-bold text-center font-weight-bold">
 					<th class="text-left font-weight-bold"> Skill </th>

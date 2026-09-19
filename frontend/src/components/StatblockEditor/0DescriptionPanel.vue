@@ -3,10 +3,10 @@ import type { Statblock } from "~/shared";
 import { watch } from "vue";
 import { useRules } from "vuetify/labs/rules";
 import { alignments, creatureTypes, sizes } from "@/utils/constants";
-import { store } from "@/utils/store";
 import { getXPbyCR, globalLimits } from "~/shared";
 import CRInput from "../FormInputs/CRInput.vue";
 import Editor from "./Editor.vue";
+import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
 
 const { data } = defineProps<{ data: Statblock }>();
 
@@ -50,18 +50,22 @@ const rules = useRules();
 			<v-col cols="6">
 				<v-number-input v-model="data.description.xp" label="XP" hide-details />
 			</v-col>
+			<v-col cols="12">
+				<SectionHeader title="Flavor" />
+			</v-col>
 			<v-col cols="6">
 				<v-text-field v-model="data.description.environment" label="Environment" hide-details />
 			</v-col>
 			<v-col cols="6">
 				<v-text-field v-model="data.description.faction" label="Faction" hide-details />
 			</v-col>
+
+			<v-col cols="6">
+				<v-text-field v-model="data.description.gear" label="Gear" hide-details />
+			</v-col>
 			<v-col cols="6">
 				<v-text-field v-model="data.description.tag" label="Tag"
 					hint="Use this to categorize your creatures on the Bestiary page." persistent-hint />
-			</v-col>
-			<v-col cols="6">
-				<v-text-field v-model="data.description.gear" label="Gear" hide-details />
 			</v-col>
 			<v-col cols="6">
 				<v-checkbox v-model="data.description.isProperNoun" label="Proper noun" color="primary"

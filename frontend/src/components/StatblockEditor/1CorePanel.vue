@@ -43,186 +43,176 @@ const addNewSense = (newSenseName: string) => {
 	newSense.value = null
 };
 
+const speedIcons: Record<string, string> = {
+	'Walk': 'mdi:walk',
+	'Swim': 'mdi:swim',
+	'Fly': 'at-icons:wing',
+	'Climb': 'game-icons:mountain-climbing',
+	'Burrow': 'game-icons:leeching-worm'
+}
 
+const senseIcons: Record<string, string> = {
+	'Darkvision': 'mdi:torch',
+	'Blindsight': 'fa7-solid:user-ninja',
+	'Truesight': 'game-icons:eyeball',
+	'Tremorsense': 'material-symbols:earthquake',
+}
 </script>
 
 <template>
 	<div>
-		<v-list :opened="['speed']">
-			<v-list-group value="speed">
-				<template #activator="{ props }">
-					<v-list-item v-bind="props" title="Speed" class="group-header" />
-					<v-divider />
-				</template>
-
-				<VueDraggable v-model="data.core.speed" :animation="150" handle=".handle">
-					<div v-for="element, idx in data.core.speed" :key="idx">
-						<v-list-item slim>
-							<template #prepend>
-								<v-icon icon="$drag" class="handle" size="24" />
+		<SectionHeader title="Speed" class="pb-2" />
+		<v-table hover gridlines density="compact" v-if="data.core.speed.length > 0" class="rounded">
+			<thead>
+				<tr>
+					<th class="text-left font-weight-bold">
+						Type
+					</th>
+					<th class="text-center font-weight-bold">
+						Value
+					</th>
+					<th class="text-center font-weight-bold">
+						Options
+					</th>
+				</tr>
+			</thead>
+			<VueDraggable v-model="data.core.speed" tag="tbody" :animation="150">
+				<tr v-for="sp, idx in data.core.speed" class="cursor-grab">
+					<td class="font-weight-bold text-left text-no-wrap">
+						<v-icon :icon="speedIcons[sp.name] ?? ''" size="24" />
+						{{ sp.name }}
+					</td>
+					<td class="text-center">
+						<SimpleNumberInput v-model="sp.value" :min="0" :step="5" :label="sp.name" />
+					</td>
+					<td class="text-center">
+						<DropdownMenu>
+							<template #activator="{ props }">
+								<v-icon icon="mdi:ruler" text="Set unit for this speed" size="20" v-bind="props"
+									color="primary" />
 							</template>
-
-							<template #title>
-								<div class="d-flex align-center justify-space-between">
-									<span>{{ element.name }}</span>
-									<SimpleNumberInput v-model="element.value" :min="0" :step="5"
-										:label="element.name" />
-								</div>
+							<v-card min-width="300" class="text-center pb-2" subtitle="Set unit for this speed">
+								<select v-model="sp.unit" class="ghost" title="Select speed unit">
+									<option>ft</option>
+									<option>m</option>
+									<option>km</option>
+									<option>mi</option>
+									<option>none</option>
+								</select>
+							</v-card>
+						</DropdownMenu>
+						<DropdownMenu>
+							<template #activator="{ props }">
+								<v-icon icon="mdi:comment" text="Set comment for this speed" size="20" v-bind="props"
+									color="primary" />
 							</template>
+							<v-card min-width="300" class="text-center pb-2" subtitle="Set (comment) for this speed">
+								<v-card-actions>
+									<v-text-field v-model="sp.comment" type="text" label="comment" />
+								</v-card-actions>
+							</v-card>
+						</DropdownMenu>
+						<v-icon icon="mdi:delete" text="Remove this speed" size="20" color="primary"
+							@click="data.core.speed.splice(idx, 1)" />
+					</td>
+				</tr>
+			</VueDraggable>
 
-							<template #append>
-								<DropdownMenu>
-									<template #activator="{ props }">
-										<v-icon icon="mdi:ruler" text="Set unit for this speed" size="20" v-bind="props"
-											color="primary" />
-									</template>
-									<v-card min-width="300" class="text-center pb-2" subtitle="Set unit for this speed">
-										<select v-model="element.unit" class="ghost" title="Select speed unit">
-											<option>ft</option>
-											<option>m</option>
-											<option>km</option>
-											<option>mi</option>
-											<option>none</option>
-										</select>
-									</v-card>
-								</DropdownMenu>
-								<DropdownMenu>
-									<template #activator="{ props }">
-										<v-icon icon="mdi:comment" text="Set comment for this speed" size="20"
-											v-bind="props" color="primary" />
-									</template>
-									<v-card min-width="300" class="text-center pb-2"
-										subtitle="Set (comment) for this speed">
-										<v-card-actions>
-											<v-text-field v-model="element.comment" type="text" label="comment" />
-										</v-card-actions>
-									</v-card>
-								</DropdownMenu>
-								<v-icon icon="mdi:delete" text="Remove this speed" size="20" color="primary"
-									@click="data.core.speed.splice(idx, 1)" />
-							</template>
-						</v-list-item>
-						<v-divider />
-					</div>
-				</VueDraggable>
+		</v-table>
 
-
-				<DropdownMenu v-model="isAddSpeedOpen">
-					<template #activator="{ props }">
-						<v-list-item slim class="text-medium-emphasis" v-bind="props">
-							<v-list-item-title>Add speed</v-list-item-title>
-							<template #prepend>
-								<v-icon icon="mdi:plus" text="Add speed" color="primary" />
-							</template>
-						</v-list-item>
-						<v-divider />
+		<v-row>
+			<v-col cols="6">
+				<v-combobox label="Choose or type a speed" class="mt-4"
+					:items="['Walk', 'Swim', 'Fly', 'Climb', 'Burrow']" v-model="newSpeed"
+					@keydown.enter="addNewSpeed(newSpeed || '')" hide-details>
+					<template #item="{ item, props }">
+						<v-list-item :prepend-icon="speedIcons[item] ?? null" v-bind="props" :title="item" />
 					</template>
-					<v-card min-width="300" class="text-center pa-4">
-						<v-card-actions>
-							<v-combobox v-model="newSpeed" :items="['Walk', 'Swim', 'Fly', 'Climb', 'Burrow']"
-								density="compact" placeholder="Type or choose speed..." persistent-placeholder
-								@keydown.enter="addNewSpeed(newSpeed || '')">
-								<template #append>
-									<v-icon-btn @click="addNewSpeed(newSpeed || '')" icon="mdi:plus"
-										:color="newSpeed ? 'primary' : 'grey'" />
-								</template>
-							</v-combobox>
-						</v-card-actions>
-					</v-card>
-				</DropdownMenu>
-			</v-list-group>
-		</v-list>
-
-
-
-		<v-list :opened="['senses']" class="mt-4">
-			<v-list-group value="senses">
-				<template #activator="{ props }">
-					<v-list-item v-bind="props" title="Senses" class="group-header" />
-					<v-divider />
-				</template>
-
-				<VueDraggable v-model="data.core.senses" :animation="150" handle=".handle">
-					<div v-for="element, idx in data.core.senses" :key="idx">
-						<v-list-item slim>
-							<template #prepend>
-								<v-icon icon="$drag" class="handle" size="24" />
-							</template>
-
-							<template #title>
-								<div class="d-flex align-center justify-space-between">
-									<span>{{ element.name }}</span>
-									<SimpleNumberInput v-model="element.value" :min="0" :step="5"
-										:label="element.name" />
-								</div>
-							</template>
-
-							<template #append>
-								<DropdownMenu>
-									<template #activator="{ props }">
-										<v-icon icon="mdi:ruler" text="Set unit for this sense" size="20" v-bind="props"
-											color="primary" />
-									</template>
-									<v-card min-width="300" class="text-center pb-2" subtitle="Set unit for this sense">
-										<select v-model="element.unit" class="ghost" title="Select sense unit">
-											<option>ft</option>
-											<option>m</option>
-											<option>km</option>
-											<option>mi</option>
-											<option>none</option>
-										</select>
-									</v-card>
-								</DropdownMenu>
-								<DropdownMenu>
-									<template #activator="{ props }">
-										<v-icon icon="mdi:comment" text="Set comment for this sense" size="20"
-											v-bind="props" color="primary" />
-									</template>
-									<v-card min-width="300" class="text-center pb-2"
-										subtitle="Set (comment) for this sense">
-										<v-card-actions>
-											<v-text-field v-model="element.comment" type="text" label="comment" />
-										</v-card-actions>
-									</v-card>
-								</DropdownMenu>
-								<v-icon icon="mdi:delete" text="Remove this sense" size="20" color="primary"
-									@click="data.core.senses.splice(idx, 1)" />
-							</template>
-						</v-list-item>
-						<v-divider />
-					</div>
-				</VueDraggable>
-
-
-				<DropdownMenu v-model="isAddSensesOpen">
-					<template #activator="{ props }">
-						<v-list-item slim class="text-medium-emphasis" v-bind="props">
-							<v-list-item-title>Add sense</v-list-item-title>
-							<template #prepend>
-								<v-icon icon="mdi:plus" text="Add sense" color="primary" />
-							</template>
-						</v-list-item>
-						<v-divider />
+					<template #append>
+						<v-icon-btn @click.stop="addNewSpeed(newSpeed || '')" icon="mdi:plus"
+							:color="newSpeed ? 'primary' : 'grey'" />
 					</template>
-					<v-card min-width="300" class="text-center pa-4">
-						<v-card-actions>
-							<v-combobox v-model="newSense"
-								:items="['Darkvision', 'Blindsight', 'Truesight', 'Tremorsense']" density="compact"
-								@keydown.enter="addNewSense(newSense || '')" placeholder="Type or choose sense..."
-								persistent-placeholder>
-								<template #append>
-									<v-icon-btn @click="addNewSense(newSense || '')" icon="mdi:plus"
-										:color="newSense ? 'primary' : 'grey'" />
-								</template>
-							</v-combobox>
-						</v-card-actions>
-					</v-card>
-				</DropdownMenu>
-			</v-list-group>
-		</v-list>
+				</v-combobox>
+			</v-col>
+		</v-row>
 
+		<SectionHeader title="Senses" class="pt-4 pb-2" />
 
-		<SectionHeader title="Miscellaneous" class="pt-3" />
+		<v-table hover gridlines density="compact" v-if="data.core.senses.length > 0" class="rounded">
+			<thead>
+				<tr>
+					<th class="text-left font-weight-bold">
+						Type
+					</th>
+					<th class="text-center font-weight-bold">
+						Value
+					</th>
+					<th class="text-center font-weight-bold">
+						Options
+					</th>
+				</tr>
+			</thead>
+			<VueDraggable v-model="data.core.senses" tag="tbody" :animation="150">
+				<tr v-for="se, idx in data.core.senses" class="cursor-grab">
+					<td class="font-weight-bold text-left text-no-wrap">
+						<v-icon :icon="senseIcons[se.name] ?? ''" size="24" />
+						{{ se.name }}
+					</td>
+					<td class="text-center">
+						<SimpleNumberInput v-model="se.value" :min="0" :step="5" :label="se.name" />
+					</td>
+					<td class="text-center">
+						<DropdownMenu>
+							<template #activator="{ props }">
+								<v-icon icon="mdi:ruler" text="Set unit for this sense" size="20" v-bind="props"
+									color="primary" />
+							</template>
+							<v-card min-width="300" class="text-center pb-2" subtitle="Set unit for this sense">
+								<select v-model="se.unit" class="ghost" title="Select sense unit">
+									<option>ft</option>
+									<option>m</option>
+									<option>km</option>
+									<option>mi</option>
+									<option>none</option>
+								</select>
+							</v-card>
+						</DropdownMenu>
+						<DropdownMenu>
+							<template #activator="{ props }">
+								<v-icon icon="mdi:comment" text="Set comment for this sense" size="20" v-bind="props"
+									color="primary" />
+							</template>
+							<v-card min-width="300" class="text-center pb-2" subtitle="Set (comment) for this sense">
+								<v-card-actions>
+									<v-text-field v-model="se.comment" type="text" label="comment" />
+								</v-card-actions>
+							</v-card>
+						</DropdownMenu>
+						<v-icon icon="mdi:delete" text="Remove this sense" size="20" color="primary"
+							@click="data.core.senses.splice(idx, 1)" />
+					</td>
+				</tr>
+			</VueDraggable>
+
+		</v-table>
+
+		<v-row>
+			<v-col cols="6">
+				<v-combobox label="Choose or type a sense" class="mt-4"
+					:items="['Darkvision', 'Blindsight', 'Truesight', 'Tremorsense']" v-model="newSense"
+					v-model:menu="isAddSensesOpen" @keydown.enter="addNewSense(newSense || '')" hide-details>
+					<template #item="{ item, props }">
+						<v-list-item :prepend-icon="senseIcons[item] ?? ''" v-bind="props" :title="item" />
+					</template>
+					<template #append>
+						<v-icon-btn @click.stop="addNewSense(newSense || '')" icon="mdi:plus"
+							:color="newSense ? 'primary' : 'grey'" />
+					</template>
+				</v-combobox>
+			</v-col>
+		</v-row>
+
+		<SectionHeader title="Miscellaneous" class="pt-4 pb-2" />
 		<v-row class="my-4">
 			<v-col cols="6">
 				<v-combobox v-model="data.core.languages" multiple chips closable-chips label="Languages"
@@ -240,7 +230,8 @@ const addNewSense = (newSenseName: string) => {
 </template>
 
 <style scoped>
-:deep(.v-list-group__items) {
-	--indent-padding: 8px;
+.v-table :deep(td),
+.v-table :deep(th) {
+	padding: 2px 8px !important;
 }
 </style>
