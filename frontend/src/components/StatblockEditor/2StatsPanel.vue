@@ -195,11 +195,8 @@ const skillOptions = computed(() => {
 		<v-row>
 			<v-col cols="6">
 				<v-select label="Add a skill" class="mt-4" :items="skillOptions" v-model="newSkillName" ref="addSkill">
-
-					<template #item="{ item }">
-						<v-list-item :prepend-icon="skillIcons[item]">
-							{{ item }}
-						</v-list-item>
+					<template #item="{ item, props }">
+						<v-list-item :prepend-icon="skillIcons[item]" v-bind="props" :title="item" />
 					</template>
 				</v-select>
 			</v-col>

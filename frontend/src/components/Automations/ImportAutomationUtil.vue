@@ -159,8 +159,8 @@ const groupedAutomatedItems = computed(() => {
 								label="Import From Character" hide-details @update:menu="avraeCharacters.handleMenuOpen"
 								prepend-inner-icon="$avrae">
 								<template #item="{ props, item }">
-									<v-list-item density="compact" style="min-height: 28px">
-										<v-list-item-title v-bind="props">
+									<v-list-item density="compact" style="min-height: 28px" v-bind="props">
+										<v-list-item-title>
 											{{ item.name }}
 										</v-list-item-title>
 									</v-list-item>
