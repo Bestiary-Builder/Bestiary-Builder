@@ -7,8 +7,6 @@ defineProps<{ title: string }>();
 		<v-divider thickness="2" opacity="0.4" />
 		<span> {{ title }}</span>
 		<v-divider thickness="2" opacity="0.4" />
-		<!-- <hr class="left"> <span> {{ title }}</span>
-		<hr> -->
 	</div>
 </template>
 

@@ -1,14 +1,22 @@
 <script setup lang="ts">
 import type { AutomationDocumentation } from "~/shared";
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useFetch } from "@/utils/utils";
 import { defaultNodes } from "../VisualEditor/util";
 import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
 import Markdown from "../Global/Markdown.vue";
+import { useTheme } from "vuetify";
+import type * as Monaco from 'monaco-editor';
 
 // Documentation helpers
 const docu = ref<AutomationDocumentation>({});
 const model = defineModel<string>();
+
+const internalValue = ref(model.value)
+watch(() => model.value, (newValue) => {
+	internalValue.value = newValue
+})
+
 onMounted(async () => {
 	const { success, data } = await useFetch<AutomationDocumentation>("/api/automationDocumentation");
 	if (success)
@@ -16,38 +24,61 @@ onMounted(async () => {
 });
 
 const currentDocu = computed(() => {
-	if (!model.value)
+	if (!internalValue.value)
 		return;
-	return docu.value[model.value];
+	return docu.value[internalValue.value];
 });
+
+const theme = useTheme()
+const editorTheme = theme.name.value === 'dark' ? 'vs-dark' : 'vs-light'
+
+const editorOptions: Monaco.editor.IStandaloneEditorConstructionOptions = {
+	wordWrap: 'on',
+	minimap: { enabled: false },
+	automaticLayout: true,
+	readOnly: true,
+	scrollBeyondLastLine: false,
+	quickSuggestions: false,
+	suggestOnTriggerCharacters: false,
+	parameterHints: { enabled: false },
+	hover: { enabled: "off" },
+}
+
+const options = [
+	{ title: "Target", value: "target" },
+	{ title: "Attack", value: "attack" },
+	{ title: "Save", value: "save" },
+	{ title: "Damage", value: "damage" },
+	{ title: "TempHP", value: "temphp" },
+	{ title: "IEffect", value: "ieffect2" },
+	{ title: "Passive Effects", value: "PassiveEffects" },
+	{ title: "Attack Interaction", value: "attackroot" },
+	{ title: "Button Interaction", value: "buttonroot" },
+	{ title: "Attack Root", value: "noderoot" },
+	{ title: "Remove IEffect", value: "remove_ieffect" },
+	{ title: "Roll", value: "roll" },
+	{ title: "Text", value: "text" },
+	{ title: "Set Variable", value: "variable" },
+	{ title: "Condition", value: "condition" },
+	{ title: "Use Counter", value: "counter" },
+	{ title: "Cast Spell", value: "spell" },
+	{ title: "Check", value: "check" },
+]
 </script>
 
 <template>
 	<div class="documentation-container">
-		<h3> Documentation</h3>
-		<p> Select documentation to view:</p>
-		<div>
-			<select v-model="model" class="ghost">
-				<option v-for="key of Object.keys(defaultNodes)" :key="key">
-					{{ key }}
-				</option>
-			</select>
-		</div>
+		<v-select :items="options" v-model="internalValue" label="Choose option to view" density="comfortable"
+			hide-details variant="underlined" />
 		<div v-if="currentDocu" class="docs">
-			<hr>
-			<h3>Documentation: {{ model }}</h3>
 			<Markdown class="small" :text="currentDocu.desc" />
-
 			<div>
-				<hr>
-				<h4>Overview</h4>
 				See full documentation <a
 					:href="`https://avrae.readthedocs.io/en/stable/automation_ref.html#${currentDocu.url}`"
 					target="_blank">here</a>.
 				<VueMonacoEditor v-if="currentDocu?.ts"
-					:value="`// Values denoted with an ? are optional.\n${currentDocu.ts}`" theme="vs-dark"
-					:options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, automaticLayout: true, readOnly: true, scrollBeyondLastLine: false }"
-					language="typescript" height="200px" />
+					:value="`// Values denoted with an ? are optional.\ninterface ${currentDocu.class} ${currentDocu.ts}`"
+					:theme="editorTheme" :options="editorOptions" language="typescript" height="200px" />
 			</div>
 			<div v-if="currentDocu?.opt">
 				<hr>
@@ -74,7 +105,13 @@ const currentDocu = computed(() => {
 	</div>
 </template>
 
-<style>
+<style scoped>
+.docs {
+	gap: 1rem;
+	display: flex;
+	flex-direction: column;
+}
+
 .docs a {
 	color: rgb(var(--v-theme-primary));
 }

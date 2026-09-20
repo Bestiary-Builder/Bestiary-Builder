@@ -45,10 +45,10 @@ useDataCleanup(currentEffect, ["defaultAttackBonus", "defaultCastingMod", "defau
 			<v-col cols="6">
 				<TypeHintedEditor v-model="currentEffect.attack.extra_crit_damage" label="Extra Crit Damage" />
 			</v-col>
+
 			<v-col cols="12">
 				<SectionHeader title="Additional Options" />
 			</v-col>
-
 			<v-col cols="6">
 				<v-select v-model="currentEffect.attack.activation_type" label="Action Type" title="Activation Type"
 					:items="[
@@ -75,13 +75,8 @@ useDataCleanup(currentEffect, ["defaultAttackBonus", "defaultCastingMod", "defau
 			<v-col cols="6">
 				<TypeHintedEditor v-model="currentEffect.defaultDC" label="Default DC" />
 			</v-col>
-
 		</v-row>
-
-
-
 		<v-row>
-
 		</v-row>
 	</template>
 </template>

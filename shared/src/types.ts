@@ -34,9 +34,10 @@ export class GlobalStats {
 export interface AutomationDocumentationEntity {
 	desc: string;
 	url: string;
-	variables: { [key: string]: { type: string; desc: string } };
+	variables?: { [key: string]: { type: string; desc: string } };
 	opt: { [key: string]: string };
 	ts: string;
+	class: string;
 }
 export interface AutomationDocumentation { [key: string]: AutomationDocumentationEntity }
 

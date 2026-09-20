@@ -59,7 +59,10 @@ const labelColor = computed(() => {
   return 'rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity))'
 })
 
-const editorOptions: ComputedRef<Monaco.editor.IStandaloneEditorConstructionOptions> = computed(() => ({
+const theme = useTheme()
+const editorTheme = theme.name.value === 'dark' ? 'vs-dark' : 'vs-light'
+
+const editorOptions: Monaco.editor.IStandaloneEditorConstructionOptions = {
   minimap: { enabled: false },
   lineNumbers: 'off' as const,
   glyphMargin: false,
@@ -87,12 +90,12 @@ const editorOptions: ComputedRef<Monaco.editor.IStandaloneEditorConstructionOpti
   suggestOnTriggerCharacters: true,
   padding: {
     top: 24
-  }
-}))
+  },
+  theme: editorTheme
+}
 
 const handleMount = (editor: Monaco.editor.IStandaloneCodeEditor, monaco: typeof Monaco) => {
   editorRef.value = editor
-  monaco.editor.setTheme(theme.name.value === 'dark' ? 'vs-dark' : 'vs-light');
 
   editor.onDidFocusEditorWidget(() => {
     isFocused.value = true
@@ -125,12 +128,6 @@ const handleMount = (editor: Monaco.editor.IStandaloneCodeEditor, monaco: typeof
 const focusEditor = () => {
   editorRef.value?.focus()
 }
-
-const theme = useTheme()
-watch(() => theme, () => {
-  editorRef.value?.updateOptions({ theme: theme.name.value === 'dark' ? 'vs-dark' : 'vs-light' })
-})
-
 </script>
 
 <template>
@@ -145,7 +142,8 @@ watch(() => theme, () => {
         {{ label }}
       </label>
       <div v-bind="fieldSlotProps" class="code-field__editor" :style="{ height: `${height}px` }">
-        <VueMonacoEditor v-model:value="code" :language theme="vs-dark" :options="editorOptions" @mount="handleMount" />
+        <VueMonacoEditor v-model:value="code" :language :theme="editorTheme" :options="editorOptions"
+          @mount="handleMount" />
       </div>
     </template>
     <template #append-inner>

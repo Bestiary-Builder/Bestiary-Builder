@@ -25,7 +25,8 @@
 			}
 		},
 		"url": "target",
-		"ts": "{\n  type: \"target\";\n  target: \"all\" | \"each\" | int | \"self\" | \"parent\" | \"children\";\n  effects: Effect[];\n  sortBy?: \"hp_asc\" | \"hp_desc\";\n}"
+		"ts": "{\n  type: \"target\";\n  target: \"all\" | \"each\" | int | \"self\" | \"parent\" | \"children\";\n  effects: Effect[];\n  sortBy?: \"hp_asc\" | \"hp_desc\";\n}",
+		"class": "Target"
 	},
 	"attack": {
 		"desc": "An Attack effect makes an attack roll against a targeted creature. It must be inside a Target effect.",
@@ -58,7 +59,8 @@
 			}
 		},
 		"url": "attack",
-		"ts": "{\n  type: \"attack\";\n  hit: Effect[];\n  miss: Effect[];\n  attackBonus?: IntExpression;\n  adv?: IntExpression;\n}"
+		"ts": "{\n  type: \"attack\";\n  hit: Effect[];\n  miss: Effect[];\n  attackBonus?: IntExpression;\n  adv?: IntExpression;\n}",
+		"class": "Attack"
 	},
 	"save": {
 		"desc": "A Save effect forces a targeted creature to make a saving throw. It must be inside a Target effect.",
@@ -92,7 +94,8 @@
 			}
 		},
 		"url": "save",
-		"ts": "{\n  type: \"save\";\n  stat: \"str\" | \"dex\" | \"con\" | \"int\" | \"wis\" | \"cha\";\n  fail: Effect[];\n  success: Effect[];\n  dc?: IntExpression;\n  adv?: -1 | 0 | 1;\n}"
+		"ts": "{\n  type: \"save\";\n  stat: \"str\" | \"dex\" | \"con\" | \"int\" | \"wis\" | \"cha\";\n  fail: Effect[];\n  success: Effect[];\n  dc?: IntExpression;\n  adv?: -1 | 0 | 1;\n}",
+		"class": "Save"
 	},
 	"damage": {
 		"desc": "Deals damage to a targeted creature. It must be inside a Target effect.\n\n**Note:** This node can also be used to heal a target; simply use negative damage to supply healing.",
@@ -110,7 +113,8 @@
 			}
 		},
 		"url": "damage",
-		"ts": "{\n  type: \"damage\";\n  damage: AnnotatedString;\n  overheal?: boolean;\n  higher?: {int: string};\n  cantripScale?: boolean;\n  fixedValue?: boolean;\n}"
+		"ts": "{\n  type: \"damage\";\n  damage: AnnotatedString;\n  overheal?: boolean;\n  higher?: {int: string};\n  cantripScale?: boolean;\n  fixedValue?: boolean;\n}",
+		"class": "Damage"
 	},
 	"temphp": {
 		"desc": "Sets the target's THP. It must be inside a Target effect.",
@@ -126,7 +130,8 @@
 			}
 		},
 		"url": "temphp",
-		"ts": "{\n  type: \"temphp\";\n  amount: AnnotatedString;\n  higher?: {int: string};\n  cantripScale?: boolean;\n}"
+		"ts": "{\n  type: \"temphp\";\n  amount: AnnotatedString;\n  higher?: {int: string};\n  cantripScale?: boolean;\n}",
+		"class": "TempHP"
 	},
 	"ieffect2": {
 		"desc": "Adds an InitTracker Effect to a targeted creature, if the automation target is in combat. It must be inside a Target effect.\n\n**Note:** If the targeted creature is not in combat, this will display the effects of the initiative effect but not save it on the creature.",
@@ -153,7 +158,8 @@
 				"type": "IEffectMetaVar or None",
 				"desc": "A reference to the effect that was added to the target. Use this in another IEffect's `parent` key to set that IEffect's parent to the given one."
 			}
-		}
+		},
+		"class": "IEffect"
 	},
 	"PassiveEffects": {
 		"desc": "Used to specify the passive effects granted by an initiative effect.",
@@ -180,9 +186,10 @@
 			"dc_bonus": "*optional* - A bonus added to the all of the combatant's save DCs while this effect is active."
 		},
 		"url": "PassiveEffects",
-		"ts": "{\n  attack_advantage?: IntExpression;\n  to_hit_bonus?: AnnotatedString;\n  damage_bonus?: AnnotatedString;\n  magical_damage?: IntExpression;\n  silvered_damage?: IntExpression;\n  resistances?: AnnotatedString[];\n  immunities?: AnnotatedString[];\n  vulnerabilities?: AnnotatedString[];\n  ignored_resistances?: AnnotatedString[];\n  ac_value?: IntExpression;\n  ac_bonus?: IntExpression;\n  max_hp_value?: IntExpression;\n  max_hp_bonus?: IntExpression;\n  save_bonus?: AnnotatedString;\n  save_adv?: AnnotatedString[];\n  save_dis?: AnnotatedString[];\n  check_bonus?: AnnotatedString;\n  check_adv?: AnnotatedString[];\n  check_dis?: AnnotatedString[];\n  dc_bonus?: IntExpression;\n}"
+		"ts": "{\n  attack_advantage?: IntExpression;\n  to_hit_bonus?: AnnotatedString;\n  damage_bonus?: AnnotatedString;\n  magical_damage?: IntExpression;\n  silvered_damage?: IntExpression;\n  resistances?: AnnotatedString[];\n  immunities?: AnnotatedString[];\n  vulnerabilities?: AnnotatedString[];\n  ignored_resistances?: AnnotatedString[];\n  ac_value?: IntExpression;\n  ac_bonus?: IntExpression;\n  max_hp_value?: IntExpression;\n  max_hp_bonus?: IntExpression;\n  save_bonus?: AnnotatedString;\n  save_adv?: AnnotatedString[];\n  save_dis?: AnnotatedString[];\n  check_bonus?: AnnotatedString;\n  check_adv?: AnnotatedString[];\n  check_dis?: AnnotatedString[];\n  dc_bonus?: IntExpression;\n}",
+		"class": "PassiveEffects"
 	},
-	"AttackInteraction": {
+	"attackroot": {
 		"desc": "Used to specify an attack granted by an initiative effect: some automation that appears in the combatant's `!action list` and can be run with a command.",
 		"opt": {
 			"attack": "The Attack model is any valid individual entity as exported by the attack editor on the Avrae Dashboard:```ts\n{\n  _v: 2;\n  name: string;\n  automation: Effect[];\n  verb?: string;\n  proper?: boolean;\n  criton?: number;\n  phrase?: string;\n  thumb?: string;\n  extra_crit_damage?: string;\n}```",
@@ -191,9 +198,10 @@
 			"defaultCastingMod": "*optional* - The default spellcasting modifier to use when running the automation. If not provided, defaults to the targeted combatant's default spellcasting modifier. Use this if the effect's spellcasting modifier depends on the original caster's spellcasting modifier, rather than the target's spellcasting modifier."
 		},
 		"url": "attackinteraction",
-		"ts": "{\n  attack: Attack;\n  defaultDC?: IntExpression;\n  defaultAttackBonus?: IntExpression;\n  defaultCastingMod?: IntExpression;\n}"
+		"ts": "{\n  attack: Attack;\n  defaultDC?: IntExpression;\n  defaultAttackBonus?: IntExpression;\n  defaultCastingMod?: IntExpression;\n}",
+		"class": "AttackInteraction"
 	},
-	"ButtonInteraction": {
+	"buttonroot": {
 		"desc": "Used to specify a button that will appear on the targeted combatant's turn and execute some automation when pressed.\n\n**Note:** Any initiative effects applying an offensive effect to the caster will not be considered when a ButtonInteraction is run, to prevent scenarios where an effect granting a damage bonus to the caster increases the damage done by a damage over time effect and other similar scenarios.\n\nYou may think of this as a ButtonInteraction's caster being a temporary actor without any active initiative effects.",
 		"opt": {
 			"automation": "The automation to run when this button is pressed.",
@@ -205,7 +213,8 @@
 			"defaultCastingMod": "*optional* - The default spellcasting modifier to use when running the automation. If not provided, defaults to the targeted combatant's default spellcasting modifier. Use this if the effect's spellcasting modifier depends on the original caster's spellcasting modifier, rather than the target's spellcasting modifier."
 		},
 		"url": "buttoninteraction",
-		"ts": "{\n  automation: Effect[];\n  label: AnnotatedString;\n  verb?: AnnotatedString;\n  style?: IntExpression;\n  defaultDC?: IntExpression;\n  defaultAttackBonus?: IntExpression;\n  defaultCastingMod?: IntExpression;\n}"
+		"ts": "{\n  automation: Effect[];\n  label: AnnotatedString;\n  verb?: AnnotatedString;\n  style?: IntExpression;\n  defaultDC?: IntExpression;\n  defaultAttackBonus?: IntExpression;\n  defaultCastingMod?: IntExpression;\n}",
+		"class": "ButtonInteraction"
 	},
 	"remove_ieffect": {
 		"desc": "Removes the initiative effect that triggered this automation. Only works when run in execution triggered by an initiative effect, such as a [ButtonInteraction](https://avrae.readthedocs.io/en/stable/automation_ref.html#buttoninteraction).",
@@ -213,7 +222,8 @@
 			"removeParent": "*optional, default null* - If the removed effect has a parent, whether to remove the parent.\n\n`null` (default) - Do not remove the parent effect.\n\n`\"always\"` - If the removed effect has a parent, remove it too.\n\n`\"if_no_children\"` - If the removed effect has a parent and its only remaining child was the removed effect, remove it too."
 		},
 		"url": "RemoveIEffect",
-		"ts": "{\n  type: \"remove_ieffect\";\n  removeParent?: \"always\" | \"if_no_children\";\n}"
+		"ts": "{\n  type: \"remove_ieffect\";\n  removeParent?: \"always\" | \"if_no_children\";\n}",
+		"class": "RemoveIEffect"
 	},
 	"roll": {
 		"desc": "Rolls some dice and saves the result in a variable. Displays the roll and its name in a Meta field, unless `hidden` is `true`.",
@@ -237,7 +247,8 @@
 			}
 		},
 		"url": "roll",
-		"ts": "{\n  type: \"roll\";\n  dice: AnnotatedString;\n  name: string;\n  higher?: {int: string};\n  cantripScale?: boolean;\n  hidden?: boolean;\n  displayName?: string;\n  fixedValue?: boolean;\n}"
+		"ts": "{\n  type: \"roll\";\n  dice: AnnotatedString;\n  name: string;\n  higher?: {int: string};\n  cantripScale?: boolean;\n  hidden?: boolean;\n  displayName?: string;\n  fixedValue?: boolean;\n}",
+		"class": "Roll"
 	},
 	"text": {
 		"desc": "Outputs a short amount of text in the resulting embed.",
@@ -246,7 +257,8 @@
 			"title": "*optional* - Allows you to set the name of the field. Defaults to \"Effect\""
 		},
 		"url": "text",
-		"ts": "{\n  type: \"text\";\n  text: AnnotatedString | AbilityReference;\n  title?: string\n}"
+		"ts": "{\n  type: \"text\";\n  text: AnnotatedString | AbilityReference;\n  title?: string\n}",
+		"class": "Text"
 	},
 	"variable": {
 		"desc": "Saves the result of an `IntExpression` to a variable without displaying anything.",
@@ -257,7 +269,8 @@
 			"onError": "*optional* - If provided, what to set the variable to if the normal value would throw an error."
 		},
 		"url": "set-variable",
-		"ts": "{\n  type: \"variable\";\n  name: string;\n  value: IntExpression;\n  higher?: {int: IntExpression};\n  onError?: IntExpression;\n}"
+		"ts": "{\n  type: \"variable\";\n  name: string;\n  value: IntExpression;\n  higher?: {int: IntExpression};\n  onError?: IntExpression;\n}",
+		"class": "SetVariable"
 	},
 	"condition": {
 		"desc": "Run certain effects if a special condition is met, or other effects otherwise.",
@@ -268,7 +281,8 @@
 			"errorBehaviour": "How to behave if the condition raises an error:\n`\"true\"`: Run the `onTrue` effects.\n`\"false\"`: Run the `onFalse` effects. (*default*)\n`\"both\"`: Run both the `onTrue` and `onFalse` effects, in that order.\n`\"neither\"`: Skip this effect.\n`\"raise\"`: Raise the error and halt execution."
 		},
 		"url": "condition",
-		"ts": "{\n  type: \"condition\";\n  condition: IntExpression;\n  onTrue: Effect[];\n  onFalse: Effect[];\n  errorBehaviour?: \"true\" | \"false\" | \"both\" | \"neither\" | \"raise\";\n}"
+		"ts": "{\n  type: \"condition\";\n  condition: IntExpression;\n  onTrue: Effect[];\n  onFalse: Effect[];\n  errorBehaviour?: \"true\" | \"false\" | \"both\" | \"neither\" | \"raise\";\n}",
+		"class": "Condition"
 	},
 	"counter": {
 		"desc": "Uses a number of charges of the given counter, and displays the remaining amount and delta.\n\n**Note:** Regardless of the current target, this effect will always use the *caster's* counter/spell slots!",
@@ -298,7 +312,8 @@
 			}
 		},
 		"url": "use-counter",
-		"ts": "{\n  type: \"counter\";\n  counter: string | SpellSlotReference | AbilityReference;\n  amount: IntExpression;\n  allowOverflow?: boolean;\n  errorBehaviour?: null | \"warn\" | \"raise\";\n  fixedValue?: boolean;\n}"
+		"ts": "{\n  type: \"counter\";\n  counter: string | SpellSlotReference | AbilityReference;\n  amount: IntExpression;\n  allowOverflow?: boolean;\n  errorBehaviour?: null | \"warn\" | \"raise\";\n  fixedValue?: boolean;\n}",
+		"class": "UseCounter"
 	},
 	"SpellSlotReference": {
 		"desc": "Used to reference a spell slot in a Use Counter effect.",
@@ -306,7 +321,8 @@
 			"slot": "The level of the spell slot to reference (`[1..9]`)."
 		},
 		"url": "spellslotreference",
-		"ts": "{\n  slot: number | IntExpression;\n}"
+		"ts": "{\n  slot: number | IntExpression;\n}",
+		"class": "SpellSlotReference"
 	},
 	"AbilityReference": {
 		"desc": "In most cases, an `AbilityReference` should not be constructed manually; use the Automation editor to select an ability instead. A list of valid abilities can be retrieved from the API at `/gamedata/limiteduse`.\n\n**Note:** The Automation Engine will make a best effort at discovering the appropriate counter to use for the given ability - in most cases this won't affect the chosen counter, but in some cases, it may lead to some unexpected behaviour. Some examples of counter discovery include:\n\nChoosing `Channel Divinity (Paladin)` may discover a counter granted by the Cleric's Channel Divinity feature\nChoosing `Breath Weapon (Gold)` may discover a counter for a breath weapon of a different color\nChoosing `Sorcery Points (Sorcerer)` may discover a counter granted by the Metamagic Adept feat",
@@ -315,7 +331,8 @@
 			"typeId": "The DDB entity type ID of the ability referenced."
 		},
 		"url": "abilityreference",
-		"ts": "{\n  id: number;\n  typeId: number;\n}"
+		"ts": "{\n  id: number;\n  typeId: number;\n}",
+		"class": "AbilityReference"
 	},
 	"spell": {
 		"desc": "Executes the given spell's automation as if it were immediately cast. Does not use a spell slot to cast the spell. Can only be used at the root of automation. Cannot be used inside a spell's automation.\n\nThis is usually used in features that cast spells using alternate resources (i.e. Use Counter, Cast Spell).",
@@ -328,7 +345,8 @@
 			"parent": "*optional, default None* - If supplied, sets the spells created effect's parent to the given effect. This must be the name of an existing `IEffectMetaVar`. Useful for handling concentration."
 		},
 		"url": "cast-spell",
-		"ts": "{\n  type: \"spell\";\n  id: int;\n  level?: int;\n  dc?: IntExpression;\n  attackBonus?: IntExpression;\n  castingMod?: IntExpression;\n  parent?: string\n}"
+		"ts": "{\n  type: \"spell\";\n  id: int;\n  level?: int;\n  dc?: IntExpression;\n  attackBonus?: IntExpression;\n  castingMod?: IntExpression;\n  parent?: string\n}",
+		"class": "CastSpell"
 	},
 	"check": {
 		"desc": "An Ability Check effect forces a targeted creature to make an ability check, optionally as a contest against the caster. It must be inside a Target effect.",
@@ -380,6 +398,26 @@
 			}
 		},
 		"url": "Check",
-		"ts": "{\n  type: \"check\";\n  ability: string | string[];\n  contestAbility?: string | string[];\n  dc?: IntExpression;\n  success?: Effect[];\n  fail?: Effect[];\n  contestTie?: \"fail\" | \"success\" | \"neither\";\n  adv?: -1 | 0 | 1;\n}"
+		"ts": "{\n  type: \"check\";\n  ability: string | string[];\n  contestAbility?: string | string[];\n  dc?: IntExpression;\n  success?: Effect[];\n  fail?: Effect[];\n  contestTie?: \"fail\" | \"success\" | \"neither\";\n  adv?: -1 | 0 | 1;\n}",
+		"class": "Check"
+	},
+	"noderoot": {
+		"desc": "The AttackModel describes the basic information about this attack when it is run.",
+		"opt": {
+			"_v": "This must always be set to `2`",
+			"name": "The name of the attack.",
+			"automation": "A list of Effects",
+			"verb": "*optional, default “attacks with”* - The verb to use in attack title displays.",
+			"proper": "*optional, default false* - Whether or not the attack’s name is a proper noun. Affects title displays.",
+			"criton": "*optional* - The natural roll (or higher) this attack should crit on. For example, `criton: 18` would cause this attack to crit on a natural roll of 18, 19, or 20.",
+			"phrase": "*optional* - A short snippet of flavor text to display when this attack is used.",
+			"thumb": "*optional* - A URL to an image to display in a thumbnail when this attack is used.",
+			"extra_crit_damage": "optional* - How much extra damage to deal when this attack crits, in addition to normal crit rules such as doubling damage dice. For example, if this attack normally deals 1d6 damage with `extra_crit_damage: \"1d8\"`, it will deal 2d6 + 1d8 damage on a crit.",
+			"list_display_override": "*optional* - The display text to display in the action list (such as !a list ). `caster` (AliasStatBlock) is available in this attribute.",
+			"activation_type": "*optional* - What action type to display this attack as in an action list (such as !a list). (1-11)"
+		},
+		"url": "custom-attack-structure",
+		"ts": "{\n  _v: 2;\n  name: string;\n  automation: Effect[];\n  verb?: string;\n  proper?: boolean;\n  criton?: number;\n  phrase?: string;\n  thumb?: string;\n  extra_crit_damage?: string;\n  activation_type?: number;\n  list_display_override?: AnnotatedString;\n}",
+		"class": "AttackModel"
 	}
 }

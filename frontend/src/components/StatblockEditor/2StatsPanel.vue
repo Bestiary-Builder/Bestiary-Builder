@@ -137,7 +137,7 @@ const skillOptions = computed(() => {
 			<thead>
 				<tr class="text-bold text-center font-weight-bold">
 					<th class="text-left font-weight-bold"> Skill </th>
-					<th class="text-center font-weight-bold"> Prof / Exp / <span style="font-size: 8px">1/2</span>Prof
+					<th class="text-center font-weight-bold"> Prof / Exp / Half
 					</th>
 					<th class="text-center font-weight-bold"> Advantage </th>
 					<th class="text-center font-weight-bold"> Override</th>

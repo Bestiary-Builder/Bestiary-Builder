@@ -157,7 +157,7 @@ const flattenedItems = computed<FlatEntry[]>(() => {
     const groups = new Map<string, Automation[]>()
 
     for (const item of items) {
-        const groupKey = String(getGroupRawValue(item)).replace(/ .*/, '')
+        const groupKey = String(getGroupRawValue(item))
         if (groupKeyProp !== 'tag') groupKey.replace(/ .*/, '')
         if (!groups.has(groupKey)) groups.set(groupKey, [])
         groups.get(groupKey)!.push(item)

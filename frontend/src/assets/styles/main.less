@@ -41,12 +41,16 @@ select {
 
 	&.ghost {
 		border-color: rgba(var(--v-theme-surface-variant), 0.5);
-		color: white;
+		color: rgb(var(--v-theme-on-surface-light));
 	}
 
 	& optgroup {
 		background-color: rgb(var(--v-theme-surface-light));
 	}
+}
+
+summary {
+	cursor: pointer;
 }
 
 .content {

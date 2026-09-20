@@ -10,6 +10,7 @@ import { useFetch } from "@/utils/utils";
 import AutomationDocumentationView from "./AutomationDocumentation.vue";
 import { useOnboardingTour } from "@/utils/app/useOnboardingTour.js";
 import { useRoute } from "vue-router";
+import { useTheme } from "vuetify";
 
 type AutomationValue = AttackModel | AttackModel[] | null;
 
@@ -175,12 +176,16 @@ const restore = () => {
 }
 
 const $route = useRoute()
+
+const theme = useTheme()
+const editorTheme = theme.name.value === 'dark' ? 'vs-dark' : 'vs-light'
+
 </script>
 
 <template>
 	<div v-if="!isVisualEditor" class="editor pt-4">
-		<VueMonacoEditor v-model:value="automationString" theme="vs-dark"
-			:options="{ wordWrap: 'on', theme: 'vs-dark', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false }"
+		<VueMonacoEditor v-model:value="automationString" :theme="editorTheme"
+			:options="{ wordWrap: 'on', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false }"
 			height="800px" language="yaml" @mount="handleMount" />
 		<small v-if="yamlError" style="color: rgb(var(--v-theme-error))">{{ yamlError }}</small>
 

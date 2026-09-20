@@ -2,7 +2,7 @@
 import type * as Monaco from "monaco-editor";
 import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
 import { useElementSize, watchDebounced } from "@vueuse/core";
-import { onBeforeMount, shallowRef, useTemplateRef, watch } from "vue";
+import { shallowRef, useTemplateRef } from "vue";
 import { useTheme } from "vuetify";
 import { useRoute } from "vue-router";
 
@@ -11,13 +11,14 @@ const { height = 150 } = defineProps<{ height?: number }>();
 const model = defineModel<string>();
 const editorRef = shallowRef<Monaco.editor.IStandaloneCodeEditor>();
 
+const theme = useTheme()
+const editorTheme = theme.name.value === 'dark' ? 'vs-dark' : 'vs-light'
+
 async function handleMount(
 	editor: Monaco.editor.IStandaloneCodeEditor,
 	monaco: typeof Monaco
 ) {
 	editorRef.value = editor;
-
-	monaco.editor.setTheme(theme.name.value === 'dark' ? 'vs-dark' : 'vs-light');
 
 	editor.addCommand(
 		monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyB,
@@ -41,9 +42,6 @@ async function handleMount(
 	);
 
 	editor.layout();
-	await document.fonts.load('400 15px Roboto');
-	await document.fonts.ready;
-	monaco.editor.remeasureFonts()
 
 	setTimeout(() => {
 		editorRef.value?.layout();
@@ -375,10 +373,6 @@ watchDebounced(width, async () => {
 	editorRef.value?.layout();
 }, { debounce: 500, maxWait: 1000 },);
 
-const theme = useTheme()
-watch(() => theme, () => {
-	editorRef.value?.updateOptions({ theme: theme.name.value === 'dark' ? 'vs-dark' : 'vs-light' })
-})
 
 const $route = useRoute()
 
@@ -432,6 +426,7 @@ const editorOptions: Monaco.editor.IStandaloneEditorConstructionOptions = {
 	fontFamily: "'Roboto Mono'",
 	disableMonospaceOptimizations: true,
 	fontSize: 13,
+	theme: editorTheme
 }
 </script>
 
@@ -465,8 +460,7 @@ const editorOptions: Monaco.editor.IStandaloneEditorConstructionOptions = {
 		</div>
 		<v-divider />
 		<div class="wrapper">
-
-			<VueMonacoEditor v-model:value="model" theme="vs-dark" :options="editorOptions" class="description-editor"
+			<VueMonacoEditor v-model:value="model" theme="vs-light" :options="editorOptions" class="description-editor"
 				:height="`${height}px`" width="100%" language="markdown" @mount="handleMount" />
 		</div>
 	</div>
@@ -492,6 +486,7 @@ const editorOptions: Monaco.editor.IStandaloneEditorConstructionOptions = {
 .wrapper :deep(.monaco-editor .margin),
 .wrapper :deep(.monaco-editor-background) {
 	background-color: rgb(var(--v-theme-surface)) !important;
+	color: rgb(var(--v-theme-on-surface)) !important;
 }
 </style>
 

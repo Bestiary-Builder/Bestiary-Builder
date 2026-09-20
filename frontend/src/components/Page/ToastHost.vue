@@ -9,18 +9,16 @@ function offsetStyle(index: number) {
 </script>
 
 <template>
-	<v-snackbar
-		v-for="toast, idx in toasts" :key="toast.id" v-model="toast.show" :color="toast.color"
+	<v-snackbar v-for="toast, idx in toasts" :key="toast.id" v-model="toast.show" :color="toast.color"
 		:timeout="toast.timeout" location="bottom left" :style="`bottom: ${offsetStyle(idx)}px`"
-		:loading="toast.loading" :prepend-icon="toast.prependIcon"
-		class="bestiary-builder-snackbar" @update:model-value="v => !v && removeToast(toast.id)"
-	>
+		:loading="toast.loading" :prepend-icon="toast.prependIcon" class="bestiary-builder-snackbar"
+		@update:model-value="v => !v && removeToast(toast.id)">
 		<template v-if="!toast.isHtml">
 			{{ toast.text }}
 		</template>
 		<div v-else v-html="toast.text" />
 		<template v-if="toast.timeout < 0" #actions>
-			<v-btn color="black" variant="text" icon="mdi-close" @click="removeToast(toast.id)" />
+			<v-btn color="black" variant="text" icon="mdi:close" @click="removeToast(toast.id)" />
 		</template>
 	</v-snackbar>
 </template>
