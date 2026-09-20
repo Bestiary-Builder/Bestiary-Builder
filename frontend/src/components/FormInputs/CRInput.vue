@@ -37,7 +37,7 @@ const internalValue = computed<number | string | null>({
 		model.value
 			= Number.isFinite(number) && number >= 0
 				? number
-				: null;
+				: 0;
 	},
 });
 
@@ -48,5 +48,6 @@ const rules = [
 </script>
 
 <template>
-	<v-combobox v-model="internalValue" :items="values" :item-title="formatValue" :rules="rules" type="number" :label />
+	<v-combobox v-model="internalValue" :items="values" :item-title="formatValue" :rules="rules" type="number" :label
+		hide-details />
 </template>

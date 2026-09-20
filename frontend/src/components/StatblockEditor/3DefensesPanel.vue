@@ -110,24 +110,24 @@ const stepDown = () => {
 			<v-col cols="6">
 				<v-combobox v-model="data.defenses.vulnerabilities" label="Vulnerabilities" multiple chips
 					closable-chips :items="resistanceList" hint="Supports custom input" persistent-hint
-					:item-props="(item) => ({ prependIcon: resistanceIcons[item], style: '--v-list-prepend-gap: 2px' })">
+					:item-props="(item) => ({ prependIcon: resistanceIcons[item], style: '--v-list-prepend-gap: 8px' })">
 
 				</v-combobox>
 			</v-col>
 			<v-col cols="6">
 				<v-combobox v-model="data.defenses.resistances" label="Resistances" multiple chips closable-chips
 					:items="resistanceList" hint="Supports custom input" persistent-hint
-					:item-props="(item) => ({ prependIcon: resistanceIcons[item], style: '--v-list-prepend-gap: 2px' })" />
+					:item-props="(item) => ({ prependIcon: resistanceIcons[item], style: '--v-list-prepend-gap: 8px' })" />
 			</v-col>
 			<v-col cols="6">
 				<v-combobox v-model="data.defenses.immunities" label="Immunities" multiple chips closable-chips
 					:items="resistanceList" hint="Supports custom input" persistent-hint
-					:item-props="(item) => ({ prependIcon: resistanceIcons[item], style: '--v-list-prepend-gap: 2px' })" />
+					:item-props="(item) => ({ prependIcon: resistanceIcons[item], style: '--v-list-prepend-gap: 8px' })" />
 			</v-col>
 			<v-col cols="6">
 				<v-combobox v-model="data.defenses.conditionImmunities" label="Condition Immunities" multiple chips
 					closable-chips :items="conditionList" hint="Supports custom input" persistent-hint
-					:item-props="(item) => ({ prependIcon: conditionIcons[item], style: '--v-list-prepend-gap: 2px' })" />
+					:item-props="(item) => ({ prependIcon: conditionIcons[item], style: '--v-list-prepend-gap: 8px' })" />
 			</v-col>
 		</v-row>
 	</div>

@@ -16,6 +16,23 @@ watch(() => data.description.cr, () => {
 });
 
 const rules = useRules();
+
+const creatureTypeIcons: Record<string, string> = {
+	"Aberration": "game-icons:octopus",
+	"Beast": "game-icons:wolf-howl",
+	"Celestial": "game-icons:angel-wings",
+	"Construct": "game-icons:robot-golem",
+	"Dragon": "game-icons:spiked-dragon-head",
+	"Elemental": "mdi:fire",
+	"Fey": "game-icons:woman-elf-face",
+	"Fiend": "game-icons:evil-fork",
+	"Giant": "game-icons:giant",
+	"Humanoid": "game-icons:person",
+	"Monstrosity": "game-icons:frankenstein-creature",
+	"Ooze": "game-icons:melting-ice-cube",
+	"Plant": "mdi:leaf",
+	"Undead": "game-icons:broken-skull",
+}
 </script>
 
 <template>
@@ -36,13 +53,14 @@ const rules = useRules();
 				<v-combobox v-model="data.core.size" :items="sizes" label="Size" hide-details />
 			</v-col>
 			<v-col cols="6">
-				<v-combobox v-model="data.core.race" :items="creatureTypes" label="Type" hide-details />
+				<v-combobox v-model="data.core.race" :items="creatureTypes" label="Type" hide-details
+					:item-props="(item) => ({ prependIcon: creatureTypeIcons[item], style: '--v-list-prepend-gap: 8px' })" />
 			</v-col>
 			<v-col cols="6">
 				<v-combobox v-model="data.description.alignment" :items="alignments" label="Alignment" hide-details />
 			</v-col>
 			<v-col cols="6">
-				<CRInput v-model="data.description.cr" label="Challenge Rating" hide-details />
+				<CRInput v-model="data.description.cr" label="Challenge Rating" />
 			</v-col>
 			<v-col cols="6">
 				<v-number-input v-model="data.core.proficiencyBonus" label="Proficiency Bonus" hide-details />
