@@ -127,7 +127,7 @@ const DragHandle = () => h(
 <template>
 	<div class="tree-node"
 		:style="isCurrentSelectedContext ? '--bg-color: color-mix(in srgb, rgb(var(--v-theme-surface)) 100%, white 0%)' : ''">
-		<p class="drag-area tree-row" :style="`--depth: ${depth}`"
+		<p class="drag-area tree-row text-on-surface" :style="`--depth: ${depth}`"
 			@click="currentEffect = data; currentContext = context" :id="`${selfType}${depth}`">
 			<NodeHeader :type="selfType" :additional-text="additionalText" :is-current="isCurrentSelectedContext" />
 
@@ -147,8 +147,9 @@ const DragHandle = () => h(
 			<template v-for="effect, key of data" :key="key">
 				<template v-if="deepKeys.includes(key) && selfType !== 'ieffect2'">
 					<!--- E.g. hit, Miss, on False text -->
-					<p v-if="!['root', 'effects'].includes(key)" :key="key" :style="`--depth: ${depth + 1}`"
-						class="tree-row section-node text-medium-emphasis" @click.stop="toggleBranch(key)">
+					<p v-if="!['root', 'effects'].includes(key)" :key="key"
+						:style="`--depth: ${depth + 1}; opacity: var(--v-medium-emphasis-opacity)`"
+						class="tree-row section-node text-on-surface" @click.stop="toggleBranch(key)">
 						<NodeHeader :type="key" />
 						<span v-if="['onTrue', 'onFalse', 'hit', 'miss', 'fail', 'success'].includes(key)"
 							class="collapse-button">

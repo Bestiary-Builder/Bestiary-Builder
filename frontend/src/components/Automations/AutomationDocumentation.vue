@@ -2,11 +2,10 @@
 import type { AutomationDocumentation } from "~/shared";
 import { computed, onMounted, ref, watch } from "vue";
 import { useFetch } from "@/utils/utils";
-import { defaultNodes } from "../VisualEditor/util";
 import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
 import Markdown from "../Global/Markdown.vue";
-import { useTheme } from "vuetify";
 import type * as Monaco from 'monaco-editor';
+import { useThemePersistence } from "@/utils/app/theme";
 
 // Documentation helpers
 const docu = ref<AutomationDocumentation>({});
@@ -29,8 +28,7 @@ const currentDocu = computed(() => {
 	return docu.value[internalValue.value];
 });
 
-const theme = useTheme()
-const editorTheme = theme.name.value === 'dark' ? 'vs-dark' : 'vs-light'
+const { monacoTheme } = useThemePersistence()
 
 const editorOptions: Monaco.editor.IStandaloneEditorConstructionOptions = {
 	wordWrap: 'on',
@@ -78,7 +76,7 @@ const options = [
 					target="_blank">here</a>.
 				<VueMonacoEditor v-if="currentDocu?.ts"
 					:value="`// Values denoted with an ? are optional.\ninterface ${currentDocu.class} ${currentDocu.ts}`"
-					:theme="editorTheme" :options="editorOptions" language="typescript" height="200px" />
+					:theme="monacoTheme" :options="editorOptions" language="typescript" height="200px" />
 			</div>
 			<div v-if="currentDocu?.opt">
 				<hr>

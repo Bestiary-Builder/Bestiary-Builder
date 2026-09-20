@@ -3,16 +3,16 @@ import type * as Monaco from "monaco-editor";
 import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
 import { useElementSize, watchDebounced } from "@vueuse/core";
 import { shallowRef, useTemplateRef } from "vue";
-import { useTheme } from "vuetify";
 import { useRoute } from "vue-router";
+import { useThemePersistence } from "@/utils/app/theme";
 
 const { height = 150 } = defineProps<{ height?: number }>();
 
 const model = defineModel<string>();
 const editorRef = shallowRef<Monaco.editor.IStandaloneCodeEditor>();
 
-const theme = useTheme()
-const editorTheme = theme.name.value === 'dark' ? 'vs-dark' : 'vs-light'
+const { monacoTheme } = useThemePersistence()
+
 
 async function handleMount(
 	editor: Monaco.editor.IStandaloneCodeEditor,
@@ -426,7 +426,6 @@ const editorOptions: Monaco.editor.IStandaloneEditorConstructionOptions = {
 	fontFamily: "'Roboto Mono'",
 	disableMonospaceOptimizations: true,
 	fontSize: 13,
-	theme: editorTheme
 }
 </script>
 
@@ -460,8 +459,9 @@ const editorOptions: Monaco.editor.IStandaloneEditorConstructionOptions = {
 		</div>
 		<v-divider />
 		<div class="wrapper">
-			<VueMonacoEditor v-model:value="model" theme="vs-light" :options="editorOptions" class="description-editor"
-				:height="`${height}px`" width="100%" language="markdown" @mount="handleMount" />
+			<VueMonacoEditor v-model:value="model" :theme="monacoTheme" :options="editorOptions"
+				class="description-editor" :height="`${height}px`" width="100%" language="markdown"
+				@mount="handleMount" />
 		</div>
 	</div>
 

@@ -2,7 +2,6 @@
 import StatblockRenderer from '@/components/Statblock/StatblockRenderer.vue'
 import { useCustomThemeColors, useStatblockColors } from '@/utils/app/customTheme'
 import { useThemePersistence } from '@/utils/app/theme'
-import { computed } from 'vue'
 import { useTheme } from 'vuetify'
 import { capitalizeFirstLetter, defaultInterestingStatblock } from '~/shared'
 
@@ -87,7 +86,10 @@ const { statblockColors, resetColor: resetStatblockColor, resetAll: resetAllStat
             <v-divider />
             <v-col cols="12">
                 <h2> Statblock Theme </h2>
-                <small> Remember to set Statblock Theme as "Custom" to see your changes elsewhere.</small>
+                <small> Remember to set Statblock Theme as "Custom" to see your changes elsewhere.
+                    <br>
+                    If the options below do not grant you enough customization options, please contact the developers.
+                </small>
 
             </v-col>
             <v-col cols="6">

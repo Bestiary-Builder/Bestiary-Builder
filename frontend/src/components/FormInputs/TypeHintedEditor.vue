@@ -2,8 +2,8 @@
 import { ref, computed, shallowRef, watch, type ComputedRef } from 'vue'
 import { VueMonacoEditor } from '@guolao/vue-monaco-editor'
 import type * as Monaco from 'monaco-editor';
-import { useTheme } from 'vuetify';
 import { useRoute } from 'vue-router';
+import { useThemePersistence } from '@/utils/app/theme';
 
 type Variant = 'outlined' | 'filled' | 'underlined' | 'solo' | 'solo-filled' | 'solo-inverted' | 'plain'
 type Density = 'default' | 'comfortable' | 'compact'
@@ -59,8 +59,8 @@ const labelColor = computed(() => {
   return 'rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity))'
 })
 
-const theme = useTheme()
-const editorTheme = theme.name.value === 'dark' ? 'vs-dark' : 'vs-light'
+const { monacoTheme } = useThemePersistence()
+
 
 const editorOptions: Monaco.editor.IStandaloneEditorConstructionOptions = {
   minimap: { enabled: false },
@@ -91,7 +91,6 @@ const editorOptions: Monaco.editor.IStandaloneEditorConstructionOptions = {
   padding: {
     top: 24
   },
-  theme: editorTheme
 }
 
 const handleMount = (editor: Monaco.editor.IStandaloneCodeEditor, monaco: typeof Monaco) => {
@@ -142,7 +141,7 @@ const focusEditor = () => {
         {{ label }}
       </label>
       <div v-bind="fieldSlotProps" class="code-field__editor" :style="{ height: `${height}px` }">
-        <VueMonacoEditor v-model:value="code" :language :theme="editorTheme" :options="editorOptions"
+        <VueMonacoEditor v-model:value="code" :language :theme="monacoTheme" :options="editorOptions"
           @mount="handleMount" />
       </div>
     </template>

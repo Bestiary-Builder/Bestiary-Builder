@@ -2,6 +2,8 @@ import { useLocalStorage } from "@vueuse/core"
 import { computed, watch } from "vue"
 import { useTheme } from "vuetify"
 import { store } from "../store"
+import * as monaco from "monaco-editor";
+
 export const useThemePersistence = () => {
     const theme = useTheme()
     const savedTheme = useLocalStorage('app-theme', theme.global.name.value)
@@ -22,6 +24,22 @@ export const useThemePersistence = () => {
         savedTheme.value = newName
     })
 
+    const monacoTheme = computed(() => {
+        if (theme.global.name.value === 'dark')
+            return 'vs-dark'
+        if (theme.global.name.value === 'light')
+            return 'vs-light'
+        if (theme.global.name.value === 'custom' && isAllowedCustomTheme) {
+            const isDarkTheme = relativeLuminance(
+                // @ts-expect-error
+                JSON.parse((localStorage.getItem("app-theme-custom-colors") ?? { 'surface': '#000000' }))["surface"]
+            ) < 0.5
+            if (isDarkTheme) return 'vs-dark'
+            return 'vs-light'
+        }
+        return 'vs-dark'
+    })
+
     const themeOptions = computed(() => [
         { title: 'Light', value: 'light' },
         { title: 'Dark', value: 'dark' },
@@ -32,6 +50,28 @@ export const useThemePersistence = () => {
         },
     ])
 
+    return { savedTheme, isAllowedCustomTheme, themeOptions, monacoTheme }
+}
 
-    return { savedTheme, isAllowedCustomTheme, themeOptions }
+// for custom themes, automatically determine whether they should get vs-light or vs-dark themes.
+const hexToRgb = (hex: string) => {
+    const clean = hex.replace('#', '')
+    const full = clean.length === 3
+        ? clean.split('').map((c) => c + c).join('')
+        : clean
+    const bigint = parseInt(full, 16)
+    return {
+        r: (bigint >> 16) & 255,
+        g: (bigint >> 8) & 255,
+        b: bigint & 255
+    }
+}
+
+const relativeLuminance = (hex: string) => {
+    const { r, g, b } = hexToRgb(hex)
+    const [rs, gs, bs] = [r, g, b].map((c) => {
+        const s = c / 255
+        return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4
+    })
+    return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs
 }

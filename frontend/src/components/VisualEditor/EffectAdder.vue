@@ -239,8 +239,8 @@ const onKeydown = (e: KeyboardEvent) => {
 	<DropdownMenu v-model="menuOpen" :close-on-content-click="false" @update:model-value="onMenuToggle"
 		v-if="showControls">
 		<template #activator="{ props }">
-			<p class="tree-row text-medium-emphasis" v-bind="props" :style="`--depth: ${depth}`" ref="btnRef"
-				id="add-effect">
+			<p class="tree-row text-on-surface" v-bind="props"
+				:style="`--depth: ${depth};opacity: var(--v-medium-emphasis-opacity)`" ref="btnRef" id="add-effect">
 				<span class="icon">
 					<Icon icon="mdi:plus-circle" width="1em" color="rgb(var(--v-theme-primary))" />
 				</span><span>{{ automation === null ? 'Create Automation' : 'Add Effect' }}</span>

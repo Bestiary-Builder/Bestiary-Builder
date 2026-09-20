@@ -9,8 +9,9 @@ import { useRecentPages } from "./utils/app/useRecentPages";
 import { store } from "./utils/store";
 import { sendToLogin } from "./utils/utils";
 import { latestChangelogVersion } from "./utils/constants";
-import { GlowTourDefault, GlowTourRoot, GlowTourAdvanceTrigger, GlowTourBackTrigger, GlowTourCancelTrigger, GlowTourContent, GlowTourFooter, GlowTourHeader, GlowTourOverlay, GlowTourPointer, GlowTourPopover } from "@glowhop/vue-tour";
+import { GlowTourRoot, GlowTourAdvanceTrigger, GlowTourBackTrigger, GlowTourCancelTrigger, GlowTourContent, GlowTourFooter, GlowTourHeader, GlowTourOverlay, GlowTourPointer, GlowTourPopover } from "@glowhop/vue-tour";
 import { useOnboardingTour } from "./utils/app/useOnboardingTour";
+import { useCustomThemeColors } from "./utils/app/customTheme.js";
 
 const { recentPages } = useRecentPages();
 
@@ -35,12 +36,12 @@ const defaults = computed(() => ({
 const isFeedbackFormOpen = ref(false);
 
 useThemePersistence();
+useCustomThemeColors();
 
 const changeLogVersionLastViewed = useLocalStorage('changeLogVersionLastViewed', '')
 
 const { tour, startOnboardingWorkflow } = useOnboardingTour();
 const dismissed = useLocalStorage("update3.0.0dismissed", false);
-
 </script>
 
 <template>

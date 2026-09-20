@@ -11,6 +11,7 @@ const defaultColors: Record<string, string> = {
     'surface': '#212121',
     "surface-light": "#424242"
 }
+
 export const useCustomThemeColors = () => {
     const theme = useTheme()
     const customColors: Record<string, string> = theme.themes.value.custom.colors as Record<string, string>
