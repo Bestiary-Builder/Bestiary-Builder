@@ -5,6 +5,7 @@ import AvraeLogo from "@/assets/svg/Avrae_Logo.svg";
 import BestiaryBuilderLogo from "@/assets/svg/logo.svg";
 import iconifyAdapter from "./utils/app/icon";
 import "vuetify/styles";
+import { store } from "./utils/store";
 
 
 const savedTheme = localStorage.getItem('app-theme')
@@ -89,7 +90,7 @@ export const vuetify = createVuetify({
 
 	},
 	theme: {
-		defaultTheme: savedTheme ? savedTheme : 'dark',
+		defaultTheme: !store.user ? 'dark' : (savedTheme ? savedTheme : 'dark'),
 		transition: true,
 		themes: {
 			dark: {

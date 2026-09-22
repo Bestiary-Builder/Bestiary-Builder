@@ -55,7 +55,7 @@ body .v-card .statblock-outer.custom {
 	h3,
 	h4,
 	h5 {
-		font-family: "Scala Sans Offc", Roboto, Helvetica, sans-serif;
+		font-family: "Scala Sans", Roboto, Helvetica, sans-serif;
 		color: var(--primary);
 		line-height: 1.1;
 		font-variant: small-caps;

@@ -67,7 +67,7 @@ router.afterEach((to) => {
 			delete to.query.loginSuccess;
 		}
 		if (to.query.loginError) {
-			addToast(`Login failed: ${to.query.loginError.toString()}`, { color: "success", timeout: -1 });
+			addToast(`Login failed: ${to.query.loginError.toString()}`, { color: "error", timeout: -1 });
 			delete to.query.loginError;
 		}
 		// Remove queries from parameter

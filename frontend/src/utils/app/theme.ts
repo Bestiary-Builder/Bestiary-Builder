@@ -2,7 +2,6 @@ import { useLocalStorage } from "@vueuse/core"
 import { computed, watch } from "vue"
 import { useTheme } from "vuetify"
 import { store } from "../store"
-import * as monaco from "monaco-editor";
 
 export const useThemePersistence = () => {
     const theme = useTheme()
