@@ -8,8 +8,8 @@ import spells from "@/staticData/shared/spells.json";
 import tOF from "@/staticData/shared/textOnlyFeatures.json";
 import { app } from "@/utilities/constants";
 
-let SRDAttacks2014 = SRDAttacks2014_
-let SRDAttacks2024 = SRDAttacks2024_
+let SRDAttacks2014 = SRDAttacks2014_;
+let SRDAttacks2024 = SRDAttacks2024_;
 
 // Actions
 const textOnlyFeatures = {} as { [key: string]: { name: string; description: string; automation: null } };
@@ -96,22 +96,20 @@ app.get("/api/gamedata/spells", async (req, res) => {
 // limiteduse abilities
 let limiteduse: any[] = [];
 const getLimitedUse = async () => {
-
 	const data = await fetch("https://api.avrae.io/gamedata/limiteduse", {
 		method: "GET",
 		headers: {
 			"Content-Type": "application/json"
 		},
-	}).then(response => response.json())
+	}).then(response => response.json());
 
 	const transformed = data.data.map((item: any) => {
 		return {
-			"title": item.name,
-			"value": { id: item.id, typeId: item.typeId },
+			title: item.name,
+			value: { id: item.id, typeId: item.typeId },
 		};
 	});
-	return transformed
-
+	return transformed;
 };
 
 getLimitedUse().then(x => limiteduse = x);

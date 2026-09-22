@@ -96,20 +96,22 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 		faction: "",
 		gear: (() => {
 			try {
-				let output = ""
+				let output = "";
 				for (const item of data?.gear ?? data?.attachedItems ?? []) {
 					if (typeof (item) === "string") {
-						output += capitalizeFirstLetter((item.split("|")[0] ?? item ?? ""))
-						output += ", "
-					} else if (typeof (item) === "object") {
-						output += `${item.quantity} ${capitalizeFirstLetter((item.item.split("|")[0] ?? item.item ?? ""))}s`
-						output += ", "
+						output += capitalizeFirstLetter((item.split("|")[0] ?? item ?? ""));
+						output += ", ";
+					}
+					else if (typeof (item) === "object") {
+						output += `${item.quantity} ${capitalizeFirstLetter((item.item.split("|")[0] ?? item.item ?? ""))}s`;
+						output += ", ";
 					}
 				}
-				output = output.slice(0, -2)
-				return output
-			} catch (e) {
-				return ""
+				output = output.slice(0, -2);
+				return output;
+			}
+			catch {
+				return "";
 			}
 		})(),
 		tag: "",
@@ -216,7 +218,7 @@ export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string
 
 				let ability;
 				for (const sk2 in SKILLS_BY_STAT) {
-					if (SKILLS_BY_STAT[sk2 as Stat].includes(shortname)) {
+					if ((SKILLS_BY_STAT[sk2 as Stat] as unknown as string[]).includes(shortname)) {
 						ability = sk2 as Stat;
 						break;
 					}

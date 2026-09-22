@@ -274,7 +274,7 @@ export function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: 
 
 			let ability;
 			for (const sk2 in SKILLS_BY_STAT) {
-				if (SKILLS_BY_STAT[sk2 as Stat].includes(shortname)) {
+				if ((SKILLS_BY_STAT[sk2 as Stat] as unknown as string[]).includes(shortname)) {
 					ability = sk2 as Stat;
 					break;
 				}
