@@ -7,7 +7,7 @@ import { useToast } from "@/utils/app/toast";
 import { useFetch } from "@/utils/utils";
 import { buildCounterCopyCommand, getAvraeCharacters } from "./utils";
 
-const { automation, consumables = null } = defineProps<{ automation: AttackModel | AttackModel[] | null, consumables?: AutomationConsumables | null }>();
+const { automation, consumables = null } = defineProps<{ automation: AttackModel | AttackModel[] | null; consumables?: AutomationConsumables | null }>();
 const { addToast, updateToast } = useToast();
 const AvraeToken = localStorage.getItem("AvraeToken");
 const isMenuOpen = ref(false);
@@ -42,7 +42,7 @@ const confirmImport = async () => {
 		return;
 	}
 	const toastId = addToast("Waiting on the Avrae API", { loading: true });
-	const body: { automationList: AttackModel[], consumables: AutomationConsumables } = { automationList: toArray(automation), consumables: consumables || [] }
+	const body: { automationList: AttackModel[]; consumables: AutomationConsumables } = { automationList: toArray(automation), consumables: consumables || [] };
 	const { error } = await useFetch(`/api/character/${selectedCharacter.value}/attacks/add`, "POST", body);
 
 	if (error) {
@@ -67,10 +67,10 @@ const copyCommand = async () => {
 	}
 	else if (data) {
 		updateToast(toastId, { color: "success", prependIcon: "mdi:check", text: "Copied Avrae Command to Clipboard!" });
-		let text = `!alias importactionfrombb multiline
+		const text = `!alias importactionfrombb multiline
 !a import {{get_gvar("${data.gvarId}")}}${buildCounterCopyCommand(consumables)}
 !alias delete importactionfrombb
-# NOW RUN \`!importactionfrombb\` to import your Action.`
+# NOW RUN \`!importactionfrombb\` to import your Action.`;
 		await navigator.clipboard.writeText(text);
 		isMenuOpen.value = false;
 	}
@@ -96,9 +96,11 @@ const toArray = <T>(input: T | T[]): T[] => {
 						load its counters.
 					</span>
 					<div v-if="AvraeToken">
-						<v-select v-model="selectedCharacter" :items="characters || []" :loading="loading"
+						<v-select
+							v-model="selectedCharacter" :items="characters || []" :loading="loading"
 							item-title="name" item-value="upstream" label="Select a character" class="mt-4" hide-details
-							@update:menu="handleMenuOpen" prepend-inner-icon="$avrae">
+							prepend-inner-icon="$avrae" @update:menu="handleMenuOpen"
+						>
 							<template #no-data>
 								<v-list-item>
 									<v-list-item-title>
@@ -110,8 +112,10 @@ const toArray = <T>(input: T | T[]): T[] => {
 						<p v-if="selectedCharacter !== null" class="py-5 text-error">
 							Warning: this will override existing attacks of the same name.
 						</p>
-						<v-btn v-if="selectedCharacter !== null" class="w-100" size="large" color="success"
-							prepend-icon="mdi:import" @click="confirmImport">
+						<v-btn
+							v-if="selectedCharacter !== null" class="w-100" size="large" color="success"
+							prepend-icon="mdi:import" @click="confirmImport"
+						>
 							Confirm import
 						</v-btn>
 					</div>

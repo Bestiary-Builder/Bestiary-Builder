@@ -112,12 +112,12 @@ p:has(img[src="/Beholder.webp"]) {
 		width: 50%;
 	}
 
-	+p {
+	+ p {
 		text-align: center;
 	}
 }
 
-blockquote:has(p img[src="/Beholder.webp"])~p {
+blockquote:has(p img[src="/Beholder.webp"]) ~ p {
 	text-align: center;
 	display: block;
 	margin: auto;
@@ -129,12 +129,12 @@ blockquote:has(p img[src="/Beholder.webp"])~p {
 	grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 	gap: 1rem;
 
-	&>a {
+	& > a {
 		text-decoration: none;
 	}
 }
 
-.content.markdown *+* {
+.content.markdown * + * {
 	margin-top: 1em;
 }
 

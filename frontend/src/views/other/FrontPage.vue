@@ -3,8 +3,8 @@ import type { GlobalStats } from "~/shared";
 import { onMounted, onUnmounted, ref } from "vue";
 import dataFile from "@/assets/documents/home.md";
 import Markdown from "@/components/Global/Markdown.vue";
-import { useFetch } from "@/utils/utils";
 import { useOnboardingTour } from "@/utils/app/useOnboardingTour";
+import { useFetch } from "@/utils/utils";
 
 const stats = ref<null | GlobalStats>(null);
 onMounted(async () => {
@@ -19,10 +19,10 @@ onMounted(async () => {
 });
 
 const images = [
-	{ id: 'a', url: '/hero/a.webp' },
-	{ id: 'b', url: '/hero/b.webp' },
-	{ id: 'c', url: '/hero/c.webp' },
-	{ id: 'd', url: '/hero/d.webp' },
+	{ id: "a", url: "/hero/a.webp" },
+	{ id: "b", url: "/hero/b.webp" },
+	{ id: "c", url: "/hero/c.webp" },
+	{ id: "d", url: "/hero/d.webp" },
 ];
 
 const activeIndex = ref(0);
@@ -33,20 +33,22 @@ const advance = () => {
 	activeIndex.value = (activeIndex.value + 1) % images.length;
 };
 
-
 const startTimer = () => {
 	timerId = setInterval(advance, rotateMs);
 };
 
 onMounted(() => startTimer());
-onUnmounted(() => { if (timerId) clearInterval(timerId); });
-
+onUnmounted(() => {
+	if (timerId)
+		clearInterval(timerId);
+});
 
 const loadedUrls = ref(new Set());
 
-const preloadImage = (url: string): Promise<void> => {
+const preloadImage = async (url: string): Promise<void> => {
 	return new Promise((resolve) => {
-		if (loadedUrls.value.has(url)) return resolve();
+		if (loadedUrls.value.has(url))
+			return resolve();
 		const img = new Image();
 		img.onload = () => {
 			loadedUrls.value.add(url);
@@ -70,42 +72,45 @@ const getBackgroundStyle = (img: { url: string }) => {
 		: {};
 };
 
-onMounted(() => {
+onMounted(async () => {
 	// Load the first (active) image right away
-	preloadImage(images[0].url).then(() => {
+	await preloadImage(images[0].url).then(() => {
 		// Then defer the rest until the browser is idle
-		if ('requestIdleCallback' in window) {
-			requestIdleCallback(() => preloadQueue());
-		} else {
+		if ("requestIdleCallback" in window) {
+			requestIdleCallback(async () => preloadQueue());
+		}
+		else {
 			setTimeout(preloadQueue, 200);
 		}
-	});
+	}).catch();
 });
 
-const { startOnboardingWorkflow } = useOnboardingTour()
+const { startOnboardingWorkflow } = useOnboardingTour();
 </script>
 
 <template>
 	<section class="hero">
-		<div v-for="(img, index) in images" :key="img.id" class="hero__layer"
-			:class="{ 'is-active': index === activeIndex }" :style="getBackgroundStyle(img)"></div>
+		<div
+			v-for="(img, index) in images" :key="img.id" class="hero__layer"
+			:class="{ 'is-active': index === activeIndex }" :style="getBackgroundStyle(img)"
+		/>
 
 		<div class="hero__content">
-			<div class="hero__brand">Bestiary Builder <span>&middot;</span> The Ultimate D&D Bestiary Creator for Avrae
+			<div class="hero__brand">
+				Bestiary Builder <span>&middot;</span> The Ultimate D&D Bestiary Creator for Avrae
 			</div>
 
 			<div class="hero__body">
 				<h1 class="hero__headline">
 					Build your Bestiary with <em>ease.</em><br>
 					Integrate with <em>Avrae.</em><br>
-
 				</h1>
 				<p class="hero__subhead">
 					Join our <b>{{ stats?.users }}</b> users.<br>
 					Flip through our <b>{{ stats?.bestiaries }}</b> bestiaries!<br>
 					And frighten your players with our <b>{{ stats?.creatures }}</b> creatures!
 				</p>
-				<v-btn size="x-large" @click="startOnboardingWorkflow()" color="primary" variant="elevated">
+				<v-btn size="x-large" color="primary" variant="elevated" @click="startOnboardingWorkflow()">
 					See what's new in 3.0.0
 				</v-btn>
 			</div>
@@ -115,15 +120,19 @@ const { startOnboardingWorkflow } = useOnboardingTour()
 	<v-container max-width="600">
 		<v-row class="mt-8">
 			<v-col cols="6" class="d-flex justify-center">
-				<v-btn color="#f1465a" size="x-large" prepend-icon="mdi:patreon" class="rounded" variant="elevated"
-					href="https://www.patreon.com/join/BestiaryBuilder" width="250">
+				<v-btn
+					color="#f1465a" size="x-large" prepend-icon="mdi:patreon" class="rounded" variant="elevated"
+					href="https://www.patreon.com/join/BestiaryBuilder" width="250"
+				>
 					Support us on Patreon
 				</v-btn>
 			</v-col>
 
 			<v-col cols="6" class="d-flex justify-center">
-				<v-btn color="#5865f2" size="x-large" prepend-icon="mdi:discord" class="rounded" variant="elevated"
-					href="https://discord.gg/a6bwXCSymN" width="250">
+				<v-btn
+					color="#5865f2" size="x-large" prepend-icon="mdi:discord" class="rounded" variant="elevated"
+					href="https://discord.gg/a6bwXCSymN" width="250"
+				>
 					Join our Discord
 				</v-btn>
 			</v-col>
@@ -134,23 +143,30 @@ const { startOnboardingWorkflow } = useOnboardingTour()
 		<Markdown :text="dataFile" :options="{ html: true, linkify: true, typographer: true }" />
 	</div>
 
-
 	<v-row class="my-8">
 		<v-col cols="12" class="text-center">
 			<h2>Developers</h2>
 		</v-col>
 		<v-col cols="6">
 			<div class="float-right">
-				<img src="/VeryGreatFrog.jpg" alt="VeryGreatFrog"
-					style="width: 15vw; height: 15vw; margin: auto; object-fit: cover" />
-				<div style="text-align: center">VeryGreatFrog</div>
+				<img
+					src="/VeryGreatFrog.jpg" alt="VeryGreatFrog"
+					style="width: 15vw; height: 15vw; margin: auto; object-fit: cover"
+				>
+				<div style="text-align: center">
+					VeryGreatFrog
+				</div>
 			</div>
 		</v-col>
 		<v-col cols="6">
 			<div class="float-left">
-				<img src="/Stevnbak.png" alt="Stevnbak"
-					style="width: 15vw; height: 15vw; margin: auto; object-fit: cover" />
-				<div style="text-align: center">Stevnbak</div>
+				<img
+					src="/Stevnbak.png" alt="Stevnbak"
+					style="width: 15vw; height: 15vw; margin: auto; object-fit: cover"
+				>
+				<div style="text-align: center">
+					Stevnbak
+				</div>
 			</div>
 		</v-col>
 	</v-row>
@@ -164,7 +180,6 @@ const { startOnboardingWorkflow } = useOnboardingTour()
 	--overlay-top: rgba(10, 9, 7, 0.15);
 	--overlay-bottom: rgba(10, 9, 7, 0.78);
 }
-
 
 .hero {
 	position: relative;
@@ -218,7 +233,7 @@ const { startOnboardingWorkflow } = useOnboardingTour()
 }
 
 .hero__brand {
-	font-family: 'Inter', sans-serif;
+	font-family: "Inter", sans-serif;
 	font-weight: 600;
 	font-size: 1.1rem;
 	letter-spacing: 0.02em;
@@ -233,27 +248,24 @@ const { startOnboardingWorkflow } = useOnboardingTour()
 .hero__body {
 	max-width: 800px;
 	margin-bottom: 48px;
-
 }
 
 .hero__headline {
-	font-family: 'Newsreader', serif;
+	font-family: "Newsreader", serif;
 	font-weight: 500;
 	font-size: clamp(1.6rem, 3.4vw, 2.6rem);
 	line-height: 1.12;
 	margin: 0 0 20px;
 	text-shadow: 0 2px 3px rgba(0, 0, 0, 0.5);
-
 }
 
 .hero__headline em {
 	font-style: normal;
 	color: rgb(var(--v-theme-primary));
-
 }
 
 .hero__subhead {
-	font-family: 'Inter', sans-serif;
+	font-family: "Inter", sans-serif;
 	font-weight: 400;
 	font-size: clamp(0.95rem, 1.6vw, 1.08rem);
 	line-height: 1.55;
@@ -262,12 +274,11 @@ const { startOnboardingWorkflow } = useOnboardingTour()
 	margin: 0 0 32px;
 
 	text-shadow: 0 2px 3px rgba(0, 0, 0, 0.5);
-
 }
 
 .hero__cta.v-btn {
 	text-transform: none;
-	font-family: 'Inter', sans-serif;
+	font-family: "Inter", sans-serif;
 	font-weight: 500;
 	letter-spacing: 0.01em;
 	border-radius: 2px;
@@ -275,7 +286,6 @@ const { startOnboardingWorkflow } = useOnboardingTour()
 	padding: 0 26px;
 	height: 46px;
 }
-
 
 @media (prefers-reduced-motion: reduce) {
 	.hero__layer {

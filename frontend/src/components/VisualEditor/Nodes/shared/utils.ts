@@ -47,9 +47,10 @@ export const useDataCleanup = <T extends EffectWithTarget | AttackModel | Button
 								if (
 									!!data.value[property][nestedProperty] === false
 									|| data.value[property][nestedProperty] === "0"
-								)
+								) {
 									delete data.value[property][nestedProperty];
-							}, 5000)
+								}
+							}, 5000);
 						}
 					});
 				}

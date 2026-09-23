@@ -46,39 +46,37 @@ const computedContext = computed(() => {
 
 const availableNodes = computed(() => {
 	const { isTargetContext, contextLevel } = computedContext.value;
-	let output: string[] = []
+	let output: string[] = [];
 	if (!isTargetContext)
 		output = ["target", "roll", "text", "variable", "condition", "counter", "spell"];
 	if (isTargetContext)
 		output = ["attack", "save", "damage", "temphp", "ieffect2", "roll", "text", "variable", "condition", "counter", "check",];
 	if (!isTargetContext && contextLevel !== "buttons")
-		output.push(...["__divider__", "__header__Presets", "basicAttack", "saveForHalfDamage", "saveForHalfDamageWithRecharge", "attackWithPoison", "attackWithGrappleRestrain"])
+		output.push(...["__divider__", "__header__Presets", "basicAttack", "saveForHalfDamage", "saveForHalfDamageWithRecharge", "attackWithPoison", "attackWithGrappleRestrain"]);
 	if (isTargetContext && contextLevel !== "buttons")
-		output.push(...["__divider__", "__header__Button Presets", "proneButton", "rechargeButton", "grappleButton", "damageStartOfTurnButton"])
+		output.push(...["__divider__", "__header__Button Presets", "proneButton", "rechargeButton", "grappleButton", "damageStartOfTurnButton"]);
 	if (!isTargetContext && contextLevel === "buttons")
-		output.splice(6, 1, "remove_ieffect")
+		output.splice(6, 1, "remove_ieffect");
 	if (isTargetContext && contextLevel === "buttons")
-		output.splice(5, 0, "remove_ieffect")
+		output.splice(5, 0, "remove_ieffect");
 
 	return output;
 });
 
 const automation = inject<Ref<null | AttackModel | AttackModel[]>>("automation");
 const currentEffect = inject<Ref<EffectWithTarget | ButtonInteraction | AttackInteraction>>("currentEffect");
-const addAndSelect = async (node: string) => {
+const addAndSelect = (node: string) => {
 	// traverse through the tree.
 	if (!automation)
 		return;
 	if (!automation.value) {
-		const toAdd = defaultNodes[node]
+		const toAdd = defaultNodes[node];
 		if (Array.isArray(toAdd))
 			automation.value = { _v: 2, name: props.name || "New Attack", automation: [...JSON.parse(JSON.stringify(toAdd))], activation_type: activation_type[type] };
 		else
 			automation.value = { _v: 2, name: props.name || "New Attack", automation: [JSON.parse(JSON.stringify(defaultNodes[node]))], activation_type: activation_type[type] };
 		return;
 	}
-
-
 
 	let tree: any;
 	if (Array.isArray(automation.value))
@@ -109,11 +107,12 @@ const addAndSelect = async (node: string) => {
 		}
 	}
 	try {
-		const toAdd = defaultNodes[node]
+		const toAdd = defaultNodes[node];
 		if (Array.isArray(toAdd)) {
 			tree.push(...JSON.parse(JSON.stringify(toAdd)));
 			currentEffect!.value = tree[tree.length - toAdd.length];
-		} else {
+		}
+		else {
 			tree.push(JSON.parse(JSON.stringify(toAdd)));
 			currentEffect!.value = tree[tree.length - 1];
 		}
@@ -127,120 +126,122 @@ const addAndSelect = async (node: string) => {
 
 const showControls = inject<Ref<boolean>>("showControls");
 
-const search = ref('')
-const menuOpen = ref(false)
-const highlightedIndex = ref(0)
+const search = ref("");
+const menuOpen = ref(false);
+const highlightedIndex = ref(0);
 
-const btnRef = useTemplateRef("btnRef")
-const searchFieldRef = useTemplateRef("searchFieldRef")
-const listRef = useTemplateRef("listRef")
+const btnRef = useTemplateRef("btnRef");
+const searchFieldRef = useTemplateRef("searchFieldRef");
+const listRef = useTemplateRef("listRef");
 
+const HEADER_PREFIX = "__header__";
+const DIVIDER_TOKEN = "__divider__";
 
-
-const HEADER_PREFIX = '__header__'
-const DIVIDER_TOKEN = '__divider__'
-
-const isHeader = (node: string) => node.startsWith(HEADER_PREFIX)
-const isDivider = (node: string) => node === DIVIDER_TOKEN
-const isSelectable = (node: string) => !isHeader(node) && !isDivider(node)
-const headerTitle = (node: string) => node.slice(HEADER_PREFIX.length)
+const isHeader = (node: string) => node.startsWith(HEADER_PREFIX);
+const isDivider = (node: string) => node === DIVIDER_TOKEN;
+const headerTitle = (node: string) => node.slice(HEADER_PREFIX.length);
 
 const filteredNodes = computed(() => {
-	const q = search.value.toLowerCase()
-	const result = []
-	let pendingHeader = null
-	let pendingDivider = false
+	const q = search.value.toLowerCase();
+	const result = [];
+	let pendingHeader = null;
+	let pendingDivider = false;
 
 	for (const node of availableNodes.value) {
 		if (isHeader(node)) {
-			pendingHeader = node
-			continue
+			pendingHeader = node;
+			continue;
 		}
 		if (isDivider(node)) {
-			pendingDivider = true
-			continue
+			pendingDivider = true;
+			continue;
 		}
 
-		const matches = displayNames[node]?.label.toLowerCase().includes(q)
-		if (!matches) continue
+		const matches = displayNames[node]?.label.toLowerCase().includes(q);
+		if (!matches)
+			continue;
 
 		if (pendingDivider && result.length) {
-			result.push(DIVIDER_TOKEN)
-			pendingDivider = false
+			result.push(DIVIDER_TOKEN);
+			pendingDivider = false;
 		}
 		if (pendingHeader) {
-			result.push(pendingHeader)
-			pendingHeader = null
+			result.push(pendingHeader);
+			pendingHeader = null;
 		}
-		result.push(node)
+		result.push(node);
 	}
-	return result
-})
+	return result;
+});
 
 // whenever the filtered results change, the first match becomes highlighted —
 // this is what makes plain "type + Enter" select the top result
 watch(filteredNodes, () => {
-	highlightedIndex.value = 0
-})
+	highlightedIndex.value = 0;
+});
 
-const onMenuToggle = (isOpen: boolean) => {
+const onMenuToggle = async (isOpen: boolean) => {
 	if (isOpen) {
-		search.value = ''
-		highlightedIndex.value = 0
-		nextTick(() => searchFieldRef.value?.focus())
+		search.value = "";
+		highlightedIndex.value = 0;
+		await nextTick(() => searchFieldRef.value?.focus());
 	}
-}
+};
 
-const scrollToHighlighted = () => {
-	nextTick(() => {
-		const activeEl = listRef.value?.$el.querySelector('.v-list-item--active')
-		activeEl?.scrollIntoView({ block: 'nearest' })
-	})
-}
+const scrollToHighlighted = async () => {
+	await nextTick(() => {
+		const activeEl = listRef.value?.$el.querySelector(".v-list-item--active");
+		activeEl?.scrollIntoView({ block: "nearest" });
+	});
+};
 
-const moveHighlight = (delta: number) => {
-	const max = filteredNodes.value.length - 1
-	if (max < 0) return
-	highlightedIndex.value = Math.min(Math.max(highlightedIndex.value + delta, 0), max)
-	scrollToHighlighted()
-}
-const selectNode = (node: string) => {
-	addAndSelect(node)
-	menuOpen.value = false
-	nextTick(() => btnRef.value?.focus())
-}
+const moveHighlight = async (delta: number) => {
+	const max = filteredNodes.value.length - 1;
+	if (max < 0)
+		return;
+	highlightedIndex.value = Math.min(Math.max(highlightedIndex.value + delta, 0), max);
+	await scrollToHighlighted();
+};
+const selectNode = async (node: string) => {
+	addAndSelect(node);
+	menuOpen.value = false;
+	await nextTick(() => btnRef.value?.focus());
+};
 
-const onKeydown = (e: KeyboardEvent) => {
+const onKeydown = async (e: KeyboardEvent) => {
 	switch (e.key) {
-		case 'ArrowDown':
-			e.preventDefault()
-			moveHighlight(1)
-			break
-		case 'ArrowUp':
-			e.preventDefault()
-			moveHighlight(-1)
-			break
-		case 'Enter':
-			e.preventDefault()
+		case "ArrowDown":
+			e.preventDefault();
+			await moveHighlight(1);
+			break;
+		case "ArrowUp":
+			e.preventDefault();
+			await moveHighlight(-1);
+			break;
+		case "Enter":
+			e.preventDefault();
 			if (filteredNodes.value[highlightedIndex.value]) {
-				selectNode(filteredNodes.value[highlightedIndex.value])
+				await selectNode(filteredNodes.value[highlightedIndex.value]);
 			}
-			break
-		case 'Escape':
-			menuOpen.value = false
-			nextTick(() => btnRef.value?.focus())
-			break
+			break;
+		case "Escape":
+			menuOpen.value = false;
+			await nextTick(() => btnRef.value?.focus());
+			break;
 	}
-}
-
+};
 </script>
 
 <template>
-	<DropdownMenu v-model="menuOpen" :close-on-content-click="false" @update:model-value="onMenuToggle"
-		v-if="showControls">
-		<template #activator="{ props }">
-			<p class="tree-row text-on-surface" v-bind="props"
-				:style="`--depth: ${depth};opacity: var(--v-medium-emphasis-opacity)`" ref="btnRef" id="add-effect">
+	<DropdownMenu
+		v-if="showControls" v-model="menuOpen" :close-on-content-click="false"
+		@update:model-value="onMenuToggle"
+	>
+		<template #activator="{ props: dropdownProps }">
+			<p
+				v-bind="dropdownProps" id="add-effect" ref="btnRef" class="tree-row text-on-surface"
+				:style="`--depth: ${depth};opacity: var(--v-medium-emphasis-opacity)`"
+			>
 				<span class="icon">
 					<Icon icon="mdi:plus-circle" width="1em" color="rgb(var(--v-theme-primary))" />
 				</span><span>{{ automation === null ? 'Create Automation' : 'Add Effect' }}</span>
@@ -249,19 +250,24 @@ const onKeydown = (e: KeyboardEvent) => {
 
 		<v-card border class="pa-1">
 			<v-card-text class="pb-0">
-				<v-text-field ref="searchFieldRef" v-model="search" density="compact" variant="plain" hide-details
-					placeholder="Search..." persistent-placeholder @keydown="onKeydown" autofocus />
+				<v-text-field
+					ref="searchFieldRef" v-model="search" density="compact" variant="plain" hide-details
+					placeholder="Search..." persistent-placeholder autofocus @keydown="onKeydown"
+				/>
 				<v-divider />
-
 			</v-card-text>
 
-			<v-list ref="listRef" max-height="350" class="overflow-y-auto" id="effect-adder-list">
-				<template v-for="(node, index) in filteredNodes" :key="node + '-' + index">
-					<v-list-subheader v-if="isHeader(node)">{{ headerTitle(node) }}</v-list-subheader>
+			<v-list id="effect-adder-list" ref="listRef" max-height="350" class="overflow-y-auto">
+				<template v-for="(node, index) in filteredNodes" :key="`${node}-${index}`">
+					<v-list-subheader v-if="isHeader(node)">
+						{{ headerTitle(node) }}
+					</v-list-subheader>
 					<v-divider v-else-if="isDivider(node)" />
-					<v-list-item v-else :title="displayNames[node]?.label" :prepend-icon="displayNames[node]?.icon"
-						:active="index === highlightedIndex" @click="selectNode(node)"
-						@mouseenter="highlightedIndex = index" :id="`effectAdder${node}`" />
+					<v-list-item
+						v-else :id="`effectAdder${node}`" :title="displayNames[node]?.label"
+						:prepend-icon="displayNames[node]?.icon" :active="index === highlightedIndex"
+						@click="selectNode(node)" @mouseenter="highlightedIndex = index"
+					/>
 				</template>
 				<v-list-item v-if="!filteredNodes.length" title="No matches" disabled />
 			</v-list>

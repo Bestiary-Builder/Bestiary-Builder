@@ -11,7 +11,7 @@ const { data } = defineProps<{ data: Statblock }>();
 const { addToast } = useToast();
 
 const newSpeed = ref<string | null>(null);
-const isAddSpeedOpen = ref(false)
+const isAddSpeedOpen = ref(false);
 const addNewSpeed = (newSpeedName: string) => {
 	if (!newSpeedName) {
 		addToast("No speed given.");
@@ -24,11 +24,11 @@ const addNewSpeed = (newSpeedName: string) => {
 	}
 	data.core.speed.push({ name: newSpeedName, value: 30, unit: "ft", comment: "" });
 	isAddSpeedOpen.value = false;
-	newSpeed.value = null
+	newSpeed.value = null;
 };
 
 const newSense = ref<string | null>(null);
-const isAddSensesOpen = ref(false)
+const isAddSensesOpen = ref(false);
 const addNewSense = (newSenseName: string) => {
 	if (!newSenseName) {
 		addToast("No sense given");
@@ -40,29 +40,29 @@ const addNewSense = (newSenseName: string) => {
 	}
 	data.core.senses.push({ name: newSenseName, value: 30, unit: "ft", comment: "" });
 	isAddSensesOpen.value = false;
-	newSense.value = null
+	newSense.value = null;
 };
 
 const speedIcons: Record<string, string> = {
-	'Walk': 'mdi:walk',
-	'Swim': 'mdi:swim',
-	'Fly': 'at-icons:wing',
-	'Climb': 'game-icons:mountain-climbing',
-	'Burrow': 'game-icons:leeching-worm'
-}
+	Walk: "mdi:walk",
+	Swim: "mdi:swim",
+	Fly: "at-icons:wing",
+	Climb: "game-icons:mountain-climbing",
+	Burrow: "game-icons:leeching-worm"
+};
 
 const senseIcons: Record<string, string> = {
-	'Darkvision': 'mdi:torch',
-	'Blindsight': 'fa7-solid:user-ninja',
-	'Truesight': 'game-icons:eyeball',
-	'Tremorsense': 'material-symbols:earthquake',
-}
+	Darkvision: "mdi:torch",
+	Blindsight: "fa7-solid:user-ninja",
+	Truesight: "game-icons:eyeball",
+	Tremorsense: "material-symbols:earthquake",
+};
 </script>
 
 <template>
 	<div>
 		<SectionHeader title="Speed" class="pb-2" />
-		<v-table hover gridlines density="compact" v-if="data.core.speed.length > 0" class="rounded">
+		<v-table v-if="data.core.speed.length > 0" hover gridlines density="compact" class="rounded">
 			<thead>
 				<tr>
 					<th class="text-left font-weight-bold">
@@ -77,7 +77,7 @@ const senseIcons: Record<string, string> = {
 				</tr>
 			</thead>
 			<VueDraggable v-model="data.core.speed" tag="tbody" :animation="150">
-				<tr v-for="sp, idx in data.core.speed" class="cursor-grab">
+				<tr v-for="sp, idx in data.core.speed" :key="idx" class="cursor-grab">
 					<td class="font-weight-bold text-left text-no-wrap">
 						<v-icon :icon="speedIcons[sp.name] ?? ''" size="24" />
 						{{ sp.name }}
@@ -88,8 +88,10 @@ const senseIcons: Record<string, string> = {
 					<td class="text-center">
 						<DropdownMenu>
 							<template #activator="{ props }">
-								<v-icon icon="mdi:ruler" text="Set unit for this speed" size="20" v-bind="props"
-									color="primary" />
+								<v-icon
+									icon="mdi:ruler" text="Set unit for this speed" size="20" v-bind="props"
+									color="primary"
+								/>
 							</template>
 							<v-card min-width="300" class="text-center pb-2" subtitle="Set unit for this speed">
 								<select v-model="sp.unit" class="ghost" title="Select speed unit">
@@ -103,8 +105,10 @@ const senseIcons: Record<string, string> = {
 						</DropdownMenu>
 						<DropdownMenu>
 							<template #activator="{ props }">
-								<v-icon icon="mdi:comment" text="Set comment for this speed" size="20" v-bind="props"
-									color="primary" />
+								<v-icon
+									icon="mdi:comment" text="Set comment for this speed" size="20" v-bind="props"
+									color="primary"
+								/>
 							</template>
 							<v-card min-width="300" class="text-center pb-2" subtitle="Set (comment) for this speed">
 								<v-card-actions>
@@ -112,25 +116,30 @@ const senseIcons: Record<string, string> = {
 								</v-card-actions>
 							</v-card>
 						</DropdownMenu>
-						<v-icon icon="mdi:delete" text="Remove this speed" size="20" color="primary"
-							@click="data.core.speed.splice(idx, 1)" />
+						<v-icon
+							icon="mdi:delete" text="Remove this speed" size="20" color="primary"
+							@click="data.core.speed.splice(idx, 1)"
+						/>
 					</td>
 				</tr>
 			</VueDraggable>
-
 		</v-table>
 
 		<v-row>
 			<v-col cols="6">
-				<v-combobox label="Choose or type a speed" class="mt-4"
-					:items="['Walk', 'Swim', 'Fly', 'Climb', 'Burrow']" v-model="newSpeed"
-					@keydown.enter="addNewSpeed(newSpeed || '')" hide-details>
+				<v-combobox
+					v-model="newSpeed" label="Choose or type a speed" class="mt-4"
+					:items="['Walk', 'Swim', 'Fly', 'Climb', 'Burrow']" hide-details
+					@keydown.enter="addNewSpeed(newSpeed || '')"
+				>
 					<template #item="{ item, props }">
 						<v-list-item :prepend-icon="speedIcons[item] ?? null" v-bind="props" :title="item" />
 					</template>
 					<template #append>
-						<v-icon-btn @click.stop="addNewSpeed(newSpeed || '')" icon="mdi:plus"
-							:color="newSpeed ? 'primary' : 'grey'" />
+						<v-icon-btn
+							icon="mdi:plus" :color="newSpeed ? 'primary' : 'grey'"
+							@click.stop="addNewSpeed(newSpeed || '')"
+						/>
 					</template>
 				</v-combobox>
 			</v-col>
@@ -138,7 +147,7 @@ const senseIcons: Record<string, string> = {
 
 		<SectionHeader title="Senses" class="pt-4 pb-2" />
 
-		<v-table hover gridlines density="compact" v-if="data.core.senses.length > 0" class="rounded">
+		<v-table v-if="data.core.senses.length > 0" hover gridlines density="compact" class="rounded">
 			<thead>
 				<tr>
 					<th class="text-left font-weight-bold">
@@ -153,7 +162,7 @@ const senseIcons: Record<string, string> = {
 				</tr>
 			</thead>
 			<VueDraggable v-model="data.core.senses" tag="tbody" :animation="150">
-				<tr v-for="se, idx in data.core.senses" class="cursor-grab">
+				<tr v-for="se, idx in data.core.senses" :key="idx" class="cursor-grab">
 					<td class="font-weight-bold text-left text-no-wrap">
 						<v-icon :icon="senseIcons[se.name] ?? ''" size="24" />
 						{{ se.name }}
@@ -164,8 +173,10 @@ const senseIcons: Record<string, string> = {
 					<td class="text-center">
 						<DropdownMenu>
 							<template #activator="{ props }">
-								<v-icon icon="mdi:ruler" text="Set unit for this sense" size="20" v-bind="props"
-									color="primary" />
+								<v-icon
+									icon="mdi:ruler" text="Set unit for this sense" size="20" v-bind="props"
+									color="primary"
+								/>
 							</template>
 							<v-card min-width="300" class="text-center pb-2" subtitle="Set unit for this sense">
 								<select v-model="se.unit" class="ghost" title="Select sense unit">
@@ -179,8 +190,10 @@ const senseIcons: Record<string, string> = {
 						</DropdownMenu>
 						<DropdownMenu>
 							<template #activator="{ props }">
-								<v-icon icon="mdi:comment" text="Set comment for this sense" size="20" v-bind="props"
-									color="primary" />
+								<v-icon
+									icon="mdi:comment" text="Set comment for this sense" size="20" v-bind="props"
+									color="primary"
+								/>
 							</template>
 							<v-card min-width="300" class="text-center pb-2" subtitle="Set (comment) for this sense">
 								<v-card-actions>
@@ -188,25 +201,30 @@ const senseIcons: Record<string, string> = {
 								</v-card-actions>
 							</v-card>
 						</DropdownMenu>
-						<v-icon icon="mdi:delete" text="Remove this sense" size="20" color="primary"
-							@click="data.core.senses.splice(idx, 1)" />
+						<v-icon
+							icon="mdi:delete" text="Remove this sense" size="20" color="primary"
+							@click="data.core.senses.splice(idx, 1)"
+						/>
 					</td>
 				</tr>
 			</VueDraggable>
-
 		</v-table>
 
 		<v-row>
 			<v-col cols="6">
-				<v-combobox label="Choose or type a sense" class="mt-4"
-					:items="['Darkvision', 'Blindsight', 'Truesight', 'Tremorsense']" v-model="newSense"
-					v-model:menu="isAddSensesOpen" @keydown.enter="addNewSense(newSense || '')" hide-details>
+				<v-combobox
+					v-model="newSense" v-model:menu="isAddSensesOpen" label="Choose or type a sense"
+					class="mt-4" :items="['Darkvision', 'Blindsight', 'Truesight', 'Tremorsense']" hide-details
+					@keydown.enter="addNewSense(newSense || '')"
+				>
 					<template #item="{ item, props }">
 						<v-list-item :prepend-icon="senseIcons[item] ?? ''" v-bind="props" :title="item" />
 					</template>
 					<template #append>
-						<v-icon-btn @click.stop="addNewSense(newSense || '')" icon="mdi:plus"
-							:color="newSense ? 'primary' : 'grey'" />
+						<v-icon-btn
+							icon="mdi:plus" :color="newSense ? 'primary' : 'grey'"
+							@click.stop="addNewSense(newSense || '')"
+						/>
 					</template>
 				</v-combobox>
 			</v-col>
@@ -215,15 +233,19 @@ const senseIcons: Record<string, string> = {
 		<SectionHeader title="Miscellaneous" class="pt-4 pb-2" />
 		<v-row class="my-4">
 			<v-col cols="6">
-				<v-combobox v-model="data.core.languages" multiple chips closable-chips label="Languages"
-					:items="languages" hint="Supports custom languages" persistent-hint />
+				<v-combobox
+					v-model="data.core.languages" multiple chips closable-chips label="Languages"
+					:items="languages" hint="Supports custom languages" persistent-hint
+				/>
 			</v-col>
 			<v-col cols="6">
 				<v-number-input v-model="data.misc.telepathy" label="Telepathy" :min="0" :step="5" />
 			</v-col>
 			<v-col cols="6">
-				<v-number-input v-model="data.misc.passivePerceptionOverride" label="Passive perception override"
-					clearable />
+				<v-number-input
+					v-model="data.misc.passivePerceptionOverride" label="Passive perception override"
+					clearable
+				/>
 			</v-col>
 		</v-row>
 	</div>

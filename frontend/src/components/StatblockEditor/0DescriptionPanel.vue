@@ -5,8 +5,8 @@ import { useRules } from "vuetify/labs/rules";
 import { alignments, creatureTypes, sizes } from "@/utils/constants";
 import { getXPbyCR, globalLimits } from "~/shared";
 import CRInput from "../FormInputs/CRInput.vue";
-import Editor from "./Editor.vue";
 import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
+import Editor from "./Editor.vue";
 
 const { data } = defineProps<{ data: Statblock }>();
 
@@ -18,30 +18,32 @@ watch(() => data.description.cr, () => {
 const rules = useRules();
 
 const creatureTypeIcons: Record<string, string> = {
-	"Aberration": "game-icons:octopus",
-	"Beast": "game-icons:wolf-howl",
-	"Celestial": "game-icons:angel-wings",
-	"Construct": "game-icons:robot-golem",
-	"Dragon": "game-icons:spiked-dragon-head",
-	"Elemental": "mdi:fire",
-	"Fey": "game-icons:woman-elf-face",
-	"Fiend": "game-icons:evil-fork",
-	"Giant": "game-icons:giant",
-	"Humanoid": "game-icons:person",
-	"Monstrosity": "game-icons:frankenstein-creature",
-	"Ooze": "game-icons:melting-ice-cube",
-	"Plant": "mdi:leaf",
-	"Undead": "game-icons:broken-skull",
-}
+	Aberration: "game-icons:octopus",
+	Beast: "game-icons:wolf-howl",
+	Celestial: "game-icons:angel-wings",
+	Construct: "game-icons:robot-golem",
+	Dragon: "game-icons:spiked-dragon-head",
+	Elemental: "mdi:fire",
+	Fey: "game-icons:woman-elf-face",
+	Fiend: "game-icons:evil-fork",
+	Giant: "game-icons:giant",
+	Humanoid: "game-icons:person",
+	Monstrosity: "game-icons:frankenstein-creature",
+	Ooze: "game-icons:melting-ice-cube",
+	Plant: "mdi:leaf",
+	Undead: "game-icons:broken-skull",
+};
 </script>
 
 <template>
 	<div>
 		<v-row density="comfortable">
 			<v-col cols="6">
-				<v-text-field v-model="data.description.name" label="Name" :maxlength="globalLimits.nameLength"
+				<v-text-field
+					v-model="data.description.name" label="Name" :maxlength="globalLimits.nameLength"
 					:min-length="globalLimits.nameMin"
-					:rules="[rules.required(), rules.minLength(globalLimits.nameMin), rules.maxLength(globalLimits.nameLength)]" />
+					:rules="[rules.required(), rules.minLength(globalLimits.nameMin), rules.maxLength(globalLimits.nameLength)]"
+				/>
 			</v-col>
 			<v-col cols="6">
 				<v-text-field v-model="data.description.image" label="Image URL" :rules="[rules.imageLink()]" />
@@ -53,8 +55,10 @@ const creatureTypeIcons: Record<string, string> = {
 				<v-combobox v-model="data.core.size" :items="sizes" label="Size" hide-details />
 			</v-col>
 			<v-col cols="6">
-				<v-combobox v-model="data.core.race" :items="creatureTypes" label="Type" hide-details
-					:item-props="(item) => ({ prependIcon: creatureTypeIcons[item], style: '--v-list-prepend-gap: 8px' })" />
+				<v-combobox
+					v-model="data.core.race" :items="creatureTypes" label="Type" hide-details
+					:item-props="(item) => ({ prependIcon: creatureTypeIcons[item], style: '--v-list-prepend-gap: 8px' })"
+				/>
 			</v-col>
 			<v-col cols="6">
 				<v-combobox v-model="data.description.alignment" :items="alignments" label="Alignment" hide-details />
@@ -82,14 +86,18 @@ const creatureTypeIcons: Record<string, string> = {
 				<v-text-field v-model="data.description.gear" label="Gear" hide-details />
 			</v-col>
 			<v-col cols="6">
-				<v-text-field v-model="data.description.tag" label="Tag"
-					hint="Use this to categorize your creatures on the Bestiary page." persistent-hint />
+				<v-text-field
+					v-model="data.description.tag" label="Tag"
+					hint="Use this to categorize your creatures on the Bestiary page." persistent-hint
+				/>
 			</v-col>
 			<v-col cols="6">
-				<v-checkbox v-model="data.description.isProperNoun" label="Proper noun" color="primary"
+				<v-checkbox
+					v-model="data.description.isProperNoun" label="Proper noun" color="primary"
 					density="compact"
 					:hint="`Toggles display as '${data.description.name}' instead of 'the ${data.description.name}'`"
-					persistent-hint />
+					persistent-hint
+				/>
 			</v-col>
 		</v-row>
 	</div>

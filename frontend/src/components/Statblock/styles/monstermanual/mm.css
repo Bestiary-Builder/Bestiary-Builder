@@ -11,7 +11,6 @@ body .v-card .statblock-outer.monstermanual {
 		color: #4d1e20;
 	}
 
-
 	.statblock-name-container {
 		color: #4d1e20;
 		border-color: #4d1e20;
@@ -19,9 +18,8 @@ body .v-card .statblock-outer.monstermanual {
 	}
 
 	.statblock-core {
-		color: rgb(72, 72, 72)
+		color: rgb(72, 72, 72);
 	}
-
 
 	.feature-container {
 		color: black;
@@ -39,7 +37,7 @@ body .v-card .statblock-outer.monstermanual {
 		}
 
 		.feature-header {
-			color: rgb(72, 72, 72)
+			color: rgb(72, 72, 72);
 		}
 	}
 
@@ -50,7 +48,12 @@ body .v-card .statblock-outer.monstermanual {
 			color: color-mix(in srgb, #4d1e20 30%, red 70%);
 			border-color: color-mix(in srgb, #4d1e20 30%, red 70%);
 		}
-		h1,h2,h3,h4,h5, a {
+		h1,
+		h2,
+		h3,
+		h4,
+		h5,
+		a {
 			color: color-mix(in srgb, hsl(357, 44%, 21%) 30%, red 70%);
 		}
 		hr {

@@ -2,10 +2,11 @@
 import type { Ref } from "vue";
 import type { Spell } from "~/shared";
 import { inject, onMounted, ref } from "vue";
+import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 import { useFetch } from "@/utils/utils";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
-import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
+
 const currentEffect = inject<Ref<Spell>>("currentEffect");
 
 type Spells = { label: string; id: number }[];
@@ -32,8 +33,10 @@ useDataCleanup(currentEffect, ["level", "attackBonus", "castingMod", "parent"]);
 			</v-col>
 
 			<v-col cols="6">
-				<v-autocomplete v-model="currentEffect.id" label="Spell" :items="spells" item-title="label"
-					item-value="id" />
+				<v-autocomplete
+					v-model="currentEffect.id" label="Spell" :items="spells" item-title="label"
+					item-value="id"
+				/>
 			</v-col>
 
 			<v-col cols="12">
@@ -41,10 +44,12 @@ useDataCleanup(currentEffect, ["level", "attackBonus", "castingMod", "parent"]);
 			</v-col>
 
 			<v-col cols="6">
-				<v-select v-model="currentEffect.level" label="Level" :items="[
-					{ title: '(default level)', value: null },
-					...Array.from({ length: 10 }, (_, i) => ({ title: i.toString(), value: i })),
-				]" />
+				<v-select
+					v-model="currentEffect.level" label="Level" :items="[
+						{ title: '(default level)', value: null },
+						...Array.from({ length: 10 }, (_, i) => ({ title: i.toString(), value: i })),
+					]"
+				/>
 			</v-col>
 			<v-col cols="6">
 				<v-text-field v-model="currentEffect.parent" label="Parent Effect" />

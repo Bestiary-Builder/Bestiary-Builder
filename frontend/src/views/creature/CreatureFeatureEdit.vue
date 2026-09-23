@@ -8,12 +8,12 @@ import EditAutomation from "@/components/Automations/EditAutomation.vue";
 import ImportAutomationUtil from "@/components/Automations/ImportAutomationUtil.vue";
 import ImportToCharacter from "@/components/Characters/ImportToCharacter.vue";
 import Editor from "@/components/StatblockEditor/Editor.vue";
+import { activation_type } from "@/components/VisualEditor/util";
 import { useToast } from "@/utils/app/toast";
 import { useRecentPages } from "@/utils/app/useRecentPages";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { globalLimits, parseDescIntoAutomation } from "~/shared";
-import { activation_type } from "@/components/VisualEditor/util";
 
 const $router = useRouter();
 const $route = useRoute();
@@ -40,7 +40,7 @@ onMounted(async () => {
 			return;
 		}
 		await getBestiary();
-		trackVisit($route.path, data.value.description.name)
+		trackVisit($route.path, data.value.description.name);
 		removeToast(toastId);
 		hasImported = true;
 	}
@@ -82,7 +82,6 @@ const unwatch = watch(() => data.value, () => {
 	madeChanges.value = true;
 	unwatch();
 }, { deep: true });
-
 
 watch(() => data.value?.features[type][aid].name, () => {
 	document.title = `${data.value?.features[type][aid].name} | Bestiary Builder`;
@@ -212,7 +211,7 @@ const saveStatblock2 = async (shouldNotify: boolean): Promise<boolean> => {
 		if (toastId)
 			setTimeout(updateToast, 500, toastId, { text: "Saved action!", prependIcon: "mdi-check" });
 		isSavingCreature.value = false;
-		trackVisit($route.path, data.value.description.name)
+		trackVisit($route.path, data.value.description.name);
 		return true;
 	}
 	catch (err) {
@@ -246,18 +245,19 @@ const generateAutomation = async () => {
 	if (!data.value)
 		return;
 
-	const activationType = activation_type[type] ?? 0
+	const activationType = activation_type[type] ?? 0;
 	const result = parseDescIntoAutomation(data.value.features[type][aid].description, data.value.features[type][aid].name, activationType)[0];
 	if (result) {
 		try {
 			data.value.features[type][aid].automation = result;
-			addToast("Generated automation!", { color: "success" })
+			addToast("Generated automation!", { color: "success" });
 		}
 		catch {
 			addToast("Something went wrong when generation automation", { color: "error" });
 		}
-	} else {
-		addToast("Your text could not be parsed into Automation.")
+	}
+	else {
+		addToast("Your text could not be parsed into Automation.");
 	}
 };
 
@@ -332,7 +332,8 @@ const parityOptions = useLocalStorage("featureEditParityOptionsForCreatures", {
 });
 
 watch(() => data.value?.features[type][aid].name, (newName) => {
-	if (!hasImported) return;
+	if (!hasImported)
+		return;
 	if (isVisualEditor.value && parityOptions.value.updateName) {
 		const automation = data.value?.features[type][aid].automation as AttackModel | AttackModel[] | null;
 		if (!automation)
@@ -345,7 +346,8 @@ watch(() => data.value?.features[type][aid].name, (newName) => {
 });
 
 watch(() => data.value?.features[type][aid].description, (newDesc) => {
-	if (!hasImported) return;
+	if (!hasImported)
+		return;
 	if (isVisualEditor.value && parityOptions.value.updateDescription) {
 		const automation = data.value?.features[type][aid].automation as AttackModel | AttackModel[] | null;
 		if (!automation)
@@ -382,50 +384,63 @@ provide("setActionDescription", setDesc);
 </script>
 
 <template>
-	<Breadcrumbs :routes="[
-		{
-			path: `/bestiary/edit/${rawInfo?.bestiaryId}`,
-			text: bestiary?.name || 'Unnamed Bestiary',
-			isCurrent: false
-		},
-		{
-			path: `/creature/edit/${$route.params.id}?pane=5`,
-			text: data?.description.name.substring(0, store.isMobile ? 30 : Infinity) || 'Creature',
-			isCurrent: false
-		},
-		{
-			path: '',
-			text: data?.features[$route.params.type as keyof Features][$route.params.aid as any].name.substring(0, store.isMobile ? 30 : Infinity) || 'Action',
-			isCurrent: true
-		}
-	]">
-		<v-icon-btn v-if="madeChanges && (isOwner || isEditor)" v-tooltip="'Save feature (CTRL+S)'"
+	<Breadcrumbs
+		:routes="[
+			{
+				path: `/bestiary/edit/${rawInfo?.bestiaryId}`,
+				text: bestiary?.name || 'Unnamed Bestiary',
+				isCurrent: false
+			},
+			{
+				path: `/creature/edit/${$route.params.id}?pane=5`,
+				text: data?.description.name.substring(0, store.isMobile ? 30 : Infinity) || 'Creature',
+				isCurrent: false
+			},
+			{
+				path: '',
+				text: data?.features[$route.params.type as keyof Features][$route.params.aid as any].name.substring(0, store.isMobile ? 30 : Infinity) || 'Action',
+				isCurrent: true
+			}
+		]"
+	>
+		<v-icon-btn
+			v-if="madeChanges && (isOwner || isEditor)" v-tooltip="'Save feature (CTRL+S)'"
 			icon="mdi:content-save" text="Save creature" :class="{ inverted: !isSavingCreature }" size="24"
-			:loading="isSavingCreature" @click="saveStatblock2(true)" />
+			:loading="isSavingCreature" @click="saveStatblock2(true)"
+		/>
 		<v-icon-btn
 			v-tooltip="'Generate automation from description. May be incomplete or inaccurate. Only works for basic, to hit attacks.'"
 			icon="fa7-solid:wand-sparkles"
 			text="Generate automation from description. May be incomplete or inaccurate. Only works for basic, to hit attacks."
-			size="24" @click="generateAutomation" />
-		<v-icon-btn v-tooltip="'Change editor'" size="24" icon="mdi:code-block-braces" text="Change editor"
-			@click="EditAutomationRef?.toggleEditor()" />
+			size="24" @click="generateAutomation"
+		/>
+		<v-icon-btn
+			v-tooltip="'Change editor'" size="24" icon="mdi:code-block-braces" text="Change editor"
+			@click="EditAutomationRef?.toggleEditor()"
+		/>
 		<ImportAutomationUtil @load-feature="feature => loadFeature(feature)" />
 		<ImportToCharacter :automation="data?.features[type][aid].automation ?? null" />
-		<v-icon-btn v-if="data && store.isMobile" v-tooltip="'Clear automation'" icon="mdi:delete"
-			text="Clear automation" size="24" @click="data.features[type][aid].automation = {}" />
-		<v-icon-btn v-if="data && store.isMobile" v-tooltip="'Copy automation'" icon="mdi:content-copy"
-			text="Copy automation" size="24" @click="EditAutomationRef?.copyAutomation()" />
+		<v-icon-btn
+			v-if="data && store.isMobile" v-tooltip="'Clear automation'" icon="mdi:delete"
+			text="Clear automation" size="24" @click="data.features[type][aid].automation = {}"
+		/>
+		<v-icon-btn
+			v-if="data && store.isMobile" v-tooltip="'Copy automation'" icon="mdi:content-copy"
+			text="Copy automation" size="24" @click="EditAutomationRef?.copyAutomation()"
+		/>
 	</Breadcrumbs>
 	<div v-if="data" class="content">
 		<v-sheet class="pa-4" color="surface-light" rounded>
 			<v-row>
 				<v-col cols="4">
-					<v-text-field v-model="data.features[type][aid].name" type="text" label="Feature name"
-						:minlength="globalLimits.nameMin" :maxlength="globalLimits.nameLength" hide-details />
+					<v-text-field
+						v-model="data.features[type][aid].name" type="text" label="Feature name"
+						:minlength="globalLimits.nameMin" :maxlength="globalLimits.nameLength" hide-details
+					/>
 					<span v-if="isVisualEditor">
 						<input v-model="parityOptions.updateName" type="checkbox" style="scale: .7; translate: 0 4px">
 						<small style="font-size: x-small;"> <i>Updates the name of the first action in the automation
-								structure to this text while enabled.</i> </small>
+							structure to this text while enabled.</i> </small>
 					</span>
 					<div style="margin-top: 1rem;">
 						<select v-model="toNavigateTo" class="ghost w-100" placeholder="Open other attack">
@@ -445,12 +460,16 @@ provide("setActionDescription", setDesc);
 					<div v-if="!isVisualEditor && showDescriptionButtons" class="mt-4">
 						<b> Descriptions: </b>
 						<span style="color: rgb(var(--v-theme-error))"> Don't match. </span>
-						<p style="text-decoration: underline; font-size: smaller; cursor: pointer;"
-							@click="updateAutomationDescFromFeatureDesc">
+						<p
+							style="text-decoration: underline; font-size: smaller; cursor: pointer;"
+							@click="updateAutomationDescFromFeatureDesc"
+						>
 							Update from feature
 						</p>
-						<p style="text-decoration: underline; font-size: smaller; cursor: pointer"
-							@click="updateFeatureDescFromAutomationDesc">
+						<p
+							style="text-decoration: underline; font-size: smaller; cursor: pointer"
+							@click="updateFeatureDescFromAutomationDesc"
+						>
 							Update from automation
 						</p>
 					</div>
@@ -460,18 +479,18 @@ provide("setActionDescription", setDesc);
 					<span v-if="isVisualEditor" class="sub-action">
 						<input v-model="parityOptions.updateDescription" type="checkbox">
 						<small> <i>
-								Updates the last text node of the first action in
-								the automation structure to this text while enabled.
-							</i> </small>
+							Updates the last text node of the first action in
+							the automation structure to this text while enabled.
+						</i> </small>
 					</span>
 				</v-col>
 			</v-row>
 		</v-sheet>
-		<EditAutomation ref="EditAutomationRef" v-model="data.features[type][aid].automation"
-			v-model:is-visual-editor="isVisualEditor" :name="data.features[type][aid].name" :no-list-attack="false" />
+		<EditAutomation
+			ref="EditAutomationRef" v-model="data.features[type][aid].automation"
+			v-model:is-visual-editor="isVisualEditor" :name="data.features[type][aid].name" :no-list-attack="false"
+		/>
 	</div>
-
-
 </template>
 
 <style scoped lang="less">

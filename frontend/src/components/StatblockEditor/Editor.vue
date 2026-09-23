@@ -11,8 +11,7 @@ const { height = 150 } = defineProps<{ height?: number }>();
 const model = defineModel<string>();
 const editorRef = shallowRef<Monaco.editor.IStandaloneCodeEditor>();
 
-const { monacoTheme } = useThemePersistence()
-
+const { monacoTheme } = useThemePersistence();
 
 async function handleMount(
 	editor: Monaco.editor.IStandaloneCodeEditor,
@@ -77,7 +76,7 @@ function toggleMarkdown(
 
 	const hasMarkers
 		= before === marker
-		&& after === marker;
+			&& after === marker;
 
 	if (hasMarkers) {
 		// Remove markers
@@ -350,15 +349,15 @@ function toggleHeading(
 	);
 }
 
-
 const replaceNewlinesWithSpaces = (editor: Monaco.editor.IStandaloneCodeEditor) => {
 	const model = editor.getModel();
-	if (!model) return;
+	if (!model)
+		return;
 
 	const fullRange = model.getFullModelRange();
-	const newText = model.getValue().replace(/\r\n|\r|\n/g, ' ');
+	const newText = model.getValue().replace(/\r\n|\r|\n/g, " ");
 
-	editor.executeEdits('replace-newlines', [
+	editor.executeEdits("replace-newlines", [
 		{
 			range: fullRange,
 			text: newText,
@@ -366,23 +365,21 @@ const replaceNewlinesWithSpaces = (editor: Monaco.editor.IStandaloneCodeEditor) 
 	]);
 };
 
-
 const wrapper = useTemplateRef("wrapper");
 const { width } = useElementSize(wrapper);
 watchDebounced(width, async () => {
 	editorRef.value?.layout();
 }, { debounce: 500, maxWait: 1000 },);
 
-
-const $route = useRoute()
+const $route = useRoute();
 
 const editorOptions: Monaco.editor.IStandaloneEditorConstructionOptions = {
 	// Highlighting (from before)
 	selectionHighlight: false,
-	occurrencesHighlight: 'off',
+	occurrencesHighlight: "off",
 
 	// Chrome / gutter
-	lineNumbers: 'off',
+	lineNumbers: "off",
 	folding: false,
 	lineNumbersMinChars: 0,
 	overviewRulerLanes: 0,
@@ -390,49 +387,48 @@ const editorOptions: Monaco.editor.IStandaloneEditorConstructionOptions = {
 	overviewRulerBorder: false,
 	minimap: { enabled: false },
 	scrollBeyondLastLine: false,
-	renderLineHighlight: 'none',
+	renderLineHighlight: "none",
 
 	// Wrapping (markdown should wrap like prose)
-	wordWrap: 'on',
-	wrappingIndent: 'none',
+	wordWrap: "on",
+	wrappingIndent: "none",
 
 	// Autocomplete / IntelliSense noise
 	quickSuggestions: false,
 	suggestOnTriggerCharacters: false,
-	wordBasedSuggestions: 'off',
+	wordBasedSuggestions: "off",
 	parameterHints: { enabled: false },
 	hover: { enabled: "off" },
 	codeLens: false,
 
 	// Code-editor auto-behaviors that feel wrong in prose
-	autoClosingBrackets: 'never',
-	autoClosingQuotes: 'never',
-	autoSurround: 'never',
-	matchBrackets: 'never',
+	autoClosingBrackets: "never",
+	autoClosingQuotes: "never",
+	autoSurround: "never",
+	matchBrackets: "never",
 	bracketPairColorization: { enabled: false },
 	guides: { indentation: false, bracketPairs: false },
 
 	// Visual noise
-	renderWhitespace: 'none',
+	renderWhitespace: "none",
 	renderControlCharacters: false,
 	unicodeHighlight: { ambiguousCharacters: false, invisibleCharacters: false },
 
 	// Misc
 	contextmenu: true,
-	scrollbar: { vertical: 'auto', horizontal: 'hidden' },
-
-
+	scrollbar: { vertical: "auto", horizontal: "hidden" },
 
 	fontFamily: "'Roboto Mono'",
 	disableMonospaceOptimizations: true,
 	fontSize: 13,
-}
+};
 </script>
 
 <template>
-
-	<div ref="wrapper" class="monaco-wrapper-thing"
-		:style="$route.path.startsWith('/automation/view') || $route.path.startsWith('/creature/view') ? { opacity: 'var(--v-disabled-opacity)' } : {}">
+	<div
+		ref="wrapper" class="monaco-wrapper-thing"
+		:style="$route.path.startsWith('/automation/view') || $route.path.startsWith('/creature/view') ? { opacity: 'var(--v-disabled-opacity)' } : {}"
+	>
 		<div class="button-container">
 			<span> <b> Description</b></span>
 			<v-divider vertical />
@@ -440,35 +436,44 @@ const editorOptions: Monaco.editor.IStandaloneEditorConstructionOptions = {
 			<v-icon-btn size="20" icon="mdi:format-italic" text="Italic" @click="toggleMarkdown(editorRef!, '*')" />
 			<v-divider vertical />
 
-			<v-icon-btn size="20" icon="mdi:format-list-bulleted" text="List"
-				@click="toggleLinePrefix(editorRef!, '* ')" />
-			<v-icon-btn size="20" icon="mdi:format-list-numbered" text="Ordered list"
-				@click="toggleOrderedList(editorRef!)" />
-			<v-icon-btn v-tooltip="'Makes everything but the first line indented as a \'hanging\' list.'" size="20"
+			<v-icon-btn
+				size="20" icon="mdi:format-list-bulleted" text="List"
+				@click="toggleLinePrefix(editorRef!, '* ')"
+			/>
+			<v-icon-btn
+				size="20" icon="mdi:format-list-numbered" text="Ordered list"
+				@click="toggleOrderedList(editorRef!)"
+			/>
+			<v-icon-btn
+				v-tooltip="'Makes everything but the first line indented as a \'hanging\' list.'" size="20"
 				icon="mdi-format-indent-increase" text="Ordered list"
-				@click="toggleLineSuffix(editorRef!, ' {.hanging}')" />
+				@click="toggleLineSuffix(editorRef!, ' {.hanging}')"
+			/>
 			<v-divider vertical />
 			<v-icon-btn size="20" icon="mdi:format-header-1" text="Heading 1" @click="toggleHeading(editorRef!, 1)" />
 			<v-icon-btn size="20" icon="mdi:format-header-2" text="Heading 2" @click="toggleHeading(editorRef!, 2)" />
 			<v-icon-btn size="20" icon="mdi:format-header-3" text="Heading 3" @click="toggleHeading(editorRef!, 3)" />
 			<v-icon-btn size="20" icon="mdi:format-header-4" text="Heading 4" @click="toggleHeading(editorRef!, 4)" />
 			<v-divider vertical />
-			<v-icon-btn size="20" icon="octicon:no-newline" text="Remove newlines"
-				v-tooltip="'Replace all new lines with spaces. Helpful when copying from PDFs!'"
-				@click="replaceNewlinesWithSpaces(editorRef!)" />
+			<v-icon-btn
+				v-tooltip="'Replace all new lines with spaces. Helpful when copying from PDFs!'" size="20" icon="octicon:no-newline"
+				text="Remove newlines"
+				@click="replaceNewlinesWithSpaces(editorRef!)"
+			/>
 		</div>
 		<v-divider />
 		<div class="wrapper">
-			<VueMonacoEditor v-model:value="model" :theme="monacoTheme" :options="editorOptions"
+			<VueMonacoEditor
+				v-model:value="model" :theme="monacoTheme" :options="editorOptions"
 				class="description-editor" :height="`${height}px`" width="100%" language="markdown"
-				@mount="handleMount" />
+				@mount="handleMount"
+			/>
 		</div>
 	</div>
-
 </template>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap");
 
 .button-container {
 	display: flex;
@@ -492,10 +497,8 @@ const editorOptions: Monaco.editor.IStandaloneEditorConstructionOptions = {
 
 <style lang="less">
 .monaco-wrapper-thing {
-
 	.monaco-editor {
 		min-height: 100px;
-
 	}
 
 	.monaco-editor,
@@ -510,6 +513,5 @@ const editorOptions: Monaco.editor.IStandaloneEditorConstructionOptions = {
 
 .description-editor {
 	border: 1px solid rgb(var(--v-theme-surface));
-
 }
 </style>

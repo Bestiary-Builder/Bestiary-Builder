@@ -4,11 +4,10 @@ import { createRulesPlugin } from "vuetify/labs/rules";
 import AvraeLogo from "@/assets/svg/Avrae_Logo.svg";
 import BestiaryBuilderLogo from "@/assets/svg/logo.svg";
 import iconifyAdapter from "./utils/app/icon";
-import "vuetify/styles";
 import { store } from "./utils/store";
+import "vuetify/styles";
 
-
-const savedTheme = localStorage.getItem('app-theme')
+const savedTheme = localStorage.getItem("app-theme");
 export const vuetify = createVuetify({
 	defaults: {
 		VTextField: {
@@ -90,28 +89,28 @@ export const vuetify = createVuetify({
 
 	},
 	theme: {
-		defaultTheme: !store.user ? 'dark' : (savedTheme ? savedTheme : 'dark'),
+		defaultTheme: !store.user ? "dark" : (savedTheme || "dark"),
 		transition: true,
 		themes: {
 			dark: {
 				dark: true,
 				colors: {
-					"primary": "#ff4500",
+					primary: "#ff4500",
 				},
 			},
 			light: {
 				dark: false,
 				colors: {
-					"primary": "#ff4500",
-					"surface": "#d5dbd6",
+					primary: "#ff4500",
+					surface: "#d5dbd6",
 				},
 			},
 			custom: {
 				dark: true,
 				colors: {
 					"primary": "#FF46A2",
-					'background': '#121212',
-					'surface': '#212121',
+					"background": "#121212",
+					"surface": "#212121",
 					"surface-light": "#424242"
 				},
 			},

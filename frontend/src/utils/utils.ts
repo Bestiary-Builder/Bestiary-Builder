@@ -27,8 +27,8 @@ export async function useFetch<Type>(url: string, method: "GET" | "POST" = "GET"
 			},
 			body: body
 				? JSON.stringify({
-					data: body
-				})
+						data: body
+					})
 				: undefined
 		}).then(async response => handleApiResponse<Type>(response));
 		return result;

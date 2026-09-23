@@ -11,7 +11,6 @@ body .v-card .statblock-outer.custom {
 		color: var(--primary);
 	}
 
-
 	.statblock-name-container {
 		color: var(--primary);
 		border-color: var(--primary);
@@ -20,7 +19,6 @@ body .v-card .statblock-outer.custom {
 	.statblock-core {
 		color: var(--subtle);
 	}
-
 
 	.feature-container {
 		color: var(--text-color);
@@ -38,7 +36,12 @@ body .v-card .statblock-outer.custom {
 			color: var(--primary);
 			border-color: var(--primary);
 		}
-		h1,h2,h3,h4,h5, a {
+		h1,
+		h2,
+		h3,
+		h4,
+		h5,
+		a {
 			color: var(--primary);
 		}
 		hr {
@@ -47,7 +50,7 @@ body .v-card .statblock-outer.custom {
 	}
 
 	.feature-header {
-		color: var(--subtle)
+		color: var(--subtle);
 	}
 
 	h1,
@@ -71,11 +74,11 @@ body .v-card .statblock-outer.custom {
 	}
 
 	.stat-table:first-of-type {
-        thead th {
-            color: var(--subtle)
-        }
+		thead th {
+			color: var(--subtle);
+		}
 		tbody > tr > td {
-			background-color: var(--table-1)
+			background-color: var(--table-1);
 		}
 
 		tbody > tr > th,
@@ -85,9 +88,9 @@ body .v-card .statblock-outer.custom {
 	}
 
 	.stat-table:nth-of-type(2) {
-        thead th {
-            color: var(--subtle)
-        }
+		thead th {
+			color: var(--subtle);
+		}
 		tbody > tr > td {
 			background-color: var(--table-3);
 		}

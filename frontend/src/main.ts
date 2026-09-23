@@ -30,7 +30,6 @@ app.use(vuetifyRulesPlugin);
 app.component("DropdownMenu", DropdownMenu);
 app.component("Breadcrumbs", Breadcrumbs);
 
-
 // error handling
 if (import.meta.env.MODE === "production")
 	import("./utils/app/error").then().catch(() => { });

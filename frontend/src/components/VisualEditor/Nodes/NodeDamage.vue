@@ -2,10 +2,10 @@
 import type { Ref } from "vue";
 import type { Damage } from "~/shared";
 import { inject, onBeforeUnmount, watch } from "vue";
+import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 import HigherLevels from "./shared/HigherLevels.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
-import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 
 const currentEffect = inject<Ref<Damage>>("currentEffect");
 
@@ -44,18 +44,24 @@ useDataCleanup(currentEffect, ["overheal", "cantripScale", "fixedValue"]);
 			</v-col>
 
 			<v-col cols="6">
-				<v-checkbox v-model="currentEffect.fixedValue" label="Whether this roll should ignore the -d argument and
-					damage bonus effects." hide-details />
+				<v-checkbox
+					v-model="currentEffect.fixedValue" label="Whether this roll should ignore the -d argument and
+					damage bonus effects." hide-details
+				/>
 			</v-col>
 
 			<v-col cols="6">
-				<v-checkbox v-model="currentEffect.overheal"
+				<v-checkbox
+					v-model="currentEffect.overheal"
 					label="Whether this damage should go through if it exceeds the targets hit point maximum."
-					hide-details />
+					hide-details
+				/>
 			</v-col>
 			<v-col cols="6">
-				<v-checkbox v-model="currentEffect.cantripScale" label="Whether this roll should scale like a cantrip."
-					hide-details />
+				<v-checkbox
+					v-model="currentEffect.cantripScale" label="Whether this roll should scale like a cantrip."
+					hide-details
+				/>
 			</v-col>
 
 			<v-col cols="6">

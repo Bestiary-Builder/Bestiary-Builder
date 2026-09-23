@@ -50,27 +50,25 @@ export const getAvraeCharacterByUpstream = async (upstream: string) => {
 	return null;
 };
 
-
-
 export const buildCounterCopyCommand = (consumables: AutomationConsumables | null) => {
 	let output = "";
 	for (const consumable of consumables || []) {
 		output += buildCounterOutput(consumable);
 	}
-	return output
-}
+	return output;
+};
 
 export const buildCounterOutput = (consumable: AutomationConsumable) => {
 	let output = "";
-	output += `\n!cc create "${consumable.name}"`
-	output += consumable.minv ? ` -min "${consumable.minv}"` : ''
-	output += consumable.maxv ? ` -max "${consumable.maxv}"` : ''
-	output += consumable.desc ? ` -desc "${consumable.desc}"` : ''
-	output += consumable.title ? ` -title "${consumable.title}"` : ''
-	output += consumable.value ? ` -value "${consumable.value}"` : ''
-	output += consumable.reset ? ` -reset "${consumable.reset}"` : ''
-	output += consumable.reset_to ? ` -resetto "${consumable.reset_to}"` : ''
-	output += consumable.reset_by ? ` -resetby "${consumable.reset_by}"` : ''
-	output += consumable.display_type ? ` -type "${consumable.display_type}"` : ''
-	return output
-}
+	output += `\n!cc create "${consumable.name}"`;
+	output += consumable.minv ? ` -min "${consumable.minv}"` : "";
+	output += consumable.maxv ? ` -max "${consumable.maxv}"` : "";
+	output += consumable.desc ? ` -desc "${consumable.desc}"` : "";
+	output += consumable.title ? ` -title "${consumable.title}"` : "";
+	output += consumable.value ? ` -value "${consumable.value}"` : "";
+	output += consumable.reset ? ` -reset "${consumable.reset}"` : "";
+	output += consumable.reset_to ? ` -resetto "${consumable.reset_to}"` : "";
+	output += consumable.reset_by ? ` -resetby "${consumable.reset_by}"` : "";
+	output += consumable.display_type ? ` -type "${consumable.display_type}"` : "";
+	return output;
+};

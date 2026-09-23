@@ -3,10 +3,10 @@ import type { AvraeCharacter } from "../Characters/utils";
 import type { FeatureEntity, Id } from "~/shared";
 import { computed, reactive, ref, watch } from "vue";
 import { useToast } from "@/utils/app/toast";
+import { useLazyAsync, useLazyOptions } from "@/utils/app/useLazyOptions";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { getAvraeCharacterByUpstream, getAvraeCharacters } from "../Characters/utils";
-import { useLazyAsync, useLazyOptions } from "@/utils/app/useLazyOptions";
 
 const emit = defineEmits<{
 	(e: "loadFeature", feature: FeatureEntity): void;
@@ -17,11 +17,11 @@ const isOpen = ref(false);
 const { addToast } = useToast();
 
 type AutomationTypes = "automation" | "srd-features/2014" | "srd-features/2024";
-type myAutomationSkeletonGroup = {
+interface myAutomationSkeletonGroup {
 	[key: string]: {
 		name: string;
 		id: Id;
-	}[]
+	}[];
 }
 
 const fetchList = async <T>(apiPath: string): Promise<T> => {
@@ -36,12 +36,12 @@ const onListError = (error: unknown) =>
 	addToast(error instanceof Error ? error.message : String(error), { color: "error" });
 
 const srdFeatures = reactive(useLazyOptions<string>(
-	() => fetchList(`srd-features/${store.user?.SRDVersion === "SRD_2024" ? "2024" : "2014"}/list`),
+	async () => fetchList(`srd-features/${store.user?.SRDVersion === "SRD_2024" ? "2024" : "2014"}/list`),
 	{ onError: onListError },
 ));
 
 const myAutomation = reactive(useLazyAsync<myAutomationSkeletonGroup>(
-	() => fetchList("my-automations/list"),
+	async () => fetchList("my-automations/list"),
 	{},
 	{ onError: onListError },
 ));
@@ -87,33 +87,37 @@ watch(() => selectedAttack.value, () => {
 });
 
 const groupedAutomatedItems = computed(() => {
-	const output = []
+	const output = [];
 
 	for (const [collection, items] of Object.entries(myAutomation.data)) {
-		output.push({ type: 'subheader', title: collection })
+		output.push({ type: "subheader", title: collection });
 		for (const item of items) {
-			output.push({ title: item.name, id: item.id })
+			output.push({ title: item.name, id: item.id });
 		}
 	}
-	return output
-})
+	return output;
+});
 </script>
 
 <template>
-	<v-icon-btn v-tooltip="'Import Feature'" icon="mdi:database" text="Import Action" size="24"
-		@click="isOpen = true" />
+	<v-icon-btn
+		v-tooltip="'Import Feature'" icon="mdi:database" text="Import Action" size="24"
+		@click="isOpen = true"
+	/>
 
 	<v-dialog v-model="isOpen" max-width="700">
 		<v-card class="pa-4" title="Import Action">
 			<v-card-text>
 				<v-row density="compact">
 					<v-col cols="12">
-						<v-autocomplete :items="srdFeatures.items" :loading="srdFeatures.loading"
+						<v-autocomplete
+							:items="srdFeatures.items" :loading="srdFeatures.loading"
 							label="Import SRD Feature" variant="solo-filled" class="w-100 pb-3" clearable
-							@update:menu="srdFeatures.handleMenuOpen"
-							@update:model-value="selected => (selectAndLoad(`srd-features/${store.user?.SRDVersion === 'SRD_2024' ? '2024' : '2014'}`, selected || ''))"
 							:hint="`SRD ${store.user?.SRDVersion === 'SRD_2024' ? '2024' : '2014'}. Change in settings.`"
-							persistent-hint prepend-inner-icon="mdi:database">
+							persistent-hint
+							prepend-inner-icon="mdi:database"
+							@update:menu="srdFeatures.handleMenuOpen" @update:model-value="selected => (selectAndLoad(`srd-features/${store.user?.SRDVersion === 'SRD_2024' ? '2024' : '2014'}`, selected || ''))"
+						>
 							<template #item="{ props, item }">
 								<v-list-item density="compact" style="min-height: 28px">
 									<v-list-item-title v-bind="props">
@@ -131,11 +135,13 @@ const groupedAutomatedItems = computed(() => {
 						</v-autocomplete>
 					</v-col>
 					<v-col cols="12">
-						<v-autocomplete :items="groupedAutomatedItems" :loading="myAutomation.loading"
+						<v-autocomplete
+							:items="groupedAutomatedItems" :loading="myAutomation.loading"
 							item-title="title" label="Select From Automation Collections" variant="solo-filled"
-							@update:menu="myAutomation.handleMenuOpen" return-object
+							return-object prepend-inner-icon="$automationCollection"
+							@update:menu="myAutomation.handleMenuOpen"
 							@update:model-value="(selected) => selected && selectAndLoad('automation', selected.title, selected.id)"
-							prepend-inner-icon="$automationCollection">
+						>
 							<template #item="{ props, item }">
 								<v-list-item density="compact" style="min-height: 28px">
 									<v-list-item-title v-bind="props">
@@ -154,10 +160,12 @@ const groupedAutomatedItems = computed(() => {
 					</v-col>
 					<v-col cols="12">
 						<div v-if="AvraeToken">
-							<v-select v-model="selectedCharacter" :items="avraeCharacters.items"
+							<v-select
+								v-model="selectedCharacter" :items="avraeCharacters.items"
 								:loading="avraeCharacters.loading" item-title="name" item-value="upstream"
-								label="Import From Character" hide-details @update:menu="avraeCharacters.handleMenuOpen"
-								prepend-inner-icon="$avrae">
+								label="Import From Character" hide-details prepend-inner-icon="$avrae"
+								@update:menu="avraeCharacters.handleMenuOpen"
+							>
 								<template #item="{ props, item }">
 									<v-list-item density="compact" style="min-height: 28px" v-bind="props">
 										<v-list-item-title>
@@ -184,10 +192,12 @@ const groupedAutomatedItems = computed(() => {
 						</div>
 					</v-col>
 					<v-col cols="12">
-						<v-select v-if="selectedCharacterData" v-model="selectedAttack" variant="solo-filled"
+						<v-select
+							v-if="selectedCharacterData" v-model="selectedAttack" variant="solo-filled"
 							:items="selectedCharacterData.overrides.attacks" class="mt-4" item-title="name"
 							label="Choose Character Attack" return-object
-							@update:model-value="(selected) => selected && emit('loadFeature', { name: selected.name, description: '', automation: selected })" />
+							@update:model-value="(selected) => selected && emit('loadFeature', { name: selected.name, description: '', automation: selected })"
+						/>
 					</v-col>
 				</v-row>
 			</v-card-text>

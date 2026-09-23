@@ -1,20 +1,20 @@
 <script setup lang="ts">
+import type * as Monaco from "monaco-editor";
 import type { AutomationDocumentation } from "~/shared";
-import { computed, onMounted, ref, watch } from "vue";
-import { useFetch } from "@/utils/utils";
 import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
-import Markdown from "../Global/Markdown.vue";
-import type * as Monaco from 'monaco-editor';
+import { computed, onMounted, ref, watch } from "vue";
 import { useThemePersistence } from "@/utils/app/theme";
+import { useFetch } from "@/utils/utils";
+import Markdown from "../Global/Markdown.vue";
 
 // Documentation helpers
 const docu = ref<AutomationDocumentation>({});
 const model = defineModel<string>();
 
-const internalValue = ref(model.value)
+const internalValue = ref(model.value);
 watch(() => model.value, (newValue) => {
-	internalValue.value = newValue
-})
+	internalValue.value = newValue;
+});
 
 onMounted(async () => {
 	const { success, data } = await useFetch<AutomationDocumentation>("/api/automationDocumentation");
@@ -28,10 +28,10 @@ const currentDocu = computed(() => {
 	return docu.value[internalValue.value];
 });
 
-const { monacoTheme } = useThemePersistence()
+const { monacoTheme } = useThemePersistence();
 
 const editorOptions: Monaco.editor.IStandaloneEditorConstructionOptions = {
-	wordWrap: 'on',
+	wordWrap: "on",
 	minimap: { enabled: false },
 	automaticLayout: true,
 	readOnly: true,
@@ -40,7 +40,7 @@ const editorOptions: Monaco.editor.IStandaloneEditorConstructionOptions = {
 	suggestOnTriggerCharacters: false,
 	parameterHints: { enabled: false },
 	hover: { enabled: "off" },
-}
+};
 
 const options = [
 	{ title: "Target", value: "target" },
@@ -61,22 +61,27 @@ const options = [
 	{ title: "Use Counter", value: "counter" },
 	{ title: "Cast Spell", value: "spell" },
 	{ title: "Check", value: "check" },
-]
+];
 </script>
 
 <template>
 	<div class="documentation-container">
-		<v-select :items="options" v-model="internalValue" label="Choose option to view" density="comfortable"
-			hide-details variant="underlined" />
+		<v-select
+			v-model="internalValue" :items="options" label="Choose option to view" density="comfortable"
+			hide-details variant="underlined"
+		/>
 		<div v-if="currentDocu" class="docs">
 			<Markdown class="small" :text="currentDocu.desc" />
 			<div>
 				See full documentation <a
 					:href="`https://avrae.readthedocs.io/en/stable/automation_ref.html#${currentDocu.url}`"
-					target="_blank">here</a>.
-				<VueMonacoEditor v-if="currentDocu?.ts"
+					target="_blank"
+				>here</a>.
+				<VueMonacoEditor
+					v-if="currentDocu?.ts"
 					:value="`// Values denoted with an ? are optional.\ninterface ${currentDocu.class} ${currentDocu.ts}`"
-					:theme="monacoTheme" :options="editorOptions" language="typescript" height="200px" />
+					:theme="monacoTheme" :options="editorOptions" language="typescript" height="200px"
+				/>
 			</div>
 			<div v-if="currentDocu?.opt">
 				<hr>

@@ -17,7 +17,6 @@ const user = useFetch<User>("/api/user").then(async (result) => {
 	}
 });
 
-
 const { width } = useWindowSize();
 
 watch(width, () => {
@@ -25,6 +24,7 @@ watch(width, () => {
 });
 
 export const store = reactive({
+	// eslint-disable-next-line antfu/no-top-level-await
 	user: await user,
 	isMobile: width.value < 900,
 });

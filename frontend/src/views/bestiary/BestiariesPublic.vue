@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { bestiaryTags, type BestiaryExtended, type BestiaryWithCount } from "~/shared";
+import type { BestiaryExtended, BestiaryWithCount } from "~/shared";
 import { refDebounced } from "@vueuse/core";
 import { onMounted, ref, watch } from "vue";
 import CollectionTile from "@/components/Collections/CollectionTile.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { useToast } from "@/utils/app/toast";
-import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
+import { bestiaryTags } from "~/shared";
 
 onMounted(async () => {
 	const toastId = addToast("Loading...", { loading: true });
@@ -76,15 +76,19 @@ watch(debouncedSearch, async () => searchBestiaries());
 </script>
 
 <template>
-	<Breadcrumbs :routes="[
-		{
-			path: '',
-			text: 'Public Bestiaries',
-			isCurrent: true
-		}
-	]">
-		<select v-model="viewMode" aria-label="Select public bestiary list mode"
-			name="Select public bestiary list mode">
+	<Breadcrumbs
+		:routes="[
+			{
+				path: '',
+				text: 'Public Bestiaries',
+				isCurrent: true
+			}
+		]"
+	>
+		<select
+			v-model="viewMode" aria-label="Select public bestiary list mode"
+			name="Select public bestiary list mode"
+		>
 			<option>Recent</option>
 			<option>Popular</option>
 			<option>Bookmarked</option>
@@ -92,15 +96,19 @@ watch(debouncedSearch, async () => searchBestiaries());
 
 		<DropdownMenu>
 			<template #activator="{ props }">
-				<v-icon-btn v-tooltip="'Search bestiaries'" icon="mdi:magnify" v-bind="props" text="Search bestiaries"
-					size="24" />
+				<v-icon-btn
+					v-tooltip="'Search bestiaries'" icon="mdi:magnify" v-bind="props" text="Search bestiaries"
+					size="24"
+				/>
 			</template>
 			<v-card min-width="300" class="text-center pb-2" title="Search bestiaries">
 				<v-spacer />
 				<v-card-text>
 					<v-text-field v-model="search" label="Search text" />
-					<v-select v-model="selectedTags" label="Select Tags" multiple :items="bestiaryTags" chips
-						closable-chips />
+					<v-select
+						v-model="selectedTags" label="Select Tags" multiple :items="bestiaryTags" chips
+						closable-chips
+					/>
 				</v-card-text>
 			</v-card>
 		</DropdownMenu>

@@ -3,13 +3,13 @@
 import { fileURLToPath, URL } from "node:url";
 import vue from "@vitejs/plugin-vue";
 
+import { visualizer } from "rollup-plugin-visualizer";
 import { defineConfig } from "vite";
 import Pages from "vite-plugin-pages";
 import generateSitemap from "vite-plugin-pages-sitemap";
+import vuetify from "vite-plugin-vuetify";
 import rawloader from "vite-raw-plugin";
 import svgLoader from "vite-svg-loader";
-import vuetify from 'vite-plugin-vuetify'
-import { visualizer } from 'rollup-plugin-visualizer';
 
 // @ts-expect-error Magic
 import { routes } from "../shared/";

@@ -1,14 +1,14 @@
 <script setup lang="ts">
+import { useLocalStorage } from "@vueuse/core";
 import markdownit from "markdown-it";
-import anchor from "markdown-it-anchor";
 
+import anchor from "markdown-it-anchor";
 import markdownItAttrs from "markdown-it-attrs";
 import { nextTick, onMounted, ref, watch } from "vue";
-import { useRoute } from "vue-router";
 
-import { prefersReducedMotion } from "@/utils/utils";
+import { useRoute } from "vue-router";
 import { latestChangelogVersion } from "@/utils/constants";
-import { useLocalStorage } from "@vueuse/core";
+import { prefersReducedMotion } from "@/utils/utils";
 
 const props = defineProps<{ filePath: string }>();
 const dataFile = ref("");
@@ -27,8 +27,7 @@ onMounted(() => {
 		window.scrollTo({ top: 0, behavior: "instant" });
 });
 
-
-const changeLogVersionLastViewed = useLocalStorage('changeLogVersionLastViewed', '')
+const changeLogVersionLastViewed = useLocalStorage("changeLogVersionLastViewed", "");
 
 watch(
 	() => route.fullPath,
@@ -45,22 +44,23 @@ watch(
 			}
 		}).catch(() => { });
 
-		if (route.path === '/changelog') {
+		if (route.path === "/changelog") {
 			changeLogVersionLastViewed.value = latestChangelogVersion;
 		}
-
 	},
 	{ immediate: true }
 );
 </script>
 
 <template>
-	<Breadcrumbs :routes="[
-		{
-			path: '',
-			text: $route.name as string ?? 'Name not found',
-			isCurrent: true
-		}
-	]" />
+	<Breadcrumbs
+		:routes="[
+			{
+				path: '',
+				text: $route.name as string ?? 'Name not found',
+				isCurrent: true
+			}
+		]"
+	/>
 	<div class="content markdown less-wide" v-html="md.render(dataFile)" />
 </template>

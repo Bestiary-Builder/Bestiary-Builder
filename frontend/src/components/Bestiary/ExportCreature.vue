@@ -2,9 +2,9 @@
 import type { Statblock } from "~/shared";
 import { useRoute } from "vue-router";
 import { getUmami } from "@/utils/app/analytics";
+import { downloadFile } from "@/utils/app/export";
 import { useToast } from "@/utils/app/toast";
 import { useFetch } from "@/utils/utils";
-import { downloadFile } from "@/utils/app/export";
 
 const { data } = defineProps<{ data: Statblock }>();
 const { addToast, removeToast, updateToast } = useToast();
@@ -19,7 +19,7 @@ const exportStatblockToClipBoard = async () => {
 
 const exportStatblockToFile = async () => {
 	void getUmami()?.track("Export statblock to file");
-	downloadFile(data, `${data.description.name} from Bestiary Builder`)
+	downloadFile(data, `${data.description.name} from Bestiary Builder`);
 };
 
 const exportHomebrewery = async () => {
@@ -56,10 +56,8 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 	el.style = `width: ${type === "2x1 wide" ? "1200" : "800"}px; column-count: ${type === "1x1" ? "1" : "2"};`;
 	el.classList.add("to-print");
 
-
-	let canvas;
-	const { default: html2canvas } = await import('html2canvas-pro');
-	canvas = await html2canvas(el, { scale: 2, allowTaint: true, logging: false });
+	const { default: html2canvas } = await import("html2canvas-pro");
+	const canvas = await html2canvas(el, { scale: 2, allowTaint: true, logging: false });
 
 	const image = canvas.toDataURL("image/jpeg");
 
@@ -78,8 +76,10 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 <template>
 	<v-dialog max-width="400">
 		<template #activator="{ props }">
-			<v-icon-btn v-tooltip="'Export creature'" icon="mdi:export" label="Export Creature" v-bind="props"
-				size="24" />
+			<v-icon-btn
+				v-tooltip="'Export creature'" icon="mdi:export" label="Export Creature" v-bind="props"
+				size="24"
+			/>
 		</template>
 
 		<template #default>

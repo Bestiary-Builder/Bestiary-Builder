@@ -3,12 +3,11 @@ import type { Ref } from "vue";
 import type { PassiveEffectDef } from "./passiveEffect";
 import type { IEffect } from "~/shared";
 import { computed, inject, ref } from "vue";
-import { useRules } from "vuetify/labs/rules";
+import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 import Editor from "@/components/StatblockEditor/Editor.vue";
 import SectionHeader from "../shared/SectionHeader.vue";
 import { useDataCleanup } from "../shared/utils";
 import { PASSIVE_EFFECTS } from "./passiveEffect";
-import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 
 const currentEffect = inject<Ref<IEffect>>("currentEffect");
 
@@ -18,7 +17,7 @@ const filteredPassiveEffects = computed(() => {
 	return PASSIVE_EFFECTS.filter(x => !Object.keys(currentEffect.value.effects as any).includes(x.value));
 });
 
-const newPassiveEffect = ref<null | PassiveEffectDef>()
+const newPassiveEffect = ref<null | PassiveEffectDef>();
 const addNewPassiveEffect = (effect: PassiveEffectDef | null) => {
 	if (effect === null)
 		return;
@@ -32,7 +31,7 @@ const addNewPassiveEffect = (effect: PassiveEffectDef | null) => {
 		// @ts-expect-error already checked for lists..
 		currentEffect!.value.effects[effect.value] = "1";
 
-	newPassiveEffect.value = null
+	newPassiveEffect.value = null;
 };
 
 const getEffectData = (value: string) => {
@@ -70,8 +69,6 @@ const addAttack = () => {
 };
 
 useDataCleanup(currentEffect, ["end", "tick_on_caster", "conc", "desc", "save_as", "parent", "target_self", "stacking", "hidden"], { effects: PASSIVE_EFFECTS.map(x => x.value) });
-
-const rules = useRules();
 
 interface EffectOption {
 	label: string;
@@ -124,12 +121,16 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 				<v-checkbox v-model="currentEffect.end" label="Ticks on end of turn." hide-details density="compact" />
 			</v-col>
 			<v-col cols="6">
-				<v-checkbox v-model="currentEffect.tick_on_caster" label="Ticks on Caster rather than the Target."
-					hide-details density="compact" />
+				<v-checkbox
+					v-model="currentEffect.tick_on_caster" label="Ticks on Caster rather than the Target."
+					hide-details density="compact"
+				/>
 			</v-col>
 			<v-col cols="6">
-				<v-checkbox v-model="currentEffect.conc" label="Requires concentration." hide-details
-					density="compact" />
+				<v-checkbox
+					v-model="currentEffect.conc" label="Requires concentration." hide-details
+					density="compact"
+				/>
 			</v-col>
 		</v-row>
 
@@ -139,11 +140,12 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 				<div v-if="getInputType(key) !== 'list'">
 					<div class="v-input v-input--horizontal v-input--center-affix ">
 						<div class="v-input__control">
-							<TypeHintedEditor :id="key" v-model="(currentEffect as any).effects[key]"
+							<TypeHintedEditor
+								:id="key" v-model="(currentEffect as any).effects[key]"
 								:label="getEffectData(key)?.label || ''"
-								:is-annotated-string="getInputType(key) === 'annotatedstring'">
-								<template #append>
-								</template>
+								:is-annotated-string="getInputType(key) === 'annotatedstring'"
+							>
+								<template #append />
 							</TypeHintedEditor>
 						</div>
 
@@ -157,8 +159,10 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 										Are you sure you want to delete<br> <b>{{ getEffectData(key)?.label }}</b>?
 									</v-card-text>
 									<v-card-actions>
-										<v-btn size="large" color="error" class="w-100"
-											@click="delete currentEffect.effects![key]">
+										<v-btn
+											size="large" color="error" class="w-100"
+											@click="delete currentEffect.effects![key]"
+										>
 											Delete
 										</v-btn>
 									</v-card-actions>
@@ -168,10 +172,12 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 					</div>
 				</div>
 				<div v-else>
-					<v-combobox v-model="effectValueFor(key).value" :label="getEffectData(key)?.label || ''"
+					<v-combobox
+						v-model="effectValueFor(key).value" :label="getEffectData(key)?.label || ''"
 						:items="getEffectData(key)?.defaultOptions" item-title="label" item-value="value"
 						:multiple="getEffectData(key)?.isList" :chips="getEffectData(key)?.isList"
-						:closable-chips="getEffectData(key)?.isList" variant="solo">
+						:closable-chips="getEffectData(key)?.isList" variant="solo"
+					>
 						<template #append>
 							<DropdownMenu>
 								<template #activator="{ props }">
@@ -182,8 +188,10 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 										Are you sure you want to delete<br> <b>{{ getEffectData(key)?.label }}</b>?
 									</v-card-text>
 									<v-card-actions>
-										<v-btn size="large" color="error" class="w-100"
-											@click="delete currentEffect.effects![key]">
+										<v-btn
+											size="large" color="error" class="w-100"
+											@click="delete currentEffect.effects![key]"
+										>
 											Delete
 										</v-btn>
 									</v-card-actions>
@@ -194,10 +202,11 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 				</div>
 			</v-col>
 			<v-col cols="6">
-				<v-autocomplete :items="filteredPassiveEffects" item-title="label" label="New Passive Effect"
-					return-object prepend-inner-icon="mdi:plus" icon-color="primary" item-color="primary"
-					@update:model-value="(e: PassiveEffectDef | null) => addNewPassiveEffect(e)"
-					v-model="newPassiveEffect" />
+				<v-autocomplete
+					v-model="newPassiveEffect" :items="filteredPassiveEffects" item-title="label"
+					label="New Passive Effect" return-object prepend-inner-icon="mdi:plus" icon-color="primary"
+					item-color="primary" @update:model-value="(e: PassiveEffectDef | null) => addNewPassiveEffect(e)"
+				/>
 			</v-col>
 		</v-row>
 		<SectionHeader title="Buttons & Attacks" />

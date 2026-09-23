@@ -1,18 +1,19 @@
 <script setup lang="ts">
+import type * as Monaco from "monaco-editor";
 import type { AttackModel, ButtonInteraction, EffectWithTarget } from "~/shared";
-import { computed, nextTick, onBeforeUnmount, onMounted, provide, ref, useTemplateRef, watch } from "vue";
+import { loader } from "@guolao/vue-monaco-editor";
+import { computed, onBeforeUnmount, onMounted, provide, ref, useTemplateRef } from "vue";
+import { useDisplay } from "vuetify";
+import { AliasAPIClasses, AliasAPIInstances, automationContextHints } from "~/shared";
+import AutomationDocumentation from "../Automations/AutomationDocumentation.vue";
 import EffectAdder from "./EffectAdder.vue";
 import NodeHelper from "./NodeHelper.vue";
 import EffectAsRaw from "./Nodes/shared/EffectAsRaw.vue";
 import SectionHeader from "./Nodes/shared/SectionHeader.vue";
 import TreeRoot from "./TreeRoot.vue";
-import type * as Monaco from 'monaco-editor'
-import { loader } from '@guolao/vue-monaco-editor';
-import { automationContextHints, AliasAPIClasses, AliasAPIInstances } from '~/shared'
-import AutomationDocumentation from "../Automations/AutomationDocumentation.vue";
-import { useDisplay } from "vuetify";
 
 const { name, noListAttack = false } = defineProps<{ name: string; noListAttack?: boolean }>();
+const emit = defineEmits(["clearAutomation", "takeTour"]);
 const currentEffect = ref<EffectWithTarget | AttackModel | ButtonInteraction | null>(null);
 const currentContext = ref<string[]>([]);
 provide("currentEffect", currentEffect);
@@ -22,7 +23,6 @@ defineExpose<{ currentEffect: any; currentContext: any }>({ currentEffect, curre
 
 const automation = defineModel<null | AttackModel | AttackModel[]>();
 provide("automation", ref(automation));
-const emit = defineEmits(['clearAutomation', 'takeTour'])
 const currentNode = computed(() => {
 	if (!currentEffect.value)
 		return null;
@@ -44,135 +44,138 @@ const currentNode = computed(() => {
 const showControls = ref(true);
 provide("showControls", showControls);
 
-let providerDisposable: Monaco.IDisposable | undefined
+let providerDisposable: Monaco.IDisposable | undefined;
 
 const registerProvider = (monaco: typeof Monaco) => {
-	providerDisposable = monaco.languages.registerCompletionItemProvider('python', {
-		triggerCharacters: ['.'],
+	providerDisposable = monaco.languages.registerCompletionItemProvider("python", {
+		triggerCharacters: ["."],
 		provideCompletionItems: (model, position) => {
-			const word = model.getWordUntilPosition(position)
+			const word = model.getWordUntilPosition(position);
 			const range = {
 				startLineNumber: position.lineNumber,
 				endLineNumber: position.lineNumber,
 				startColumn: word.startColumn,
 				endColumn: word.endColumn,
-			}
+			};
 
 			const textBeforeCursor = model.getValueInRange({
 				startLineNumber: position.lineNumber,
 				startColumn: 1,
 				endLineNumber: position.lineNumber,
 				endColumn: position.column,
-			})
+			});
 
-			const memberAccessMatch = textBeforeCursor.match(/([A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*)\.\w*$/)
+			const memberAccessMatch = textBeforeCursor.match(/([A-Z_]\w*(?:\.[A-Z_]\w*)*)\.\w*$/i);
 
 			if (memberAccessMatch) {
-				const [rootName, ...path] = memberAccessMatch[1].split('.')
-				let currentClassName: string | undefined = AliasAPIInstances[rootName]
+				const [rootName, ...path] = memberAccessMatch[1].split(".");
+				let currentClassName: string | undefined = AliasAPIInstances[rootName];
 
 				for (const propName of path) {
-					const propDef: any = currentClassName && AliasAPIClasses[currentClassName]?.properties.find((p) => p.name === propName)
-					currentClassName = propDef && AliasAPIClasses[propDef.type] ? propDef.type : undefined
+					const propDef: any = currentClassName && AliasAPIClasses[currentClassName]?.properties.find(p => p.name === propName);
+					currentClassName = propDef && AliasAPIClasses[propDef.type] ? propDef.type : undefined;
 				}
 
-				const classDef = currentClassName ? AliasAPIClasses[currentClassName] : undefined
-				if (!classDef) return { suggestions: [] }
+				const classDef = currentClassName ? AliasAPIClasses[currentClassName] : undefined;
+				if (!classDef)
+					return { suggestions: [] };
 
-				const suggestions = classDef.properties.map((prop) => ({
+				const suggestions = classDef.properties.map(prop => ({
 					label: prop.name,
 					kind: monaco.languages.CompletionItemKind.Property,
 					detail: `${currentClassName}.${prop.name}: ${prop.type}`,
 					documentation: prop.doc,
 					insertText: prop.name,
 					range,
-				}))
+				}));
 
-				return { suggestions }
+				return { suggestions };
 			}
 
-			const suggestions = automationContextHints.map((v) => ({
+			const suggestions = automationContextHints.map(v => ({
 				label: v.name,
 				kind: monaco.languages.CompletionItemKind.Variable,
 				detail: `${v.detail}`,
 				documentation: v.doc,
 				insertText: v.name,
 				range,
-			}))
+			}));
 
-			return { suggestions }
+			return { suggestions };
 		},
-	})
-}
+	});
+};
 
 onMounted(async () => {
-	const monaco = await loader.init()
-	registerProvider(monaco)
-})
+	const monaco = await loader.init();
+	registerProvider(monaco);
+});
 
 onBeforeUnmount(() => {
-	providerDisposable?.dispose()
-	observer?.disconnect()
-})
+	providerDisposable?.dispose();
+	observer?.disconnect();
+});
 
-const { mobile } = useDisplay()
+const { mobile } = useDisplay();
 
 const topSectionRef = useTemplateRef("tree");
 const bottomSectionRef = useTemplateRef("editor");
 
-const isTopInView = ref(true)
-const isBottomInView = ref(false)
+const isTopInView = ref(true);
+const isBottomInView = ref(false);
 
-let observer: IntersectionObserver | undefined
+let observer: IntersectionObserver | undefined;
 
 const handleIntersect = (entries: IntersectionObserverEntry[]) => {
 	entries.forEach((entry) => {
 		if (entry.target === topSectionRef.value) {
-			isTopInView.value = entry.isIntersecting
-		} else if (entry.target === bottomSectionRef.value) {
-			isBottomInView.value = entry.isIntersecting
+			isTopInView.value = entry.isIntersecting;
 		}
-	})
-}
+		else if (entry.target === bottomSectionRef.value) {
+			isBottomInView.value = entry.isIntersecting;
+		}
+	});
+};
 
 // If bottom is in view, point up; otherwise default to pointing down
-const scrollTarget = computed(() => (isBottomInView.value ? topSectionRef.value : bottomSectionRef.value))
-const fabIcon = computed(() => (isBottomInView.value ? 'mdi:arrow-up' : 'mdi:arrow-down'))
+const scrollTarget = computed(() => (isBottomInView.value ? topSectionRef.value : bottomSectionRef.value));
+const fabIcon = computed(() => (isBottomInView.value ? "mdi:arrow-up" : "mdi:arrow-down"));
 
 const scrollToTarget = () => {
-	if (!scrollTarget.value) return;
-	const y = scrollTarget.value.getBoundingClientRect().top - 32
-	window.scrollTo({ top: y, behavior: 'smooth' });
-}
+	if (!scrollTarget.value)
+		return;
+	const y = scrollTarget.value.getBoundingClientRect().top - 32;
+	window.scrollTo({ top: y, behavior: "smooth" });
+};
 
 onMounted(() => {
 	observer = new IntersectionObserver(handleIntersect, {
 		threshold: 0.5,
-	})
-	if (topSectionRef.value) observer.observe(topSectionRef.value)
-	if (bottomSectionRef.value) observer.observe(bottomSectionRef.value)
-})
+	});
+	if (topSectionRef.value)
+		observer.observe(topSectionRef.value);
+	if (bottomSectionRef.value)
+		observer.observe(bottomSectionRef.value);
+});
 
-watch(() => automation, () => console.log(automation))
 const empty = () => {
-	console.log(true)
-	emit('clearAutomation')
-
-	nextTick(() => console.log(automation.value))
-}
+	emit("clearAutomation");
+};
 </script>
 
 <template>
 	<section id="visual-editor-container">
 		<v-row>
 			<v-col cols="4">
-				<div class="tree" ref="tree" id="automation-tree">
+				<div id="automation-tree" ref="tree" class="tree">
 					<SectionHeader title="Effect Tree" />
-					<TreeRoot v-if="automation" :data="automation" :depth="0" :no-list-attack="noListAttack"
+					<TreeRoot
+						v-if="automation" :data="automation" :depth="0" :no-list-attack="noListAttack"
 						:style="$route.path.startsWith('/automation/view') || $route.path.startsWith('/creature/view') ? { opacity: 'var(--v-disabled-opacity)' } : {}"
-						@empty-automation="empty" />
+						@empty-automation="empty"
+					/>
 					<p v-else class="container" style="padding: 6px">
-						<EffectAdder :context="['root']" :name="name" id="root-adder" />
+						<EffectAdder id="root-adder" :context="['root']" :name="name" />
 					</p>
 					<v-btn class="pl-2" variant="text" size="x-small" @click="showControls = !showControls">
 						<small> <i>{{ showControls ? 'Hide' : 'Show' }} controls</i></small>
@@ -181,38 +184,36 @@ const empty = () => {
 						<small> <i>Take tour</i></small>
 					</v-btn>
 				</div>
-
 			</v-col>
 			<v-col cols="8">
-				<div ref="editor" class="editor" id="effect-editor">
+				<div id="effect-editor" ref="editor" class="editor">
 					<div v-if="!currentEffect && currentContext.length === 0">
 						<SectionHeader title="No Effect Selected" />
 						Select or create a node in the Effect Tree to get started.
-						<img :src="['/Devourer.png', '/Beholder.webp', '/Flumph.png'][Math.floor(Math.random() * 3)]"
-							style="max-width: 200px; transform: scale(-1, 1); margin-top: 2rem">
+						<img
+							:src="['/Devourer.png', '/Beholder.webp', '/Flumph.png'][Math.floor(Math.random() * 3)]"
+							style="max-width: 200px; transform: scale(-1, 1); margin-top: 2rem"
+						>
 					</div>
 					<template v-else>
 						<Transition>
 							<NodeHelper v-if="currentEffect" :key="currentContext.toString()" :node="currentNode" />
 						</Transition>
 						<hr>
-						<Transition>
-							<details id="showDocumentation">
-								<summary style="font-size: smaller"> Show documentation</summary>
-								<AutomationDocumentation v-model="currentNode" />
-							</details>
-						</Transition>
-						<Transition>
-							<EffectAsRaw :current-effect />
-						</Transition>
+						<details id="showDocumentation">
+							<summary style="font-size: smaller">
+								Show documentation
+							</summary>
+							<AutomationDocumentation v-model="currentNode" />
+						</details>
+						<EffectAsRaw :current-effect />
 					</template>
 				</div>
-
 			</v-col>
 		</v-row>
 	</section>
 
-	<v-fab location="bottom end" app :icon="fabIcon" @click="scrollToTarget" v-if="mobile" appear color="primary" />
+	<v-fab v-if="mobile" location="bottom end" app :icon="fabIcon" appear color="primary" @click="scrollToTarget" />
 </template>
 
 <style scoped lang="less">
@@ -250,7 +251,6 @@ section {
 }
 
 @media screen and (width <=1200px) {
-
 	section,
 	.container {
 		min-height: unset;

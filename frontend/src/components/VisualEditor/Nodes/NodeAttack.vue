@@ -2,9 +2,9 @@
 import type { Ref } from "vue";
 import type { Attack } from "~/shared";
 import { inject, onUnmounted, ref, watch } from "vue";
+import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
-import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 
 const currentEffect = inject<Ref<Attack>>("currentEffect");
 
@@ -44,7 +44,7 @@ useDataCleanup(currentEffect, ["attackBonus"]);
 			</v-col>
 
 			<v-col cols="12">
-				<TypeHintedEditor v-model="currentEffect.attackBonus" label="Attack Bonus" id="attackBonus" />
+				<TypeHintedEditor id="attackBonus" v-model="currentEffect.attackBonus" label="Attack Bonus" />
 			</v-col>
 
 			<v-col cols="12">
@@ -52,15 +52,17 @@ useDataCleanup(currentEffect, ["attackBonus"]);
 			</v-col>
 
 			<v-col cols="6">
-				<v-select v-model="currentEffect.adv" label="Advantage (optional)" title="Advantage" :items="[
-					{ title: 'Flat', value: '0' },
-					{ title: 'Advantage', value: '1' },
-					{ title: 'Elven Advantage', value: '2' },
-					{ title: 'Disadvantage', value: '-1' },
-					isCustom
-						? { title: 'Custom', value: currentEffect.adv }
-						: { title: 'Custom', value: 'custom' },
-				]" @update:model-value="handleChange" />
+				<v-select
+					v-model="currentEffect.adv" label="Advantage (optional)" title="Advantage" :items="[
+						{ title: 'Flat', value: '0' },
+						{ title: 'Advantage', value: '1' },
+						{ title: 'Elven Advantage', value: '2' },
+						{ title: 'Disadvantage', value: '-1' },
+						isCustom
+							? { title: 'Custom', value: currentEffect.adv }
+							: { title: 'Custom', value: 'custom' },
+					]" @update:model-value="handleChange"
+				/>
 			</v-col>
 
 			<v-col cols="6">
