@@ -23,18 +23,12 @@ useDataCleanup(currentEffect, ["removeParent"]);
 			</v-col>
 
 			<v-col cols="6">
-				<v-select
-					v-model="currentEffect.removeParent" label="Remove Parent" :items="[
-						{ title: 'Never', value: null },
-						{ title: 'Always', value: 'always' },
-						{ title: 'If No Children', value: 'if_no_children' },
-					]"
-				/>
+				<v-select v-model="currentEffect.removeParent" label="Remove Parent" :items="[
+					{ title: 'Never', value: null },
+					{ title: 'Always', value: 'always' },
+					{ title: 'If No Children', value: 'if_no_children' },
+				]" />
 			</v-col>
 		</v-row>
 	</template>
 </template>
-
-<style scoped>
-@import url("./styles/automation-editor.less");
-</style>

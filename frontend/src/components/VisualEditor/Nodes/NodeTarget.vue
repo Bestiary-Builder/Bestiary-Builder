@@ -40,40 +40,30 @@ if (isButton.value && currentEffect?.value.target === "each") {
 				<SectionHeader title="Target" />
 			</v-col>
 			<v-col cols="6">
-				<v-select
-					v-model="currentEffect.target" label="Target" title="Target" :items="[
-						...(hasAllTarget ? [{ title: 'Each/All', value: 'each' }] : []),
-						{ title: 'Self/Caster', value: 'self' },
-						...(!isButton ? [{ title: 'Position', value: Number(currentEffect.target) ? currentEffect.target : 1 }] : []),
-						...(isButton ? [{ title: 'Parent', value: 'parent' }] : []),
-						...(isButton ? [{ title: 'Children', value: 'children' }] : []),
-					]"
-				/>
+				<v-select v-model="currentEffect.target" label="Target" title="Target" :items="[
+					...(hasAllTarget ? [{ title: 'Each/All', value: 'each' }] : []),
+					{ title: 'Self/Caster', value: 'self' },
+					...(!isButton ? [{ title: 'Position', value: Number(currentEffect.target) ? currentEffect.target : 1 }] : []),
+					...(isButton ? [{ title: 'Parent', value: 'parent' }] : []),
+					...(isButton ? [{ title: 'Children', value: 'children' }] : []),
+				]" />
 			</v-col>
 			<v-col cols="6">
-				<v-number-input
-					v-if="Number(currentEffect.target)" v-model="(currentEffect.target as number)"
-					label="Target Position" :min="1" variant="solo-filled"
-				/>
+				<v-number-input v-if="Number(currentEffect.target)" v-model="(currentEffect.target as number)"
+					label="Target Position" :min="1" variant="solo-filled" />
 			</v-col>
 
 			<v-col cols="12">
 				<SectionHeader title="Additional Options" />
 			</v-col>
 			<v-col cols="6">
-				<v-select
-					v-model="currentEffect.sortBy" label="Sort Targets By" placeholder="User Input"
+				<v-select v-model="currentEffect.sortBy" label="Sort Targets By" placeholder="User Input"
 					title="User input" :items="[
 						{ title: 'User Input', value: null },
 						{ title: 'HP Ascending', value: 'hp_asc' },
 						{ title: 'HP Desc', value: 'hp_desc' },
-					]"
-				/>
+					]" />
 			</v-col>
 		</v-row>
 	</template>
 </template>
-
-<style scoped>
-@import url("./styles/automation-editor.less");
-</style>

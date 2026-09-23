@@ -28,10 +28,8 @@ useDataCleanup(currentEffect, ["dc"]);
 			</v-col>
 
 			<v-col cols="6">
-				<v-select
-					v-model="currentEffect.stat" label="Save Stat" title="Saving throw stat"
-					:items="Object.entries(fullStatNames).map(([value, label]) => ({ title: label, value }))"
-				/>
+				<v-select v-model="currentEffect.stat" label="Save Stat" title="Saving throw stat"
+					:items="Object.entries(fullStatNames).map(([value, label]) => ({ title: label, value }))" />
 			</v-col>
 
 			<v-col cols="12">
@@ -43,18 +41,12 @@ useDataCleanup(currentEffect, ["dc"]);
 			</v-col>
 
 			<v-col cols="6">
-				<v-select
-					v-model="currentEffect.adv" label="Advantage (optional)" :items="[
-						{ title: 'Flat', value: 0 },
-						{ title: 'Advantage', value: 1 },
-						{ title: 'Disadvantage', value: -1 },
-					]"
-				/>
+				<v-select v-model="currentEffect.adv" label="Advantage (optional)" :items="[
+					{ title: 'Flat', value: 0 },
+					{ title: 'Advantage', value: 1 },
+					{ title: 'Disadvantage', value: -1 },
+				]" />
 			</v-col>
 		</v-row>
 	</template>
 </template>
-
-<style scoped>
-@import url("./styles/automation-editor.less");
-</style>

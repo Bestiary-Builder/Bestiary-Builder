@@ -33,10 +33,8 @@ useDataCleanup(currentEffect, ["level", "attackBonus", "castingMod", "parent"]);
 			</v-col>
 
 			<v-col cols="6">
-				<v-autocomplete
-					v-model="currentEffect.id" label="Spell" :items="spells" item-title="label"
-					item-value="id"
-				/>
+				<v-autocomplete v-model="currentEffect.id" label="Spell" :items="spells" item-title="label"
+					item-value="id" />
 			</v-col>
 
 			<v-col cols="12">
@@ -44,12 +42,10 @@ useDataCleanup(currentEffect, ["level", "attackBonus", "castingMod", "parent"]);
 			</v-col>
 
 			<v-col cols="6">
-				<v-select
-					v-model="currentEffect.level" label="Level" :items="[
-						{ title: '(default level)', value: null },
-						...Array.from({ length: 10 }, (_, i) => ({ title: i.toString(), value: i })),
-					]"
-				/>
+				<v-select v-model="currentEffect.level" label="Level" :items="[
+					{ title: '(default level)', value: null },
+					...Array.from({ length: 10 }, (_, i) => ({ title: i.toString(), value: i })),
+				]" />
 			</v-col>
 			<v-col cols="6">
 				<v-text-field v-model="currentEffect.parent" label="Parent Effect" />
@@ -71,7 +67,3 @@ useDataCleanup(currentEffect, ["level", "attackBonus", "castingMod", "parent"]);
 		</v-row>
 	</template>
 </template>
-
-<style scoped>
-@import url("./styles/automation-editor.less");
-</style>

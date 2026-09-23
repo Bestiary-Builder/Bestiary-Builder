@@ -25,22 +25,18 @@ const rules = useRules();
 
 			<v-col cols="6">
 				<v-text-field v-model="currentEffect.name" label="Attack Name" :rules="[rules.required()]" />
-				<small
-					v-if="setName" style="font-size: x-small; cursor: pointer" role="button"
-					@click="setName(currentEffect.name)"
-				> <i>Click here to set the name of the statblock feature to
-					this
-					name.</i> </small>
+				<small v-if="setName" style="font-size: x-small; cursor: pointer" role="button"
+					@click="setName(currentEffect.name)"> <i>Click here to set the name of the statblock feature to
+						this
+						name.</i> </small>
 			</v-col>
 
 			<v-col cols="6">
 				<v-text-field v-model="currentEffect.thumb" label="Thumbnail URL" />
 			</v-col>
 			<v-col cols="6">
-				<v-text-field
-					v-model="currentEffect.verb" label="Verb" placeholder="attacks with"
-					persistent-placeholder
-				/>
+				<v-text-field v-model="currentEffect.verb" label="Verb" placeholder="attacks with"
+					persistent-placeholder />
 			</v-col>
 			<v-col cols="6">
 				<v-checkbox v-model="currentEffect.proper" label="Name is proper noun" hide-details />
@@ -50,12 +46,10 @@ const rules = useRules();
 			</v-col>
 
 			<v-col cols="6">
-				<v-select
-					v-model="currentEffect.criton" label="Crit On" :items="[
-						{ title: '(crit on 20)', value: null },
-						...Array.from({ length: 20 }, (_, i) => ({ title: (20 - i).toString(), value: 20 - i })),
-					]"
-				/>
+				<v-select v-model="currentEffect.criton" label="Crit On" :items="[
+					{ title: '(crit on 20)', value: null },
+					...Array.from({ length: 20 }, (_, i) => ({ title: (20 - i).toString(), value: 20 - i })),
+				]" />
 			</v-col>
 			<v-col cols="6">
 				<v-text-field v-model="currentEffect.extra_crit_damage" label="Extra Crit Damage" />
@@ -66,21 +60,19 @@ const rules = useRules();
 			</v-col>
 
 			<v-col cols="6">
-				<v-select
-					v-model="currentEffect.activation_type" label="Action Type" title="Activation Type" :items="[
-						{ title: 'Attack', value: null },
-						{ title: 'Action', value: 1 },
-						{ title: 'No Action', value: 2 },
-						{ title: 'Bonus Action', value: 3 },
-						{ title: 'Reaction', value: 4 },
-						{ title: 'Minute', value: 6 },
-						{ title: 'Hour', value: 7 },
-						{ title: 'Special', value: 8 },
-						{ title: 'Legendary', value: 9 },
-						{ title: 'Mythic', value: 10 },
-						{ title: 'Lair', value: 11 },
-					]" placeholder="(attack)"
-				/>
+				<v-select v-model="currentEffect.activation_type" label="Action Type" title="Activation Type" :items="[
+					{ title: 'Attack', value: null },
+					{ title: 'Action', value: 1 },
+					{ title: 'No Action', value: 2 },
+					{ title: 'Bonus Action', value: 3 },
+					{ title: 'Reaction', value: 4 },
+					{ title: 'Minute', value: 6 },
+					{ title: 'Hour', value: 7 },
+					{ title: 'Special', value: 8 },
+					{ title: 'Legendary', value: 9 },
+					{ title: 'Mythic', value: 10 },
+					{ title: 'Lair', value: 11 },
+				]" placeholder="(attack)" />
 			</v-col>
 			<v-col cols="6">
 				<v-text-field v-model="currentEffect.list_display_override" label="List display override" />
@@ -88,7 +80,3 @@ const rules = useRules();
 		</v-row>
 	</template>
 </template>
-
-<style scoped>
-@import url("./styles/automation-editor.less");
-</style>

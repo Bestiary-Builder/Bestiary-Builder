@@ -68,10 +68,8 @@ const isDeleteOpen = ref(false);
 
 					<DropdownMenu v-if="store.user?.id === data.ownerId" v-model="isDeleteOpen">
 						<template #activator="{ props }">
-							<v-icon-btn
-								text="Delete Collection" size="20" color="currentColor" v-bind="props"
-								icon="mdi:delete" @click.stop.prevent="props.onClick?.($event)"
-							/>
+							<v-icon-btn text="Delete Collection" size="20" color="currentColor" v-bind="props"
+								icon="mdi:delete" @click.stop.prevent="props.onClick?.($event)" />
 						</template>
 						<v-card min-width="300" class="text-center pb-2">
 							<v-card-text>
@@ -79,10 +77,8 @@ const isDeleteOpen = ref(false);
 								<br> This action cannot be undone.
 							</v-card-text>
 							<v-card-actions>
-								<v-btn
-									size="large" class="w-100" color="error"
-									@click.stop.prevent="$emit('deleteCollectionItem', data.id); isDeleteOpen = false"
-								>
+								<v-btn size="large" class="w-100" color="error"
+									@click.stop.prevent="$emit('deleteCollectionItem', data.id); isDeleteOpen = false">
 									Confirm
 								</v-btn>
 							</v-card-actions>
@@ -96,8 +92,8 @@ const isDeleteOpen = ref(false);
 
 <style scoped lang="less">
 @font-face {
-	font-family: "Scala Sans Offc";
-	src: url("../Statblock/styles/ScalaSans.woff2") format("woff2");
+	font-family: "Scala Sans";
+	src: url("../Statblock/styles/Scala Sans Regular.otf") format("opentype");
 }
 
 .collection-container {
@@ -141,7 +137,7 @@ const isDeleteOpen = ref(false);
 
 	.meta {
 		padding: 0 0.5rem;
-		font-family: "Scala Sans Offc", Roboto, Helvetica, sans-serif;
+		font-family: "Scala Sans", Roboto, Helvetica, sans-serif;
 
 		h2 {
 			font-size: 20px;

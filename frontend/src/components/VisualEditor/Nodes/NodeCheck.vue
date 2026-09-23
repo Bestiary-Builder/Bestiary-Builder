@@ -32,16 +32,12 @@ const contestDcWarning = (): boolean | string => {
 			</v-col>
 
 			<v-col cols="6">
-				<v-select
-					v-model="currentEffect.ability" label="Ability" :items="skills" item-title="label" multiple
-					:clearable="false" chips closable-chips
-				/>
+				<v-select v-model="currentEffect.ability" label="Ability" :items="skills" item-title="label" multiple
+					:clearable="false" chips closable-chips />
 			</v-col>
 			<v-col cols="6">
-				<v-select
-					v-model="currentEffect.contestAbility" label="Contest Ability" :items="skills"
-					item-title="label" multiple chips closable-chips :rules="[contestDcWarning]" persistent-hint
-				/>
+				<v-select v-model="currentEffect.contestAbility" label="Contest Ability" :items="skills"
+					item-title="label" multiple chips closable-chips :rules="[contestDcWarning]" persistent-hint />
 			</v-col>
 
 			<v-col cols="12">
@@ -52,28 +48,20 @@ const contestDcWarning = (): boolean | string => {
 				<TypeHintedEditor v-model="currentEffect.dc" label="DC (optional)" />
 			</v-col>
 			<v-col cols="6">
-				<v-select
-					v-model="currentEffect.contestTie" label="Contest Tie Behaviour (optional)"
+				<v-select v-model="currentEffect.contestTie" label="Contest Tie Behaviour (optional)"
 					title="Contest Tie" :items="[
 						{ title: 'Success (default)', value: 'success' },
 						{ title: 'Fail', value: 'fail' },
 						{ title: 'Neither', value: 'neither' },
-					]"
-				/>
+					]" />
 			</v-col>
 			<v-col cols="6">
-				<v-select
-					v-model="currentEffect.adv" label="Advantage (optional)" title="Advantage" :items="[
-						{ title: 'Flat', value: 0 },
-						{ title: 'Advantage', value: 1 },
-						{ title: 'Disadvantage', value: -1 },
-					]"
-				/>
+				<v-select v-model="currentEffect.adv" label="Advantage (optional)" title="Advantage" :items="[
+					{ title: 'Flat', value: 0 },
+					{ title: 'Advantage', value: 1 },
+					{ title: 'Disadvantage', value: -1 },
+				]" />
 			</v-col>
 		</v-row>
 	</template>
 </template>
-
-<style scoped>
-@import url("./styles/automation-editor.less");
-</style>

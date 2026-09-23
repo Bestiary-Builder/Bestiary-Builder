@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
 import type { Variable } from "~/shared";
-import { inject, onBeforeUnmount, onMounted, watch } from "vue";
+import { inject, watch } from "vue";
 import { useRules } from "vuetify/labs/rules";
 import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 import HigherLevels from "./shared/HigherLevels.vue";
@@ -10,7 +10,8 @@ import { useDataCleanup } from "./shared/utils";
 
 const currentEffect = inject<Ref<Variable>>("currentEffect");
 
-watch(() => currentEffect!.value?.higher, () => {
+watch(() => currentEffect?.value.higher, () => {
+	if (!Object.hasOwn(currentEffect!.value, "higher")) return;
 	for (const index in currentEffect!.value.higher) {
 		const toIndex = Number.parseInt(index);
 		if (currentEffect!.value.higher[toIndex] === "")
@@ -18,15 +19,6 @@ watch(() => currentEffect!.value?.higher, () => {
 	}
 }, { deep: true });
 
-onBeforeUnmount(() => {
-	if (!Object.values(currentEffect!.value.higher || {}).some(x => x !== ""))
-		delete currentEffect!.value.higher;
-});
-
-onMounted(() => {
-	if (!Object.hasOwn(currentEffect!.value, "higher"))
-		currentEffect!.value.higher = {};
-});
 useDataCleanup(currentEffect, ["onError", "higher"]);
 
 const rules = useRules();
@@ -55,14 +47,9 @@ const rules = useRules();
 				<TypeHintedEditor v-model="currentEffect.onError" label="On Error" />
 			</v-col>
 
-			<v-col v-if="currentEffect.higher" cols="12">
-				<div>At higher levels</div>
-				<HigherLevels v-model="(currentEffect.higher as Record<number, string>)" is-int-expression />
+			<v-col cols="12">
+				<HigherLevels v-model="currentEffect.higher" is-int-expression />
 			</v-col>
 		</v-row>
 	</template>
 </template>
-
-<style scoped>
-@import url("./styles/automation-editor.less");
-</style>

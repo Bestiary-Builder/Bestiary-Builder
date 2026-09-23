@@ -45,20 +45,14 @@ useDataCleanup(currentEffect, ["errorBehaviour"]);
 			</v-col>
 
 			<v-col cols="6">
-				<v-select
-					v-model="currentEffect.errorBehaviour" label="Error Behaviour" title="Error Behaviour" :items="[
-						{ title: 'Treat as True', value: 'true' },
-						{ title: 'Treat as False', value: 'false' },
-						{ title: 'Run both', value: 'both' },
-						{ title: 'Neither', value: 'neither' },
-						{ title: 'Raise', value: 'raise' },
-					]"
-				/>
+				<v-select v-model="currentEffect.errorBehaviour" label="Error Behaviour" title="Error Behaviour" :items="[
+					{ title: 'Treat as True', value: 'true' },
+					{ title: 'Treat as False', value: 'false' },
+					{ title: 'Run both', value: 'both' },
+					{ title: 'Neither', value: 'neither' },
+					{ title: 'Raise', value: 'raise' },
+				]" />
 			</v-col>
 		</v-row>
 	</template>
 </template>
-
-<style scoped>
-@import url("./styles/automation-editor.less");
-</style>

@@ -28,6 +28,8 @@ export const useDataCleanup = <T extends EffectWithTarget | AttackModel | Button
 		watch(() => data.value[property], () => {
 			if (Boolean(data.value[property]) === false)
 				delete data.value[property];
+
+			if (isEmptyObject(data.value[property])) delete data.value[property];
 		});
 	}
 
@@ -58,3 +60,8 @@ export const useDataCleanup = <T extends EffectWithTarget | AttackModel | Button
 		}
 	}
 };
+
+
+const isEmptyObject = (val: unknown): boolean =>
+	typeof val === 'object' && val !== null && !Array.isArray(val) && Object.keys(val).length === 0;
+

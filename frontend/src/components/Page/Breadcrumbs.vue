@@ -48,15 +48,11 @@ watchEffect(() => {
 
 <template>
 	<Teleport to="#navbar .v-toolbar__prepend">
-		<v-breadcrumbs
-			:items="store.isMobile ? breadcrumbItems.slice(-2) : breadcrumbItems"
-			:divider="store.isMobile ? '/' : '>'" class="left-buttons"
-		>
+		<v-breadcrumbs :items="store.isMobile ? breadcrumbItems.slice(-2) : breadcrumbItems"
+			:divider="store.isMobile ? '/' : '>'" class="left-buttons">
 			<template #item="{ item }">
-				<v-breadcrumbs-item
-					:disabled="item.disabled" :style="`opacity: ${item.disabled ? 1 : ''}`"
-					density="compact"
-				>
+				<v-breadcrumbs-item :disabled="item.disabled" :style="`opacity: ${item.disabled ? 1 : ''}`"
+					density="compact">
 					<RouterLink v-if="!item.disabled" :to="item.to || '/'" class="crumb-link">
 						{{ item.title }}
 					</RouterLink>
@@ -86,23 +82,31 @@ watchEffect(() => {
 	display: flex;
 	gap: 1.5rem;
 
-	& button {
-		margin: auto 0;
+	// :deep(button.inverted svg) {
+	// 	color: rgb(var(--v-theme-surface));
+	// 	background-color: rgb(var(--v-theme-primary));
+	// 	scale: 0.9;
+	// 	border-radius: 1rem;
+	// }
 
-		svg {
-			scale: 0.9;
-		}
-	}
+	// & button {
+	// 	margin: auto 0;
 
-	& button.inverted {
-		background-color: rgb(var(--v-theme-primary));
-		color: var(--bg-surface);
+	// 	svg {
+	// 		scale: 0.9;
+	// 	}
+	// }
 
-		&:hover {
-			background-color: var(--bg-surface);
-			color: rgb(var(--v-theme-primary));
-		}
-	}
+	// button.inverted {
+	// 	color: red;
+	// 	background-color: rgb(var(--v-theme-primary));
+	// 	color: var(--bg-surface);
+
+	// 	&:hover {
+	// 		background-color: var(--bg-surface);
+	// 		color: rgb(var(--v-theme-primary));
+	// 	}
+	// }
 }
 
 .crumb-link {

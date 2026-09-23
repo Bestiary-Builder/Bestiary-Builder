@@ -52,17 +52,15 @@ useDataCleanup(currentEffect, ["attackBonus"]);
 			</v-col>
 
 			<v-col cols="6">
-				<v-select
-					v-model="currentEffect.adv" label="Advantage (optional)" title="Advantage" :items="[
-						{ title: 'Flat', value: '0' },
-						{ title: 'Advantage', value: '1' },
-						{ title: 'Elven Advantage', value: '2' },
-						{ title: 'Disadvantage', value: '-1' },
-						isCustom
-							? { title: 'Custom', value: currentEffect.adv }
-							: { title: 'Custom', value: 'custom' },
-					]" @update:model-value="handleChange"
-				/>
+				<v-select v-model="currentEffect.adv" label="Advantage (optional)" title="Advantage" :items="[
+					{ title: 'Flat', value: '0' },
+					{ title: 'Advantage', value: '1' },
+					{ title: 'Elven Advantage', value: '2' },
+					{ title: 'Disadvantage', value: '-1' },
+					isCustom
+						? { title: 'Custom', value: currentEffect.adv }
+						: { title: 'Custom', value: 'custom' },
+				]" @update:model-value="handleChange" />
 			</v-col>
 
 			<v-col cols="6">
@@ -73,7 +71,3 @@ useDataCleanup(currentEffect, ["attackBonus"]);
 		</v-row>
 	</template>
 </template>
-
-<style scoped>
-@import url("./styles/automation-editor.less");
-</style>
