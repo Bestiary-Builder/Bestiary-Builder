@@ -211,7 +211,7 @@ const { startOnboardingWorkflow } = useOnboardingTour();
 	}
 
 	to {
-		transform: scale(1.25);
+		transform: scale(1.1);
 	}
 }
 
@@ -230,6 +230,7 @@ const { startOnboardingWorkflow } = useOnboardingTour();
 	flex-direction: column;
 	justify-content: space-between;
 	padding: 40px clamp(20px, 6vw, 72px);
+	background: linear-gradient(rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 1) 100%);
 }
 
 .hero__brand {
@@ -246,8 +247,8 @@ const { startOnboardingWorkflow } = useOnboardingTour();
 }
 
 .hero__body {
-	max-width: 800px;
-	margin-bottom: 48px;
+	max-width: 100%;
+	padding-bottom: 48px;
 }
 
 .hero__headline {
