@@ -19,6 +19,7 @@ interface Props {
 	isCharacterContext?: boolean;
 	isAnnotatedString?: boolean;
 	language?: string;
+	placeholder?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -131,39 +132,46 @@ const focusEditor = () => {
 </script>
 
 <template>
+	<div class="w-100">
 	<v-field
-		:variant="variant" :density="density" :color="color" :label="usesCustomLabel ? undefined : label"
-		:error="error"
-		:disabled="$route.path.startsWith('/automation/view') || $route.path.startsWith('/creature/view')"
-		:dirty="isDirty" :focused="isFocused" :active="isFocused" class="code-field"
-		:append-inner-icon="isAnnotatedString ? 'tabler:braces' : 'tabler:braces-off'" @click="focusEditor"
-	>
-		<template #default="{ props: fieldSlotProps }">
-			<label
-				v-if="usesCustomLabel && label" class="code-field__label"
-				:class="{ 'code-field__label--floating': isActive }" :style="{ color: labelColor }"
-				:for="(fieldSlotProps.id as string)"
-			>
-				{{ label }}
-			</label>
-			<div v-bind="fieldSlotProps" class="code-field__editor" :style="{ height: `${height}px` }">
-				<VueMonacoEditor
-					v-model:value="code" :language :theme="monacoTheme" :options="editorOptions"
-					@mount="handleMount"
-				/>
-			</div>
-		</template>
-		<template #append-inner>
-			<v-tooltip
-				:text="isAnnotatedString ? 'AnnotatedString. Dice allowed, expressions in {}.' : 'IntExpression. Dice not allowed, expressions not in { }'"
-				location="bottom"
-			>
-				<template #activator="{ props: activatorProps }">
-					<v-icon :icon="isAnnotatedString ? 'tabler:braces' : 'tabler:braces-off'" v-bind="activatorProps" />
-				</template>
-			</v-tooltip>
-		</template>
-	</v-field>
+			:variant="variant" :density="density" :color="color" :label="usesCustomLabel ? undefined : label"
+			:error="error"
+			:disabled="$route.path.startsWith('/automation/view') || $route.path.startsWith('/creature/view')"
+			:dirty="isDirty" :focused="isFocused" :active="isFocused" class="code-field"
+			:append-inner-icon="isAnnotatedString ? 'tabler:braces' : 'tabler:braces-off'" @click="focusEditor"
+		>
+			<template #default="{ props: fieldSlotProps }">
+				<label
+					v-if="usesCustomLabel && label" class="code-field__label"
+					:class="{ 'code-field__label--floating': isActive }" :style="{ color: labelColor }"
+					:for="(fieldSlotProps.id as string)"
+				>
+					{{ label }}
+				</label>
+				<div v-bind="fieldSlotProps" class="code-field__editor" :style="{ height: `${height}px` }">
+					<VueMonacoEditor
+						v-model:value="code" :language :theme="monacoTheme" :options="editorOptions"
+						@mount="handleMount"
+					/>
+				</div>
+
+			</template>
+			<template #append-inner>
+				<v-tooltip
+					:text="isAnnotatedString ? 'AnnotatedString. Dice allowed, expressions in {}.' : 'IntExpression. Dice not allowed, expressions not in { }'"
+					location="bottom"
+				>
+					<template #activator="{ props: activatorProps }">
+						<v-icon :icon="isAnnotatedString ? 'tabler:braces' : 'tabler:braces-off'" v-bind="activatorProps" />
+					</template>
+				</v-tooltip>
+			</template>
+
+		</v-field>
+		<small v-if="placeholder"> {{ placeholder }}</small>
+	</div>
+
+
 </template>
 
 <style scoped>

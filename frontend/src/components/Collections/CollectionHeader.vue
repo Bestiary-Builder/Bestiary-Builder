@@ -71,7 +71,7 @@ const md = new MarkdownIt({
 					v-if="collection.description" :icon="expanded ? 'mdi:chevron-up' : 'mdi:chevron-down'"
 					size="18" color="unset" class="mr-1" @click="expanded = !expanded"
 				/>
-				<span class="description " v-html="md.renderInline(collection.description || 'No description set.')" />
+				<span class="description" v-html="md.renderInline(collection.description || 'No description set.')" />
 			</span>
 		</template>
 
@@ -99,5 +99,9 @@ const md = new MarkdownIt({
 	line-clamp: 2;
 	-webkit-box-orient: vertical;
 	overflow: hidden;
+}
+
+.description :deep(a) {
+	color: rgb(var(--v-theme-primary))
 }
 </style>

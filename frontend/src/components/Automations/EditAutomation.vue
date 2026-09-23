@@ -4,13 +4,13 @@ import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
 import { useLocalStorage, watchDebounced } from "@vueuse/core";
 import { computed, onMounted, onUnmounted, ref, shallowRef, useTemplateRef, watch } from "vue";
 import { useRoute } from "vue-router";
-import YAML from "yaml";
 import VisualEditor from "@/components/VisualEditor/VisualEditor.vue";
 import { useThemePersistence } from "@/utils/app/theme";
 import { useToast } from "@/utils/app/toast";
 import { useOnboardingTour } from "@/utils/app/useOnboardingTour.js";
 import { useFetch } from "@/utils/utils";
 import AutomationDocumentationView from "./AutomationDocumentation.vue";
+import { parse, stringify, isSeq, type Pair } from 'yaml';
 
 type AutomationValue = AttackModel | AttackModel[] | null;
 
@@ -36,7 +36,19 @@ const visualEditorModel = computed({
 	set: (val: AutomationValue) => emit("update:modelValue", val),
 });
 
-const automationString = ref(YAML.stringify(props.modelValue ?? null));
+// sort states for automation strings
+const rankEntry = (pair: Pair): number => {
+	const key = (pair.key as { value?: unknown })?.value ?? pair.key;
+	if (key === 'type') return 0;
+	if (key === 'label') return 0;
+	if (isSeq(pair.value)) return 2;
+	return 1;
+};
+
+const sortMapEntries = (a: Pair, b: Pair): number => rankEntry(a) - rankEntry(b);
+
+const automationString = ref(stringify(props.modelValue ?? null, { sortMapEntries}));
+
 const yamlError = ref<string | null>(null);
 let suppressNextModelSync = false;
 
@@ -44,7 +56,7 @@ watchDebounced(automationString, () => {
 	if (props.isVisualEditor)
 		return;
 	try {
-		const parsed = YAML.parse(automationString.value);
+		const parsed = parse(automationString.value);
 		yamlError.value = null;
 		suppressNextModelSync = true;
 		emit("update:modelValue", parsed);
@@ -56,26 +68,28 @@ watchDebounced(automationString, () => {
 
 // keep automationString in sync when modelValue changes from outside
 // (loading a feature, generating automation, clearing it, description-parity edits)
+
+
 watch(() => props.modelValue, (newVal) => {
 	if (suppressNextModelSync) {
 		suppressNextModelSync = false;
 		return;
 	}
 	if (!props.isVisualEditor)
-		automationString.value = YAML.stringify(newVal ?? null);
+		automationString.value = stringify(newVal ?? null, { sortMapEntries});
 }, { deep: true });
 
 const toggleEditor = () => {
 	if (props.isVisualEditor) {
 		// switching TO yaml mode
-		automationString.value = YAML.stringify(props.modelValue ?? null);
+		automationString.value = stringify(props.modelValue ?? null, { sortMapEntries});
 		yamlError.value = null;
 		emit("update:isVisualEditor", false);
 	}
 	else {
 		// switching TO visual mode — must be valid yaml first
 		try {
-			const parsed = YAML.parse(automationString.value);
+			const parsed = parse(automationString.value);
 			emit("update:modelValue", parsed);
 			emit("update:isVisualEditor", true);
 		}
@@ -180,14 +194,18 @@ const { monacoTheme } = useThemePersistence();
 
 <template>
 	<div v-if="!isVisualEditor" class="editor pt-4">
-		<VueMonacoEditor
-			v-model:value="automationString" :theme="monacoTheme"
-			:options="{ wordWrap: 'on', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false }"
-			height="800px" language="yaml" @mount="handleMount"
-		/>
-		<small v-if="yamlError" style="color: rgb(var(--v-theme-error))">{{ yamlError }}</small>
+		<section>
+			<VueMonacoEditor
+				v-model:value="automationString" :theme="monacoTheme"
+				:options="{ wordWrap: 'on', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false }"
+				height="800px" language="yaml" @mount="handleMount"
+			/>
 
-		<AutomationDocumentationView v-model="currentContext" />
+			<small v-if="yamlError" style="color: rgb(var(--v-theme-error))">{{ yamlError }}</small>
+			<v-divider class="mt-2" thickness="2"/>
+
+			<AutomationDocumentationView v-model="currentContext" />
+		</section>
 	</div>
 	<div v-else class="mt-4">
 		<v-alert
@@ -230,4 +248,13 @@ const { monacoTheme } = useThemePersistence();
 a {
 	color: rgb(var(--v-theme-primary));
 }
+
+section {
+	background-color: rgb(var(--v-theme-surface-light));
+	min-height: 800px;
+	padding: 1rem;
+	border-radius: 4px;
+	box-shadow: rgb(0 0 0 / 24%) 0 3px 8px;
+}
+
 </style>

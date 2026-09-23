@@ -68,7 +68,7 @@ const options = [
 	<div class="documentation-container">
 		<v-select
 			v-model="internalValue" :items="options" label="Choose option to view" density="comfortable"
-			hide-details variant="underlined"
+			hide-details variant="outlined" max-width="500px"
 		/>
 		<div v-if="currentDocu" class="docs">
 			<Markdown class="small" :text="currentDocu.desc" />
@@ -130,5 +130,9 @@ const options = [
 	color: rgb(var(--v-theme-primary));
 	border-left: 3px solid rgb(var(--v-theme-primary));
 	padding: 3px;
+}
+
+ul li {
+	line-height: 1.7rem;
 }
 </style>

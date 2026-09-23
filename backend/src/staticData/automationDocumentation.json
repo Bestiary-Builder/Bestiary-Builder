@@ -177,7 +177,7 @@
 			"ac_bonus": "*optional* - A bonus added to the combatant's armor class while this effect is active.",
 			"max_hp_value": "*optional* - A value to set the combatant's maximum hit points to while this effect is active.\n\n**Note:** If both `max_hp_value` and `max_hp_bonus` are specified, the resulting value will be equal to `max_hp_value + max_hp_bonus`. If multiple effects specify `max_hp_value`, the highest value will be used.",
 			"max_hp_bonus": "*optional* - A bonus added to the combatant's maximum hit points while this effect is active.",
-			"save_bonus": "*optional* - A bonus that this effect grants to all of the combatant's saving throws.",
+			"save_bonus": "*optional* - A bonus that this effect grants to all of the combatant’s saving throws. Per-stat bonuses can be added like `1d4|dex`, and multiple specific bonuses can be added like `1d4|str+1d4|dex`",
 			"save_adv": "*optional* - A list of stat names (e.g. `strength`) that the combatant should have advantage on for their respective saving throws while this effect is active. Use `all` as a stat name to specify all stats.",
 			"save_dis": "*optional* - A list of stat names (e.g. `strength`) that the combatant should have disadvantage on for their respective saving throws while this effect is active. Use `all` as a stat name to specify all stats.",
 			"check_bonus": "*optional* - A bonus that this effect grants to all of the combatant's skill checks.",

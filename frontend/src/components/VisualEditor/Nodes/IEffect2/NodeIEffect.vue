@@ -2,7 +2,7 @@
 import type { Ref } from "vue";
 import type { PassiveEffectDef } from "./passiveEffect";
 import type { IEffect } from "~/shared";
-import { computed, inject, ref } from "vue";
+import { computed, inject, nextTick, ref, useTemplateRef } from "vue";
 import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 import Editor from "@/components/StatblockEditor/Editor.vue";
 import SectionHeader from "../shared/SectionHeader.vue";
@@ -17,6 +17,7 @@ const filteredPassiveEffects = computed(() => {
 	return PASSIVE_EFFECTS.filter(x => !Object.keys(currentEffect.value.effects as any).includes(x.value));
 });
 
+const addNewEffectRef = useTemplateRef("addNewEffect")
 const newPassiveEffect = ref<null | PassiveEffectDef>();
 const addNewPassiveEffect = (effect: PassiveEffectDef | null) => {
 	if (effect === null)
@@ -31,7 +32,10 @@ const addNewPassiveEffect = (effect: PassiveEffectDef | null) => {
 		// @ts-expect-error already checked for lists..
 		currentEffect!.value.effects[effect.value] = "1";
 
-	newPassiveEffect.value = null;
+	nextTick(() => {
+		newPassiveEffect.value = null
+		addNewEffectRef.value?.blur()
+	});
 };
 
 const getEffectData = (value: string) => {
@@ -137,7 +141,7 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 		<SectionHeader title="Passive Effects" />
 		<v-row>
 			<v-col v-for="effect, key in currentEffect.effects" :key="key" cols="6">
-				<div v-if="getInputType(key) !== 'list'">
+				<div v-if="getInputType(key) !== 'list'" class="d-flex flex-column">
 					<div class="v-input v-input--horizontal v-input--center-affix ">
 						<div class="v-input__control">
 							<TypeHintedEditor
@@ -145,8 +149,8 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 								:label="getEffectData(key)?.label || ''"
 								:is-annotated-string="getInputType(key) === 'annotatedstring'"
 							>
-								<template #append />
 							</TypeHintedEditor>
+							
 						</div>
 
 						<div class="v-input__append">
@@ -169,7 +173,9 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 								</v-card>
 							</DropdownMenu>
 						</div>
+
 					</div>
+					<small v-if="key === 'save_bonus'" class="mt-2"> Per-stat bonuses can be added like <code>1d4|dex</code>, and multiple specific bonuses can be added like <code>1d4|str+1d4|dex</code> </small>
 				</div>
 				<div v-else>
 					<v-combobox
@@ -206,6 +212,7 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 					v-model="newPassiveEffect" :items="filteredPassiveEffects" item-title="label"
 					label="New Passive Effect" return-object prepend-inner-icon="mdi:plus" icon-color="primary"
 					item-color="primary" @update:model-value="(e: PassiveEffectDef | null) => addNewPassiveEffect(e)"
+					ref="addNewEffect"
 				/>
 			</v-col>
 		</v-row>
