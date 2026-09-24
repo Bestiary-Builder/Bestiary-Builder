@@ -57,7 +57,7 @@ async function exportCollection(asFile: boolean) {
 		<Breadcrumbs
 			v-if="collection" :routes="[
 				{
-					path: isOwner || isEditor ? '/armories/personal' : '/armories/public',
+					path: isOwner || isEditor ? '/armory/personal' : '/armory/public',
 					text: isOwner || isEditor ? 'My Automations' : 'Automations',
 					isCurrent: false
 				},
