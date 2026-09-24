@@ -435,8 +435,6 @@ export function parseFromCritterDB(data = tData[0] as any): [Statblock, { [key: 
 		let isPsionics = false;
 		let sData = null;
 
-		log.log("info", true);
-
 		for (const a of data.stats.actions) {
 			if (a.name.toLowerCase().includes("innate spellcasting") || (a.name.toLowerCase().includes("spellcasting") && !/\d+[stndrh]{2}-level/.test(a.description)) || (a.name.toLowerCase().includes("spellcasting") && a.description.toLowerCase().includes("casts one of the following spells"))) {
 				sData = a.description;

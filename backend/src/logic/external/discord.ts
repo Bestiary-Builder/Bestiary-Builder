@@ -33,16 +33,19 @@ client.on("clientReady", async () => {
 
 if (isProduction) {
 	log.on("data", (info) => {
-		if (info.level === "request")
-			return;
-		let message = `[${info.timestamp}] ${info.level.toUpperCase()} ${info.message.trim().slice(0, 100)}`;
-		if (log.levels[info.level] < log.levels.warning) {
-			const attachment = new discord.AttachmentBuilder(Buffer.from(`${info.message}${info.stack ? `\n${info.stack}` : ""}`)).setName("error.txt");
-			if (info.level === "critical")
-				message += "\n||<@307900989455859723>||";
-			channels.errorLogs?.send({ content: message, files: [attachment] });
-			channels.errorLogs?.sendTyping();
+		try {
+			if (info.level === "request")
+				return;
+			if (log.levels[info.level] < log.levels.warning) {
+				let message = `[${info.timestamp}] ${info.level.toUpperCase()} ${info.message.trim().slice(0, 100)}`;
+				const attachment = new discord.AttachmentBuilder(Buffer.from(`${info.message}${info.stack ? `\n${info.stack}` : ""}`)).setName("error.txt");
+				if (info.level === "critical")
+					message += "\n||<@307900989455859723>||";
+				channels.errorLogs?.send({ content: message, files: [attachment] });
+				channels.errorLogs?.sendTyping();
+			}
 		}
+		catch { };
 	});
 }
 
