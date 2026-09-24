@@ -1,0 +1,130 @@
+@font-face {
+	font-family: Odyssey;
+	src: url("TrajanOdyssey-Regular.otf") format("opentype");
+}
+
+body .content .statblock-outer.odyssey,
+body .v-card .statblock-outer.odyssey {
+	.statblock {
+		color: #095471;
+		background-color: #fff;
+		background-size: 100% 100%;
+		background-repeat: no-repeat;
+		box-shadow: 0 0 3px #f3f5f9;
+		border: 1px solid #cfac8d;
+		outline: 1px solid #cfac8d;
+		outline-offset: -0.25rem;
+		border-radius: 0.5rem;
+		padding: 15px;
+	}
+
+	.statblock-name-container {
+		font-family: "Odyssey Roboto";
+		color: #095471;
+		border-bottom: 0 solid #095471;
+		background-image: url("hr.svg");
+		background-size: 47%;
+		background-repeat: no-repeat;
+		background-position-y: bottom;
+		background-position: right bottom;
+		padding-bottom: 0.8rem;
+		margin-bottom: 0.2rem;
+		margin-right: 8.5px;
+		position: relative;
+
+		&::after {
+			position: absolute;
+			background-color: #095471;
+			left: 0;
+			bottom: 2px;
+			width: 70%;
+			height: 1px;
+			display: block;
+			content: "";
+		}
+	}
+
+	.statblock-core {
+		color: #616161;
+	}
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5 {
+		font-family: Odyssey;
+		color: #095471;
+	}
+
+	hr {
+		border-color: #095471;
+	}
+
+	a {
+		color: #095471;
+	}
+
+	.statblock-row {
+		border-bottom: 0 solid white;
+	}
+
+	.feature-container:not(.statblock-description) {
+		color: black;
+		border-bottom: 0 solid white;
+	}
+
+	.feature-container-title {
+		font-family: Odyssey;
+		color: #095471;
+		border-bottom: 0 solid white;
+		background-image: url("hr.svg");
+		background-size: contain;
+		background-repeat: no-repeat;
+		background-position-y: bottom;
+		padding-bottom: 0.2rem;
+		margin-bottom: 0.2rem;
+	}
+
+	.feature-header {
+		color: rgb(139, 139, 139);
+	}
+
+	.stat-table:first-of-type {
+		tbody > th {
+			font-weight: bold;
+		}
+
+		tbody > tr > td {
+			background-color: #c3c6b4;
+		}
+
+		tbody > tr > th,
+		tbody > tr > td:first-of-type {
+			background-color: #e0e2d9;
+		}
+	}
+
+	.stat-table:nth-of-type(2) {
+		tbody > tr > td {
+			background-color: #d8ccd1;
+		}
+
+		tbody > tr > th,
+		tbody > tr > td:first-of-type {
+			background-color: #ebe5e8;
+		}
+	}
+}
+
+@media screen and (width <= 1400px) {
+	.statblock {
+		h1 {
+			background-size: 100%;
+
+			&::after {
+				display: none;
+			}
+		}
+	}
+}

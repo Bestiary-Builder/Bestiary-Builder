@@ -1,0 +1,259 @@
+<script setup lang="ts">
+import type * as Monaco from "monaco-editor";
+import type { AttackModel, ButtonInteraction, EffectWithTarget } from "~/shared";
+import { loader } from "@guolao/vue-monaco-editor";
+import { computed, onBeforeUnmount, onMounted, provide, ref, useTemplateRef } from "vue";
+import { useDisplay } from "vuetify";
+import { AliasAPIClasses, AliasAPIInstances, automationContextHints } from "~/shared";
+import AutomationDocumentation from "../Automations/AutomationDocumentation.vue";
+import EffectAdder from "./EffectAdder.vue";
+import NodeHelper from "./NodeHelper.vue";
+import EffectAsRaw from "./Nodes/shared/EffectAsRaw.vue";
+import SectionHeader from "./Nodes/shared/SectionHeader.vue";
+import TreeRoot from "./TreeRoot.vue";
+
+const { name, noListAttack = false } = defineProps<{ name: string; noListAttack?: boolean }>();
+const emit = defineEmits(["clearAutomation", "takeTour"]);
+const currentEffect = ref<EffectWithTarget | AttackModel | ButtonInteraction | null>(null);
+const currentContext = ref<string[]>([]);
+provide("currentEffect", currentEffect);
+provide("currentContext", currentContext);
+
+defineExpose<{ currentEffect: any; currentContext: any }>({ currentEffect, currentContext });
+
+const automation = defineModel<null | AttackModel | AttackModel[]>();
+provide("automation", ref(automation));
+const currentNode = computed(() => {
+	if (!currentEffect.value)
+		return null;
+	if (currentContext.value[0] === "root" && currentContext.value.length === 1)
+		return "noderoot";
+	if (currentContext.value[currentContext.value.length - 2] === "buttons")
+		return "buttonroot";
+	if (currentContext.value[currentContext.value.length - 2] === "attacks")
+		return "attackroot";
+	if (currentContext.value.length === 2 && currentContext.value[1] === "root")
+		return "noderoot";
+	if (Object.hasOwn(currentEffect.value, "type"))
+		// @ts-expect-error Yes it fucking does
+		return currentEffect.value.type;
+
+	return "";
+});
+
+const showControls = ref(true);
+provide("showControls", showControls);
+
+let providerDisposable: Monaco.IDisposable | undefined;
+
+const registerProvider = (monaco: typeof Monaco) => {
+	providerDisposable = monaco.languages.registerCompletionItemProvider("python", {
+		triggerCharacters: ["."],
+		provideCompletionItems: (model, position) => {
+			const word = model.getWordUntilPosition(position);
+			const range = {
+				startLineNumber: position.lineNumber,
+				endLineNumber: position.lineNumber,
+				startColumn: word.startColumn,
+				endColumn: word.endColumn,
+			};
+
+			const textBeforeCursor = model.getValueInRange({
+				startLineNumber: position.lineNumber,
+				startColumn: 1,
+				endLineNumber: position.lineNumber,
+				endColumn: position.column,
+			});
+
+			const memberAccessMatch = textBeforeCursor.match(/([A-Z_]\w*(?:\.[A-Z_]\w*)*)\.\w*$/i);
+
+			if (memberAccessMatch) {
+				const [rootName, ...path] = memberAccessMatch[1].split(".");
+				let currentClassName: string | undefined = AliasAPIInstances[rootName];
+
+				for (const propName of path) {
+					const propDef: any = currentClassName && AliasAPIClasses[currentClassName]?.properties.find(p => p.name === propName);
+					currentClassName = propDef && AliasAPIClasses[propDef.type] ? propDef.type : undefined;
+				}
+
+				const classDef = currentClassName ? AliasAPIClasses[currentClassName] : undefined;
+				if (!classDef)
+					return { suggestions: [] };
+
+				const suggestions = classDef.properties.map(prop => ({
+					label: prop.name,
+					kind: monaco.languages.CompletionItemKind.Property,
+					detail: `${currentClassName}.${prop.name}: ${prop.type}`,
+					documentation: prop.doc,
+					insertText: prop.name,
+					range,
+				}));
+
+				return { suggestions };
+			}
+
+			const suggestions = automationContextHints.map(v => ({
+				label: v.name,
+				kind: monaco.languages.CompletionItemKind.Variable,
+				detail: `${v.detail}`,
+				documentation: v.doc,
+				insertText: v.name,
+				range,
+			}));
+
+			return { suggestions };
+		},
+	});
+};
+
+onMounted(async () => {
+	const monaco = await loader.init();
+	registerProvider(monaco);
+});
+
+onBeforeUnmount(() => {
+	providerDisposable?.dispose();
+	observer?.disconnect();
+});
+
+const { mobile } = useDisplay();
+
+const topSectionRef = useTemplateRef("tree");
+const bottomSectionRef = useTemplateRef("editor");
+
+const isTopInView = ref(true);
+const isBottomInView = ref(false);
+
+let observer: IntersectionObserver | undefined;
+
+const handleIntersect = (entries: IntersectionObserverEntry[]) => {
+	entries.forEach((entry) => {
+		if (entry.target === topSectionRef.value) {
+			isTopInView.value = entry.isIntersecting;
+		}
+		else if (entry.target === bottomSectionRef.value) {
+			isBottomInView.value = entry.isIntersecting;
+		}
+	});
+};
+
+// If bottom is in view, point up; otherwise default to pointing down
+const scrollTarget = computed(() => (isBottomInView.value ? topSectionRef.value : bottomSectionRef.value));
+const fabIcon = computed(() => (isBottomInView.value ? "mdi:arrow-up" : "mdi:arrow-down"));
+
+const scrollToTarget = () => {
+	if (!scrollTarget.value)
+		return;
+	const y = scrollTarget.value.getBoundingClientRect().top - 32;
+	window.scrollTo({ top: y, behavior: "smooth" });
+};
+
+onMounted(() => {
+	observer = new IntersectionObserver(handleIntersect, {
+		threshold: 0.5,
+	});
+	if (topSectionRef.value)
+		observer.observe(topSectionRef.value);
+	if (bottomSectionRef.value)
+		observer.observe(bottomSectionRef.value);
+});
+
+const empty = () => {
+	emit("clearAutomation");
+};
+</script>
+
+<template>
+	<section id="visual-editor-container">
+		<v-row>
+			<v-col cols="4">
+				<div id="automation-tree" ref="tree" class="tree">
+					<SectionHeader title="Effect Tree" />
+					<TreeRoot
+						v-if="automation" :data="automation" :depth="0" :no-list-attack="noListAttack"
+						:style="$route.path.startsWith('/automation/view') || $route.path.startsWith('/creature/view') ? { opacity: 'var(--v-disabled-opacity)' } : {}"
+						@empty-automation="empty"
+					/>
+					<p v-else class="container" style="padding: 6px">
+						<EffectAdder id="root-adder" :context="['root']" :name="name" />
+					</p>
+					<v-btn class="pl-2" variant="text" size="x-small" @click="showControls = !showControls">
+						<small> <i>{{ showControls ? 'Hide' : 'Show' }} controls</i></small>
+					</v-btn>
+					<v-btn class="p3-2 float-right" variant="text" size="x-small" @click="emit('takeTour')">
+						<small> <i>Take tour</i></small>
+					</v-btn>
+				</div>
+			</v-col>
+			<v-col cols="8">
+				<div id="effect-editor" ref="editor" class="editor">
+					<div v-if="!currentEffect && currentContext.length === 0">
+						<SectionHeader title="No Effect Selected" />
+						Select or create a node in the Effect Tree to get started.
+						<img
+							:src="['/Devourer.png', '/Beholder.webp', '/Flumph.png'][Math.floor(Math.random() * 3)]"
+							style="max-width: 200px; transform: scale(-1, 1); margin-top: 2rem"
+						>
+					</div>
+					<template v-else>
+						<Transition>
+							<NodeHelper v-if="currentEffect" :key="currentContext.toString()" :node="currentNode" />
+						</Transition>
+						<hr>
+						<details id="showDocumentation">
+							<summary style="font-size: smaller">
+								Show documentation
+							</summary>
+							<AutomationDocumentation v-model="currentNode" />
+						</details>
+						<EffectAsRaw :current-effect />
+					</template>
+				</div>
+			</v-col>
+		</v-row>
+	</section>
+
+	<v-fab v-if="mobile" location="bottom end" app :icon="fabIcon" appear color="primary" @click="scrollToTarget" />
+</template>
+
+<style scoped lang="less">
+.tree,
+.editor {
+	max-width: calc(100vw - 10vw - 2rem);
+}
+
+.v-enter-active {
+	transition: opacity 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+	opacity: 0;
+}
+
+h3 {
+	margin-bottom: 0.25rem;
+}
+
+section {
+	background-color: rgb(var(--v-theme-surface-light));
+	min-height: 800px;
+	padding: 1rem;
+	border-radius: 4px;
+	box-shadow: rgb(0 0 0 / 24%) 0 3px 8px;
+}
+
+.container {
+	min-height: 800px;
+	border-radius: 6px;
+	box-shadow: rgb(0 0 0 / 24%) 0 3px 8px;
+	background-color: rgb(var(--v-theme-surface));
+}
+
+@media screen and (width <=1200px) {
+	section,
+	.container {
+		min-height: unset;
+	}
+}
+</style>

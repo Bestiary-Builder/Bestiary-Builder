@@ -1,0 +1,206 @@
+<script setup lang="ts">
+import type { AvraeCharacter } from "../Characters/utils";
+import type { FeatureEntity, Id } from "~/shared";
+import { computed, reactive, ref, watch } from "vue";
+import { useToast } from "@/utils/app/toast";
+import { useLazyAsync, useLazyOptions } from "@/utils/app/useLazyOptions";
+import { store } from "@/utils/store";
+import { useFetch } from "@/utils/utils";
+import { getAvraeCharacterByUpstream, getAvraeCharacters } from "../Characters/utils";
+
+const emit = defineEmits<{
+	(e: "loadFeature", feature: FeatureEntity): void;
+}>();
+
+const isOpen = ref(false);
+
+const { addToast } = useToast();
+
+type AutomationTypes = "automation" | "srd-features/2014" | "srd-features/2024";
+interface myAutomationSkeletonGroup {
+	[key: string]: {
+		name: string;
+		id: Id;
+	}[];
+}
+
+const fetchList = async <T>(apiPath: string): Promise<T> => {
+	const { success, data, error } = await useFetch<T>(`/api/${apiPath}`);
+	if (!success)
+		throw new Error(error);
+
+	return data;
+};
+
+const onListError = (error: unknown) =>
+	addToast(error instanceof Error ? error.message : String(error), { color: "error" });
+
+const srdFeatures = reactive(useLazyOptions<string>(
+	async () => fetchList(`srd-features/${store.user?.SRDVersion === "SRD_2024" ? "2024" : "2014"}/list`),
+	{ onError: onListError },
+));
+
+const myAutomation = reactive(useLazyAsync<myAutomationSkeletonGroup>(
+	async () => fetchList("my-automations/list"),
+	{},
+	{ onError: onListError },
+));
+
+const avraeCharacters = reactive(useLazyOptions<AvraeCharacter>(
+	async () => (await getAvraeCharacters()) ?? [],
+	{ onError: onListError },
+));
+
+const selectAndLoad = async (apiPath: AutomationTypes, name: string, _id: Id | null = null) => {
+	if (name === "")
+		return;
+	const { success, data: iData, error } = await useFetch(`/api/${apiPath}/${encodeURIComponent(_id?.toString() ?? name)}`);
+	let feature: FeatureEntity | null = null;
+	if (!success) {
+		addToast(error, { color: "error" });
+		return;
+	}
+	feature = iData as FeatureEntity | null;
+
+	if (!feature) {
+		addToast(`Failed to import ${name}. No feature data found.`, { color: "error" });
+		return;
+	}
+
+	emit("loadFeature", feature);
+	isOpen.value = false;
+};
+
+const AvraeToken = localStorage.getItem("AvraeToken");
+
+const selectedCharacter = ref<null | AvraeCharacter["upstream"]>(null);
+const selectedCharacterData = ref<null | AvraeCharacter>(null);
+
+watch(() => selectedCharacter.value, async () => {
+	if (selectedCharacter.value)
+		selectedCharacterData.value = await getAvraeCharacterByUpstream(selectedCharacter.value);
+});
+
+const selectedAttack = ref();
+watch(() => selectedAttack.value, () => {
+	isOpen.value = false;
+});
+
+const groupedAutomatedItems = computed(() => {
+	const output = [];
+
+	for (const [collection, items] of Object.entries(myAutomation.data)) {
+		output.push({ type: "subheader", title: collection });
+		for (const item of items) {
+			output.push({ title: item.name, id: item.id });
+		}
+	}
+	return output;
+});
+</script>
+
+<template>
+	<v-icon-btn
+		v-tooltip="'Import Feature'" icon="mdi:database" text="Import Action" size="24"
+		@click="isOpen = true"
+	/>
+
+	<v-dialog v-model="isOpen" max-width="700">
+		<v-card class="pa-4" title="Import Action">
+			<v-card-text>
+				<v-row density="compact">
+					<v-col cols="12">
+						<v-autocomplete
+							:items="srdFeatures.items" :loading="srdFeatures.loading"
+							label="Import SRD Feature" variant="solo-filled" class="w-100 pb-3" clearable
+							:hint="`SRD ${store.user?.SRDVersion === 'SRD_2024' ? '2024' : '2014'}. Change in settings.`"
+							persistent-hint
+							prepend-inner-icon="mdi:database"
+							@update:menu="srdFeatures.handleMenuOpen" @update:model-value="selected => (selectAndLoad(`srd-features/${store.user?.SRDVersion === 'SRD_2024' ? '2024' : '2014'}`, selected || ''))"
+						>
+							<template #item="{ props, item }">
+								<v-list-item density="compact" style="min-height: 28px">
+									<v-list-item-title v-bind="props">
+										{{ item }}
+									</v-list-item-title>
+								</v-list-item>
+							</template>
+							<template #no-data>
+								<v-list-item>
+									<v-list-item-title>
+										{{ srdFeatures.loading ? 'Loading...' : 'No features found' }}
+									</v-list-item-title>
+								</v-list-item>
+							</template>
+						</v-autocomplete>
+					</v-col>
+					<v-col cols="12">
+						<v-autocomplete
+							:items="groupedAutomatedItems" :loading="myAutomation.loading"
+							item-title="title" label="Select From Automation Collections" variant="solo-filled"
+							return-object prepend-inner-icon="$automationCollection"
+							@update:menu="myAutomation.handleMenuOpen"
+							@update:model-value="(selected) => selected && selectAndLoad('automation', selected.title, selected.id)"
+						>
+							<template #item="{ props, item }">
+								<v-list-item density="compact" style="min-height: 28px">
+									<v-list-item-title v-bind="props">
+										{{ item.title }}
+									</v-list-item-title>
+								</v-list-item>
+							</template>
+							<template #no-data>
+								<v-list-item>
+									<v-list-item-title>
+										{{ myAutomation.loading ? 'Loading...' : 'No automations found' }}
+									</v-list-item-title>
+								</v-list-item>
+							</template>
+						</v-autocomplete>
+					</v-col>
+					<v-col cols="12">
+						<div v-if="AvraeToken">
+							<v-select
+								v-model="selectedCharacter" :items="avraeCharacters.items"
+								:loading="avraeCharacters.loading" item-title="name" item-value="upstream"
+								label="Import From Character" hide-details prepend-inner-icon="$avrae"
+								@update:menu="avraeCharacters.handleMenuOpen"
+							>
+								<template #item="{ props, item }">
+									<v-list-item density="compact" style="min-height: 28px" v-bind="props">
+										<v-list-item-title>
+											{{ item.name }}
+										</v-list-item-title>
+									</v-list-item>
+								</template>
+
+								<template #no-data>
+									<v-list-item>
+										<v-list-item-title>
+											{{ avraeCharacters.loading ? 'Loading characters...' : 'No characters found'
+											}}
+										</v-list-item-title>
+									</v-list-item>
+								</template>
+							</v-select>
+						</div>
+						<div v-else class="text-primary">
+							You can set up importing from your Avrae characters with just a button press!
+							Set it up in <RouterLink to="/user">
+								your user settings.
+							</RouterLink>
+						</div>
+					</v-col>
+					<v-col cols="12">
+						<v-select
+							v-if="selectedCharacterData" v-model="selectedAttack" variant="solo-filled"
+							:items="selectedCharacterData.overrides.attacks" class="mt-4" item-title="name"
+							label="Choose Character Attack" return-object
+							@update:model-value="(selected) => selected && emit('loadFeature', { name: selected.name, description: '', automation: selected })"
+						/>
+					</v-col>
+				</v-row>
+			</v-card-text>
+		</v-card>
+	</v-dialog>
+</template>

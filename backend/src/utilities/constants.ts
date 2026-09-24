@@ -1,0 +1,71 @@
+import type { Automation, BestiaryStatus, Id, Statblock, User } from "~/shared";
+// Express app
+import crypto from "node:crypto";
+import express from "express";
+
+// Limits
+import { globalLimits } from "~/shared";
+// Secrets:
+import "@/utilities/env";
+
+export const app = express();
+
+// Is production
+export const isProduction = (process.env.NODE_ENV === "production") as boolean;
+
+export function generateUserSecret(): string {
+	return crypto.randomBytes(64).toString("hex");
+}
+export const limits = globalLimits;
+export function checkCreatureAmountLimit(count: number) {
+	if (count > limits.creatureAmount)
+		return `Number of creatures exceeds the limit of ${limits.creatureAmount}.`;
+}
+export function checkBestiaryLimits(bestiary: { id?: Id; name: string; description: string; status: BestiaryStatus }) {
+	if (!["private", "public", "unlisted"].includes(bestiary.status))
+		return "Status has an unkown value, must only be 'public', 'unlisted' or 'private'.";
+	return checkLimits(bestiary);
+}
+export function checkCreatureLimits(stats?: Statblock) {
+	if (!stats)
+		return "No statblock provided.";
+	return checkLimits(stats.description);
+}
+export function checkAutomationLimits(automation: Pick<Automation, "name" | "description">) {
+	return checkLimits(automation);
+}
+export function checkImageUrl(image: string) {
+	if (!image)
+		return;
+	try {
+		if (new URL(image).protocol !== "https:")
+			return "Image url must use HTTPS.";
+	}
+	catch {
+		return "Invalid image url.";
+	}
+}
+function checkLimits(data: { name: string; description: string }) {
+	if (data.name.length > limits.nameLength)
+		return `Name exceeds the character limit of ${limits.nameLength} characters.`;
+	if (data.name.length < limits.nameMin)
+		return `Name is less than the minimum character limit of ${limits.nameMin} characters.`;
+	if (data.description.length > limits.descriptionLength)
+		return `Description exceeds the character limit of ${limits.descriptionLength} characters.`;
+}
+
+const ADMIN_ACCOUNTS = process.env.ADMIN_ACCOUNTS?.split(",") ?? [];
+
+export function checkAdminAccount(userId: string) {
+	return ADMIN_ACCOUNTS.includes(userId);
+}
+
+// Inject additional properties on express.Request
+declare module "express" {
+	interface Request {
+		body: {
+			user: User | null;
+			data: any;
+		};
+	}
+}

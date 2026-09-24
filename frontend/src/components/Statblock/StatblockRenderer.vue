@@ -1,0 +1,544 @@
+<script setup lang="ts">
+import type { FeatureEntity, SaveEntity, SkillsEntity, Stat, Statblock } from "~/shared";
+import type { StatblockDesign } from "~/shared/src/prisma-types";
+
+import MarkdownIt from "markdown-it";
+import markdownItAttrs from "markdown-it-attrs";
+import { computed, onMounted } from "vue";
+import { useStatblockColors } from "@/utils/app/customTheme";
+
+import { useThemePersistence } from "@/utils/app/theme";
+import { featureGenerator, resistanceGenerator, stats } from "@/utils/constants";
+import { store } from "@/utils/store";
+import { capitalizeFirstLetter, crAsString, displayCasterCasting, displayInnateCasting, displaySpeedOrSenses, hpCalc, ppCalc, signedNumber, SKILLS_BY_STAT, statCalc } from "~/shared";
+
+const { data, statblockDesign = null, is2024 = null } = defineProps<{ data: Statblock; statblockDesign?: StatblockDesign; is2024?: boolean }>();
+
+const design = statblockDesign || store.user?.statblockDesign;
+let v2024;
+if (is2024 === null) {
+	if (store.user) {
+		v2024 = store.user?.statblockLayout === "SL_2024";
+	}
+	else {
+		v2024 = true;
+	}
+}
+else {
+	v2024 = is2024;
+}
+
+const showSkills = computed(() => {
+	if (v2024 && data.abilities.skills.length === 1 && data.abilities.skills[0].skillName === "Initiative")
+		return false;
+
+	for (const skill of data.abilities.skills) {
+		if (skill.isProficient || skill.isHalfProficient || skill.isExpertise || skill.override || skill.override === 0)
+			return true;
+	}
+
+	return false;
+});
+
+const showCasterCasting = computed(() => {
+	return !!((data.spellcasting.casterSpells.casterLevel) && data.spellcasting.casterSpells.castingClass);
+});
+
+const showInnateCasting = computed(() => {
+	return (data.spellcasting.innateSpells.spellCastingAbility != null) && (
+		data.spellcasting.innateSpells.spellList[0].length > 0
+		|| data.spellcasting.innateSpells.spellList[1].length > 0
+		|| data.spellcasting.innateSpells.spellList[2].length > 0
+		|| data.spellcasting.innateSpells.spellList[3].length > 0
+	);
+});
+
+const skillOutput = computed(() => {
+	let skills: SkillsEntity[] = Array.from(data.abilities.skills);
+	skills.sort((a: SkillsEntity, b: SkillsEntity) => {
+		return a.skillName.localeCompare(b.skillName);
+	});
+
+	const seenSkillNames = new Set();
+
+	// Use the filter method to create a new array without duplicates
+	skills = skills.filter((obj) => {
+		if (seenSkillNames.has(obj.skillName)) {
+			// If the skill name is already seen, filter it out
+			return false;
+		}
+		else {
+			// Otherwise, add it to the set and include it in the result
+			seenSkillNames.add(obj.skillName);
+			return true;
+		}
+	});
+	const output = [];
+	for (const skill of skills) {
+		if (!skill.isExpertise && !skill.isHalfProficient && !skill.isProficient && !skill.override)
+			continue;
+		let bonus = 0;
+		for (const stat in SKILLS_BY_STAT) {
+			if (SKILLS_BY_STAT[stat as Stat].includes(skill.skillName.replaceAll(" ", "").toLowerCase().replace("animalh", "animalH").replace("sleightofh", "sleightOfH") as never)) {
+				if (v2024 && skill.skillName === "Initiative")
+					continue;
+				if (skill.override && skill.override !== null) {
+					const over = skill.override;
+
+					output.push(`${skill.skillName} ${(over ?? 0) >= 0 ? "+" : ""}${over}`);
+				}
+				else {
+					bonus = statCalc(stat as Stat, data);
+					if (skill.isHalfProficient)
+						bonus += Math.floor(data.core.proficiencyBonus / 2);
+					else if (skill.isProficient)
+						bonus += data.core.proficiencyBonus;
+					else if (skill.isExpertise)
+						bonus += data.core.proficiencyBonus * 2;
+
+					output.push(`${skill.skillName} ${bonus >= 0 ? "+" : ""}${bonus}`);
+				}
+				break;
+			}
+			else { continue; }
+		}
+	}
+
+	return output.join(", ");
+});
+
+const hitDieBonus = computed(() => {
+	const hp = data.defenses.hp.numOfHitDie * statCalc("con", data);
+	if (hp !== 0) {
+		if (hp > 0)
+			return ` + ${hp.toString()}`;
+		else return `${hp.toString().replace("-", " - ")}`;
+	}
+	return "";
+});
+
+const alphaSort = (list: string[]) => {
+	const sortByLastWord = (a: string, b: string) => {
+		const lastWordA = a.split(" ").pop();
+		const lastWordB = b.split(" ").pop();
+		return lastWordA!.localeCompare(lastWordB!);
+	};
+	if (v2024)
+		return list.sort(sortByLastWord);
+	return list.sort(sortByLastWord).map(v => v.toLowerCase());
+};
+
+const calculatedSaveNumber = (save: SaveEntity, stat: Stat) => {
+	if (save.override)
+		return save.override || 0;
+	else if (save.isProficient)
+		return data.core.proficiencyBonus + statCalc(stat, data);
+	else return statCalc(stat, data);
+};
+
+const calculatedInitiativeNumber = () => {
+	const skill = data.abilities.skills.find(skill => skill.skillName === "Initiative");
+
+	if (!skill)
+		return statCalc("dex", data);
+
+	if (skill.override)
+		return skill.override;
+	if (skill.isHalfProficient)
+		return Math.floor(data.core.proficiencyBonus / 2) + statCalc("dex", data);
+	else if (skill.isProficient)
+		return data.core.proficiencyBonus + statCalc("dex", data);
+	else if (skill.isExpertise)
+		return data.core.proficiencyBonus * 2 + statCalc("dex", data);
+	return 0;
+};
+
+const calculatePassiveInitiative = () => {
+	const skill = data.abilities.skills.find(skill => skill.skillName === "Initiative");
+	if (!skill)
+		return 10 + statCalc("dex", data);
+
+	let value = 10;
+	if (skill.adv === true)
+		value += 5;
+	if (skill.adv === false)
+		value -= 5;
+
+	return value + calculatedInitiativeNumber();
+};
+
+const { isAllowedCustomTheme } = useThemePersistence();
+
+onMounted(async () => {
+	if (design === "Odyssey")
+		await import("./styles/odyssey/odyssey.css");
+
+	if (design === "Beyond")
+		await import("./styles/beyond/beyond.css");
+
+	if (design === "MonsterManual")
+		await import("./styles/monstermanual/mm.css");
+
+	if (design === "Custom" && isAllowedCustomTheme)
+		await import("./styles/custom/custom.css");
+});
+
+const md = new MarkdownIt({
+	html: false,
+	breaks: false,
+	linkify: false,
+	typographer: false,
+});
+md.use(markdownItAttrs, { allowedAttributes: ["class"] });
+
+const mdInlineBreaks = new MarkdownIt({ html: false, breaks: true, linkify: true });
+
+// eslint-disable-next-line regexp/no-unused-capturing-group
+const listMarker = /^\s*([-*+]|\d+[.)])\s+/;
+
+const expandNewlinesToParagraphs = (text: string) => {
+	const lines = text.split("\n");
+	const out = [];
+	let i = 0;
+
+	while (i < lines.length) {
+		const line = lines[i];
+
+		if (line.trim() === "") {
+			// one visible empty paragraph per blank line, not collapsed
+			out.push("", "&nbsp;", "");
+			i++;
+			continue;
+		}
+
+		out.push(line);
+		i++;
+
+		const next = lines[i];
+		if (next === undefined)
+			continue;
+		if (next.trim() === "")
+			continue; // blank line(s) handled on next loop iteration(s)
+
+		const curIsList = listMarker.test(line);
+		const nextIsList = listMarker.test(next);
+		if (curIsList && nextIsList)
+			continue; // keep consecutive list items tight
+
+		out.push(""); // separate everything else into its own paragraph
+	}
+
+	return out.join("\n");
+};
+
+const render = (text: string, inline = false) => {
+	if (inline) {
+		return mdInlineBreaks.renderInline(text);
+	}
+	return md.render(expandNewlinesToParagraphs(text));
+};
+
+const renderFeature = (feature: FeatureEntity) => {
+	let output = "";
+	output += `***${feature.name}${feature.automation ? "`˚`" : ""}.*** `;
+	output += feature.description;
+	return render(output);
+};
+
+const { statblockColors } = useStatblockColors();
+</script>
+
+<template>
+	<div
+		class="statblock-outer" :class="design?.toLowerCase()"
+		:style="design === 'Custom' && isAllowedCustomTheme ? statblockColors : ''"
+	>
+		<div id="statblock" class="statblock" :class="[v2024 ? 'v2024' : '']">
+			<div class="statblock-row">
+				<h1 class="statblock-name-container">
+					{{ data.description.name }}
+				</h1>
+			</div>
+			<span class="statblock-core"> {{ data.core.size }} {{ data.core.race }}{{ data.description.alignment
+				? ',' : '' }} {{ data.description.alignment }}</span>
+
+			<div class="statblock-row two-wide picture-container">
+				<div>
+					<div>
+						<b> {{ v2024 ? 'AC ' : 'Armor Class ' }} </b><span>{{ data.defenses.ac.ac }}</span><span
+							v-if="data.defenses.ac.acSource" v-html="render(` (${data.defenses.ac.acSource})`, true)"
+						/>
+						<b v-if="v2024" style="padding-left: .45rem"> Initiative </b> <span v-if="v2024"> {{
+							signedNumber(calculatedInitiativeNumber()) }} ({{ calculatePassiveInitiative() }})</span>
+					</div>
+					<div>
+						<b> {{ v2024 ? 'HP ' : 'Hit Points ' }} </b>
+						<span v-if="data.defenses.hp.override"> {{ data.defenses.hp.override }}</span>
+						<span v-else> {{ hpCalc(data) }} ({{ data.defenses.hp.numOfHitDie }}d{{
+							data.defenses.hp.sizeOfHitDie }}{{ hitDieBonus }})</span>
+					</div>
+					<div class="statblock-speed-container">
+						<b> Speed </b>
+						<span v-html="render(displaySpeedOrSenses(data.core.speed, false, v2024), true) || '—'" />
+					</div>
+				</div>
+			</div>
+
+			<div class="stat-container-wrapper">
+				<div v-if="v2024" class="stat-container">
+					<table class="stat-table">
+						<thead>
+							<tr>
+								<th />
+								<th />
+								<th> MOD </th>
+								<th> SAVE</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-for="stat in stats.slice(0, 3)" :key="stat">
+								<th scope="row">
+									{{ stat }}
+								</th>
+								<td> {{ data.abilities.stats[stat] }}</td>
+								<td> {{ signedNumber(statCalc(stat, data)) }} </td>
+								<td> {{ signedNumber(calculatedSaveNumber(data.abilities.saves[stat], stat)) }}</td>
+							</tr>
+						</tbody>
+					</table>
+					<table class="stat-table">
+						<thead>
+							<tr>
+								<th />
+								<th />
+								<th> MOD </th>
+								<th> SAVE</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-for="stat in stats.slice(3, 6)" :key="stat">
+								<th scope="row">
+									{{ stat }}
+								</th>
+								<td> {{ data.abilities.stats[stat] }}</td>
+								<td> {{ signedNumber(statCalc(stat, data)) }} </td>
+								<td> {{ signedNumber(calculatedSaveNumber(data.abilities.saves[stat], stat)) }}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+			<div v-if="!v2024" class="statblock-row statblock-abilities">
+				<div v-for="stat in stats" :key="stat">
+					<div> <b> {{ stat.toUpperCase() }} </b></div>
+					<span> {{ data.abilities.stats[stat] }} ({{ signedNumber(statCalc(stat, data)) }})</span>
+				</div>
+			</div>
+			<div class="statblock-row v2024-no-bottom-border">
+				<template v-if="!v2024">
+					<div
+						v-if="Object.values(data.abilities.saves).some((val) => (val.isProficient === true || val.override !== null))"
+						class="statblock-save-container"
+					>
+						<b> Saving Throws </b>
+						<template v-for="stat in stats" :key="stat">
+							<span
+								v-if="data.abilities.saves[stat].override !== null || data.abilities.saves[stat].isProficient"
+							>
+								{{ capitalizeFirstLetter(stat) }} {{
+									signedNumber(calculatedSaveNumber(data.abilities.saves[stat], stat)) }} </span>
+							<span
+								v-if="data.abilities.saves[stat].override !== null || data.abilities.saves[stat].isProficient"
+								class="ending-comma"
+							>, </span>
+						</template>
+					</div>
+					<div v-if="showSkills" class="statblock-skills-container">
+						<b> Skills </b>
+						{{ skillOutput }}
+					</div>
+				</template>
+				<template v-if="!v2024">
+					<template v-for="title, resType of resistanceGenerator">
+						<div v-if="data.defenses[resType].length > 0" :key="resType" class="statblock-res-container">
+							<b> {{ title }} </b>
+							<span v-html="render(alphaSort(data.defenses[resType]).join(', '), true)" />
+						</div>
+					</template>
+				</template>
+				<template v-else>
+					<div v-if="showSkills" class="statblock-skills-container">
+						<b> Skills </b>
+						{{ skillOutput }}
+					</div>
+					<div v-if="data.defenses.vulnerabilities.length > 0" class="statblock-res-container">
+						<b> Vulnerabilities </b>
+						<span v-html="render(alphaSort(data.defenses.vulnerabilities).join(', '), true)" />
+					</div>
+					<div v-if="data.defenses.resistances.length > 0" class="statblock-res-container">
+						<b> Resistances </b>
+						<span v-html="render(alphaSort(data.defenses.resistances).join(', '), true)" />
+					</div>
+					<div
+						v-if="data.defenses.immunities.length > 0 || data.defenses.conditionImmunities.length > 0"
+						class="statblock-res-container"
+					>
+						<b> Immunities </b>
+						<span v-html="render(alphaSort(data.defenses.immunities).join(', '), true)" />
+						<span
+							v-if="data.defenses.immunities.length > 0 && data.defenses.conditionImmunities.length > 0"
+						>;
+						</span>
+						<span v-html="render(alphaSort(data.defenses.conditionImmunities).join(', '), true)" />
+					</div>
+				</template>
+
+				<div v-if="data.description.gear" class="statblock-language-container">
+					<b> Gear </b>
+					<span v-html="render(data.description.gear, true)" />
+				</div>
+				<div ckass="statblock-senses-container">
+					<b> Senses </b>
+					<span v-html="render(displaySpeedOrSenses(data.core.senses, false, v2024), true)" />{{
+						data.core.senses.length > 0
+							? ';' : '' }}
+					{{ v2024 ? 'P' : 'p' }}assive Perception {{ ppCalc(data) }}
+				</div>
+				<div class="statblock-language-container">
+					<b> Languages </b>
+					<span v-if="data.core.languages && data.core.languages.length === 0 && !data.misc.telepathy"> —
+					</span>
+					<span v-else> {{ data.core.languages?.sort().join(", ") }} </span>
+					<span v-if="data.misc.telepathy"><span v-if="(data.core.languages || []).length > 0">,</span>
+						{{ (data.core.languages || []).length > 0 ? 't' : 'T' }}elepathy {{
+							data.misc.telepathy }} ft.</span>
+				</div>
+				<div v-if="v2024" class="challenge-prof">
+					<span> <b> CR</b> {{ crAsString(data.description.cr) }} (XP {{
+						data.description.xp.toLocaleString('en')
+					}}; PB {{
+						signedNumber(data.core.proficiencyBonus) }})
+					</span>
+				</div>
+				<div v-else class="challenge-prof">
+					<span> <b> Challenge </b> {{ crAsString(data.description.cr) }} ({{
+						data.description.xp.toLocaleString('en') }} XP)
+					</span>
+					<span> <b> Proficiency Bonus </b> +{{ data.core.proficiencyBonus }}</span>
+				</div>
+			</div>
+
+			<div
+				v-if="data.features.features.length > 0 || showCasterCasting || (showInnateCasting && !data.spellcasting.innateSpells.displayAsAction)"
+				id="yes" class="statblock-row"
+			>
+				<div class="feature-container">
+					<h3 v-if="v2024" class="feature-container-title">
+						Traits
+					</h3>
+					<p v-if="data.misc.featureHeaderTexts.features" class="feature-header">
+						<span v-html="render(data.misc.featureHeaderTexts.features)" />
+					</p>
+					<div
+						v-for="(feature, index) in data.features.features" :key="index" class="feature-description"
+						v-html="renderFeature(feature)"
+					/>
+
+					<p
+						v-if="showInnateCasting && !data.spellcasting.innateSpells.displayAsAction"
+						class="feature-description"
+					>
+						<b><i>Innate Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics">
+							(Psionics)</span>.</i></b>
+						<span
+							class="feature-description-inner indented"
+							v-html="render(displayInnateCasting(data, v2024))"
+						/>
+					</p>
+
+					<p
+						v-if="showCasterCasting && data.spellcasting.casterSpells.castingClass && data.spellcasting.casterSpells.casterLevel && data.spellcasting.casterSpells.spellSlotList"
+						class="feature-description"
+					>
+						<b><i>Spellcasting.</i></b>
+						<span
+							class="feature-description-inner indented"
+							v-html="render(displayCasterCasting(data, v2024))"
+						/>
+					</p>
+				</div>
+			</div>
+
+			<div
+				v-if="data.features.actions.length > 0 || (showInnateCasting && data.spellcasting.innateSpells.displayAsAction)"
+				b class="statblock-row"
+			>
+				<div class="feature-container">
+					<h3 class="feature-container-title">
+						Actions
+					</h3>
+					<p v-if="data.misc.featureHeaderTexts.actions" class="feature-header">
+						<span v-html="render(data.misc.featureHeaderTexts.actions)" />
+					</p>
+					<div
+						v-for="(feature, index) in data.features.actions" :key="index" class="feature-description"
+						v-html="renderFeature(feature)"
+					/>
+
+					<p
+						v-if="showInnateCasting && data.spellcasting.innateSpells.displayAsAction"
+						class="feature-description"
+					>
+						<b><i>Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics">
+							(Psionics)</span>.</i></b>
+						<span
+							class="feature-description-inner indented"
+							v-html="render(displayInnateCasting(data, v2024))"
+						/>
+					</p>
+				</div>
+			</div>
+
+			<!-- TODO: Add features and actions to the generator here once they no longer need special handling because of spellcasting -->
+			<template v-for="title, fType of featureGenerator">
+				<div v-if="data.features[fType].length > 0" :key="fType" class="statblock-row">
+					<div class="feature-container">
+						<h3 class="feature-container-title">
+							{{ title }}
+						</h3>
+						<p v-if="fType === 'legendary' && data.features.legendary.length > 0" class="feature-header">
+							<span
+								v-html="render(data.misc.featureHeaderTexts[fType].replace('$NUM$', data.misc.legActionsPerRound.toString()))"
+							/>
+						</p>
+						<p v-else-if="data.misc.featureHeaderTexts[fType]" class="feature-header">
+							<span v-html="render(data.misc.featureHeaderTexts[fType])" />
+						</p>
+						<p
+							v-for="(feature, index) in data.features[fType]" :key="index" class="feature-description"
+							v-html="renderFeature(feature)"
+						/>
+					</div>
+				</div>
+			</template>
+		</div>
+
+		<div class="feature-container statblock-description py-4 px-2">
+			<div v-if="data.description.environment || data.description.faction" class="faction-env">
+				{{ data.description.environment ? `Environment: ${data.description.environment}` : '' }}
+				<br v-if="data.description.environment && data.description.faction">
+				{{ data.description.faction ? `Faction: ${data.description.faction}` : '' }}
+			</div>
+			<img v-if="data.description.image" class="statblock-image" :src="data.description.image">
+			<h2 v-if="data.description.description" class="feature-container-title">
+				Description
+			</h2>
+			<div v-if="data.description.description" class="markdown" v-html="render(data.description.description)" />
+		</div>
+	</div>
+</template>
+
+<style scoped lang="less">
+@import url("./styles/default.less");
+</style>

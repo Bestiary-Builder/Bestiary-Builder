@@ -1,0 +1,94 @@
+.tree-row {
+	background-color: var(--bg-color, rgb(var--v-theme-surface));
+	cursor: pointer;
+	transition: color 150ms ease-out;
+	user-select: none;
+	font-size: 14px;
+
+	&:hover {
+		color: color-mix(in srgb, currentcolor 70%, grey 30%) !important;
+	}
+
+	& > svg {
+		color: currentcolor;
+		cursor: pointer;
+	}
+
+	.collapse-button {
+		user-select: none;
+		margin-left: 0.1rem;
+
+		svg {
+			scale: 1.2;
+			transition: color 0.3s ease-out;
+			color: currentcolor;
+			cursor: pointer;
+
+			&:hover {
+				color: rgb(var(--v-theme-primary));
+			}
+		}
+	}
+
+	.tree-buttons {
+		display: inline-flex;
+		flex-direction: row;
+		gap: 0.5em;
+		margin-left: 0.5em;
+		justify-content: flex-end;
+		float: right;
+
+		svg {
+			scale: 1.2;
+			transition: color 0.3s ease-out;
+			color: currentcolor;
+			cursor: pointer;
+
+			&:not(.disabled):hover {
+				color: rgb(var(--v-theme-primary)) !important;
+			}
+		}
+	}
+
+	.additional-text {
+		overflow-x: hidden;
+		text-wrap: nowrap;
+	}
+
+	&.section-node {
+		font-style: italic;
+	}
+}
+
+.no-focus-outline:focus,
+.no-focus-outline:focus-visible {
+	outline: none;
+}
+
+.drag-handle {
+	cursor: grab;
+}
+
+.drag-ghost {
+	outline: 1px dashed currentColor;
+	padding-left: calc(var(--depth, 0) * 15px);
+	width: 100%;
+}
+
+.tree-row {
+	&::before {
+		content: "";
+		width: calc(var(--depth, 0) * 15px);
+		height: calc(1rem + 4.2px);
+		display: inline-block;
+		vertical-align: middle;
+		background: repeating-linear-gradient(
+			to right,
+			color-mix(in srgb, rgb(var(--v-theme-surface-light)) 60%, white 40%),
+			color-mix(in srgb, rgb(var(--v-theme-surface-light)) 60%, white 40%) 1px,
+			var(--bg-color, rgb(var(--v-theme-surface))) 1px,
+			var(--bg-color, rgb(var(--v-theme-surface))) 15px
+		);
+		background-position: -9px;
+	}
+}

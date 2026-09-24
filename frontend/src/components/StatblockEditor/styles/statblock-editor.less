@@ -1,0 +1,34 @@
+.handle {
+	padding-top: 0;
+	padding-bottom: 0;
+	cursor: grab;
+	color: rgb(var(--v-theme-primary));
+
+	&:active {
+		cursor: grabbing;
+	}
+
+	&.invisible {
+		cursor: unset;
+	}
+}
+
+.group-header {
+	transition: background-color 0.1s ease;
+
+	&:hover {
+		background-color: rgba(var(--v-theme-on-surface), 0.06);
+	}
+}
+
+.group-header .v-list-item-title {
+	font-weight: bold;
+	font-size: 0.9rem;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+}
+
+.unit-selector {
+	height: 40px;
+	translate: 0 5px;
+}

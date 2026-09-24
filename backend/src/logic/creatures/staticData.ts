@@ -1,0 +1,124 @@
+import fetch from "node-fetch";
+import SRDAttacks2014_ from "@/staticData/2014/SRDAttacks2014.json";
+import SRDCreatures2014 from "@/staticData/2014/SRDCreatures2014.json";
+import SRDAttacks2024_ from "@/staticData/2024/SRDAttacks2024.json";
+import SRDCreatures2024 from "@/staticData/2024/SRDCreatures2024.json";
+import data from "@/staticData/automationDocumentation.json";
+import spells from "@/staticData/shared/spells.json";
+import tOF from "@/staticData/shared/textOnlyFeatures.json";
+import { app } from "@/utilities/constants";
+
+let SRDAttacks2014 = SRDAttacks2014_;
+let SRDAttacks2024 = SRDAttacks2024_;
+
+// Actions
+const textOnlyFeatures = {} as { [key: string]: { name: string; description: string; automation: null } };
+
+for (const [key, value] of Object.entries(tOF)) {
+	textOnlyFeatures[key] = { name: key, description: value, automation: null };
+}
+
+SRDAttacks2014 = { ...textOnlyFeatures, ...SRDAttacks2014 };
+SRDAttacks2024 = { ...textOnlyFeatures, ...SRDAttacks2024 };
+
+const registerStaticDataRoutes = (routes: Array<{
+	path: string;
+	data: Record<string, unknown>;
+	error: string;
+}>) => {
+	for (const { path, data, error } of routes) {
+		const names = Object.keys(data);
+		app.get(`${path}/list`, async (req, res) => {
+			return res.json(names);
+		});
+		app.get(`${path}/:name`, async (req, res) => {
+			const name = decodeURIComponent(req.params.name);
+			const item = data[name];
+			if (item)
+				return res.json(item);
+			else
+				return res.status(404).json({ error });
+		});
+	}
+};
+
+registerStaticDataRoutes([
+	{
+		path: "/api/srd-features/2014",
+		data: SRDAttacks2014 as Record<string, unknown>,
+		error: "No SRD feature found with that name"
+	},
+	{
+		path: "/api/srd-features/2024",
+		data: SRDAttacks2024 as Record<string, unknown>,
+		error: "No SRD feature found with that name"
+	},
+	{
+		path: "/api/srd-creatures/2014",
+		data: SRDCreatures2014 as Record<string, unknown>,
+		error: "No srd creature found with that name"
+	},
+	{
+		path: "/api/srd-creatures/2024",
+		data: SRDCreatures2024 as Record<string, unknown>,
+		error: "No srd creature found with that name"
+	}
+]);
+
+// Spells
+app.get("/api/spells/all", async (req, res) => {
+	return res.json(spells);
+});
+
+let spellListFlattenedTemp: string[] = [];
+for (const list of Object.values(spells))
+	spellListFlattenedTemp = spellListFlattenedTemp.concat(list);
+spellListFlattenedTemp.sort();
+export const spellListFlattened = [...spellListFlattenedTemp];
+
+// Gamedata from avrae
+const getAllEntitlements = async () => await fetch("https://api.avrae.io/gamedata/entitlements?free=aaa", {
+	method: "GET",
+	headers: {
+		"Content-Type": "application/json"
+	},
+}).then(response => response.json());
+
+let gameDataspells: Array<{ label: string; id: number }>;
+getAllEntitlements().then((x) => {
+	gameDataspells = Object.values(x.data).filter((x: any) => x.entity_type === "spell").map((x: any) => ({ label: x.name, id: x.entity_id }));
+});
+
+app.get("/api/gamedata/spells", async (req, res) => {
+	res.json(gameDataspells);
+});
+
+// limiteduse abilities
+let limiteduse: any[] = [];
+const getLimitedUse = async () => {
+	const data = await fetch("https://api.avrae.io/gamedata/limiteduse", {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json"
+		},
+	}).then(response => response.json());
+
+	const transformed = data.data.map((item: any) => {
+		return {
+			title: item.name,
+			value: { id: item.id, typeId: item.typeId },
+		};
+	});
+	return transformed;
+};
+
+getLimitedUse().then(x => limiteduse = x);
+
+app.get("/api/gamedata/limiteduse", async (req, res) => {
+	res.json(limiteduse);
+});
+
+// json files
+app.get("/api/automationDocumentation", async (req, res) => {
+	res.json(data);
+});

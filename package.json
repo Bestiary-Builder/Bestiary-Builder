@@ -1,0 +1,32 @@
+{
+  "name": "bestiarybuilder",
+  "private": true,
+  "version": "3.0.0",
+  "workspaces": [
+    "frontend",
+    "backend",
+    "shared"
+  ],
+  "scripts": {
+    "dev": "npm run build-types -w shared && (npm run dev -w frontend & npm run dev -w backend)",
+    "build": "npm run type-check && npm run build-types -w shared && npm run build -w frontend",
+    "lint": "npm run lint -w shared && npm run lint -w backend && npm run lint -w frontend",
+    "lint:fix": "npm run lint:fix -w shared && npm run lint:fix -w backend && npm run lint:fix -w frontend",
+    "type-check": "npm run type-check -w shared && npm run type-check -w backend && npm run type-check -w frontend",
+    "prisma:generate": "npm run generate -w backend",
+    "prisma:migrate": "npm run migrate -w backend"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^9.2.0",
+    "@eslint/js": "^9.39.5",
+    "@stylistic/eslint-plugin": "^5.10.0",
+    "@typescript-eslint/eslint-plugin": "^8.36.0",
+    "@typescript-eslint/parser": "^8.36.0",
+    "eslint": "^10.8.0",
+    "typescript": "~6.0.2",
+    "typescript-eslint": "^8.36.0"
+  },
+  "dependencies": {
+    "npm-run-all": "^4.1.5"
+  }
+}

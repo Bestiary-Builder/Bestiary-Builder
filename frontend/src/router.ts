@@ -1,12 +1,15 @@
 import { createRouter, createWebHistory } from "vue-router";
-
-import { store } from "./utils/store";
-import { app } from "./main";
 // @ts-expect-error Comes in from vite-plugin-pages
 import fileRoutes from "~pages";
-import { routes as sharedRoutes } from "~/shared";
 import { sendToLogin } from "@/utils/utils";
 
+import { routes as sharedRoutes } from "~/shared";
+import { useToast } from "./utils/app/toast";
+import { useRecentPages } from "./utils/app/useRecentPages";
+
+import { store } from "./utils/store";
+
+const { addToast } = useToast();
 const routes = sharedRoutes.routes.map((route) => {
 	return {
 		...route,
@@ -36,6 +39,10 @@ router.beforeEach(async (to, from) => {
 	// Requires being logged in?
 	if (to.meta.loggedIn) {
 		if (!store.user) {
+			if (to.fullPath.includes("/bestiary/edit"))
+				return `/bestiary/view/${to.params.id as string || ""}`;
+			if (to.fullPath.includes("/creature/edit"))
+				return `/creature/view/${to.params.id as string || ""}`;
 			sendToLogin(to.path);
 			return false;
 		}
@@ -56,11 +63,11 @@ router.afterEach((to) => {
 	const keys = Object.keys(to.query);
 	if (keys.includes("loginSuccess") || keys.includes("loginError")) {
 		if (to.query.loginSuccess) {
-			app.config.globalProperties.$toast.success("Succesfully logged in");
+			addToast("Succesfully logged in", { color: "success" });
 			delete to.query.loginSuccess;
 		}
 		if (to.query.loginError) {
-			app.config.globalProperties.$toast.error(`Login failed: ${to.query.loginError.toString()}`, { duration: 0 });
+			addToast(`Login failed: ${to.query.loginError.toString()}`, { color: "error", timeout: -1 });
 			delete to.query.loginError;
 		}
 		// Remove queries from parameter
@@ -68,6 +75,9 @@ router.afterEach((to) => {
 			console.error(err);
 		});
 	}
+
+	const { trackVisit } = useRecentPages();
+	trackVisit(to.path, to.meta.pageTitle as string | undefined);
 });
 
 // Export

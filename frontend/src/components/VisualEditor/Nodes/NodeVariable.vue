@@ -1,0 +1,56 @@
+<script setup lang="ts">
+import type { Ref } from "vue";
+import type { Variable } from "~/shared";
+import { inject, watch } from "vue";
+import { useRules } from "vuetify/labs/rules";
+import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
+import HigherLevels from "./shared/HigherLevels.vue";
+import SectionHeader from "./shared/SectionHeader.vue";
+import { useDataCleanup } from "./shared/utils";
+
+const currentEffect = inject<Ref<Variable>>("currentEffect");
+
+watch(() => currentEffect?.value.higher, () => {
+	if (!Object.hasOwn(currentEffect!.value, "higher"))
+		return;
+	for (const index in currentEffect!.value.higher) {
+		const toIndex = Number.parseInt(index);
+		if (currentEffect!.value.higher[toIndex] === "")
+			delete currentEffect!.value.higher[toIndex];
+	}
+}, { deep: true });
+
+useDataCleanup(currentEffect, ["onError", "higher"]);
+
+const rules = useRules();
+</script>
+
+<template>
+	<template v-if="currentEffect">
+		<v-row density="comfortable">
+			<v-col cols="12">
+				<SectionHeader title="Set Variable" />
+			</v-col>
+
+			<v-col cols="6">
+				<v-text-field v-model="currentEffect.name" label="Name" :rules="[rules.required()]" />
+			</v-col>
+
+			<v-col cols="12">
+				<TypeHintedEditor v-model="currentEffect.value" label="Value" class="mb-4" />
+			</v-col>
+
+			<v-col cols="12">
+				<SectionHeader title="Additional Options" />
+			</v-col>
+
+			<v-col cols="6">
+				<TypeHintedEditor v-model="currentEffect.onError" label="On Error" />
+			</v-col>
+
+			<v-col cols="12">
+				<HigherLevels v-model="currentEffect.higher" is-int-expression />
+			</v-col>
+		</v-row>
+	</template>
+</template>

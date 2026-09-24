@@ -1,0 +1,57 @@
+import type { GlobalStats } from "~/shared";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { log } from "@/utilities/logger";
+import { PrismaClient } from "~/shared/src/prisma-types";
+import { withDatabaseFallback } from "./operations";
+
+// Connect to database
+
+const adapter = new PrismaPg({
+	connectionString: process.env.DATABASE_URL!,
+});
+
+let prisma: PrismaClient | undefined;
+export function getPrismaClient() {
+	if (prisma === undefined)
+		throw new Error("Prisma client is not initialized. Please call startConnection() first.");
+	return prisma;
+}
+
+export async function startConnection() {
+	while (true) {
+		try {
+			// Create prisma client and connect
+			prisma = new PrismaClient({ adapter });
+			// Stop waiting loop
+			return;
+		}
+		catch (err) {
+			log.log("critical", err);
+			log.info("Waiting 5 seconds to retry database connection...");
+			await new Promise(resolve => setTimeout(resolve, 5000));
+		}
+	}
+}
+
+// Show error screen when no database connection
+export function isDatabaseConnected(): boolean {
+	return prisma !== undefined;
+}
+
+// Global stats
+export async function getGlobalStats(): Promise<GlobalStats | null> {
+	return await withDatabaseFallback(async () => {
+		const prisma = getPrismaClient();
+		return {
+			creatures: await prisma.creature.count(),
+			bestiaries: await prisma.bestiary.count(),
+			users: await prisma.user.count()
+		};
+	}, null);
+}
+
+// Export other functions
+export * from "./automations";
+export * from "./bestiaries";
+export * from "./creatures";
+export * from "./users";

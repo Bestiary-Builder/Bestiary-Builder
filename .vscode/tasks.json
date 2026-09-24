@@ -73,10 +73,10 @@
 			]
 		},
 		{
-			"label": "build-frontend",
+			"label": "build",
 			"type": "shell",
 			"options": {
-				"cwd": "${workspaceFolder}/frontend"
+				"cwd": "${workspaceFolder}"
 			},
 			"command": "npm run build",
 			"isBackground": false,
@@ -86,7 +86,7 @@
 			"label": "startup",
 			"type": "shell",
 			"group": "none",
-			"command": "cd frontend;npm i;cd ../backend;npm i; cd ../shared; npm i",
+			"command": "npm install --include=dev",
 			"options": {
 				"cwd": "${workspaceFolder}"
 			},

@@ -153,28 +153,6 @@ otherwise limit the subpoena as a result of action by a user or their
 lawyer, Bestiary Builder will not disclose the requested
 information until it receives an order from the court to do so.
 
-## Google Analytics Usage
-
-Bestiary Builder makes use of Google Analytics, which uses
-cookies and collects information. Certain information such as your
-browser, and your IP address may be sent to Google Analytics but this
-information is always anonymized so that we don’t know which specific
-visitors are associated with what browser and we do not have access to
-any IP information in Google Analytics. Analytics may use several
-cookies including cookies stored for very long periods in order to
-determine if you have visited the site before, but Analytics never
-associates any identifiable information with your visit. So we may know
-many people visit a particular page, but we won’t know specifically who
-read it. For more information, please review the information on the
-following link:
-
--   [Google Privacy &
-    Terms](https://policies.google.com/technologies/partner-sites)
-
-To opt out of being counted in Google Analytics, you can install a
-[browser add on made by
-Google](https://tools.google.com/dlpage/gaoptout).
-
 ## Disclaimer
 
 Bestiary Builder believes that maintaining and preserving the

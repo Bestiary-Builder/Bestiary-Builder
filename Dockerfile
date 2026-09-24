@@ -7,6 +7,10 @@ ARG VITE_DISCORD_ID
 ENV VITE_DISCORD_ID=${VITE_DISCORD_ID}
 ARG VITE_ERROR_WEBHOOK
 ENV VITE_ERROR_WEBHOOK=${VITE_ERROR_WEBHOOK}
+ARG UMAMI_URL
+ENV VITE_UMAMI_URL=${UMAMI_URL}
+ARG UMAMI_WEBSITE_ID
+ENV VITE_UMAMI_WEBSITE_ID=${UMAMI_WEBSITE_ID}
 
 # Set the working directory in the containter
 WORKDIR /app
@@ -17,18 +21,20 @@ COPY . .
 
 # Build app
 
+## Install dependencies
+RUN bun install
+
 ## Generate prisma types
-RUN cd backend && bun install && bun run generate
+RUN cd backend && bun run generate
 
 ## Build shared type interface
-RUN cd shared && bun install --production && bunx ts-interface-builder ./src/build-types.ts
+RUN cd shared && bun run build-types
 
 ## Build backend
-RUN cd backend && bun build server.ts --compile --sourcemap --outfile ../build/server
+RUN cd backend && bun build src/server.ts --compile --sourcemap --outfile ../build/server
 
 ## Build frontend
-
-RUN cd frontend && bun install && bunx vite build
+RUN cd frontend && bun run build-only
 
 FROM base AS release
 

@@ -1,29 +1,25 @@
 {
-	"name": "server",
+	"name": "backend",
 	"type": "module",
-	"version": "1.0.0",
-	"private": true,
-	"description": "",
-	"author": "Stevnbak",
-	"license": "MPL-2.0",
-	"main": "server.ts",
+	"main": "src/server.ts",
 	"engines": {
 		"node": ">=21.4.0"
 	},
 	"scripts": {
 		"generate": "prisma generate",
-		"dev": "npx prisma generate && npx nodemon",
-		"prebuild": "npx prisma generate && cd ../shared && npm install && npx ts-interface-builder ./src/build-types.ts",
-		"build": "bun build --target=bun --sourcemap --outdir ../build --outfile server.js server.ts",
+		"migrate": "prisma migrate dev",
+		"dev": "npm run generate && npx nodemon",
 		"test": "vitest run",
 		"lint": "eslint .",
-		"lint:fix": "eslint . --fix"
+		"lint:fix": "eslint . --fix",
+		"type-check": "tsc --noEmit -p tsconfig.json"
 	},
 	"dependencies": {
 		"@prisma/adapter-pg": "^7.7.0",
 		"@prisma/client": "^7.7.0",
 		"bad-words-next": "^2.3.2",
 		"body-parser": "^2.2.0",
+		"codemirror": "^6.0.2",
 		"compression": "^1.8.0",
 		"cookie-parser": "^1.4.7",
 		"cors": "^2.8.5",
@@ -41,12 +37,17 @@
 		"pg": "^8.20.0",
 		"prerender-node": "^3.8.0",
 		"prisma": "^7.7.0",
+		"prisma-json-types-generator": "^5.1.0",
+		"split-on-first": "^4.0.0",
 		"ts-interface-checker": "^1.0.2",
 		"uuid": "^14.0.0",
+		"vue-codemirror6": "^1.6.1",
 		"winston": "^3.17.0"
 	},
+	"optionalDependencies": {
+		"@esbuild/win32-x64": "^0.28.1"
+	},
 	"devDependencies": {
-		"@antfu/eslint-config": "^2.27.3",
 		"@types/compression": "^1.7.5",
 		"@types/cookie-parser": "^1.4.8",
 		"@types/cors": "^2.8.17",
@@ -54,12 +55,8 @@
 		"@types/jsonwebtoken": "^9.0.9",
 		"@types/node": "^20.17.30",
 		"@types/node-fetch": "^2.6.12",
-		"eslint": "8.57.0",
 		"nodemon": "^3.1.10",
-		"prisma-json-types-generator": "^5.1.0",
-		"ts-interface-builder": "^0.3.3",
 		"tsx": "^4.19.3",
-		"typescript": "^6.0.3",
 		"vitest": "^3.1.2"
 	}
 }

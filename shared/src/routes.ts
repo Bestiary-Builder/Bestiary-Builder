@@ -18,65 +18,125 @@ export const routes: Route[] = [
 	{
 		path: "/",
 		name: "",
-		file: "HomeView.vue",
+		file: "other/FrontPage.vue",
 		meta: { navbar: false, loggedIn: false, dynamic: false },
 	},
 	// help
 	{
 		path: "/help",
 		name: "Help",
-		file: "GenericMarkdownView.vue",
+		file: "other/GenericMarkdownView.vue",
 		meta: { navbar: true, loggedIn: false, dynamic: false },
 		props: { filePath: "help" },
 	},
-	// a list of your bestiaries
 	{
-		path: "/my-bestiaries",
+		path: "/bestiaries/personal",
 		name: "My Bestiaries",
-		file: "PersonalBestiaryList.vue",
+		file: "bestiary/BestiariesPersonal.vue",
 		meta: { navbar: true, loggedIn: true, dynamic: false },
 	},
-	// a page to edit your personal automation
 	{
-		path: "/my-automation",
-		name: "My Automations",
-		file: "PersonalAutomation.vue",
-		meta: { navbar: true, loggedIn: true, dynamic: false },
-	},
-	// a list of all public bestiaries
-	{
-		path: "/bestiaries",
+		path: "/bestiaries/public",
 		name: "Public Bestiaries",
-		file: "PublicBestiaryList.vue",
+		file: "bestiary/BestiariesPublic.vue",
 		meta: { navbar: true, loggedIn: false, dynamic: false },
 	},
-	// viewing a particular bestiary or edit it
 	{
-		path: "/bestiary-viewer/:id",
-		name: "Bestiary Viewer",
-		file: "BestiaryViewer.vue",
+		path: "/bestiary/edit/:id",
+		name: "Edit Bestiary",
+		file: "bestiary/BestiaryEdit.vue",
+		meta: { navbar: false, loggedIn: true, dynamic: true },
+	},
+	{
+		path: "/bestiary/view/:id",
+		name: "View Bestiary",
+		file: "bestiary/BestiaryView.vue",
 		meta: { navbar: false, loggedIn: false, dynamic: true },
 	},
-	// editing a creature in a bestiary (which one by url param)
 	{
-		path: "/statblock-editor/:id",
-		name: "Stat block Editor",
-		file: "StatblockEditorView.vue",
+		path: "/creature/edit/:id",
+		name: "Edit Creature",
+		file: "creature/CreatureEdit.vue",
 		meta: { navbar: false, loggedIn: true, dynamic: true },
+	},
+	{
+		path: "/creature/view/:id",
+		name: "View Creature",
+		file: "creature/CreatureView.vue",
+		meta: { navbar: false, loggedIn: false, dynamic: true },
+	},
+	{
+		path: "/creature/edit/:id/:type/:aid",
+		name: "Edit Feature",
+		file: "creature/CreatureFeatureEdit.vue",
+		meta: { navbar: false, loggedIn: true, dynamic: true },
+	},
+	{
+		path: "/armory/personal",
+		name: "My Automation Collections",
+		file: "armory/ArmoriesPersonal.vue",
+		meta: { navbar: true, loggedIn: true, dynamic: false },
+	},
+	{
+		path: "/armory/public",
+		name: "Public Automation Collections",
+		file: "armory/ArmoriesPublic.vue",
+		meta: { navbar: true, loggedIn: false, dynamic: false },
+	},
+	{
+		path: "/armory/edit/:id",
+		name: "Edit Automation Collection",
+		file: "armory/ArmoryEdit.vue",
+		meta: { navbar: false, loggedIn: true, dynamic: true },
+	},
+	{
+		path: "/armory/view/:id",
+		name: "View Automation Collection",
+		file: "armory/ArmoryView.vue",
+		meta: { navbar: false, loggedIn: false, dynamic: true },
+	},
+	{
+		path: "/automation/edit/:id",
+		name: "Edit Automation",
+		file: "armory/AutomationEdit.vue",
+		meta: { navbar: false, loggedIn: true, dynamic: true },
+	},
+	{
+		path: "/automation/view/:id",
+		name: "View Automation",
+		file: "armory/AutomationView.vue",
+		meta: { navbar: false, loggedIn: false, dynamic: true },
+	},
+	{
+		path: "/characters",
+		name: "My Characters",
+		file: "character/CharactersPersonal.vue",
+		meta: { navbar: true, loggedIn: true, dynamic: false },
+	},
+	{
+		path: "/characters/:upstream",
+		name: "Character Attacks",
+		file: "character/CharacterAttacksEdit.vue",
+		meta: { navbar: false, loggedIn: true, dynamic: false },
 	},
 	// user settings
 	{
 		path: "/user",
 		name: "User Settings",
-		file: "UserSettings.vue",
+		file: "other/UserSettings.vue",
 		meta: { navbar: false, loggedIn: false, dynamic: false },
 	},
-
+	{
+		path: "/user/theme",
+		name: "Theme Builder",
+		file: "other/CustomizeTheme.vue",
+		meta: { navbar: false, loggedIn: false, dynamic: false },
+	},
 	// privacy policy
 	{
 		path: "/privacy-policy",
 		name: "Privacy Policy",
-		file: "GenericMarkdownView.vue",
+		file: "other/GenericMarkdownView.vue",
 		meta: { navbar: false, loggedIn: false, dynamic: false },
 		props: { filePath: "privacy-policy" },
 
@@ -85,7 +145,7 @@ export const routes: Route[] = [
 	{
 		path: "/terms-and-conditions",
 		name: "Terms And Conditions",
-		file: "GenericMarkdownView.vue",
+		file: "other/GenericMarkdownView.vue",
 		meta: { navbar: false, loggedIn: false, dynamic: false },
 		props: { filePath: "terms-and-conditions" },
 	},
@@ -93,7 +153,7 @@ export const routes: Route[] = [
 	{
 		path: "/changelog",
 		name: "Changelog",
-		file: "GenericMarkdownView.vue",
+		file: "other/GenericMarkdownView.vue",
 		meta: { navbar: true, loggedIn: false, dynamic: false },
 		props: { filePath: "changelog" },
 	},
@@ -101,7 +161,7 @@ export const routes: Route[] = [
 	{
 		path: "/server-error",
 		name: "",
-		file: "GenericMarkdownView.vue",
+		file: "other/GenericMarkdownView.vue",
 		meta: { navbar: false, loggedIn: false, dynamic: false },
 		props: { filePath: "server-error" },
 	},
@@ -109,7 +169,7 @@ export const routes: Route[] = [
 	{
 		path: "/:pathMatch(.*)*",
 		name: "Page not found",
-		file: "GenericMarkdownView.vue",
+		file: "other/GenericMarkdownView.vue",
 		meta: { navbar: false, loggedIn: false, dynamic: false },
 		props: { filePath: "not-found" },
 	},

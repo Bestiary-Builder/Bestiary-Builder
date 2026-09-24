@@ -1,0 +1,60 @@
+<script setup lang="ts">
+import type { Ref } from "vue";
+import type { Condition } from "~/shared";
+import { computed, inject } from "vue";
+import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
+import SectionHeader from "./shared/SectionHeader.vue";
+import { useDataCleanup } from "./shared/utils";
+
+const currentEffect = inject<Ref<Condition>>("currentEffect");
+
+const isWarning = computed(() => {
+	return (
+		(
+			(currentEffect?.value.condition.includes(" = ")) ?? false
+		) || (
+			(
+				(currentEffect?.value.condition.includes("=") ?? false)
+				&& !(currentEffect?.value.condition.includes("==") ?? false)
+				&& currentEffect?.value.condition[currentEffect?.value.condition.length - 1] !== "="
+			)
+			&& !(currentEffect?.value.condition.includes(">") || currentEffect?.value.condition.includes("<") || currentEffect?.value.condition.includes("!"))
+		)
+	);
+});
+
+useDataCleanup(currentEffect, ["errorBehaviour"]);
+</script>
+
+<template>
+	<template v-if="currentEffect">
+		<v-row density="comfortable">
+			<v-col cols="12">
+				<SectionHeader title="Branch" />
+			</v-col>
+
+			<v-col cols="12">
+				<TypeHintedEditor v-model="currentEffect.condition" label="Condition" />
+				<p v-if="isWarning" class="pt-1 text-warning">
+					<small>Equality checks should use double ==.</small>
+				</p>
+			</v-col>
+
+			<v-col cols="12">
+				<SectionHeader title="Additional Options" />
+			</v-col>
+
+			<v-col cols="6">
+				<v-select
+					v-model="currentEffect.errorBehaviour" label="Error Behaviour" title="Error Behaviour" :items="[
+						{ title: 'Treat as True', value: 'true' },
+						{ title: 'Treat as False', value: 'false' },
+						{ title: 'Run both', value: 'both' },
+						{ title: 'Neither', value: 'neither' },
+						{ title: 'Raise', value: 'raise' },
+					]"
+				/>
+			</v-col>
+		</v-row>
+	</template>
+</template>

@@ -1,13 +1,16 @@
 /// <reference types="vitest" />
 
-import { URL, fileURLToPath } from "node:url";
-
-import { defineConfig } from "vite";
+import { fileURLToPath, URL } from "node:url";
 import vue from "@vitejs/plugin-vue";
+
+import { visualizer } from "rollup-plugin-visualizer";
+import { defineConfig } from "vite";
 import Pages from "vite-plugin-pages";
 import generateSitemap from "vite-plugin-pages-sitemap";
-import FontAwesome from "unplugin-vue-fontawesome/vite";
+import vuetify from "vite-plugin-vuetify";
 import rawloader from "vite-raw-plugin";
+import svgLoader from "vite-svg-loader";
+
 // @ts-expect-error Magic
 import { routes } from "../shared/";
 
@@ -15,6 +18,8 @@ import { routes } from "../shared/";
 export default defineConfig({
 	plugins: [
 		vue(),
+		vuetify(),
+		svgLoader(),
 		Pages({
 			dirs: "src/views",
 			onRoutesGenerated: (_fileroutes) => {
@@ -31,23 +36,7 @@ export default defineConfig({
 		rawloader({
 			fileRegex: /\.md$/
 		}),
-		FontAwesome({
-			// the fontawesome collections to use
-			collections: "free",
-
-			// collection that is used if no collection is specified
-			defaultCollection: "solid",
-
-			// prop names to be tested for icons
-			props: ["icon"],
-
-			// component names to be tested for icons, use an empty array to check all components
-			components: ["icon", "font-awesome-icon"],
-
-			// filters for transforming targets
-			include: [/\.vue$/, /\.vue\?vue/],
-			exclude: [/node_modules/, /\.git/]
-		})
+		visualizer({ open: true, gzipSize: true, template: "sunburst" }),
 	],
 	resolve: {
 		alias: {

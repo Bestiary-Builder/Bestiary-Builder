@@ -1,63 +1,299 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
-import TreeRoot from "./TreeRoot.vue";
-import { useFetch } from "@/utils/utils";
+import type { Ref } from "vue";
+import type { AttackInteraction, AttackModel, ButtonInteraction, EffectKey, EffectWithTarget, IEffect, Target } from "~/shared";
+import { Icon } from "@iconify/vue";
+import { computed, h, inject, ref } from "vue";
+import { VueDraggable } from "vue-draggable-plus";
+import { VIcon, VTooltip } from "vuetify/components";
+import { capitalizeFirstLetter } from "~/shared";
+import ConfirmDelete from "../Global/ConfirmDelete.vue";
 
-const props = defineProps<{ data: unknown; depth: number; parentType: string }>();
+import EffectAdder from "./EffectAdder.vue";
+import NodeHeader from "./Nodes/shared/NodeHeader.vue";
+import { deepKeys, draggingProps } from "./util";
 
-// Documentation helpers
-const metaData = ref<any | null>(null);
+const props = defineProps<{ data: EffectWithTarget; depth: number; context: string[] }>();
 
-onMounted(async () => {
-	const { success, data } = await useFetch("/api/automationMetaData");
-	if (success)
-		metaData.value = data;
-});
-
-const selfType = computed(() => {
-	// @ts-expect-error Automation does not have typing.
+const selfType = computed<string>(() => {
 	return props.data.type;
 });
+
+const currentEffect = inject<Ref<EffectWithTarget | ButtonInteraction | AttackInteraction | null>>("currentEffect");
+const currentContext = inject<Ref<string[]>>("currentContext");
+const automation = inject<Ref<null | AttackModel | AttackModel[]>>("automation");
+const isCollapsed = ref(false);
+
+const branchesCollapsed = ref<any[]>([]);
+
+const toggleBranch = (key: any) => {
+	if (branchesCollapsed.value.includes(key))
+		branchesCollapsed.value = branchesCollapsed.value.filter(n => n !== key);
+	else
+		branchesCollapsed.value.push(key);
+};
+
+const isCurrentSelectedContext = computed(() => {
+	return JSON.stringify(currentContext?.value || []) === JSON.stringify(props.context);
+});
+
+const deleteNode = () => {
+	if (nodeListEffectIsPartOf.value && nodeListEffectIsPartOf.value.length > 0) {
+		const tree = nodeListEffectIsPartOf.value;
+		const indexToRemove = Number.parseInt(props.context[props.context.length - 1] || "0");
+
+		tree.splice(indexToRemove, 1);
+		currentEffect!.value = null;
+		currentContext!.value = [];
+	}
+};
+
+const nodeListEffectIsPartOf = computed(() => {
+	let tree: any = [];
+
+	if (!automation || !automation.value)
+		return;
+	if (Array.isArray(automation.value))
+		tree = automation.value[Number.parseInt(props.context[0])].automation;
+
+	else
+		tree = automation.value.automation;
+
+	for (const [idx, key] of props.context.entries()) {
+		const isArrayIndex = /^\d+$/.test(key);
+		if (idx === props.context.length - 1)
+			break;
+
+		if (key === "root")
+			continue;
+		if (key.startsWith("$"))
+			continue;
+		if (isArrayIndex) {
+			if (idx === 0)
+				continue;
+			const index = Number.parseInt(key, 10);
+			if (Array.isArray(tree) && index < tree.length)
+				tree = tree[index];
+			else
+				return undefined;
+		}
+		else {
+			if (typeof tree === "object" && key in tree)
+				tree = tree[key];
+			else
+				return undefined;
+		}
+	}
+
+	return tree;
+});
+
+const additionalText = computed(() => {
+	if (selfType.value === "target") {
+		const target = (props.data as Target).target || "";
+		if (!target)
+			return "";
+
+		return capitalizeFirstLetter(target.toString());
+	}
+	if (selfType.value === "ieffect2") {
+		const target = (props.data as IEffect).name || "";
+		if (!target)
+			return "";
+
+		return target.toString().trim().replace("caster.name", "Caster").replace("target.name", "Target").substring(0, 32);
+	}
+	return "";
+});
+
+const showControls = inject<Ref<boolean>>("showControls");
+
+const DragHandle = () => h(
+	VTooltip,
+	{ text: "Drag to move this node" },
+	{
+		activator: ({ props: activatorProps }: { props: Record<string, unknown> }) => h(VIcon, {
+			...activatorProps,
+			icon: "material-symbols:drag-indicator",
+			inline: true,
+			size: 11,
+			class: "no-focus-outline drag-handle",
+			onClick: (e: MouseEvent) => e.stopPropagation(),
+		}),
+	},
+);
 </script>
 
 <template>
-	<template v-if="metaData">
-		<p :style="`margin-left: ${(depth + 0) * 20}px`">
-			{{ parentType }}:
+	<div
+		class="tree-node"
+		:style="isCurrentSelectedContext ? '--bg-color: color-mix(in srgb, rgb(var(--v-theme-surface)) 100%, white 0%)' : ''"
+	>
+		<p
+			:id="`${selfType}${depth}`" class="drag-area tree-row text-on-surface" :style="`--depth: ${depth}`"
+			@click="currentEffect = data; currentContext = context"
+		>
+			<NodeHeader :type="selfType" :additional-text="additionalText" :is-current="isCurrentSelectedContext" />
+
+			<span
+				v-if="['attack', 'condition', 'save', 'ieffect2', 'target'].includes(selfType)"
+				class="collapse-button" @click.stop="isCollapsed = !isCollapsed"
+			>
+				<Icon icon="solar:alt-arrow-right-bold" inline width=".75em" :rotate="isCollapsed ? 0 : 45" />
+			</span>
+
+			<span v-if="showControls" class="tree-buttons">
+				<DragHandle />
+				<ConfirmDelete
+					:message="`Are you sure you want to delete this ${selfType} Effect?`" size="11"
+					@confirm="deleteNode"
+				/>
+			</span>
 		</p>
-		<p :style="`margin-left: ${(depth + 1) * 20}px`">
-			{{ selfType }}
-		</p>
-	</template>
-	<!-- <p v-if="metaData" :style="`margin-left: ${depth * 20}px`"> {{parentType}}:
-        <p style="margin-left: 20px"> {{ selfType }}</p>
-    </p> -->
-	<template v-if="metaData">
-		<template v-for="node, nodeType of data">
-			<template v-if="metaData[selfType][nodeType] === 'Effects[]'">
-				<TreeNode v-for="childNode in node" :key="childNode" :data="childNode" :depth="depth + 1" :parent-type="nodeType" />
+		<div v-show="!isCollapsed">
+			<!-- Loop through each key in our data, looking for the keys which continue the structure. -->
+			<template v-for="effect, key of data" :key="key">
+				<template v-if="deepKeys.includes(key) && selfType !== 'ieffect2'">
+					<!--- E.g. hit, Miss, on False text -->
+					<p
+						v-if="!['root', 'effects'].includes(key)" :key="key"
+						:style="`--depth: ${depth + 1}; opacity: var(--v-medium-emphasis-opacity)`"
+						class="tree-row section-node text-on-surface" @click.stop="toggleBranch(key)"
+					>
+						<NodeHeader :type="key" />
+						<span
+							v-if="['onTrue', 'onFalse', 'hit', 'miss', 'fail', 'success'].includes(key)"
+							class="collapse-button"
+						>
+							<Icon
+								icon="solar:alt-arrow-right-bold" inline width=".75em"
+								:rotate="branchesCollapsed.includes(key) ? 0 : 45" class="ml-1"
+							/>
+						</span>
+					</p>
+					<template v-if="!branchesCollapsed.includes(key)">
+						<VueDraggable
+							v-model="(data as any)[key]" v-bind="draggingProps"
+							:style="`--depth: ${depth + (!['root', 'effects'].includes(key) ? 2 : 1)}`"
+						>
+							<TreeNode
+								v-for="(childNode, index) in effect" :key="childNode as any"
+								:data="childNode as any" :depth="depth + (!['root', 'effects'].includes(key) ? 2 : 1)"
+								:context="[...context, `$${selfType}`, key, index.toString()]"
+							/>
+							<EffectAdder
+								:context="[...context, `$${selfType}`, key]"
+								:depth="depth + (!['root', 'effects'].includes(key) ? 2 : 1)"
+							/>
+						</VueDraggable>
+					</template>
+				</template>
+				<template v-if="(key as EffectKey) === 'buttons'">
+					<VueDraggable
+						v-model="(data as any).buttons" v-bind="{ ...draggingProps, group: 'buttons' }"
+						:style="`--depth: ${depth + 1}`"
+					>
+						<div v-for="(button, index) in effect" :key="index" class="button-item">
+							<p
+								class="tree-row" :style="`--depth: ${depth + 1}`"
+								@click="currentEffect = (button as any as ButtonInteraction); currentContext = [...context, 'buttons', index.toString()]"
+							>
+								<NodeHeader
+									:type="key"
+									:additional-text="(button as any as ButtonInteraction).label.trim().substring(0, 16)"
+									:is-current="JSON.stringify(currentContext) === JSON.stringify([...context, 'buttons', index.toString()])"
+								/>
+
+								<span class="collapse-button" @click="toggleBranch(button)">
+									<Icon
+										icon="solar:alt-arrow-right-bold" inline width=".75em"
+										:rotate="branchesCollapsed.includes(button as any) ? 0 : 45" class="ml-1"
+									/>
+								</span>
+
+								<span class="tree-buttons">
+									<DragHandle />
+
+									<ConfirmDelete
+										:message="`Are you sure you want to delete ${(button as ButtonInteraction).label}?`"
+										size="11"
+										@confirm="(data as IEffect).buttons?.splice(index as number, 1); currentContext = []; currentEffect = null"
+									/>
+								</span>
+							</p>
+							<VueDraggable
+								v-if="!branchesCollapsed.includes(button)"
+								v-model="(button as ButtonInteraction).automation" v-bind="draggingProps"
+							>
+								<TreeNode
+									v-for="buttonNode, idx in (button as ButtonInteraction).automation" :key="idx"
+									:data="buttonNode" :depth="depth + 2"
+									:context="[...context, 'buttons', index.toString(), 'automation', idx.toString()]"
+								/>
+								<EffectAdder
+									:context="[...context, 'buttons', index.toString(), 'automation']"
+									:depth="depth + 2"
+								/>
+							</VueDraggable>
+						</div>
+					</VueDraggable>
+				</template>
+				<template v-if="(key as EffectKey) === 'attacks'">
+					<VueDraggable
+						v-model="(data as any).attacks" v-bind="{ ...draggingProps, group: 'attacks' }"
+						:style="`--depth: ${depth + 1}`"
+					>
+						<div v-for="(attack, index) in effect" :key="index" class="button-item">
+							<p
+								class="tree-row" :style="`--depth: ${depth + 1}`"
+								@click="currentEffect = (attack as any as AttackInteraction); currentContext = [...context, 'attacks', index.toString()]"
+							>
+								<NodeHeader
+									:type="key"
+									:additional-text="(attack as any as AttackInteraction).attack.name.trim().substring(0, 16)"
+									:is-current="JSON.stringify(currentContext) === JSON.stringify([...context, 'attacks', index.toString()])"
+								/>
+
+								<span class="collapse-button" @click="toggleBranch(attack)">
+									<Icon
+										icon="solar:alt-arrow-right-bold" inline width=".75em"
+										:rotate="branchesCollapsed.includes(attack as any) ? 0 : 45" class="ml-1"
+									/>
+								</span>
+
+								<span class="tree-buttons">
+									<DragHandle />
+
+									<ConfirmDelete
+										:message="`Are you sure you want to delete ${(attack as AttackInteraction).attack.name}?`"
+										size="11"
+										@confirm="(data as IEffect).attacks?.splice(index as number, 1); currentContext = []; currentEffect = null"
+									/>
+								</span>
+							</p>
+							<VueDraggable
+								v-if="!branchesCollapsed.includes(attack)"
+								v-model="(attack as AttackInteraction).attack.automation" v-bind="draggingProps"
+							>
+								<TreeNode
+									v-for="attackNode, idx in (attack as AttackInteraction).attack.automation"
+									:key="idx" :data="attackNode" :depth="depth + 2"
+									:context="[...context, 'attacks', index.toString(), 'attack', 'automation', idx.toString()]"
+								/>
+								<EffectAdder
+									:context="[...context, 'attacks', index.toString(), 'attack', 'automation']"
+									:depth="depth + 2"
+								/>
+							</VueDraggable>
+						</div>
+					</VueDraggable>
+				</template>
 			</template>
-			<template v-if="nodeType === 'buttons'">
-				<TreeRoot v-for="button in node" :key="button" :data="JSON.stringify(button)" :depth="depth + 1" parent-type="buttonRoot" />
-			</template>
-			<template v-if="nodeType === 'attacks'">
-				<TreeRoot v-for="attack in node" :key="attack" :data="JSON.stringify(attack)" :depth="depth + 1" parent-type="attackRoot" />
-			</template>
-		</template>
-	</template>
+		</div>
+	</div>
 </template>
 
 <style scoped>
-.red {
-	border: 4px solid lightcoral;
-}
-
-.blue {
-	border: 4px solid lightblue;
-	margin-right: 0.5rem;
-}
-
-.green {
-	border: 4px solid lightgreen;
-}
+/* p:has(.drag-ghost) {
+	background-color: blue !important;
+} */
 </style>

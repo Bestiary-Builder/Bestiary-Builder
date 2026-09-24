@@ -1,3 +1,56 @@
+[//]: # (Remember to update the constant in /src/utils/constants.ts whenever a new release is added)
+
+
+## v3.0.0
+_September 24, 2026_
+
+### Major Features
+- Added a complete automation editor where you can edit actions.
+  - Supports all types of nodes, attacks, buttons, etc. 
+  - Allows you to create automation directly within BB without knowing how to code YAML
+  - Includes smart features like dragging to reorder nodes and autocomplete of automation variables.
+- Added the ability to see your Avrae Characters and edit their attacks on BB.
+- Added automation collections, and improvement over "My Automations". Create collections of automations, and import them to anywhere.
+  - You can use this to create collections of shared monster actions, magic items for your server, homebrew (sub)classes, etc.
+  - Users can subscribe to the collection or import the action to their character.
+  - You can add Custom Counters to automations in collections, which will be imported to their character when a user imports an action.
+  - If you previously had automations in My Automations, they have been migrated into a collection for you.
+- You can now reorder your collections and creatures in any order you want, and better sort options have been added for collection items.
+- Updated the Statblock formatting to 2024 
+  - Added several different themes to choose from
+  - Patreon Supporters can create custom themes with any colours
+  - You may choose 2014 formatting in your settings.
+- Added 2024 SRD monsters and attacks.
+  - You may choose 2014 SRD in your settings.
+- Modernized and improved the entire User Interface - everything has been rewritten.
+- Added Light mode toggle in your settings
+- Patreon Supporters may define custom site themes with any colours.
+
+### Minor Features
+- Minor fields like AC source and speeds, and senses now support markdown formatting, i.e. can be made *italic* or **bold** etc.
+- The Export statblock to Image feature has been improved. It will now look identical to the statblock on the site
+  - Also added 1 column, 2 column, and 2 column extra wide image exports options.
+- Added CMD/CTRL+S hotkeys for saving creatures / collections / etc.
+- Updated the available default spells to choose from when editing spellcasting on a creature to all currently published spells.
+- Added a rich text editor for descriptions which supports markdown formatting buttons.
+- Added the ability to import a single creature from CritterDB.
+- Added the ability to import a single creature from BB on the Bestiary page.
+- Added an improved creature copy and pasting system.
+- Bestiaries and automation collections now have a built in image field which will be displayed as the image for the collection.
+  - The first image in the markdown description of the collection has been automatically migrated to this field.
+- Creatures and automations have a tag property which you can use to define custom grouping on the collection page.
+- Generating automation from a description now supports attacks which inflicts saves, as well as 2024 formatted actions.
+
+### Fixes
+- Improved the accuracy of the 2014 SRD Creatures and Actions data.
+- Fixed class based spellcasting to hit not having a + on positive values.
+- Fixed newlines in fields displaying as a single line as markdown, such as description, requiring many newlines to force newlines. Behaviour is now the same as Discord.
+- Fixed minor issues with critterDB importer, now is more flexible with expected formatting of actions.
+- Fixed issues with 5e.tools importer, now supports more types of data for a few fields, supports displayed as action spellcasting.
+- Reactions now import from 5e.tools.
+- Innate spellcasting now displays the different spell amounts in the correct order.
+- Importing text only actions now respects the name of the creature and if it is a proper noun.
+
 ## v2.6.6
 _June 12, 2026_
 
@@ -61,7 +114,7 @@ _April 17th, 2025_
 _June 26th, 2024_
 
 - Fixed an issue where dragging to reorder speed, senses, and features was not working properly.
-- The save statblock button is now greyed out when no changes have been made.
+- The save statblock button is now grayed out when no changes have been made.
 
 ---
 ## v2.3.1

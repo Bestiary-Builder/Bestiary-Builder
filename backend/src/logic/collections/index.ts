@@ -1,0 +1,2 @@
+import "./automationCollections";
+import "./bestiaries";

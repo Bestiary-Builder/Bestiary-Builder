@@ -5,6 +5,24 @@ export interface SearchOptions {
 	tags: string[];
 }
 
+export type AutomationConsumables = AutomationConsumable[];
+
+export interface AutomationConsumable {
+	name: string;
+	minv: string | null;
+	maxv: string | null;
+	display_type: "bubble" | "square" | "hex" | "star" | "default" | null;
+	reset: "short" | "long" | "none" | null;
+	reset_to: string | null;
+	reset_by: string | null;
+	title: string | null;
+	desc: string | null;
+	value: number | null;
+	ddb_source_feature_id: null;
+	ddb_source_feature_type: null;
+	live_id: null;
+}
+
 export type Stat = "str" | "dex" | "con" | "int" | "cha" | "wis";
 
 export interface Statblock {
@@ -36,12 +54,14 @@ export interface FeatureHeaderTexts {
 }
 export interface Description {
 	name: string;
+	tag: string;
 	isProperNoun: boolean;
 	description: string;
 	image: string;
 	faction: string;
 	environment: string;
 	alignment: string | null;
+	gear: string;
 	cr: number;
 	xp: number;
 }
@@ -145,7 +165,7 @@ export interface Features {
 export interface FeatureEntity {
 	name: string;
 	description: string;
-	automation: null | { [key: string]: unknown } | { [key: string]: unknown }[];
+	automation: any; // null | AttackModel | AttackModel[];
 }
 
 export interface SpellCasting {

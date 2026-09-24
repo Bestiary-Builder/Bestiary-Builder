@@ -1,0 +1,87 @@
+<script setup lang="ts">
+import type { User } from "~/shared";
+import { onMounted, ref } from "vue";
+import { useFetch } from "@/utils/utils";
+import { SupporterStatus } from "~/shared";
+
+const { id } = defineProps<{ id: string }>();
+const user = ref<User | null>(null);
+onMounted(async () => {
+	const { success, data } = await useFetch<User>(`/api/user/${id}`);
+	if (success)
+		user.value = data;
+	else user.value = null;
+});
+</script>
+
+<template>
+	<div class="container">
+		<div v-if="user" class="user">
+			<img
+				class="img" alt=""
+				:src="user.avatar ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` : 'https://cdn.discordapp.com/embed/avatars/0.png'"
+			>
+			by
+			<span
+				v-if="user.id === '303857638171607040' || user.id === '307900989455859723'"
+				v-tooltip="'This user is a developer of Bestiary Builder'" class="developer"
+			> {{ user.username }}
+			</span>
+			<span v-else-if="user.supporter === SupporterStatus.none">{{ user.username }}</span>
+			<span
+				v-else-if="user.supporter === SupporterStatus.wirmling"
+				v-tooltip="'This user is a Wyrmling Patreon Supporter!'" class="supporter-tier-1"
+			> {{ user.username }}
+			</span>
+			<span
+				v-else-if="user.supporter === SupporterStatus.greatwyrm"
+				v-tooltip="'This user is a Greatwyrm Patreon Supporter!'" class="supporter-tier-2"
+			> {{ user.username }}
+			</span>
+		</div>
+	</div>
+</template>
+
+<style scoped lang="less">
+.container {
+	white-space: nowrap;
+	display: inline-block;
+}
+
+.user {
+	display: flex;
+	align-items: center;
+	gap: 0.3rem;
+
+	.img {
+		display: inline;
+		height: 0.5em;
+		border-radius: 50%;
+		scale: 2.5;
+		padding: 0 0.5em;
+	}
+
+	--tier1: #29cf29;
+	--tier2: #ca2020;
+	--dev: #ff4500;
+}
+
+.supporter-tier-1 {
+	color: var(--tier1);
+	text-shadow: rgb(var(--v-theme-surface)) 2px 2px;
+}
+
+.supporter-tier-2 {
+	color: var(--tier2);
+	text-shadow: rgb(var(--v-theme-surface)) 2px 2px;
+}
+
+.developer {
+	color: var(--dev);
+	text-shadow: rgb(var(--v-theme-surface)) 2px 2px;
+}
+
+.loading {
+	display: relative;
+}
+</style>
