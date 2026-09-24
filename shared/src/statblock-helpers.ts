@@ -389,7 +389,14 @@ export function displayCasterCasting(data: Statblock, v2024 = false): string {
 const AVRAE_ATTACK_OVERRIDES_RE = /<avrae hidden>(?:(?<simple>(.*?)\|([+-]?\d*)\|(.*?))|(?<freeform>.*?))<\/avrae>/gis;
 const JUST_DAMAGE_RE = /[+-]?\d+ \((.+?)\) (\w+) damage/i;
 // eslint-disable-next-line regexp/no-obscure-range
-const ATTACK_PARSER_RE = /\*?(?:\w+ ){1,4}Attack:\*? (?<attackBonus>[+-]?\d+) to hit, .*?\*?Hit:\*? [+-]?(?:\d+ \((?<damageDiceBase>.+?)\)|(?<damageIntBase>\d+)) (?<damageTypeBase>[A-z ]+) damage[., ]??(?: in melee[.,]? or [+-]?(?:\d+ \((?<damageRangedDice>.+?)\)|(?<damageRangedInt>\d+)) (?<damageTypeRanged>[A-z ]+) damage at range[,.]?)?(?:,? or [+-]?(?:\d+ \((?<damageDiceVers>.+?)\)|(?<damageIntVers>\d+)) (?<damageTypeVers>[A-z ]+) damage if used with two hands(?: to make a melee attack)?)?(?:,? (?:plus|and) [+-]?(?:\d+ \((?<damageBonusDice>.+?)\)|(?<damageBonusInt>\d+)) (?<damageTypeBonus>[A-z ]+) damage)?/i;
+const ATTACK_PARSER_COMPLETE_2014_RE = /\*?(?:\w+ ){1,4}Attack(?: Roll)?:\*? (?<attackBonus>[+-]?\d+).*?\*?Hit:\*? [+-]?(?:\d+ \((?<damageDiceBase>.+?)\)|(?<damageIntBase>\d+)) (?<damageTypeBase>[A-z ]+) damage[., ]??(?: in melee[.,]? or [+-]?(?:\d+ \((?<damageRangedDice>.+?)\)|(?<damageRangedInt>\d+)) (?<damageTypeRanged>[A-z ]+) damage at range[,.]?)?(?:,? or [+-]?(?:\d+ \((?<damageDiceVers>.+?)\)|(?<damageIntVers>\d+)) (?<damageTypeVers>[A-z ]+) damage if used with two hands(?: to make a melee attack)?)?(?:,? (?:plus|and) [+-]?(?:\d+ \((?<damageBonusDice>.+?)\)|(?<damageBonusInt>\d+)) (?<damageTypeBonus>[A-z ]+) damage)?(.*?DC (?<DCvalue>\d+) (?<typeSave>:?Strength|Dexterity|Constitution|Intelligence|Wisdom|Charisma)? (?:saving throw|save).*?((?:\d+ \((?<damageDiceBaseSave>.+?)\)|(?<damageIntBaseSave>\d+)) (?<damageTypeBaseSave>[A-z ]+) damage)(?:,? (?:plus|and) [+-]?(?:\d+ \((?<damageBonusDiceSave>.+?)\)|(?<damageBonusIntSave>\d+)) (?<damageTypeBonusSave>[A-z ]+) damage)?)?/i;
+// eslint-disable-next-line regexp/no-obscure-range
+const ATTACK_PARSER_COMPLETE_2024_RE = /\*?(?:\w+ ){1,4}Attack(?: Roll)?:\*? (?<attackBonus>[+-]?\d+).*?\*?Hit:\*? [+-]?(?:\d+ \((?<damageDiceBase>.+?)\)|(?<damageIntBase>\d+)) (?<damageTypeBase>[A-z ]+) damage[., ]??(?: in melee[.,]? or [+-]?(?:\d+ \((?<damageRangedDice>.+?)\)|(?<damageRangedInt>\d+)) (?<damageTypeRanged>[A-z ]+) damage at range[,.]?)?(?:,? or [+-]?(?:\d+ \((?<damageDiceVers>.+?)\)|(?<damageIntVers>\d+)) (?<damageTypeVers>[A-z ]+) damage if used with two hands(?: to make a melee attack)?)?(?:,? (?:plus|and) [+-]?(?:\d+ \((?<damageBonusDice>.+?)\)|(?<damageBonusInt>\d+)) (?<damageTypeBonus>[A-z ]+) damage)?(\*?.*?(?<typeSave>:?Strength|Dexterity|Constitution|Intelligence|Wisdom|Charisma)? (?:saving throw:|save:)\*? DC (?<DCvalue>\d+).*?\*?Failure:\*?.*?((?:\d+ \((?<damageDiceBaseSave>.+?)\)|(?<damageIntBaseSave>\d+)) (?<damageTypeBaseSave>[A-z ]+) damage)(?:,? (?:plus|and) [+-]?(?:\d+ \((?<damageSaveBonusDice>.+?)\)|(?<damageSaveBonusInt>\d+)) (?<damageTypeSaveBonus>[A-z ]+) damage)?)?/i;
+// eslint-disable-next-line regexp/no-obscure-range
+const SAVE_2014_PARSER_RE = /DC (?<DCvalue>\d+) (?<typeSave>:?Strength|Dexterity|Constitution|Intelligence|Wisdom|Charisma)? (?:saving throw|save).*?((?:\d+ \((?<damageDiceBase>.+?)\)|(?<damageIntBase>\d+)) (?<damageTypeBase>[A-z ]+) damage)(?:,? (?:plus|and) [+-]?(?:\d+ \((?<damageBonusDice>.+?)\)|(?<damageBonusInt>\d+)) (?<damageTypeBonus>[A-z ]+) damage)?/i;
+// eslint-disable-next-line regexp/no-obscure-range
+const SAVE_2024_PARSER_RE = /\*?(?<typeSave>:?Strength|Dexterity|Constitution|Intelligence|Wisdom|Charisma)? (?:saving throw:|save:)\*? DC (?<DCvalue>\d+).*?\*?Failure:\*?.*?((?:\d+ \((?<damageDiceBase>.+?)\)|(?<damageIntBase>\d+)) (?<damageTypeBase>[A-z ]+) damage)(?:,? (?:plus|and) [+-]?(?:\d+ \((?<damageBonusDice>.+?)\)|(?<damageBonusInt>\d+)) (?<damageTypeBonus>[A-z ]+) damage)?/i;
+const HALVED_PARSER_RE = /half.+?damage/i;
 
 export function parseDescIntoAutomation(text: string, name = "", activationType: number): [FeatureEntity["automation"], null | string] {
 	// TODO: Make this allow multiple attacks by creating multiple attacks.
@@ -398,11 +405,16 @@ export function parseDescIntoAutomation(text: string, name = "", activationType:
 	// find attack overrides through <avrae hidden> / </hidden> text. Currently no support for simple group (nobody uses it anyway)
 	const override_matches = Array.from(text.matchAll(AVRAE_ATTACK_OVERRIDES_RE), match => match.groups?.freeform);
 	// parse normal weapon attack into automation
-	const attack_match = text.match(ATTACK_PARSER_RE);
+	const attack_match_old = text.match(ATTACK_PARSER_COMPLETE_2014_RE);
+	const attack_match_new = text.match(ATTACK_PARSER_COMPLETE_2024_RE);
+	// parse save-based attacks into automation
+	const save_match_old = text.match(SAVE_2014_PARSER_RE);
+	const save_match_new = text.match(SAVE_2024_PARSER_RE);
+
 	// find features that are just autohit damage
 	const just_damage_match = text.match(JUST_DAMAGE_RE);
 
-	// go in priority to override -> attack with hit -> just damage
+	// go in priority to override -> attack with hit 2024 -> attack with hit 2014 -> save 2014 -> save 2024 -> just damage
 	if (override_matches.length > 0) {
 		let matched: AttackModel | null = null;
 
@@ -418,89 +430,335 @@ export function parseDescIntoAutomation(text: string, name = "", activationType:
 		}
 		return [matched, null];
 	}
-	else if (attack_match?.groups) {
-		const attacks: AttackModel[] = [];
-		// again adapted from avrae repo above
-		const groups = attack_match.groups;
-
-		const attackBonus = groups.attackBonus.replace("+", "");
-
-		// Bonus damage
-		let bonus = "";
-		if (groups.damageTypeBonus && (groups.damageBonusInt || groups.damageBonusDice))
-			bonus = ` + ${groups.damageBonusInt ?? groups.damageBonusDice} [${groups.damageTypeBonus}]`;
-
-		if (groups.damageTypeVers && (groups.damageIntVers || groups.damageDiceVers)) {
-			const damage = `${groups.damageIntVers ?? groups.damageDiceVers} [${groups.damageTypeVers}]${bonus}`;
-			attacks.push({
-				name: `2-Handed ${name}`,
+	else if (attack_match_old?.groups) {
+		if (attack_match_new?.groups && save_match_new?.groups) {
+			return parseAttackIntoAutomation(text, name, activationType, attack_match_new.groups);
+		} else {
+			return parseAttackIntoAutomation(text, name, activationType, attack_match_old.groups);
+		}
+	}
+	else if (save_match_old?.groups) {
+		return parseSaveAttackIntoAutomation(text, name, activationType, save_match_old.groups);
+	}
+	else if (save_match_new?.groups) {
+		return parseSaveAttackIntoAutomation(text, name, activationType, save_match_new.groups);
+	}
+	else if (just_damage_match) {
+		return [
+			{
+				name,
 				automation: [
-					{
-						type: "target",
-						target: "each",
-						effects: [
-							{
-								type: "attack",
-								hit: [
-									{
-										type: "damage",
-										damage,
-										overheal: false,
-									},
-								],
-								miss: [],
-								attackBonus,
-							},
-						],
-					},
-					{
-						type: "text",
-						text,
-						title: "Effect",
-					},
+					{ type: "target", target: "each", effects: [{ type: "damage", damage: `${just_damage_match[1]}[${just_damage_match[2]}]`, overheal: false }] },
+					{ type: "text", text, title: "Effect" },
 				],
 				_v: 2,
 				activation_type: activationType,
-			});
-		}
+			},
+			null,
+		];
+	}
 
-		if (groups.damageTypeRanged && (groups.damageRangedInt || groups.damageRangedDice)) {
-			const damage = `${groups.damageRangedInt ?? groups.damageRangedDice} [${groups.damageTypeRanged}]${bonus}`;
-			attacks.push({
-				name: `Ranged ${name}`,
-				automation: [
-					{
-						type: "target",
-						target: "each",
-						effects: [
-							{
-								type: "attack",
-								hit: [
-									{
-										type: "damage",
-										damage,
-										overheal: false,
-									},
-								],
-								miss: [],
-								attackBonus,
-							},
-						],
-					},
-					{
-						type: "text",
-						text,
-						title: "Effect",
-					},
-				],
-				_v: 2,
-				activation_type: activationType,
-			});
-		}
+	return [null, `${name}: Did not Generate Avrae Automation.`];
+}
 
-		const damage = `${groups.damageIntBase ?? groups.damageDiceBase} [${groups.damageTypeBase}]${bonus}`;
+function parseAttackIntoAutomation(text: string, name = "", activationType: number, groups: any): [FeatureEntity["automation"], null | string] {
+	const attacks: AttackModel[] = [];
+
+	const attackBonus = groups.attackBonus.replace("+", "");
+
+	// Bonus damage
+	let bonus = "";
+	if (groups.damageTypeBonus && (groups.damageBonusInt || groups.damageBonusDice))
+		bonus = ` + ${groups.damageBonusInt ?? groups.damageBonusDice} [${groups.damageTypeBonus}]`;
+
+	let saveBonus = "";
+	if (groups.damageTypeSaveBonus && (groups.damageSaveBonusInt || groups.damageSaveBonusDice))
+		saveBonus = ` + ${groups.damageSaveBonusInt ?? groups.damageSaveBonusDice} [${groups.damageTypeSaveBonus}]`;
+
+	let saveDamage = "";
+	let IFSAVEFORHALF = false;
+	let save: null | Stat = null;
+
+	if (groups.typeSave) {
+		save = groups.typeSave.toLowerCase().substring(0, 3) as Stat;
+		IFSAVEFORHALF = HALVED_PARSER_RE.test(text);
+		saveDamage = `${groups.damageIntBaseSave ?? groups.damageDiceBaseSave} [${groups.damageTypeBaseSave}]${saveBonus}`;
+	}
+
+	if (groups.damageTypeVers && (groups.damageIntVers || groups.damageDiceVers)) {
+		const damage = `${groups.damageIntVers ?? groups.damageDiceVers} [${groups.damageTypeVers}]${bonus}`;
+
 		attacks.push({
-			name,
+			name: `2-Handed ${name}`,
+			automation: [
+				{
+					type: "target",
+					target: "each",
+					effects: [
+						{
+							type: "attack",
+							hit: save ? [
+								{
+									type: "damage",
+									damage,
+									overheal: false,
+								},
+								{
+									type: "target",
+									target: "each",
+									effects: [
+										{
+											type: "save",
+											stat: save,
+											dc: groups.DCvalue,
+											fail: [
+												{
+													type: "damage",
+													damage: saveDamage
+												}
+											],
+											success: IFSAVEFORHALF ? [
+												{
+													type: "damage",
+													damage: "(" + saveDamage + ") / 2"
+												}
+											] : []
+										}
+									],
+								},
+							] :
+								[
+									{
+										type: "damage",
+										damage,
+										overheal: false,
+									},
+								],
+							miss: [],
+							attackBonus,
+						},
+					],
+				},
+				{
+					type: "text",
+					text,
+					title: "Effect",
+				},
+			],
+			_v: 2,
+			activation_type: activationType,
+		});
+	}
+
+	if (groups.damageTypeRanged && (groups.damageRangedInt || groups.damageRangedDice)) {
+		const damage = `${groups.damageRangedInt ?? groups.damageRangedDice} [${groups.damageTypeRanged}]${bonus}`;
+		attacks.push({
+			name: `Ranged ${name}`,
+			automation: [
+				{
+					type: "target",
+					target: "each",
+					effects: [
+						{
+							type: "attack",
+							hit: save ? [
+								{
+									type: "damage",
+									damage,
+									overheal: false,
+								},
+								{
+									type: "target",
+									target: "each",
+									effects: [
+										{
+											type: "save",
+											stat: save,
+											dc: groups.DCvalue,
+											fail: [
+												{
+													type: "damage",
+													damage: saveDamage
+												}
+											],
+											success: IFSAVEFORHALF ? [
+												{
+													type: "damage",
+													damage: "(" + saveDamage + ") / 2"
+												}
+											] : []
+										}
+									],
+								},
+							] :
+								[
+									{
+										type: "damage",
+										damage,
+										overheal: false,
+									},
+								],
+							miss: [],
+							attackBonus,
+						},
+					],
+				},
+				{
+					type: "text",
+					text,
+					title: "Effect",
+				},
+			],
+			_v: 2,
+			activation_type: activationType,
+		});
+	}
+
+	const damage = `${groups.damageIntBase ?? groups.damageDiceBase} [${groups.damageTypeBase}]${bonus}`;
+	attacks.push({
+		name,
+		automation: [
+			{
+				type: "target",
+				target: "each",
+				effects: [
+					{
+						type: "attack",
+						hit: save ? [
+							{
+								type: "damage",
+								damage,
+								overheal: false,
+							},
+							{
+								type: "target",
+								target: "each",
+								effects: [
+									{
+										type: "save",
+										stat: save,
+										dc: groups.DCvalue,
+										fail: [
+											{
+												type: "damage",
+												damage: saveDamage
+											}
+										],
+										success: IFSAVEFORHALF ? [
+											{
+												type: "damage",
+												damage: "(" + saveDamage + ") / 2"
+											}
+										] : []
+									}
+								],
+							},
+						] :
+							[
+								{
+									type: "damage",
+									damage,
+									overheal: false,
+								},
+							],
+						miss: [],
+						attackBonus,
+					},
+				],
+			},
+			{
+				type: "text",
+				text,
+				title: "Effect",
+			},
+		],
+		_v: 2,
+		activation_type: activationType,
+	});
+
+	if (!attacks)
+		return [null, `${name}: Attempted to parse into Avrae Automation but an error occured.`];
+	if (attacks.length === 1)
+		return [attacks[0], null];
+	return [attacks[0], null];
+}
+
+function parseSaveAttackIntoAutomation(text: string, name = "", activationType: number, groups: any): [FeatureEntity["automation"], null | string] {
+	const saves: AttackModel[] = [];
+
+	const save = groups.typeSave.toLowerCase().substring(0, 3) as Stat;;
+
+	// check if the save has a "half damage on success" clause
+	const IFSAVEFORHALF = HALVED_PARSER_RE.test(text);
+
+	// Bonus damage
+	let bonus = "";
+	if (groups.damageTypeBonus && (groups.damageBonusInt || groups.damageBonusDice))
+		bonus = ` + ${groups.damageBonusInt ?? groups.damageBonusDice} [${groups.damageTypeBonus}]`;
+
+	const damage = `${groups.damageIntBase ?? groups.damageDiceBase} [${groups.damageTypeBase}]${bonus}`;
+	saves.push({
+		name,
+		automation: [
+			{
+				type: "roll",
+				dice: damage,
+				name: "damage"
+			},
+			{
+				type: "target",
+				target: "each",
+				effects: [
+					{
+						type: "save",
+						stat: save,
+						dc: groups.DCvalue,
+						fail: [
+							{
+								type: "damage",
+								damage: "{damage}"
+							}
+						],
+						success: IFSAVEFORHALF ? [
+							{
+								type: "damage",
+								damage: "({damage}) / 2"
+							}
+						] : []
+					}
+				],
+			},
+			{
+				type: "text",
+				text,
+				title: "Effect",
+			},
+		],
+		_v: 2,
+		activation_type: activationType,
+	});
+
+	if (!saves)
+		return [null, `${name}: Attempted to parse into Avrae Automation but an error occured.`];
+	if (saves.length === 1)
+		return [saves[0], null];
+	return [saves[0], null];
+}
+
+function parseAttackWithSave(text: string, name = "", activationType: number, groups: any): [FeatureEntity["automation"], null | string] {
+	const attacks: AttackModel[] = [];
+
+	const attackBonus = groups.attackBonus.replace("+", "");
+
+	// Bonus damage
+	let bonus = "";
+	if (groups.damageTypeBonus && (groups.damageBonusInt || groups.damageBonusDice))
+		bonus = ` + ${groups.damageBonusInt ?? groups.damageBonusDice} [${groups.damageTypeBonus}]`;
+
+	if (groups.damageTypeVers && (groups.damageIntVers || groups.damageDiceVers)) {
+		const damage = `${groups.damageIntVers ?? groups.damageDiceVers} [${groups.damageTypeVers}]${bonus}`;
+		attacks.push({
+			name: `2-Handed ${name}`,
 			automation: [
 				{
 					type: "target",
@@ -529,31 +787,79 @@ export function parseDescIntoAutomation(text: string, name = "", activationType:
 			_v: 2,
 			activation_type: activationType,
 		});
-
-		if (!attacks)
-			return [null, `${name}: Attempted to parse into Avrae Automation but an error occured.`];
-		if (attacks.length === 1)
-			return [attacks[0], null];
-		return [attacks[0], null];
 	}
-	else if (just_damage_match) {
-		if (text.includes(" DC "))
-			return [null, `${name}: Cannot generate automation for save-based attacks.`];
-		return [
+
+	if (groups.damageTypeRanged && (groups.damageRangedInt || groups.damageRangedDice)) {
+		const damage = `${groups.damageRangedInt ?? groups.damageRangedDice} [${groups.damageTypeRanged}]${bonus}`;
+		attacks.push({
+			name: `Ranged ${name}`,
+			automation: [
+				{
+					type: "target",
+					target: "each",
+					effects: [
+						{
+							type: "attack",
+							hit: [
+								{
+									type: "damage",
+									damage,
+									overheal: false,
+								},
+							],
+							miss: [],
+							attackBonus,
+						},
+					],
+				},
+				{
+					type: "text",
+					text,
+					title: "Effect",
+				},
+			],
+			_v: 2,
+			activation_type: activationType,
+		});
+	}
+
+	const damage = `${groups.damageIntBase ?? groups.damageDiceBase} [${groups.damageTypeBase}]${bonus}`;
+	attacks.push({
+		name,
+		automation: [
 			{
-				name,
-				automation: [
-					{ type: "target", target: "each", effects: [{ type: "damage", damage: `${just_damage_match[1]}[${just_damage_match[2]}]`, overheal: false }] },
-					{ type: "text", text, title: "Effect" },
+				type: "target",
+				target: "each",
+				effects: [
+					{
+						type: "attack",
+						hit: [
+							{
+								type: "damage",
+								damage,
+								overheal: false,
+							},
+						],
+						miss: [],
+						attackBonus,
+					},
 				],
-				_v: 2,
-				activation_type: activationType,
 			},
-			null,
-		];
-	}
+			{
+				type: "text",
+				text,
+				title: "Effect",
+			},
+		],
+		_v: 2,
+		activation_type: activationType,
+	});
 
-	return [null, `${name}: Did not Generate Avrae Automation.`];
+	if (!attacks)
+		return [null, `${name}: Attempted to parse into Avrae Automation but an error occured.`];
+	if (attacks.length === 1)
+		return [attacks[0], null];
+	return [attacks[0], null];
 }
 
 export function capitalizeFirstLetter(string: string) {
