@@ -73,30 +73,38 @@ const copySingleCounter = async (consumable: AutomationConsumable) => {
 </script>
 
 <template>
-	<Breadcrumbs :routes="[
-		{
-			path: isOwner || isEditor ? `/armory/edit/${collection?.id}` : `/armory/view/${collection?.id}`,
-			text: collection?.name || '',
-			isCurrent: false
-		},
-		{
-			path: '',
-			text: data?.name,
-			isCurrent: true
-		}
-	]">
-		<v-icon-btn v-tooltip="'Change editor'" size="24" icon="mdi:code-block-braces" text="Change editor"
-			@click="EditAutomationRef?.toggleEditor()" />
+	<Breadcrumbs
+		:routes="[
+			{
+				path: isOwner || isEditor ? `/armory/edit/${collection?.id}` : `/armory/view/${collection?.id}`,
+				text: collection?.name || '',
+				isCurrent: false
+			},
+			{
+				path: '',
+				text: data?.name,
+				isCurrent: true
+			}
+		]"
+	>
+		<v-icon-btn
+			v-tooltip="'Change editor'" size="24" icon="mdi:code-block-braces" text="Change editor"
+			@click="EditAutomationRef?.toggleEditor()"
+		/>
 		<ImportToCharacter :automation="data?.automation || null" :consumables="data?.consumables || null" />
-		<v-icon-btn v-if="data && store.isMobile" v-tooltip="'Copy automation'" icon="mdi:content-copy"
-			text="Copy automation" size="24" @click="EditAutomationRef?.copyAutomation()" />
+		<v-icon-btn
+			v-if="data && store.isMobile" v-tooltip="'Copy automation'" icon="mdi:content-copy"
+			text="Copy automation" size="24" @click="EditAutomationRef?.copyAutomation()"
+		/>
 	</Breadcrumbs>
 	<div v-if="data" class="content">
 		<v-card class="pa-4" color="surface-light">
 			<v-row>
 				<v-col cols="4">
-					<v-text-field v-model="data.name" type="text" label="Feature name" :minlength="globalLimits.nameMin"
-						:maxlength="globalLimits.nameLength" hide-details disabled />
+					<v-text-field
+						v-model="data.name" type="text" label="Feature name" :minlength="globalLimits.nameMin"
+						:maxlength="globalLimits.nameLength" hide-details disabled
+					/>
 
 					<v-text-field v-model="data.tag" label="Tag" class="mt-4" disabled />
 				</v-col>
@@ -107,23 +115,32 @@ const copySingleCounter = async (consumable: AutomationConsumable) => {
 		</v-card>
 
 		<v-defaults-provider
-			:defaults="{ VTextField: { disabled: true }, VSelect: { disabled: true }, VNumberInput: { disabled: true }, VComboBox: { disabled: true }, VCheckbox: { disabled: true }, VAutocomplete: { disabled: true }, VTextArea: { disabled: true }, VField: { disabled: true } }">
-			<EditAutomation ref="EditAutomationRef" v-model="data.automation" v-model:is-visual-editor="isVisualEditor"
-				:name="data.name" />
+			:defaults="{ VTextField: { disabled: true }, VSelect: { disabled: true }, VNumberInput: { disabled: true }, VComboBox: { disabled: true }, VCheckbox: { disabled: true }, VAutocomplete: { disabled: true }, VTextArea: { disabled: true }, VField: { disabled: true } }"
+		>
+			<EditAutomation
+				ref="EditAutomationRef" v-model="data.automation" v-model:is-visual-editor="isVisualEditor"
+				:name="data.name"
+			/>
 
-			<v-card title="Custom Counters" class="pa-4 d-flex flex-column"
+			<v-card
+				title="Custom Counters" class="pa-4 d-flex flex-column"
 				subtitle="Importing this action to your Avrae Character will import this Custom Counter too."
-				bg-color="surface-light" color="surface-light">
+				bg-color="surface-light" color="surface-light"
+			>
 				<v-card-text class="flex-grow-1" bg-color="surface-light">
 					<v-list density="compact" class="text-left my-4" max-height="1000">
 						<v-list-group v-for="consumable, idx of data.consumables" :key="idx">
 							<template #activator="{ props, isOpen }">
 								<v-list-item v-bind="props" :title="consumable.name" :subtitle="consumable.desc || ''">
 									<template #append>
-										<v-icon-btn text="Copy counter" icon="$avrae"
-											@click.stop="copySingleCounter(consumable)" />
-										<v-icon icon="mdi:chevron-down" :class="{ 'rotate-180': isOpen }"
-											class="transition-transform" />
+										<v-icon-btn
+											text="Copy counter" icon="$avrae"
+											@click.stop="copySingleCounter(consumable)"
+										/>
+										<v-icon
+											icon="mdi:chevron-down" :class="{ 'rotate-180': isOpen }"
+											class="transition-transform"
+										/>
 									</template>
 								</v-list-item>
 							</template>
@@ -137,8 +154,10 @@ const copySingleCounter = async (consumable: AutomationConsumable) => {
 										<p class="">
 											<small>
 												The following fields may use CVARS from the
-												<a href="https://avrae.readthedocs.io/en/stable/aliasing/api.html#cvar-table"
-													target="_blank">
+												<a
+													href="https://avrae.readthedocs.io/en/stable/aliasing/api.html#cvar-table"
+													target="_blank"
+												>
 													CVAR
 													table
 												</a>
@@ -148,12 +167,16 @@ const copySingleCounter = async (consumable: AutomationConsumable) => {
 									</v-col>
 
 									<v-col cols="6">
-										<v-select v-model="consumable.display_type" label="Display Type"
-											:items="displayTypeOptions" hide-details />
+										<v-select
+											v-model="consumable.display_type" label="Display Type"
+											:items="displayTypeOptions" hide-details
+										/>
 									</v-col>
 									<v-col cols="6">
-										<v-select v-model="consumable.reset" label="Reset On" :items="resetOnOptions"
-											hide-details />
+										<v-select
+											v-model="consumable.reset" label="Reset On" :items="resetOnOptions"
+											hide-details
+										/>
 									</v-col>
 									<v-col cols="6">
 										<TypeHintedEditor v-model="consumable.minv" label="Minimum" />
@@ -163,8 +186,10 @@ const copySingleCounter = async (consumable: AutomationConsumable) => {
 									</v-col>
 
 									<v-col cols="6">
-										<TypeHintedEditor v-model="consumable.reset_by" label="Reset By"
-											is-annotated-string />
+										<TypeHintedEditor
+											v-model="consumable.reset_by" label="Reset By"
+											is-annotated-string
+										/>
 									</v-col>
 									<v-col cols="6">
 										<TypeHintedEditor v-model="consumable.reset_to" label="Reset To" />

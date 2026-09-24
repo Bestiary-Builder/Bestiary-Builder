@@ -11,7 +11,8 @@ import { useDataCleanup } from "./shared/utils";
 const currentEffect = inject<Ref<Variable>>("currentEffect");
 
 watch(() => currentEffect?.value.higher, () => {
-	if (!Object.hasOwn(currentEffect!.value, "higher")) return;
+	if (!Object.hasOwn(currentEffect!.value, "higher"))
+		return;
 	for (const index in currentEffect!.value.higher) {
 		const toIndex = Number.parseInt(index);
 		if (currentEffect!.value.higher[toIndex] === "")

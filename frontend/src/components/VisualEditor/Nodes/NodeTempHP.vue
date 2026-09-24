@@ -10,7 +10,8 @@ import { useDataCleanup } from "./shared/utils";
 const currentEffect = inject<Ref<TempHP>>("currentEffect");
 
 watch(() => currentEffect?.value.higher, () => {
-	if (!Object.hasOwn(currentEffect!.value, "higher")) return;
+	if (!Object.hasOwn(currentEffect!.value, "higher"))
+		return;
 	for (const index in currentEffect!.value.higher) {
 		const toIndex = Number.parseInt(index);
 		if (currentEffect!.value.higher[toIndex] === "")
@@ -37,8 +38,10 @@ useDataCleanup(currentEffect, ["cantripScale", "higher"]);
 			</v-col>
 
 			<v-col cols="6">
-				<v-checkbox v-model="currentEffect.cantripScale" label="Whether this roll should scale like a cantrip."
-					hide-details />
+				<v-checkbox
+					v-model="currentEffect.cantripScale" label="Whether this roll should scale like a cantrip."
+					hide-details
+				/>
 			</v-col>
 			<v-col cols="6">
 				<HigherLevels v-model="currentEffect.higher" />

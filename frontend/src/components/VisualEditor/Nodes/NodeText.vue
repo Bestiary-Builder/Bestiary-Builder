@@ -49,22 +49,28 @@ const abilityTitle = (item: Record<string, any>) => {
 
 			<v-col v-if="typeof (currentEffect!.text) === 'string'" cols="12">
 				<Editor v-model="currentEffect.text" />
-				<small v-if="setDesc" style="font-size: x-small; cursor: pointer" role="button"
-					@click="setDesc(currentEffect.text)"> <i>Set the description of the feature to this
-						text.</i>
+				<small
+					v-if="setDesc" style="font-size: x-small; cursor: pointer" role="button"
+					@click="setDesc(currentEffect.text)"
+				> <i>Set the description of the feature to this
+					text.</i>
 				</small>
 			</v-col>
 
 			<v-col v-else cols="12">
-				<v-autocomplete v-model="currentEffect.text" :items="abilities" :item-title="abilityTitle" return-object
-					label="Ability Reference" />
+				<v-autocomplete
+					v-model="currentEffect.text" :items="abilities" :item-title="abilityTitle" return-object
+					label="Ability Reference"
+				/>
 			</v-col>
 
 			<v-col cols="6">
-				<v-select v-model="descIsText" :items="[
-					{ title: 'Text', value: true },
-					{ title: 'Ability Reference', value: false },
-				]" label="Text type" />
+				<v-select
+					v-model="descIsText" :items="[
+						{ title: 'Text', value: true },
+						{ title: 'Ability Reference', value: false },
+					]" label="Text type"
+				/>
 			</v-col>
 		</v-row>
 	</template>

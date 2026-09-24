@@ -48,11 +48,15 @@ watchEffect(() => {
 
 <template>
 	<Teleport to="#navbar .v-toolbar__prepend">
-		<v-breadcrumbs :items="store.isMobile ? breadcrumbItems.slice(-2) : breadcrumbItems"
-			:divider="store.isMobile ? '/' : '>'" class="left-buttons">
+		<v-breadcrumbs
+			:items="store.isMobile ? breadcrumbItems.slice(-2) : breadcrumbItems"
+			:divider="store.isMobile ? '/' : '>'" class="left-buttons"
+		>
 			<template #item="{ item }">
-				<v-breadcrumbs-item :disabled="item.disabled" :style="`opacity: ${item.disabled ? 1 : ''}`"
-					density="compact">
+				<v-breadcrumbs-item
+					:disabled="item.disabled" :style="`opacity: ${item.disabled ? 1 : ''}`"
+					density="compact"
+				>
 					<RouterLink v-if="!item.disabled" :to="item.to || '/'" class="crumb-link">
 						{{ item.title }}
 					</RouterLink>

@@ -66,17 +66,22 @@ const options = [
 
 <template>
 	<div class="documentation-container">
-		<v-select v-model="internalValue" :items="options" label="Choose option to view" density="comfortable"
-			hide-details variant="outlined" max-width="500px" />
+		<v-select
+			v-model="internalValue" :items="options" label="Choose option to view" density="comfortable"
+			hide-details variant="outlined" max-width="500px"
+		/>
 		<div v-if="currentDocu" class="docs">
 			<Markdown class="small" :text="currentDocu.desc" />
 			<div>
 				See full documentation <a
 					:href="`https://avrae.readthedocs.io/en/stable/automation_ref.html#${currentDocu.url}`"
-					target="_blank">here</a>.
-				<VueMonacoEditor v-if="currentDocu?.ts"
+					target="_blank"
+				>here</a>.
+				<VueMonacoEditor
+					v-if="currentDocu?.ts"
 					:value="`// Values denoted with an ? are optional.\ninterface ${currentDocu.class} ${currentDocu.ts}`"
-					:theme="monacoTheme" :options="editorOptions" language="typescript" height="200px" class="mt-4" />
+					:theme="monacoTheme" :options="editorOptions" language="typescript" height="200px" class="mt-4"
+				/>
 			</div>
 			<div v-if="currentDocu?.opt">
 				<h4>Options</h4>

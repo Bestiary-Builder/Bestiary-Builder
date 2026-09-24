@@ -502,44 +502,44 @@ function parseAttackIntoAutomation(text: string, name = "", activationType: numb
 							type: "attack",
 							hit: save
 								? [
-									{
-										type: "damage",
-										damage,
-										overheal: false,
-									},
-									{
-										type: "target",
-										target: "each",
-										effects: [
-											{
-												type: "save",
-												stat: save,
-												dc: groups.DCvalue,
-												fail: [
-													{
-														type: "damage",
-														damage: saveDamage
-													}
-												],
-												success: isSaveForHalf
-													? [
+										{
+											type: "damage",
+											damage,
+											overheal: false,
+										},
+										{
+											type: "target",
+											target: "each",
+											effects: [
+												{
+													type: "save",
+													stat: save,
+													dc: groups.DCvalue,
+													fail: [
 														{
 															type: "damage",
-															damage: `(${saveDamage}) / 2`
+															damage: saveDamage
 														}
-													]
-													: []
-											}
-										],
-									},
-								]
+													],
+													success: isSaveForHalf
+														? [
+																{
+																	type: "damage",
+																	damage: `(${saveDamage}) / 2`
+																}
+															]
+														: []
+												}
+											],
+										},
+									]
 								: [
-									{
-										type: "damage",
-										damage,
-										overheal: false,
-									},
-								],
+										{
+											type: "damage",
+											damage,
+											overheal: false,
+										},
+									],
 							miss: [],
 							attackBonus,
 						},
@@ -568,44 +568,44 @@ function parseAttackIntoAutomation(text: string, name = "", activationType: numb
 							type: "attack",
 							hit: save
 								? [
-									{
-										type: "damage",
-										damage,
-										overheal: false,
-									},
-									{
-										type: "target",
-										target: "each",
-										effects: [
-											{
-												type: "save",
-												stat: save,
-												dc: groups.DCvalue,
-												fail: [
-													{
-														type: "damage",
-														damage: saveDamage
-													}
-												],
-												success: isSaveForHalf
-													? [
+										{
+											type: "damage",
+											damage,
+											overheal: false,
+										},
+										{
+											type: "target",
+											target: "each",
+											effects: [
+												{
+													type: "save",
+													stat: save,
+													dc: groups.DCvalue,
+													fail: [
 														{
 															type: "damage",
-															damage: `(${saveDamage}) / 2`
+															damage: saveDamage
 														}
-													]
-													: []
-											}
-										],
-									},
-								]
+													],
+													success: isSaveForHalf
+														? [
+																{
+																	type: "damage",
+																	damage: `(${saveDamage}) / 2`
+																}
+															]
+														: []
+												}
+											],
+										},
+									]
 								: [
-									{
-										type: "damage",
-										damage,
-										overheal: false,
-									},
-								],
+										{
+											type: "damage",
+											damage,
+											overheal: false,
+										},
+									],
 							miss: [],
 							attackBonus,
 						},
@@ -633,44 +633,44 @@ function parseAttackIntoAutomation(text: string, name = "", activationType: numb
 						type: "attack",
 						hit: save
 							? [
-								{
-									type: "damage",
-									damage,
-									overheal: false,
-								},
-								{
-									type: "target",
-									target: "each",
-									effects: [
-										{
-											type: "save",
-											stat: save,
-											dc: groups.DCvalue,
-											fail: [
-												{
-													type: "damage",
-													damage: saveDamage
-												}
-											],
-											success: isSaveForHalf
-												? [
+									{
+										type: "damage",
+										damage,
+										overheal: false,
+									},
+									{
+										type: "target",
+										target: "each",
+										effects: [
+											{
+												type: "save",
+												stat: save,
+												dc: groups.DCvalue,
+												fail: [
 													{
 														type: "damage",
-														damage: `(${saveDamage}) / 2`
+														damage: saveDamage
 													}
-												]
-												: []
-										}
-									],
-								},
-							]
+												],
+												success: isSaveForHalf
+													? [
+															{
+																type: "damage",
+																damage: `(${saveDamage}) / 2`
+															}
+														]
+													: []
+											}
+										],
+									},
+								]
 							: [
-								{
-									type: "damage",
-									damage,
-									overheal: false,
-								},
-							],
+									{
+										type: "damage",
+										damage,
+										overheal: false,
+									},
+								],
 						miss: [],
 						attackBonus,
 					},
@@ -695,7 +695,7 @@ function parseAttackIntoAutomation(text: string, name = "", activationType: numb
 function parseSaveAttackIntoAutomation(text: string, name = "", activationType: number, groups: any): [FeatureEntity["automation"], null | string] {
 	const saves: AttackModel[] = [];
 
-	const save = groups.typeSave.toLowerCase().substring(0, 3) as Stat;;
+	const save = groups.typeSave.toLowerCase().substring(0, 3) as Stat; ;
 
 	// check if the save has a "half damage on success" clause
 	const IFSAVEFORHALF = HALVED_PARSER_RE.test(text);
@@ -730,11 +730,11 @@ function parseSaveAttackIntoAutomation(text: string, name = "", activationType: 
 						],
 						success: IFSAVEFORHALF
 							? [
-								{
-									type: "damage",
-									damage: "({damage}) / 2"
-								}
-							]
+									{
+										type: "damage",
+										damage: "({damage}) / 2"
+									}
+								]
 							: []
 					}
 				],

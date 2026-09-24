@@ -124,21 +124,29 @@ const DragHandle = () => h(
 </script>
 
 <template>
-	<div class="tree-node"
-		:style="isCurrentSelectedContext ? '--bg-color: color-mix(in srgb, rgb(var(--v-theme-surface)) 100%, white 0%)' : ''">
-		<p :id="`${selfType}${depth}`" class="drag-area tree-row text-on-surface" :style="`--depth: ${depth}`"
-			@click="currentEffect = data; currentContext = context">
+	<div
+		class="tree-node"
+		:style="isCurrentSelectedContext ? '--bg-color: color-mix(in srgb, rgb(var(--v-theme-surface)) 100%, white 0%)' : ''"
+	>
+		<p
+			:id="`${selfType}${depth}`" class="drag-area tree-row text-on-surface" :style="`--depth: ${depth}`"
+			@click="currentEffect = data; currentContext = context"
+		>
 			<NodeHeader :type="selfType" :additional-text="additionalText" :is-current="isCurrentSelectedContext" />
 
-			<span v-if="['attack', 'condition', 'save', 'ieffect2', 'target'].includes(selfType)"
-				class="collapse-button" @click.stop="isCollapsed = !isCollapsed">
+			<span
+				v-if="['attack', 'condition', 'save', 'ieffect2', 'target'].includes(selfType)"
+				class="collapse-button" @click.stop="isCollapsed = !isCollapsed"
+			>
 				<Icon icon="solar:alt-arrow-right-bold" inline width=".75em" :rotate="isCollapsed ? 0 : 45" />
 			</span>
 
 			<span v-if="showControls" class="tree-buttons">
 				<DragHandle />
-				<ConfirmDelete :message="`Are you sure you want to delete this ${selfType} Effect?`" size="11"
-					@confirm="deleteNode" />
+				<ConfirmDelete
+					:message="`Are you sure you want to delete this ${selfType} Effect?`" size="11"
+					@confirm="deleteNode"
+				/>
 			</span>
 		</p>
 		<div v-show="!isCollapsed">
@@ -146,40 +154,60 @@ const DragHandle = () => h(
 			<template v-for="effect, key of data" :key="key">
 				<template v-if="deepKeys.includes(key) && selfType !== 'ieffect2'">
 					<!--- E.g. hit, Miss, on False text -->
-					<p v-if="!['root', 'effects'].includes(key)" :key="key"
+					<p
+						v-if="!['root', 'effects'].includes(key)" :key="key"
 						:style="`--depth: ${depth + 1}; opacity: var(--v-medium-emphasis-opacity)`"
-						class="tree-row section-node text-on-surface" @click.stop="toggleBranch(key)">
+						class="tree-row section-node text-on-surface" @click.stop="toggleBranch(key)"
+					>
 						<NodeHeader :type="key" />
-						<span v-if="['onTrue', 'onFalse', 'hit', 'miss', 'fail', 'success'].includes(key)"
-							class="collapse-button">
-							<Icon icon="solar:alt-arrow-right-bold" inline width=".75em"
-								:rotate="branchesCollapsed.includes(key) ? 0 : 45" class="ml-1" />
+						<span
+							v-if="['onTrue', 'onFalse', 'hit', 'miss', 'fail', 'success'].includes(key)"
+							class="collapse-button"
+						>
+							<Icon
+								icon="solar:alt-arrow-right-bold" inline width=".75em"
+								:rotate="branchesCollapsed.includes(key) ? 0 : 45" class="ml-1"
+							/>
 						</span>
 					</p>
 					<template v-if="!branchesCollapsed.includes(key)">
-						<VueDraggable v-model="(data as any)[key]" v-bind="draggingProps"
-							:style="`--depth: ${depth + (!['root', 'effects'].includes(key) ? 2 : 1)}`">
-							<TreeNode v-for="(childNode, index) in effect" :key="childNode as any"
+						<VueDraggable
+							v-model="(data as any)[key]" v-bind="draggingProps"
+							:style="`--depth: ${depth + (!['root', 'effects'].includes(key) ? 2 : 1)}`"
+						>
+							<TreeNode
+								v-for="(childNode, index) in effect" :key="childNode as any"
 								:data="childNode as any" :depth="depth + (!['root', 'effects'].includes(key) ? 2 : 1)"
-								:context="[...context, `$${selfType}`, key, index.toString()]" />
-							<EffectAdder :context="[...context, `$${selfType}`, key]"
-								:depth="depth + (!['root', 'effects'].includes(key) ? 2 : 1)" />
+								:context="[...context, `$${selfType}`, key, index.toString()]"
+							/>
+							<EffectAdder
+								:context="[...context, `$${selfType}`, key]"
+								:depth="depth + (!['root', 'effects'].includes(key) ? 2 : 1)"
+							/>
 						</VueDraggable>
 					</template>
 				</template>
 				<template v-if="(key as EffectKey) === 'buttons'">
-					<VueDraggable v-model="(data as any).buttons" v-bind="{ ...draggingProps, group: 'buttons' }"
-						:style="`--depth: ${depth + 1}`">
+					<VueDraggable
+						v-model="(data as any).buttons" v-bind="{ ...draggingProps, group: 'buttons' }"
+						:style="`--depth: ${depth + 1}`"
+					>
 						<div v-for="(button, index) in effect" :key="index" class="button-item">
-							<p class="tree-row" :style="`--depth: ${depth + 1}`"
-								@click="currentEffect = (button as any as ButtonInteraction); currentContext = [...context, 'buttons', index.toString()]">
-								<NodeHeader :type="key"
+							<p
+								class="tree-row" :style="`--depth: ${depth + 1}`"
+								@click="currentEffect = (button as any as ButtonInteraction); currentContext = [...context, 'buttons', index.toString()]"
+							>
+								<NodeHeader
+									:type="key"
 									:additional-text="(button as any as ButtonInteraction).label.trim().substring(0, 16)"
-									:is-current="JSON.stringify(currentContext) === JSON.stringify([...context, 'buttons', index.toString()])" />
+									:is-current="JSON.stringify(currentContext) === JSON.stringify([...context, 'buttons', index.toString()])"
+								/>
 
 								<span class="collapse-button" @click="toggleBranch(button)">
-									<Icon icon="solar:alt-arrow-right-bold" inline width=".75em"
-										:rotate="branchesCollapsed.includes(button as any) ? 0 : 45" class="ml-1" />
+									<Icon
+										icon="solar:alt-arrow-right-bold" inline width=".75em"
+										:rotate="branchesCollapsed.includes(button as any) ? 0 : 45" class="ml-1"
+									/>
 								</span>
 
 								<span class="tree-buttons">
@@ -188,33 +216,48 @@ const DragHandle = () => h(
 									<ConfirmDelete
 										:message="`Are you sure you want to delete ${(button as ButtonInteraction).label}?`"
 										size="11"
-										@confirm="(data as IEffect).buttons?.splice(index as number, 1); currentContext = []; currentEffect = null" />
+										@confirm="(data as IEffect).buttons?.splice(index as number, 1); currentContext = []; currentEffect = null"
+									/>
 								</span>
 							</p>
-							<VueDraggable v-if="!branchesCollapsed.includes(button)"
-								v-model="(button as ButtonInteraction).automation" v-bind="draggingProps">
-								<TreeNode v-for="buttonNode, idx in (button as ButtonInteraction).automation" :key="idx"
+							<VueDraggable
+								v-if="!branchesCollapsed.includes(button)"
+								v-model="(button as ButtonInteraction).automation" v-bind="draggingProps"
+							>
+								<TreeNode
+									v-for="buttonNode, idx in (button as ButtonInteraction).automation" :key="idx"
 									:data="buttonNode" :depth="depth + 2"
-									:context="[...context, 'buttons', index.toString(), 'automation', idx.toString()]" />
-								<EffectAdder :context="[...context, 'buttons', index.toString(), 'automation']"
-									:depth="depth + 2" />
+									:context="[...context, 'buttons', index.toString(), 'automation', idx.toString()]"
+								/>
+								<EffectAdder
+									:context="[...context, 'buttons', index.toString(), 'automation']"
+									:depth="depth + 2"
+								/>
 							</VueDraggable>
 						</div>
 					</VueDraggable>
 				</template>
 				<template v-if="(key as EffectKey) === 'attacks'">
-					<VueDraggable v-model="(data as any).attacks" v-bind="{ ...draggingProps, group: 'attacks' }"
-						:style="`--depth: ${depth + 1}`">
+					<VueDraggable
+						v-model="(data as any).attacks" v-bind="{ ...draggingProps, group: 'attacks' }"
+						:style="`--depth: ${depth + 1}`"
+					>
 						<div v-for="(attack, index) in effect" :key="index" class="button-item">
-							<p class="tree-row" :style="`--depth: ${depth + 1}`"
-								@click="currentEffect = (attack as any as AttackInteraction); currentContext = [...context, 'attacks', index.toString()]">
-								<NodeHeader :type="key"
+							<p
+								class="tree-row" :style="`--depth: ${depth + 1}`"
+								@click="currentEffect = (attack as any as AttackInteraction); currentContext = [...context, 'attacks', index.toString()]"
+							>
+								<NodeHeader
+									:type="key"
 									:additional-text="(attack as any as AttackInteraction).attack.name.trim().substring(0, 16)"
-									:is-current="JSON.stringify(currentContext) === JSON.stringify([...context, 'attacks', index.toString()])" />
+									:is-current="JSON.stringify(currentContext) === JSON.stringify([...context, 'attacks', index.toString()])"
+								/>
 
 								<span class="collapse-button" @click="toggleBranch(attack)">
-									<Icon icon="solar:alt-arrow-right-bold" inline width=".75em"
-										:rotate="branchesCollapsed.includes(attack as any) ? 0 : 45" class="ml-1" />
+									<Icon
+										icon="solar:alt-arrow-right-bold" inline width=".75em"
+										:rotate="branchesCollapsed.includes(attack as any) ? 0 : 45" class="ml-1"
+									/>
 								</span>
 
 								<span class="tree-buttons">
@@ -223,17 +266,23 @@ const DragHandle = () => h(
 									<ConfirmDelete
 										:message="`Are you sure you want to delete ${(attack as AttackInteraction).attack.name}?`"
 										size="11"
-										@confirm="(data as IEffect).attacks?.splice(index as number, 1); currentContext = []; currentEffect = null" />
+										@confirm="(data as IEffect).attacks?.splice(index as number, 1); currentContext = []; currentEffect = null"
+									/>
 								</span>
 							</p>
-							<VueDraggable v-if="!branchesCollapsed.includes(attack)"
-								v-model="(attack as AttackInteraction).attack.automation" v-bind="draggingProps">
-								<TreeNode v-for="attackNode, idx in (attack as AttackInteraction).attack.automation"
+							<VueDraggable
+								v-if="!branchesCollapsed.includes(attack)"
+								v-model="(attack as AttackInteraction).attack.automation" v-bind="draggingProps"
+							>
+								<TreeNode
+									v-for="attackNode, idx in (attack as AttackInteraction).attack.automation"
 									:key="idx" :data="attackNode" :depth="depth + 2"
-									:context="[...context, 'attacks', index.toString(), 'attack', 'automation', idx.toString()]" />
+									:context="[...context, 'attacks', index.toString(), 'attack', 'automation', idx.toString()]"
+								/>
 								<EffectAdder
 									:context="[...context, 'attacks', index.toString(), 'attack', 'automation']"
-									:depth="depth + 2" />
+									:depth="depth + 2"
+								/>
 							</VueDraggable>
 						</div>
 					</VueDraggable>

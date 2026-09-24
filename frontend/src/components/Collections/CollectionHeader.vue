@@ -102,6 +102,6 @@ const md = new MarkdownIt({
 }
 
 .description :deep(a) {
-	color: rgb(var(--v-theme-primary))
+	color: rgb(var(--v-theme-primary));
 }
 </style>

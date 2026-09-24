@@ -1,16 +1,17 @@
 <script setup lang="ts">
+import type { Pair } from "yaml";
 import type { AttackModel, AutomationDocumentation } from "~/shared";
 import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
 import { useLocalStorage, watchDebounced } from "@vueuse/core";
 import { computed, onMounted, onUnmounted, ref, shallowRef, useTemplateRef, watch } from "vue";
 import { useRoute } from "vue-router";
+import { isSeq, parse, stringify } from "yaml";
 import VisualEditor from "@/components/VisualEditor/VisualEditor.vue";
 import { useThemePersistence } from "@/utils/app/theme";
 import { useToast } from "@/utils/app/toast";
 import { useOnboardingTour } from "@/utils/app/useOnboardingTour.js";
 import { useFetch } from "@/utils/utils";
 import AutomationDocumentationView from "./AutomationDocumentation.vue";
-import { parse, stringify, isSeq, type Pair } from 'yaml';
 
 type AutomationValue = AttackModel | AttackModel[] | null;
 
@@ -39,15 +40,18 @@ const visualEditorModel = computed({
 // sort states for automation strings
 const rankEntry = (pair: Pair): number => {
 	const key = (pair.key as { value?: unknown })?.value ?? pair.key;
-	if (key === 'type') return 0;
-	if (key === 'label') return 0;
-	if (isSeq(pair.value)) return 2;
+	if (key === "type")
+		return 0;
+	if (key === "label")
+		return 0;
+	if (isSeq(pair.value))
+		return 2;
 	return 1;
 };
 
 const sortMapEntries = (a: Pair, b: Pair): number => rankEntry(a) - rankEntry(b);
 
-const automationString = ref(stringify(props.modelValue ?? null, { sortMapEntries}));
+const automationString = ref(stringify(props.modelValue ?? null, { sortMapEntries }));
 
 const yamlError = ref<string | null>(null);
 let suppressNextModelSync = false;
@@ -69,20 +73,19 @@ watchDebounced(automationString, () => {
 // keep automationString in sync when modelValue changes from outside
 // (loading a feature, generating automation, clearing it, description-parity edits)
 
-
 watch(() => props.modelValue, (newVal) => {
 	if (suppressNextModelSync) {
 		suppressNextModelSync = false;
 		return;
 	}
 	if (!props.isVisualEditor)
-		automationString.value = stringify(newVal ?? null, { sortMapEntries});
+		automationString.value = stringify(newVal ?? null, { sortMapEntries });
 }, { deep: true });
 
 const toggleEditor = () => {
 	if (props.isVisualEditor) {
 		// switching TO yaml mode
-		automationString.value = stringify(props.modelValue ?? null, { sortMapEntries});
+		automationString.value = stringify(props.modelValue ?? null, { sortMapEntries });
 		yamlError.value = null;
 		emit("update:isVisualEditor", false);
 	}
@@ -202,7 +205,7 @@ const { monacoTheme } = useThemePersistence();
 			/>
 
 			<small v-if="yamlError" style="color: rgb(var(--v-theme-error))">{{ yamlError }}</small>
-			<v-divider class="mt-2" thickness="2"/>
+			<v-divider class="mt-2" thickness="2" />
 
 			<AutomationDocumentationView v-model="currentContext" />
 		</section>
@@ -210,24 +213,22 @@ const { monacoTheme } = useThemePersistence();
 	<div v-else class="mt-4">
 		<v-alert
 			v-if="!$route.path.includes('/character') && !dismissed" id="automation-workflow-alert"
-			title="Welcome to the new Automation Editor" class="mb-4" color="primary" icon="mdi:creation-outline"
-			closable @click:close="dismissed = true"
+			title="Welcome to the new Automation Editor" class="mb-4" variant="tonal"
+			closable @click:close="dismissed = true" 
 		>
+		<template #prepend>
+			<v-icon icon="mdi:creation-outline" color="primary" size="48"/>
+		</template>
 			<template #text>
-				With 3.0.0, you can now create Automation directly within Bestiary Builder. The automation editor
-				includes
-				smart features to make your life easier. If you prefer the old YAML editor, you can toggle it at the top
-				menu or set a default in your <RouterLink to="/user" style="color: white; text-decoration: underline;">
-					User
-					Settings.
-				</RouterLink>
+				With update 3.0.0, you can now create Automation directly within Bestiary Builder.
+				The automation editor includes smart features to make your life easier.
+				You can also manage automation for your <RouterLink to="/characters"> characters. </RouterLink>
+				You can also quickly import automation from and to characters to quickly iterate and test actions!
 			</template>
 			<template #append>
-				<div>
-					<v-btn variant="outlined" @click="startAutomationEditorWorkflow">
-						Take the tour
-					</v-btn>
-				</div>
+				<v-btn color="primary" @click="startAutomationEditorWorkflow" variant="elevated">
+					Take the tour
+				</v-btn>
 			</template>
 		</v-alert>
 		<VisualEditor
@@ -256,5 +257,4 @@ section {
 	border-radius: 4px;
 	box-shadow: rgb(0 0 0 / 24%) 0 3px 8px;
 }
-
 </style>

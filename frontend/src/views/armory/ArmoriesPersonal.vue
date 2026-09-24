@@ -99,12 +99,12 @@ const newCollectionIsOpen = ref(false);
 			label="Create new Automation Collection" class="inverted" size="24" @click="newCollectionIsOpen = true"
 		/>
 	</Breadcrumbs>
-	<div class="content" >
+	<div class="content">
 		<VueDraggable
 			v-model="automationCollections" :animation="150" class="tile-container"
 			:handle="store.isMobile ? '.handle' : ''" @update="saveOrder"
 		>
-			<RouterLink v-for="element, idx, in automationCollections" :key="idx" :to="`/armory/edit/${element.id}`" >
+			<RouterLink v-for="element, idx, in automationCollections" :key="idx" :to="`/armory/edit/${element.id}`">
 				<CollectionTile :data="element" @delete-collection-item="(id) => deleteAutomationCollection(id)" />
 			</RouterLink>
 		</VueDraggable>

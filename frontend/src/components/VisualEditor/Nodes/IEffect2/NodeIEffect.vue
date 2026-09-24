@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
 import type { PassiveEffectDef } from "./passiveEffect";
-import type { IEffect, PassiveEffects } from "~/shared";
-import { computed, inject, nextTick, onUnmounted, ref, useTemplateRef, watch } from "vue";
+import type { IEffect } from "~/shared";
+import { computed, inject, nextTick, ref, useTemplateRef } from "vue";
 import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 import Editor from "@/components/StatblockEditor/Editor.vue";
 import SectionHeader from "../shared/SectionHeader.vue";
@@ -17,9 +17,9 @@ const filteredPassiveEffects = computed(() => {
 	return PASSIVE_EFFECTS.filter(x => !Object.keys(currentEffect.value.effects as any).includes(x.value));
 });
 
-const addNewEffectRef = useTemplateRef("addNewEffect")
+const addNewEffectRef = useTemplateRef("addNewEffect");
 const newPassiveEffect = ref<null | PassiveEffectDef>();
-const addNewPassiveEffect = (effect: PassiveEffectDef | null) => {
+const addNewPassiveEffect = async (effect: PassiveEffectDef | null) => {
 	if (effect === null)
 		return;
 	if (!currentEffect!.value.effects)
@@ -32,9 +32,9 @@ const addNewPassiveEffect = (effect: PassiveEffectDef | null) => {
 		// @ts-expect-error already checked for lists..
 		currentEffect!.value.effects[effect.value] = "1";
 
-	nextTick(() => {
-		newPassiveEffect.value = null
-		addNewEffectRef.value?.blur()
+	await nextTick(() => {
+		newPassiveEffect.value = null;
+		addNewEffectRef.value?.blur();
 	});
 };
 
@@ -125,12 +125,16 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 				<v-checkbox v-model="currentEffect.end" label="Ticks on end of turn." hide-details density="compact" />
 			</v-col>
 			<v-col cols="6">
-				<v-checkbox v-model="currentEffect.tick_on_caster" label="Ticks on Caster rather than the Target."
-					hide-details density="compact" />
+				<v-checkbox
+					v-model="currentEffect.tick_on_caster" label="Ticks on Caster rather than the Target."
+					hide-details density="compact"
+				/>
 			</v-col>
 			<v-col cols="6">
-				<v-checkbox v-model="currentEffect.conc" label="Requires concentration." hide-details
-					density="compact" />
+				<v-checkbox
+					v-model="currentEffect.conc" label="Requires concentration." hide-details
+					density="compact"
+				/>
 			</v-col>
 		</v-row>
 
@@ -140,11 +144,11 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 				<div v-if="getInputType(key) !== 'list'" class="d-flex flex-column">
 					<div class="v-input v-input--horizontal v-input--center-affix ">
 						<div class="v-input__control">
-							<TypeHintedEditor :id="key" v-model="(currentEffect as any).effects[key]"
+							<TypeHintedEditor
+								:id="key" v-model="(currentEffect as any).effects[key]"
 								:label="getEffectData(key)?.label || ''"
-								:is-annotated-string="getInputType(key) === 'annotatedstring'">
-							</TypeHintedEditor>
-
+								:is-annotated-string="getInputType(key) === 'annotatedstring'"
+							/>
 						</div>
 
 						<div class="v-input__append">
@@ -157,25 +161,28 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 										Are you sure you want to delete<br> <b>{{ getEffectData(key)?.label }}</b>?
 									</v-card-text>
 									<v-card-actions>
-										<v-btn size="large" color="error" class="w-100"
-											@click="delete currentEffect.effects![key]">
+										<v-btn
+											size="large" color="error" class="w-100"
+											@click="delete currentEffect.effects![key]"
+										>
 											Delete
 										</v-btn>
 									</v-card-actions>
 								</v-card>
 							</DropdownMenu>
 						</div>
-
 					</div>
 					<small v-if="key === 'save_bonus'" class="mt-2"> Per-stat bonuses can be added like
 						<code>1d4|dex</code>, and multiple
 						specific bonuses can be added like <code>1d4|str+1d4|dex</code> </small>
 				</div>
 				<div v-else>
-					<v-combobox v-model="effectValueFor(key).value" :label="getEffectData(key)?.label || ''"
+					<v-combobox
+						v-model="effectValueFor(key).value" :label="getEffectData(key)?.label || ''"
 						:items="getEffectData(key)?.defaultOptions" item-title="label" item-value="value"
 						:multiple="getEffectData(key)?.isList" :chips="getEffectData(key)?.isList"
-						:closable-chips="getEffectData(key)?.isList" hint="Custom Expressions: type them into the field above." persistent-hint>
+						:closable-chips="getEffectData(key)?.isList" hint="Custom Expressions: type them into the field above." persistent-hint
+					>
 						<template #append>
 							<DropdownMenu>
 								<template #activator="{ props }">
@@ -186,8 +193,10 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 										Are you sure you want to delete<br> <b>{{ getEffectData(key)?.label }}</b>?
 									</v-card-text>
 									<v-card-actions>
-										<v-btn size="large" color="error" class="w-100"
-											@click="delete currentEffect.effects![key]">
+										<v-btn
+											size="large" color="error" class="w-100"
+											@click="delete currentEffect.effects![key]"
+										>
 											Delete
 										</v-btn>
 									</v-card-actions>
@@ -197,7 +206,8 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 						<template #append-inner>
 							<v-tooltip
 								:text="getEffectData(key)?.type === 'annotatedstring' ? 'AnnotatedString. Dice allowed, expressions in {}.' : 'IntExpression. Dice not allowed, expressions not in { }'"
-								location="bottom">
+								location="bottom"
+							>
 								<template #activator="{ props: activatorProps }">
 									<v-icon :icon="getEffectData(key)?.type === 'annotatedstring' ? 'tabler:braces' : 'tabler:braces-off'" v-bind="activatorProps" />
 								</template>
@@ -207,10 +217,12 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 				</div>
 			</v-col>
 			<v-col cols="6">
-				<v-autocomplete v-model="newPassiveEffect" :items="filteredPassiveEffects" item-title="label"
-					label="New Passive Effect" return-object prepend-inner-icon="mdi:plus" icon-color="primary"
-					item-color="primary" @update:model-value="(e: PassiveEffectDef | null) => addNewPassiveEffect(e)"
-					ref="addNewEffect" />
+				<v-autocomplete
+					ref="addNewEffect" v-model="newPassiveEffect" :items="filteredPassiveEffects"
+					item-title="label" label="New Passive Effect" return-object prepend-inner-icon="mdi:plus"
+					icon-color="primary" item-color="primary"
+					@update:model-value="(e: PassiveEffectDef | null) => addNewPassiveEffect(e)"
+				/>
 			</v-col>
 		</v-row>
 		<SectionHeader title="Buttons & Attacks" />

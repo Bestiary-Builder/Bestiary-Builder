@@ -133,7 +133,7 @@ const focusEditor = () => {
 
 <template>
 	<div class="w-100">
-	<v-field
+		<v-field
 			:variant="variant" :density="density" :color="color" :label="usesCustomLabel ? undefined : label"
 			:error="error"
 			:disabled="$route.path.startsWith('/automation/view') || $route.path.startsWith('/creature/view')"
@@ -154,7 +154,6 @@ const focusEditor = () => {
 						@mount="handleMount"
 					/>
 				</div>
-
 			</template>
 			<template #append-inner>
 				<v-tooltip
@@ -166,12 +165,9 @@ const focusEditor = () => {
 					</template>
 				</v-tooltip>
 			</template>
-
 		</v-field>
 		<small v-if="placeholder"> {{ placeholder }}</small>
 	</div>
-
-
 </template>
 
 <style scoped>
