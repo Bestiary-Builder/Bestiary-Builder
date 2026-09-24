@@ -126,7 +126,7 @@ function formatSaves(creature: Statblock): string | undefined {
 function formatSkills(creature: Statblock): string | undefined {
 	const output: string[] = [];
 
-	for (const [stat, skills] of Object.entries(SKILLS_BY_STAT) as [Stat, string[]][]) {
+	for (const [stat, skills] of Object.entries(SKILLS_BY_STAT) as unknown as [Stat, string[]][]) {
 		skills.forEach((skill) => {
 			const rawSkill = creature.abilities.skills.find(a => a.skillName.replace(" ", "").toLowerCase() === skill.toLowerCase());
 
