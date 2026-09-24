@@ -49,7 +49,7 @@ export function parseSenses(senses: string[] = []): SenseEntity[] {
 		}
 
 		if (name)
-			output.push({ name, value, unit: "ft", comment: isBlind ? "blind beyond this radius" : "" });
+			output.push({ name, value: value || 30, unit: "ft", comment: isBlind ? "blind beyond this radius" : "" });
 	}
 	return output;
 }
