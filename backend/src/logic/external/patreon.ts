@@ -7,7 +7,7 @@ import { SupporterStatus } from "~/shared";
 
 const PATREON_API_URL = "https://www.patreon.com/api/oauth2/v2";
 const PATREON_TOKEN_URL = "https://www.patreon.com/api/oauth2/token";
-const SYNC_INTERVAL_MS = 6 * 60 * 60 * 1000; // Every 6 hours, or on webhooks
+const SYNC_INTERVAL_MS = 1 * 60 * 60 * 1000; // Every hour, or on webhooks
 const USER_AGENT = "Bestiary Builder - Supporter Sync";
 
 type PatreonResourceType = "campaign" | "member" | "tier" | "user";
