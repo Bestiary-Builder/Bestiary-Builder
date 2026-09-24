@@ -1,27 +1,25 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
 import type { Attack } from "~/shared";
-import { inject, onUnmounted, ref, watch } from "vue";
+import { inject, onMounted, onUnmounted, ref, watch } from "vue";
 import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
 
 const currentEffect = inject<Ref<Attack>>("currentEffect");
-
-watch(() => currentEffect?.value?.attackBonus, () => {
-	if (currentEffect?.value?.attackBonus === "")
-		delete currentEffect?.value.attackBonus;
-});
-
-if (currentEffect!.value && !Object.hasOwn(currentEffect!.value, "adv"))
-	currentEffect!.value.adv = "0";
-
-onUnmounted(() => {
-	if (currentEffect?.value?.adv === "0")
-		delete currentEffect?.value.adv;
-});
-
 const isCustom = ref(false);
+
+onMounted(() => {
+	if (currentEffect?.value.adv !== null) {
+		if (!['-2', '-1', '1'].includes(currentEffect?.value.adv ?? '1') ) {
+			isCustom.value = true
+		}
+
+		if (currentEffect!.value.adv === '0') {
+			delete currentEffect!.value.adv
+		}
+	}
+})
 
 const handleChange = () => {
 	if (currentEffect?.value.adv === "custom") {
@@ -33,7 +31,7 @@ const handleChange = () => {
 	}
 };
 
-useDataCleanup(currentEffect, ["attackBonus"]);
+useDataCleanup(currentEffect, ["attackBonus", "adv"]);
 </script>
 
 <template>
@@ -53,7 +51,7 @@ useDataCleanup(currentEffect, ["attackBonus"]);
 
 			<v-col cols="6">
 				<v-select v-model="currentEffect.adv" label="Advantage (optional)" title="Advantage" :items="[
-					{ title: 'Flat', value: '0' },
+					{ title: 'Flat', value: null },
 					{ title: 'Advantage', value: '1' },
 					{ title: 'Elven Advantage', value: '2' },
 					{ title: 'Disadvantage', value: '-1' },

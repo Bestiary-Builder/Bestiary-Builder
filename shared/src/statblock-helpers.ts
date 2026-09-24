@@ -548,7 +548,6 @@ function parseAttackIntoAutomation(text: string, name = "", activationType: numb
 				{
 					type: "text",
 					text,
-					title: "Effect",
 				},
 			],
 			_v: 2,
@@ -615,7 +614,6 @@ function parseAttackIntoAutomation(text: string, name = "", activationType: numb
 				{
 					type: "text",
 					text,
-					title: "Effect",
 				},
 			],
 			_v: 2,
@@ -681,7 +679,6 @@ function parseAttackIntoAutomation(text: string, name = "", activationType: numb
 			{
 				type: "text",
 				text,
-				title: "Effect",
 			},
 		],
 		_v: 2,
@@ -745,7 +742,6 @@ function parseSaveAttackIntoAutomation(text: string, name = "", activationType: 
 			{
 				type: "text",
 				text,
-				title: "Effect",
 			},
 		],
 		_v: 2,
