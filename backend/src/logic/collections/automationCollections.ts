@@ -1,11 +1,12 @@
 import type { CollectionWithEditors } from "./collections";
-import { automationCollectionTags, type AttackModel, type Automation, type AutomationCollection } from "~/shared";
+import type { AttackModel, Automation, AutomationCollection } from "~/shared";
 import type { BestiaryStatus } from "~/shared/src/prisma-types";
 
 import { checkBadwords } from "@/utilities/badwords";
 import { app, checkBestiaryLimits, checkImageUrl, limits } from "@/utilities/constants";
 import { addAutomationCollectionBookmark, addAutomationCollectionEditor, createAutomationCollection, createAutomations, deleteAutomationCollection, getAutomationCollection, getAutomationCollectionAutomationCount, getAutomationCollectionsByOwner, getAutomationCollectionsByUser, getAutomationIds, getAutomationsByCollection, getOwnedAutomationCollectionIds, getPrismaClient, getPublicAutomationCollectionsByOwner, incrementAutomationCollectionViewCount, isAutomationCollectionBookmarked, removeAutomationCollectionBookmark, removeAutomationCollectionEditor, updateAutomationCollection, updateAutomationIndexes, updateUserAutomationCollectionIndexes } from "@/utilities/database";
 import { log } from "@/utilities/logger";
+import { automationCollectionTags } from "~/shared";
 import { prepareAutomationInput } from "../automations/automations";
 import { privateLog, publicLog } from "../external/discord";
 import { possibleUser, requireUser } from "../main/login";
@@ -236,7 +237,6 @@ app.post("/api/automation-collection/:id/addautomations", requireUser, async (re
 	if (!Array.isArray(inputData))
 		return res.status(400).json({ error: "Failed to parse automation data." });
 
-	console.log(inputData)
 	const data: Partial<Automation>[] = inputData.map((a) => {
 		if (Array.isArray(a)) { // AttackModel[]
 			return {

@@ -75,8 +75,8 @@ const firstLetters = computed(() => {
 
 <style lang="less">
 @font-face {
-	font-family: "Scala Sans Offc";
-	src: url("../Statblock/styles/ScalaSans.woff2") format("woff2");
+	font-family: "Scala Sans";
+	src: url("../Statblock/styles/Scala Sans Regular.otf") format("opentype");
 }
 
 .character-container {
@@ -130,7 +130,7 @@ const firstLetters = computed(() => {
 
 	.meta {
 		padding: 0 0.5rem 1rem;
-		font-family: "Scala Sans Offc", Roboto, Helvetica, sans-serif;
+		font-family: "Scala Sans", Roboto, Helvetica, sans-serif;
 
 		h2 {
 			font-size: 20px;

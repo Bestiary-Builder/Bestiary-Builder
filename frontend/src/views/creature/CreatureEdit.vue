@@ -258,7 +258,7 @@ const importCreature = async (creature: Statblock) => {
 	addToast(`Successfully imported ${data.value.description.name}`);
 };
 
-const isCollapsed = ref(false)
+const isCollapsed = ref(false);
 </script>
 
 <template>
@@ -282,7 +282,7 @@ const isCollapsed = ref(false)
 		]">
 			<v-icon-btn v-if="madeChanges && (isOwner || isEditor)" v-tooltip="'Save Creature (CTRL+S)'"
 				icon="mdi:content-save" text="Save creature" :class="{ inverted: !isSavingStatblock }" size="24"
-				:loading="isSavingStatblock" @click="saveStatblock()" />
+				:loading="isSavingStatblock" @click="saveStatblock()" variant="outlined" />
 
 			<CopyCreature v-if="rawInfo" no-import-all :may-import="isOwner || isEditor"
 				:current-creature="{ ...rawInfo, bestiaryName: bestiary?.name || '' }"
@@ -341,7 +341,7 @@ const isCollapsed = ref(false)
 		</Breadcrumbs>
 		<div class="content more-wide" :class="{ 'is-statblock-only': !shouldShowEditor }">
 			<v-row style="position: relative;">
-				<v-col :cols="6" v-if="!isCollapsed">
+				<v-col v-if="!isCollapsed" :cols="6">
 					<v-sheet elevation="2">
 						<v-tabs v-model="tab" color="primary" style="background-color: rgb(var(--v-theme-surface))"
 							:grow="!store.isMobile" :show-arrows="store.isMobile">
@@ -407,12 +407,11 @@ const isCollapsed = ref(false)
 						type="heading, divider, text, text, sentences, heading, text" />
 					<StatblockRenderer v-else :data="data" />
 				</v-col>
-
 			</v-row>
 		</div>
 	</div>
 	<v-fab v-if="!store.isMobile" :icon="isCollapsed ? 'mdi:chevron-double-right' : 'mdi:chevron-double-left'" absolute
-		@click="isCollapsed = !isCollapsed" location="top right" size="40" app></v-fab>
+		location="top right" size="40" app @click="isCollapsed = !isCollapsed" />
 </template>
 
 <style lang="less">

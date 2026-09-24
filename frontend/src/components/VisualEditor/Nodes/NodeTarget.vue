@@ -28,8 +28,8 @@ if (currentEffect?.value.target === "all")
 
 useDataCleanup(currentEffect, ["sortBy"]);
 
-if (isButton.value && currentEffect?.value.target === 'each') {
-	currentEffect.value.target = 'self'
+if (isButton.value && currentEffect?.value.target === "each") {
+	currentEffect.value.target = "self";
 }
 </script>
 
@@ -67,7 +67,3 @@ if (isButton.value && currentEffect?.value.target === 'each') {
 		</v-row>
 	</template>
 </template>
-
-<style scoped>
-@import url("./styles/automation-editor.less");
-</style>

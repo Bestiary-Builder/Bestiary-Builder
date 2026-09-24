@@ -6,15 +6,15 @@ import CopyCreature from "@/components/Bestiary/CopyCreature.vue";
 import ExportCreature from "@/components/Bestiary/ExportCreature.vue";
 import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
 import { useToast } from "@/utils/app/toast";
-import { useFetch } from "@/utils/utils";
-import { store } from "@/utils/store";
 import { useRecentPages } from "@/utils/app/useRecentPages";
+import { store } from "@/utils/store";
+import { useFetch } from "@/utils/utils";
 
 const $route = useRoute();
 const $router = useRouter();
 
 const { addToast } = useToast();
-const { trackVisit } = useRecentPages()
+const { trackVisit } = useRecentPages();
 const data = ref<CreatureResponse | null>(null);
 const bestiary = ref<BestiaryResponse | null>(null);
 const isOwner = ref(false);
@@ -33,7 +33,7 @@ onMounted(async () => {
 			isEditor.value = bData.permissionLevel === "editor";
 			if (bestiary.value && data.value && (isOwner.value || isEditor.value))
 				void $router.push(`/creature/edit/${data.value.id}`);
-			trackVisit($route.path, data.value.stats.description.name)
+			trackVisit($route.path, data.value.stats.description.name);
 		}
 		else {
 			addToast(error, { color: "error" });
@@ -51,20 +51,24 @@ onMounted(async () => {
 
 <template>
 	<div>
-		<Breadcrumbs v-if="bestiary && (data?.stats.description.name || data?.stats.description.name === '')" :routes="[
-			{
-				path: `/bestiary/view/${bestiary?.id}`,
-				text: bestiary?.name,
-				isCurrent: false
-			},
-			{
-				path: '',
-				text: data?.stats.description.name || 'Unnamed Creature',
-				isCurrent: true
-			}
-		]">
-			<CopyCreature v-if="data && store.user" no-import-all :may-import="false"
-				:current-creature="{ ...data, bestiaryName: bestiary.name }" />
+		<Breadcrumbs
+			v-if="bestiary && (data?.stats.description.name || data?.stats.description.name === '')" :routes="[
+				{
+					path: `/bestiary/view/${bestiary?.id}`,
+					text: bestiary?.name,
+					isCurrent: false
+				},
+				{
+					path: '',
+					text: data?.stats.description.name || 'Unnamed Creature',
+					isCurrent: true
+				}
+			]"
+		>
+			<CopyCreature
+				v-if="data && store.user" no-import-all :may-import="false"
+				:current-creature="{ ...data, bestiaryName: bestiary.name }"
+			/>
 			<ExportCreature :data="data.stats" />
 		</Breadcrumbs>
 		<div class="content">

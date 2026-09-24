@@ -9,6 +9,7 @@ import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { automationCollectionTags, globalLimits } from "~/shared";
+
 const { addToast, updateToast } = useToast();
 
 const automationCollections = ref<AutomationCollectionExtended[]>([]);
@@ -84,26 +85,36 @@ const newCollectionIsOpen = ref(false);
 </script>
 
 <template>
-	<Breadcrumbs :routes="[
-		{
-			path: '',
-			text: 'My Automation Collections',
-			isCurrent: true
-		}
-	]">
-		<v-icon-btn v-tooltip="'Create new Automation Collection'" icon="mdi:plus"
-			label="Create new Automation Collection" class="inverted" size="24" @click="newCollectionIsOpen = true" />
+	<Breadcrumbs
+		:routes="[
+			{
+				path: '',
+				text: 'My Automation Collections',
+				isCurrent: true
+			}
+		]"
+	>
+		<v-icon-btn
+			v-tooltip="'Create new Automation Collection'" icon="mdi:plus"
+			label="Create new Automation Collection" class="inverted" size="24" @click="newCollectionIsOpen = true"
+		/>
 	</Breadcrumbs>
-	<div class="content">
-		<VueDraggable v-model="automationCollections" :animation="150" class="tile-container"
-			:handle="store.isMobile ? '.handle' : ''" @update="saveOrder">
-			<RouterLink v-for="element, idx, in automationCollections" :key="idx" :to="`/armory/edit/${element.id}`">
+	<div class="content" >
+		<VueDraggable
+			v-model="automationCollections" :animation="150" class="tile-container"
+			:handle="store.isMobile ? '.handle' : ''" @update="saveOrder"
+		>
+			<RouterLink v-for="element, idx, in automationCollections" :key="idx" :to="`/armory/edit/${element.id}`" >
 				<CollectionTile :data="element" @delete-collection-item="(id) => deleteAutomationCollection(id)" />
 			</RouterLink>
 		</VueDraggable>
-		<p class="text-center" v-if="automationCollections.length === 0"> No automation collections created yet. </p>
-		<v-fab icon="mdi:plus" location="bottom end" app color="primary" size="large"
-			@click="newCollectionIsOpen = true" />
+		<p v-if="automationCollections.length === 0" class="text-center">
+			No automation collections created yet.
+		</p>
+		<v-fab
+			icon="mdi:plus" location="bottom end" app color="primary" size="large"
+			@click="newCollectionIsOpen = true"
+		/>
 	</div>
 
 	<v-dialog v-model="newCollectionIsOpen" max-width="750">
@@ -112,37 +123,47 @@ const newCollectionIsOpen = ref(false);
 				<v-row>
 					<v-col>
 						<div>
-							<v-text-field v-model="createOptions.name" label="Name" :maxlength="globalLimits.nameLength"
+							<v-text-field
+								v-model="createOptions.name" label="Name" :maxlength="globalLimits.nameLength"
 								:min-length="globalLimits.nameMin"
 								:rules="[rules.required(), rules.minLength(globalLimits.nameMin), rules.maxLength(globalLimits.nameLength)]"
-								class="mb-4" />
+								class="mb-4"
+							/>
 						</div>
 					</v-col>
 					<v-col>
 						<div>
-							<v-text-field v-model="createOptions.image" label="Image" class="mb-4"
-								:rules="[rules.imageLink()]" />
+							<v-text-field
+								v-model="createOptions.image" label="Image" class="mb-4"
+								:rules="[rules.imageLink()]"
+							/>
 						</div>
 					</v-col>
 				</v-row>
 			</v-container>
 
-			<v-textarea v-model="createOptions.description" :max-length="globalLimits.descriptionLength"
+			<v-textarea
+				v-model="createOptions.description" :max-length="globalLimits.descriptionLength"
 				:rules="[rules.maxLength(globalLimits.descriptionLength)]" label="Description" class="mb-4"
-				hint="Supports Markdown" persistent-hint />
+				hint="Supports Markdown" persistent-hint
+			/>
 
 			<v-container class="pa-0">
 				<v-row>
 					<v-col>
 						<div>
-							<v-select v-model="createOptions.status" label="Status"
-								:items="[{ value: 'private', title: 'Private' }, { value: 'unlisted', title: 'Unlisted' }, { value: 'public', title: 'Public' }]" />
+							<v-select
+								v-model="createOptions.status" label="Status"
+								:items="[{ value: 'private', title: 'Private' }, { value: 'unlisted', title: 'Unlisted' }, { value: 'public', title: 'Public' }]"
+							/>
 						</div>
 					</v-col>
 					<v-col>
 						<div>
-							<v-select v-model="createOptions.tags" multiple :items="automationCollectionTags"
-								label="Tags" chips closable-chips />
+							<v-select
+								v-model="createOptions.tags" multiple :items="automationCollectionTags"
+								label="Tags" chips closable-chips
+							/>
 						</div>
 					</v-col>
 				</v-row>

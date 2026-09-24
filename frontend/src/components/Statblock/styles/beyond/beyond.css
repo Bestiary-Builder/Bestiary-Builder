@@ -11,7 +11,6 @@ body .v-card .statblock-outer.beyond {
 		color: #5b160c;
 	}
 
-
 	.statblock-name-container {
 		color: #5b160c;
 		border-color: #5b160c;
@@ -20,7 +19,6 @@ body .v-card .statblock-outer.beyond {
 	.statblock-core {
 		color: rgb(139, 139, 139);
 	}
-
 
 	.feature-container {
 		color: black;
@@ -42,7 +40,12 @@ body .v-card .statblock-outer.beyond {
 			color: color-mix(in srgb, #5b160c 30%, red 70%);
 			border-color: color-mix(in srgb, #5b160c 30%, red 70%);
 		}
-		h1,h2,h3,h4,h5, a {
+		h1,
+		h2,
+		h3,
+		h4,
+		h5,
+		a {
 			color: color-mix(in srgb, #5b160c 30%, red 70%);
 		}
 		hr {
@@ -55,7 +58,7 @@ body .v-card .statblock-outer.beyond {
 	h3,
 	h4,
 	h5 {
-		font-family: "Scala Sans Offc", Roboto, Helvetica, sans-serif;
+		font-family: "Scala Sans", Roboto, Helvetica, sans-serif;
 		color: #5b160c;
 		line-height: 1.1;
 		font-variant: small-caps;

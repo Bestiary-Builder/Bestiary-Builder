@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import type { CreatureWithStats, InnateSpellsEntity, Statblock } from "~/shared";
-import { computed, onMounted, reactive, ref, watch } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 import { useToast } from "@/utils/app/toast";
-import { classes, classLevels, stats } from "@/utils/constants";
+import { useLazyAsync } from "@/utils/app/useLazyOptions";
+import { classes, classLevels } from "@/utils/constants";
 import { useFetch } from "@/utils/utils";
 import { defaultStatblock, getSpellSlots, statFullName } from "~/shared";
 import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
-import { useLazyAsync } from "@/utils/app/useLazyOptions";
 
 const { data, rawInfo } = defineProps<{ data: Statblock; rawInfo: CreatureWithStats | null }>();
 const { addToast } = useToast();
@@ -23,7 +23,7 @@ const spells = reactive(useLazyAsync<RawSpellList>(
 		return data;
 	},
 	{},
-	{ onError: (error) => addToast(error instanceof Error ? error.message : String(error), { color: "error" }) },
+	{ onError: error => addToast(error instanceof Error ? error.message : String(error), { color: "error" }) },
 ));
 
 const spellListFlattened = computed<InnateSpellsEntity[]>(() =>
@@ -82,6 +82,7 @@ watch(() => data.spellcasting.casterSpells.castingClass, (newValue) => {
 	data.spellcasting.casterSpells.castingClass = newValue;
 
 	const sClass = data.spellcasting.casterSpells.castingClass;
+	// eslint-disable-next-line ts/switch-exhaustiveness-check
 	switch (sClass) {
 		case "Artificer":
 		case "Wizard":
@@ -113,7 +114,9 @@ const addNewDaily = () => {
 
 const handleNewCustomInnateSpell = () => {
 	const spells = data.spellcasting.innateSpells.spellList;
+
 	for (const times in spells) {
+		// eslint-disable-next-line ts/no-for-in-array
 		for (const idx in spells[times]) {
 			if (typeof (spells[times][idx]) === "string") {
 				spells[times][idx] = { spell: spells[times][idx], comment: "" };
@@ -123,12 +126,12 @@ const handleNewCustomInnateSpell = () => {
 };
 
 const castingAbilityOptions = computed(() => {
-	const output = []
+	const output = [];
 	for (const [value, key] of Object.entries(statFullName)) {
-		output.push({ title: key, value })
+		output.push({ title: key, value });
 	}
-	return output
-})
+	return output;
+});
 </script>
 
 <template>
@@ -136,20 +139,28 @@ const castingAbilityOptions = computed(() => {
 		<SectionHeader title="Daily Spells" />
 		<v-row class="my-4">
 			<v-col cols="6">
-				<v-select v-model="data.spellcasting.innateSpells.spellCastingAbility" :items="castingAbilityOptions"
-					label="Casting ability" input-id="castingability" hide-details />
+				<v-select
+					v-model="data.spellcasting.innateSpells.spellCastingAbility" :items="castingAbilityOptions"
+					label="Casting ability" input-id="castingability" hide-details
+				/>
 			</v-col>
 			<v-col cols="6">
-				<v-select v-model="data.spellcasting.innateSpells.noComponentsOfType"
+				<v-select
+					v-model="data.spellcasting.innateSpells.noComponentsOfType"
 					:items="['Material', 'Verbal', 'Somatic']" multiple chips closable-chips
-					label="Not these components" hide-details />
+					label="Not these components" hide-details
+				/>
 			</v-col>
 			<v-col cols="6">
 				<div>
-					<v-checkbox v-model="data.spellcasting.innateSpells.displayAsAction" label="Display as Action"
-						color="primary" density="compact" hide-details />
-					<v-checkbox v-model="data.spellcasting.innateSpells.isPsionics" label="Display as Psionics"
-						color="primary" density="compact" hide-details />
+					<v-checkbox
+						v-model="data.spellcasting.innateSpells.displayAsAction" label="Display as Action"
+						color="primary" density="compact" hide-details
+					/>
+					<v-checkbox
+						v-model="data.spellcasting.innateSpells.isPsionics" label="Display as Psionics"
+						color="primary" density="compact" hide-details
+					/>
 				</div>
 			</v-col>
 			<v-col cols="6">
@@ -161,32 +172,42 @@ const castingAbilityOptions = computed(() => {
 					</template>
 
 					<template #default="{ isActive }">
-						<v-card title="Customize daily spellcasting defaults"
-							subtitle="The options here allow you to customize the defaults inferred from the statblock and default rules">
+						<v-card
+							title="Customize daily spellcasting defaults"
+							subtitle="The options here allow you to customize the defaults inferred from the statblock and default rules"
+						>
 							<v-sheet class="pa-4">
 								<v-container class="pa-0">
 									<v-row>
 										<v-col>
-											<v-number-input v-model="data.spellcasting.innateSpells.spellDcOverride"
-												label="DC Override" clearable />
+											<v-number-input
+												v-model="data.spellcasting.innateSpells.spellDcOverride"
+												label="DC Override" clearable
+											/>
 										</v-col>
 										<v-col>
-											<v-number-input v-model="data.spellcasting.innateSpells.spellBonusOverride"
-												label="Attack Bonus Override" clearable />
+											<v-number-input
+												v-model="data.spellcasting.innateSpells.spellBonusOverride"
+												label="Attack Bonus Override" clearable
+											/>
 										</v-col>
 									</v-row>
 								</v-container>
 								<div>
-									<v-textarea v-model="data.spellcasting.innateSpells.customDescription"
-										label="Description override" />
+									<v-textarea
+										v-model="data.spellcasting.innateSpells.customDescription"
+										label="Description override"
+									/>
 								</div>
 								<v-divider />
 								<v-card-text> Add a new daily amount of casts here. </v-card-text>
 								<v-container class="pa-0">
 									<v-row>
 										<v-col>
-											<v-number-input v-model="newDailyAmount" label="Add new daily amount"
-												:min="4" clearable />
+											<v-number-input
+												v-model="newDailyAmount" label="Add new daily amount"
+												:min="4" clearable
+											/>
 										</v-col>
 										<v-col>
 											<v-btn class="w-100" size="large" @click="addNewDaily()">
@@ -200,8 +221,10 @@ const castingAbilityOptions = computed(() => {
 								<v-container class="pa-0">
 									<v-card-text> Add a (comment) to each spell here. </v-card-text>
 									<v-row>
-										<template v-for="times, idx in data.spellcasting.innateSpells.spellList"
-											:key="idx">
+										<template
+											v-for="times, idx in data.spellcasting.innateSpells.spellList"
+											:key="idx"
+										>
 											<v-col v-for="(spell, index) of times" :key="index" cols="4">
 												<v-text-field v-model="spell.comment" :label="spell.spell" />
 											</v-col>
@@ -221,14 +244,18 @@ const castingAbilityOptions = computed(() => {
 			</v-col>
 			<v-col v-for="_, times in data.spellcasting.innateSpells.spellList" :key="times" cols="6">
 				<div :class="{ 'select-with-delete': parseInt(times.toString()) > 3 }">
-					<v-combobox v-model="data.spellcasting.innateSpells.spellList[times]" item-title="spell"
+					<v-combobox
+						v-model="data.spellcasting.innateSpells.spellList[times]" item-title="spell"
 						:items="spellListFlattened" :loading="spells.loading" multiple chips closable-chips
 						return-object hint="Supports custom spells" :label="times === '0' ? 'At will' : `${times}/day`"
 						class="w-100" persistent-hint @update:focused="spells.handleMenuOpen"
-						@update:model-value="handleNewCustomInnateSpell">
-						<template #append v-if="parseInt(times.toString()) > 3">
-							<v-icon-btn v-tooltip="'Delete this daily amount'" icon="mdi:delete"
-								@click="delete data.spellcasting.innateSpells.spellList[times]" />
+						@update:model-value="handleNewCustomInnateSpell"
+					>
+						<template v-if="parseInt(times.toString()) > 3" #append>
+							<v-icon-btn
+								v-tooltip="'Delete this daily amount'" icon="mdi:delete"
+								@click="delete data.spellcasting.innateSpells.spellList[times]"
+							/>
 						</template>
 						<template #no-data>
 							<v-list-item>
@@ -238,26 +265,30 @@ const castingAbilityOptions = computed(() => {
 							</v-list-item>
 						</template>
 					</v-combobox>
-
 				</div>
 			</v-col>
 		</v-row>
 		<SectionHeader title="Class Spellcasting" />
 		<v-row class="mt-4">
 			<v-col cols="6">
-				<v-select v-model="data.spellcasting.casterSpells.castingClass" :items="classes" label="Class" clearable
-					hide-details />
+				<v-select
+					v-model="data.spellcasting.casterSpells.castingClass" :items="classes" label="Class" clearable
+					hide-details
+				/>
 			</v-col>
 			<v-col cols="6">
-				<v-select v-model="data.spellcasting.casterSpells.casterLevel" :items="classLevels" label="Caster level"
-					hide-details />
+				<v-select
+					v-model="data.spellcasting.casterSpells.casterLevel" :items="classLevels" label="Caster level"
+					hide-details
+				/>
 			</v-col>
 			<template v-if="data.spellcasting.casterSpells.castingClass">
 				<v-col v-if="!['Ranger', 'Paladin'].includes(data.spellcasting.casterSpells.castingClass)" cols="6">
-					<v-combobox v-model="data.spellcasting.casterSpells.spellList[0]" :items="spells.data[0] ?? []"
+					<v-combobox
+						v-model="data.spellcasting.casterSpells.spellList[0]" :items="spells.data[0] ?? []"
 						:loading="spells.loading" multiple chips closable-chips label="Cantrips"
-						hint="Supports custom spells" persistent-hint @update:focused="spells.handleMenuOpen">
-
+						hint="Supports custom spells" persistent-hint @update:focused="spells.handleMenuOpen"
+					>
 						<template #no-data>
 							<v-list-item>
 								<v-list-item-title>
@@ -267,11 +298,13 @@ const castingAbilityOptions = computed(() => {
 						</template>
 					</v-combobox>
 				</v-col>
-				<v-col v-for="level in spellLevelList" cols="6">
-					<v-combobox v-model="data.spellcasting.casterSpells.spellList[level]"
+				<v-col v-for="level, idx in spellLevelList" :key="idx" cols="6">
+					<v-combobox
+						v-model="data.spellcasting.casterSpells.spellList[level]"
 						:items="getSpellsByLevel(level)" :loading="spells.loading" multiple chips closable-chips
 						:label="`Level ${level} spells`" hint="Supports custom spells" persistent-hint
-						@update:focused="spells.handleMenuOpen">
+						@update:focused="spells.handleMenuOpen"
+					>
 						<template #no-data>
 							<v-list-item>
 								<v-list-item-title>
@@ -279,7 +312,8 @@ const castingAbilityOptions = computed(() => {
 								</v-list-item-title>
 							</v-list-item>
 						</template>
-					</v-combobox> </v-col>
+					</v-combobox>
+				</v-col>
 			</template>
 			<v-col cols="6">
 				<v-dialog max-width="750">
@@ -290,24 +324,32 @@ const castingAbilityOptions = computed(() => {
 					</template>
 
 					<template #default="{ isActive }">
-						<v-card title="Customize class spellcasting defaults"
-							subtitle="The options here allow you to customize the defaults inferred from the statblock and default rules">
+						<v-card
+							title="Customize class spellcasting defaults"
+							subtitle="The options here allow you to customize the defaults inferred from the statblock and default rules"
+						>
 							<v-sheet class="pa-4">
 								<v-container class="pa-0">
 									<v-row>
 										<v-col>
-											<v-number-input v-model="data.spellcasting.casterSpells.spellDcOverride"
-												label="DC Override" clearable />
+											<v-number-input
+												v-model="data.spellcasting.casterSpells.spellDcOverride"
+												label="DC Override" clearable
+											/>
 										</v-col>
 										<v-col>
-											<v-number-input v-model="data.spellcasting.casterSpells.spellBonusOverride"
-												label="Attack Bonus Override" clearable />
+											<v-number-input
+												v-model="data.spellcasting.casterSpells.spellBonusOverride"
+												label="Attack Bonus Override" clearable
+											/>
 										</v-col>
 									</v-row>
 								</v-container>
 								<div>
-									<v-textarea v-model="data.spellcasting.casterSpells.customDescription"
-										label="Description override" />
+									<v-textarea
+										v-model="data.spellcasting.casterSpells.customDescription"
+										label="Description override"
+									/>
 								</div>
 								<v-spacer />
 								<v-divider />
@@ -319,8 +361,10 @@ const castingAbilityOptions = computed(() => {
 									</v-card-text>
 									<v-row>
 										<v-col v-for="x in 9" :key="x" cols="4">
-											<v-number-input v-model="data.spellcasting.casterSpells.spellSlotList[x]"
-												:label="`Level ${x}`" :min="0" size="small" variant="solo" clearable />
+											<v-number-input
+												v-model="data.spellcasting.casterSpells.spellSlotList[x]"
+												:label="`Level ${x}`" :min="0" size="small" variant="solo" clearable
+											/>
 										</v-col>
 									</v-row>
 								</v-container>

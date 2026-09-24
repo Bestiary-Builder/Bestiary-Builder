@@ -9,7 +9,7 @@
 		color: color-mix(in srgb, currentcolor, white) !important;
 	}
 
-	&>svg {
+	& > svg {
 		color: currentcolor;
 		cursor: pointer;
 	}
@@ -82,11 +82,13 @@
 		height: calc(1rem + 4.2px);
 		display: inline-block;
 		vertical-align: middle;
-		background: repeating-linear-gradient(to right,
-				color-mix(in srgb, rgb(var(--v-theme-surface-light)) 60%, white 40%),
-				color-mix(in srgb, rgb(var(--v-theme-surface-light)) 60%, white 40%) 1px,
-				var(--bg-color, rgb(var(--v-theme-surface))) 1px,
-				var(--bg-color, rgb(var(--v-theme-surface))) 15px);
+		background: repeating-linear-gradient(
+			to right,
+			color-mix(in srgb, rgb(var(--v-theme-surface-light)) 60%, white 40%),
+			color-mix(in srgb, rgb(var(--v-theme-surface-light)) 60%, white 40%) 1px,
+			var(--bg-color, rgb(var(--v-theme-surface))) 1px,
+			var(--bg-color, rgb(var(--v-theme-surface))) 15px
+		);
 		background-position: -9px;
 	}
 }

@@ -18,7 +18,6 @@ body .v-card .statblock-outer.odyssey {
 		padding: 15px;
 	}
 
-
 	.statblock-name-container {
 		font-family: "Odyssey Roboto";
 		color: #095471;
@@ -90,7 +89,6 @@ body .v-card .statblock-outer.odyssey {
 	.feature-header {
 		color: rgb(139, 139, 139);
 	}
-		
 
 	.stat-table:first-of-type {
 		tbody > th {

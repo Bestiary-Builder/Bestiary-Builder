@@ -33,7 +33,6 @@ const rules = useRules();
 
 			<v-col cols="6">
 				<v-text-field v-model="currentEffect.thumb" label="Thumbnail URL" />
-
 			</v-col>
 			<v-col cols="6">
 				<v-text-field v-model="currentEffect.verb" label="Verb" placeholder="attacks with"
@@ -41,7 +40,6 @@ const rules = useRules();
 			</v-col>
 			<v-col cols="6">
 				<v-checkbox v-model="currentEffect.proper" label="Name is proper noun" hide-details />
-
 			</v-col>
 			<v-col cols="12">
 				<v-textarea v-model="currentEffect.phrase" label="Flavor Text" rows="5" />
@@ -82,7 +80,3 @@ const rules = useRules();
 		</v-row>
 	</template>
 </template>
-
-<style scoped>
-@import url("./styles/automation-editor.less");
-</style>

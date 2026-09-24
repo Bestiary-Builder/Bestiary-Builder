@@ -2,9 +2,9 @@
 import type { Ref } from "vue";
 import type { AttackInteraction } from "~/shared";
 import { inject } from "vue";
+import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
-import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 
 const currentEffect = inject<Ref<AttackInteraction>>("currentEffect");
 useDataCleanup(currentEffect, ["defaultAttackBonus", "defaultCastingMod", "defaultDC"], { attack: ["activation_type", "criton", "extra_crit_damage", "phrase", "proper", "thumb", "verb"] });
@@ -22,7 +22,6 @@ useDataCleanup(currentEffect, ["defaultAttackBonus", "defaultCastingMod", "defau
 			</v-col>
 			<v-col cols="6">
 				<v-text-field v-model="currentEffect.attack.thumb" label="Thumbnail URL" />
-
 			</v-col>
 			<v-col cols="6">
 				<v-text-field v-model="currentEffect.attack.verb" label="Verb" placeholder="attacks with"
@@ -30,11 +29,9 @@ useDataCleanup(currentEffect, ["defaultAttackBonus", "defaultCastingMod", "defau
 			</v-col>
 			<v-col cols="6">
 				<v-checkbox v-model="currentEffect.attack.proper" label="Name is proper noun" hide-details />
-
 			</v-col>
 			<v-col cols="12">
 				<v-textarea v-model="currentEffect.attack.phrase" label="Flavor Text" rows="5" />
-
 			</v-col>
 			<v-col cols="6">
 				<v-select v-model="currentEffect.attack.criton" label="Crit On" :items="[
@@ -67,7 +64,6 @@ useDataCleanup(currentEffect, ["defaultAttackBonus", "defaultCastingMod", "defau
 			</v-col>
 			<v-col cols="6">
 				<TypeHintedEditor v-model="currentEffect.defaultAttackBonus" label="Default Attack Bonus" />
-
 			</v-col>
 			<v-col cols="6">
 				<TypeHintedEditor v-model="currentEffect.defaultCastingMod" label="Default Casting Modifier" />
@@ -76,11 +72,6 @@ useDataCleanup(currentEffect, ["defaultAttackBonus", "defaultCastingMod", "defau
 				<TypeHintedEditor v-model="currentEffect.defaultDC" label="Default DC" />
 			</v-col>
 		</v-row>
-		<v-row>
-		</v-row>
+		<v-row />
 	</template>
 </template>
-
-<style scoped>
-@import url("./styles/automation-editor.less");
-</style>

@@ -1,17 +1,17 @@
 <script setup lang="ts">
+import { GlowTourAdvanceTrigger, GlowTourBackTrigger, GlowTourCancelTrigger, GlowTourContent, GlowTourFooter, GlowTourHeader, GlowTourOverlay, GlowTourPointer, GlowTourPopover, GlowTourRoot } from "@glowhop/vue-tour";
 import { useLocalStorage } from "@vueuse/core";
 import { computed, ref } from "vue";
 import { RouterView } from "vue-router";
 import FeedbackForm from "./components/Global/FeedbackForm.vue";
 import ToastHost from "./components/Page/ToastHost.vue";
+import { useCustomThemeColors } from "./utils/app/customTheme.js";
 import { useThemePersistence } from "./utils/app/theme";
+import { useOnboardingTour } from "./utils/app/useOnboardingTour";
 import { useRecentPages } from "./utils/app/useRecentPages";
+import { latestChangelogVersion } from "./utils/constants";
 import { store } from "./utils/store";
 import { sendToLogin } from "./utils/utils";
-import { latestChangelogVersion } from "./utils/constants";
-import { GlowTourRoot, GlowTourAdvanceTrigger, GlowTourBackTrigger, GlowTourCancelTrigger, GlowTourContent, GlowTourFooter, GlowTourHeader, GlowTourOverlay, GlowTourPointer, GlowTourPopover } from "@glowhop/vue-tour";
-import { useOnboardingTour } from "./utils/app/useOnboardingTour";
-import { useCustomThemeColors } from "./utils/app/customTheme.js";
 
 const { recentPages } = useRecentPages();
 
@@ -38,7 +38,7 @@ const isFeedbackFormOpen = ref(false);
 useThemePersistence();
 useCustomThemeColors();
 
-const changeLogVersionLastViewed = useLocalStorage('changeLogVersionLastViewed', '')
+const changeLogVersionLastViewed = useLocalStorage("changeLogVersionLastViewed", "");
 
 const { tour, startOnboardingWorkflow } = useOnboardingTour();
 const dismissed = useLocalStorage("update3.0.0dismissed", false);
@@ -89,39 +89,53 @@ const dismissed = useLocalStorage("update3.0.0dismissed", false);
 						<v-list-item v-bind="props" prepend-icon="mdi:history" title="Recently Viewed" />
 					</template>
 					<v-list density="compact" class="recent-pages-list">
-						<v-list-item v-for="page in recentPages" :key="page.path" :title="page.label"
+						<v-list-item
+							v-for="page in recentPages" :key="page.path" :title="page.label"
 							:prepend-icon="page.icon" :to="page.path" density="compact" size="small"
-							class="text-caption" />
+							class="text-caption"
+						/>
 					</v-list>
 				</v-list-group>
 			</v-list>
 			<template #append>
 				<v-list nav density="compact">
 					<v-divider />
-					<v-list-item title="Feedback" value="feedback" prepend-icon="mdi:comment-text"
-						@click="isFeedbackFormOpen = true" link />
+					<v-list-item
+						title="Feedback" value="feedback" prepend-icon="mdi:comment-text" link
+						@click="isFeedbackFormOpen = true"
+					/>
 					<v-list-item title="Help" value="help" to="/help" prepend-icon="mdi:frequently-asked-questions" />
-					<v-list-item title="Changelog" value="changelog" to="/changelog" prepend-icon="mdi:history"
-						id="changelog-nav">
-						<template #append v-if="changeLogVersionLastViewed != latestChangelogVersion">
-							<v-badge inline color="primary" dot></v-badge>
+					<v-list-item
+						id="changelog-nav" title="Changelog" value="changelog" to="/changelog"
+						prepend-icon="mdi:history"
+					>
+						<template v-if="changeLogVersionLastViewed !== latestChangelogVersion" #append>
+							<v-badge inline color="primary" dot />
 						</template>
 					</v-list-item>
-					<v-list-item title="Discord" value="discord" href="https://discord.gg/a6bwXCSymN" target="_blank"
-						rel="noopener noreferrer" prepend-icon="mdi:discord" link append-icon="mdi:open-in-new" />
-					<v-list-item title="Patreon" value="patreon" href="https://patreon.com/BestiaryBuilder"
+					<v-list-item
+						title="Discord" value="discord" href="https://discord.gg/a6bwXCSymN" target="_blank"
+						rel="noopener noreferrer" prepend-icon="mdi:discord" link append-icon="mdi:open-in-new"
+					/>
+					<v-list-item
+						title="Patreon" value="patreon" href="https://patreon.com/BestiaryBuilder"
 						target="_blank" rel="noopener noreferrer" prepend-icon="mdi:patreon" link
-						append-icon="mdi:open-in-new" />
+						append-icon="mdi:open-in-new"
+					/>
 					<v-divider />
-					<v-list-item v-if="store.user" append-icon="mdi:cog" to="/user" :title="store.user.username"
-						id="user-page">
+					<v-list-item
+						v-if="store.user" id="user-page" append-icon="mdi:cog" to="/user"
+						:title="store.user.username"
+					>
 						<template #prepend>
-							<v-avatar alt="avatar"
+							<v-avatar
+								alt="avatar"
 								:image="store.user.avatar ? `https://cdn.discordapp.com/avatars/${store.user.id}/${store.user.avatar}.png` : 'https://cdn.discordapp.com/embed/avatars/0.png'"
-								size="30" class="mr-3" />
+								size="30" class="mr-3"
+							/>
 						</template>
 					</v-list-item>
-					<v-list-item v-else prepend-icon="mdi:login" @click="sendToLogin($route.path)" id="user-page">
+					<v-list-item v-else id="user-page" prepend-icon="mdi:login" @click="sendToLogin($route.path)">
 						<v-list-item-title>
 							<b> Login </b>
 						</v-list-item-title>
@@ -131,14 +145,16 @@ const dismissed = useLocalStorage("update3.0.0dismissed", false);
 		</v-navigation-drawer>
 		<v-app-bar id="navbar" scroll-behavior="elevate" class="border-b" app elevation="3" height="64">
 			<template #prepend>
-				<v-app-bar-nav-icon v-model="drawer" @click="toggleDrawer" id="toggle-drawer" />
+				<v-app-bar-nav-icon id="toggle-drawer" v-model="drawer" @click="toggleDrawer" />
 			</template>
 			<div id="app-bar-actions" class="d-flex align-center" />
 			<template #append />
 		</v-app-bar>
 		<v-main min-height="100vh">
-			<v-alert v-if="!dismissed" class="ma-4" closable title="Update 3.0.0 Released"
-				@click:close="dismissed = true" icon="$bestiaryBuilder" icon-size="48" elevation="3">
+			<v-alert
+				v-if="!dismissed" class="ma-4" closable title="Update 3.0.0 Released" icon="$bestiaryBuilder"
+				icon-size="48" elevation="3" @click:close="dismissed = true"
+			>
 				<template #text>
 					Welcome to Bestiary Builder 3.0.0, the biggest and best update to BestiaryBuilder ever.<br>
 					See all the changes in the
@@ -148,8 +164,10 @@ const dismissed = useLocalStorage("update3.0.0dismissed", false);
 				</template>
 
 				<template #append>
-					<v-btn color="success" @click="startOnboardingWorkflow()" elevation="3"> See what's new in
-						3.0.0</v-btn>
+					<v-btn color="success" elevation="3" @click="startOnboardingWorkflow()">
+						See what's new in
+						3.0.0
+					</v-btn>
 				</template>
 			</v-alert>
 			<VDefaultsProvider :defaults="defaults">

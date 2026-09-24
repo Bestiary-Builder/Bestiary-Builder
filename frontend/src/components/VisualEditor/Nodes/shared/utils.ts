@@ -28,6 +28,8 @@ export const useDataCleanup = <T extends EffectWithTarget | AttackModel | Button
 		watch(() => data.value[property], () => {
 			if (Boolean(data.value[property]) === false)
 				delete data.value[property];
+
+			if (isEmptyObject(data.value[property])) delete data.value[property];
 		});
 	}
 
@@ -47,9 +49,10 @@ export const useDataCleanup = <T extends EffectWithTarget | AttackModel | Button
 								if (
 									!!data.value[property][nestedProperty] === false
 									|| data.value[property][nestedProperty] === "0"
-								)
+								) {
 									delete data.value[property][nestedProperty];
-							}, 5000)
+								}
+							}, 5000);
 						}
 					});
 				}
@@ -57,3 +60,8 @@ export const useDataCleanup = <T extends EffectWithTarget | AttackModel | Button
 		}
 	}
 };
+
+
+const isEmptyObject = (val: unknown): boolean =>
+	typeof val === 'object' && val !== null && !Array.isArray(val) && Object.keys(val).length === 0;
+

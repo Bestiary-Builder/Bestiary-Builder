@@ -3,14 +3,14 @@ import type { AttackModel, AutomationDocumentation } from "~/shared";
 import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
 import { useLocalStorage, watchDebounced } from "@vueuse/core";
 import { computed, onMounted, onUnmounted, ref, shallowRef, useTemplateRef, watch } from "vue";
-import YAML from "yaml";
+import { useRoute } from "vue-router";
 import VisualEditor from "@/components/VisualEditor/VisualEditor.vue";
+import { useThemePersistence } from "@/utils/app/theme";
 import { useToast } from "@/utils/app/toast";
+import { useOnboardingTour } from "@/utils/app/useOnboardingTour.js";
 import { useFetch } from "@/utils/utils";
 import AutomationDocumentationView from "./AutomationDocumentation.vue";
-import { useOnboardingTour } from "@/utils/app/useOnboardingTour.js";
-import { useRoute } from "vue-router";
-import { useThemePersistence } from "@/utils/app/theme";
+import { parse, stringify, isSeq, type Pair } from 'yaml';
 
 type AutomationValue = AttackModel | AttackModel[] | null;
 
@@ -36,7 +36,19 @@ const visualEditorModel = computed({
 	set: (val: AutomationValue) => emit("update:modelValue", val),
 });
 
-const automationString = ref(YAML.stringify(props.modelValue ?? null));
+// sort states for automation strings
+const rankEntry = (pair: Pair): number => {
+	const key = (pair.key as { value?: unknown })?.value ?? pair.key;
+	if (key === 'type') return 0;
+	if (key === 'label') return 0;
+	if (isSeq(pair.value)) return 2;
+	return 1;
+};
+
+const sortMapEntries = (a: Pair, b: Pair): number => rankEntry(a) - rankEntry(b);
+
+const automationString = ref(stringify(props.modelValue ?? null, { sortMapEntries}));
+
 const yamlError = ref<string | null>(null);
 let suppressNextModelSync = false;
 
@@ -44,7 +56,7 @@ watchDebounced(automationString, () => {
 	if (props.isVisualEditor)
 		return;
 	try {
-		const parsed = YAML.parse(automationString.value);
+		const parsed = parse(automationString.value);
 		yamlError.value = null;
 		suppressNextModelSync = true;
 		emit("update:modelValue", parsed);
@@ -56,26 +68,28 @@ watchDebounced(automationString, () => {
 
 // keep automationString in sync when modelValue changes from outside
 // (loading a feature, generating automation, clearing it, description-parity edits)
+
+
 watch(() => props.modelValue, (newVal) => {
 	if (suppressNextModelSync) {
 		suppressNextModelSync = false;
 		return;
 	}
 	if (!props.isVisualEditor)
-		automationString.value = YAML.stringify(newVal ?? null);
+		automationString.value = stringify(newVal ?? null, { sortMapEntries});
 }, { deep: true });
 
 const toggleEditor = () => {
 	if (props.isVisualEditor) {
 		// switching TO yaml mode
-		automationString.value = YAML.stringify(props.modelValue ?? null);
+		automationString.value = stringify(props.modelValue ?? null, { sortMapEntries});
 		yamlError.value = null;
 		emit("update:isVisualEditor", false);
 	}
 	else {
 		// switching TO visual mode — must be valid yaml first
 		try {
-			const parsed = YAML.parse(automationString.value);
+			const parsed = parse(automationString.value);
 			emit("update:modelValue", parsed);
 			emit("update:isVisualEditor", true);
 		}
@@ -155,66 +169,78 @@ onMounted(async () => {
 });
 
 const clear = () => {
-	console.log("clearing...")
-	resetVisualEditorState()
-	suppressNextModelSync = true
-	visualEditorModel.value = null
-}
+	resetVisualEditorState();
+	suppressNextModelSync = true;
+	visualEditorModel.value = null;
+};
 
 const dismissed = useLocalStorage("newAutomationEditorDismissed", false);
-const { startAutomationEditorWorkflow } = useOnboardingTour()
+const { startAutomationEditorWorkflow } = useOnboardingTour();
 
 const initialize = () => {
-	localStorage.setItem("automationDataStoredDuringWorkflow", JSON.stringify(visualEditorModel.value))
+	localStorage.setItem("automationDataStoredDuringWorkflow", JSON.stringify(visualEditorModel.value));
 	suppressNextModelSync = true;
-	visualEditorModel.value = { name: 'Test attack', '_v': 2, automation: [] };
-}
+	visualEditorModel.value = { name: "Test attack", _v: 2, automation: [] };
+};
 
 const restore = () => {
-	suppressNextModelSync = true
-	visualEditorModel.value = JSON.parse(localStorage.getItem("automationDataStoredDuringWorkflow") ?? 'null');
-}
+	suppressNextModelSync = true;
+	visualEditorModel.value = JSON.parse(localStorage.getItem("automationDataStoredDuringWorkflow") ?? "null");
+};
 
-const $route = useRoute()
-const { monacoTheme } = useThemePersistence()
+const $route = useRoute();
+const { monacoTheme } = useThemePersistence();
 </script>
 
 <template>
 	<div v-if="!isVisualEditor" class="editor pt-4">
-		<VueMonacoEditor v-model:value="automationString" :theme="monacoTheme"
-			:options="{ wordWrap: 'on', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false }"
-			height="800px" language="yaml" @mount="handleMount" />
-		<small v-if="yamlError" style="color: rgb(var(--v-theme-error))">{{ yamlError }}</small>
+		<section>
+			<VueMonacoEditor
+				v-model:value="automationString" :theme="monacoTheme"
+				:options="{ wordWrap: 'on', minimap: { enabled: false }, formatOnPaste: true, formatOnType: true, automaticLayout: true, scrollBeyondLastLine: false }"
+				height="800px" language="yaml" @mount="handleMount"
+			/>
 
-		<AutomationDocumentationView v-model="currentContext" />
+			<small v-if="yamlError" style="color: rgb(var(--v-theme-error))">{{ yamlError }}</small>
+			<v-divider class="mt-2" thickness="2"/>
+
+			<AutomationDocumentationView v-model="currentContext" />
+		</section>
 	</div>
 	<div v-else class="mt-4">
-		<v-alert title="Welcome to the new Automation Editor" class="mb-4" color="primary" icon="mdi:creation-outline"
-			closable v-if="!$route.path.includes('/character') && !dismissed" @click:close="dismissed = true"
-			id="automation-workflow-alert">
+		<v-alert
+			v-if="!$route.path.includes('/character') && !dismissed" id="automation-workflow-alert"
+			title="Welcome to the new Automation Editor" class="mb-4" color="primary" icon="mdi:creation-outline"
+			closable @click:close="dismissed = true"
+		>
 			<template #text>
 				With 3.0.0, you can now create Automation directly within Bestiary Builder. The automation editor
 				includes
 				smart features to make your life easier. If you prefer the old YAML editor, you can toggle it at the top
 				menu or set a default in your <RouterLink to="/user" style="color: white; text-decoration: underline;">
 					User
-					Settings.</RouterLink>
+					Settings.
+				</RouterLink>
 			</template>
 			<template #append>
 				<div>
-					<v-btn variant="outlined" @click="startAutomationEditorWorkflow"> Take the tour </v-btn>
+					<v-btn variant="outlined" @click="startAutomationEditorWorkflow">
+						Take the tour
+					</v-btn>
 				</div>
 			</template>
 		</v-alert>
-		<VisualEditor ref="VisualEditorRef" v-model="visualEditorModel" :name="name || ''"
-			:no-list-attack="noListAttack" @clear-automation="clear" @take-tour="startAutomationEditorWorkflow" />
+		<VisualEditor
+			ref="VisualEditorRef" v-model="visualEditorModel" :name="name || ''"
+			:no-list-attack="noListAttack" @clear-automation="clear" @take-tour="startAutomationEditorWorkflow"
+		/>
 	</div>
 
-	<!-- These buttons allow us to interface with our state from the onboarding workflow without having to globally manage the state. 
-	These are clicked by the tour runner.-->
+	<!-- These buttons allow us to interface with our state from the onboarding workflow without having to globally manage the state.
+	These are clicked by the tour runner. -->
 	<div style="visibility: hidden;">
-		<button @click="initialize" id="automation-workflow-initialize-data"></button>
-		<button @click="restore" id="automation-workflow-end-data"></button>
+		<button id="automation-workflow-initialize-data" @click="initialize" />
+		<button id="automation-workflow-end-data" @click="restore" />
 	</div>
 </template>
 
@@ -222,4 +248,13 @@ const { monacoTheme } = useThemePersistence()
 a {
 	color: rgb(var(--v-theme-primary));
 }
+
+section {
+	background-color: rgb(var(--v-theme-surface-light));
+	min-height: 800px;
+	padding: 1rem;
+	border-radius: 4px;
+	box-shadow: rgb(0 0 0 / 24%) 0 3px 8px;
+}
+
 </style>

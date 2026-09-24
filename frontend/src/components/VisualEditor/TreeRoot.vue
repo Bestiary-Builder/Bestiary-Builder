@@ -8,11 +8,11 @@ import EffectAdder from "./EffectAdder.vue";
 import TreeNode from "./TreeNode.vue";
 import { draggingProps } from "./util";
 
-const emit = defineEmits<{
-	'emptyAutomation': []
-}>()
-
 const { data, noListAttack = false } = defineProps<{ data: AttackModel | AttackModel[]; noListAttack?: boolean }>();
+
+const emit = defineEmits<{
+	emptyAutomation: [];
+}>();
 
 const automation = inject<Ref<null | AttackModel | AttackModel[]>>("automation");
 const makeListAttack = () => {
@@ -38,13 +38,13 @@ const deleteListAttack = (index: number) => {
 		automation.value = automation.value[0];
 
 	currentContext!.value = [];
-	currentEffect!.value = null
+	currentEffect!.value = null;
 };
 
 const setAutomationEmpty = () => {
-	emit('emptyAutomation');
+	emit("emptyAutomation");
 	currentContext!.value = [];
-	currentEffect!.value = null
+	currentEffect!.value = null;
 };
 
 const currentEffect = inject<Ref<EffectWithTarget | AttackModel | null>>("currentEffect");
@@ -57,18 +57,23 @@ const showControls = inject<Ref<boolean>>("showControls");
 	<section class="container">
 		<template v-if="Array.isArray(data)">
 			<template v-for="auto, index in data" :key="index">
-				<p class="add root tree-row"
-					@click="currentEffect = data[index]; currentContext = [index.toString(), 'root']">
+				<p
+					class="add root tree-row"
+					@click="currentEffect = data[index]; currentContext = [index.toString(), 'root']"
+				>
 					<Icon
 						:icon="JSON.stringify(currentContext) === JSON.stringify([index.toString(), 'root']) ? 'material-symbols:asterisk' : 'material-symbols:swords'"
 						:inline="true" width="1em"
-						:color="JSON.stringify(currentContext) === JSON.stringify([index.toString(), 'root']) ? 'rgb(var(--v-theme-success))' : 'rgb(var(--v-theme-primary))'" />
+						:color="JSON.stringify(currentContext) === JSON.stringify([index.toString(), 'root']) ? 'rgb(var(--v-theme-success))' : 'rgb(var(--v-theme-primary))'"
+					/>
 					{{ auto.name || "Unnamed Attack" }}
 					<span v-if="showControls" class="tree-buttons" @click.stop>
 						<DropdownMenu>
 							<template #activator="{ props }">
-								<Icon icon="mdi:trash" inline width=".75em" role="button" class="trigger" color="gray"
-									v-bind="props" />
+								<Icon
+									icon="mdi:trash" inline width=".75em" role="button" class="trigger" color="gray"
+									v-bind="props"
+								/>
 							</template>
 							<v-card min-width="300" class="text-center pb-2">
 								<v-card-text>
@@ -84,11 +89,12 @@ const showControls = inject<Ref<boolean>>("showControls");
 					</span>
 				</p>
 				<VueDraggable v-model="auto.automation" v-bind="draggingProps" :style="`--depth: ${0}`">
-					<TreeNode v-for="(node, idx) in auto.automation ?? []" :key="(node as any)" :data="node" :depth="0"
-						:context="[index.toString(), 'root', idx.toString()]" />
+					<TreeNode
+						v-for="(node, idx) in auto.automation ?? []" :key="(node as any)" :data="node" :depth="0"
+						:context="[index.toString(), 'root', idx.toString()]"
+					/>
 					<EffectAdder :context="[index.toString(), 'root']" />
 				</VueDraggable>
-
 			</template>
 			<p v-if="!noListAttack && showControls" style="--depth: 0" class="tree-row" @click="addListAttack()">
 				Add Attack to this feature
@@ -99,13 +105,16 @@ const showControls = inject<Ref<boolean>>("showControls");
 				<Icon
 					:icon="JSON.stringify(currentContext) === JSON.stringify(['root']) ? 'material-symbols:asterisk' : 'material-symbols:swords'"
 					:inline="true" width="1em"
-					:color="JSON.stringify(currentContext) === JSON.stringify(['root']) ? 'rgb(var(--v-theme-success))' : 'rgb(var(--v-theme-primary))'" />
+					:color="JSON.stringify(currentContext) === JSON.stringify(['root']) ? 'rgb(var(--v-theme-success))' : 'rgb(var(--v-theme-primary))'"
+				/>
 				{{ data.name || "Unnamed Attack" }}
 				<span v-if="showControls" class="tree-buttons" @click.stop>
 					<DropdownMenu>
 						<template #activator="{ props }">
-							<Icon icon="mdi:trash" inline width=".75em" role="button" class="trigger" color="gray"
-								v-bind="props" />
+							<Icon
+								icon="mdi:trash" inline width=".75em" role="button" class="trigger" color="gray"
+								v-bind="props"
+							/>
 						</template>
 						<v-card min-width="300" class="text-center pb-2">
 							<v-card-text>
@@ -121,8 +130,10 @@ const showControls = inject<Ref<boolean>>("showControls");
 				</span>
 			</p>
 			<VueDraggable v-model="data.automation" v-bind="draggingProps" :style="`--depth: ${0}`">
-				<TreeNode v-for="(node, idx) in data.automation ?? []" :key="(node as any)" :data="node" :depth="0"
-					:context="['root', idx.toString()]" />
+				<TreeNode
+					v-for="(node, idx) in data.automation ?? []" :key="(node as any)" :data="node" :depth="0"
+					:context="['root', idx.toString()]"
+				/>
 				<EffectAdder :context="['root']" :depth="0" />
 			</VueDraggable>
 

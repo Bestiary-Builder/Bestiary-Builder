@@ -2,10 +2,11 @@
 import type { Ref } from "vue";
 import type { Spell } from "~/shared";
 import { inject, onMounted, ref } from "vue";
+import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 import { useFetch } from "@/utils/utils";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
-import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
+
 const currentEffect = inject<Ref<Spell>>("currentEffect");
 
 type Spells = { label: string; id: number }[];
@@ -66,7 +67,3 @@ useDataCleanup(currentEffect, ["level", "attackBonus", "castingMod", "parent"]);
 		</v-row>
 	</template>
 </template>
-
-<style scoped>
-@import url("./styles/automation-editor.less");
-</style>

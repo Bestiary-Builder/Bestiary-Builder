@@ -2,30 +2,23 @@
 import type { Ref } from "vue";
 import type { Damage } from "~/shared";
 import { inject, onBeforeUnmount, watch } from "vue";
+import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 import HigherLevels from "./shared/HigherLevels.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
-import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 
 const currentEffect = inject<Ref<Damage>>("currentEffect");
 
 watch(() => currentEffect?.value.higher, () => {
-	for (const index in currentEffect?.value.higher) {
+	if (!Object.hasOwn(currentEffect!.value, "higher")) return;
+	for (const index in currentEffect!.value.higher) {
 		const toIndex = Number.parseInt(index);
-		if (currentEffect?.value.higher[toIndex] === "")
-			delete currentEffect?.value.higher[toIndex];
+		if (currentEffect!.value.higher[toIndex] === "")
+			delete currentEffect!.value.higher[toIndex];
 	}
 }, { deep: true });
 
-onBeforeUnmount(() => {
-	if (!Object.values(currentEffect?.value.higher || {}).some(x => x !== ""))
-		delete currentEffect?.value.higher;
-});
-
-if (!Object.hasOwn(currentEffect!.value, "higher"))
-	currentEffect!.value.higher = {};
-
-useDataCleanup(currentEffect, ["overheal", "cantripScale", "fixedValue"]);
+useDataCleanup(currentEffect, ["overheal", "cantripScale", "fixedValue", "higher"]);
 </script>
 
 <template>
@@ -59,13 +52,8 @@ useDataCleanup(currentEffect, ["overheal", "cantripScale", "fixedValue"]);
 			</v-col>
 
 			<v-col cols="6">
-				<div>At higher levels</div>
-				<HigherLevels v-model="(currentEffect!.higher as Record<number, string>)" />
+				<HigherLevels v-model="currentEffect.higher" />
 			</v-col>
 		</v-row>
 	</template>
 </template>
-
-<style scoped>
-@import url("./styles/automation-editor.less");
-</style>

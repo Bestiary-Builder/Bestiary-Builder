@@ -2,9 +2,9 @@
 import type { Ref } from "vue";
 import type { Attack } from "~/shared";
 import { inject, onUnmounted, ref, watch } from "vue";
+import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
-import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 
 const currentEffect = inject<Ref<Attack>>("currentEffect");
 
@@ -44,7 +44,7 @@ useDataCleanup(currentEffect, ["attackBonus"]);
 			</v-col>
 
 			<v-col cols="12">
-				<TypeHintedEditor v-model="currentEffect.attackBonus" label="Attack Bonus" id="attackBonus" />
+				<TypeHintedEditor id="attackBonus" v-model="currentEffect.attackBonus" label="Attack Bonus" />
 			</v-col>
 
 			<v-col cols="12">
@@ -71,7 +71,3 @@ useDataCleanup(currentEffect, ["attackBonus"]);
 		</v-row>
 	</template>
 </template>
-
-<style scoped>
-@import url("./styles/automation-editor.less");
-</style>

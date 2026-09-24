@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import type { FeatureEntity, SaveEntity, SkillsEntity, Stat, Statblock } from "~/shared";
-import MarkdownIt from "markdown-it";
+import type { StatblockDesign } from "~/shared/src/prisma-types";
 
+import MarkdownIt from "markdown-it";
 import markdownItAttrs from "markdown-it-attrs";
 import { computed, onMounted } from "vue";
+import { useStatblockColors } from "@/utils/app/customTheme";
+
+import { useThemePersistence } from "@/utils/app/theme";
 import { featureGenerator, resistanceGenerator, stats } from "@/utils/constants";
 import { store } from "@/utils/store";
-
 import { capitalizeFirstLetter, crAsString, displayCasterCasting, displayInnateCasting, displaySpeedOrSenses, hpCalc, ppCalc, signedNumber, SKILLS_BY_STAT, statCalc } from "~/shared";
-import type { StatblockDesign } from "~/shared/src/prisma-types";
-import { useThemePersistence } from "@/utils/app/theme";
-import { useStatblockColors } from "@/utils/app/customTheme";
 
 const { data, statblockDesign = null, is2024 = null } = defineProps<{ data: Statblock; statblockDesign?: StatblockDesign; is2024?: boolean }>();
 
@@ -19,12 +19,14 @@ let v2024;
 if (is2024 === null) {
 	if (store.user) {
 		v2024 = store.user?.statblockLayout === "SL_2024";
-	} else {
-		v2024 = true
+	}
+	else {
+		v2024 = true;
 	}
 }
-else
+else {
 	v2024 = is2024;
+}
 
 const showSkills = computed(() => {
 	if (v2024 && data.abilities.skills.length === 1 && data.abilities.skills[0].skillName === "Initiative")
@@ -165,7 +167,7 @@ const calculatePassiveInitiative = () => {
 	return value + calculatedInitiativeNumber();
 };
 
-const { isAllowedCustomTheme } = useThemePersistence()
+const { isAllowedCustomTheme } = useThemePersistence();
 
 onMounted(async () => {
 	if (design === "Odyssey")
@@ -191,6 +193,7 @@ md.use(markdownItAttrs, { allowedAttributes: ["class"] });
 
 const mdInlineBreaks = new MarkdownIt({ html: false, breaks: true, linkify: true });
 
+// eslint-disable-next-line regexp/no-unused-capturing-group
 const listMarker = /^\s*([-*+]|\d+[.)])\s+/;
 
 const expandNewlinesToParagraphs = (text: string) => {
@@ -242,12 +245,14 @@ const renderFeature = (feature: FeatureEntity) => {
 	return render(output);
 };
 
-const { statblockColors } = useStatblockColors()
+const { statblockColors } = useStatblockColors();
 </script>
 
 <template>
-	<div class="statblock-outer" :class="design?.toLowerCase()"
-		:style="design === 'Custom' && isAllowedCustomTheme ? statblockColors : ''">
+	<div
+		class="statblock-outer" :class="design?.toLowerCase()"
+		:style="design === 'Custom' && isAllowedCustomTheme ? statblockColors : ''"
+	>
 		<div id="statblock" class="statblock" :class="[v2024 ? 'v2024' : '']">
 			<div class="statblock-row">
 				<h1 class="statblock-name-container">
@@ -261,7 +266,8 @@ const { statblockColors } = useStatblockColors()
 				<div>
 					<div>
 						<b> {{ v2024 ? 'AC ' : 'Armor Class ' }} </b><span>{{ data.defenses.ac.ac }}</span><span
-							v-if="data.defenses.ac.acSource" v-html="render(` (${data.defenses.ac.acSource})`, true)" />
+							v-if="data.defenses.ac.acSource" v-html="render(` (${data.defenses.ac.acSource})`, true)"
+						/>
 						<b v-if="v2024" style="padding-left: .45rem"> Initiative </b> <span v-if="v2024"> {{
 							signedNumber(calculatedInitiativeNumber()) }} ({{ calculatePassiveInitiative() }})</span>
 					</div>
@@ -331,17 +337,21 @@ const { statblockColors } = useStatblockColors()
 			</div>
 			<div class="statblock-row v2024-no-bottom-border">
 				<template v-if="!v2024">
-					<div v-if="Object.values(data.abilities.saves).some((val) => (val.isProficient === true || val.override !== null))"
-						class="statblock-save-container">
+					<div
+						v-if="Object.values(data.abilities.saves).some((val) => (val.isProficient === true || val.override !== null))"
+						class="statblock-save-container"
+					>
 						<b> Saving Throws </b>
 						<template v-for="stat in stats" :key="stat">
 							<span
-								v-if="data.abilities.saves[stat].override !== null || data.abilities.saves[stat].isProficient">
+								v-if="data.abilities.saves[stat].override !== null || data.abilities.saves[stat].isProficient"
+							>
 								{{ capitalizeFirstLetter(stat) }} {{
 									signedNumber(calculatedSaveNumber(data.abilities.saves[stat], stat)) }} </span>
 							<span
 								v-if="data.abilities.saves[stat].override !== null || data.abilities.saves[stat].isProficient"
-								class="ending-comma">, </span>
+								class="ending-comma"
+							>, </span>
 						</template>
 					</div>
 					<div v-if="showSkills" class="statblock-skills-container">
@@ -370,18 +380,21 @@ const { statblockColors } = useStatblockColors()
 						<b> Resistances </b>
 						<span v-html="render(alphaSort(data.defenses.resistances).join(', '), true)" />
 					</div>
-					<div v-if="data.defenses.immunities.length > 0 || data.defenses.conditionImmunities.length > 0"
-						class="statblock-res-container">
+					<div
+						v-if="data.defenses.immunities.length > 0 || data.defenses.conditionImmunities.length > 0"
+						class="statblock-res-container"
+					>
 						<b> Immunities </b>
 						<span v-html="render(alphaSort(data.defenses.immunities).join(', '), true)" />
 						<span
-							v-if="data.defenses.immunities.length > 0 && data.defenses.conditionImmunities.length > 0">;
+							v-if="data.defenses.immunities.length > 0 && data.defenses.conditionImmunities.length > 0"
+						>;
 						</span>
 						<span v-html="render(alphaSort(data.defenses.conditionImmunities).join(', '), true)" />
 					</div>
 				</template>
 
-				<div class="statblock-language-container" v-if="data.description.gear">
+				<div v-if="data.description.gear" class="statblock-language-container">
 					<b> Gear </b>
 					<span v-html="render(data.description.gear, true)" />
 				</div>
@@ -405,7 +418,7 @@ const { statblockColors } = useStatblockColors()
 					<span> <b> CR</b> {{ crAsString(data.description.cr) }} (XP {{
 						data.description.xp.toLocaleString('en')
 					}}; PB {{
-							signedNumber(data.core.proficiencyBonus) }})
+						signedNumber(data.core.proficiencyBonus) }})
 					</span>
 				</div>
 				<div v-else class="challenge-prof">
@@ -416,8 +429,10 @@ const { statblockColors } = useStatblockColors()
 				</div>
 			</div>
 
-			<div v-if="data.features.features.length > 0 || showCasterCasting || (showInnateCasting && !data.spellcasting.innateSpells.displayAsAction)"
-				id="yes" class="statblock-row">
+			<div
+				v-if="data.features.features.length > 0 || showCasterCasting || (showInnateCasting && !data.spellcasting.innateSpells.displayAsAction)"
+				id="yes" class="statblock-row"
+			>
 				<div class="feature-container">
 					<h3 v-if="v2024" class="feature-container-title">
 						Traits
@@ -425,28 +440,40 @@ const { statblockColors } = useStatblockColors()
 					<p v-if="data.misc.featureHeaderTexts.features" class="feature-header">
 						<span v-html="render(data.misc.featureHeaderTexts.features)" />
 					</p>
-					<div v-for="(feature, index) in data.features.features" :key="index" class="feature-description"
-						v-html="renderFeature(feature)" />
+					<div
+						v-for="(feature, index) in data.features.features" :key="index" class="feature-description"
+						v-html="renderFeature(feature)"
+					/>
 
-					<p v-if="showInnateCasting && !data.spellcasting.innateSpells.displayAsAction"
-						class="feature-description">
+					<p
+						v-if="showInnateCasting && !data.spellcasting.innateSpells.displayAsAction"
+						class="feature-description"
+					>
 						<b><i>Innate Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics">
-									(Psionics)</span>.</i></b>
-						<span class="feature-description-inner indented"
-							v-html="render(displayInnateCasting(data, v2024))" />
+							(Psionics)</span>.</i></b>
+						<span
+							class="feature-description-inner indented"
+							v-html="render(displayInnateCasting(data, v2024))"
+						/>
 					</p>
 
-					<p v-if="showCasterCasting && data.spellcasting.casterSpells.castingClass && data.spellcasting.casterSpells.casterLevel && data.spellcasting.casterSpells.spellSlotList"
-						class="feature-description">
+					<p
+						v-if="showCasterCasting && data.spellcasting.casterSpells.castingClass && data.spellcasting.casterSpells.casterLevel && data.spellcasting.casterSpells.spellSlotList"
+						class="feature-description"
+					>
 						<b><i>Spellcasting.</i></b>
-						<span class="feature-description-inner indented"
-							v-html="render(displayCasterCasting(data, v2024))" />
+						<span
+							class="feature-description-inner indented"
+							v-html="render(displayCasterCasting(data, v2024))"
+						/>
 					</p>
 				</div>
 			</div>
 
-			<div v-if="data.features.actions.length > 0 || (showInnateCasting && data.spellcasting.innateSpells.displayAsAction)"
-				b class="statblock-row">
+			<div
+				v-if="data.features.actions.length > 0 || (showInnateCasting && data.spellcasting.innateSpells.displayAsAction)"
+				b class="statblock-row"
+			>
 				<div class="feature-container">
 					<h3 class="feature-container-title">
 						Actions
@@ -454,15 +481,21 @@ const { statblockColors } = useStatblockColors()
 					<p v-if="data.misc.featureHeaderTexts.actions" class="feature-header">
 						<span v-html="render(data.misc.featureHeaderTexts.actions)" />
 					</p>
-					<div v-for="(feature, index) in data.features.actions" :key="index" class="feature-description"
-						v-html="renderFeature(feature)" />
+					<div
+						v-for="(feature, index) in data.features.actions" :key="index" class="feature-description"
+						v-html="renderFeature(feature)"
+					/>
 
-					<p v-if="showInnateCasting && data.spellcasting.innateSpells.displayAsAction"
-						class="feature-description">
+					<p
+						v-if="showInnateCasting && data.spellcasting.innateSpells.displayAsAction"
+						class="feature-description"
+					>
 						<b><i>Spellcasting<span v-if="data.spellcasting.innateSpells.isPsionics">
-									(Psionics)</span>.</i></b>
-						<span class="feature-description-inner indented"
-							v-html="render(displayInnateCasting(data, v2024))" />
+							(Psionics)</span>.</i></b>
+						<span
+							class="feature-description-inner indented"
+							v-html="render(displayInnateCasting(data, v2024))"
+						/>
 					</p>
 				</div>
 			</div>
@@ -476,29 +509,32 @@ const { statblockColors } = useStatblockColors()
 						</h3>
 						<p v-if="fType === 'legendary' && data.features.legendary.length > 0" class="feature-header">
 							<span
-								v-html="render(data.misc.featureHeaderTexts[fType].replace('$NUM$', data.misc.legActionsPerRound.toString()))" />
+								v-html="render(data.misc.featureHeaderTexts[fType].replace('$NUM$', data.misc.legActionsPerRound.toString()))"
+							/>
 						</p>
 						<p v-else-if="data.misc.featureHeaderTexts[fType]" class="feature-header">
 							<span v-html="render(data.misc.featureHeaderTexts[fType])" />
 						</p>
-						<p v-for="(feature, index) in data.features[fType]" :key="index" class="feature-description"
-							v-html="renderFeature(feature)" />
+						<p
+							v-for="(feature, index) in data.features[fType]" :key="index" class="feature-description"
+							v-html="renderFeature(feature)"
+						/>
 					</div>
 				</div>
 			</template>
 		</div>
 
 		<div class="feature-container statblock-description py-4 px-2">
-			<div class="faction-env" v-if="data.description.environment || data.description.faction">
+			<div v-if="data.description.environment || data.description.faction" class="faction-env">
 				{{ data.description.environment ? `Environment: ${data.description.environment}` : '' }}
 				<br v-if="data.description.environment && data.description.faction">
 				{{ data.description.faction ? `Faction: ${data.description.faction}` : '' }}
 			</div>
 			<img v-if="data.description.image" class="statblock-image" :src="data.description.image">
-			<h2 class="feature-container-title" v-if="data.description.description">
+			<h2 v-if="data.description.description" class="feature-container-title">
 				Description
 			</h2>
-			<div class="markdown" v-if="data.description.description" v-html="render(data.description.description)" />
+			<div v-if="data.description.description" class="markdown" v-html="render(data.description.description)" />
 		</div>
 	</div>
 </template>

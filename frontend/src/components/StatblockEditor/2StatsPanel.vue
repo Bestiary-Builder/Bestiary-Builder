@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { Statblock } from "~/shared";
+import type { Stat, Statblock } from "~/shared";
+import { computed, ref, watch } from "vue";
 import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
-import { SKILLS_BY_STAT, statFullName, type Stat } from "~/shared";
+import { statFullName } from "~/shared";
 import SimpleNumberInput from "../FormInputs/SimpleNumberInput.vue";
 import SectionHeader from "../VisualEditor/Nodes/shared/SectionHeader.vue";
-import { computed, ref, useTemplateRef, watch } from "vue";
 
 const { data } = defineProps<{ data: Statblock }>();
 const { addToast } = useToast();
@@ -14,8 +14,7 @@ const deleteSkill = (index: number) => {
 	data.abilities.skills?.splice(index, 1);
 };
 
-const addSkillRef = useTemplateRef("addSkill");
-const newSkillName = ref<string | null>(null)
+const newSkillName = ref<string | null>(null);
 watch(newSkillName, () => {
 	if (!newSkillName.value) {
 		return;
@@ -43,40 +42,40 @@ const statIcons: Record<Stat, string> = {
 	int: "mdi:brain",
 	wis: "mdi:stomach",
 	cha: "pinhead:person-dancing-with-sparkles",
-}
+};
 
 const skillIcons: Record<string, string> = {
-	Athletics: "streamline-ultimate:athletics-javelin-throwing-bold",
-	Strength: "boxicons:biceps-filled",
-	Acrobatics: "material-symbols:sports-gymnastics-rounded",
-	'Sleight of Hand': "mdi:handcuffs",
-	Stealth: "mdi:volume-off",
-	Initiative: "mdi:clock-fast",
-	Dexterity: "mdi:run-fast",
-	Constitution: "mdi:heart",
-	Arcana: "mdi:crystal-ball",
-	History: "mdi:book-open-blank-variant",
-	Investigation: "mdi:magnify-expand",
-	Nature: "mdi:leaf",
-	Religion: "mdi:star-four-points",
-	Intelligence: "mdi:brain",
+	"Athletics": "streamline-ultimate:athletics-javelin-throwing-bold",
+	"Strength": "boxicons:biceps-filled",
+	"Acrobatics": "material-symbols:sports-gymnastics-rounded",
+	"Sleight of Hand": "mdi:handcuffs",
+	"Stealth": "mdi:volume-off",
+	"Initiative": "mdi:clock-fast",
+	"Dexterity": "mdi:run-fast",
+	"Constitution": "mdi:heart",
+	"Arcana": "mdi:crystal-ball",
+	"History": "mdi:book-open-blank-variant",
+	"Investigation": "mdi:magnify-expand",
+	"Nature": "mdi:leaf",
+	"Religion": "mdi:star-four-points",
+	"Intelligence": "mdi:brain",
 	"Animal Handling": "mdi:cat",
-	Insight: "mdi:glasses",
-	Medicine: "material-symbols:health-metrics",
-	Perception: "mdi:eye",
-	Survival: "mdi:tent",
-	Wisdom: "mdi:stomach",
-	Deception: "mdi:emoticon-devil",
-	Intimidation: "game-icons:fangs",
-	Performance: "mdi:guitar-acoustic",
-	Persuasion: "material-symbols:lips",
-	Charisma: "pinhead:person-dancing-with-sparkles",
+	"Insight": "mdi:glasses",
+	"Medicine": "material-symbols:health-metrics",
+	"Perception": "mdi:eye",
+	"Survival": "mdi:tent",
+	"Wisdom": "mdi:stomach",
+	"Deception": "mdi:emoticon-devil",
+	"Intimidation": "game-icons:fangs",
+	"Performance": "mdi:guitar-acoustic",
+	"Persuasion": "material-symbols:lips",
+	"Charisma": "pinhead:person-dancing-with-sparkles",
 };
 
 const skillOptions = computed(() => {
-	const items = ['Acrobatics', 'Animal Handling', 'Arcana', 'Athletics', 'Charisma', 'Constitution', 'Deception', 'Dexterity', 'History', 'Initiative', 'Insight', 'Intelligence', 'Intimidation', 'Investigation', 'Medicine', 'Nature', 'Perception', 'Performance', 'Persuasion', 'Religion', 'Sleight of Hand', 'Stealth', 'Strength', 'Survival', 'Wisdom']
-	return items.filter((item) => !data.abilities.skills.some((o) => o.skillName === item))
-})
+	const items = ["Acrobatics", "Animal Handling", "Arcana", "Athletics", "Charisma", "Constitution", "Deception", "Dexterity", "History", "Initiative", "Insight", "Intelligence", "Intimidation", "Investigation", "Medicine", "Nature", "Perception", "Performance", "Persuasion", "Religion", "Sleight of Hand", "Stealth", "Strength", "Survival", "Wisdom"];
+	return items.filter(item => !data.abilities.skills.some(o => o.skillName === item));
+});
 </script>
 
 <template>
@@ -85,30 +84,46 @@ const skillOptions = computed(() => {
 		<v-table density="compact" hover gridlines class="rounded">
 			<thead class="text-center font-weight-bold">
 				<tr>
-					<th class="text-left font-weight-bold"> Ability </th>
-					<th class="text-center font-weight-bold"> Value </th>
-					<th class="text-center font-weight-bold"> Save Prof</th>
-					<th class="text-center font-weight-bold"> Save Adv </th>
-					<th class="text-center font-weight-bold"> Save Override</th>
+					<th class="text-left font-weight-bold">
+						Ability
+					</th>
+					<th class="text-center font-weight-bold">
+						Value
+					</th>
+					<th class="text-center font-weight-bold">
+						Save Prof
+					</th>
+					<th class="text-center font-weight-bold">
+						Save Adv
+					</th>
+					<th class="text-center font-weight-bold">
+						Save Override
+					</th>
 				</tr>
 			</thead>
 			<tbody class="text-center">
 				<tr v-for="name, stat of statFullName" :key="stat">
 					<td class="text-left text-no-wrap">
-						<v-icon :icon="statIcons[stat]" v-if="!store.isMobile" />
+						<v-icon v-if="!store.isMobile" :icon="statIcons[stat]" />
 						{{ name }}
 					</td>
 					<td>
-						<SimpleNumberInput v-model="data.abilities.stats[stat]" :min="0" :label="name"
-							:label-id="stat" />
+						<SimpleNumberInput
+							v-model="data.abilities.stats[stat]" :min="0" :label="name"
+							:label-id="stat"
+						/>
 					</td>
 					<td class="d-flex justify-center align-items-center">
-						<v-checkbox-btn v-model="data.abilities.saves[stat].isProficient" color="primary"
-							density="compact" inline />
+						<v-checkbox-btn
+							v-model="data.abilities.saves[stat].isProficient" color="primary"
+							density="compact" inline
+						/>
 					</td>
 					<td>
-						<select v-model="data.abilities.saves[stat].adv" class="ghost"
-							title="Select advantage or disadvantage for this save">
+						<select
+							v-model="data.abilities.saves[stat].adv" class="ghost"
+							title="Select advantage or disadvantage for this save"
+						>
 							<option :value="null">
 								None
 							</option>
@@ -120,14 +135,18 @@ const skillOptions = computed(() => {
 							</option>
 						</select>
 					</td>
-					<td v-if="data.abilities.saves[stat].override === null" style="cursor: pointer;"
-						@click="data.abilities.saves[stat].override = 1">
+					<td
+						v-if="data.abilities.saves[stat].override === null" style="cursor: pointer;"
+						@click="data.abilities.saves[stat].override = 1"
+					>
 						-
 					</td>
 					<td v-else>
-						<SimpleNumberInput v-model="data.abilities.saves[stat].override"
+						<SimpleNumberInput
+							v-model="data.abilities.saves[stat].override"
 							:label="`${name} save override`" :label-id="`${stat}Override`" is-clearable
-							:min="Number.NEGATIVE_INFINITY" />
+							:min="Number.NEGATIVE_INFINITY"
+						/>
 					</td>
 				</tr>
 			</tbody>
@@ -136,38 +155,53 @@ const skillOptions = computed(() => {
 		<v-table v-if="data.abilities.skills.length > 0" class="text-center rounded" density="compact" hover gridlines>
 			<thead>
 				<tr class="text-bold text-center font-weight-bold">
-					<th class="text-left font-weight-bold"> Skill </th>
-					<th class="text-center font-weight-bold"> Prof / Exp / Half
+					<th class="text-left font-weight-bold">
+						Skill
 					</th>
-					<th class="text-center font-weight-bold"> Advantage </th>
-					<th class="text-center font-weight-bold"> Override</th>
-					<th class="text-center font-weight-bold"> Delete </th>
+					<th class="text-center font-weight-bold">
+						Prof / Exp / Half
+					</th>
+					<th class="text-center font-weight-bold">
+						Advantage
+					</th>
+					<th class="text-center font-weight-bold">
+						Override
+					</th>
+					<th class="text-center font-weight-bold">
+						Delete
+					</th>
 				</tr>
 			</thead>
 			<tbody>
-				<tr v-for="skill, idx of data.abilities.skills.sort((a, b) => a.skillName.localeCompare(b.skillName))"
-					:key="skill.skillName">
+				<tr
+					v-for="skill, idx of data.abilities.skills.sort((a, b) => a.skillName.localeCompare(b.skillName))"
+					:key="skill.skillName"
+				>
 					<td class="text-left text-no-wrap">
-						<v-icon :icon="skillIcons[skill.skillName]" v-if="!store.isMobile" />
+						<v-icon v-if="!store.isMobile" :icon="skillIcons[skill.skillName]" />
 						{{ skill.skillName }}
 					</td>
 					<td>
 						<div class="d-flex justify-center align-items-center">
-							<v-checkbox-btn v-model="skill.isProficient"
-								@click="skill.isExpertise = false; skill.isHalfProficient = false" color="primary"
-								density="compact" inline />
-							<v-checkbox-btn v-model="skill.isExpertise"
-								@click="skill.isProficient = false; skill.isHalfProficient = false" color="primary"
-								density="compact" inline />
-							<v-checkbox-btn v-model="skill.isHalfProficient"
-								@click="skill.isExpertise = false; skill.isProficient = false" color="primary"
-								density="compact" inline />
-
+							<v-checkbox-btn
+								v-model="skill.isProficient" color="primary" density="compact" inline
+								@click="skill.isExpertise = false; skill.isHalfProficient = false"
+							/>
+							<v-checkbox-btn
+								v-model="skill.isExpertise" color="primary" density="compact" inline
+								@click="skill.isProficient = false; skill.isHalfProficient = false"
+							/>
+							<v-checkbox-btn
+								v-model="skill.isHalfProficient" color="primary" density="compact" inline
+								@click="skill.isExpertise = false; skill.isProficient = false"
+							/>
 						</div>
 					</td>
 					<td>
-						<select v-model="skill.adv" class="ghost"
-							title="Select advantage or disadvantage for this save">
+						<select
+							v-model="skill.adv" class="ghost"
+							title="Select advantage or disadvantage for this save"
+						>
 							<option :value="null">
 								None
 							</option>
@@ -183,8 +217,10 @@ const skillOptions = computed(() => {
 						-
 					</td>
 					<td v-else>
-						<SimpleNumberInput v-model="skill.override" :label="`${skill.skillName} save override`"
-							:label-id="`${skill.skillName}Override`" is-clearable :min="Number.NEGATIVE_INFINITY" />
+						<SimpleNumberInput
+							v-model="skill.override" :label="`${skill.skillName} save override`"
+							:label-id="`${skill.skillName}Override`" is-clearable :min="Number.NEGATIVE_INFINITY"
+						/>
 					</td>
 					<td>
 						<v-icon-btn size="22" icon="mdi:delete" color="primary" @click="deleteSkill(idx)" />
@@ -194,7 +230,7 @@ const skillOptions = computed(() => {
 		</v-table>
 		<v-row>
 			<v-col cols="6">
-				<v-select label="Add a skill" class="mt-4" :items="skillOptions" v-model="newSkillName" ref="addSkill">
+				<v-select v-model="newSkillName" label="Add a skill" class="mt-4" :items="skillOptions">
 					<template #item="{ item, props }">
 						<v-list-item :prepend-icon="skillIcons[item]" v-bind="props" :title="item" />
 					</template>

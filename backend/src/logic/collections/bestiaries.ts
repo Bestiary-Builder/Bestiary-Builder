@@ -1,10 +1,11 @@
 import type { CollectionWithEditors } from "./collections";
-import { bestiaryTags, type Statblock, type User } from "~/shared";
+import type { Statblock, User } from "~/shared";
 import type { Bestiary, BestiaryCreateInput, BestiaryStatus, Creature } from "~/shared/src/prisma-types";
 import { checkBadwords } from "@/utilities/badwords";
 import { app, checkBestiaryLimits, checkCreatureAmountLimit, checkImageUrl, limits } from "@/utilities/constants";
 import { addBestiaryEditor, addBookmark, createBestiary, createCreatures, deleteBestiary, getBestiariesByOwner, getBestiariesByUser, getBestiary, getBestiaryCreatureCount, getBestiaryCreatureIds, getBestiaryFull, getOwnedBestiaryIds, getPrismaClient, getPublicBestiariesByOwner, incrementBestiaryViewCount, isBestiaryBookmarked, removeBestiaryEditor, removeBookmark, updateBestiary, updateBestiaryCreatureIndexes, updateUserBestiaryIndexes } from "@/utilities/database";
 import { log } from "@/utilities/logger";
+import { bestiaryTags } from "~/shared";
 
 import { prepareCreatureStats } from "../creatures/creaturePreparation";
 import { privateLog, publicLog } from "../external/discord";

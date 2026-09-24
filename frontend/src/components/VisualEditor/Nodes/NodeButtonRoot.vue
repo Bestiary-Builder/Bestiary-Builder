@@ -2,9 +2,9 @@
 import type { Ref } from "vue";
 import type { ButtonInteraction } from "~/shared";
 import { inject, ref, watch } from "vue";
+import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
-import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 
 const currentEffect = inject<Ref<ButtonInteraction>>("currentEffect");
 
@@ -33,8 +33,6 @@ watch(() => currentEffect!.value?.style, () => {
 			</v-col>
 			<v-col cols="6">
 				<v-text-field v-model="currentEffect.verb" label="Verb" placeholder="attacks with" />
-
-
 			</v-col>
 			<v-col cols="6">
 				<v-select v-model="currentEffect.style" label="Button Style" :items="[
@@ -78,7 +76,3 @@ watch(() => currentEffect!.value?.style, () => {
 		</v-row>
 	</template>
 </template>
-
-<style scoped>
-@import url("./styles/automation-editor.less");
-</style>

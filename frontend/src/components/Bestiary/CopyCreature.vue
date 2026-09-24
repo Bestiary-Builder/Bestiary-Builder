@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import type { CreatureWithStats, Statblock } from "~/shared";
 import { useLocalStorage } from "@vueuse/core";
-import { useToast } from "@/utils/app/toast";
-import { getUmami } from "@/utils/app/analytics";
 import { onMounted } from "vue";
+import { getUmami } from "@/utils/app/analytics";
+import { useToast } from "@/utils/app/toast";
 
 const {
 	noImportAll = false,
@@ -11,11 +11,11 @@ const {
 	currentCreature = undefined,
 	canCopyCurrentBestiary = false,
 } = defineProps<{
-	noImportAll?: boolean
-	mayImport?: boolean
-	currentCreature?: CopiedCreature | undefined
-	canCopyCurrentBestiary?: boolean
-}>()
+	noImportAll?: boolean;
+	mayImport?: boolean;
+	currentCreature?: CopiedCreature | undefined;
+	canCopyCurrentBestiary?: boolean;
+}>();
 
 const emit = defineEmits<{
 	(e: "importCreature", data: Statblock): void;
@@ -23,36 +23,35 @@ const emit = defineEmits<{
 	(e: "copyCurrentBestiary"): void;
 }>();
 
-const { addToast } = useToast()
+const { addToast } = useToast();
 
 type CopiedCreature = CreatureWithStats & { bestiaryName: string };
 let lastGoodValue: CopiedCreature[] = [];
 
-
 const isQuotaExceededError = (err: DOMException) => {
 	return (
-		err instanceof DOMException &&
-		(err.name === 'QuotaExceededError' || err.name === 'NS_ERROR_DOM_QUOTA_REACHED')
+		err instanceof DOMException
+		&& (err.name === "QuotaExceededError" || err.name === "NS_ERROR_DOM_QUOTA_REACHED")
 	);
 };
 
-const copiedCreatures = useLocalStorage<CopiedCreature[]>('copiedCreatures', [], {
+const copiedCreatures = useLocalStorage<CopiedCreature[]>("copiedCreatures", [], {
 	onError: (err: any) => {
 		if (isQuotaExceededError(err)) {
-			console.error('Storage quota exceeded — reverting unsaved change.', err);
+			console.error("Storage quota exceeded — reverting unsaved change.", err);
 			copiedCreatures.value = lastGoodValue;
-			addToast("Copied too many creatures - exceeded storage size.", { color: "error" })
-		} else {
+			addToast("Copied too many creatures - exceeded storage size.", { color: "error" });
+		}
+		else {
 			console.error(err);
 		}
 	},
-}
-);
+});
 
 const addCreature = (creature: CopiedCreature) => {
-	lastGoodValue = copiedCreatures.value
-	copiedCreatures.value.push(creature)
-}
+	lastGoodValue = copiedCreatures.value;
+	copiedCreatures.value.push(creature);
+};
 
 const clearCreatures = () => {
 	copiedCreatures.value = [];
@@ -63,16 +62,15 @@ const deleteCreature = (idx: number) => {
 };
 
 const addManyCreatures = (creatures: CreatureWithStats[], bestiaryName: string) => {
-	lastGoodValue = copiedCreatures.value
+	lastGoodValue = copiedCreatures.value;
 	const toAdd: CopiedCreature[] = [];
 	for (const creature of creatures)
-		toAdd.push({ ...creature, bestiaryName: bestiaryName });
+		toAdd.push({ ...creature, bestiaryName });
 
 	copiedCreatures.value = copiedCreatures.value.concat(toAdd);
 	addToast("Copied current Bestiary");
 	void getUmami()?.track("Copy bestiary");
-}
-
+};
 
 const importCreature = (creature: CopiedCreature) => {
 	emit("importCreature", creature.stats);
@@ -81,32 +79,30 @@ const importCreature = (creature: CopiedCreature) => {
 const importManyCreatures = () => {
 	try {
 		emit("importAllCreatures");
-
-	} catch {
-		console.log('aaaa')
 	}
+	catch { }
 };
 
 defineExpose({
 	copiedCreatures,
 	addManyCreatures,
 	addCreature,
-})
+});
 
 onMounted(() => {
-	lastGoodValue = copiedCreatures.value
-})
+	lastGoodValue = copiedCreatures.value;
+});
 </script>
 
 <template>
 	<DropdownMenu>
 		<template #activator="{ props }">
 			<v-badge color="primary" :content="copiedCreatures.length" location="bottom right">
-				<v-icon-btn v-tooltip="'Manage copies'" icon="mdi:content-copy" v-bind="props" text="Manage copies"
-					size="24">
-				</v-icon-btn>
+				<v-icon-btn
+					v-tooltip="'Manage copies'" icon="mdi:content-copy" v-bind="props" text="Manage copies"
+					size="24"
+				/>
 			</v-badge>
-
 		</template>
 		<v-card min-width="500" class=" pa-4 d-flex justify-center flex-column">
 			<v-card-text>
@@ -123,10 +119,14 @@ onMounted(() => {
 									</v-list-item-subtitle>
 
 									<template #append>
-										<v-icon-btn v-if="mayImport" icon="mdi:import" size="20" text="Import creature"
-											@click="importCreature(creature)" />
-										<v-icon-btn icon="mdi:delete" size="20" text="Delete creature from list"
-											@click="deleteCreature(idx)" />
+										<v-icon-btn
+											v-if="mayImport" icon="mdi:import" size="20" text="Import creature"
+											@click="importCreature(creature)"
+										/>
+										<v-icon-btn
+											icon="mdi:delete" size="20" text="Delete creature from list"
+											@click="deleteCreature(idx)"
+										/>
 									</template>
 								</v-list-item>
 							</template>
@@ -144,20 +144,28 @@ onMounted(() => {
 				</v-container>
 			</v-card-text>
 			<div class="d-flex justify-center items-center ga-4">
-				<v-btn v-if="mayImport && copiedCreatures.length > 0 && !noImportAll" prepend-icon="mdi:import"
-					color="success" @click="importManyCreatures">
+				<v-btn
+					v-if="mayImport && copiedCreatures.length > 0 && !noImportAll" prepend-icon="mdi:import"
+					color="success" @click="importManyCreatures"
+				>
 					Import all
 				</v-btn>
-				<v-btn v-if="currentCreature" prepend-icon="mdi:content-copy"
-					@click="lastGoodValue = copiedCreatures; copiedCreatures.push(currentCreature)">
+				<v-btn
+					v-if="currentCreature" prepend-icon="mdi:content-copy"
+					@click="lastGoodValue = copiedCreatures; copiedCreatures.push(currentCreature)"
+				>
 					Copy current creature
 				</v-btn>
-				<v-btn v-if="canCopyCurrentBestiary" prepend-icon="mdi:content-copy"
-					@click="emit('copyCurrentBestiary')">
+				<v-btn
+					v-if="canCopyCurrentBestiary" prepend-icon="mdi:content-copy"
+					@click="emit('copyCurrentBestiary')"
+				>
 					Copy current bestiary
 				</v-btn>
-				<v-btn v-if="copiedCreatures.length > 0" color="error" prepend-icon="mdi:trash"
-					@click="clearCreatures()">
+				<v-btn
+					v-if="copiedCreatures.length > 0" color="error" prepend-icon="mdi:trash"
+					@click="clearCreatures()"
+				>
 					Clear list
 				</v-btn>
 			</div>

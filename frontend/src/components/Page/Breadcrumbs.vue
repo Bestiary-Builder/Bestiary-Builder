@@ -82,23 +82,31 @@ watchEffect(() => {
 	display: flex;
 	gap: 1.5rem;
 
-	& button {
-		margin: auto 0;
+	// :deep(button.inverted svg) {
+	// 	color: rgb(var(--v-theme-surface));
+	// 	background-color: rgb(var(--v-theme-primary));
+	// 	scale: 0.9;
+	// 	border-radius: 1rem;
+	// }
 
-		svg {
-			scale: 0.9;
-		}
-	}
+	// & button {
+	// 	margin: auto 0;
 
-	& button.inverted {
-		background-color: rgb(var(--v-theme-primary));
-		color: var(--bg-surface);
+	// 	svg {
+	// 		scale: 0.9;
+	// 	}
+	// }
 
-		&:hover {
-			background-color: var(--bg-surface);
-			color: rgb(var(--v-theme-primary));
-		}
-	}
+	// button.inverted {
+	// 	color: red;
+	// 	background-color: rgb(var(--v-theme-primary));
+	// 	color: var(--bg-surface);
+
+	// 	&:hover {
+	// 		background-color: var(--bg-surface);
+	// 		color: rgb(var(--v-theme-primary));
+	// 	}
+	// }
 }
 
 .crumb-link {

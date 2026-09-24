@@ -67,7 +67,7 @@ export async function publicLog(collection: (Bestiary | AutomationCollection), i
 		embed.addFields({ inline: true, name: "Tags", value: collection.tags.join(", ") });
 	const itemName = type === "bestiary" ? "Creatures" : "Automations";
 	const fieldValue = items.slice(0, 3).map(item => item.name).join(",\n") + (items.length > 3 ? `\nand ${items.length - 3} more ${itemName.toLowerCase()}.` : `.`);
-	embed.addFields({ inline: false, name: itemName, value: fieldValue })
+	embed.addFields({ inline: false, name: itemName, value: fieldValue });
 
 	channels.publicLogs?.send({ embeds: [embed] }).catch(console.error);
 }
@@ -89,7 +89,7 @@ export async function privateLog(before: (Bestiary | AutomationCollection), afte
 // Feedback form
 app.post("/api/feedback", possibleUser, async (req, res) => {
 	// Get message from request body
-	const { message, type, route } = req.body.data as { message?: string; type?: "idea" | "issue", route?: string };
+	const { message, type, route } = req.body.data as { message?: string; type?: "idea" | "issue"; route?: string };
 	if (!message || !type)
 		return res.status(400).json({ error: "Message and feedback type are both required" });
 

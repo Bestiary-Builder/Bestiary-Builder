@@ -2,9 +2,9 @@
 import type { Ref } from "vue";
 import type { Condition } from "~/shared";
 import { computed, inject } from "vue";
+import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
-import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 
 const currentEffect = inject<Ref<Condition>>("currentEffect");
 
@@ -35,7 +35,9 @@ useDataCleanup(currentEffect, ["errorBehaviour"]);
 
 			<v-col cols="12">
 				<TypeHintedEditor v-model="currentEffect.condition" label="Condition" />
-				<p v-if="isWarning" class="pt-1 text-warning"> <small>Equality checks should use double ==.</small></p>
+				<p v-if="isWarning" class="pt-1 text-warning">
+					<small>Equality checks should use double ==.</small>
+				</p>
 			</v-col>
 
 			<v-col cols="12">
@@ -54,7 +56,3 @@ useDataCleanup(currentEffect, ["errorBehaviour"]);
 		</v-row>
 	</template>
 </template>
-
-<style scoped>
-@import url("./styles/automation-editor.less");
-</style>

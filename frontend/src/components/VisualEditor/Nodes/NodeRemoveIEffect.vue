@@ -16,7 +16,6 @@ useDataCleanup(currentEffect, ["removeParent"]);
 			<v-col cols="12">
 				<SectionHeader title="Remove IEffect" />
 				<p>Remove IEffect only has optional options.</p>
-
 			</v-col>
 
 			<v-col cols="12">
@@ -33,7 +32,3 @@ useDataCleanup(currentEffect, ["removeParent"]);
 		</v-row>
 	</template>
 </template>
-
-<style scoped>
-@import url("./styles/automation-editor.less");
-</style>

@@ -11,7 +11,7 @@
     "dev": "npm run build-types -w shared && (npm run dev -w frontend & npm run dev -w backend)",
     "build": "npm run type-check && npm run build-types -w shared && npm run build -w frontend",
     "lint": "npm run lint -w shared && npm run lint -w backend && npm run lint -w frontend",
-    "lint:fix": "npm run lint:fix -w shared ; npm run lint:fix -w backend ; npm run lint:fix -w frontend",
+    "lint:fix": "npm run lint:fix -w shared && npm run lint:fix -w backend && npm run lint:fix -w frontend",
     "type-check": "npm run type-check -w shared && npm run type-check -w backend && npm run type-check -w frontend",
     "prisma:generate": "npm run generate -w backend",
     "prisma:migrate": "npm run migrate -w backend"

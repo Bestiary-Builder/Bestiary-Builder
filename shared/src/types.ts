@@ -1,5 +1,5 @@
 import type * as Prisma from "../prisma/internal/prismaNamespace";
-import type { AutomationConsumables, Statblock } from "./build-types";
+import type { Statblock } from "./build-types";
 
 export type Id = string;
 export type CollectionPermission = "none" | "view" | "editor" | "owner";

@@ -246,106 +246,105 @@ export const defaultNodes: Record<string, EffectWithTarget | EffectWithTarget[]>
 			}
 		],
 	attackWithPoison: [{
-		"type": "target",
-		"target": "each",
-		"effects": [
+		type: "target",
+		target: "each",
+		effects: [
 			{
-				"type": "attack",
-				"hit": [
+				type: "attack",
+				hit: [
 					{
-						"type": "damage",
-						"damage": "1d4 + 4 [piercing]"
+						type: "damage",
+						damage: "1d4 + 4 [piercing]"
 					},
 					{
-						"type": "save",
-						"stat": "con",
-						"dc": "10",
-						"fail": [
+						type: "save",
+						stat: "con",
+						dc: "10",
+						fail: [
 							{
-								"type": "damage",
-								"damage": "3d6 [poison]"
+								type: "damage",
+								damage: "3d6 [poison]"
 							}
 						],
-						"success": [
+						success: [
 							{
-								"type": "damage",
-								"damage": "(3d6 [poison]) / 2"
+								type: "damage",
+								damage: "(3d6 [poison]) / 2"
 							}
 						],
 					}
 				],
-				"miss": [],
-				"attackBonus": "6"
+				miss: [],
+				attackBonus: "6"
 			}
 		]
-	},
-	{
-		"type": "text",
-		"text": "*Melee Weapon Attack:* +6 to hit, reach 10 ft., one target. *Hit:* 6 (1d4 + 4) piercing damage, and the target must make a DC 10 Constitution saving throw, taking 10 (3d6) poison damage on a failed save, or half as much damage on a successful one."
+	},	{
+		type: "text",
+		text: "*Melee Weapon Attack:* +6 to hit, reach 10 ft., one target. *Hit:* 6 (1d4 + 4) piercing damage, and the target must make a DC 10 Constitution saving throw, taking 10 (3d6) poison damage on a failed save, or half as much damage on a successful one."
 	},],
 	attackWithGrappleRestrain: [
 		{
-			"type": "target",
-			"target": "each",
-			"effects": [
+			type: "target",
+			target: "each",
+			effects: [
 				{
-					"type": "attack",
-					"hit": [
+					type: "attack",
+					hit: [
 						{
-							"type": "damage",
-							"damage": "2d6 + 4 [bludgeoning]"
+							type: "damage",
+							damage: "2d6 + 4 [bludgeoning]"
 						},
 						{
-							"type": "ieffect2",
-							"name": "Grappled",
-							"desc": "Grappled by {{caster.name}}\n - Escape DC 14",
-							"buttons": [
+							type: "ieffect2",
+							name: "Grappled",
+							desc: "Grappled by {{caster.name}}\n - Escape DC 14",
+							buttons: [
 								{
-									"label": "Escape Grapple",
-									"verb": "tries to escape",
-									"automation": [
+									label: "Escape Grapple",
+									verb: "tries to escape",
+									automation: [
 										{
-											"type": "target",
-											"target": "self",
-											"effects": [
+											type: "target",
+											target: "self",
+											effects: [
 												{
-													"type": "check",
-													"ability": [
+													type: "check",
+													ability: [
 														"acrobatics",
 														"athletics"
 													],
-													"dc": "14",
-													"success": [
+													dc: "14",
+													success: [
 														{
-															"type": "remove_ieffect",
-															"removeParent": "if_no_children"
+															type: "remove_ieffect",
+															removeParent: "if_no_children"
 														}
 													],
-													"fail": []
+													fail: []
 												}
 											]
 										},
 										{
-											"type": "text",
-											"text": "A creature grappled by the monster can use its action to try to escape. To do so, it must succeed on a Strength (Athletics) or Dexterity (Acrobatics) check against the escape DC in the monster's stat block."
+											type: "text",
+											text: "A creature grappled by the monster can use its action to try to escape. To do so, it must succeed on a Strength (Athletics) or Dexterity (Acrobatics) check against the escape DC in the monster's stat block."
 										}
 									]
 								}
 							],
-							"end": false,
-							"conc": false,
-							"stacking": false,
-							"save_as": "grapple"
+							end: false,
+							conc: false,
+							stacking: false,
+							save_as: "grapple"
 						}
 					],
-					"miss": [],
-					"attackBonus": "6"
+					miss: [],
+					attackBonus: "6"
 				}
 			]
 		},
 		{
-			"type": "text",
-			"text": "*Melee Weapon Attack:* +6 to hit, reach 10 ft., one target. *Hit:* 11 (2d6 + 4) bludgeoning damage. The target is grappled (escape DC 14) if it is a Large or smaller creature and the monster doesn't have two other creatures grappled."
+			type: "text",
+			text: "*Melee Weapon Attack:* +6 to hit, reach 10 ft., one target. *Hit:* 11 (2d6 + 4) bludgeoning damage. The target is grappled (escape DC 14) if it is a Large or smaller creature and the monster doesn't have two other creatures grappled."
 		}
 	],
 	proneButton: {
@@ -409,55 +408,55 @@ export const defaultNodes: Record<string, EffectWithTarget | EffectWithTarget[]>
 		]
 	},
 	damageStartOfTurnButton: {
-		"type": "ieffect2",
-		"name": "On Fire",
-		"desc": "Target takes 2d6 fire at the start of its turns",
-		"buttons": [
+		type: "ieffect2",
+		name: "On Fire",
+		desc: "Target takes 2d6 fire at the start of its turns",
+		buttons: [
 			{
-				"label": "On Fire",
-				"verb": "is On Fire",
-				"style": "4",
-				"automation": [
+				label: "On Fire",
+				verb: "is On Fire",
+				style: "4",
+				automation: [
 					{
-						"type": "target",
-						"target": "self",
-						"effects": [
+						type: "target",
+						target: "self",
+						effects: [
 							{
-								"type": "damage",
-								"damage": "2d6 [fire]"
+								type: "damage",
+								damage: "2d6 [fire]"
 							}
 						]
 					},
 					{
-						"type": "text",
-						"text": "While the target is on fire it takes 7 (2d6) fire damage at the start of each of its turns."
+						type: "text",
+						text: "While the target is on fire it takes 7 (2d6) fire damage at the start of each of its turns."
 					}
 				]
 			}
 		]
 	},
 	grappleButton: [{
-		"type": "ieffect2",
-		"name": "Grappled by {{caster.name}}",
-		"buttons": [
+		type: "ieffect2",
+		name: "Grappled by {{caster.name}}",
+		buttons: [
 			{
-				"label": "Escape {{caster.name}}'s grapple",
-				"automation": [
+				label: "Escape {{caster.name}}'s grapple",
+				automation: [
 					{
-						"type": "target",
-						"target": "self",
-						"effects": [
+						type: "target",
+						target: "self",
+						effects: [
 							{
-								"type": "check",
-								"ability": [
+								type: "check",
+								ability: [
 									"athletics",
 									"acrobatics"
 								],
-								"dc": "13",
-								"success": [
+								dc: "13",
+								success: [
 									{
-										"type": "remove_ieffect",
-										"removeParent": "if_no_children"
+										type: "remove_ieffect",
+										removeParent: "if_no_children"
 									}
 								],
 								fail: []
@@ -465,13 +464,13 @@ export const defaultNodes: Record<string, EffectWithTarget | EffectWithTarget[]>
 						]
 					}
 				],
-				"verb": "tries to escape from {{caster.name}}'s grapple",
-				"style": "1"
+				verb: "tries to escape from {{caster.name}}'s grapple",
+				style: "1"
 			}
 		],
-		"desc": "Escape DC 13",
-		"save_as": "grapple",
-		"effects": {}
+		desc: "Escape DC 13",
+		save_as: "grapple",
+		effects: {}
 	}]
 
 };
@@ -480,7 +479,7 @@ export const deepKeys = ["effects", "hit", "miss", "fail", "success", "onTrue", 
 
 type activation_types = {
 	[id in keyof Features]: number;
-};;
+}; ;
 export const activation_type: activation_types = {
 	features: 2,
 	actions: 1,
@@ -525,8 +524,8 @@ const onGhostMove = (evt: any) => {
 
 	const depthSource
 		= related?.querySelector<HTMLElement>(".tree-row")
-		?? related
-		?? to;
+			?? related
+			?? to;
 	if (!depthSource || !dragState.value)
 		return true;
 
@@ -559,15 +558,15 @@ const onGhostEnd = () => {
 };
 
 export const draggingProps = {
-	group: "tree-group",
-	handle: ".drag-handle",
-	'ghost-class': "drag-ghost",
-	class: "draggable-list",
-	animation: 200,
-	'swap-treshold': 0.65,
-	'invert-swap': true,
-	'inverted-swap-treshold': 0.65,
-	'on-move': onGhostMove,
-	'on-start': onGhostStart,
-	'on-end': onGhostEnd
+	"group": "tree-group",
+	"handle": ".drag-handle",
+	"ghost-class": "drag-ghost",
+	"class": "draggable-list",
+	"animation": 200,
+	"swap-treshold": 0.65,
+	"invert-swap": true,
+	"inverted-swap-treshold": 0.65,
+	"on-move": onGhostMove,
+	"on-start": onGhostStart,
+	"on-end": onGhostEnd
 };

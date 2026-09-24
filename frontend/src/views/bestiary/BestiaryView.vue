@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import type { CreatureMetaData, CreatureWithStats } from "~/shared";
-import { ref, watch, useTemplateRef, onMounted } from "vue";
+import { onMounted, ref, useTemplateRef, watch } from "vue";
+import { useRoute } from "vue-router";
 import CopyCreature from "@/components/Bestiary/CopyCreature.vue";
+import CreatureList from "@/components/Bestiary/CreatureList.vue";
 import { useCollection } from "@/components/Bestiary/useCollection";
+import CollectionHeader from "@/components/Collections/CollectionHeader.vue";
 import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
 import { getUmami } from "@/utils/app/analytics";
-import { useToast } from "@/utils/app/toast";
-import { useFetch } from "@/utils/utils";
-import CreatureList from "@/components/Bestiary/CreatureList.vue";
-import CollectionHeader from "@/components/Collections/CollectionHeader.vue";
 import { downloadFile } from "@/utils/app/export";
+import { useToast } from "@/utils/app/toast";
 import { useRecentPages } from "@/utils/app/useRecentPages";
-import { useRoute } from "vue-router";
+import { useFetch } from "@/utils/utils";
 
 const {
 	collection,
@@ -38,7 +38,7 @@ onMounted(async () => {
 	removeToast(toastId);
 	if (collection.value?.name) {
 		document.title = `${collection.value?.name} | Bestiary Builder`;
-		trackVisit($route.path, collection.value.name)
+		trackVisit($route.path, collection.value.name);
 	}
 });
 
@@ -73,7 +73,7 @@ async function exportBestiary(asFile: boolean) {
 	}
 
 	if (asFile) {
-		downloadFile(creatures.map(creature => creature.stats), `${collection.value?.name} from Bestiary Builder`)
+		downloadFile(creatures.map(creature => creature.stats), `${collection.value?.name} from Bestiary Builder`);
 		void getUmami()?.track("Export bestiary to file view");
 	}
 	else {
@@ -89,7 +89,7 @@ async function exportBestiary(asFile: boolean) {
 	}
 }
 
-const copyManager = useTemplateRef("copyManager")
+const copyManager = useTemplateRef("copyManager");
 
 const copyCurrentBestiary = async () => {
 	if (!items.value || !collection.value)
@@ -101,7 +101,7 @@ const copyCurrentBestiary = async () => {
 		return;
 	}
 
-	copyManager.value?.addManyCreatures(creatures, collection.value.name)
+	copyManager.value?.addManyCreatures(creatures, collection.value.name);
 };
 
 // misc
@@ -153,7 +153,6 @@ watch(lastClickedCreature, (): void => {
 	void getUmami()?.track("Pinned creature");
 });
 
-
 const pinCreature = async (id: CreatureMetaData["id"]) => {
 	if (lastClickedCreature.value?.id === id) {
 		lastClickedCreature.value = null;
@@ -176,23 +175,26 @@ const hoverCreature = async (id: CreatureMetaData["id"]) => {
 
 <template>
 	<div>
-		<Breadcrumbs v-if="collection" :routes="[
-			{
-				path: isOwner || isEditor ? '/bestiaries/personal' : '/bestiaries/public',
-				text: isOwner || isEditor ? 'My Bestiaries' : 'Bestiaries',
-				isCurrent: false
-			},
-			{
-				path: '',
-				text: collection?.name,
-				isCurrent: true
-			}
-		]">
-			<CopyCreature :may-import="isOwner || isEditor" :current-creatures="items || []" can-copy-current-bestiary
+		<Breadcrumbs
+			v-if="collection" :routes="[
+				{
+					path: isOwner || isEditor ? '/bestiaries/personal' : '/bestiaries/public',
+					text: isOwner || isEditor ? 'My Bestiaries' : 'Bestiaries',
+					isCurrent: false
+				},
+				{
+					path: '',
+					text: collection?.name,
+					isCurrent: true
+				}
+			]"
+		>
+			<CopyCreature
+				ref="copyManager" :may-import="isOwner || isEditor" :current-creatures="items || []"
+				can-copy-current-bestiary
 				@import-creature="(creature) => createItem(creature, false)"
-				@import-all-creatures="createManyItems(copyManager!.copiedCreatures.map(x => x.stats))"
-				@copy-current-bestiary="copyCurrentBestiary" ref="copyManager" />
-
+				@import-all-creatures="createManyItems(copyManager!.copiedCreatures.map(x => x.stats))" @copy-current-bestiary="copyCurrentBestiary"
+			/>
 
 			<DropdownMenu>
 				<template #activator="{ props }">
@@ -217,24 +219,31 @@ const hoverCreature = async (id: CreatureMetaData["id"]) => {
 			<div v-if="collection">
 				<v-row gap="72">
 					<v-col cols="6">
-						<CollectionHeader :collection :item-count="(items || []).length" :can-edit="isOwner || isEditor"
-							:bookmarked="bookmarked" @toggle-bookmark="toggleBookmark" />
+						<CollectionHeader
+							:collection :item-count="(items || []).length" :can-edit="isOwner || isEditor"
+							:bookmarked="bookmarked" @toggle-bookmark="toggleBookmark"
+						/>
 						<v-divider class="my-4" />
 						<v-skeleton-loader v-if="items === null" type="heading, text, text" />
-						<CreatureList v-else v-model="items" @hovered-creature="id => hoverCreature(id)"
-							:pinned-creature="lastClickedCreature?.id || null" @pin-creature="id => pinCreature(id)"
-							:collection="collection" :can-edit="false" @delete-creature="id => deleteItem(id)" />
+						<CreatureList
+							v-else v-model="items" :pinned-creature="lastClickedCreature?.id || null"
+							:collection="collection" :can-edit="false"
+							@hovered-creature="id => hoverCreature(id)" @pin-creature="id => pinCreature(id)" @delete-creature="id => deleteItem(id)"
+						/>
 					</v-col>
 					<v-col cols="6">
 						<div v-if="items && lastHoveredCreature" class="statblock-container">
 							<span v-if="lastClickedCreature" class="pin-notice">
-								<v-btn class="unpin-button" variant="text" density="compact" append-icon="mdi:pin-off"
-									@click="lastClickedCreature = null"><b>unpin</b></v-btn>
+								<v-btn
+									class="unpin-button" variant="text" density="compact" append-icon="mdi:pin-off"
+									@click="lastClickedCreature = null"
+								><b>unpin</b></v-btn>
 							</span>
 							<Transition name="fade" mode="out-in">
 								<StatblockRenderer
 									:key="lastClickedCreature?.stats.description.name || lastHoveredCreature.stats.description.name"
-									:data="lastClickedCreature?.stats || lastHoveredCreature.stats" />
+									:data="lastClickedCreature?.stats || lastHoveredCreature.stats"
+								/>
 							</Transition>
 						</div>
 						<div v-else class="statblock-container">
@@ -244,7 +253,6 @@ const hoverCreature = async (id: CreatureMetaData["id"]) => {
 						</div>
 					</v-col>
 				</v-row>
-
 			</div>
 		</div>
 	</div>

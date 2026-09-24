@@ -1,8 +1,12 @@
-@import url("https://fonts.googleapis.com/css2?family=Convergence");
+@font-face {
+	font-family: "Scala Sans";
+	src: url("Scala Sans Regular.otf") format("opentype");
+}
 
 @font-face {
-	font-family: "Scala Sans Offc";
-	src: url("ScalaSans.woff2") format("woff2");
+	font-family: "Scala Sans";
+	font-weight: bold;
+	src: url("Scala Sans Bold.otf") format("opentype");
 }
 
 .statblock-outer {
@@ -12,12 +16,11 @@
 		box-shadow:
 			rgb(0 0 0 / 19%) 0 10px 20px,
 			rgb(0 0 0 / 23%) 0 6px 6px;
-		font-family: "Scala Sans Offc", Roboto, Helvetica, sans-serif;
+		font-family: "Scala Sans", Roboto, Helvetica, sans-serif;
 		line-height: 1.4rem;
 		font-size: 0.9rem;
 		padding: 15px;
 	}
-
 
 	.picture-container {
 		position: relative;
@@ -56,7 +59,7 @@
 
 	.statblock-name-container {
 		border-bottom: 0.063rem solid rgb(var(--v-theme-primary));
-		font-family: "Scala Sans Offc", Roboto, Helvetica, sans-serif;
+		font-family: "Scala Sans", Roboto, Helvetica, sans-serif;
 		font-weight: bold;
 		font-size: 1.75rem;
 		column-span: all;
@@ -69,7 +72,7 @@
 
 	.statblock-core {
 		font-style: italic;
-		color: rgb(139, 139, 139);
+		color: rgb(180, 180, 180);
 	}
 
 	.statblock-abilities {
@@ -86,7 +89,7 @@
 		&-title {
 			border-bottom: 0.063rem solid rgb(var(--v-theme-primary));
 			font-size: 1.25rem;
-			font-family: "Scala Sans Offc", Roboto, Helvetica, sans-serif;
+			font-family: "Scala Sans", Roboto, Helvetica, sans-serif;
 			font-weight: normal;
 			line-height: 1.4;
 			margin-top: 1rem;
@@ -102,7 +105,7 @@
 			font-size: 15px;
 			font-weight: 700;
 			padding-bottom: 5px;
-			color: color-mix(in srgb, rgb(var(--v-theme-on-surface-bright)) calc(var(--v-medium-emphasis-opacity) * 100%), transparent);
+			color: rgb(180, 180, 180);
 		}
 
 		.feature-description {
@@ -139,8 +142,8 @@
 		border-collapse: collapse;
 		min-width: 142px;
 
-		thead>tr>th {
-			color: color-mix(in srgb, rgb(var(--v-theme-on-surface-bright)) calc(var(--v-medium-emphasis-opacity) * 100%), transparent);
+		thead > tr > th {
+			color: rgb(180, 180, 180);
 			font-weight: 400;
 			padding: 0.3125rem 0.125rem 0;
 			text-transform: uppercase;
@@ -148,19 +151,19 @@
 			font-size: 0.6875rem;
 		}
 
-		tbody>tr>th {
+		tbody > tr > th {
 			text-transform: uppercase;
 			padding: 0 8px;
 		}
 
-		tbody>tr>td {
+		tbody > tr > td {
 			text-align: center;
 			padding: 0 8px;
 			background-color: color-mix(in srgb, rgb(var(--v-theme-surface)) 75%, white 25%);
 		}
 
-		tbody>tr>th,
-		tbody>tr>td:first-of-type {
+		tbody > tr > th,
+		tbody > tr > td:first-of-type {
 			background-color: rgb(var(--v-theme-surface));
 		}
 	}
@@ -176,8 +179,6 @@
 			margin-bottom: 0.25rem;
 		}
 	}
-
-
 
 	.v2024 {
 		column-count: 2;
@@ -205,14 +206,10 @@
 		}
 
 		&:has(.faction-env) .statblock-image {
-			margin-top: 1.5rem
+			margin-top: 1.5rem;
 		}
-
-
 	}
 }
-
-
 
 @media screen and (width <=1400px) {
 	.statblock.v2024 {

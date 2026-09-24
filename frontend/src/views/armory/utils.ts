@@ -17,16 +17,16 @@ export const getActionTypeLabel = (value: number) => {
 };
 
 export const displayTypeOptions = [
-	{ title: '0/1 Default', value: null },
-	{ title: '〇◉ Bubble', value: 'bubble' },
-	{ title: '▢▣ Square', value: 'square' },
-	{ title: '⬡⬢ Hex', value: 'hex' },
-	{ title: '☆★ Star', value: 'star' },
-]
+	{ title: "0/1 Default", value: null },
+	{ title: "〇◉ Bubble", value: "bubble" },
+	{ title: "▢▣ Square", value: "square" },
+	{ title: "⬡⬢ Hex", value: "hex" },
+	{ title: "☆★ Star", value: "star" },
+];
 
 export const resetOnOptions = [
-	{ title: 'Default', value: null },
-	{ title: 'Short Rest ', value: 'short' },
-	{ title: 'Long Rest', value: 'long' },
-	{ title: 'None (never)', value: 'none' },
-]
+	{ title: "Default", value: null },
+	{ title: "Short Rest ", value: "short" },
+	{ title: "Long Rest", value: "long" },
+	{ title: "None (never)", value: "none" },
+];

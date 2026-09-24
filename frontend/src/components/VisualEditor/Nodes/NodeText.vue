@@ -44,10 +44,10 @@ const abilityTitle = (item: Record<string, any>) => {
 			</v-col>
 
 			<v-col cols="6">
-				<v-text-field v-model="currentEffect.title" label="Title" placeholder="Effect" persistent-placeholder/>
+				<v-text-field v-model="currentEffect.title" label="Title" placeholder="Effect" persistent-placeholder />
 			</v-col>
 
-			<v-col cols="12" v-if="typeof (currentEffect!.text) === 'string'">
+			<v-col v-if="typeof (currentEffect!.text) === 'string'" cols="12">
 				<Editor v-model="currentEffect.text" />
 				<small v-if="setDesc" style="font-size: x-small; cursor: pointer" role="button"
 					@click="setDesc(currentEffect.text)"> <i>Set the description of the feature to this
@@ -55,7 +55,7 @@ const abilityTitle = (item: Record<string, any>) => {
 				</small>
 			</v-col>
 
-			<v-col cols="12" v-else>
+			<v-col v-else cols="12">
 				<v-autocomplete v-model="currentEffect.text" :items="abilities" :item-title="abilityTitle" return-object
 					label="Ability Reference" />
 			</v-col>
@@ -69,7 +69,3 @@ const abilityTitle = (item: Record<string, any>) => {
 		</v-row>
 	</template>
 </template>
-
-<style scoped>
-@import url("./styles/automation-editor.less");
-</style>

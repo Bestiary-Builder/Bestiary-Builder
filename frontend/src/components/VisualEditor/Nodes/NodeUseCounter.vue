@@ -3,10 +3,10 @@ import type { Ref } from "vue";
 import type { AbilityReference, Counter, SpellSlotReference } from "~/shared";
 import { inject, onMounted, ref, watch } from "vue";
 import { useRules } from "vuetify/labs/rules";
+import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 import { useFetch } from "@/utils/utils";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
-import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 
 const currentEffect = inject<Ref<Counter>>("currentEffect");
 
@@ -48,7 +48,7 @@ onMounted(async () => {
 	const { data } = await useFetch<{ success: boolean; data: AbilityReference[] }>("/api/gamedata/limiteduse");
 	if (!data)
 		return;
-	limitedUse.value = data
+	limitedUse.value = data;
 });
 
 useDataCleanup(currentEffect, ["allowOverflow", "fixedValue"]);
@@ -71,24 +71,24 @@ const rules = useRules();
 				]" />
 			</v-col>
 
-			<v-col cols="6" v-if="counterType === 'cc'">
+			<v-col v-if="counterType === 'cc'" cols="6">
 				<v-text-field v-model="currentEffect.counter" label="Counter Name"
 					hint="Leave empty and set Error Behaviour to Ignore to take arbitrary -amt # input. "
 					persistent-hint />
 			</v-col>
 
-			<v-col cols="6" v-else-if="counterType === 'ss'">
+			<v-col v-else-if="counterType === 'ss'" cols="6">
 				<v-text-field v-model="(currentEffect.counter as SpellSlotReference).slot" label="Slot Level"
 					:rules="[rules.required()]" hint="IntExpression" />
 			</v-col>
 
-			<v-col cols="6" v-else-if="counterType === 'abi'">
+			<v-col v-else-if="counterType === 'abi'" cols="6">
 				<v-autocomplete v-model="currentEffect.counter" label="Ability Reference" :items="limitedUse"
 					item-title="title" item-value="value" :menu-props="{ width: 520 }" clearable
 					:rules="[rules.required()]" />
 			</v-col>
 
-			<v-col cols="6" v-else>
+			<v-col v-else cols="6">
 				<span> Something went wrong with this node. Please delete it and recreate the counter node.</span>
 			</v-col>
 
@@ -118,7 +118,3 @@ const rules = useRules();
 		</v-row>
 	</template>
 </template>
-
-<style scoped>
-@import url("./styles/automation-editor.less");
-</style>

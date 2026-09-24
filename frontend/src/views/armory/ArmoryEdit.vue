@@ -1,19 +1,20 @@
 <script setup lang="ts">
-import { automationCollectionTags, globalLimits, type Automation } from "~/shared";
+import type { Automation } from "~/shared";
 import { computed, onMounted, reactive, ref, watch } from "vue";
+import { useRoute } from "vue-router";
 import { useRules } from "vuetify/labs/rules";
-import { useCollection } from "@/components/Bestiary/useCollection";
-import UserBanner from "@/components/Bestiary/UserBanner.vue";
-import SectionHeader from "@/components/VisualEditor/Nodes/shared/SectionHeader.vue";
-import { getUmami } from "@/utils/app/analytics";
-import { useToast } from "@/utils/app/toast";
-import { ACTION_TYPE_MAP } from "./utils";
 import YAML from "yaml";
 import AutomationList from "@/components/Automations/AutomationList.vue";
+import { useCollection } from "@/components/Bestiary/useCollection";
+import UserBanner from "@/components/Bestiary/UserBanner.vue";
 import CollectionHeader from "@/components/Collections/CollectionHeader.vue";
+import SectionHeader from "@/components/VisualEditor/Nodes/shared/SectionHeader.vue";
+import { getUmami } from "@/utils/app/analytics";
 import { downloadFile } from "@/utils/app/export";
+import { useToast } from "@/utils/app/toast";
 import { useRecentPages } from "@/utils/app/useRecentPages";
-import { useRoute } from "vue-router";
+import { automationCollectionTags, globalLimits } from "~/shared";
+import { ACTION_TYPE_MAP } from "./utils";
 
 const {
 	collection,
@@ -42,13 +43,13 @@ onMounted(async () => {
 	removeToast(toastId);
 	if (collection.value?.name) {
 		document.title = `${collection.value?.name} | Bestiary Builder`;
-		trackVisit($route.path, collection.value.name)
+		trackVisit($route.path, collection.value.name);
 	}
 });
 
 async function exportCollection(asFile: boolean) {
 	if (asFile) {
-		downloadFile(items.value || [], `${collection.value?.name} from Bestiary Builder`)
+		downloadFile(items.value || [], `${collection.value?.name} from Bestiary Builder`);
 		void getUmami()?.track("Export automation collection to file edit");
 	}
 	else {
@@ -82,7 +83,7 @@ watch(() => collection.value?.name, (): void => {
 
 const createNewActionOpen = ref(false);
 
-const createOptions = reactive<{ name: string, description: string, activation_type: null | number }>({
+const createOptions = reactive<{ name: string; description: string; activation_type: null | number }>({
 	name: "",
 	description: "",
 	activation_type: null
@@ -101,7 +102,6 @@ const importFields = reactive({
 	attackJson: null
 });
 
-
 const importIsOpen = ref(false);
 async function importAutomationsFromJson() {
 	let attacksToImport;
@@ -117,7 +117,7 @@ async function importAutomationsFromJson() {
 			if (!Array.isArray(attacksToImport))
 				attacksToImport = [attacksToImport];
 
-			await createManyItems(attacksToImport)
+			await createManyItems(attacksToImport);
 			importIsOpen.value = false;
 		};
 		reader.readAsText(importFields.attackJson);
@@ -128,68 +128,81 @@ async function importAutomationsFromJson() {
 }
 
 const createAutomation = async () => {
-	const data: Partial<Automation> = { name: createOptions.name, description: createOptions.description, automation: { _v: 2, name: createOptions.name, automation: [] } }
+	const data: Partial<Automation> = { name: createOptions.name, description: createOptions.description, automation: { _v: 2, name: createOptions.name, automation: [] } };
 	if (createOptions.activation_type !== 0 && createOptions.activation_type !== null && !Array.isArray(data.automation))
-		data.automation!.activation_type = createOptions.activation_type
+		data.automation!.activation_type = createOptions.activation_type;
 	try {
-		await createItem(data, false)
-		createNewActionOpen.value = false
-	} catch { }
-
-
-}
+		await createItem(data, false);
+		createNewActionOpen.value = false;
+	}
+	catch { }
+};
 </script>
 
 <template>
 	<div>
-		<Breadcrumbs v-if="collection" :routes="[
-			{
-				path: isOwner || isEditor ? '/armory/personal' : '/armory/public',
-				text: isOwner || isEditor ? 'My Automations' : 'Automations',
-				isCurrent: false
-			},
-			{
-				path: '',
-				text: collection?.name,
-				isCurrent: true
-			}
-		]">
-			<v-icon-btn v-tooltip="'Create action'" text="Create action" icon="mdi:plus" size="24" class="inverted"
-				@click="createNewActionOpen = !createNewActionOpen" />
+		<Breadcrumbs
+			v-if="collection" :routes="[
+				{
+					path: isOwner || isEditor ? '/armory/personal' : '/armory/public',
+					text: isOwner || isEditor ? 'My Automations' : 'Automations',
+					isCurrent: false
+				},
+				{
+					path: '',
+					text: collection?.name,
+					isCurrent: true
+				}
+			]"
+		>
+			<v-icon-btn
+				v-tooltip="'Create action'" text="Create action" icon="mdi:plus" size="24" class="inverted"
+				@click="createNewActionOpen = !createNewActionOpen"
+			/>
 
 			<v-dialog v-if="isOwner" max-width="950">
 				<template #activator="{ props }">
-					<v-icon-btn v-tooltip="'Settings'" text="Collection Settings" icon="mdi:cog" size="24"
-						v-bind="props" />
+					<v-icon-btn
+						v-tooltip="'Settings'" text="Collection Settings" icon="mdi:cog" size="24"
+						v-bind="props"
+					/>
 				</template>
 
 				<template #default="{ isActive }">
 					<v-card title="Collection Settings" class="pa-4">
 						<v-row>
 							<v-col cols="6">
-								<v-text-field v-model="collection.name" label="Name"
+								<v-text-field
+									v-model="collection.name" label="Name"
 									:maxlength="globalLimits.nameLength" :min-length="globalLimits.nameMin"
 									:rules="[rules.required(), rules.minLength(globalLimits.nameMin), rules.maxLength(globalLimits.nameLength)]"
-									class="mb-4" />
+									class="mb-4"
+								/>
 							</v-col>
 							<v-col cols="6">
 								<v-text-field v-model="collection.image" label="Image" class="mb-4" />
 							</v-col>
 
 							<v-col cols="12">
-								<v-textarea v-model="collection.description"
+								<v-textarea
+									v-model="collection.description"
 									:max-length="globalLimits.descriptionLength"
 									:rules="[rules.maxLength(globalLimits.descriptionLength)]" label="Description"
-									class="mb-4" hint="Supports Markdown" persistent-hint counter />
+									class="mb-4" hint="Supports Markdown" persistent-hint counter
+								/>
 							</v-col>
 
 							<v-col cols="6">
-								<v-select v-model="collection.status" label="Status"
-									:items="[{ value: 'private', title: 'Private' }, { value: 'unlisted', title: 'Unlisted' }, { value: 'public', title: 'Public' }]" />
+								<v-select
+									v-model="collection.status" label="Status"
+									:items="[{ value: 'private', title: 'Private' }, { value: 'unlisted', title: 'Unlisted' }, { value: 'public', title: 'Public' }]"
+								/>
 							</v-col>
 							<v-col cols="6">
-								<v-select v-model="collection.tags" multiple :items="automationCollectionTags"
-									label="Tags" chips closable-chips />
+								<v-select
+									v-model="collection.tags" multiple :items="automationCollectionTags"
+									label="Tags" chips closable-chips
+								/>
 							</v-col>
 
 							<v-col cols="12" class="px-4">
@@ -209,9 +222,11 @@ const createAutomation = async () => {
 								</p>
 							</v-col>
 							<v-col cols="6">
-								<v-text-field v-model="editorToAdd" inputmode="numeric" label="Discord user ID"
+								<v-text-field
+									v-model="editorToAdd" inputmode="numeric" label="Discord user ID"
 									:rules="[rules.integer('This must be a numeric Discord User ID.')]"
-									pattern="[0-9]*" />
+									pattern="[0-9]*"
+								/>
 							</v-col>
 							<v-col cols="6">
 								<v-btn class="w-100" size="large" @click="addEditor(editorToAdd)">
@@ -244,11 +259,12 @@ const createAutomation = async () => {
 				</template>
 			</v-dialog>
 
-
-			<v-dialog v-if="isOwner" max-width="750" v-model="importIsOpen">
+			<v-dialog v-if="isOwner" v-model="importIsOpen" max-width="750">
 				<template #activator="{ props }">
-					<v-icon-btn v-tooltip="'Import actions'" text="Import actions" icon="mdi:import" size="24"
-						v-bind="props" />
+					<v-icon-btn
+						v-tooltip="'Import actions'" text="Import actions" icon="mdi:import" size="24"
+						v-bind="props"
+					/>
 				</template>
 
 				<template #default="{ isActive }">
@@ -256,17 +272,21 @@ const createAutomation = async () => {
 						<v-card-text>
 							<v-row>
 								<v-col>
-									<v-file-input v-model="importFields.attackJson" label="Attack JSON"
+									<v-file-input
+										v-model="importFields.attackJson" label="Attack JSON"
 										hint="JSON (.json/.txt) or YAML (.yaml, .txt) formatted as a list of automated actions"
 										persistent-hint accept=".txt,.json,.yaml" prepend-inner-icon="mdi:attachment"
-										prepend-icon="" />
+										prepend-icon=""
+									/>
 								</v-col>
 							</v-row>
 						</v-card-text>
 
 						<v-card-actions>
-							<v-btn size="large" @click="importAutomationsFromJson"
-								:color="importFields.attackJson ? 'success' : undefined" prepend-icon="mdi:import">
+							<v-btn
+								size="large" :color="importFields.attackJson ? 'success' : undefined"
+								prepend-icon="mdi:import" @click="importAutomationsFromJson"
+							>
 								Import
 							</v-btn>
 							<v-btn text="Cancel" size="large" @click="isActive.value = false" />
@@ -310,8 +330,10 @@ const createAutomation = async () => {
 
 				<v-divider class="my-4" />
 				<v-skeleton-loader v-if="items === null" type="heading, text, text" />
-				<AutomationList v-else v-model="items" :can-edit="true" :collection="collection"
-					@delete-item="(id) => deleteItem(id)" />
+				<AutomationList
+					v-else v-model="items" :can-edit="true" :collection="collection"
+					@delete-item="(id) => deleteItem(id)"
+				/>
 			</div>
 		</div>
 	</div>
@@ -321,15 +343,19 @@ const createAutomation = async () => {
 			<v-card-text>
 				<v-row>
 					<v-col>
-						<v-text-field v-model="createOptions.name" label="Name"
-							:rules="[rules.required(), rules.minLength(globalLimits.nameMin), rules.maxLength(globalLimits.nameLength)]" />
+						<v-text-field
+							v-model="createOptions.name" label="Name"
+							:rules="[rules.required(), rules.minLength(globalLimits.nameMin), rules.maxLength(globalLimits.nameLength)]"
+						/>
 					</v-col>
 					<v-col>
 						<v-select v-model="createOptions.activation_type" label="Type" :items="activationTypeOptions" />
 					</v-col>
 					<v-col cols="12">
-						<v-textarea v-model="createOptions.description" label="Description"
-							:rules="[rules.maxLength(globalLimits.descriptionLength)]" counter />
+						<v-textarea
+							v-model="createOptions.description" label="Description"
+							:rules="[rules.maxLength(globalLimits.descriptionLength)]" counter
+						/>
 					</v-col>
 				</v-row>
 			</v-card-text>

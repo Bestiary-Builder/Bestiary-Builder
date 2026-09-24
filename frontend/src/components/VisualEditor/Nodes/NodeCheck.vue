@@ -2,9 +2,9 @@
 import type { Ref } from "vue";
 import type { Check, } from "~/shared";
 import { inject } from "vue";
+import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
-import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 
 const currentEffect = inject<Ref<Check>>("currentEffect");
 
@@ -65,7 +65,3 @@ const contestDcWarning = (): boolean | string => {
 		</v-row>
 	</template>
 </template>
-
-<style scoped>
-@import url("./styles/automation-editor.less");
-</style>

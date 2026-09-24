@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import type { Bestiary, Statblock } from "~/shared";
+import type { Bestiary } from "~/shared";
 import { useLocalStorage } from "@vueuse/core";
-import { computed, reactive, ref } from "vue";
+import { reactive, ref } from "vue";
+import { useHotkey, useTheme } from "vuetify";
 import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
 import SectionHeader from "@/components/VisualEditor/Nodes/shared/SectionHeader.vue";
 import { getUmami } from "@/utils/app/analytics";
+import { useStatblockColors } from "@/utils/app/customTheme";
+import { useThemePersistence } from "@/utils/app/theme";
 import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { sendToLogin, useFetch } from "@/utils/utils";
 import { defaultInterestingStatblock, SupporterStatus } from "~/shared";
-import { useHotkey, useTheme } from "vuetify";
-import { useThemePersistence } from "@/utils/app/theme";
-import { useStatblockColors } from "@/utils/app/customTheme";
 
 const { addToast } = useToast();
 const logoutClick = async () => {
@@ -45,15 +45,14 @@ useHotkey("cmd+s", async () => saveSettings(), { inputs: true });
 
 const AvraeToken = useLocalStorage("AvraeToken", "");
 
-const theme = useTheme()
-const { themeOptions } = useThemePersistence()
-const { statblockDesignOptions } = useStatblockColors()
+const theme = useTheme();
+const { themeOptions } = useThemePersistence();
+const { statblockDesignOptions } = useStatblockColors();
 
 const layoutOptions = [
 	{ title: "2024 (OneD&D / Default)", value: "SL_2024" },
 	{ title: "2014 (5e2014)", value: "SL_2014" },
 ];
-
 
 const preferredEditorOptions = [
 	{ title: "Visual (Default)", value: "Visual" },
@@ -67,18 +66,22 @@ const srdOptions = [
 </script>
 
 <template>
-	<Breadcrumbs :routes="[
-		{
-			path: '',
-			text: 'User',
-			isCurrent: true
-		}
-	]" />
+	<Breadcrumbs
+		:routes="[
+			{
+				path: '',
+				text: 'User',
+				isCurrent: true
+			}
+		]"
+	/>
 	<div class="content less-wide">
 		<div v-if="!store.user">
 			<p> You are not logged in. Login with Discord to begin.</p>
-			<v-btn color="success" size="large" class="mt-4" prepend-icon="ic:sharp-discord"
-				@click.prevent="sendToLogin($route.path)">
+			<v-btn
+				color="success" size="large" class="mt-4" prepend-icon="ic:sharp-discord"
+				@click.prevent="sendToLogin($route.path)"
+			>
 				Login
 			</v-btn>
 		</div>
@@ -102,9 +105,12 @@ const srdOptions = [
 					</ul>
 				</div>
 				<span
-					v-if="!(store.user.supporter === SupporterStatus.wirmling || store.user.supporter === SupporterStatus.greatwyrm)">
-					<v-btn color="#f1465a" size="x-large" prepend-icon="mdi:patreon" class="mt-4 rounded"
-						variant="elevated" href="https://www.patreon.com/join/BestiaryBuilder">
+					v-if="!(store.user.supporter === SupporterStatus.wirmling || store.user.supporter === SupporterStatus.greatwyrm)"
+				>
+					<v-btn
+						color="#f1465a" size="x-large" prepend-icon="mdi:patreon" class="mt-4 rounded"
+						variant="elevated" href="https://www.patreon.com/join/BestiaryBuilder"
+					>
 						Support us on Patreon
 					</v-btn>
 				</span>
@@ -124,8 +130,10 @@ const srdOptions = [
 				<div class="preferences mt-4">
 					<div class="setting-container">
 						<div>
-							<v-select v-model="theme.global.name.value" :items="themeOptions" label="Theme"
-								item-props="props" width="400" hide-details />
+							<v-select
+								v-model="theme.global.name.value" :items="themeOptions" label="Theme"
+								item-props="props" width="400" hide-details
+							/>
 						</div>
 					</div>
 					<span style="font-size: smaller" class="pt-2">
@@ -137,42 +145,53 @@ const srdOptions = [
 
 					<div class="setting-container">
 						<div>
-							<v-select v-model="preferences.statblockLayout" label="Statblock Layout"
-								:items="layoutOptions" width="400" hide-details />
+							<v-select
+								v-model="preferences.statblockLayout" label="Statblock Layout"
+								:items="layoutOptions" width="400" hide-details
+							/>
 						</div>
 
-						<v-icon-btn v-tooltip="'Set statblock layout to 2024 or 2014. This is appearance only.'"
-							icon="mdi:information" />
+						<v-icon-btn
+							v-tooltip="'Set statblock layout to 2024 or 2014. This is appearance only.'"
+							icon="mdi:information"
+						/>
 						<DropdownMenu>
 							<template #activator="{ props }">
 								<v-icon-btn text="Preview statblock style" icon="mdi:eye" v-bind="props" />
 							</template>
 							<v-card min-width="300" class="pa-4">
-								<StatblockRenderer :data="defaultInterestingStatblock"
+								<StatblockRenderer
+									:data="defaultInterestingStatblock"
 									:statblock-design="preferences.statblockDesign"
-									:is2024="preferences.statblockLayout === 'SL_2024'" style="max-width: 650px" />
+									:is2024="preferences.statblockLayout === 'SL_2024'" style="max-width: 650px"
+								/>
 							</v-card>
 						</DropdownMenu>
 					</div>
 
 					<div class="setting-container">
 						<div>
-							<v-select v-model="preferences.statblockDesign" :items="statblockDesignOptions"
-								label="Statblock Theme" width="400" hide-details />
+							<v-select
+								v-model="preferences.statblockDesign" :items="statblockDesignOptions"
+								label="Statblock Theme" width="400" hide-details
+							/>
 						</div>
 
 						<v-icon-btn
 							v-tooltip="'Change the visual design of the statblock. This changes its appearance only.'"
-							icon="mdi:information" title="Setting information" />
+							icon="mdi:information" title="Setting information"
+						/>
 
 						<DropdownMenu>
 							<template #activator="{ props }">
 								<v-icon-btn text="Preview statblock style" icon="mdi:eye" v-bind="props" />
 							</template>
 							<v-card min-width="300" class="pa-4">
-								<StatblockRenderer :data="defaultInterestingStatblock"
+								<StatblockRenderer
+									:data="defaultInterestingStatblock"
 									:statblock-design="preferences.statblockDesign"
-									:is2024="preferences.statblockLayout === 'SL_2024'" style="max-width: 650px" />
+									:is2024="preferences.statblockLayout === 'SL_2024'" style="max-width: 650px"
+								/>
 							</v-card>
 						</DropdownMenu>
 					</div>
@@ -184,23 +203,29 @@ const srdOptions = [
 					</span>
 					<div class="setting-container">
 						<div>
-							<v-select v-model="preferences.preferredEditor" :items="preferredEditorOptions"
-								label="Preferred Editor" width="400" hide-details />
+							<v-select
+								v-model="preferences.preferredEditor" :items="preferredEditorOptions"
+								label="Preferred Editor" width="400" hide-details
+							/>
 						</div>
 
 						<v-icon-btn
 							v-tooltip="'Set default automation editor to visual (button and layout) or code (YAML) editor.'"
-							icon="mdi:information" />
+							icon="mdi:information"
+						/>
 					</div>
 
 					<div class="setting-container">
 						<div>
-							<v-select v-model="preferences.SRDVersion" :items="srdOptions" label="SRD Version"
-								width="400" hide-details />
+							<v-select
+								v-model="preferences.SRDVersion" :items="srdOptions" label="SRD Version"
+								width="400" hide-details
+							/>
 						</div>
 						<v-icon-btn
 							v-tooltip="'Set whether creating Creatures and Features from the SRD should use the 2024 or 2014 list of options.'"
-							icon="mdi:information" />
+							icon="mdi:information"
+						/>
 					</div>
 					<div class="my-6">
 						<v-btn color="success" size="large" @click.prevent="saveSettings">
@@ -222,8 +247,10 @@ const srdOptions = [
 							<small> To get the Token:
 								<ol>
 									<li>
-										Log in on the <a href="https://avrae.io/dashboard/characters"
-											style="color: rgb(var(--v-theme-primary))"> Avrae Dashboard
+										Log in on the <a
+											href="https://avrae.io/dashboard/characters"
+											style="color: rgb(var(--v-theme-primary))"
+										> Avrae Dashboard
 										</a>
 									</li>
 									<li>
@@ -232,7 +259,7 @@ const srdOptions = [
 									<li>
 										Open the <code> Application </code> Tab (At the top: Press the three dots or the
 										>> button to view
-										the tab menu ).<br />
+										the tab menu ).<br>
 										<i>On Firefox: Instead choose the Storage tab.</i>
 									</li>
 									<li>

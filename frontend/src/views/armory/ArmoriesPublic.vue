@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { automationCollectionTags, type AutomationCollectionExtended, type AutomationCollectionWithCount } from "~/shared";
+import type { AutomationCollectionExtended, AutomationCollectionWithCount } from "~/shared";
 import { refDebounced } from "@vueuse/core";
 import { onMounted, ref, watch } from "vue";
 import CollectionTile from "@/components/Collections/CollectionTile.vue";
 import { getUmami } from "@/utils/app/analytics";
 import { useToast } from "@/utils/app/toast";
 import { useFetch } from "@/utils/utils";
+import { automationCollectionTags } from "~/shared";
 
 onMounted(async () => {
 	const toastId = addToast("Loading...", { loading: true });
@@ -75,15 +76,19 @@ watch(debouncedSearch, async () => searchCollections());
 </script>
 
 <template>
-	<Breadcrumbs :routes="[
-		{
-			path: '',
-			text: 'Public Automation Collections',
-			isCurrent: true
-		}
-	]">
-		<select v-model="viewMode" aria-label="Select public collections list mode"
-			name="Select public collections list mode">
+	<Breadcrumbs
+		:routes="[
+			{
+				path: '',
+				text: 'Public Automation Collections',
+				isCurrent: true
+			}
+		]"
+	>
+		<select
+			v-model="viewMode" aria-label="Select public collections list mode"
+			name="Select public collections list mode"
+		>
 			<option>Recent</option>
 			<option>Popular</option>
 			<option>Bookmarked</option>
@@ -91,15 +96,19 @@ watch(debouncedSearch, async () => searchCollections());
 
 		<DropdownMenu>
 			<template #activator="{ props }">
-				<v-icon-btn v-tooltip="'Search collections'" icon="mdi:magnify" v-bind="props" text="Search collections"
-					size="24" />
+				<v-icon-btn
+					v-tooltip="'Search collections'" icon="mdi:magnify" v-bind="props" text="Search collections"
+					size="24"
+				/>
 			</template>
 			<v-card min-width="300" class="text-center pb-2" title="Search collections">
 				<v-spacer />
 				<v-card-text>
 					<v-text-field v-model="search" label="Search text" />
-					<v-select v-model="selectedTags" label="Select Tags" multiple :items="automationCollectionTags"
-						chips closable-chips />
+					<v-select
+						v-model="selectedTags" label="Select Tags" multiple :items="automationCollectionTags"
+						chips closable-chips
+					/>
 				</v-card-text>
 			</v-card>
 		</DropdownMenu>

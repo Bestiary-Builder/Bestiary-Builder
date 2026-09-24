@@ -5,7 +5,6 @@ import { useRoute, useRouter } from "vue-router";
 
 import { getUmami } from "@/utils/app/analytics";
 import { useToast } from "@/utils/app/toast";
-import { useRecentPages } from "@/utils/app/useRecentPages";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 
@@ -239,24 +238,24 @@ export const useCollection = <T extends CollectionType>(type: T) => {
 			[config.itemRawKey]: data,
 			[config.parentIdField]: collection.value?.id,
 		};
-		const toastId = addToast(`Creating ${config.labels.itemName}`, { loading: true })
+		const toastId = addToast(`Creating ${config.labels.itemName}`, { loading: true });
 
 		const { success, data: resultData, error } = await useFetch<Item>(`/api/${config.itemRoute}/add`, "POST", payload);
 		if (success) {
 			void getUmami()?.track(`Create ${config.labels.itemName}`);
 			if (openPage) {
 				await $router.push(`/${config.itemRoute}/edit/${resultData.id.toString()}`);
-				removeToast(toastId)
+				removeToast(toastId);
 			}
 			else {
 				await getCollection();
-				updateToast(toastId, { text: `Successfully created ${config.labels.itemName}!`, color: "success" })
+				updateToast(toastId, { text: `Successfully created ${config.labels.itemName}!`, color: "success" });
 			}
 			return resultData;
 		}
 		else {
-			addToast(error, { color: "error", isHtml: true });
-			throw error
+			updateToast(toastId, { color: "error", isHtml: true, text: error });
+			throw error;
 		}
 	};
 

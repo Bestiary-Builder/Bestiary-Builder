@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
 import type { Roll } from "~/shared";
-import { inject, onBeforeUnmount, watch } from "vue";
+import { inject, watch } from "vue";
+import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 import HigherLevels from "./shared/HigherLevels.vue";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
-import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 
 const currentEffect = inject<Ref<Roll>>("currentEffect");
 
 watch(() => currentEffect?.value.higher, () => {
+	if (!Object.hasOwn(currentEffect!.value, "higher")) return;
 	for (const index in currentEffect!.value.higher) {
 		const toIndex = Number.parseInt(index);
 		if (currentEffect!.value.higher[toIndex] === "")
@@ -17,15 +18,7 @@ watch(() => currentEffect?.value.higher, () => {
 	}
 }, { deep: true });
 
-onBeforeUnmount(() => {
-	if (!Object.values(currentEffect!.value.higher || {}).some(x => x !== ""))
-		delete currentEffect!.value.higher;
-});
-
-if (!Object.hasOwn(currentEffect!.value, "higher"))
-	currentEffect!.value.higher = {};
-
-useDataCleanup(currentEffect, ["cantripScale", "hidden", "displayName", "fixedValue"]);
+useDataCleanup(currentEffect, ["cantripScale", "hidden", "displayName", "fixedValue", "higher"]);
 </script>
 
 <template>
@@ -52,7 +45,6 @@ useDataCleanup(currentEffect, ["cantripScale", "hidden", "displayName", "fixedVa
 			<v-col cols="6">
 				<v-checkbox v-model="currentEffect.fixedValue" label="Whether this roll should ignore the -d argument and
 					damage bonus effects." hide-details />
-
 			</v-col>
 			<v-col cols="6">
 				<v-checkbox v-model="currentEffect.hidden"
@@ -68,13 +60,8 @@ useDataCleanup(currentEffect, ["cantripScale", "hidden", "displayName", "fixedVa
 					hide-details />
 			</v-col>
 			<v-col cols="6">
-				<div>At higher levels</div>
-				<HigherLevels v-model="(currentEffect.higher as Record<number, string>)" />
+				<HigherLevels v-model="currentEffect.higher" />
 			</v-col>
 		</v-row>
 	</template>
 </template>
-
-<style scoped>
-@import url("./styles/automation-editor.less");
-</style>

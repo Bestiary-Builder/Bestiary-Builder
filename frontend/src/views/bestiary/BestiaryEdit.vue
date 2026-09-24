@@ -1,26 +1,26 @@
 <script setup lang="ts">
 import type { CreatureMetaData, CreatureWithStats, Statblock } from "~/shared";
 import { onMounted, reactive, ref, useTemplateRef, watch } from "vue";
+import { useRoute } from "vue-router";
 import { useRules } from "vuetify/labs/rules";
 import CopyCreature from "@/components/Bestiary/CopyCreature.vue";
 import CreatureList from "@/components/Bestiary/CreatureList.vue";
 import { useCollection } from "@/components/Bestiary/useCollection";
 import UserBanner from "@/components/Bestiary/UserBanner.vue";
+import CollectionHeader from "@/components/Collections/CollectionHeader.vue";
 import StatblockRenderer from "@/components/Statblock/StatblockRenderer.vue";
 import SectionHeader from "@/components/VisualEditor/Nodes/shared/SectionHeader.vue";
 import { getUmami } from "@/utils/app/analytics";
+import { downloadFile } from "@/utils/app/export";
 import { useToast } from "@/utils/app/toast";
+import { useLazyOptions } from "@/utils/app/useLazyOptions";
+import { useRecentPages } from "@/utils/app/useRecentPages";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 import { bestiaryTags, defaultStatblock, globalLimits } from "~/shared";
-import { useLazyOptions } from "@/utils/app/useLazyOptions";
-import CollectionHeader from "@/components/Collections/CollectionHeader.vue";
-import { downloadFile } from "@/utils/app/export";
-import { useRoute } from "vue-router";
-import { useRecentPages } from "@/utils/app/useRecentPages";
 
-const $route = useRoute()
-const { trackVisit } = useRecentPages()
+const $route = useRoute();
+const { trackVisit } = useRecentPages();
 
 const {
 	collection,
@@ -51,7 +51,7 @@ const fetchList = async <T>(apiPath: string): Promise<T[]> => {
 };
 
 const srdCreatures = reactive(useLazyOptions<string>(
-	() => fetchList(`srd-creatures/${store.user?.SRDVersion === "SRD_2024" ? "2024" : "2014"}/list`),
+	async () => fetchList(`srd-creatures/${store.user?.SRDVersion === "SRD_2024" ? "2024" : "2014"}/list`),
 	{
 		onError: (error: unknown) =>
 			addToast(error instanceof Error ? error.message : String(error), { color: "error" })
@@ -64,7 +64,7 @@ onMounted(async () => {
 	removeToast(toastId);
 	if (collection.value?.name) {
 		document.title = `${collection.value?.name} | Bestiary Builder`;
-		trackVisit($route.path, collection.value.name)
+		trackVisit($route.path, collection.value.name);
 	}
 });
 
@@ -99,7 +99,7 @@ async function exportBestiary(asFile: boolean) {
 	}
 
 	if (asFile) {
-		downloadFile(creatures.map(creature => creature.stats), `${collection.value?.name} from Bestiary Builder`)
+		downloadFile(creatures.map(creature => creature.stats), `${collection.value?.name} from Bestiary Builder`);
 		void getUmami()?.track("Export bestiary to file edit");
 	}
 	else {
@@ -119,7 +119,6 @@ const importFields = reactive({
 	critterDbId: "",
 	bestiaryBuilderJson: null
 });
-
 
 const isImportOpen = ref(false);
 async function importBestiaryFromCritterDB() {
@@ -164,7 +163,7 @@ async function importBestiaryFromCritterDB() {
 		updateToast(toastId, { text: error, color: "error", timeout: 2500 });
 		return;
 	}
-	createManyItems(data.data.creatures);
+	await createManyItems(data.data.creatures);
 	void getUmami()?.track("Import bestiary from CritterDB");
 }
 
@@ -182,7 +181,7 @@ async function importCreaturesFromBestiaryBuilder() {
 			if (!Array.isArray(creaturesToImport))
 				creaturesToImport = [creaturesToImport];
 
-			createManyItems(creaturesToImport);
+			await createManyItems(creaturesToImport);
 			void getUmami()?.track("Import bestiary from Bestiary Builder");
 		};
 		reader.readAsText(importFields.bestiaryBuilderJson);
@@ -207,7 +206,7 @@ async function importSrdCreature(creature: string | null) {
 	}
 }
 
-const copyManager = useTemplateRef("copyManager")
+const copyManager = useTemplateRef("copyManager");
 
 const copyCurrentBestiary = async () => {
 	if (!items.value || !collection.value)
@@ -219,7 +218,7 @@ const copyCurrentBestiary = async () => {
 		return;
 	}
 
-	copyManager.value?.addManyCreatures(creatures, collection.value.name)
+	copyManager.value?.addManyCreatures(creatures, collection.value.name);
 };
 
 // misc
@@ -308,59 +307,75 @@ const hoverCreature = async (id: CreatureMetaData["id"]) => {
 
 <template>
 	<div>
-		<Breadcrumbs v-if="collection" :routes="[
-			{
-				path: isOwner || isEditor ? '/bestiaries/personal' : '/bestiaries/public',
-				text: isOwner || isEditor ? 'My Bestiaries' : 'Bestiaries',
-				isCurrent: false
-			},
-			{
-				path: '',
-				text: collection?.name,
-				isCurrent: true
-			}
-		]">
-			<v-icon-btn v-tooltip="'Create creature'" text="Create creature" icon="mdi:plus" size="24" class="inverted"
-				@click="newCreatureIsOpen = !newCreatureIsOpen" />
+		<Breadcrumbs
+			v-if="collection" :routes="[
+				{
+					path: isOwner || isEditor ? '/bestiaries/personal' : '/bestiaries/public',
+					text: isOwner || isEditor ? 'My Bestiaries' : 'Bestiaries',
+					isCurrent: false
+				},
+				{
+					path: '',
+					text: collection?.name,
+					isCurrent: true
+				}
+			]"
+		>
+			<v-icon-btn
+				v-tooltip="'Create creature'" text="Create creature" icon="mdi:plus" size="24" class="inverted"
+				@click="newCreatureIsOpen = !newCreatureIsOpen"
+			/>
 
-			<CopyCreature :may-import="isOwner || isEditor" :current-creatures="items || []" can-copy-current-bestiary
-				@import-creature="(creature) => createItem(creature, false)"
+			<CopyCreature
+				ref="copyManager" :may-import="isOwner || isEditor" :current-creatures="items || []"
+				can-copy-current-bestiary @import-creature="(creature) => createItem(creature, false)"
 				@import-all-creatures="createManyItems(copyManager!.copiedCreatures.map(x => x.stats))"
-				@copy-current-bestiary="copyCurrentBestiary" ref="copyManager" />
+				@copy-current-bestiary="copyCurrentBestiary"
+			/>
 
 			<v-dialog v-if="isOwner" max-width="950">
 				<template #activator="{ props }">
-					<v-icon-btn v-tooltip="'Settings'" text="Collection Settings" icon="mdi:cog" size="24"
-						v-bind="props" />
+					<v-icon-btn
+						v-tooltip="'Settings'" text="Collection Settings" icon="mdi:cog" size="24"
+						v-bind="props"
+					/>
 				</template>
 
 				<template #default="{ isActive }">
 					<v-card title="Bestiary Settings" class="pa-4">
 						<v-row>
 							<v-col cols="6">
-								<v-text-field v-model="collection.name" label="Name"
+								<v-text-field
+									v-model="collection.name" label="Name"
 									:maxlength="globalLimits.nameLength" :min-length="globalLimits.nameMin"
 									:rules="[rules.required(), rules.minLength(globalLimits.nameMin), rules.maxLength(globalLimits.nameLength)]"
-									class="mb-4" />
+									class="mb-4"
+								/>
 							</v-col>
 							<v-col cols="6">
 								<v-text-field v-model="collection.image" label="Image" class="mb-4" />
 							</v-col>
 
 							<v-col cols="12">
-								<v-textarea v-model="collection.description"
+								<v-textarea
+									v-model="collection.description"
 									:max-length="globalLimits.descriptionLength"
 									:rules="[rules.maxLength(globalLimits.descriptionLength)]" label="Description"
-									class="mb-4" hint="Supports Markdown" persistent-hint counter />
+									class="mb-4" hint="Supports Markdown" persistent-hint counter
+								/>
 							</v-col>
 
 							<v-col cols="6">
-								<v-select v-model="collection.status" label="Status"
-									:items="[{ value: 'private', title: 'Private' }, { value: 'unlisted', title: 'Unlisted' }, { value: 'public', title: 'Public' }]" />
+								<v-select
+									v-model="collection.status" label="Status"
+									:items="[{ value: 'private', title: 'Private' }, { value: 'unlisted', title: 'Unlisted' }, { value: 'public', title: 'Public' }]"
+								/>
 							</v-col>
 							<v-col cols="6">
-								<v-select v-model="collection.tags" multiple :items="bestiaryTags" label="Tags" chips
-									closable-chips />
+								<v-select
+									v-model="collection.tags" multiple :items="bestiaryTags" label="Tags" chips
+									closable-chips
+								/>
 							</v-col>
 
 							<v-col cols="12" class="px-4">
@@ -380,9 +395,11 @@ const hoverCreature = async (id: CreatureMetaData["id"]) => {
 								</p>
 							</v-col>
 							<v-col cols="6">
-								<v-text-field v-model="editorToAdd" inputmode="numeric" label="Discord user ID"
+								<v-text-field
+									v-model="editorToAdd" inputmode="numeric" label="Discord user ID"
 									:rules="[rules.integer('This must be a numeric Discord User ID.')]"
-									pattern="[0-9]*" />
+									pattern="[0-9]*"
+								/>
 							</v-col>
 							<v-col cols="6">
 								<v-btn class="w-100" size="large" @click="addEditor(editorToAdd)">
@@ -415,29 +432,34 @@ const hoverCreature = async (id: CreatureMetaData["id"]) => {
 				</template>
 			</v-dialog>
 
-
-			<v-dialog v-if="isOwner" max-width="750" v-model="isImportOpen">
+			<v-dialog v-if="isOwner" v-model="isImportOpen" max-width="750">
 				<template #activator="{ props }">
-					<v-icon-btn v-tooltip="'Import creatures'" text="Import creatures" icon="mdi:import" size="24"
-						v-bind="props" />
+					<v-icon-btn
+						v-tooltip="'Import creatures'" text="Import creatures" icon="mdi:import" size="24"
+						v-bind="props"
+					/>
 				</template>
 
 				<template #default="{ isActive }">
 					<v-card title="Import bestiary" max-width="800" class="pa-4">
 						<v-row>
 							<v-col cols="6">
-								<v-text-field v-model="importFields.critterDbId" label="CritterDB Bestiary link"
+								<v-text-field
+									v-model="importFields.critterDbId" label="CritterDB Bestiary link"
 									hint="Make sure the Bestiary is public or has link-sharing enabled"
-									persistent-hint />
+									persistent-hint
+								/>
 								<v-btn size="large" class="w-100 mt-4" @click="importBestiaryFromCritterDB()">
 									Import CritterDB
 								</v-btn>
 							</v-col>
 							<v-col>
-								<v-file-input v-model="importFields.bestiaryBuilderJson" label="Bestiary Builder JSON"
+								<v-file-input
+									v-model="importFields.bestiaryBuilderJson" label="Bestiary Builder JSON"
 									hint="JSON (.json/.txt) describing a bestiary gotten from clicking export elsewhere on BB"
 									persistent-hint accept=".txt,.json" prepend-inner-icon="mdi:attachment" prepe
-									prepend-icon="" />
+									prepend-icon=""
+								/>
 
 								<v-btn size="large" class="w-100 mt-4" @click="importCreaturesFromBestiaryBuilder()">
 									Import BB
@@ -490,20 +512,25 @@ const hoverCreature = async (id: CreatureMetaData["id"]) => {
 						<CollectionHeader :collection :item-count="(items || []).length" can-edit />
 						<v-divider class="my-4" />
 						<v-skeleton-loader v-if="items === null" type="heading, text, text" />
-						<CreatureList v-else v-model="items" @hovered-creature="id => hoverCreature(id)"
-							:pinned-creature="lastClickedCreature?.id || null" @pin-creature="id => pinCreature(id)"
-							:collection="collection" can-edit @delete-creature="id => deleteItem(id)" />
+						<CreatureList
+							v-else v-model="items" :pinned-creature="lastClickedCreature?.id || null"
+							:collection="collection" can-edit @hovered-creature="id => hoverCreature(id)"
+							@pin-creature="id => pinCreature(id)" @delete-creature="id => deleteItem(id)"
+						/>
 					</v-col>
 					<v-col cols="6">
 						<div v-if="items && lastHoveredCreature" class="statblock-container">
 							<span v-if="lastClickedCreature" class="pin-notice">
-								<v-btn class="unpin-button" variant="text" density="compact" append-icon="mdi:pin-off"
-									@click="lastClickedCreature = null"><b>unpin</b></v-btn>
+								<v-btn
+									class="unpin-button" variant="text" density="compact" append-icon="mdi:pin-off"
+									@click="lastClickedCreature = null"
+								><b>unpin</b></v-btn>
 							</span>
 							<Transition name="fade" mode="out-in">
 								<StatblockRenderer
 									:key="lastClickedCreature?.stats.description.name || lastHoveredCreature.stats.description.name"
-									:data="lastClickedCreature?.stats || lastHoveredCreature.stats" />
+									:data="lastClickedCreature?.stats || lastHoveredCreature.stats"
+								/>
 							</Transition>
 						</div>
 						<div v-else class="statblock-container">
@@ -513,7 +540,6 @@ const hoverCreature = async (id: CreatureMetaData["id"]) => {
 						</div>
 					</v-col>
 				</v-row>
-
 			</div>
 		</div>
 	</div>
@@ -535,10 +561,12 @@ const hoverCreature = async (id: CreatureMetaData["id"]) => {
 						</div>
 					</v-col>
 					<v-col cols="12">
-						<v-autocomplete :items="srdCreatures.items" label="Select SRD creature"
+						<v-autocomplete
+							:items="srdCreatures.items" label="Select SRD creature"
+							:loading="srdCreatures.loading" prepend-inner-icon="mdi:database"
 							@update:model-value="item => importSrdCreature(item)"
-							@update:menu="srdCreatures.handleMenuOpen" :loading="srdCreatures.loading"
-							prepend-inner-icon="mdi:database">
+							@update:menu="srdCreatures.handleMenuOpen"
+						>
 							<template #item="{ props, item }">
 								<v-list-item v-bind="props" density="compact" style="min-height: 28px">
 									{{ (item as any).title }}

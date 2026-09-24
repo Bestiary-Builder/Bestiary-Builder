@@ -2,10 +2,10 @@
 import type { Ref } from "vue";
 import type { Save } from "~/shared";
 import { inject, watch } from "vue";
+import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 import { fullStatNames } from "@/utils/constants";
 import SectionHeader from "./shared/SectionHeader.vue";
 import { useDataCleanup } from "./shared/utils";
-import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 
 const currentEffect = inject<Ref<Save>>("currentEffect");
 
@@ -50,7 +50,3 @@ useDataCleanup(currentEffect, ["dc"]);
 		</v-row>
 	</template>
 </template>
-
-<style scoped>
-@import url("./styles/automation-editor.less");
-</style>
