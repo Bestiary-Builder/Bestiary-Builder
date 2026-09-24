@@ -78,7 +78,7 @@ export const useOnboardingTour = () => {
 		.step({ id: "editor-11", target: "#showDocumentation", content: "You can see the documentation of every automation effect here. Let's now see some other features", title: "Show Documentation" })
 		.step({ id: "editor-12", target: ".right-buttons", content: "Here are buttons for several different powerful features. Let's go over them.", title: "Additional Options" })
 		.step({ id: "editor-13", target: ".right-buttons button:nth-of-type(1)", content: "Press the save button to save your changes. Tip: You can also press CTRL/CMD + S to save!", title: "Save Automation" })
-		.step({ id: "editor-14", target: ".right-buttons button:nth-of-type(2)", content: "The magic generate button reads the description of the attack and then tries to generate automation for it. Works best for simple attacks!", title: "Magic Generate" })
+		.step({ id: "editor-14", target: ".right-buttons button:nth-of-type(2)", content: "The magic generate button reads the description of the attack and then tries to generate automation for it!", title: "Magic Generate" })
 		.step({ id: "editor-15", target: ".right-buttons button:nth-of-type(3)", content: "The change editor button allows you to edit your automation as YAML!", title: "Change Editor" })
 		.step({ id: "editor-16", target: ".right-buttons button:nth-of-type(4)", content: "The database button allows you to load automation from the SRD, from your (subscribed) Automation Collections, and your Avrae Characters.", title: "Load Feature" })
 		.step({ id: "editor-17", target: ".right-buttons button:nth-of-type(5)", content: "The Avrae button allows you to load this automation onto a character if you want to quickly test it!", title: "Avrae Character" })

@@ -2,7 +2,7 @@
 
 
 ## v3.0.0
-_???, 2026_
+_September 24, 2026_
 
 ### Major Features
 - Added a complete automation editor where you can edit actions.
@@ -39,6 +39,7 @@ _???, 2026_
 - Bestiaries and automation collections now have a built in image field which will be displayed as the image for the collection.
   - The first image in the markdown description of the collection has been automatically migrated to this field.
 - Creatures and automations have a tag property which you can use to define custom grouping on the collection page.
+- Generating automation from a description now supports attacks which inflicts saves, as well as 2024 formatted actions.
 
 ### Fixes
 - Improved the accuracy of the 2014 SRD Creatures and Actions data.

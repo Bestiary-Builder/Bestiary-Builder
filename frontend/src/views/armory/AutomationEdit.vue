@@ -440,78 +440,57 @@ watch(() => data.value?.name, () => {
 </script>
 
 <template>
-	<Breadcrumbs
-		:routes="[
-			{
-				path: isOwner || isEditor ? `/armory/edit/${collection?.id}` : `/armory/view/${collection?.id}`,
-				text: collection?.name || 'Armory',
-				isCurrent: false
-			},
-			{
-				path: '',
-				text: data?.name || 'Automation',
-				isCurrent: true
-			}
-		]"
-	>
-		<v-icon-btn
-			v-if="madeChanges && (isOwner || isEditor)" v-tooltip="'Save feature (CTRL+S)'"
+	<Breadcrumbs :routes="[
+		{
+			path: isOwner || isEditor ? `/armory/edit/${collection?.id}` : `/armory/view/${collection?.id}`,
+			text: collection?.name || 'Armory',
+			isCurrent: false
+		},
+		{
+			path: '',
+			text: data?.name || 'Automation',
+			isCurrent: true
+		}
+	]">
+		<v-icon-btn v-if="madeChanges && (isOwner || isEditor)" v-tooltip="'Save feature (CTRL+S)'"
 			icon="mdi:content-save" text="Save automation" :class="{ inverted: !isSavingCreature }" size="24"
-			:loading="isSavingCreature" @click="saveAutomation(true)"
-		/>
-		<v-icon-btn
-			v-tooltip="'Generate automation from description. May be incomplete or inaccurate. Only works for basic, to hit attacks.'"
-			icon="fa7-solid:wand-sparkles"
-			text="Generate automation from description. May be incomplete or inaccurate. Only works for basic, to hit attacks."
-			size="24" @click="generateAutomation"
-		/>
-		<v-icon-btn
-			v-tooltip="'Change editor'" size="24" icon="mdi:code-block-braces" text="Change editor"
-			@click="EditAutomationRef?.toggleEditor()"
-		/>
+			:loading="isSavingCreature" @click="saveAutomation(true)" />
+		<v-icon-btn v-tooltip="'Generate automation from description. May be incomplete or inaccurate.'"
+			icon="fa7-solid:wand-sparkles" text="Generate automation from description. May be incomplete or inaccurate."
+			size="24" @click="generateAutomation" />
+		<v-icon-btn v-tooltip="'Change editor'" size="24" icon="mdi:code-block-braces" text="Change editor"
+			@click="EditAutomationRef?.toggleEditor()" />
 		<ImportAutomationUtil @load-feature="feature => loadFeature(feature)" />
 		<ImportToCharacter :automation="data?.automation || null" :consumables="data?.consumables || null" />
-		<v-icon-btn
-			v-if="data && store.isMobile" v-tooltip="'Clear automation'" icon="mdi:delete"
-			text="Clear automation" size="24" @click="data.automation = null"
-		/>
-		<v-icon-btn
-			v-if="data && store.isMobile" v-tooltip="'Copy automation'" icon="mdi:content-copy"
-			text="Copy automation" size="24" @click="EditAutomationRef?.copyAutomation()"
-		/>
+		<v-icon-btn v-if="data && store.isMobile" v-tooltip="'Clear automation'" icon="mdi:delete"
+			text="Clear automation" size="24" @click="data.automation = null" />
+		<v-icon-btn v-if="data && store.isMobile" v-tooltip="'Copy automation'" icon="mdi:content-copy"
+			text="Copy automation" size="24" @click="EditAutomationRef?.copyAutomation()" />
 	</Breadcrumbs>
 	<div v-if="data" class="content">
 		<v-sheet class="pa-4" color="surface-light">
 			<v-row>
 				<v-col cols="4">
-					<v-text-field
-						v-model="data.name" type="text" label="Feature name" :minlength="globalLimits.nameMin"
-						:maxlength="globalLimits.nameLength" hide-details
-					/>
+					<v-text-field v-model="data.name" type="text" label="Feature name" :minlength="globalLimits.nameMin"
+						:maxlength="globalLimits.nameLength" hide-details />
 					<span v-if="isVisualEditor">
 						<input v-model="parityOptions.updateName" type="checkbox" style="scale: .7; translate: 0 4px">
 						<small style="font-size: x-small;"> <i>Updates the name of the first action in the automation
-							structure to this text while enabled.</i> </small>
+								structure to this text while enabled.</i> </small>
 					</span>
 
-					<v-text-field
-						v-model="data.tag" label="Tag" class="mt-4"
-						hint="Use this to organize your automations on the collection page."
-					/>
+					<v-text-field v-model="data.tag" label="Tag" class="mt-4"
+						hint="Use this to organize your automations on the collection page." />
 
 					<div v-if="!isVisualEditor && showDescriptionButtons" class="mt-4">
 						<b class="mt-4"> Descriptions: </b>
 						<span style="color: rgb(var(--v-theme-error))"> Don't match. </span>
-						<p
-							style="text-decoration: underline; font-size: smaller; cursor: pointer;"
-							@click="updateAutomationDescFromFeatureDesc"
-						>
+						<p style="text-decoration: underline; font-size: smaller; cursor: pointer;"
+							@click="updateAutomationDescFromFeatureDesc">
 							Update from feature
 						</p>
-						<p
-							style="text-decoration: underline; font-size: smaller; cursor: pointer"
-							@click="updateFeatureDescFromAutomationDesc"
-						>
+						<p style="text-decoration: underline; font-size: smaller; cursor: pointer"
+							@click="updateFeatureDescFromAutomationDesc">
 							Update from automation
 						</p>
 					</div>
@@ -521,63 +500,49 @@ watch(() => data.value?.name, () => {
 					<span v-if="isVisualEditor" class="sub-action">
 						<input v-model="parityOptions.updateDescription" type="checkbox">
 						<small> <i>Updates the last text node of the first action in the automation structure to this
-							text
-							while
-							enabled.</i> </small>
+								text
+								while
+								enabled.</i> </small>
 					</span>
 				</v-col>
 			</v-row>
 		</v-sheet>
 
-		<EditAutomation
-			ref="EditAutomationRef" v-model="data.automation" v-model:is-visual-editor="isVisualEditor"
-			:name="data.name"
-		/>
+		<EditAutomation ref="EditAutomationRef" v-model="data.automation" v-model:is-visual-editor="isVisualEditor"
+			:name="data.name" />
 
-		<v-card
-			title="Custom Counters" class="pa-4 d-flex flex-column mt-4"
+		<v-card title="Custom Counters" class="pa-4 d-flex flex-column mt-4"
 			subtitle="You can define Custom Counters for Avrae Characters here. Importing this action will import this Custom Counter too."
-			color="surface-light"
-		>
+			color="surface-light">
 			<v-card-text class="flex-grow-1" bg-color="surface-light">
 				<v-list density="compact" class="text-left my-4" max-height="1000">
 					<v-list-group v-for="consumable, idx of data.consumables" :key="idx">
 						<template #activator="{ props, isOpen }">
 							<v-list-item v-bind="props" :title="consumable.name" :subtitle="consumable.desc || ''">
 								<template #append>
-									<v-icon-btn
-										text="Copy counter" icon="$avrae"
-										@click.stop="copySingleCounter(consumable)"
-									/>
-									<v-icon-btn
-										text="Delete counter" icon="mdi:delete"
-										@click.stop="data.consumables?.splice(idx, 1)"
-									/>
+									<v-icon-btn text="Copy counter" icon="$avrae"
+										@click.stop="copySingleCounter(consumable)" />
+									<v-icon-btn text="Delete counter" icon="mdi:delete"
+										@click.stop="data.consumables?.splice(idx, 1)" />
 
-									<v-icon
-										icon="mdi:chevron-down" :class="{ 'rotate-180': isOpen }"
-										class="transition-transform"
-									/>
+									<v-icon icon="mdi:chevron-down" :class="{ 'rotate-180': isOpen }"
+										class="transition-transform" />
 								</template>
 							</v-list-item>
 						</template>
 						<v-container class="pa-4">
 							<v-row density="comfortable">
 								<v-col cols="6">
-									<v-text-field
-										v-model="consumable.name"
-										:rules="[rules.required(), rules.minLength(1)]" label="Name"
-									/>
+									<v-text-field v-model="consumable.name"
+										:rules="[rules.required(), rules.minLength(1)]" label="Name" />
 								</v-col>
 
 								<v-col cols="12">
 									<p class="">
 										<small>
 											The following fields may use CVARS from the
-											<a
-												href="https://avrae.readthedocs.io/en/stable/aliasing/api.html#cvar-table"
-												target="_blank"
-											>
+											<a href="https://avrae.readthedocs.io/en/stable/aliasing/api.html#cvar-table"
+												target="_blank">
 												CVAR
 												table
 											</a>
@@ -587,16 +552,12 @@ watch(() => data.value?.name, () => {
 								</v-col>
 
 								<v-col cols="6">
-									<v-select
-										v-model="consumable.display_type" label="Display Type"
-										:items="displayTypeOptions" hide-details
-									/>
+									<v-select v-model="consumable.display_type" label="Display Type"
+										:items="displayTypeOptions" hide-details />
 								</v-col>
 								<v-col cols="6">
-									<v-select
-										v-model="consumable.reset" label="Reset On" :items="resetOnOptions"
-										hide-details
-									/>
+									<v-select v-model="consumable.reset" label="Reset On" :items="resetOnOptions"
+										hide-details />
 								</v-col>
 								<v-col cols="6">
 									<TypeHintedEditor v-model="consumable.minv" language="julia" label="Minimum" />
@@ -606,10 +567,8 @@ watch(() => data.value?.name, () => {
 								</v-col>
 
 								<v-col cols="6">
-									<TypeHintedEditor
-										v-model="consumable.reset_by" language="julia" label="Reset By"
-										is-annotated-string
-									/>
+									<TypeHintedEditor v-model="consumable.reset_by" language="julia" label="Reset By"
+										is-annotated-string />
 								</v-col>
 								<v-col cols="6">
 									<TypeHintedEditor v-model="consumable.reset_to" language="julia" label="Reset To" />
@@ -630,10 +589,8 @@ watch(() => data.value?.name, () => {
 					<v-list-item v-if="!data.consumables" title="No consumables set..." />
 					<v-divider />
 
-					<v-list-item
-						v-if="!data.consumables || data.consumables.length < 16" title="Add Consumable"
-						prepend-icon="mdi:plus" @click="addConsumable"
-					/>
+					<v-list-item v-if="!data.consumables || data.consumables.length < 16" title="Add Consumable"
+						prepend-icon="mdi:plus" @click="addConsumable" />
 				</v-list>
 			</v-card-text>
 		</v-card>
