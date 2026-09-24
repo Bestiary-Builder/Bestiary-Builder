@@ -2,7 +2,7 @@
 /* eslint-disable  regexp/no-obscure-range */
 
 import type { AttackModel, CasterSpells, FeatureEntity, InnateSpells, SenseEntity, SpeedEntity, SpellSlotList, Stat, Statblock } from "./types";
-import YAML from "yaml";
+import { parse } from "yaml";
 
 export const SKILLS_BY_STAT = {
 	str: ["athletics", "strength"],
@@ -423,7 +423,7 @@ export function parseDescIntoAutomation(text: string, name = "", activationType:
 		// eslint-disable-next-line no-unreachable-loop
 		for (const m of override_matches) {
 			try {
-				matched = YAML.parse(m ?? "");
+				matched = parse(m ?? "");
 				break;
 			}
 			catch {

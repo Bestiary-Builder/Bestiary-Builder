@@ -511,7 +511,7 @@ watch(() => data.value?.name, () => {
 		<EditAutomation ref="EditAutomationRef" v-model="data.automation" v-model:is-visual-editor="isVisualEditor"
 			:name="data.name" />
 
-		<v-card title="Custom Counters" class="pa-4 d-flex flex-column mt-4"
+		<v-card title="Custom Counters" class="pa-4 d-flex flex-column"
 			subtitle="You can define Custom Counters for Avrae Characters here. Importing this action will import this Custom Counter too."
 			color="surface-light">
 			<v-card-text class="flex-grow-1" bg-color="surface-light">

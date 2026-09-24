@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
 import type { PassiveEffectDef } from "./passiveEffect";
-import type { IEffect } from "~/shared";
-import { computed, inject, nextTick, ref, useTemplateRef } from "vue";
+import type { IEffect, PassiveEffects } from "~/shared";
+import { computed, inject, nextTick, onUnmounted, ref, useTemplateRef, watch } from "vue";
 import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 import Editor from "@/components/StatblockEditor/Editor.vue";
 import SectionHeader from "../shared/SectionHeader.vue";
@@ -175,7 +175,7 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 					<v-combobox v-model="effectValueFor(key).value" :label="getEffectData(key)?.label || ''"
 						:items="getEffectData(key)?.defaultOptions" item-title="label" item-value="value"
 						:multiple="getEffectData(key)?.isList" :chips="getEffectData(key)?.isList"
-						:closable-chips="getEffectData(key)?.isList" variant="solo">
+						:closable-chips="getEffectData(key)?.isList" hint="Custom Expressions: type them into the field above." persistent-hint>
 						<template #append>
 							<DropdownMenu>
 								<template #activator="{ props }">
@@ -193,6 +193,15 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 									</v-card-actions>
 								</v-card>
 							</DropdownMenu>
+						</template>
+						<template #append-inner>
+							<v-tooltip
+								:text="getEffectData(key)?.type === 'annotatedstring' ? 'AnnotatedString. Dice allowed, expressions in {}.' : 'IntExpression. Dice not allowed, expressions not in { }'"
+								location="bottom">
+								<template #activator="{ props: activatorProps }">
+									<v-icon :icon="getEffectData(key)?.type === 'annotatedstring' ? 'tabler:braces' : 'tabler:braces-off'" v-bind="activatorProps" />
+								</template>
+							</v-tooltip>
 						</template>
 					</v-combobox>
 				</div>

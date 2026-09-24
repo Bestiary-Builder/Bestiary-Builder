@@ -3,7 +3,7 @@ import type { Automation } from "~/shared";
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useRules } from "vuetify/labs/rules";
-import YAML from "yaml";
+import { parse } from "yaml";
 import AutomationList from "@/components/Automations/AutomationList.vue";
 import { useCollection } from "@/components/Bestiary/useCollection";
 import UserBanner from "@/components/Bestiary/UserBanner.vue";
@@ -112,7 +112,7 @@ async function importAutomationsFromJson() {
 	try {
 		const reader = new FileReader();
 		reader.onload = async () => {
-			attacksToImport = YAML.parse(reader.result as string || "");
+			attacksToImport = parse(reader.result as string || "");
 
 			if (!Array.isArray(attacksToImport))
 				attacksToImport = [attacksToImport];
@@ -141,68 +141,54 @@ const createAutomation = async () => {
 
 <template>
 	<div>
-		<Breadcrumbs
-			v-if="collection" :routes="[
-				{
-					path: isOwner || isEditor ? '/armory/personal' : '/armory/public',
-					text: isOwner || isEditor ? 'My Automations' : 'Automations',
-					isCurrent: false
-				},
-				{
-					path: '',
-					text: collection?.name,
-					isCurrent: true
-				}
-			]"
-		>
-			<v-icon-btn
-				v-tooltip="'Create action'" text="Create action" icon="mdi:plus" size="24" class="inverted"
-				@click="createNewActionOpen = !createNewActionOpen"
-			/>
+		<Breadcrumbs v-if="collection" :routes="[
+			{
+				path: isOwner || isEditor ? '/armory/personal' : '/armory/public',
+				text: isOwner || isEditor ? 'My Automations' : 'Automations',
+				isCurrent: false
+			},
+			{
+				path: '',
+				text: collection?.name,
+				isCurrent: true
+			}
+		]">
+			<v-icon-btn v-tooltip="'Create action'" text="Create action" icon="mdi:plus" size="24" class="inverted"
+				@click="createNewActionOpen = !createNewActionOpen" />
 
 			<v-dialog v-if="isOwner" max-width="950">
 				<template #activator="{ props }">
-					<v-icon-btn
-						v-tooltip="'Settings'" text="Collection Settings" icon="mdi:cog" size="24"
-						v-bind="props"
-					/>
+					<v-icon-btn v-tooltip="'Settings'" text="Collection Settings" icon="mdi:cog" size="24"
+						v-bind="props" />
 				</template>
 
 				<template #default="{ isActive }">
 					<v-card title="Collection Settings" class="pa-4">
 						<v-row>
 							<v-col cols="6">
-								<v-text-field
-									v-model="collection.name" label="Name"
+								<v-text-field v-model="collection.name" label="Name"
 									:maxlength="globalLimits.nameLength" :min-length="globalLimits.nameMin"
 									:rules="[rules.required(), rules.minLength(globalLimits.nameMin), rules.maxLength(globalLimits.nameLength)]"
-									class="mb-4"
-								/>
+									class="mb-4" />
 							</v-col>
 							<v-col cols="6">
 								<v-text-field v-model="collection.image" label="Image" class="mb-4" />
 							</v-col>
 
 							<v-col cols="12">
-								<v-textarea
-									v-model="collection.description"
+								<v-textarea v-model="collection.description"
 									:max-length="globalLimits.descriptionLength"
 									:rules="[rules.maxLength(globalLimits.descriptionLength)]" label="Description"
-									class="mb-4" hint="Supports Markdown" persistent-hint counter
-								/>
+									class="mb-4" hint="Supports Markdown" persistent-hint counter />
 							</v-col>
 
 							<v-col cols="6">
-								<v-select
-									v-model="collection.status" label="Status"
-									:items="[{ value: 'private', title: 'Private' }, { value: 'unlisted', title: 'Unlisted' }, { value: 'public', title: 'Public' }]"
-								/>
+								<v-select v-model="collection.status" label="Status"
+									:items="[{ value: 'private', title: 'Private' }, { value: 'unlisted', title: 'Unlisted' }, { value: 'public', title: 'Public' }]" />
 							</v-col>
 							<v-col cols="6">
-								<v-select
-									v-model="collection.tags" multiple :items="automationCollectionTags"
-									label="Tags" chips closable-chips
-								/>
+								<v-select v-model="collection.tags" multiple :items="automationCollectionTags"
+									label="Tags" chips closable-chips />
 							</v-col>
 
 							<v-col cols="12" class="px-4">
@@ -222,11 +208,9 @@ const createAutomation = async () => {
 								</p>
 							</v-col>
 							<v-col cols="6">
-								<v-text-field
-									v-model="editorToAdd" inputmode="numeric" label="Discord user ID"
+								<v-text-field v-model="editorToAdd" inputmode="numeric" label="Discord user ID"
 									:rules="[rules.integer('This must be a numeric Discord User ID.')]"
-									pattern="[0-9]*"
-								/>
+									pattern="[0-9]*" />
 							</v-col>
 							<v-col cols="6">
 								<v-btn class="w-100" size="large" @click="addEditor(editorToAdd)">
@@ -261,10 +245,8 @@ const createAutomation = async () => {
 
 			<v-dialog v-if="isOwner" v-model="importIsOpen" max-width="750">
 				<template #activator="{ props }">
-					<v-icon-btn
-						v-tooltip="'Import actions'" text="Import actions" icon="mdi:import" size="24"
-						v-bind="props"
-					/>
+					<v-icon-btn v-tooltip="'Import actions'" text="Import actions" icon="mdi:import" size="24"
+						v-bind="props" />
 				</template>
 
 				<template #default="{ isActive }">
@@ -272,21 +254,17 @@ const createAutomation = async () => {
 						<v-card-text>
 							<v-row>
 								<v-col>
-									<v-file-input
-										v-model="importFields.attackJson" label="Attack JSON"
+									<v-file-input v-model="importFields.attackJson" label="Attack JSON"
 										hint="JSON (.json/.txt) or YAML (.yaml, .txt) formatted as a list of automated actions"
 										persistent-hint accept=".txt,.json,.yaml" prepend-inner-icon="mdi:attachment"
-										prepend-icon=""
-									/>
+										prepend-icon="" />
 								</v-col>
 							</v-row>
 						</v-card-text>
 
 						<v-card-actions>
-							<v-btn
-								size="large" :color="importFields.attackJson ? 'success' : undefined"
-								prepend-icon="mdi:import" @click="importAutomationsFromJson"
-							>
+							<v-btn size="large" :color="importFields.attackJson ? 'success' : undefined"
+								prepend-icon="mdi:import" @click="importAutomationsFromJson">
 								Import
 							</v-btn>
 							<v-btn text="Cancel" size="large" @click="isActive.value = false" />
@@ -330,10 +308,8 @@ const createAutomation = async () => {
 
 				<v-divider class="my-4" />
 				<v-skeleton-loader v-if="items === null" type="heading, text, text" />
-				<AutomationList
-					v-else v-model="items" :can-edit="true" :collection="collection"
-					@delete-item="(id) => deleteItem(id)"
-				/>
+				<AutomationList v-else v-model="items" :can-edit="true" :collection="collection"
+					@delete-item="(id) => deleteItem(id)" />
 			</div>
 		</div>
 	</div>
@@ -343,19 +319,15 @@ const createAutomation = async () => {
 			<v-card-text>
 				<v-row>
 					<v-col>
-						<v-text-field
-							v-model="createOptions.name" label="Name"
-							:rules="[rules.required(), rules.minLength(globalLimits.nameMin), rules.maxLength(globalLimits.nameLength)]"
-						/>
+						<v-text-field v-model="createOptions.name" label="Name"
+							:rules="[rules.required(), rules.minLength(globalLimits.nameMin), rules.maxLength(globalLimits.nameLength)]" />
 					</v-col>
 					<v-col>
 						<v-select v-model="createOptions.activation_type" label="Type" :items="activationTypeOptions" />
 					</v-col>
 					<v-col cols="12">
-						<v-textarea
-							v-model="createOptions.description" label="Description"
-							:rules="[rules.maxLength(globalLimits.descriptionLength)]" counter
-						/>
+						<v-textarea v-model="createOptions.description" label="Description"
+							:rules="[rules.maxLength(globalLimits.descriptionLength)]" counter />
 					</v-col>
 				</v-row>
 			</v-card-text>
