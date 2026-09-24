@@ -214,19 +214,21 @@ const { monacoTheme } = useThemePersistence();
 		<v-alert
 			v-if="!$route.path.includes('/character') && !dismissed" id="automation-workflow-alert"
 			title="Welcome to the new Automation Editor" class="mb-4" variant="tonal"
-			closable @click:close="dismissed = true" 
+			closable @click:close="dismissed = true"
 		>
-		<template #prepend>
-			<v-icon icon="mdi:creation-outline" color="primary" size="48"/>
-		</template>
+			<template #prepend>
+				<v-icon icon="mdi:creation-outline" color="primary" size="48" />
+			</template>
 			<template #text>
 				With update 3.0.0, you can now create Automation directly within Bestiary Builder.
 				The automation editor includes smart features to make your life easier.
-				You can also manage automation for your <RouterLink to="/characters"> characters. </RouterLink>
+				You can also manage automation for your <RouterLink to="/characters">
+					characters.
+				</RouterLink>
 				You can also quickly import automation from and to characters to quickly iterate and test actions!
 			</template>
 			<template #append>
-				<v-btn color="primary" @click="startAutomationEditorWorkflow" variant="elevated">
+				<v-btn color="primary" variant="elevated" @click="startAutomationEditorWorkflow">
 					Take the tour
 				</v-btn>
 			</template>

@@ -153,7 +153,7 @@ const dismissed = useLocalStorage("update3.0.0dismissed", false);
 		<v-main min-height="100vh">
 			<v-alert
 				v-if="!dismissed" class="ma-4" closable title="Update 3.0.0 Released" icon="$bestiaryBuilder"
-				icon-size="48" elevation="3" @click:close="dismissed = true" variant="tonal"
+				icon-size="48" elevation="3" variant="tonal" @click:close="dismissed = true"
 			>
 				<template #text>
 					Welcome to Bestiary Builder 3.0.0, the biggest update to Bestiary Builder ever.<br>
