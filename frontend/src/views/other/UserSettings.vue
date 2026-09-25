@@ -29,11 +29,16 @@ const preferences = reactive({
 	statblockDesign: store.user?.statblockDesign,
 	statblockLayout: store.user?.statblockLayout,
 	preferredEditor: store.user?.preferredEditor,
-	SRDVersion: store.user?.SRDVersion
+	SRDVersion: store.user?.SRDVersion,
+	emailsEnabled: !store.user?.unsubscribedFromEmails
 });
 
 const saveSettings = async () => {
-	const { success, data } = await useFetch("/api/user/updatePreferences", "POST", preferences);
+	const { emailsEnabled, ...otherPreferences } = preferences;
+	const { success, data } = await useFetch("/api/user/updatePreferences", "POST", {
+		...otherPreferences,
+		unsubscribedFromEmails: !emailsEnabled
+	});
 	if (success) {
 		store.user = (data as any).data;
 		void getUmami()?.track("Update preferences", preferences);
@@ -224,6 +229,13 @@ const srdOptions = [
 						</div>
 						<v-icon-btn
 							v-tooltip="'Set whether creating Creatures and Features from the SRD should use the 2024 or 2014 list of options.'"
+							icon="mdi:information"
+						/>
+					</div>
+					<div class="setting-container">
+						<v-checkbox v-model="preferences.emailsEnabled" label="Emails enabled" hide-details />
+						<v-icon-btn
+							v-tooltip="'Receive announcement emails from Bestiary Builder. Turn this off to unsubscribe from future emails.'"
 							icon="mdi:information"
 						/>
 					</div>

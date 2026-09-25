@@ -132,6 +132,12 @@ export const routes: Route[] = [
 		file: "other/CustomizeTheme.vue",
 		meta: { navbar: false, loggedIn: false, dynamic: false },
 	},
+	{
+		path: "/unsubscribe",
+		name: "Unsubscribe",
+		file: "other/Unsubscribe.vue",
+		meta: { navbar: false, loggedIn: false, dynamic: false },
+	},
 	// privacy policy
 	{
 		path: "/privacy-policy",

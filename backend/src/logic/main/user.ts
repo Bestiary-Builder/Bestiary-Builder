@@ -42,6 +42,23 @@ app.get("/api/user/:id", async (req, res) => {
 	}
 });
 
+app.post("/api/unsubscribe", requireUser, async (req, res) => {
+	try {
+		const user = req.user!;
+		await getPrismaClient().user.update({
+			where: { id: user.id },
+			data: { unsubscribedFromEmails: true }
+		});
+		resetUserCache(user.id);
+		log.info(`User with the id ${user.id} unsubscribed from emails`);
+		return res.json({ success: true });
+	}
+	catch (err) {
+		log.log("critical", err);
+		return res.status(500).json({ success: false, error: "Failed to unsubscribe from emails." });
+	}
+});
+
 app.post("/api/user/updatePreferences", requireUser, async (req, res) => {
 	const user = req.user!;
 	const newSettings = req.body.data;

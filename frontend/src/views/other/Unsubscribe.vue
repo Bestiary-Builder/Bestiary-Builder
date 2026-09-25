@@ -1,30 +1,27 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { useRouter } from "vue-router";
 import { getUmami } from "@/utils/app/analytics";
+import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
 import { useFetch } from "@/utils/utils";
 
-const status = ref(0);
-const errorMsg = ref("");
+const router = useRouter();
+const { addToast } = useToast();
 
-useFetch("/api/unsubscribe")
-	.then((result) => {
-		if (result.success) {
-			status.value = 1;
-			void getUmami()?.track("Unsubscribe email", { id: store.user?.id });
-			if (store.user)
-				store.user.unsubscribedFromEmails = false;
-		}
-		else {
-			status.value = 2;
-			errorMsg.value = result.error;
-		}
-	})
-	.catch((err) => {
-		console.error(err);
-		status.value = 2;
-		errorMsg.value = err;
+async function unsubscribe() {
+	const result = await useFetch("/api/unsubscribe", "POST");
+	if (result.success) {
+		void getUmami()?.track("Unsubscribe email", { id: store.user?.id });
+		if (store.user)
+			store.user.unsubscribedFromEmails = true;
+	}
+	addToast(result.success ? "Successfully unsubscribed from emails." : `Failed to unsubscribe from emails: ${result.error}`, {
+		color: result.success ? "success" : "error"
 	});
+	await router.replace("/user");
+}
+
+void unsubscribe();
 </script>
 
 <template>
@@ -39,12 +36,8 @@ useFetch("/api/unsubscribe")
 	/>
 	<div class="content less-wide center">
 		<div>
-			<h3 v-if="status === 1">
-				Succesfully unsubscribed from all future emails.
-			</h3>
-			<h3 v-else-if="status === 2">
-				Failed to unsubscribe from emails: {{ errorMsg }}
-			</h3>
+			<v-progress-circular indeterminate color="primary" size="64" />
+			<p>Unsubscribing from emails...</p>
 		</div>
 	</div>
 </template>
