@@ -113,7 +113,7 @@ async function main() {
 			host: "localhost",
 			port: 25,
 			secure: false,
-			tls: { rejectUnauthorized: false }, // Match the existing local SMTP relay configuration.
+			tls: { rejectUnauthorized: true },
 		});
 		let sent = 0;
 		let failed = 0;
