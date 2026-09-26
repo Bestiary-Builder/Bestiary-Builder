@@ -21,7 +21,7 @@ let counter = 0;
 type ToastColor = "success" | "warn" | "error" | "info" | "";
 
 const COLOR_ICONS: Record<ToastColor, string> = {
-	"success": "mdi:check-circle",
+	"success": "mdi:check",
 	"warn": "mdi:alert",
 	"error": "mdi:close-circle",
 	"info": "mdi:information",

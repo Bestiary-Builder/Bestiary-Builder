@@ -335,7 +335,7 @@ const { statblockColors } = useStatblockColors();
 					<span> {{ data.abilities.stats[stat] }} ({{ signedNumber(statCalc(stat, data)) }})</span>
 				</div>
 			</div>
-			<div class="statblock-row v2024-no-bottom-border statblock-basic-traits" >
+			<div class="statblock-row v2024-no-bottom-border statblock-basic-traits">
 				<template v-if="!v2024">
 					<div
 						v-if="Object.values(data.abilities.saves).some((val) => (val.isProficient === true || val.override !== null))"

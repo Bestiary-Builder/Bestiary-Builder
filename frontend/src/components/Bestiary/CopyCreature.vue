@@ -38,7 +38,6 @@ const isQuotaExceededError = (err: DOMException) => {
 const copiedCreatures = useLocalStorage<CopiedCreature[]>("copiedCreatures", [], {
 	onError: (err: any) => {
 		if (isQuotaExceededError(err)) {
-			console.error("Storage quota exceeded — reverting unsaved change.", err);
 			copiedCreatures.value = lastGoodValue;
 			addToast("Copied too many creatures - exceeded storage size.", { color: "error" });
 		}
@@ -92,6 +91,8 @@ defineExpose({
 onMounted(() => {
 	lastGoodValue = copiedCreatures.value;
 });
+
+const copyButtonOnBestiaryPage = useLocalStorage("copyButtonOnBestiaryPage", false);
 </script>
 
 <template>
@@ -168,6 +169,14 @@ onMounted(() => {
 				>
 					Clear list
 				</v-btn>
+			</div>
+			<div class="d-flex justify-center items-center ga-4">
+				<v-checkbox
+					v-model="copyButtonOnBestiaryPage"
+					label="Show the copy button on the Bestiary Page" class="text-center"
+					density="compact" hide-details
+					style="transform: scale(0.8);"
+				/>
 			</div>
 		</v-card>
 	</DropdownMenu>

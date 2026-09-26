@@ -303,6 +303,17 @@ const pinCreature = async (id: CreatureMetaData["id"]) => {
 const hoverCreature = async (id: CreatureMetaData["id"]) => {
 	lastHoveredCreature.value = await getFullCreature(id) ?? null;
 };
+
+const copyCreature = async (id: CreatureMetaData["id"]) => {
+	const creature = await getFullCreature(id);
+	if (creature && collection.value) {
+		copyManager.value?.addCreature({ ...creature, bestiaryName: collection.value.name });
+		addToast(`Copied ${creature.stats.description.name}`, { color: "success" });
+	}
+	else {
+		addToast("Could not copy the creature", { color: "error" });
+	}
+};
 </script>
 
 <template>
@@ -516,6 +527,7 @@ const hoverCreature = async (id: CreatureMetaData["id"]) => {
 							v-else v-model="items" :pinned-creature="lastClickedCreature?.id || null"
 							:collection="collection" can-edit @hovered-creature="id => hoverCreature(id)"
 							@pin-creature="id => pinCreature(id)" @delete-creature="id => deleteItem(id)"
+							@copy-creature="id => copyCreature(id)"
 						/>
 					</v-col>
 					<v-col cols="6">

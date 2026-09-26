@@ -15,6 +15,7 @@ const emit = defineEmits<{
 const model = defineModel<CreatureMetaData[]>();
 const hoveredCreature = ref<CreatureMetaData["id"] | null>(null);
 const debouncedHoveredCreature = refDebounced(hoveredCreature, 200);
+const copyButtonOnBestiaryPage = useLocalStorage("copyButtonOnBestiaryPage", false);
 
 watch(debouncedHoveredCreature, () => {
 	if (debouncedHoveredCreature.value)
@@ -217,7 +218,7 @@ watch(model, saveOrder);
 								:icon="pinnedCreature === item.data.id ? 'mdi:pin-off' : 'mdi:pin'" size="24"
 								@click="emit('pinCreature', item.data.id)"
 							/>
-
+							<v-icon-btn v-if="copyButtonOnBestiaryPage" text="Copy Creature" icon="material-symbols:content-copy" size="24" @click="emit('copyCreature', item.data.id)" />
 							<DropdownMenu v-if="canEdit">
 								<template #activator="{ props }">
 									<v-icon-btn text="Delete creature" icon="mdi:delete" v-bind="props" size="24" />
