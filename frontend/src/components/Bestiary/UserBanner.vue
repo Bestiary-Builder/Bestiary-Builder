@@ -1,17 +1,18 @@
 <script setup lang="ts">
 import type { User } from "~/shared";
-import { onMounted, ref } from "vue";
+import { ref, watch } from "vue";
 import { useFetch } from "@/utils/utils";
 import { SupporterStatus } from "~/shared";
 
 const { id } = defineProps<{ id: string }>();
 const user = ref<User | null>(null);
-onMounted(async () => {
-	const { success, data } = await useFetch<User>(`/api/user/${id}`);
+
+watch(() => id, async () => {
+		const { success, data } = await useFetch<User>(`/api/user/${id}`);
 	if (success)
 		user.value = data;
 	else user.value = null;
-});
+}, { immediate: true})
 </script>
 
 <template>
