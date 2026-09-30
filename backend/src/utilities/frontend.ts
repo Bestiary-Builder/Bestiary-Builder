@@ -51,8 +51,8 @@ export async function getFrontendHtml(route: routes.Route, req: Request) {
 			const armory = await getAutomationCollectionMetaData(paramId);
 			if (armory) {
 				if (armory.status === "private") {
-					title = "Private bestiary | Bestiary Builder";
-					description = "A bestiary that is unavailable to anyone but its editors.";
+					title = "Private armory | Bestiary Builder";
+					description = "An armory that is unavailable to anyone but its editors.";
 				}
 				else {
 					title = `${armory.name} | Bestiary Builder`;
