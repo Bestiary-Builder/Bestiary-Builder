@@ -1,0 +1,17 @@
+.git
+.github
+**/node_modules
+**/.env
+**/.env.*
+**/*.local
+**/*.log
+**/logs
+build
+coverage
+cypress
+shared/prisma
+**/*-ti.ts
+frontend/stats.html
+frontend/public/sitemap.xml
+.idea
+.vscode

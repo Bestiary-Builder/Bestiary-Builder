@@ -2,9 +2,10 @@ import type { Request } from "express";
 import fs from "node:fs";
 import path from "node:path";
 import express from "express";
-import { getAutomationCollectionMetaData, getAutomationMetaData, getBestiaryMetaData, getCreatureMetaData, isDatabaseConnected } from "@/utilities/database";
+import { getAutomationCollectionMetaData, getAutomationMetaData, getBestiaryMetaData, getCreatureMetaData, getPrismaClient, isDatabaseConnected } from "@/utilities/database";
 import { routes } from "~/shared";
 import { app } from "./constants";
+import { createHealthHandler } from "./health";
 import { log } from "./logger";
 
 // Middleware needs to be imported before frontend stuff
@@ -109,6 +110,9 @@ export async function getFrontendHtml(route: routes.Route, req: Request) {
 	// Return html with tags
 	return html.replace("<!-- meta tags -->", metatags.join("\n		"));
 }
+
+// Readiness must bypass static files and the general database-error middleware.
+app.get("/api/health", createHealthHandler(() => getPrismaClient().$queryRaw`SELECT 1`));
 
 // Static frontend files (before any middleware)
 log.info(`Reading frontend files from: \"${path.resolve(process.env.frontendPath as string)}\"`);

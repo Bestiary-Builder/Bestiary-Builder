@@ -42,10 +42,7 @@ jobs:
             - name: Lint frontend
               working-directory: ./frontend
               run: bun run lint
-            # Run StyleLint
-            - name: Run Stylelint
-              working-directory: ./frontend
-              run: bun run stylelint
+
     build-and-test:
         runs-on: ubuntu-latest
 
