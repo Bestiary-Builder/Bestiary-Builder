@@ -196,7 +196,14 @@ jobs:
             contents: read
             deployments: read
         steps:
+            - name: Bypass approval validation in the isolated test repository
+              if: ${{ github.repository == 'bestiary-builder/deployment-test' }}
+              run: |
+                  echo "::warning::Production approval validation bypassed in the isolated test repository."
+                  echo "### Test repository — automatic production promotion" >> "$GITHUB_STEP_SUMMARY"
+
             - name: Refuse production promotion without required reviewers
+              if: ${{ github.repository != 'bestiary-builder/deployment-test' }}
               uses: actions/github-script@v7
               with:
                   script: |
