@@ -4,6 +4,7 @@ import { app } from "@/utilities/constants";
 import { abilityParser, buildSpeedEntries, detectCastingClass, markdownReplacer, parseSenses } from "@/utilities/parsing";
 import { capitalizeFirstLetter, defaultStatblock, getXPbyCR, SKILLS_BY_STAT } from "~/shared";
 import { spellListFlattened } from "../creatures/staticData";
+import { log } from "@/utilities/logger";
 
 function parseSavingThrow(mod: any, abilityScore: number, proficiencyBonus: number) {
 	if (!mod)
@@ -71,17 +72,23 @@ function parseDamageTypes(values: any, type: "immune" | "resist" | "vulnerable")
 
 app.post("/api/5etools-import", async (req, res) => {
 	const { data: input } = req.body;
-	const [data, notices] = parseFrom5eTools(input);
-	const oldStats = { ...data };
-	const newData = {} as Statblock;
-	for (const key in defaultStatblock) {
-		// @ts-expect-error untyped
-		newData[key] = { ...defaultStatblock[key], ...oldStats[key] };
+	try {
+		const [data, notices] = parseFrom5eTools(input);
+		const oldStats = { ...data };
+		const newData = {} as Statblock;
+		for (const key in defaultStatblock) {
+			// @ts-expect-error untyped
+			newData[key] = { ...defaultStatblock[key], ...oldStats[key] };
+		}
+		return res.json({
+			stats: newData,
+			notices
+		});
 	}
-	return res.json({
-		stats: newData,
-		notices
-	});
+	catch (error) {
+		log.error(`Failed to import creature from 5eTools:\n${error}.\nFull input:\n${input}`);
+		return res.status(400).send("Failed to import creature from 5eTools");
+	}
 });
 
 export function parseFrom5eTools(data: any): [Statblock, { [key: string]: string[] }] {
