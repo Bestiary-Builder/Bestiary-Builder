@@ -3,6 +3,7 @@ ARG BUN_VERSION=1.4.0
 
 FROM oven/bun:${BUN_VERSION}-alpine AS builder
 WORKDIR /app
+ENV NODE_ENV=production
 COPY package.json bun.lock ./
 COPY backend/package.json ./backend/package.json
 COPY frontend/package.json ./frontend/package.json
