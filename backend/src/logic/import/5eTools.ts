@@ -1,10 +1,10 @@
 import type { CasterSpells, InnateSpellsList, SkillsEntity, SpellSlotList, Stat, Statblock } from "~/shared";
 import splitOnFirst from "split-on-first";
 import { app } from "@/utilities/constants";
+import { log } from "@/utilities/logger";
 import { abilityParser, buildSpeedEntries, detectCastingClass, markdownReplacer, parseSenses } from "@/utilities/parsing";
 import { capitalizeFirstLetter, defaultStatblock, getXPbyCR, SKILLS_BY_STAT } from "~/shared";
 import { spellListFlattened } from "../creatures/staticData";
-import { log } from "@/utilities/logger";
 
 function parseSavingThrow(mod: any, abilityScore: number, proficiencyBonus: number) {
 	if (!mod)
@@ -86,7 +86,7 @@ app.post("/api/5etools-import", async (req, res) => {
 		});
 	}
 	catch (error) {
-		log.error(`Failed to import creature from 5eTools:\n${error}.\nFull input:\n${input}`);
+		log.error(`Failed to import creature from 5eTools:\n${error}.\nFull input:\n${JSON.stringify(input)}`);
 		return res.status(400).send("Failed to import creature from 5eTools");
 	}
 });
