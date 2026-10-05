@@ -74,6 +74,7 @@ jobs:
                   VITE_ERROR_WEBHOOK: ${{ secrets.VITE_ERROR_WEBHOOK }}
                   VITE_UMAMI_URL: ${{ vars.UMAMI_URL }}
                   VITE_UMAMI_WEBSITE_ID: ${{ vars.UMAMI_WEBSITE_ID }}
+                  VITE_UMAMI_STAGE_WEBSITE_ID: ${{ vars.UMAMI_STAGE_WEBSITE_ID }}
             - name: Run backend tests
               working-directory: backend
               run: bun run test
@@ -114,6 +115,7 @@ jobs:
                       VITE_ERROR_WEBHOOK=${{ secrets.VITE_ERROR_WEBHOOK }}
                       UMAMI_URL=${{ vars.UMAMI_URL }}
                       UMAMI_WEBSITE_ID=${{ vars.UMAMI_WEBSITE_ID }}
+                      UMAMI_STAGE_WEBSITE_ID=${{ vars.UMAMI_STAGE_WEBSITE_ID }}
             - name: Record registry-provided immutable digest
               id: image
               env:
