@@ -1,0 +1,262 @@
+name: Build and deploy
+
+on:
+    release:
+        types: [published]
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+# Keep stage stable through verification and production approval. Do not cancel
+# a running deployment; cancellation could leave deployctl pending work.
+concurrency:
+    group: deployctl-stage-to-production
+    cancel-in-progress: false
+
+env:
+    BUN_VERSION: 1.4.0
+
+jobs:
+    build:
+        runs-on: ubuntu-24.04-arm
+        timeout-minutes: 45
+        permissions:
+            contents: read
+            packages: write
+        outputs:
+            image: ${{ steps.image.outputs.image }}
+        services:
+            database:
+                image: postgres:16-alpine
+                env:
+                    POSTGRES_DB: bestiarybuilder
+                    POSTGRES_USER: postgres
+                    POSTGRES_PASSWORD: password
+                ports:
+                    - 5432:5432
+                options: >-
+                    --health-cmd "pg_isready -U postgres -d bestiarybuilder"
+                    --health-interval 5s
+                    --health-timeout 5s
+                    --health-retries 10
+        env:
+            DATABASE_URL: postgresql://postgres:password@localhost:5432/bestiarybuilder?schema=public
+            frontendPath: ../build/frontend
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 24
+            - uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version: ${{ env.BUN_VERSION }}
+            - name: Install locked dependencies including development tools
+              run: bun install --frozen-lockfile
+              env:
+                  NODE_ENV: development
+            - name: Generate Prisma client
+              working-directory: backend
+              run: bun run generate
+            - name: Apply migrations to disposable test database
+              working-directory: backend
+              run: bun run migrate:deploy
+            - name: Build shared interfaces
+              working-directory: shared
+              run: bun run build-types
+            # The backend tests serve the built frontend as well as exercising APIs.
+            - name: Build frontend for backend tests
+              working-directory: frontend
+              run: bun run build-only
+              env:
+                  NODE_ENV: production
+                  VITE_DISCORD_ID: ${{ secrets.VITE_DISCORD_ID }}
+                  VITE_ERROR_WEBHOOK: ${{ secrets.VITE_ERROR_WEBHOOK }}
+                  VITE_UMAMI_URL: ${{ vars.UMAMI_URL }}
+                  VITE_UMAMI_WEBSITE_ID: ${{ vars.UMAMI_WEBSITE_ID }}
+            - name: Run backend tests
+              working-directory: backend
+              run: bun run test
+            - name: Typecheck all workspaces
+              run: |
+                  bun run --cwd shared type-check
+                  bun run --cwd backend type-check
+                  bun run --cwd frontend type-check
+            - name: Lint all workspaces
+              run: |
+                  bun run --cwd shared lint
+                  bun run --cwd backend lint
+                  bun run --cwd frontend lint
+            - name: Resolve lowercase image repository
+              id: repository
+              env:
+                  REPOSITORY: ${{ github.repository }}
+              run: echo "name=ghcr.io/${REPOSITORY,,}" >> "$GITHUB_OUTPUT"
+            - uses: docker/login-action@v3
+              with:
+                  registry: ghcr.io
+                  username: ${{ github.repository_owner }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+            - uses: docker/setup-buildx-action@v3
+            - name: Build and push the single deployment image
+              id: docker
+              uses: docker/build-push-action@v6
+              with:
+                  context: .
+                  push: true
+                  platforms: linux/arm64
+                  tags: ${{ steps.repository.outputs.name }}:release-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max
+                  build-args: |
+                      BUN_VERSION=${{ env.BUN_VERSION }}
+                      VITE_DISCORD_ID=${{ secrets.VITE_DISCORD_ID }}
+                      VITE_ERROR_WEBHOOK=${{ secrets.VITE_ERROR_WEBHOOK }}
+                      UMAMI_URL=${{ vars.UMAMI_URL }}
+                      UMAMI_WEBSITE_ID=${{ vars.UMAMI_WEBSITE_ID }}
+            - name: Record registry-provided immutable digest
+              id: image
+              env:
+                  REPOSITORY: ${{ steps.repository.outputs.name }}
+                  DIGEST: ${{ steps.docker.outputs.digest }}
+              run: |
+                  [[ "$DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]] || { echo "Invalid registry digest" >&2; exit 1; }
+                  echo "image=$REPOSITORY@$DIGEST" >> "$GITHUB_OUTPUT"
+                  echo "Built once: \`$REPOSITORY@$DIGEST\`" >> "$GITHUB_STEP_SUMMARY"
+
+    stage:
+        needs: build
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
+        environment:
+            name: Staging
+            url: https://stage.bestiarybuilder.com
+        outputs:
+            image: ${{ steps.verified.outputs.image }}
+        env:
+            IMAGE: ${{ needs.build.outputs.image }}
+            DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+            DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+        steps:
+            - name: Configure restricted stage SSH identity
+              env:
+                  SSH_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+                  SSH_KNOWN_HOSTS: ${{ secrets.DEPLOY_SSH_KNOWN_HOSTS }}
+              run: |
+                  test -n "$DEPLOY_HOST" && test -n "$DEPLOY_USER" && test -n "$SSH_KEY" && test -n "$SSH_KNOWN_HOSTS"
+                  install -d -m 700 "$HOME/.ssh"
+                  printf '%s\n' "$SSH_KEY" > "$HOME/.ssh/deployctl"
+                  printf '%s\n' "$SSH_KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+                  chmod 600 "$HOME/.ssh/deployctl" "$HOME/.ssh/known_hosts"
+            - name: Deploy immutable image to stage
+              run: |
+                  [[ "$IMAGE" =~ ^ghcr\.io/[a-z0-9._/-]+@sha256:[0-9a-f]{64}$ ]] || { echo "Invalid immutable image" >&2; exit 1; }
+                  ssh -T -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ConnectTimeout=15 \
+                      -i "$HOME/.ssh/deployctl" "$DEPLOY_USER@$DEPLOY_HOST" "deploy $IMAGE"
+            - name: E2E verification placeholder
+              id: e2e
+              continue-on-error: true
+              run: |
+                  mkdir -p cypress/logs
+                  echo "No E2E tests were run; this is a temporary placeholder." | tee cypress/logs/e2e.log
+                  echo "::warning::No E2E tests were run; this is a temporary placeholder."
+                  echo "### E2E placeholder — no tests were run" >> "$GITHUB_STEP_SUMMARY"
+                  echo "Only deployctl's internal and public readiness checks have verified this image." >> "$GITHUB_STEP_SUMMARY"
+            - name: Roll back stage and its database on E2E failure
+              if: ${{ always() && steps.e2e.outcome == 'failure' }}
+              run: |
+                  ssh -T -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ConnectTimeout=15 \
+                      -i "$HOME/.ssh/deployctl" "$DEPLOY_USER@$DEPLOY_HOST" 'rollback --database'
+            - name: Upload E2E failure artifacts
+              if: ${{ always() && steps.e2e.outcome == 'failure' }}
+              uses: actions/upload-artifact@v4
+              with:
+                  name: stage-e2e-failure-${{ github.run_id }}-${{ github.run_attempt }}
+                  if-no-files-found: warn
+                  path: |
+                      cypress/logs
+                      cypress/screenshots
+                      cypress/videos
+            - name: Fail the workflow after unsuccessful E2E verification
+              if: ${{ always() && steps.e2e.outcome == 'failure' }}
+              run: exit 1
+            - name: Record stage-verified image for promotion
+              id: verified
+              run: echo "image=$IMAGE" >> "$GITHUB_OUTPUT"
+            - name: Remove stage SSH credentials
+              if: ${{ always() }}
+              run: rm -f "$HOME/.ssh/deployctl" "$HOME/.ssh/known_hosts"
+
+    check-production-approval:
+        name: Require a configured manual production approval gate
+        needs: stage
+        runs-on: ubuntu-latest
+        timeout-minutes: 5
+        permissions:
+            contents: read
+            deployments: read
+        steps:
+            - name: Bypass approval validation in the isolated test repository
+              if: ${{ github.repository == 'bestiary-builder/deployment-test' }}
+              run: |
+                  echo "::warning::Production approval validation bypassed in the isolated test repository."
+                  echo "### Test repository — automatic production promotion" >> "$GITHUB_STEP_SUMMARY"
+
+            - name: Refuse production promotion without required reviewers
+              if: ${{ github.repository != 'bestiary-builder/deployment-test' }}
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const { data: environment } = await github.rest.repos.getEnvironment({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          environment_name: 'Production',
+                      });
+                      const reviewRule = environment.protection_rules?.find(rule => rule.type === 'required_reviewers');
+                      if (!reviewRule || !reviewRule.reviewers?.length) {
+                          core.setFailed('Configure required reviewers under Settings → Environments → Production before deploying. Production deployment is blocked.');
+                          return;
+                      }
+                      await core.summary
+                          .addHeading('Production approval required')
+                          .addRaw('Stage verification passed. The production job will now wait for approval in the protected Production Environment.')
+                          .write();
+
+    production:
+        name: Deploy production after manual approval
+        needs: [build, stage, check-production-approval]
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
+        # GitHub holds this job before starting a runner or exposing its secrets
+                # until the required reviewers configured for Production approve it.
+        environment:
+            name: Production
+            url: https://bestiarybuilder.com
+        env:
+            IMAGE: ${{ needs.stage.outputs.image }}
+            BUILT_IMAGE: ${{ needs.build.outputs.image }}
+            DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+            DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+        steps:
+            - name: Verify promotion uses the exact stage-tested digest
+              run: |
+                  [[ "$IMAGE" =~ ^ghcr\.io/[a-z0-9._/-]+@sha256:[0-9a-f]{64}$ ]] || { echo "Invalid immutable image" >&2; exit 1; }
+                  test "$IMAGE" = "$BUILT_IMAGE" || { echo "Stage/build digest mismatch" >&2; exit 1; }
+            - name: Configure restricted production SSH identity
+              env:
+                  SSH_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+                  SSH_KNOWN_HOSTS: ${{ secrets.DEPLOY_SSH_KNOWN_HOSTS }}
+              run: |
+                  test -n "$DEPLOY_HOST" && test -n "$DEPLOY_USER" && test -n "$SSH_KEY" && test -n "$SSH_KNOWN_HOSTS"
+                  install -d -m 700 "$HOME/.ssh"
+                  printf '%s\n' "$SSH_KEY" > "$HOME/.ssh/deployctl"
+                  printf '%s\n' "$SSH_KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+                  chmod 600 "$HOME/.ssh/deployctl" "$HOME/.ssh/known_hosts"
+            - name: Deploy the same immutable image to production
+              run: |
+                  ssh -T -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ConnectTimeout=15 \
+                      -i "$HOME/.ssh/deployctl" "$DEPLOY_USER@$DEPLOY_HOST" "deploy $IMAGE"
+                  echo "Promoted without rebuilding: \`$IMAGE\`" >> "$GITHUB_STEP_SUMMARY"
+            - name: Remove production SSH credentials
+              if: ${{ always() }}
+              run: rm -f "$HOME/.ssh/deployctl" "$HOME/.ssh/known_hosts"

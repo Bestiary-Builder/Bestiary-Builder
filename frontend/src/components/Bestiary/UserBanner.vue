@@ -8,11 +8,11 @@ const { id } = defineProps<{ id: string }>();
 const user = ref<User | null>(null);
 
 watch(() => id, async () => {
-		const { success, data } = await useFetch<User>(`/api/user/${id}`);
+	const { success, data } = await useFetch<User>(`/api/user/${id}`);
 	if (success)
 		user.value = data;
 	else user.value = null;
-}, { immediate: true})
+}, { immediate: true });
 </script>
 
 <template>
