@@ -18,11 +18,11 @@ export type UpdateToastPatch = Partial<Omit<ToastItem, "id">>;
 const toasts: Ref<ToastItem[]> = ref([]);
 let counter = 0;
 
-type ToastColor = "success" | "warn" | "error" | "info" | "";
+type ToastColor = "success" | "warning" | "error" | "info" | "";
 
 const COLOR_ICONS: Record<ToastColor, string> = {
 	"success": "mdi:check",
-	"warn": "mdi:alert",
+	"warning": "mdi:alert",
 	"error": "mdi:close-circle",
 	"info": "mdi:information",
 	"": "mdi:information"
