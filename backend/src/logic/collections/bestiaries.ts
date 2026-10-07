@@ -311,7 +311,7 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 		const result = await createCreatures(fixedData);
 		if (!result)
 			return res.status(500).json({ error: "Unexpected server error occured." });
-		log.info(`Added ${result.count} creatures to bestiary with the id: ${_id}`);
+		log.info(`Added ${result} creatures to bestiary with the id: ${_id}`);
 	}
 	else {
 		error += "0 valid creatures found.";

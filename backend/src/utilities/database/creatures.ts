@@ -48,7 +48,20 @@ export async function createCreatures(data: CreatureCreateManyInput[]) {
 	return await withDatabaseFallback(async () => {
 		const now = new Date(Date.now());
 		log.log("database", `Creating ${data.length} creatures.`);
-		return await getPrismaClient().creature.createMany({ data: data.map(creature => ({ ...creature, lastUpdated: now })) });
+		const BATCH_SIZE = 200;
+		const prisma = getPrismaClient();
+		if (data.length <= BATCH_SIZE) {
+			return (await prisma.creature.createMany({ data: data.map(creature => ({ ...creature, lastUpdated: now })) })).count;
+		}
+		else {
+			const splitData = [];
+			for (let i = 0; i < data.length; i += BATCH_SIZE) {
+				splitData.push(data.slice(i, i + BATCH_SIZE).map(creature => ({ ...creature, lastUpdated: now })));
+			}
+			const results = await prisma.$transaction(splitData.map(creatures => prisma.creature.createMany({ data: creatures })));
+
+			return results.map(r => r.count).reduce((a, b) => a + b);
+		}
 	}, null);
 }
 
