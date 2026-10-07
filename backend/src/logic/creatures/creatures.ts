@@ -76,9 +76,9 @@ app.post("/api/creature/add", requireUser, async (req, res) => {
 	// Check permissions
 	if (!await canEditBestiary(bestiary, user))
 		return res.status(401).json({ error: "You don't have permission to add creatures to this bestiary." });
-		// Check amount of creatures:
+	// Check amount of creatures:
 	const count = await getBestiaryCreatureCount(bestiary.id);
-	const amountError = checkCreatureAmountLimit(count);
+	const amountError = checkCreatureAmountLimit(count + 1);
 	if (amountError)
 		return res.status(400).json({ error: amountError });
 		// Set creature index
