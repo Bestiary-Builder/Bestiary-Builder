@@ -259,10 +259,16 @@ export const useCollection = <T extends CollectionType>(type: T) => {
 		}
 	};
 
+	let isCreatingMany = false;
 	const createManyItems = async (payload: ItemRaw[]) => {
 		if (!collection.value)
 			return;
 
+		if (isCreatingMany) {
+			addToast("Already importing, please wait for the current import to finish.", { color: "warning" });
+			return;
+		}
+		isCreatingMany = true;
 		const toastId = addToast(`Importing ${config.labels.itemNamePlural} has started. This may take a while.`, { timeout: -1 });
 		const { success, data, error } = await useFetch<{ error?: string; ignoredItems: { item: string; error: string }[] }>(
 			`/api/${config.apiRoute}/${collection.value.id.toString()}/${config.addManyRoute}`,
@@ -286,6 +292,7 @@ export const useCollection = <T extends CollectionType>(type: T) => {
 		}
 
 		await getCollection();
+		isCreatingMany = false;
 	};
 
 	const deleteItem = async (id: string) => {

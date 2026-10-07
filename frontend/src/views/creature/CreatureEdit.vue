@@ -89,7 +89,7 @@ const saveStatblock = async (shouldNotify = true): Promise<boolean> => {
 	const { success, error } = await useFetch<CreatureResponse>(`/api/creature/${creature.id.toString()}/update`, "POST", creature);
 	if (success) {
 		if (shouldNotify)
-			addToast("Saved stat block", { color: "success" });
+			addToast("Saved Creature", { color: "success" });
 		madeChanges.value = false;
 		trackVisit($route.path, data.value.description.name);
 
@@ -285,7 +285,7 @@ const isCollapsed = ref(false);
 			<v-icon-btn
 				v-if="madeChanges && (isOwner || isEditor)" v-tooltip="'Save Creature (CTRL+S)'"
 				icon="mdi:content-save" text="Save creature" :class="{ inverted: !isSavingStatblock }" size="24"
-				:loading="isSavingStatblock" variant="outlined" @click="saveStatblock()"
+				:loading="isSavingStatblock" @click="saveStatblock()"
 			/>
 
 			<CopyCreature
