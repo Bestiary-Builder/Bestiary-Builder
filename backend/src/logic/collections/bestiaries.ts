@@ -272,8 +272,14 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 	const inputData = req.body.data as Statblock[];
 	if (!Array.isArray(inputData) || !validateStatblockInput(inputData))
 		return res.status(400).json({ error: "Failed to parse creature data." });
+	// Check amount of creatures:
+	const existingCount = await getBestiaryCreatureCount(_id);
+	if (existingCount + inputData.length > limits.creatureAmount)
+		return res.status(400).json({ error: `Number of creatures exceeds the limit of ${limits.creatureAmount}.` });
+
 	const data = inputData.map(a => ({ stats: a } as Omit<Creature, "id">));
 	const now = new Date(Date.now());
+
 	// Make sure all fields are present in all creatures
 	const ignoredItems = [] as { item: string; error: string }[];
 	const fixedData = [];
@@ -300,12 +306,6 @@ app.post("/api/bestiary/:id/addcreatures", requireUser, async (req, res) => {
 	if (ignoredItems.length > 0)
 		error += `Failed to add ${ignoredItems.length} creatures, due to invalid data.`;
 
-	// Check amount of creatures:
-	const existingCount = await getBestiaryCreatureCount(_id);
-	if (existingCount + fixedData.length > limits.creatureAmount) {
-		fixedData.length = limits.creatureAmount - existingCount;
-		error += `Number of creatures exceeds the limit of ${limits.creatureAmount}, only creatures up to this limit was added.\n`;
-	}
 	// Add all creatures
 	if (fixedData.length > 0) {
 		const result = await createCreatures(fixedData);
