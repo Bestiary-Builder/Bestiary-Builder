@@ -1,6 +1,6 @@
 import type { Creature, User } from "~/shared";
-import { app, checkCreatureAmountLimit } from "@/utilities/constants";
-import { createCreature, deleteCreature, getBestiary, getBestiaryCreatureCount, getCreature, getCreaturesByBestiary, getPrismaClient, updateCreature } from "@/utilities/database";
+import { app, checkCreatureAmountLimit, limits } from "@/utilities/constants";
+import { createCreature, deleteCreature, getBestiary, getBestiaryCreatureCount, getCreature, getCreaturesByBestiary, updateCreature } from "@/utilities/database";
 import { log } from "@/utilities/logger";
 import { bestiaryCollections, canEditBestiary, checkBestiaryPermission } from "../collections/bestiaries";
 import { validateCreatureInput } from "../external/validation";
@@ -76,19 +76,23 @@ app.post("/api/creature/add", requireUser, async (req, res) => {
 	// Check permissions
 	if (!await canEditBestiary(bestiary, user))
 		return res.status(401).json({ error: "You don't have permission to add creatures to this bestiary." });
-		// Check amount of creatures:
+	// Check amount of creatures:
 	const count = await getBestiaryCreatureCount(bestiary.id);
-	const amountError = checkCreatureAmountLimit(count);
+	const amountError = checkCreatureAmountLimit(count + 1);
 	if (amountError)
 		return res.status(400).json({ error: amountError });
-		// Set creature index
-	data.index = (await getPrismaClient().creature.findFirst({ where: { bestiaryId: bestiary.id }, orderBy: { index: "desc" } }))?.index ?? count ?? 0;
-	// Add creature
-	const _id = await createCreature(data);
-	if (!_id)
+	// Add creature; the database rechecks the limit and assigns the index under a lock.
+	const result = await createCreature(data);
+	if (!result)
 		return res.status(500).json({ error: "Failed to create creature." });
-	data.id = _id;
-	log.info(`New creature created with the id: ${_id}`);
+	if (!result.ok) {
+		if (result.reason === "bestiary-not-found")
+			return res.status(404).json({ error: "Bestiary not found" });
+		return res.status(400).json({ error: `Number of creatures exceeds the limit of ${limits.creatureAmount}.` });
+	}
+	data.id = result.value.id;
+	data.index = result.value.index;
+	log.info(`New creature created with the id: ${data.id}`);
 	if (prepared.imageWarning)
 		return res.status(400).json({ error: prepared.imageWarning });
 	return res.status(201).json(data);

@@ -263,12 +263,13 @@ export const useCollection = <T extends CollectionType>(type: T) => {
 	const createManyItems = async (payload: ItemRaw[]) => {
 		if (!collection.value)
 			return;
+
 		if (isCreatingMany) {
 			addToast("Already importing, please wait for the current import to finish.", { color: "warning" });
 			return;
 		}
 		isCreatingMany = true;
-		const toastId = addToast(`Importing ${config.labels.itemNamePlural} has started. This may take a while.`);
+		const toastId = addToast(`Importing ${config.labels.itemNamePlural} has started. This may take a while.`, { timeout: -1 });
 		const { success, data, error } = await useFetch<{ error?: string; ignoredItems: { item: string; error: string }[] }>(
 			`/api/${config.apiRoute}/${collection.value.id.toString()}/${config.addManyRoute}`,
 			"POST",
@@ -277,16 +278,16 @@ export const useCollection = <T extends CollectionType>(type: T) => {
 
 		if (!success) {
 			notices.value = {};
-			updateToast(toastId, { text: error, color: "error" });
+			updateToast(toastId, { text: error, color: "error", timeout: 5000 });
 		}
 		else if (data.error) {
-			updateToast(toastId, { text: "The import was completed with errors.", color: "error" });
+			updateToast(toastId, { text: "The import was completed with errors.", color: "error", timeout: 5000 });
 			notices.value.Errors = data.error;
 			for (const ignored of data.ignoredItems)
 				notices.value[ignored.item] = ignored.error;
 		}
 		else {
-			updateToast(toastId, { text: "Importing has finished!", color: "success" });
+			updateToast(toastId, { text: "Importing has finished!", color: "success", timeout: 2500 });
 			void getUmami()?.track(`Imported ${config.labels.itemNamePlural}`, { count: payload.length });
 		}
 
