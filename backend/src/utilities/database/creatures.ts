@@ -1,5 +1,6 @@
 import type { Id } from "~/shared";
-import type { Creature, CreatureCreateInput, CreatureCreateManyInput } from "~/shared/src/prisma-types";
+import type { Creature, CreatureCreateInput, CreatureCreateManyInput, Prisma } from "~/shared/src/prisma-types";
+import { limits } from "@/utilities/constants";
 import { log } from "@/utilities/logger";
 import { getPrismaClient } from ".";
 import { withDatabaseFallback } from "./operations";
@@ -30,12 +31,44 @@ export async function getCreatureMetaData(id: Id) {
 		});
 	}, null);
 }
-export async function createCreature(data: Creature) {
-	return await withDatabaseFallback(async () => {
-		const creature: CreatureCreateInput = { stats: data.stats, lastUpdated: new Date(Date.now()), index: data.index, bestiary: { connect: { id: data.bestiaryId } } };
-		log.log("database", `Creating creature.`);
-		return (await getPrismaClient().creature.create({ data: creature })).id;
+type CreatureCreationResult<T> = { ok: true; value: T } | { ok: false; reason: "bestiary-not-found" | "creature-limit" };
+
+async function withCreatureCreation<T>(bestiaryId: Id, amount: number, create: (tx: Prisma.TransactionClient, firstIndex: number) => Promise<T>): Promise<CreatureCreationResult<T> | null> {
+	return await withDatabaseFallback<CreatureCreationResult<T> | null>(async () => {
+		return await getPrismaClient().$transaction(async (tx): Promise<CreatureCreationResult<T>> => {
+			// All creation paths lock the parent row before counting or assigning indexes.
+			const bestiaries = await tx.$queryRaw<{ id: string }[]>`
+				SELECT "id" FROM "Bestiaries" WHERE "id" = ${bestiaryId} FOR UPDATE
+			`;
+			if (bestiaries.length === 0)
+				return { ok: false, reason: "bestiary-not-found" };
+
+			const count = await tx.creature.count({ where: { bestiaryId } });
+			if (count + amount > limits.creatureAmount)
+				return { ok: false, reason: "creature-limit" };
+
+			const lastCreature = await tx.creature.findFirst({
+				where: { bestiaryId },
+				orderBy: { index: "desc" },
+				select: { index: true }
+			});
+			const value = await create(tx, (lastCreature?.index ?? -1) + 1);
+			return { ok: true, value };
+		}, {
+			// The count must see commits made while this transaction waited for the lock.
+			isolationLevel: "ReadCommitted",
+			maxWait: 10000,
+			timeout: 60000
+		});
 	}, null);
+}
+
+export async function createCreature(data: Creature) {
+	return await withCreatureCreation(data.bestiaryId, 1, async (tx, index) => {
+		const creature: CreatureCreateInput = { stats: data.stats, lastUpdated: new Date(Date.now()), index, bestiary: { connect: { id: data.bestiaryId } } };
+		log.log("database", `Creating creature.`);
+		return await tx.creature.create({ data: creature, select: { id: true, index: true } });
+	});
 }
 export async function updateCreature(data: Creature, id: Id) {
 	return await withDatabaseFallback(async () => {
@@ -44,25 +77,24 @@ export async function updateCreature(data: Creature, id: Id) {
 		return (await getPrismaClient().creature.update({ where: { id }, data: creature })).id;
 	}, null);
 }
-export async function createCreatures(data: CreatureCreateManyInput[]) {
-	return await withDatabaseFallback(async () => {
+export async function createCreatures(bestiaryId: Id, data: Omit<CreatureCreateManyInput, "bestiaryId" | "index">[], requestedCount = data.length) {
+	// Preserve the import limit check against all submitted creatures, including invalid ones.
+	return await withCreatureCreation(bestiaryId, Math.max(requestedCount, data.length), async (tx, firstIndex) => {
 		const now = new Date(Date.now());
 		log.log("database", `Creating ${data.length} creatures.`);
 		const BATCH_SIZE = 200;
-		const prisma = getPrismaClient();
-		if (data.length <= BATCH_SIZE) {
-			return (await prisma.creature.createMany({ data: data.map(creature => ({ ...creature, lastUpdated: now })) })).count;
+		let count = 0;
+		for (let offset = 0; offset < data.length; offset += BATCH_SIZE) {
+			const batch = data.slice(offset, offset + BATCH_SIZE).map((creature, index) => ({
+				...creature,
+				bestiaryId,
+				index: firstIndex + offset + index,
+				lastUpdated: now
+			}));
+			count += (await tx.creature.createMany({ data: batch })).count;
 		}
-		else {
-			const splitData = [];
-			for (let i = 0; i < data.length; i += BATCH_SIZE) {
-				splitData.push(data.slice(i, i + BATCH_SIZE).map(creature => ({ ...creature, lastUpdated: now })));
-			}
-			const results = await prisma.$transaction(splitData.map(creatures => prisma.creature.createMany({ data: creatures })));
-
-			return results.map(r => r.count).reduce((a, b) => a + b);
-		}
-	}, null);
+		return count;
+	});
 }
 
 export async function getCreaturesByBestiary(bestiaryId: Id) {

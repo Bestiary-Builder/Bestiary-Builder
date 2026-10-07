@@ -337,7 +337,7 @@ export const globalLimits = {
 	nameMin: 3,
 	nameLength: 50,
 	descriptionLength: 10000,
-	creatureAmount: 5000,
+	creatureAmount: 8000,
 	imageFormats: ["png", "jpg", "jpeg", "webp", "gif", "apng"]
 };
 
