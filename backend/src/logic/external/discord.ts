@@ -10,6 +10,8 @@ const client = new discord.Client({
 });
 export default client;
 
+let clientIsReady = false;
+
 const channels = {} as {
 	errorLogs?: discord.TextChannel;
 	publicLogs?: discord.TextChannel;
@@ -29,11 +31,16 @@ client.on("clientReady", async () => {
 	channels.publicLogs = (await guild.channels.fetch("1188139329642565722")) as discord.TextChannel;
 	channels.privateLogs = (await guild.channels.fetch("1546958721467424838")) as discord.TextChannel;
 	channels.privateFeedback = (await guild.channels.fetch("1543368742736760942")) as discord.TextChannel;
+
+	clientIsReady = true;
 });
 
 if (isProduction) {
 	log.on("data", (info) => {
 		try {
+			if (!clientIsReady)
+				return;
+
 			if (info.level === "request")
 				return;
 			if (log.levels[info.level] < log.levels.warning) {
@@ -45,48 +52,60 @@ if (isProduction) {
 				channels.errorLogs?.sendTyping();
 			}
 		}
-		catch { };
+		catch (e) {
+			console.error(e);
+		}
 	});
 }
 
 // Public discord logging
 export const colors = discord.Colors;
 export async function publicLog(collection: (Bestiary | AutomationCollection), items: { name: string }[], link: string, user: User, type: "bestiary" | "automation collection") {
-	if (!isProduction)
-		return;
-	const description = collection.description.trim().length === 0 ? "No description." : (collection.description.trim().length > 4096 ? collection.description.trim().slice(0, 4096) : collection.description.trim());
+	try {
+		if (!isProduction || !clientIsReady)
+			return;
+		const description = collection.description.trim().length === 0 ? "No description." : (collection.description.trim().length > 4096 ? collection.description.trim().slice(0, 4096) : collection.description.trim());
 
-	const embed = new discord.EmbedBuilder()
-		.setTitle(collection.name.length > 256 ? collection.name.slice(0, 256).trim() : collection.name.trim())
-		.setDescription(description)
-		.setAuthor({ name: user.username, iconURL: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` })
-		.setFooter({ text: `New public ${type}` })
-		.setColor(type === "bestiary" ? colors.Blurple : colors.Fuchsia)
-		.setURL(link)
-		.setTimestamp();
-	if (collection.image)
-		embed.setImage(collection.image);
-	if (collection.tags.length > 0)
-		embed.addFields({ inline: true, name: "Tags", value: collection.tags.join(", ") });
-	const itemName = type === "bestiary" ? "Creatures" : "Automations";
-	const fieldValue = items.slice(0, 3).map(item => item.name).join(",\n") + (items.length > 3 ? `\nand ${items.length - 3} more ${itemName.toLowerCase()}.` : `.`);
-	embed.addFields({ inline: false, name: itemName, value: fieldValue });
+		const embed = new discord.EmbedBuilder()
+			.setTitle(collection.name.length > 256 ? collection.name.slice(0, 256).trim() : collection.name.trim())
+			.setDescription(description)
+			.setAuthor({ name: user.username, iconURL: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` })
+			.setFooter({ text: `New public ${type}` })
+			.setColor(type === "bestiary" ? colors.Blurple : colors.Fuchsia)
+			.setURL(link)
+			.setTimestamp();
+		if (collection.image)
+			embed.setImage(collection.image);
+		if (collection.tags.length > 0)
+			embed.addFields({ inline: true, name: "Tags", value: collection.tags.join(", ") });
+		const itemName = type === "bestiary" ? "Creatures" : "Automations";
+		const fieldValue = items.slice(0, 3).map(item => item.name).join(",\n") + (items.length > 3 ? `\nand ${items.length - 3} more ${itemName.toLowerCase()}.` : `.`);
+		embed.addFields({ inline: false, name: itemName, value: fieldValue });
 
-	channels.publicLogs?.send({ embeds: [embed] }).catch(console.error);
+		channels.publicLogs?.send({ embeds: [embed] }).catch(console.error);
+	}
+	catch (e) {
+		console.error(e);
+	}
 }
 export async function privateLog(before: (Bestiary | AutomationCollection), after: (Bestiary | AutomationCollection), link: string, user: User, type: "bestiary" | "automation collection", action: "rename") {
-	if (!isProduction)
-		return;
+	try {
+		if (!isProduction || !clientIsReady)
+			return;
 
-	const embed = new discord.EmbedBuilder()
-		.setTitle(`Public ${type} was ${action}d`)
-		.setDescription(`From "${before.name}" to "${after.name}"`)
-		.setAuthor({ name: user.username, iconURL: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` })
-		.setColor(type === "bestiary" ? colors.Blurple : colors.Fuchsia)
-		.setURL(link)
-		.setTimestamp();
+		const embed = new discord.EmbedBuilder()
+			.setTitle(`Public ${type} was ${action}d`)
+			.setDescription(`From "${before.name}" to "${after.name}"`)
+			.setAuthor({ name: user.username, iconURL: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` })
+			.setColor(type === "bestiary" ? colors.Blurple : colors.Fuchsia)
+			.setURL(link)
+			.setTimestamp();
 
-	channels.privateLogs?.send({ embeds: [embed] }).catch(console.error);
+		channels.privateLogs?.send({ embeds: [embed] }).catch(console.error);
+	}
+	catch (e) {
+		console.error(e);
+	}
 }
 
 // Feedback form
@@ -103,19 +122,25 @@ app.post("/api/feedback", possibleUser, async (req, res) => {
 	const user = req.user;
 
 	// Send feedback to private feedback channel
-	if (!channels.privateFeedback)
-		return res.status(500).json({ error: "Feedback channel not found" });
+	try {
+		if (!clientIsReady || !channels.privateFeedback)
+			return res.status(500).json({ error: "Feedback channel not found" });
 
-	channels.privateFeedback.send({
-		embeds: [
-			new discord.EmbedBuilder()
-				.setAuthor(user ? { name: user.username, iconURL: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` } : { name: "Anonymous" })
-				.setTitle(type === "idea" ? "Idea" : "Issue")
-				.setDescription(message)
-				.setFooter({ text: route || "" })
-				.setTimestamp()
-		]
-	});
+		channels.privateFeedback.send({
+			embeds: [
+				new discord.EmbedBuilder()
+					.setAuthor(user ? { name: user.username, iconURL: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` } : { name: "Anonymous" })
+					.setTitle(type === "idea" ? "Idea" : "Issue")
+					.setDescription(message)
+					.setFooter({ text: route || "" })
+					.setTimestamp()
+			]
+		});
+	}
+	catch (e) {
+		console.error(e);
+		return res.status(500).json({ error: "Unknown server error occured." });
+	}
 
 	res.status(200).json({ message: "Feedback submitted" });
 });

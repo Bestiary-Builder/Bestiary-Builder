@@ -73,9 +73,19 @@ export function errorHandler(err: Error, req: Request, res: Response, _next: Nex
 	return res.status(500).send("Internal Server Error");
 }
 process.on("unhandledRejection", (err, origin) => {
-	log.log("critical", `Unhandled rejection: ${err}; From: ${origin} `);
+	try {
+		log.log("critical", `Unhandled rejection: ${err}; From: ${origin} `);
+	}
+	catch (e) {
+		console.error(e);
+	}
 });
 process.on("uncaughtException", (err, origin) => {
-	console.log(err, origin); // eslint-disable-line no-console
-	log.log("critical", `Uncaught exception: ${err}. From: ${origin}`);
+	try {
+		console.error(err, origin);
+		log.log("critical", `Uncaught exception: ${err}. From: ${origin}`);
+	}
+	catch (e) {
+		console.error(e);
+	}
 });
