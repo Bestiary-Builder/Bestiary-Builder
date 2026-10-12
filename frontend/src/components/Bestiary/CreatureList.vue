@@ -220,7 +220,7 @@ watch(model, saveOrder);
 						<v-icon-btn icon="mdi:magnify-expand" color="surface-light" v-bind="props" />
 					</template>
 					<v-card
-						max-width="600" class="text-center pa-4" title="Advanced filter options"
+						max-width="600" class="text-center pa-4" title="Advanced search options"
 						:subtitle="`Current options match ${flattenedItems.length} creatures`"
 					>
 						<v-card-text>

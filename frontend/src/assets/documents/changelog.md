@@ -2,7 +2,7 @@
 ## v3.0.2
 _October 13, 2026_
 
-- Added advanced filter options to the Bestiary page.
+- Added advanced search options to the Bestiary page.
 
 ## v3.0.1
 _October 7, 2026_
