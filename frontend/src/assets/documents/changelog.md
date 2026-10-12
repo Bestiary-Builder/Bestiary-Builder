@@ -1,9 +1,13 @@
 [//]: # (Remember to update the constant in /src/utils/constants.ts whenever a new release is added)
+## v3.0.2
+_October 13, 2026_
+
+- Added advanced filter options to the Bestiary page.
 
 ## v3.0.1
 _October 7, 2026_
 
-- Increased the maximum creatures in a bestiary from 1000 to 5000.
+- Increased the maximum creatures in a Bestiary from 1000 to 5000.
 
 
 ## v3.0.0

@@ -22,11 +22,51 @@ watch(debouncedHoveredCreature, () => {
 		emit("hoveredCreature", debouncedHoveredCreature.value);
 });
 
+// Searching and filtering
+const searchText = ref("");
+const creatureTypesText = ref("");
+const tagText = ref("");
+const envText = ref("");
+const factionText = ref("");
+const sizeText = ref("");
+const crSearch = ref([0, 31]);
+
+const filter = (item: CreatureMetaData) => {
+	const searchQuery = searchText.value.trim().toLowerCase();
+	const creatureQuery = creatureTypesText.value.trim().toLowerCase();
+	const tagQuery = tagText.value.trim().toLowerCase();
+	const envQuery = envText.value.trim().toLowerCase();
+	const factionQuery = factionText.value.trim().toLowerCase();
+	const sizeQuery = sizeText.value.trim().toLowerCase();
+	const min = crSearch.value[0];
+	const max = crSearch.value[1] >= 31 ? Number.POSITIVE_INFINITY : crSearch.value[1];
+
+	if (item.cr < min || (max !== null && item.cr > max))
+		return false;
+
+	if (searchQuery && !item.name.toLowerCase().includes(searchQuery))
+		return false;
+
+	if (creatureQuery && !item.race.toLowerCase().includes(creatureQuery))
+		return false;
+
+	if (tagQuery && !item.tag?.toLowerCase().includes(tagQuery))
+		return false;
+
+	if (envQuery && !item.environment?.toLowerCase().includes(envQuery))
+		return false;
+
+	if (factionQuery && !item.faction?.toLowerCase().includes(factionQuery))
+		return false;
+
+	if (sizeQuery && !item.size?.toLowerCase().includes(sizeQuery))
+		return false;
+	return true;
+};
 // --- Grouping ---
 
 type SortMode = "Custom" | "Alphabetical" | "race" | "size" | "tag" | "cr-asc" | "cr-desc";
 const sortMode = canEdit ? useLocalStorage<SortMode>("sortModeForBestiaries", "Alphabetical") : ref<SortMode>("Alphabetical");
-const searchText = ref("");
 
 const sortModeOptions: { title: string; value: SortMode }[] = [
 	{ title: "Alphabetically", value: "Alphabetical" },
@@ -40,7 +80,7 @@ const sortModeOptions: { title: string; value: SortMode }[] = [
 ];
 
 type FlatEntry
-	= | { type: "header"; key: string; label: string; groupKey: string; collapsed: boolean }
+	= | { type: "header"; key: string; label: string; groupKey: string; collapsed: boolean; numItems: number }
 		| { type: "item"; key: string; data: CreatureMetaData };
 
 const collapsedGroups = ref(new Set<string>());
@@ -57,10 +97,7 @@ watch(sortMode, () => {
 });
 
 const flattenedItems = computed<FlatEntry[]>(() => {
-	const query = searchText.value.trim().toLowerCase();
-	const items = (model.value ?? []).filter(item =>
-		query === "" || item.name.toLowerCase().includes(query)
-	);
+	const items = (model.value ?? []).filter(filter);
 
 	if (sortMode.value === "Custom") {
 		return items.map(item => ({ type: "item" as const, key: String(item.id), data: item }));
@@ -108,6 +145,7 @@ const flattenedItems = computed<FlatEntry[]>(() => {
 				label: isCr ? `CR ${groupKey}` : (groupKey || `No ${sortMode.value}`),
 				groupKey,
 				collapsed: isCollapsed,
+				numItems: groups.get(groupKey)?.length ?? 0,
 			},
 			...groupItems.map(item => ({ type: "item" as const, key: String(item.id), data: item })),
 		];
@@ -176,8 +214,71 @@ watch(model, saveOrder);
 					prepend-inner-icon="mdi:sort"
 				/>
 			</v-col>
+			<v-col cols="1">
+				<DropdownMenu>
+					<template #activator="{ props }">
+						<v-icon-btn icon="mdi:magnify-expand" color="surface-light" v-bind="props" />
+					</template>
+					<v-card
+						max-width="600" class="text-center pa-4" title="Advanced filter options"
+						:subtitle="`Current options match ${flattenedItems.length} creatures`"
+					>
+						<v-card-text>
+							<v-row>
+								<v-col cols="12" class="my-4 px-4">
+									<v-range-slider
+										v-model="crSearch" :min="0" :max="31" density="compact" hide-details
+										strict thumb-label="always" :step="1" class="mt-6" show-ticks="always" :ticks="{ 0: 'Min CR', 31: 'Max CR' }" tick-size="0" color="primary" :track-color="crSearch[0] === 0 && crSearch[1] === 31 ? 'primary' : 'grey'"
+									>
+										<template #thumb-label="{ modelValue }">
+											<span v-if="modelValue === 31">30+</span>
+											<span v-else>{{ modelValue }}</span>
+										</template>
+									</v-range-slider>
+								</v-col>
+								<v-col cols="6">
+									<v-text-field
+										v-model="searchText" label="Name" prepend-inner-icon="mdi:magnify" clearable
+										hide-details @click:clear="searchText = ''"
+									/>
+								</v-col>
+								<v-col cols="6">
+									<v-text-field
+										v-model="creatureTypesText" label="Creature type"
+										prepend-inner-icon="game-icons:spiked-dragon-head" clearable hide-details @click:clear="creatureTypesText = ''"
+									/>
+								</v-col>
+								<v-col cols="6">
+									<v-text-field
+										v-model="tagText" label="Tag" prepend-inner-icon="mdi:tag"
+										clearable hide-details @click:clear="tagText = ''"
+									/>
+								</v-col>
+								<v-col cols="6">
+									<v-text-field
+										v-model="envText" label="Environment"
+										prepend-inner-icon="mingcute:mountain-2-fill" clearable
+										hide-details @click:clear="envText = ''"
+									/>
+								</v-col>
+								<v-col cols="6">
+									<v-text-field
+										v-model="factionText" label="Faction"
+										prepend-inner-icon="mdi:flag" clearable hide-details @click:clear="factionText = ''"
+									/>
+								</v-col>
+								<v-col cols="6">
+									<v-text-field
+										v-model="sizeText" label="Size"
+										prepend-inner-icon="mdi:ruler" clearable hide-details @click:clear="sizeText = ''"
+									/>
+								</v-col>
+							</v-row>
+						</v-card-text>
+					</v-card>
+				</DropdownMenu>
+			</v-col>
 		</v-row>
-
 		<v-list v-if="flattenedItems.length > 0" density="compact">
 			<v-virtual-scroll
 				ref="virtualScroll" max-height="500" :items="flattenedItems" item-height="65"
@@ -186,7 +287,7 @@ watch(model, saveOrder);
 				<template #default="{ item }">
 					<v-list-item
 						v-if="item.type === 'header'" :title="item.label" class="group-header"
-						@click="toggleGroup(item.groupKey)"
+						:subtitle="`${item.numItems} creatures`" @click="toggleGroup(item.groupKey)"
 					>
 						<template #append>
 							<v-icon :icon="item.collapsed ? 'mdi-chevron-right' : 'mdi-chevron-down'" />
@@ -218,7 +319,11 @@ watch(model, saveOrder);
 								:icon="pinnedCreature === item.data.id ? 'mdi:pin-off' : 'mdi:pin'" size="24"
 								@click="emit('pinCreature', item.data.id)"
 							/>
-							<v-icon-btn v-if="copyButtonOnBestiaryPage" text="Copy Creature" icon="material-symbols:content-copy" size="24" @click="emit('copyCreature', item.data.id)" />
+							<v-icon-btn
+								v-if="copyButtonOnBestiaryPage" text="Copy Creature"
+								icon="material-symbols:content-copy" size="24"
+								@click="emit('copyCreature', item.data.id)"
+							/>
 							<DropdownMenu v-if="canEdit">
 								<template #activator="{ props }">
 									<v-icon-btn text="Delete creature" icon="mdi:delete" v-bind="props" size="24" />

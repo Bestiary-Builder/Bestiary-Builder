@@ -66,9 +66,9 @@ const flattenedItems = computed<FlatEntry[]>(() => {
 			const automation = item.automation;
 			if (Array.isArray(automation) && automation.length > 0) {
 				const firstAutomation = automation[0];
-				return firstAutomation.activation_type ?? null;
+				return firstAutomation?.activation_type ?? null;
 			}
-			return automation.activation_type ?? null;
+			return automation?.activation_type ?? null;
 		}
 		return item[groupKeyProp as keyof Automation];
 	};
