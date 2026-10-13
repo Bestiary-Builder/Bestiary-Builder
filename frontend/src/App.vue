@@ -153,19 +153,26 @@ const dismissed = useLocalStorage("update3.0.0dismissed", false);
 		<v-main min-height="100vh">
 			<v-alert
 				v-if="!dismissed" class="ma-4" closable title="Update 3.0.0 Released" icon="$bestiaryBuilder"
-				icon-size="48" elevation="3" variant="tonal" @click:close="dismissed = true"
+				:icon-size="store.isMobile ? 36 : 48" elevation="3" variant="tonal" @click:close="dismissed = true"
 			>
 				<template #text>
-					Welcome to Bestiary Builder 3.0.0, the biggest update to Bestiary Builder ever.<br>
-					Experience a complete UI rework, automation collections, characters on Bestiary Builder,<br>
-					and a complete automation editor.<br>
-					See all the changes in the
-					<RouterLink to="/changelog" style="color: rgb(var(--v-theme-primary))">
-						Changelog!
-					</RouterLink>
+					<template v-if="!store.isMobile">
+						Welcome to Bestiary Builder 3.0.0, the biggest update to Bestiary Builder ever.<br>
+						Experience a complete UI rework, automation collections, characters on Bestiary Builder,<br>
+						and a complete automation editor.<br>
+						See all the changes in the
+						<RouterLink to="/changelog" style="color: rgb(var(--v-theme-primary))">
+							Changelog!
+						</RouterLink>
+					</template>
+
+					<v-btn v-else color="success" elevation="3" class="mt-2" @click="startOnboardingWorkflow()">
+						See what's new in
+						3.0.0
+					</v-btn>
 				</template>
 
-				<template #append>
+				<template v-if="!store.isMobile" #append>
 					<v-btn color="success" elevation="3" @click="startOnboardingWorkflow()">
 						See what's new in
 						3.0.0
