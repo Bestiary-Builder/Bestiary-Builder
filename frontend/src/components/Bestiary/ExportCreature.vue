@@ -57,7 +57,7 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 	el.classList.add("to-print");
 
 	const { default: html2canvas } = await import("html2canvas-pro");
-	const canvas = await html2canvas(el, { scale: 2, allowTaint: true, logging: false });
+	const canvas = await html2canvas(el, { scale: 2, allowTaint: true, logging: true });
 
 	const image = canvas.toDataURL("image/jpeg");
 
