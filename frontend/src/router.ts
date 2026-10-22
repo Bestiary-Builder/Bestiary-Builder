@@ -78,6 +78,7 @@ router.afterEach((to) => {
 
 	if (keys.includes("avraeToken")) {
 		addToast("Succesfully logged in with Avrae", { color: "success", prependIcon: "$avrae" });
+		localStorage.setItem("AvraeToken", to.query.avraeToken as string);
 		delete to.query.avraeToken;
 		// Remove queries from parameter
 		router.replace({ query: to.query, force: true }).catch((err) => {
