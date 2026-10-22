@@ -42,6 +42,7 @@ const exportHomebrewery = async () => {
 	}
 };
 
+let _exportInProgress = false;
 const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 	if (!data)
 		return;
@@ -53,14 +54,21 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 		return;
 	}
 
+	// if (exportInProgress) {
+	// 	updateToast(toastId, { text: "Export already in progress", color: "error" });
+	// 	return;
+	// }
+
+	_exportInProgress = true;
 	el.style = `width: ${type === "2x1 wide" ? "1200" : "800"}px; column-count: ${type === "1x1" ? "1" : "2"};`;
 	el.classList.add("to-print");
-
+	await new Promise(resolve => setTimeout(resolve, 1000));
 	const { default: html2canvas } = await import("html2canvas-pro");
 	const canvas = await html2canvas(el, { scale: 2, allowTaint: false, logging: true, ignoreElements: (element) => {
 		return element.classList?.contains("monaco-editor");
 	} });
 
+	await new Promise(resolve => setTimeout(resolve, 1000));
 	const image = canvas.toDataURL("image/jpeg");
 
 	const link = document.createElement("a");
@@ -72,6 +80,7 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 
 	removeToast(toastId);
 	void getUmami()?.track("Export statblock to image");
+	_exportInProgress = false;
 };
 </script>
 

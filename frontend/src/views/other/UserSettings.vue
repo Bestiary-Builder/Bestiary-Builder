@@ -246,7 +246,7 @@ const srdOptions = [
 							<v-btn v-if="!AvraeToken" color="#9c27b0" prepend-icon="$avrae" variant="flat" @click.prevent="sendToAvraeLogin($route.path)">
 								Login with Avrae
 							</v-btn>
-							<v-btn color="error" @click.prevent="AvraeToken = ''" v-else>
+							<v-btn v-else color="error" @click.prevent="AvraeToken = ''">
 								Clear token
 							</v-btn>
 						</v-container>
