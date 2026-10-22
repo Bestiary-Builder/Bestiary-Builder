@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { BestiaryResponse, CreatureResponse, Statblock } from "~/shared";
-import { nextTick, onMounted, onUnmounted, provide, ref, useTemplateRef, watch } from "vue";
+import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
 import { useHotkey } from "vuetify";
 import CopyCreature from "@/components/Bestiary/CopyCreature.vue";
@@ -303,7 +303,7 @@ const isCollapsed = ref(false);
 
 				<template #default="{ isActive }">
 					<v-card class="text-center pb-2 pa-4" title="Import Creature">
-						<v-card-actions class="d-flex flex-column align-center justify-center position-relative" min-width="200" ref="menuHost" >
+						<v-card-actions ref="menuHost" class="d-flex flex-column align-center justify-center position-relative" min-width="200">
 							<v-select
 								v-model="importType" label="Choose import type"
 								:items="['Bestiary Builder JSON', '5e Tools JSON', 'CritterDB Creature link']"
