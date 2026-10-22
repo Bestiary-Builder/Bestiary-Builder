@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { BestiaryResponse, CreatureResponse, Statblock } from "~/shared";
-import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
+import { nextTick, onMounted, onUnmounted, provide, ref, useTemplateRef, watch } from "vue";
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
 import { useHotkey } from "vuetify";
 import CopyCreature from "@/components/Bestiary/CopyCreature.vue";
@@ -160,12 +160,11 @@ watch(() => data.value.description.name, () => {
 }, { immediate: true });
 
 // import
-const isImportCreatureOpen = ref(false);
 const importText = ref("");
 type ImportTypes = "" | "CritterDB Creature link" | "Bestiary Builder JSON" | "5e Tools JSON";
 const importType = ref<ImportTypes>("");
 const notices = ref<{ [key: string]: string[] }>({});
-
+const menuHost = useTemplateRef("menuHost");
 const import5etools = async () => {
 	if (importText.value.startsWith("___")) {
 		addToast("You copied the Markdown, not the JSON", { color: "error" });
@@ -295,54 +294,59 @@ const isCollapsed = ref(false);
 				@import-creature="(creature) => importCreature(creature)"
 			/>
 
-			<v-icon-btn
-				v-if="isOwner || isEditor" v-tooltip="'Import creature'" text="Import Creature" icon="mdi:import" size="24" @click="isImportCreatureOpen = true"
-			/>
+			<v-dialog v-if="isOwner || isEditor" width="600">
+				<template #activator="{ props }">
+					<v-icon-btn
+						v-tooltip="'Import creature'" text="Import Creature" icon="mdi:import" size="24"
+						v-bind="props"
+					/>
+				</template>
 
-			<v-dialog v-model="isImportCreatureOpen" width="600">
-				<v-card class="text-center pb-2 pa-4" title="Import Creature">
-					<v-card-actions class="d-flex flex-column align-center justify-center" min-width="200">
-						<v-select
-							v-model="importType" label="Choose import type"
-							:items="['Bestiary Builder JSON', '5e Tools JSON', 'CritterDB Creature link']"
-							class="w-100"
-						/>
-						<v-text-field
-							v-if="importType" v-model="importText"
-							:label="importType === 'CritterDB Creature link' ? 'Link' : 'JSON data'"
-							class="w-100"
-						/>
-						<v-spacer v-else />
-						<v-btn v-if="importText" class="w-100" color="success" @click="importCreatureFromUserInput">
-							Import
-						</v-btn>
-						<v-spacer v-else />
-						<div v-if="JSON.stringify(notices) !== '{}'" class="pa-0 text-left">
-							<p class="warning">
-								<b>Please note the following for this import:</b>
-							</p>
-							<p>
-								Some features may not have automation as they should, aka description only features,
-								but some
-								might not have imported correctly or are missing certain parts. It is recommended to
-								review.
-							</p>
-							<div v-for="(type, index) in notices" :key="index">
-								<h3 v-if="type.length > 0">
-									{{ index }}
-								</h3>
-								<ul v-if="type.length > 0">
-									<li v-for="(notice, indexInner) in type" :key="indexInner">
-										{{ notice }}
-									</li>
-								</ul>
+				<template #default="{ isActive }">
+					<v-card class="text-center pb-2 pa-4" title="Import Creature">
+						<v-card-actions class="d-flex flex-column align-center justify-center position-relative" min-width="200" ref="menuHost" >
+							<v-select
+								v-model="importType" label="Choose import type"
+								:items="['Bestiary Builder JSON', '5e Tools JSON', 'CritterDB Creature link']"
+								class="w-100" :menu-props="{ attach: menuHost?.$el, contentClass: 'text-left' }"
+							/>
+							<v-text-field
+								v-if="importType" v-model="importText"
+								:label="importType === 'CritterDB Creature link' ? 'Link' : 'JSON data'"
+								class="w-100"
+							/>
+							<v-spacer v-else />
+							<v-btn v-if="importText" class="w-100" color="success" @click="importCreatureFromUserInput">
+								Import
+							</v-btn>
+							<v-spacer v-else />
+							<div v-if="JSON.stringify(notices) !== '{}'" class="pa-0 text-left">
+								<p class="warning">
+									<b>Please note the following for this import:</b>
+								</p>
+								<p>
+									Some features may not have automation as they should, aka description only features,
+									but some
+									might not have imported correctly or are missing certain parts. It is recommended to
+									review.
+								</p>
+								<div v-for="(type, index) in notices" :key="index">
+									<h3 v-if="type.length > 0">
+										{{ index }}
+									</h3>
+									<ul v-if="type.length > 0">
+										<li v-for="(notice, indexInner) in type" :key="indexInner">
+											{{ notice }}
+										</li>
+									</ul>
+								</div>
 							</div>
-						</div>
-					</v-card-actions>
-					<v-card-actions>
-						<v-btn text="Cancel" @click="isImportCreatureOpen = false; importType = ''; importText = ''" />
-					</v-card-actions>
-				</v-card>
+						</v-card-actions>
+						<v-card-actions>
+							<v-btn text="Cancel" @click="isActive.value = false; importType = ''; importText = ''" />
+						</v-card-actions>
+					</v-card>
+				</template>
 			</v-dialog>
 
 			<ExportCreature :data="data" />
