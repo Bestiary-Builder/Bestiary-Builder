@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import type { Statblock } from "~/shared";
+import { snapdom } from "@zumer/snapdom";
 import { useRoute } from "vue-router";
 import { getUmami } from "@/utils/app/analytics";
 import { downloadFile } from "@/utils/app/export";
 import { useToast } from "@/utils/app/toast";
 import { useFetch } from "@/utils/utils";
-import { snapdom } from '@zumer/snapdom';
 
 const { data } = defineProps<{ data: Statblock }>();
 const { addToast, removeToast, updateToast } = useToast();
@@ -65,8 +65,7 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 	el.classList.add("to-print");
 
 	const result = await snapdom(el, { scale: 2, quality: 1, backgroundColor: "#fff" });
-	await result.download({format: 'jpg', filename: `${data.description.name} from BestiaryBuilder (${type}).jpg`});
-	
+	await result.download({ format: "jpg", filename: `${data.description.name} from BestiaryBuilder (${type}).jpg` });
 
 	el.classList.remove("to-print");
 	el.style = "";
