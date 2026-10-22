@@ -317,7 +317,7 @@ app.post("/api/automation-collection/:id/addautomations", requireUser, async (re
 	return res.status(201).json({ error, ignoredItems });
 });
 
-app.post("/api/automation-collection/:collectionid/editors/add/:userid", requireUser, async (req, res) => {
+app.get("/api/automation-collection/:collectionid/editors/add/:userid", requireUser, async (req, res) => {
 	const user = req.user!;
 	const result = await automationCollections.addEditor(req.params.collectionid, user.id, req.params.userid);
 	if (result.ok)
@@ -332,7 +332,7 @@ app.post("/api/automation-collection/:collectionid/editors/add/:userid", require
 	}
 });
 
-app.post("/api/automation-collection/:collectionid/editors/remove/:userid", requireUser, async (req, res) => {
+app.get("/api/automation-collection/:collectionid/editors/remove/:userid", requireUser, async (req, res) => {
 	const user = req.user!;
 	const result = await automationCollections.removeEditor(req.params.collectionid, user.id, req.params.userid);
 	if (result.ok)
