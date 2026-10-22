@@ -8,7 +8,7 @@ import { useToast } from "@/utils/app/toast";
 import { useFetch } from "@/utils/utils";
 
 const { data } = defineProps<{ data: Statblock }>();
-const { addToast, removeToast, updateToast } = useToast();
+const { addToast, updateToast } = useToast();
 const $route = useRoute();
 
 const exportStatblockToClipBoard = async () => {
@@ -43,7 +43,6 @@ const exportHomebrewery = async () => {
 	}
 };
 
-let _exportInProgress = false;
 const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 	if (!data)
 		return;
@@ -55,12 +54,6 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 		return;
 	}
 
-	// if (exportInProgress) {
-	// 	updateToast(toastId, { text: "Export already in progress", color: "error" });
-	// 	return;
-	// }
-
-	_exportInProgress = true;
 	el.style = `width: ${type === "2x1 wide" ? "1200" : "800"}px; column-count: ${type === "1x1" ? "1" : "2"};`;
 	el.classList.add("to-print");
 
@@ -69,9 +62,8 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 
 	el.classList.remove("to-print");
 	el.style = "";
-	removeToast(toastId);
+	updateToast(toastId, { text: "Export completed successfully", color: "success" });
 	void getUmami()?.track("Export statblock to image");
-	_exportInProgress = false;
 };
 </script>
 

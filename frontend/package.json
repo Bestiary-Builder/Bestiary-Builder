@@ -19,7 +19,6 @@
 		"@guolao/vue-monaco-editor": "^1.5.1",
 		"@vueuse/core": "^14.4.0",
 		"@zumer/snapdom": "^3.3.6",
-		"html2canvas-pro": "^2.4.1",
 		"less": "^4.2.0",
 		"markdown-it": "^14.0.0",
 		"markdown-it-anchor": "^8.6.7",
