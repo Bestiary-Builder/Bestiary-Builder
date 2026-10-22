@@ -5,6 +5,7 @@ import { getUmami } from "@/utils/app/analytics";
 import { downloadFile } from "@/utils/app/export";
 import { useToast } from "@/utils/app/toast";
 import { useFetch } from "@/utils/utils";
+import { snapdom } from '@zumer/snapdom';
 
 const { data } = defineProps<{ data: Statblock }>();
 const { addToast, removeToast, updateToast } = useToast();
@@ -62,22 +63,13 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 	_exportInProgress = true;
 	el.style = `width: ${type === "2x1 wide" ? "1200" : "800"}px; column-count: ${type === "1x1" ? "1" : "2"};`;
 	el.classList.add("to-print");
-	await new Promise(resolve => setTimeout(resolve, 1000));
-	const { default: html2canvas } = await import("html2canvas-pro");
-	const canvas = await html2canvas(el, { scale: 2, allowTaint: false, logging: true, ignoreElements: (element) => {
-		return element.classList?.contains("monaco-editor");
-	} });
 
-	await new Promise(resolve => setTimeout(resolve, 1000));
-	const image = canvas.toDataURL("image/jpeg");
+	const result = await snapdom(el, { scale: 2, quality: 1, backgroundColor: "#fff" });
+	await result.download({format: 'jpg', filename: `${data.description.name} from BestiaryBuilder (${type}).jpg`});
+	
 
-	const link = document.createElement("a");
-	link.download = `${data.description.name} from BestiaryBuilder (${type}).jpg`;
-	link.href = image;
-	link.click();
 	el.classList.remove("to-print");
 	el.style = "";
-
 	removeToast(toastId);
 	void getUmami()?.track("Export statblock to image");
 	_exportInProgress = false;
