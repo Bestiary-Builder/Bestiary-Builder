@@ -152,6 +152,17 @@ const flattenedItems = computed<FlatEntry[]>(() => {
 	});
 });
 
+const displayCR =(cr: number) => {
+	if (cr === 0)
+		return "0";
+	if (cr === 0.125)
+		return "1/8";
+	if (cr === 0.25)
+		return "1/4";
+	if (cr === 0.5)
+		return "1/2";
+	return String(cr);
+};
 // --- Drag-to-reorder (Custom/flat mode only) ---
 
 const virtualScrollRef = useTemplateRef("virtualScroll");
@@ -296,7 +307,7 @@ watch(model, saveOrder);
 
 					<v-list-item
 						v-else :title="item.data.name"
-						:subtitle="`${item.data.size} ${item.data.race}\nCR ${item.data.cr}`" lines="two"
+						:subtitle="`${item.data.size} ${item.data.race}\nCR ${displayCR(item.data.cr)}`" lines="two"
 						class="multiline-subtitle creature-item" @mouseover="hoveredCreature = item.data.id"
 					>
 						<template v-if="sortMode === 'Custom' && canEdit" #prepend>
