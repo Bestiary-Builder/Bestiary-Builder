@@ -1,6 +1,6 @@
 [//]: # (Remember to update the constant in /src/utils/constants.ts whenever a new release is added)
 ## v3.0.3
-_Octoberr 22, 2026_
+_October 22, 2026_
 
 - Added a Login flow for Avrae
 - Fixed an issue where on some browsers or devices, exporting a creature to an image would result in a blank image.
