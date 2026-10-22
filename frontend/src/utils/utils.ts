@@ -1,3 +1,5 @@
+import { getUmami } from "./app/analytics";
+
 // Api handling
 async function handleApiResponse<Type>(response: Response): Promise<{ success: true; data: Type; error: undefined; status: number } | { success: false; data: undefined; error: string; status: number }> {
 	try {
@@ -47,6 +49,12 @@ export function sendToLogin(route: string) {
 	window.document.cookie = `route=${route}`;
 	window.location.href = loginLink;
 }
+
+export const sendToAvraeLogin = (route: string) => {
+	void getUmami()?.track("Avrae Login");
+	localStorage.setItem("avraeLoginRedirect", route);
+	window.location.href = `https://avrae.io/oauth-external?redirecturi=${encodeURIComponent(`https://bestiarybuilder.com`)}`;
+};
 
 // Prefers reduced motion
 export const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");

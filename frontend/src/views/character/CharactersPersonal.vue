@@ -4,6 +4,7 @@ import { useLocalStorage } from "@vueuse/core";
 import { onMounted, ref } from "vue";
 import CharacterTile from "@/components/Characters/CharacterTile.vue";
 import { getAvraeCharacters } from "@/components/Characters/utils";
+import { sendToAvraeLogin } from "@/utils/utils";
 
 const AvraeToken = useLocalStorage("AvraeToken", "");
 
@@ -27,10 +28,10 @@ onMounted(async () => {
 	/>
 	<div v-if="!AvraeToken" class="content">
 		This page allows you to edit the attacks of your Avrae characters using the BB editor.
-		<br><br>
-		No Avrae Token Set. Please see <RouterLink to="/user#avrae-token" style="color: rgb(var(--v-theme-primary))">
-			your user settings
-		</RouterLink> for how to enable this.
+		<br>
+		<v-btn color="#9c27b0" prepend-icon="$avrae" variant="flat" class="mt-4" @click.prevent="sendToAvraeLogin($route.path)">
+			Login with Avrae
+		</v-btn>
 	</div>
 	<div class="content">
 		<div class="character-container">

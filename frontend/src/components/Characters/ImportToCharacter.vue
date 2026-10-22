@@ -4,7 +4,7 @@ import type { AttackModel, AutomationConsumables } from "~/shared";
 import { ref } from "vue";
 import { getUmami } from "@/utils/app/analytics";
 import { useToast } from "@/utils/app/toast";
-import { useFetch } from "@/utils/utils";
+import { sendToAvraeLogin, useFetch } from "@/utils/utils";
 import { buildCounterCopyCommand, getAvraeCharacters } from "./utils";
 
 const { automation, consumables = null } = defineProps<{ automation: AttackModel | AttackModel[] | null; consumables?: AutomationConsumables | null }>();
@@ -119,11 +119,10 @@ const toArray = <T>(input: T | T[]): T[] => {
 							Confirm import
 						</v-btn>
 					</div>
-					<div v-else class="mt-4">
-						You can set up importing to your characters with just a button press!
-						Set it up in <RouterLink to="/user">
-							<span class="text-primary"> your user settings. </span>
-						</RouterLink>
+					<div v-else>
+						<v-btn color="#9c27b0" prepend-icon="$avrae" variant="flat" class="mt-4" @click.prevent="sendToAvraeLogin($route.path)">
+							Login with Avrae
+						</v-btn>
 					</div>
 					<div class="d-flex align-center my-4 w-100">
 						<v-divider class="flex-grow-1" />

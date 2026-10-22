@@ -10,7 +10,7 @@ import { useStatblockColors } from "@/utils/app/customTheme";
 import { useThemePersistence } from "@/utils/app/theme";
 import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
-import { sendToLogin, useFetch } from "@/utils/utils";
+import { sendToAvraeLogin, sendToLogin, useFetch } from "@/utils/utils";
 import { defaultInterestingStatblock, SupporterStatus } from "~/shared";
 
 const { addToast } = useToast();
@@ -114,11 +114,11 @@ const srdOptions = [
 						Support us on Patreon
 					</v-btn>
 				</span>
-				<p v-if="store.user.supporter === SupporterStatus.wirmling">
+				<p v-if="store.user?.supporter === SupporterStatus.wirmling">
 					You support us on Patreon as a <b> Wyrmling </b> Tier supporter. Thank you so much for your pledge!
 					If you cannot see your name display change on the website yet, make sure to join our discord.
 				</p>
-				<p v-if="store.user.supporter === SupporterStatus.greatwyrm">
+				<p v-if="store.user?.supporter === SupporterStatus.greatwyrm">
 					You support us on Patreon as a <b> Greatwyrm </b> Tier supporter. Thank you so much for your
 					support!
 					If you cannot see your name display change on the website yet, make sure to join our discord.
@@ -243,44 +243,18 @@ const srdOptions = [
 								token, it is only saved in your browser.
 							</small>
 							<v-text-field v-model="AvraeToken" label="Token" class="mt-4" max-width="600" />
-
-							<small> To get the Token:
-								<ol>
-									<li>
-										Log in on the <a
-											href="https://avrae.io/dashboard/characters"
-											style="color: rgb(var(--v-theme-primary))"
-										> Avrae Dashboard
-										</a>
-									</li>
-									<li>
-										Open developer console (CTRL-SHIFT-I or Right click -> Inspect)
-									</li>
-									<li>
-										Open the <code> Application </code> Tab (At the top: Press the three dots or the
-										>> button to view
-										the tab menu ).<br>
-										<i>On Firefox: Instead choose the Storage tab.</i>
-									</li>
-									<li>
-										Choose <code>Local Storage (https://avrae.io) </code>
-									</li>
-									<li>
-										Copy the entire value of the
-										<code> avrae-token</code> key and paste it into the field above.
-									</li>
-									<li>
-										<b> If you need help with getting the token, please ask on our Discord
-											server.</b>
-									</li>
-								</ol>
-							</small>
+							<v-btn v-if="!AvraeToken" color="#9c27b0" prepend-icon="$avrae" variant="flat" @click.prevent="sendToAvraeLogin($route.path)">
+								Login with Avrae
+							</v-btn>
+							<v-btn color="error" @click.prevent="AvraeToken = ''">
+								Clear token
+							</v-btn>
 						</v-container>
 					</div>
 				</div>
 			</div>
 			<SectionHeader title="Log out" />
-			<v-btn color="error" size="large" @click.prevent="logoutClick">
+			<v-btn color="error" size="large" prepend-icon="mdi:logout" @click.prevent="logoutClick">
 				Log out of Bestiary Builder
 			</v-btn>
 		</div>

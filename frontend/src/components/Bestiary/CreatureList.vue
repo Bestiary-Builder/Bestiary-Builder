@@ -152,7 +152,7 @@ const flattenedItems = computed<FlatEntry[]>(() => {
 	});
 });
 
-const displayCR =(cr: number) => {
+const displayCR = (cr: number) => {
 	if (cr === 0)
 		return "0";
 	if (cr === 0.125)

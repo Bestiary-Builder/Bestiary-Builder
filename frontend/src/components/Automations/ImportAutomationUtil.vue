@@ -5,7 +5,7 @@ import { computed, reactive, ref, watch } from "vue";
 import { useToast } from "@/utils/app/toast";
 import { useLazyAsync, useLazyOptions } from "@/utils/app/useLazyOptions";
 import { store } from "@/utils/store";
-import { useFetch } from "@/utils/utils";
+import { sendToAvraeLogin, useFetch } from "@/utils/utils";
 import { getAvraeCharacterByUpstream, getAvraeCharacters } from "../Characters/utils";
 
 const emit = defineEmits<{
@@ -184,11 +184,12 @@ const groupedAutomatedItems = computed(() => {
 								</template>
 							</v-select>
 						</div>
-						<div v-else class="text-primary">
-							You can set up importing from your Avrae characters with just a button press!
-							Set it up in <RouterLink to="/user">
-								your user settings.
-							</RouterLink>
+						<div v-else>
+							Or login with Avrae to import an action from a character.
+							<br>
+							<v-btn color="#9c27b0" prepend-icon="$avrae" variant="flat" class="mt-4" @click.prevent="sendToAvraeLogin($route.path)">
+								Login with Avrae
+							</v-btn>
 						</div>
 					</v-col>
 					<v-col cols="12">

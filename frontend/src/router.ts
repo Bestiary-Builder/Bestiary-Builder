@@ -76,6 +76,18 @@ router.afterEach((to) => {
 		});
 	}
 
+	if (keys.includes("avraeToken")) {
+		addToast("Succesfully logged in with Avrae", { color: "success", prependIcon: "$avrae" });
+		delete to.query.avraeToken;
+		// Remove queries from parameter
+		router.replace({ query: to.query, force: true }).catch((err) => {
+			console.error(err);
+		});
+		router.push({ path: localStorage.getItem("avraeLoginRedirect") ?? "/" }).catch((err) => {
+			console.error(err);
+		});
+	}
+
 	const { trackVisit } = useRecentPages();
 	trackVisit(to.path, to.meta.pageTitle as string | undefined);
 });
