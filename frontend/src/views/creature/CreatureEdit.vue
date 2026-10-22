@@ -293,7 +293,7 @@ const isCollapsed = ref(false);
 				@import-creature="(creature) => importCreature(creature)"
 			/>
 
-			<v-dialog v-if="isOwner || isEditor" width="600" scroll-strategy="none">
+			<v-dialog v-if="isOwner || isEditor" max-width="600">
 				<template #activator="{ props }">
 					<v-icon-btn
 						v-tooltip="'Import creature'" text="Import Creature" icon="mdi:import" size="24"
@@ -307,7 +307,7 @@ const isCollapsed = ref(false);
 							<v-select
 								v-model="importType" label="Choose import type"
 								:items="['Bestiary Builder JSON', '5e Tools JSON', 'CritterDB Creature link']"
-								class="w-100"
+								class="w-100" :menu-props="{ attach: true, locationStrategy: 'static' }"
 							/>
 							<v-text-field
 								v-if="importType" v-model="importText"
