@@ -167,8 +167,7 @@ const groupedAutomatedItems = computed(() => {
 								@update:menu="avraeCharacters.handleMenuOpen"
 							>
 								<template #item="{ props, item }">
-									<v-list-item density="compact" style="min-height: 28px" v-bind="props" :title="item.name">
-									</v-list-item>
+									<v-list-item density="compact" style="min-height: 28px" v-bind="props" :title="item.name" />
 								</template>
 
 								<template #no-data>
