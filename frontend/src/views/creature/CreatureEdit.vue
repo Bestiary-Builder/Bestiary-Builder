@@ -164,7 +164,6 @@ const importText = ref("");
 type ImportTypes = "" | "CritterDB Creature link" | "Bestiary Builder JSON" | "5e Tools JSON";
 const importType = ref<ImportTypes>("");
 const notices = ref<{ [key: string]: string[] }>({});
-const menuHost = useTemplateRef("menuHost");
 const import5etools = async () => {
 	if (importText.value.startsWith("___")) {
 		addToast("You copied the Markdown, not the JSON", { color: "error" });
@@ -294,7 +293,7 @@ const isCollapsed = ref(false);
 				@import-creature="(creature) => importCreature(creature)"
 			/>
 
-			<v-dialog v-if="isOwner || isEditor" width="600">
+			<v-dialog v-if="isOwner || isEditor" width="600" scroll-strategy="none">
 				<template #activator="{ props }">
 					<v-icon-btn
 						v-tooltip="'Import creature'" text="Import Creature" icon="mdi:import" size="24"
@@ -308,7 +307,7 @@ const isCollapsed = ref(false);
 							<v-select
 								v-model="importType" label="Choose import type"
 								:items="['Bestiary Builder JSON', '5e Tools JSON', 'CritterDB Creature link']"
-								class="w-100" :menu-props="{ attach: menuHost?.$el, contentClass: 'text-left' }"
+								class="w-100"
 							/>
 							<v-text-field
 								v-if="importType" v-model="importText"
