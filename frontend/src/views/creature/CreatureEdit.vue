@@ -307,7 +307,7 @@ const isCollapsed = ref(false);
 							<v-select
 								v-model="importType" label="Choose import type"
 								:items="['Bestiary Builder JSON', '5e Tools JSON', 'CritterDB Creature link']"
-								class="w-100" :menu-props="{ attach: true, locationStrategy: 'static' }"
+								class="w-100" :menu-props="{ eager: true }"
 							/>
 							<v-text-field
 								v-if="importType" v-model="importText"
