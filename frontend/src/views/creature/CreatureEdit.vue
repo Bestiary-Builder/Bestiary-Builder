@@ -304,20 +304,20 @@ const isCollapsed = ref(false);
 				<template #default="{ isActive }">
 					<v-card class="text-center pb-2 pa-4" title="Import Creature">
 						<v-card-actions class="d-flex flex-column align-center justify-center" min-width="200">
-							<v-select
-								v-model="importType" label="Choose import type"
-								:items="['Bestiary Builder JSON', '5e Tools JSON', 'CritterDB Creature link']"
-								class="w-100"
-							/>
+							<v-btn-toggle v-model="importType" mandatory rounded class="w-100" variant="tonal">
+								<v-btn
+									v-for="t in ['Bestiary Builder JSON', '5e Tools JSON', 'CritterDB Creature link']"
+									:key="t" :value="t" class="flex-grow-1"
+								>
+									{{ t }}
+								</v-btn>
+							</v-btn-toggle>
+
 							<v-text-field
 								v-if="importType" v-model="importText"
-								:label="importType === 'CritterDB Creature link' ? 'Link' : 'JSON data'"
-								class="w-100"
+								:label="importType === 'CritterDB Creature link' ? 'Link' : 'JSON Data'"
+								class="w-100 mt-4"
 							/>
-							<v-spacer v-else />
-							<v-btn v-if="importText" class="w-100" color="success" @click="importCreatureFromUserInput">
-								Import
-							</v-btn>
 							<v-spacer v-else />
 							<div v-if="JSON.stringify(notices) !== '{}'" class="pa-0 text-left">
 								<p class="warning">
@@ -342,6 +342,9 @@ const isCollapsed = ref(false);
 							</div>
 						</v-card-actions>
 						<v-card-actions>
+							<v-btn :color="importText ? 'success' : undefined" prepend-icon="mdi:import" @click="importCreatureFromUserInput">
+								Import
+							</v-btn>
 							<v-btn text="Cancel" @click="isActive.value = false; importType = ''; importText = ''" />
 						</v-card-actions>
 					</v-card>
