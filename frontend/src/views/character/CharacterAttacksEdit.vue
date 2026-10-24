@@ -128,7 +128,7 @@ const isVisualEditor = ref(store.user?.preferredEditor === "Visual");
 			v-tooltip="'Change editor'" size="24" icon="mdi:code-block-braces" text="Change editor"
 			@click="EditAutomationRef?.toggleEditor()"
 		/>
-		<ImportAutomationUtil @load-feature="(feature: FeatureEntity) => loadFeature(feature)" />
+		<ImportAutomationUtil :current-data="character?.overrides.attacks[activeAttackIndex] ?? null" current-data-type="fromCharacter" @load-feature="(feature: FeatureEntity) => loadFeature(feature)" />
 	</Breadcrumbs>
 	<div v-if="!AvraeToken" class="content">
 		<v-btn color="#9c27b0" prepend-icon="$avrae" variant="flat" class="mt-4" @click.prevent="sendToAvraeLogin($route.path)">

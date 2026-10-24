@@ -7,7 +7,7 @@ import { useToast } from "@/utils/app/toast";
 import { sendToAvraeLogin, useFetch } from "@/utils/utils";
 import { buildCounterCopyCommand, getAvraeCharacters } from "./utils";
 
-const { automation, consumables = null } = defineProps<{ automation: AttackModel | AttackModel[] | null; consumables?: AutomationConsumables | null }>();
+const { automation, consumables = null, renderInputsOnly = false } = defineProps<{ automation: AttackModel | AttackModel[] | null; consumables?: AutomationConsumables | null; renderInputsOnly?: boolean }>();
 const { addToast, updateToast } = useToast();
 const AvraeToken = localStorage.getItem("AvraeToken");
 const isMenuOpen = ref(false);
@@ -82,7 +82,7 @@ const toArray = <T>(input: T | T[]): T[] => {
 </script>
 
 <template>
-	<v-dialog v-model="isMenuOpen" max-width="600">
+	<v-dialog v-if="!renderInputsOnly" v-model="isMenuOpen" max-width="600">
 		<template #activator="{ props }">
 			<v-icon-btn v-tooltip="'Import to Avrae'" icon="$avrae" v-bind="props" size="24" />
 		</template>
@@ -95,50 +95,99 @@ const toArray = <T>(input: T | T[]): T[] => {
 						also
 						load its counters.
 					</span>
-					<div v-if="AvraeToken">
-						<v-select
-							v-model="selectedCharacter" :items="characters || []" :loading="loading"
-							item-title="name" item-value="upstream" label="Select a character" class="mt-4" hide-details
-							prepend-inner-icon="$avrae" @update:menu="handleMenuOpen"
-						>
-							<template #no-data>
-								<v-list-item>
-									<v-list-item-title>
-										{{ loading ? 'Loading characters...' : 'No characters found' }}
-									</v-list-item-title>
-								</v-list-item>
-							</template>
-						</v-select>
-						<p v-if="selectedCharacter !== null" class="py-5 text-error">
-							Warning: this will override existing attacks of the same name.
-						</p>
-						<v-btn
-							v-if="selectedCharacter !== null" class="w-100" size="large" color="success"
-							prepend-icon="mdi:import" @click="confirmImport"
-						>
-							Confirm import
-						</v-btn>
-					</div>
-					<div v-else>
-						<v-btn color="#9c27b0" prepend-icon="$avrae" variant="flat" class="mt-4" @click.prevent="sendToAvraeLogin($route.path)">
-							Login with Avrae
-						</v-btn>
-					</div>
-					<div class="d-flex align-center my-4 w-100">
-						<v-divider class="flex-grow-1" />
-						<span class="mx-4 text-medium-emphasis">OR</span>
-						<v-divider class="flex-grow-1" />
-					</div>
-					<div>
-						<v-btn prepend-icon="mdi:content-copy" size="large" class="w-100" @click="copyCommand">
-							Copy
-							Avrae
-							Command
-						</v-btn>
-					</div>
+					<v-row>
+						<v-col v-if="AvraeToken" cols="12">
+							<v-select
+								v-model="selectedCharacter" :items="characters || []" :loading="loading"
+								item-title="name" item-value="upstream" label="Select a character" class="mt-4"
+								hide-details prepend-inner-icon="$avrae" @update:menu="handleMenuOpen"
+							>
+								<template #no-data>
+									<v-list-item>
+										<v-list-item-title>
+											{{ loading ? 'Loading characters...' : 'No characters found' }}
+										</v-list-item-title>
+									</v-list-item>
+								</template>
+							</v-select>
+							<p v-if="selectedCharacter !== null" class="py-5 text-error">
+								Warning: this will override existing attacks of the same name.
+							</p>
+							<v-btn
+								v-if="selectedCharacter !== null" class="w-100" size="large" color="success"
+								prepend-icon="mdi:import" @click="confirmImport"
+							>
+								Confirm import
+							</v-btn>
+						</v-col>
+						<v-col v-else cols="12">
+							<v-btn
+								color="#9c27b0" prepend-icon="$avrae" variant="flat" class="mt-4"
+								@click.prevent="sendToAvraeLogin($route.path)"
+							>
+								Login with Avrae
+							</v-btn>
+						</v-col>
+						<v-col cols="12">
+							<div class="d-flex align-center my-4 w-100">
+								<v-divider class="flex-grow-1" />
+								<span class="mx-4 text-medium-emphasis">OR</span>
+								<v-divider class="flex-grow-1" />
+							</div>
+						</v-col>
+
+						<v-col cols="12">
+							<v-btn prepend-icon="mdi:content-copy" size="large" class="w-100" @click="copyCommand">
+								Copy
+								Avrae
+								Command
+							</v-btn>
+						</v-col>
+					</v-row>
 				</v-card-text>
-				<v-card-actions />
 			</v-card>
 		</template>
 	</v-dialog>
+	<template v-else>
+		<v-col v-if="AvraeToken" cols="12">
+			<v-select
+				v-model="selectedCharacter" :items="characters || []" :loading="loading" item-title="name"
+				item-value="upstream" label="Select a character" prepend-inner-icon="$avrae"
+				hide-details clearable @update:menu="handleMenuOpen"
+			>
+				<template #no-data>
+					<v-list-item>
+						<v-list-item-title>
+							{{ loading ? 'Loading characters...' : 'No characters found' }}
+						</v-list-item-title>
+					</v-list-item>
+				</template>
+			</v-select>
+			<p v-if="selectedCharacter !== null" class="py-5 text-error">
+				Warning: this will override existing attacks of the same name.
+			</p>
+			<v-btn
+				v-if="selectedCharacter !== null" class="w-100" size="large" color="success"
+				prepend-icon="mdi:import" @click="confirmImport"
+			>
+				Confirm import
+			</v-btn>
+		</v-col>
+		<v-col v-else cols="12">
+			<v-btn
+				color="#9c27b0" prepend-icon="$avrae" variant="flat" class="mt-4"
+				@click.prevent="sendToAvraeLogin($route.path)"
+			>
+				Login with Avrae
+			</v-btn>
+		</v-col>
+
+		<v-col cols="12">
+			<v-btn prepend-icon="mdi:content-copy" size="large" class="w-100" @click="copyCommand">
+				Copy
+				Avrae
+				Command
+			</v-btn>
+		</v-col>
+	</template>
 </template>

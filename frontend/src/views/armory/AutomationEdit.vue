@@ -9,7 +9,6 @@ import { useHotkey } from "vuetify";
 import { useRules } from "vuetify/labs/rules";
 import EditAutomation from "@/components/Automations/EditAutomation.vue";
 import ImportAutomationUtil from "@/components/Automations/ImportAutomationUtil.vue";
-import ImportToCharacter from "@/components/Characters/ImportToCharacter.vue";
 import { buildCounterOutput } from "@/components/Characters/utils";
 import TypeHintedEditor from "@/components/FormInputs/TypeHintedEditor.vue";
 import Editor from "@/components/StatblockEditor/Editor.vue";
@@ -468,8 +467,7 @@ watch(() => data.value?.name, () => {
 			v-tooltip="'Change editor'" size="24" icon="mdi:code-block-braces" text="Change editor"
 			@click="EditAutomationRef?.toggleEditor()"
 		/>
-		<ImportAutomationUtil @load-feature="feature => loadFeature(feature)" />
-		<ImportToCharacter :automation="data?.automation || null" :consumables="data?.consumables || null" />
+		<ImportAutomationUtil :current-data="data ?? null" current-data-type="fromAutomation" @load-feature="feature => loadFeature(feature)" />
 		<v-icon-btn
 			v-if="data && store.isMobile" v-tooltip="'Clear automation'" icon="mdi:delete"
 			text="Clear automation" size="24" @click="data.automation = null"

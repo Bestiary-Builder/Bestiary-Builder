@@ -6,7 +6,6 @@ import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vu
 import { useHotkey } from "vuetify";
 import EditAutomation from "@/components/Automations/EditAutomation.vue";
 import ImportAutomationUtil from "@/components/Automations/ImportAutomationUtil.vue";
-import ImportToCharacter from "@/components/Characters/ImportToCharacter.vue";
 import Editor from "@/components/StatblockEditor/Editor.vue";
 import { activation_type } from "@/components/VisualEditor/util";
 import { useToast } from "@/utils/app/toast";
@@ -417,8 +416,7 @@ provide("setActionDescription", setDesc);
 			v-tooltip="'Change editor'" size="24" icon="mdi:code-block-braces" text="Change editor"
 			@click="EditAutomationRef?.toggleEditor()"
 		/>
-		<ImportAutomationUtil @load-feature="feature => loadFeature(feature)" />
-		<ImportToCharacter :automation="data?.features[type][aid].automation ?? null" />
+		<ImportAutomationUtil :current-data="data?.features[type][aid] ?? null" current-data-type="fromCreature" @load-feature="feature => loadFeature(feature)" />
 		<v-icon-btn
 			v-if="data && store.isMobile" v-tooltip="'Clear automation'" icon="mdi:delete"
 			text="Clear automation" size="24" @click="data.features[type][aid].automation = {}"

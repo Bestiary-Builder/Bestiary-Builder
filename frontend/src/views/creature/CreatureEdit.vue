@@ -162,7 +162,7 @@ watch(() => data.value.description.name, () => {
 // import
 const importText = ref("");
 type ImportTypes = "" | "CritterDB Creature link" | "Bestiary Builder JSON" | "5e Tools JSON";
-const importType = ref<ImportTypes>("");
+const importType = ref<ImportTypes>("Bestiary Builder JSON");
 const notices = ref<{ [key: string]: string[] }>({});
 const import5etools = async () => {
 	if (importText.value.startsWith("___")) {
@@ -258,10 +258,6 @@ const importCreature = async (creature: Statblock) => {
 };
 
 const isCollapsed = ref(false);
-
-const onAfterEnter = () => {
-	window.dispatchEvent(new Event("resize"));
-};
 </script>
 
 <template>
@@ -311,8 +307,9 @@ const onAfterEnter = () => {
 							<v-select
 								v-model="importType" label="Choose import type"
 								:items="['Bestiary Builder JSON', '5e Tools JSON', 'CritterDB Creature link']"
-								class="w-100" @update:menu="(isOpen) => isOpen && onAfterEnter()"
-							/>							<v-text-field
+								class="w-100"
+							/>
+							<v-text-field
 								v-if="importType" v-model="importText"
 								:label="importType === 'CritterDB Creature link' ? 'Link' : 'JSON data'"
 								class="w-100"
