@@ -112,7 +112,15 @@ const groupedAutomatedItems = computed(() => {
 
 const copyAutomation = async () => {
 	try {
-		await navigator.clipboard.writeText(JSON.stringify(currentData));
+		switch (currentDataType) {
+			case "fromCharacter":
+				await navigator.clipboard.writeText(JSON.stringify(currentData, null, 2));
+				break;
+			case "fromCreature":
+			case "fromAutomation":
+				await navigator.clipboard.writeText(JSON.stringify(currentData?.automation, null, 2));
+				break;
+		}
 		addToast("Copied automation!");
 	}
 	catch { }
