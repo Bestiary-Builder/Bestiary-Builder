@@ -258,6 +258,10 @@ const importCreature = async (creature: Statblock) => {
 };
 
 const isCollapsed = ref(false);
+
+const onAfterEnter = () => {
+  window.dispatchEvent(new Event('resize'))
+}
 </script>
 
 <template>
@@ -307,9 +311,8 @@ const isCollapsed = ref(false);
 							<v-select
 								v-model="importType" label="Choose import type"
 								:items="['Bestiary Builder JSON', '5e Tools JSON', 'CritterDB Creature link']"
-								class="w-100" :menu-props="{ eager: true }"
-							/>
-							<v-text-field
+								class="w-100" @update:menu="(isOpen) => isOpen && onAfterEnter()"
+							/>							<v-text-field
 								v-if="importType" v-model="importText"
 								:label="importType === 'CritterDB Creature link' ? 'Link' : 'JSON data'"
 								class="w-100"
