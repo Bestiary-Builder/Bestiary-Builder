@@ -14,7 +14,6 @@ async function canEditAutomation(automation: Automation, userId: Id) {
 }
 
 export function prepareAutomationInput(input: Partial<Automation>, defaultName: string) {
-	console.log(input)
 	const data = {
 		automation: input.automation ?? null,
 		name: input.name ?? defaultName,
@@ -22,7 +21,6 @@ export function prepareAutomationInput(input: Partial<Automation>, defaultName: 
 		description: input.description ?? "",
 		consumables: input.consumables ?? []
 	};
-	console.log(data)
 	const limitError = checkAutomationLimits(data);
 	if (limitError)
 		return { data, error: limitError };
@@ -106,7 +104,6 @@ app.post("/api/automation/:id/update", requireUser, async (req, res) => {
 
 app.post("/api/automation/add", requireUser, async (req, res) => {
 	const user = req.user!;
-	console.log(req.body)
 	if (!req.body.data)
 		return res.status(400).json({ error: "Automation data not found." });
 	const input = req.body.data as { automation: Partial<Automation>; collectionId: string };
