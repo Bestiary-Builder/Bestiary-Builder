@@ -1,4 +1,9 @@
 [//]: # (Remember to update the constant in /src/utils/constants.ts whenever a new release is added)
+## v3.0.4
+_October 25, 2026
+
+- Added a way to add any automation in Bestiary Builder to any of your automation collections directly.
+
 ## v3.0.3
 _October 22, 2026_
 
