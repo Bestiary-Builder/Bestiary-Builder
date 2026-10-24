@@ -98,7 +98,7 @@ const copySingleCounter = async (consumable: AutomationConsumable) => {
 		/>
 	</Breadcrumbs>
 	<div v-if="data" class="content">
-		<v-card class="pa-4" color="surface-light">
+		<v-sheet class="pa-4" color="surface-light" rounded>
 			<v-row>
 				<v-col cols="4">
 					<v-text-field
@@ -112,7 +112,7 @@ const copySingleCounter = async (consumable: AutomationConsumable) => {
 					<Editor v-model="data.description" :height="100" />
 				</v-col>
 			</v-row>
-		</v-card>
+		</v-sheet>
 
 		<v-defaults-provider
 			:defaults="{ VTextField: { disabled: true }, VSelect: { disabled: true }, VNumberInput: { disabled: true }, VComboBox: { disabled: true }, VCheckbox: { disabled: true }, VAutocomplete: { disabled: true }, VTextArea: { disabled: true }, VField: { disabled: true } }"
@@ -125,7 +125,7 @@ const copySingleCounter = async (consumable: AutomationConsumable) => {
 			<v-card
 				title="Custom Counters" class="pa-4 d-flex flex-column"
 				subtitle="Importing this action to your Avrae Character will import this Custom Counter too."
-				bg-color="surface-light" color="surface-light"
+				bg-color="surface-light" color="surface-light" rounded
 			>
 				<v-card-text class="flex-grow-1" bg-color="surface-light">
 					<v-list density="compact" class="text-left my-4" max-height="1000">

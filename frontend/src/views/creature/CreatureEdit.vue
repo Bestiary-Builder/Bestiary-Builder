@@ -260,8 +260,8 @@ const importCreature = async (creature: Statblock) => {
 const isCollapsed = ref(false);
 
 const onAfterEnter = () => {
-  window.dispatchEvent(new Event('resize'))
-}
+	window.dispatchEvent(new Event("resize"));
+};
 </script>
 
 <template>

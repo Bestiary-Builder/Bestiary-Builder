@@ -480,7 +480,7 @@ watch(() => data.value?.name, () => {
 		/>
 	</Breadcrumbs>
 	<div v-if="data" class="content">
-		<v-sheet class="pa-4" color="surface-light">
+		<v-sheet class="pa-4" color="surface-light" rounded>
 			<v-row>
 				<v-col cols="4">
 					<v-text-field
