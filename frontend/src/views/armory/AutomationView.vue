@@ -87,6 +87,14 @@ const copySingleCounter = async (consumable: AutomationConsumable) => {
 			}
 		]"
 	>
+		<RouterLink
+			v-if="data && (isOwner || isEditor)"
+			:to="`/automation/edit/${data.id}`"
+		>
+			<v-icon-btn
+				v-tooltip="'Edit'" text="Edit" icon="mdi:edit" size="24"
+			/>
+		</RouterLink>
 		<v-icon-btn
 			v-tooltip="'Change editor'" size="24" icon="mdi:code-block-braces" text="Change editor"
 			@click="EditAutomationRef?.toggleEditor()"

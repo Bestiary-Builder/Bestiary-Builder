@@ -46,7 +46,7 @@ const clientId = import.meta.env.VITE_DISCORD_ID ?? "";
 const loginLink = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&response_type=code&scope=identify+email&redirect_uri=${encodeURIComponent(`${window.location.origin}/api/login`)}`;
 
 export function sendToLogin(route: string) {
-	window.document.cookie = `route=${route}`;
+	window.document.cookie = `route=${route}; path=/`;
 	window.location.href = loginLink;
 }
 

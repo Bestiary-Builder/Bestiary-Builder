@@ -39,10 +39,11 @@ router.beforeEach(async (to, from) => {
 	// Requires being logged in?
 	if (to.meta.loggedIn) {
 		if (!store.user) {
-			if (to.fullPath.includes("/bestiary/edit"))
-				return `/bestiary/view/${to.params.id as string || ""}`;
-			if (to.fullPath.includes("/creature/edit"))
+			if (to.fullPath.includes("/creature/edit/"))
 				return `/creature/view/${to.params.id as string || ""}`;
+			else if (to.fullPath.includes("/edit/"))
+				return to.fullPath.replace("/edit/", "/view/");
+
 			sendToLogin(to.path);
 			return false;
 		}

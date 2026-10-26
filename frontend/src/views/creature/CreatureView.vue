@@ -65,6 +65,14 @@ onMounted(async () => {
 				}
 			]"
 		>
+			<RouterLink
+				v-if="data && (isOwner || isEditor)"
+				:to="`/creature/edit/${data.id}`"
+			>
+				<v-icon-btn
+					v-tooltip="'Edit'" text="Edit" icon="mdi:edit" size="24"
+				/>
+			</RouterLink>
 			<CopyCreature
 				v-if="data && store.user" no-import-all :may-import="false"
 				:current-creature="{ ...data, bestiaryName: bestiary.name }"

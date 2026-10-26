@@ -200,6 +200,15 @@ const copyCreature = async (id: CreatureMetaData["id"]) => {
 				}
 			]"
 		>
+			<RouterLink
+				v-if="collection && (isOwner || isEditor)"
+				:to="`/bestiary/edit/${collection.id}`"
+			>
+				<v-icon-btn
+					v-tooltip="'Edit'" text="Edit" icon="mdi:edit" size="24"
+				/>
+			</RouterLink>
+
 			<CopyCreature
 				ref="copyManager" :may-import="isOwner || isEditor" :current-creatures="items || []"
 				can-copy-current-bestiary

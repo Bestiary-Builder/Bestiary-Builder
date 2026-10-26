@@ -68,6 +68,15 @@ async function exportCollection(asFile: boolean) {
 				}
 			]"
 		>
+			<RouterLink
+				v-if="collection && (isOwner || isEditor)"
+				:to="`/armory/edit/${collection.id}`"
+			>
+				<v-icon-btn
+					v-tooltip="'Edit'" text="Edit" icon="mdi:edit" size="24"
+				/>
+			</RouterLink>
+
 			<DropdownMenu>
 				<template #activator="{ props }">
 					<v-icon-btn text="Export collection" icon="mdi:export" size="24" v-bind="props" />
