@@ -6,7 +6,7 @@ import { useRoute, useRouter } from "vue-router";
 import { getUmami } from "@/utils/app/analytics";
 import { useToast } from "@/utils/app/toast";
 import { store } from "@/utils/store";
-import { useFetch } from "@/utils/utils";
+import { sendToLogin, useFetch } from "@/utils/utils";
 
 type CollectionType = "bestiary" | "automations";
 
@@ -97,8 +97,12 @@ export const useCollection = <T extends CollectionType>(type: T) => {
 		if (!success) {
 			collection.value = null;
 			addToast(error, { color: "error" });
-			if (status === 401 || status === 404)
-				await $router.replace("/404");
+			if (status === 401 || status === 404) {
+				if (store.user)
+					await $router.push("/404");
+				else
+					sendToLogin($route.fullPath);
+			}
 			return;
 		}
 

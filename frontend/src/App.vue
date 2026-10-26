@@ -135,7 +135,13 @@ const dismissed = useLocalStorage("update3.0.0dismissed", false);
 							/>
 						</template>
 					</v-list-item>
-					<v-list-item v-else id="user-page" prepend-icon="mdi:login" @click="sendToLogin($route.path)">
+					<v-list-item
+						v-else id="user-page" prepend-icon="mdi:login" @click="
+							($route.path !== '/404')
+								? sendToLogin($route.path)
+								: sendToLogin($router.options.history.state.back?.toString() || '/')
+						"
+					>
 						<v-list-item-title>
 							<b> Login </b>
 						</v-list-item-title>

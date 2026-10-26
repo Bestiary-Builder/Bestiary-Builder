@@ -16,7 +16,7 @@ import { getUmami } from "@/utils/app/analytics";
 import { useToast } from "@/utils/app/toast";
 import { useRecentPages } from "@/utils/app/useRecentPages";
 import { store } from "@/utils/store";
-import { useFetch } from "@/utils/utils";
+import { sendToLogin, useFetch } from "@/utils/utils";
 import { defaultStatblock } from "~/shared";
 
 const $route = useRoute();
@@ -71,8 +71,12 @@ const loadRawInfo = async () => {
 	}
 	else {
 		addToast(error, { color: "error" });
-		if (status === 401 || status === 404)
-			await $router.replace("/404");
+		if (status === 401 || status === 404) {
+			if (store.user)
+				await $router.push("/404");
+			else
+				sendToLogin($route.fullPath);
+		}
 		return false;
 	}
 };
