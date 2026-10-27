@@ -5,11 +5,10 @@ import { checkBadwords } from "@/utilities/badwords";
 import { app, checkBestiaryLimits, checkCreatureAmountLimit, checkImageUrl, limits } from "@/utilities/constants";
 import { addBestiaryEditor, addBookmark, createBestiary, createCreatures, deleteBestiary, getBestiariesByOwner, getBestiariesByUser, getBestiary, getBestiaryCreatureCount, getBestiaryCreatureIds, getBestiaryFull, getOwnedBestiaryIds, getPublicBestiariesByOwner, incrementBestiaryViewCount, isBestiaryBookmarked, removeBestiaryEditor, removeBookmark, updateBestiary, updateBestiaryCreatureIndexes, updateUserBestiaryIndexes } from "@/utilities/database";
 import { log } from "@/utilities/logger";
-import { bestiaryTags } from "~/shared";
+import { bestiaryTags, validateStatblock } from "~/shared";
 
 import { prepareCreatureStats } from "../creatures/creaturePreparation";
 import { privateLog, publicLog } from "../external/discord";
-import { StatblockChecker } from "../external/validation";
 import { possibleUser, requireUser } from "../main/login";
 import { createCollectionService } from "./collections";
 
@@ -387,7 +386,7 @@ app.get("/api/bestiary/:id/bookmark/get", requireUser, async (req, res) => {
 
 function validateStatblockInput(input: Statblock[]) {
 	for (const block of input) {
-		if (!StatblockChecker.test(block))
+		if (!validateStatblock(block).success)
 			return false;
 	}
 

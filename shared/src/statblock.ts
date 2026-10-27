@@ -1,27 +1,4 @@
-export interface SearchOptions {
-	search: string;
-	page: number;
-	mode: "popular" | "recent";
-	tags: string[];
-}
-
-export type AutomationConsumables = AutomationConsumable[];
-
-export interface AutomationConsumable {
-	name: string;
-	minv: string | null;
-	maxv: string | null;
-	display_type: "bubble" | "square" | "hex" | "star" | "default" | null;
-	reset: "short" | "long" | "none" | null;
-	reset_to: string | null;
-	reset_by: string | null;
-	title: string | null;
-	desc: string | null;
-	value: number | null;
-	ddb_source_feature_id: null;
-	ddb_source_feature_type: null;
-	live_id: null;
-}
+import type { AutomationModel } from "./attackModel";
 
 export type Stat = "str" | "dex" | "con" | "int" | "cha" | "wis";
 
@@ -165,7 +142,7 @@ export interface Features {
 export interface FeatureEntity {
 	name: string;
 	description: string;
-	automation: any; // null | AttackModel | AttackModel[];
+	automation: AutomationModel;
 }
 
 export interface SpellCasting {

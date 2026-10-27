@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AttackModel, BestiaryResponse, CreatureResponse, FeatureEntity, Features, Statblock } from "~/shared";
+import type { AttackModel, AutomationModel, BestiaryResponse, CreatureResponse, FeatureEntity, Features, Statblock } from "~/shared";
 import { useLocalStorage } from "@vueuse/core";
 import { computed, nextTick, onMounted, onUnmounted, provide, ref, useTemplateRef, watch } from "vue";
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
@@ -262,7 +262,7 @@ const generateAutomation = async () => {
 
 // Description parity helpers
 const updateFeatureDescFromAutomationDesc = () => {
-	const auto = data.value?.features[type][aid].automation as AttackModel | AttackModel[] | null | undefined;
+	const auto = data.value?.features[type][aid].automation;
 	if (!auto || Array.isArray(auto))
 		return;
 	for (let i = (auto.automation || []).length - 1; i >= 0; i--) {
@@ -275,7 +275,7 @@ const updateFeatureDescFromAutomationDesc = () => {
 };
 
 const updateAutomationDescFromFeatureDesc = () => {
-	const auto = data.value?.features[type][aid].automation as AttackModel | AttackModel[] | null | undefined;
+	const auto = data.value?.features[type][aid].automation;
 	if (!auto || Array.isArray(auto))
 		return;
 	for (let i = (auto.automation || []).length - 1; i >= 0; i--) {
@@ -288,7 +288,7 @@ const updateAutomationDescFromFeatureDesc = () => {
 };
 
 const getAutomationDescription = (): string | boolean => {
-	const auto = data.value?.features[type][aid].automation as AttackModel | AttackModel[] | null | undefined;
+	const auto = data.value?.features[type][aid].automation;
 	if (!auto || Array.isArray(auto) || !auto.automation || auto.automation.length === 0)
 		return false;
 	for (let i = auto.automation.length - 1; i >= 0; i--) {
@@ -419,7 +419,7 @@ provide("setActionDescription", setDesc);
 		<ImportAutomationUtil :current-data="data?.features[type][aid] ?? null" current-data-type="fromCreature" @load-feature="feature => loadFeature(feature)" />
 		<v-icon-btn
 			v-if="data && store.isMobile" v-tooltip="'Clear automation'" icon="mdi:delete"
-			text="Clear automation" size="24" @click="data.features[type][aid].automation = {}"
+			text="Clear automation" size="24" @click="data.features[type][aid].automation = {} as AutomationModel"
 		/>
 		<v-icon-btn
 			v-if="data && store.isMobile" v-tooltip="'Copy automation'" icon="mdi:content-copy"
