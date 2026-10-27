@@ -14,7 +14,7 @@ export interface AttackModel {
 	list_display_override?: string;
 }
 
-export type IntExpression = string | number;
+export type IntExpression = string;
 export type AnnotatedString = string;
 export type Effect = Target | Remove_IEffect | Roll | Text | Variable | Condition | Counter | Spell;
 export type EffectWithTarget = Target | Remove_IEffect | Roll | Text | Variable | Condition | Counter | Spell | Check | Attack | Save | Damage | TempHP | IEffect;
