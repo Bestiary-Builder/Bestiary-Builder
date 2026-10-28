@@ -1,12 +1,10 @@
 import type { Response } from "express";
-import type { Checker } from "ts-interface-checker";
 
-import type { AutomationConsumables, Statblock } from "~/shared";
+import type { AutomationConsumables, AutomationModel, IValidation, Statblock } from "~/shared";
 import fetch from "node-fetch";
 // Validate input
-import { createCheckers } from "ts-interface-checker";
 import { app } from "@/utilities/constants";
-import { interfaceValidation, typeInterface } from "~/shared";
+import { interfaceValidation, validateAutomationConsumables, validateAutomationModel, validateStatblock } from "~/shared";
 
 app.post("/api/validate/automation", async (req, res) => {
 	const automation = req.body.data;
@@ -23,28 +21,28 @@ app.post("/api/validate/automation", async (req, res) => {
 	else
 		return res.status(400).json(result);
 });
-const {
-	AutomationConsumables: AutomationConsumablesChecker,
-	SearchOptions: SearchOptionsChecker,
-	Statblock: StatblockChecker
-} = createCheckers(typeInterface);
 
-export { AutomationConsumablesChecker, SearchOptionsChecker, StatblockChecker };
+type Checker = (input: unknown) => IValidation;
 
 export function validateInput(input: unknown, checker: Checker, res: Response, dataName: string) {
-	if (checker.test(input))
+	const result = checker(input);
+	if (result.success)
 		return true;
 
-	res.status(400).json({ error: `${dataName} data not valid:\n${interfaceValidation(checker.validate(input) ?? [])}` });
+	res.status(400).json({ error: `${dataName} data not valid:\n${interfaceValidation(result.errors)}` });
 	return false;
 }
 
 export function validateCreatureInput(input: Statblock, res: Response) {
-	return validateInput(input, StatblockChecker, res, "Creature");
+	return validateInput(input, validateStatblock, res, "Creature");
+}
+
+export function validateAutomationInput(input: AutomationModel, res: Response) {
+	return validateInput(input, validateAutomationModel, res, "Automation");
 }
 
 export function validateAutomationConsumablesInput(input: AutomationConsumables, res: Response) {
-	return validateInput(input, AutomationConsumablesChecker, res, "Automation consumables");
+	return validateInput(input, validateAutomationConsumables, res, "Automation consumables");
 }
 
 app.post("/api/validate/creature", async (req, res) => {

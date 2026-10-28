@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
 
-import { StatblockChecker } from "../src/logic/external/validation";
+import { validateStatblock } from "~/shared";
 import { parseFrom5eTools } from "../src/logic/import/5eTools";
 
 export const data = {
@@ -218,5 +218,5 @@ export const data = {
 it("5eTools parse output matches the Statblock schema", () => {
 	const [parsed] = parseFrom5eTools(data);
 
-	expect(StatblockChecker.test(parsed)).toBe(true);
+	expect(validateStatblock(parsed).success).toBe(true);
 });
