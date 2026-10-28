@@ -180,6 +180,148 @@ describe("validate automations", () => {
 		} as unknown as AutomationModel;
 		expect(validateAutomationModel(automation).success).toBe(false);
 	});
+
+	// Deeply nested automations work
+	it("deeply nested automation", () => {
+		const automation = {
+			_v: 2,
+			name: "Dumb Test Attack",
+			automation: [
+				{
+					type: "target",
+					target: "self",
+					effects: [
+						{
+							type: "ieffect2",
+							name: "",
+							effects: {},
+							buttons: [
+								{
+									label: "New Button",
+									automation: [
+										{
+											type: "target",
+											target: "self",
+											effects: [
+												{
+													type: "ieffect2",
+													name: "",
+													effects: {},
+													buttons: [
+														{
+															label: "New Button",
+															automation: [
+																{
+																	type: "target",
+																	target: "self",
+																	effects: [
+																		{
+																			type: "ieffect2",
+																			name: "",
+																			effects: {},
+																			buttons: [
+																				{
+																					label: "New Button",
+																					automation: [
+																						{
+																							type: "target",
+																							target: "self",
+																							effects: [
+																								{
+																									type: "ieffect2",
+																									name: "",
+																									effects: {},
+																									buttons: [
+																										{
+																											label: "New Button",
+																											automation: [
+																												{
+																													type: "target",
+																													target: "self",
+																													effects: [
+																														{
+																															type: "ieffect2",
+																															name: "",
+																															effects: {},
+																															buttons: [
+																																{
+																																	label: "New Button",
+																																	automation: [
+																																		{
+																																			type: "target",
+																																			target: "self",
+																																			effects: [
+																																				{
+																																					type: "ieffect2",
+																																					name: "",
+																																					effects: {},
+																																					buttons: [
+																																						{
+																																							label: "New Button",
+																																							automation: [
+																																								{
+																																									type: "target",
+																																									target: "self",
+																																									effects: [
+																																										{
+																																											type: "ieffect2",
+																																											name: "",
+																																											effects: {},
+																																											buttons: [
+																																												{
+																																													label: "New Button",
+																																													automation: [
+																																														{
+																																															type: "target",
+																																															target: "self",
+																																															effects: []
+																																														}
+																																													]
+																																												}
+																																											]
+																																										}
+																																									]
+																																								}
+																																							]
+																																						}
+																																					]
+																																				}
+																																			]
+																																		}
+																																	]
+																																}
+																															]
+																														}
+																													]
+																												}
+																											]
+																										}
+																									]
+																								}
+																							]
+																						}
+																					]
+																				}
+																			]
+																		}
+																	]
+																}
+															]
+														}
+													]
+												}
+											]
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		};
+		expectValidAutomation(automation);
+	});
 });
 
 // Automation consumables validation
