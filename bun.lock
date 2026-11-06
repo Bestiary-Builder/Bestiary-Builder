@@ -73,6 +73,7 @@
         "@guolao/vue-monaco-editor": "^1.5.1",
         "@vueuse/core": "^14.4.0",
         "@zumer/snapdom": "^3.3.6",
+        "@zumer/snapdom-plugins": "^4.4.1",
         "less": "^4.2.0",
         "markdown-it": "^14.0.0",
         "markdown-it-anchor": "^8.6.7",
@@ -703,6 +704,8 @@
     "@vueuse/shared": ["@vueuse/shared@14.4.0", "", { "peerDependencies": { "vue": "^3.5.0" } }, "sha512-JRgY90Sz8DDtPMsaDflvPMp9xYk69JZAmbuDvAquUVXKr2gEjqtzGNTTthLfckH0BzBqvnu31gb4a8TGLRe79g=="],
 
     "@zumer/snapdom": ["@zumer/snapdom@3.3.6", "", {}, "sha512-Ynxm2UJz6/diX/M2Xi9R5xqAgg/MrfsiEVJqAjUzcDI1kwnlfK+3F2tiP3BQJWgRouuYjT07cxeSYs31zgR2GA=="],
+
+    "@zumer/snapdom-plugins": ["@zumer/snapdom-plugins@4.4.1", "", { "peerDependencies": { "@zumer/snapdom": "^3.4.0" } }, "sha512-P9bS24pJTfaGuCAPPmbRVVy9TOAOh2YGgwAL3/4LggwV2DkFj912ovNo+88m4bVIQYlxwNA7vmdfghuJeZSt6g=="],
 
     "accepts": ["accepts@2.0.0", "", { "dependencies": { "mime-types": "^3.0.0", "negotiator": "^1.0.0" } }, ""],
 
