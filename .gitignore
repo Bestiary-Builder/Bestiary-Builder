@@ -32,3 +32,4 @@ frontend/stats.html
 build/
 shared/prisma
 shared/src/typia-output/
+shared/src/typia/attackModelForTypia.ts
