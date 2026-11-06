@@ -6,7 +6,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Adjust these two to match your layout, relative to THIS script file
 const typiaInputPath = path.resolve(__dirname, "../src/typia");
-const typiaOutputPath = path.resolve(__dirname, "../src/typia-output/temp");
+const typiaOutputPath = path.resolve(__dirname, "../src/typia-output-temp");
 
 const typeInputPath = path.resolve(__dirname, "../src");
 const typesToCopy = ["statblock.ts", "attackModel.ts"];

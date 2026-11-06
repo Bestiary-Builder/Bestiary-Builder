@@ -1,4 +1,4 @@
-import type { AutomationConsumables } from "@/types";
+import type { AutomationConsumables } from "../types";
 
 import typia from "typia";
 
