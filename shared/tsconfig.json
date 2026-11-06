@@ -4,6 +4,9 @@
 		"lib": ["es2022"],
 		"rootDir": ".",
 		"module": "commonjs",
+		"paths": {
+			"@/*": ["./src/*"],
+		},
 		"resolveJsonModule": true,
 		"allowJs": true,
 		"strict": true,

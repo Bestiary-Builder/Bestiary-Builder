@@ -3,7 +3,7 @@ import type { IValidation as TypiaValidation } from "typia";
 export * from "./typia-output/automation-consumable";
 export * from "./typia-output/automation-model";
 export * from "./typia-output/search";
-export * from "./typia-output/statblock";
+export * from "./typia-output/statblock-validation";
 export type { IValidation } from "typia";
 
 export function interfaceValidation(validation: TypiaValidation.IError[]) {

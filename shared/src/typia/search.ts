@@ -1,4 +1,4 @@
-import type { SearchOptions } from "../types";
+import type { SearchOptions } from "@/types";
 
 import typia from "typia";
 

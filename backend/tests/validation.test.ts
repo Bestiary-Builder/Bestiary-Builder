@@ -100,6 +100,7 @@ describe("validate automations", () => {
 	// SRD Attacks 2014 examples
 	for (const name of [
 		"Acolyte - Club",
+		"Aboleth - Phantasmal Lair",
 		"Abominable Yeti - Cold Breath",
 		"Adult Black Dragon - Bite",
 		"Adult Blue Dragon - Lightning Breath",
