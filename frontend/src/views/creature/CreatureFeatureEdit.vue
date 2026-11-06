@@ -183,12 +183,15 @@ const saveStatblock2 = async (shouldNotify: boolean): Promise<boolean> => {
 					text: `Error saving statblock. ${error}`,
 					color: "error",
 					timeout: -1,
+					isHtml: true
 				});
 			}
 			else {
 				addToast(`Error saving statblock. ${error}`, {
 					color: "error",
 					timeout: -1,
+					isHtml: true
+
 				});
 			}
 			isSavingCreature.value = false;

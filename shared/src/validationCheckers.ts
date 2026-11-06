@@ -10,7 +10,7 @@ export function interfaceValidation(validation: TypiaValidation.IError[]) {
 	let message = "";
 	for (const err of validation) {
 		const path = err.path.replace(/^\$input\.?/, "") || "value";
-		message += `<span><span style="font-family: monospace; font-size: 1rem;">${escapeHtml(path)}</span> is not of type ${escapeHtml(err.expected)}.</span>\n`;
+		message += `<span><span style="font-family: monospace; font-size: 1rem; overflow-wrap: anywhere;">${escapeHtml(path)}</span> is not of type ${escapeHtml(err.expected)}.</span>\n`;
 	}
 	return message;
 }

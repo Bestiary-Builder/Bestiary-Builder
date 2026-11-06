@@ -165,12 +165,14 @@ const saveAutomation = async (shouldNotify: boolean): Promise<boolean> => {
 					text: `Error saving automation. ${error}`,
 					color: "error",
 					timeout: -1,
+					isHtml: true
 				});
 			}
 			else {
 				addToast(`Error saving automation. ${error}`, {
 					color: "error",
 					timeout: -1,
+					isHtml: true
 				});
 			}
 			isSavingCreature.value = false;
