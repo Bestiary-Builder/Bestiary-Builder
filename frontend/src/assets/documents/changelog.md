@@ -3,6 +3,9 @@
 _November 5, 2026_
 
 - Added the ability to export single creatures to a PDF.
+- Fixed an issue where setting CR > 30 and XP / PB greater than usual values would reset the latter two upon page refresh.
+- Improved systems around validating automation type correctness and performance. 
+
 ## v3.0.4
 _October 25, 2026_
 
