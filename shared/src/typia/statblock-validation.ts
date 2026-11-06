@@ -1,5 +1,4 @@
-// @ts-ignore statblock will be created on build-types
-import type { Statblock } from "./statblock";
+import type { Statblock } from "../types";
 
 import typia from "typia";
 

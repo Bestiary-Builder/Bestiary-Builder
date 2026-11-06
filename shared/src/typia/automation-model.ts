@@ -1,5 +1,4 @@
-// @ts-ignore attackModel will be created on build-types
-import type { AutomationModel } from "./attackModel";
+import type { AutomationModel } from "../types";
 import typia from "typia";
 
 export const validateAutomationModel = typia.createValidate<AutomationModel>();
