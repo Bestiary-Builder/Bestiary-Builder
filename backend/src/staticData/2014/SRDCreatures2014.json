@@ -7219,7 +7219,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "always"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             }
@@ -8001,7 +8002,8 @@
                                                                                 "type": "remove_ieffect"
                                                                             }
                                                                         ],
-                                                                        "contestTie": "neither"
+                                                                        "contestTie": "neither",
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             }
@@ -16011,7 +16013,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "always"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             }
@@ -16793,7 +16796,8 @@
                                                                                 "type": "remove_ieffect"
                                                                             }
                                                                         ],
-                                                                        "contestTie": "neither"
+                                                                        "contestTie": "neither",
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             }
@@ -20266,7 +20270,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -27150,7 +27155,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -28331,7 +28337,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -37548,7 +37555,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -38810,7 +38818,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -39626,7 +39635,8 @@
                                                                             {
                                                                                 "type": "remove_ieffect"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ],
                                                                 "verb": "attempts to detach the cloaker",
@@ -41027,7 +41037,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -42003,7 +42014,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -42867,7 +42879,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -44432,7 +44445,8 @@
                                                                             {
                                                                                 "type": "remove_ieffect"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ],
                                                                 "verb": "attempts to detach the darkmantle",
@@ -46561,7 +46575,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -49001,7 +49016,8 @@
                                                                             {
                                                                                 "type": "remove_ieffect"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             }
@@ -57128,7 +57144,8 @@
                                                                                 "removeParent": "if_no_children"
                                                                             }
                                                                         ],
-                                                                        "contestTie": "neither"
+                                                                        "contestTie": "neither",
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             }
@@ -65531,7 +65548,8 @@
                                                                             {
                                                                                 "type": "remove_ieffect"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             }
@@ -68593,7 +68611,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -68950,7 +68969,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -69272,7 +69292,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -70597,7 +70618,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -71816,7 +71838,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -72929,7 +72952,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -74014,7 +74038,8 @@
                                                                                 "removeParent": "if_no_children"
                                                                             }
                                                                         ],
-                                                                        "contestTie": "neither"
+                                                                        "contestTie": "neither",
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             }
@@ -74306,7 +74331,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -77510,7 +77536,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -83907,7 +83934,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -97337,7 +97365,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -98220,7 +98249,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -99397,7 +99427,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -102917,7 +102948,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -105722,7 +105754,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -107175,7 +107208,9 @@
                                                 ],
                                                 "contestAbility": [
                                                     "strength"
-                                                ]
+                                                ],
+                                                "success": [],
+                                                "fail": []
                                             }
                                         ],
                                         "attackBonus": "6",
@@ -108275,7 +108310,8 @@
                                                                                         "type": "remove_ieffect",
                                                                                         "removeParent": "if_no_children"
                                                                                     }
-                                                                                ]
+                                                                                ],
+                                                                                "fail": []
                                                                             }
                                                                         ]
                                                                     },
@@ -108315,7 +108351,8 @@
                                                                                         "type": "remove_ieffect",
                                                                                         "removeParent": "if_no_children"
                                                                                     }
-                                                                                ]
+                                                                                ],
+                                                                                "fail": []
                                                                             }
                                                                         ]
                                                                     },
@@ -108911,7 +108948,8 @@
                                                                                         "type": "remove_ieffect",
                                                                                         "removeParent": "if_no_children"
                                                                                     }
-                                                                                ]
+                                                                                ],
+                                                                                "fail": []
                                                                             }
                                                                         ]
                                                                     },
@@ -108951,7 +108989,8 @@
                                                                                         "type": "remove_ieffect",
                                                                                         "removeParent": "if_no_children"
                                                                                     }
-                                                                                ]
+                                                                                ],
+                                                                                "fail": []
                                                                             }
                                                                         ]
                                                                     },
@@ -114841,7 +114880,9 @@
                                         ],
                                         "contestAbility": [
                                             "insight"
-                                        ]
+                                        ],
+                                        "success": [],
+                                        "fail": []
                                     }
                                 ]
                             },
@@ -115814,7 +115855,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -118525,7 +118567,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -129115,7 +129158,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -129617,7 +129661,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -130536,7 +130581,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -130950,7 +130996,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -131296,7 +131343,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -133571,7 +133619,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -146898,7 +146947,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -150985,7 +151035,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -152772,7 +152823,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -153343,7 +153395,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -153913,7 +153966,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -154535,7 +154589,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -155470,7 +155525,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -155623,7 +155679,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -157570,7 +157627,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             }
@@ -157899,7 +157957,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -170615,7 +170674,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
@@ -171877,7 +171937,8 @@
                                                                                 "type": "remove_ieffect",
                                                                                 "removeParent": "if_no_children"
                                                                             }
-                                                                        ]
+                                                                        ],
+                                                                        "fail": []
                                                                     }
                                                                 ]
                                                             },
