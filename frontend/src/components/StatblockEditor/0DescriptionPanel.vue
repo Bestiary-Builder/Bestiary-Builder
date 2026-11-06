@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { Statblock } from "~/shared";
-import { watch } from "vue";
 import { useRules } from "vuetify/labs/rules";
 import { alignments, creatureTypes, sizes } from "@/utils/constants";
 import { getXPbyCR, globalLimits } from "~/shared";
@@ -13,7 +12,7 @@ const { data } = defineProps<{ data: Statblock }>();
 const updatePbAndXp = () => {
 	data.core.proficiencyBonus = Math.max(2, Math.min(9, Math.floor((data.description.cr + 3) / 4)) + 1);
 	data.description.xp = getXPbyCR(data.description.cr);
-}
+};
 
 const rules = useRules();
 
@@ -64,7 +63,7 @@ const creatureTypeIcons: Record<string, string> = {
 				<v-combobox v-model="data.description.alignment" :items="alignments" label="Alignment" hide-details />
 			</v-col>
 			<v-col cols="6">
-				<CRInput v-model="data.description.cr" label="Challenge Rating" @update:model-value="updatePbAndXp"/>
+				<CRInput v-model="data.description.cr" label="Challenge Rating" @update:model-value="updatePbAndXp" />
 			</v-col>
 			<v-col cols="6">
 				<v-number-input v-model="data.core.proficiencyBonus" label="Proficiency Bonus" hide-details />
