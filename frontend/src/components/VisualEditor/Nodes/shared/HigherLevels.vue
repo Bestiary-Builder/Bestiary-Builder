@@ -2,9 +2,12 @@
 import { ref } from "vue";
 
 withDefaults(defineProps<{ isIntExpression?: boolean }>(), { isIntExpression: false });
-const model = defineModel<Record<number, string> | undefined>();
+const model = defineModel<Record<number, string | number> | undefined>();
 
-const getValue = (index: number): string => model.value?.[index] ?? "";
+const getValue = (index: number): string => {
+	const value = model.value?.[index];
+	return value === undefined ? "" : String(value);
+};
 
 const updateValue = (index: number, value: string) => {
 	model.value = { ...(model.value ?? {}), [index]: value };

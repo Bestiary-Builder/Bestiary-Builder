@@ -9,7 +9,7 @@ type Variant = "outlined" | "filled" | "underlined" | "solo" | "solo-filled" | "
 type Density = "default" | "comfortable" | "compact";
 
 interface Props {
-	modelValue?: string;
+	modelValue?: string | number;
 	label?: string;
 	variant?: Variant;
 	density?: Density;
@@ -38,8 +38,8 @@ const $route = useRoute();
 const isFocused = ref(false);
 const editorRef = shallowRef<Monaco.editor.IStandaloneCodeEditor>();
 
-const code = computed({
-	get: () => props.modelValue ?? "",
+const code = computed<string>({
+	get: () => props.modelValue === undefined ? "" : String(props.modelValue),
 	set: value => emit("update:modelValue", value),
 });
 

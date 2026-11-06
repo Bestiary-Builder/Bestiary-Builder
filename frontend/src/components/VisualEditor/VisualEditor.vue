@@ -2,7 +2,7 @@
 import type * as Monaco from "monaco-editor";
 import type { AttackModel, ButtonInteraction, EffectWithTarget } from "~/shared";
 import { loader } from "@guolao/vue-monaco-editor";
-import { computed, onBeforeUnmount, onMounted, provide, ref, useTemplateRef } from "vue";
+import { computed, onBeforeUnmount, onMounted, provide, ref, useTemplateRef, watch } from "vue";
 import { useDisplay } from "vuetify";
 import { AliasAPIClasses, AliasAPIInstances, automationContextHints } from "~/shared";
 import AutomationDocumentation from "../Automations/AutomationDocumentation.vue";
@@ -10,6 +10,7 @@ import EffectAdder from "./EffectAdder.vue";
 import NodeHelper from "./NodeHelper.vue";
 import EffectAsRaw from "./Nodes/shared/EffectAsRaw.vue";
 import SectionHeader from "./Nodes/shared/SectionHeader.vue";
+import { normalizeIntExpressions } from "./normalizeIntExpressions";
 import TreeRoot from "./TreeRoot.vue";
 
 const { name, noListAttack = false } = defineProps<{ name: string; noListAttack?: boolean }>();
@@ -22,6 +23,7 @@ provide("currentContext", currentContext);
 defineExpose<{ currentEffect: any; currentContext: any }>({ currentEffect, currentContext });
 
 const automation = defineModel<null | AttackModel | AttackModel[]>();
+watch(automation, value => normalizeIntExpressions(value), { immediate: true });
 provide("automation", ref(automation));
 const currentNode = computed(() => {
 	if (!currentEffect.value)
