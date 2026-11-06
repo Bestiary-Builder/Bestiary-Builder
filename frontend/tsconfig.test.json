@@ -1,0 +1,19 @@
+{
+	"extends": "./tsconfig.app.json",
+	"compilerOptions": {
+		"composite": true,
+		"noEmit": true,
+		"types": [
+			"markdown-it",
+			"node",
+			"vitest/globals"
+		]
+	},
+	"include": [
+		"env.d.ts",
+		"src/**/__tests__/**/*.ts",
+		"src/utils/normalizeIntExpressions.ts",
+		"../shared/**/*"
+	],
+	"exclude": []
+}

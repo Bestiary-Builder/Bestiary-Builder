@@ -14,7 +14,7 @@ const isCustom = ref(false);
 
 watch(() => currentEffect!.value?.style, () => {
 	const style = currentEffect?.value.style;
-	if (!style || (style && ["1", "2", "3", "4"].includes(style)))
+	if (!style || ["1", "2", "3", "4"].includes(String(style)))
 		isCustom.value = false;
 	else isCustom.value = true;
 });
@@ -49,7 +49,7 @@ watch(() => currentEffect!.value?.style, () => {
 			</v-col>
 			<v-col cols="6">
 				<template v-if="isCustom">
-					<TypeHintedEditor v-model="(currentEffect.style as string)" label="Custom Style Expression" />
+					<TypeHintedEditor v-model="currentEffect.style" label="Custom Style Expression" />
 				</template>
 			</v-col>
 
@@ -67,17 +67,17 @@ watch(() => currentEffect!.value?.style, () => {
 			</v-col>
 
 			<v-col cols="6">
-				<TypeHintedEditor v-model="(currentEffect.defaultDC as string)" label="Default DC (spell_dc)" />
+				<TypeHintedEditor v-model="currentEffect.defaultDC" label="Default DC (spell_dc)" />
 			</v-col>
 			<v-col cols="6">
 				<TypeHintedEditor
-					v-model="(currentEffect.defaultAttackBonus as string)"
+					v-model="currentEffect.defaultAttackBonus"
 					label="Default Attack Bonus (spell_attack_bonus)"
 				/>
 			</v-col>
 			<v-col cols="6">
 				<TypeHintedEditor
-					v-model="(currentEffect.defaultCastingMod as string)"
+					v-model="currentEffect.defaultCastingMod"
 					label="Default Casting Modifier (spell)"
 				/>
 			</v-col>

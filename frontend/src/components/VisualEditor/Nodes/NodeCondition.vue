@@ -9,16 +9,14 @@ import { useDataCleanup } from "./shared/utils";
 const currentEffect = inject<Ref<Condition>>("currentEffect");
 
 const isWarning = computed(() => {
+	const condition = String(currentEffect?.value.condition ?? "");
 	return (
-		(
-			(currentEffect?.value.condition.includes(" = ")) ?? false
-		) || (
-			(
-				(currentEffect?.value.condition.includes("=") ?? false)
-				&& !(currentEffect?.value.condition.includes("==") ?? false)
-				&& currentEffect?.value.condition[currentEffect?.value.condition.length - 1] !== "="
-			)
-			&& !(currentEffect?.value.condition.includes(">") || currentEffect?.value.condition.includes("<") || currentEffect?.value.condition.includes("!"))
+		condition.includes(" = ")
+		|| (
+			condition.includes("=")
+			&& !condition.includes("==")
+			&& condition[condition.length - 1] !== "="
+			&& !(condition.includes(">") || condition.includes("<") || condition.includes("!"))
 		)
 	);
 });

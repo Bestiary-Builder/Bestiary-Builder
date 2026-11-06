@@ -11,7 +11,7 @@ const isCustom = ref(false);
 
 onMounted(() => {
 	if (currentEffect?.value.adv !== null) {
-		if (!["-2", "-1", "1"].includes(currentEffect?.value.adv ?? "1")) {
+		if (!["-2", "-1", "1"].includes(String(currentEffect?.value.adv ?? "1"))) {
 			isCustom.value = true;
 		}
 

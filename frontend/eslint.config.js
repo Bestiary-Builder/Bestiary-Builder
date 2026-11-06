@@ -11,7 +11,7 @@ export default antfu(
 		},
 		// ts settings, filesTypeAware makes typing is better but slowing down overall tping
 		typescript: {
-			tsconfigPath: ["tsconfig.json", "tsconfig.app.json", "tsconfig.node.json"],
+			tsconfigPath: ["tsconfig.json", "tsconfig.app.json", "tsconfig.node.json", "tsconfig.test.json"],
 			filesTypeAware: ["**\/*.{ts,vue}"],
 		},
 		languageOptions: {

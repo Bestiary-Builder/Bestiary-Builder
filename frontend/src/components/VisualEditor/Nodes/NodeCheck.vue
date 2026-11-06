@@ -15,7 +15,7 @@ if (currentEffect?.value.ability.length === 0)
 
 const contestDcWarning = (): boolean | string => {
 	const hasContestAbility = (currentEffect!.value?.contestAbility?.length ?? 0) > 0;
-	const hasDc = (currentEffect!.value?.dc?.length ?? 0) > 0;
+	const hasDc = String(currentEffect!.value?.dc ?? "").length > 0;
 
 	if (hasContestAbility && hasDc)
 		return "Warning: You cannot both have a DC and a contest ability";

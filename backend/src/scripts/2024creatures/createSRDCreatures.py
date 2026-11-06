@@ -194,6 +194,10 @@ required_keys = {
         "onTrue",
         "onFalse"
     ],
+    "check": [
+        "success",
+        "fail"
+    ]
 }
 
 from collections.abc import Mapping
