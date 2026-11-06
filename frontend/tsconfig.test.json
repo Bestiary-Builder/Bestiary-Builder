@@ -12,7 +12,7 @@
 	"include": [
 		"env.d.ts",
 		"src/**/__tests__/**/*.ts",
-		"src/components/VisualEditor/normalizeIntExpressions.ts",
+		"src/utils/normalizeIntExpressions.ts",
 		"../shared/**/*"
 	],
 	"exclude": []
