@@ -127,13 +127,10 @@ const saveAutomation = async (shouldNotify: boolean): Promise<boolean> => {
 		return false;
 	}
 
-	const toastId = shouldNotify ? addToast("Validating...", { loading: true }) : undefined;
+	const toastId = shouldNotify ? addToast("Saving...", { loading: true }) : undefined;
 	isSavingCreature.value = true;
 
 	try {
-		if (toastId)
-			updateToast(toastId, { text: "Saving..." });
-
 		const { success, error } = await useFetch(`/api/automation/${data.value.id}/update`, "POST", data.value);
 		if (!success) {
 			if (toastId) {

@@ -144,13 +144,10 @@ const saveStatblock2 = async (shouldNotify: boolean): Promise<boolean> => {
 	}
 
 	rawInfo.value.stats = data.value;
-	const toastId = shouldNotify ? addToast("Validating...", { loading: true }) : undefined;
+	const toastId = shouldNotify ? addToast("Saving...", { loading: true }) : undefined;
 	isSavingCreature.value = true;
 
 	try {
-		if (toastId)
-			updateToast(toastId, { text: "Saving..." });
-
 		const { permissionLevel: _, ...creature } = rawInfo.value;
 		const { success, error } = await useFetch<CreatureResponse>(`/api/creature/${creature.id}/update`, "POST", creature);
 		if (!success) {
