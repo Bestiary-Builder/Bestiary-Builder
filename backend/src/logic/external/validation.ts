@@ -1,26 +1,9 @@
 import type { Response } from "express";
 
 import type { AutomationConsumables, AutomationModel, IValidation, Statblock } from "~/shared";
-import fetch from "node-fetch";
 // Validate input
 import { app } from "@/utilities/constants";
 import { interfaceValidation, validateAutomationConsumables, validateAutomationModel, validateStatblock } from "~/shared";
-
-app.post("/api/validate/automation", async (req, res) => {
-	const automation = req.body.data;
-	const result = await fetch("https://api.avrae.io/characters/attacks/validate", {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json"
-		},
-		body: JSON.stringify(automation)
-	}).then(response => response.json());
-
-	if (result.success)
-		return res.json(result);
-	else
-		return res.status(400).json(result);
-});
 
 type Checker = (input: unknown) => IValidation;
 

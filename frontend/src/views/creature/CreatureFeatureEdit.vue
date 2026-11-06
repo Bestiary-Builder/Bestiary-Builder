@@ -129,16 +129,6 @@ const getBestiary = async () => {
 };
 
 // saving
-const validateAttack = async (automation: any): Promise<true | string> => {
-	if (automation === null)
-		return true;
-	const { success, error } = await useFetch("/api/validate/automation", "POST", automation);
-	if (success)
-		return true;
-	else
-		return error;
-};
-
 const isSaved = ref(false);
 const isSavingCreature = ref(false);
 
@@ -158,20 +148,6 @@ const saveStatblock2 = async (shouldNotify: boolean): Promise<boolean> => {
 	isSavingCreature.value = true;
 
 	try {
-		const validAutomation = await validateAttack(data.value.features[type][aid].automation);
-		if (validAutomation !== true) {
-			if (toastId) {
-				updateToast(toastId, {
-					text: validAutomation,
-					color: "error",
-					timeout: -1,
-					isHtml: true,
-				});
-			}
-			isSavingCreature.value = false;
-			return false;
-		}
-
 		if (toastId)
 			updateToast(toastId, { text: "Saving..." });
 
