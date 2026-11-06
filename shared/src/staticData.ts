@@ -669,7 +669,7 @@ export const defaultInterestingStatblock: Statblock = {
 											]
 										}
 									],
-									duration: -1,
+									duration: "-1",
 									stacking: true
 								}
 							]

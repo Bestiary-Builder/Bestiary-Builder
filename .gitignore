@@ -31,3 +31,5 @@ frontend/stats.html
 .jwtkey
 build/
 shared/prisma
+shared/src/typia-output/
+shared/src/typia-output-temp/

@@ -80,7 +80,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 },
@@ -317,7 +318,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 },
@@ -2989,7 +2991,7 @@
                                     "name": "Prone",
                                     "duration": -1,
                                     "effects": {
-                                        "attack_advantage": -1
+                                        "attack_advantage": "-1"
                                     },
                                     "buttons": [
                                         {
@@ -5457,7 +5459,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 },
@@ -5566,7 +5569,8 @@
                                                                     "name": "grabbed",
                                                                     "value": "0"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 },
@@ -5755,7 +5759,7 @@
                                     "name": "Prone",
                                     "duration": -1,
                                     "effects": {
-                                        "attack_advantage": -1
+                                        "attack_advantage": "-1"
                                     },
                                     "buttons": [
                                         {
@@ -6688,7 +6692,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 },
@@ -7278,7 +7283,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 }
@@ -8256,7 +8262,7 @@
                                     "name": "Prone",
                                     "duration": -1,
                                     "effects": {
-                                        "attack_advantage": -1
+                                        "attack_advantage": "-1"
                                     },
                                     "buttons": [
                                         {
@@ -8822,7 +8828,7 @@
                                     "name": "Prone",
                                     "duration": -1,
                                     "effects": {
-                                        "attack_advantage": -1
+                                        "attack_advantage": "-1"
                                     },
                                     "buttons": [
                                         {
@@ -8959,7 +8965,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 }
@@ -9059,7 +9066,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 },
@@ -9220,7 +9228,7 @@
                                     "name": "Prone",
                                     "duration": -1,
                                     "effects": {
-                                        "attack_advantage": -1
+                                        "attack_advantage": "-1"
                                     },
                                     "buttons": [
                                         {
@@ -9541,7 +9549,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 }
@@ -9978,7 +9987,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 }
@@ -10687,7 +10697,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 },
@@ -11009,7 +11020,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 }
@@ -11125,7 +11137,7 @@
                                     "type": "ieffect2",
                                     "name": "Grappled by {{caster.name}}",
                                     "effects": {
-                                        "attack_advantage": -1,
+                                        "attack_advantage": "-1",
                                         "save_dis": [
                                             "dex"
                                         ]
@@ -11150,7 +11162,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 },
@@ -11342,7 +11355,7 @@
                                             "name": "Poisoned",
                                             "duration": 6000,
                                             "effects": {
-                                                "attack_advantage": -1,
+                                                "attack_advantage": "-1",
                                                 "check_dis": [
                                                     "all"
                                                 ]
@@ -11618,7 +11631,7 @@
                                                                 "type": "ieffect2",
                                                                 "name": "Restrained",
                                                                 "effects": {
-                                                                    "attack_advantage": -1,
+                                                                    "attack_advantage": "-1",
                                                                     "save_dis": [
                                                                         "dex"
                                                                     ]
@@ -12027,7 +12040,7 @@
                                     "name": "Poisoned",
                                     "duration": 1,
                                     "effects": {
-                                        "attack_advantage": -1,
+                                        "attack_advantage": "-1",
                                         "check_dis": [
                                             "all"
                                         ]
@@ -12415,7 +12428,7 @@
                                     "name": "Blinded",
                                     "duration": 1,
                                     "effects": {
-                                        "attack_advantage": -1
+                                        "attack_advantage": "-1"
                                     },
                                     "end": true,
                                     "tick_on_caster": true
@@ -12643,7 +12656,7 @@
                                     "name": "Prone",
                                     "duration": -1,
                                     "effects": {
-                                        "attack_advantage": -1
+                                        "attack_advantage": "-1"
                                     },
                                     "buttons": [
                                         {
@@ -12697,7 +12710,7 @@
                                     "name": "Prone",
                                     "duration": -1,
                                     "effects": {
-                                        "attack_advantage": -1
+                                        "attack_advantage": "-1"
                                     },
                                     "buttons": [
                                         {
@@ -12795,7 +12808,7 @@
                                     "name": "Prone",
                                     "duration": -1,
                                     "effects": {
-                                        "attack_advantage": -1
+                                        "attack_advantage": "-1"
                                     },
                                     "buttons": [
                                         {
@@ -12849,7 +12862,7 @@
                                     "name": "Prone",
                                     "duration": -1,
                                     "effects": {
-                                        "attack_advantage": -1
+                                        "attack_advantage": "-1"
                                     },
                                     "buttons": [
                                         {
@@ -12936,7 +12949,7 @@
                                     "type": "ieffect2",
                                     "name": "Restrained",
                                     "effects": {
-                                        "attack_advantage": -1,
+                                        "attack_advantage": "-1",
                                         "save_dis": [
                                             "dex"
                                         ]
@@ -13007,7 +13020,7 @@
                                     "name": "Poisoned",
                                     "duration": 1,
                                     "effects": {
-                                        "attack_advantage": -1,
+                                        "attack_advantage": "-1",
                                         "check_dis": [
                                             "all"
                                         ]
@@ -13131,7 +13144,7 @@
                                     "name": "Restrained",
                                     "duration": 10,
                                     "effects": {
-                                        "attack_advantage": -1,
+                                        "attack_advantage": "-1",
                                         "save_dis": [
                                             "dex"
                                         ]
@@ -13789,7 +13802,7 @@
                             "name": "War Cry",
                             "duration": 1,
                             "effects": {
-                                "attack_advantage": 1
+                                "attack_advantage": "1"
                             },
                             "tick_on_caster": true
                         }
@@ -13872,7 +13885,8 @@
                                                                 {
                                                                     "type": "remove_ieffect"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 }
@@ -14614,7 +14628,7 @@
                                     "name": "Prone",
                                     "duration": -1,
                                     "effects": {
-                                        "attack_advantage": -1
+                                        "attack_advantage": "-1"
                                     },
                                     "buttons": [
                                         {
@@ -14667,7 +14681,7 @@
                                     "name": "Poisoned",
                                     "duration": 1,
                                     "effects": {
-                                        "attack_advantage": -1,
+                                        "attack_advantage": "-1",
                                         "check_dis": [
                                             "all"
                                         ]
@@ -14765,7 +14779,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 },
@@ -14869,7 +14884,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 },
@@ -14922,7 +14938,7 @@
                                     "type": "ieffect2",
                                     "name": "Grappled by {{caster.name}}",
                                     "effects": {
-                                        "attack_advantage": -1,
+                                        "attack_advantage": "-1",
                                         "save_dis": [
                                             "dex"
                                         ]
@@ -14947,7 +14963,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 },
@@ -15033,7 +15050,7 @@
                                     "name": "Prone",
                                     "duration": -1,
                                     "effects": {
-                                        "attack_advantage": -1
+                                        "attack_advantage": "-1"
                                     },
                                     "buttons": [
                                         {
@@ -15153,7 +15170,7 @@
                                     "name": "Prone",
                                     "duration": -1,
                                     "effects": {
-                                        "attack_advantage": -1
+                                        "attack_advantage": "-1"
                                     },
                                     "buttons": [
                                         {
@@ -15285,7 +15302,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 },
@@ -15399,7 +15417,7 @@
                                     "name": "Prone",
                                     "duration": -1,
                                     "effects": {
-                                        "attack_advantage": -1
+                                        "attack_advantage": "-1"
                                     },
                                     "buttons": [
                                         {
@@ -15522,7 +15540,7 @@
                                     "type": "ieffect2",
                                     "name": "Grappled by {{caster.name}}",
                                     "effects": {
-                                        "attack_advantage": -1,
+                                        "attack_advantage": "-1",
                                         "save_dis": [
                                             "dex"
                                         ]
@@ -15547,7 +15565,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 },
@@ -15717,7 +15736,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 },
@@ -15918,7 +15938,7 @@
                                         }
                                     ],
                                     "attackBonus": "9",
-                                    "adv": 1,
+                                    "adv": "1",
                                     "miss": []
                                 }
                             ],
@@ -16030,7 +16050,7 @@
                                     "name": "Restrained (Web)",
                                     "duration": "100",
                                     "effects": {
-                                        "attack_advantage": -1,
+                                        "attack_advantage": "-1",
                                         "save_dis": [
                                             "dex"
                                         ]
@@ -16098,7 +16118,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 },
@@ -16144,7 +16165,7 @@
                             "type": "ieffect2",
                             "name": "Swallowed (Blinded, Restrained)",
                             "effects": {
-                                "attack_advantage": -1,
+                                "attack_advantage": "-1",
                                 "save_dis": [
                                     "dex"
                                 ]
@@ -16265,7 +16286,7 @@
                                     "name": "Poisoned",
                                     "duration": 1,
                                     "effects": {
-                                        "attack_advantage": -1,
+                                        "attack_advantage": "-1",
                                         "check_dis": [
                                             "all"
                                         ]
@@ -16477,7 +16498,7 @@
                                     "name": "Prone",
                                     "duration": -1,
                                     "effects": {
-                                        "attack_advantage": -1
+                                        "attack_advantage": "-1"
                                     },
                                     "buttons": [
                                         {
@@ -16586,7 +16607,7 @@
                                     "name": "Blinded",
                                     "duration": 1,
                                     "effects": {
-                                        "attack_advantage": -1
+                                        "attack_advantage": "-1"
                                     },
                                     "end": true,
                                     "tick_on_caster": true
@@ -16647,7 +16668,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 },
@@ -17486,7 +17508,7 @@
                                     "type": "ieffect2",
                                     "name": "Restrained (Petrifying)",
                                     "effects": {
-                                        "attack_advantage": -1,
+                                        "attack_advantage": "-1",
                                         "save_dis": [
                                             "dex"
                                         ]
@@ -17566,7 +17588,7 @@
                                     "name": "Prone",
                                     "duration": -1,
                                     "effects": {
-                                        "attack_advantage": -1
+                                        "attack_advantage": "-1"
                                     },
                                     "buttons": [
                                         {
@@ -17954,7 +17976,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 },
@@ -18058,7 +18081,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 },
@@ -18315,7 +18339,7 @@
                                     "name": "Blinded",
                                     "duration": 1,
                                     "effects": {
-                                        "attack_advantage": -1
+                                        "attack_advantage": "-1"
                                     },
                                     "end": true
                                 }
@@ -18814,7 +18838,7 @@
                                     "name": "Prone",
                                     "duration": -1,
                                     "effects": {
-                                        "attack_advantage": -1
+                                        "attack_advantage": "-1"
                                     },
                                     "buttons": [
                                         {
@@ -18867,7 +18891,7 @@
                                     "name": "Poisoned",
                                     "duration": 1,
                                     "effects": {
-                                        "attack_advantage": -1,
+                                        "attack_advantage": "-1",
                                         "check_dis": [
                                             "all"
                                         ]
@@ -19150,7 +19174,7 @@
                                                     "name": "Poisoned",
                                                     "duration": 1,
                                                     "effects": {
-                                                        "attack_advantage": -1,
+                                                        "attack_advantage": "-1",
                                                         "check_dis": [
                                                             "all"
                                                         ]
@@ -19165,7 +19189,7 @@
                                                     "name": "Poisoned (Unconscious)",
                                                     "duration": 10,
                                                     "effects": {
-                                                        "attack_advantage": -1,
+                                                        "attack_advantage": "-1",
                                                         "check_dis": [
                                                             "all"
                                                         ]
@@ -19186,7 +19210,7 @@
                                                                             "name": "Poisoned",
                                                                             "duration": 10,
                                                                             "effects": {
-                                                                                "attack_advantage": -1,
+                                                                                "attack_advantage": "-1",
                                                                                 "check_dis": [
                                                                                     "all"
                                                                                 ]
@@ -20143,7 +20167,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 },
@@ -20622,7 +20647,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 },
@@ -20983,7 +21009,7 @@
                                     "name": "Cursed (Charmed, Poisoned)",
                                     "duration": 600,
                                     "effects": {
-                                        "attack_advantage": -1,
+                                        "attack_advantage": "-1",
                                         "check_dis": [
                                             "all"
                                         ]
@@ -21271,7 +21297,7 @@
                                     "name": "Frightened",
                                     "duration": 1,
                                     "effects": {
-                                        "attack_advantage": -1
+                                        "attack_advantage": "-1"
                                     },
                                     "desc": "Frightened of {{caster.name}}",
                                     "tick_on_caster": true
@@ -21705,7 +21731,7 @@
                                     "name": "Prone",
                                     "duration": -1,
                                     "effects": {
-                                        "attack_advantage": -1
+                                        "attack_advantage": "-1"
                                     },
                                     "buttons": [
                                         {
@@ -21901,7 +21927,7 @@
                                     "type": "ieffect2",
                                     "name": "Grappled (Restrained) by {{caster.name}}",
                                     "effects": {
-                                        "attack_advantage": -1,
+                                        "attack_advantage": "-1",
                                         "save_dis": [
                                             "dex"
                                         ]
@@ -21926,7 +21952,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 },
@@ -22072,7 +22099,7 @@
                                     "name": "Prone",
                                     "duration": 1,
                                     "effects": {
-                                        "attack_advantage": -1
+                                        "attack_advantage": "-1"
                                     },
                                     "buttons": [
                                         {
@@ -22274,7 +22301,7 @@
                                     "type": "ieffect2",
                                     "name": "Restrained (Petrifying)",
                                     "effects": {
-                                        "attack_advantage": -1,
+                                        "attack_advantage": "-1",
                                         "save_dis": [
                                             "dex"
                                         ]
@@ -22387,7 +22414,7 @@
                                     "name": "Poisoned",
                                     "duration": 2,
                                     "effects": {
-                                        "attack_advantage": -1,
+                                        "attack_advantage": "-1",
                                         "check_dis": [
                                             "all"
                                         ]
@@ -22551,7 +22578,8 @@
                                                                     "removeParent": "if_no_children"
                                                                 }
                                                             ],
-                                                            "adv": -1
+                                                            "adv": "-1",
+                                                            "fail": []
                                                         }
                                                     ]
                                                 },
@@ -23519,7 +23547,7 @@
                                     "type": "ieffect2",
                                     "name": "Poisoned",
                                     "effects": {
-                                        "attack_advantage": -1,
+                                        "attack_advantage": "-1",
                                         "check_dis": [
                                             "all"
                                         ]
@@ -23582,7 +23610,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 },
@@ -23799,7 +23828,7 @@
                                             "name": "Poisoned by {{caster.name}} (Paralyzed, Stable)",
                                             "duration": 600,
                                             "effects": {
-                                                "attack_advantage": -1,
+                                                "attack_advantage": "-1",
                                                 "check_dis": [
                                                     "all"
                                                 ]
@@ -24096,7 +24125,7 @@
                                             "name": "Poisoned",
                                             "duration": 10,
                                             "effects": {
-                                                "attack_advantage": -1,
+                                                "attack_advantage": "-1",
                                                 "check_dis": [
                                                     "all"
                                                 ],
@@ -24582,7 +24611,7 @@
                                             "name": "Poisoned",
                                             "duration": 600,
                                             "effects": {
-                                                "attack_advantage": -1,
+                                                "attack_advantage": "-1",
                                                 "check_dis": [
                                                     "all"
                                                 ]
@@ -24595,7 +24624,7 @@
                                             "name": "Poisoned, Unconscious",
                                             "duration": 600,
                                             "effects": {
-                                                "attack_advantage": -1,
+                                                "attack_advantage": "-1",
                                                 "check_dis": [
                                                     "all"
                                                 ]
@@ -24810,7 +24839,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 },
@@ -25577,7 +25607,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 },
@@ -25864,7 +25895,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 },
@@ -26100,7 +26132,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 },
@@ -26373,7 +26406,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 },
@@ -26778,7 +26812,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 },
@@ -27189,7 +27224,7 @@
                                     "name": "Blinded",
                                     "duration": "10",
                                     "effects": {
-                                        "attack_advantage": -1
+                                        "attack_advantage": "-1"
                                     }
                                 }
                             ],
@@ -27571,7 +27606,7 @@
                                     "name": "Prone",
                                     "duration": -1,
                                     "effects": {
-                                        "attack_advantage": -1
+                                        "attack_advantage": "-1"
                                     },
                                     "buttons": [
                                         {
@@ -28503,7 +28538,7 @@
                                     "name": "Blinded/Deafened",
                                     "duration": 1,
                                     "effects": {
-                                        "attack_advantage": -1
+                                        "attack_advantage": "-1"
                                     },
                                     "desc": "The target has the Blinded and Deafened conditions until the start of the giant's next turn",
                                     "tick_on_caster": true
@@ -29221,7 +29256,8 @@
                                                             "type": "remove_ieffect",
                                                             "removeParent": "if_no_children"
                                                         }
-                                                    ]
+                                                    ],
+                                                    "fail": []
                                                 }
                                             ]
                                         },
@@ -29481,7 +29517,7 @@
                                     "type": "ieffect2",
                                     "name": "Swallowed (Blinded, Restrained)",
                                     "effects": {
-                                        "attack_advantage": -1,
+                                        "attack_advantage": "-1",
                                         "save_dis": [
                                             "dex"
                                         ]
@@ -29646,7 +29682,7 @@
                                     "name": "Prone",
                                     "duration": -1,
                                     "effects": {
-                                        "attack_advantage": -1
+                                        "attack_advantage": "-1"
                                     },
                                     "buttons": [
                                         {
@@ -30185,7 +30221,7 @@
                                     "type": "ieffect2",
                                     "name": "Grappled by {{caster.name}}",
                                     "effects": {
-                                        "attack_advantage": -1,
+                                        "attack_advantage": "-1",
                                         "save_dis": [
                                             "dex"
                                         ]
@@ -30210,7 +30246,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 },
@@ -30552,7 +30589,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 }
@@ -30820,7 +30858,7 @@
                                             "duration": 600,
                                             "effects": [
                                                 {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "check_dis": [
                                                         "all"
                                                     ]
@@ -30969,7 +31007,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 }
@@ -31296,7 +31335,7 @@
                                     "name": "Poisoned",
                                     "duration": 10,
                                     "effects": {
-                                        "attack_advantage": -1,
+                                        "attack_advantage": "-1",
                                         "check_dis": [
                                             "all"
                                         ]
@@ -31542,7 +31581,7 @@
                                         "name": "Prone",
                                         "duration": -1,
                                         "effects": {
-                                            "attack_advantage": -1
+                                            "attack_advantage": "-1"
                                         },
                                         "buttons": [
                                             {
@@ -31625,7 +31664,7 @@
                                         "name": "Prone",
                                         "duration": -1,
                                         "effects": {
-                                            "attack_advantage": -1
+                                            "attack_advantage": "-1"
                                         },
                                         "buttons": [
                                             {
@@ -31967,7 +32006,8 @@
                                                                     "type": "remove_ieffect",
                                                                     "removeParent": "if_no_children"
                                                                 }
-                                                            ]
+                                                            ],
+                                                            "fail": []
                                                         }
                                                     ]
                                                 }
@@ -32293,7 +32333,7 @@
                                     "name": "Prone",
                                     "duration": -1,
                                     "effects": {
-                                        "attack_advantage": -1
+                                        "attack_advantage": "-1"
                                     },
                                     "buttons": [
                                         {
@@ -33190,7 +33230,7 @@
                             "name": "Invisible",
                             "duration": -1,
                             "effects": {
-                                "attack_advantage": 1
+                                "attack_advantage": "1"
                             },
                             "buttons": [
                                 {
@@ -33443,7 +33483,7 @@
                                     "name": "Prone",
                                     "duration": -1,
                                     "effects": {
-                                        "attack_advantage": -1
+                                        "attack_advantage": "-1"
                                     },
                                     "buttons": [
                                         {

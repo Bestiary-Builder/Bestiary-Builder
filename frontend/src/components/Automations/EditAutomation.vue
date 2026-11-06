@@ -10,6 +10,7 @@ import VisualEditor from "@/components/VisualEditor/VisualEditor.vue";
 import { useThemePersistence } from "@/utils/app/theme";
 import { useToast } from "@/utils/app/toast";
 import { useOnboardingTour } from "@/utils/app/useOnboardingTour.js";
+import { normalizeIntExpressions } from "@/utils/normalizeIntExpressions";
 import { useFetch } from "@/utils/utils";
 import AutomationDocumentationView from "./AutomationDocumentation.vue";
 
@@ -51,6 +52,7 @@ const rankEntry = (pair: Pair): number => {
 
 const sortMapEntries = (a: Pair, b: Pair): number => rankEntry(a) - rankEntry(b);
 
+normalizeIntExpressions(props.modelValue);
 const automationString = ref(stringify(props.modelValue ?? null, { sortMapEntries }));
 
 const yamlError = ref<string | null>(null);
@@ -83,6 +85,7 @@ watch(() => props.modelValue, (newVal) => {
 }, { deep: true });
 
 const toggleEditor = () => {
+	normalizeIntExpressions(props.modelValue);
 	if (props.isVisualEditor) {
 		// switching TO yaml mode
 		automationString.value = stringify(props.modelValue ?? null, { sortMapEntries });

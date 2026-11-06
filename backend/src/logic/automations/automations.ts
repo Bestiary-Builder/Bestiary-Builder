@@ -6,7 +6,7 @@ import { createAutomation, deleteAutomation, getAutomation, updateAutomation } f
 import { log } from "@/utilities/logger";
 import { Prisma } from "~/shared/src/prisma-types";
 import { automationCollections } from "../collections/automationCollections";
-import { validateAutomationConsumablesInput } from "../external/validation";
+import { validateAutomationConsumablesInput, validateAutomationInput } from "../external/validation";
 import { possibleUser, requireUser } from "../main/login";
 
 async function canEditAutomation(automation: Automation, userId: Id) {
@@ -70,10 +70,11 @@ app.post("/api/automation/:id/update", requireUser, async (req, res) => {
 	const id = req.params.id;
 	if (!id)
 		return res.status(400).json({ error: "Invalid automation id." });
-	if (!req.body.data)
-		return res.status(400).json({ error: "Automation data not found." });
-
 	const input = req.body.data as Partial<Automation>;
+	if (!input)
+		return res.status(400).json({ error: "Automation data not found." });
+	if (!validateAutomationInput(input.automation ?? null, res))
+		return;
 	const hasConsumables = Object.hasOwn(input, "consumables");
 	if (hasConsumables && !validateAutomationConsumablesInput(input.consumables || [], res))
 		return;
@@ -104,9 +105,11 @@ app.post("/api/automation/:id/update", requireUser, async (req, res) => {
 
 app.post("/api/automation/add", requireUser, async (req, res) => {
 	const user = req.user!;
-	if (!req.body.data)
-		return res.status(400).json({ error: "Automation data not found." });
 	const input = req.body.data as { automation: Partial<Automation>; collectionId: string };
+	if (!input)
+		return res.status(400).json({ error: "Automation data not found." });
+	if (!validateAutomationInput(input.automation.automation ?? null, res))
+		return;
 	const preparedInput = prepareAutomationInput(input.automation, "");
 	if ("error" in preparedInput)
 		return res.status(400).json({ error: preparedInput.error });

@@ -40,7 +40,6 @@
 		"prisma": "7.9.1",
 		"prisma-json-types-generator": "^5.1.0",
 		"split-on-first": "^4.0.0",
-		"ts-interface-checker": "^1.0.2",
 		"uuid": "^14.0.0",
 		"vue-codemirror6": "^1.6.1",
 		"winston": "^3.17.0"

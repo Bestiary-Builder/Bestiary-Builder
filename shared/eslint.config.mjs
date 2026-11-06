@@ -32,7 +32,8 @@ export default antfu(
 			"no-throw-literal": "off",
 			"ts/only-throw-error": "off",
 			"ts/no-throw-literal": "off",
-			"ts/no-misused-promises": "off"
+			"ts/no-misused-promises": "off",
+			"ts/ban-ts-comment": "off",
 		},
 	},
 );

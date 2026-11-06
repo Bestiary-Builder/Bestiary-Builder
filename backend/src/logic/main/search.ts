@@ -3,10 +3,11 @@ import type { AutomationCollectionWithCount, BestiaryWithCount, SearchOptions } 
 import { app } from "@/utilities/constants";
 import { getGlobalStats, getPrismaClient } from "@/utilities/database";
 import { log } from "@/utilities/logger";
+import { validateSearch } from "~/shared";
 
 import { Prisma } from "~/shared/prisma/client";
 
-import { SearchOptionsChecker, validateInput } from "../external/validation";
+import { validateInput } from "../external/validation";
 
 const amountPerPage = 12;
 
@@ -175,7 +176,7 @@ app.post("/api/search/automations", async (req, res) => {
 });
 
 function validateSearchInput(input: SearchOptions, res: Response) {
-	return validateInput(input, SearchOptionsChecker, res, "Search");
+	return validateInput(input, validateSearch, res, "Search");
 }
 
 // Global stats

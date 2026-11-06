@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
-import { StatblockChecker } from "@/logic/external/validation";
 import { getPublishedBestiaryCreatures, parseFromCritterDB } from "@/logic/import/critterdb";
+import { validateStatblock } from "~/shared";
 
 it("critterDB export to be unchanged", async () => {
 	// Test https://critterdb.com/#/publishedbestiary/view/5acb0aa187653a455731b890 to be identical as before.
@@ -14,5 +14,5 @@ it("critterDB data parsed to match Statblock schema", async () => {
 
 	const parsed = parseFromCritterDB(result[0])![0];
 
-	expect(StatblockChecker.test(parsed)).toBe(true);
+	expect(validateStatblock(parsed).success).toBe(true);
 });

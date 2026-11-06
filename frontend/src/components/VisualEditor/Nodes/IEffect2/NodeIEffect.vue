@@ -119,7 +119,7 @@ const effectValueFor = (key: string) => computed<EffectOption | EffectOption[] |
 		<SectionHeader title="Duration Options" />
 		<v-row>
 			<v-col cols="6">
-				<TypeHintedEditor v-model="(currentEffect.duration as string)" label="Duration" />
+				<TypeHintedEditor v-model="currentEffect.duration" label="Duration" />
 			</v-col>
 			<v-col cols="6">
 				<v-checkbox v-model="currentEffect.end" label="Ticks on end of turn." hide-details density="compact" />
