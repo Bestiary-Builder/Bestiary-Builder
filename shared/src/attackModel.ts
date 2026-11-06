@@ -63,7 +63,7 @@ export interface TempHP {
 export interface IEffect {
 	type: "ieffect2";
 	name: AnnotatedString;
-	duration?: IntExpression;
+	duration?: number | IntExpression;
 	effects?: PassiveEffects;
 	attacks?: AttackInteraction[];
 	buttons?: ButtonInteraction[];

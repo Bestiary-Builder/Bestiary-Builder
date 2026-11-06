@@ -915,7 +915,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -2297,7 +2297,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -2349,7 +2349,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -3713,7 +3713,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -3774,7 +3774,7 @@
                                                 "name": "Prone (Restrained)",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -3795,7 +3795,7 @@
                                                                         "name": "Prone",
                                                                         "duration": -1,
                                                                         "effects": {
-                                                                            "attack_advantage": -1
+                                                                            "attack_advantage": "-1"
                                                                         },
                                                                         "buttons": [
                                                                             {
@@ -3853,7 +3853,7 @@
                                                 "name": "Blinded",
                                                 "duration": 10,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -4656,7 +4656,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -4708,7 +4708,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -4758,7 +4758,7 @@
                                                 "name": "Blinded",
                                                 "duration": 10,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -5506,7 +5506,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -6309,7 +6309,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -6361,7 +6361,7 @@
                                                 "name": "Restrained",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -7134,7 +7134,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -7888,7 +7888,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -7978,7 +7978,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Restrained",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -8674,7 +8674,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -8770,7 +8770,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -8820,7 +8820,7 @@
                                                 "name": "Poisoned (Incapacitated)",
                                                 "duration": 1,
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "check_dis": [
                                                         "all"
                                                     ]
@@ -9575,7 +9575,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -10267,7 +10267,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -10937,7 +10937,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -11720,7 +11720,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -11772,7 +11772,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -12497,7 +12497,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -12558,7 +12558,7 @@
                                                 "name": "Prone (Restrained)",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -12579,7 +12579,7 @@
                                                                         "name": "Prone",
                                                                         "duration": -1,
                                                                         "effects": {
-                                                                            "attack_advantage": -1
+                                                                            "attack_advantage": "-1"
                                                                         },
                                                                         "buttons": [
                                                                             {
@@ -12637,7 +12637,7 @@
                                                 "name": "Blinded",
                                                 "duration": 10,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -13445,7 +13445,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -13497,7 +13497,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -13547,7 +13547,7 @@
                                                 "name": "Blinded",
                                                 "duration": 10,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -14295,7 +14295,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -15103,7 +15103,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -15155,7 +15155,7 @@
                                                 "name": "Restrained",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -15928,7 +15928,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -16682,7 +16682,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -16772,7 +16772,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Restrained",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -17468,7 +17468,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -17564,7 +17564,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -17614,7 +17614,7 @@
                                                 "name": "Poisoned (Incapacitated)",
                                                 "duration": 1,
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "check_dis": [
                                                         "all"
                                                     ]
@@ -18369,7 +18369,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -19061,7 +19061,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -19668,7 +19668,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -20305,7 +20305,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Latched Onto {{targets[0].name if str(targets[0])!=targets[0] else targets[0]}}",
                                                 "effects": {
-                                                    "attack_advantage": 1
+                                                    "attack_advantage": "1"
                                                 },
                                                 "attacks": [
                                                     {
@@ -20325,7 +20325,7 @@
                                                                                 }
                                                                             ],
                                                                             "attackBonus": "5",
-                                                                            "adv": 1,
+                                                                            "adv": "1",
                                                                             "miss": []
                                                                         }
                                                                     ]
@@ -20685,7 +20685,7 @@
                                                         "name": "Prone",
                                                         "duration": -1,
                                                         "effects": {
-                                                            "attack_advantage": -1
+                                                            "attack_advantage": "-1"
                                                         },
                                                         "buttons": [
                                                             {
@@ -25729,7 +25729,7 @@
                                         "name": "Attacked Recklessly",
                                         "duration": 1,
                                         "effects": {
-                                            "attack_advantage": 1
+                                            "attack_advantage": "1"
                                         },
                                         "desc": "All attacks made against them until the start of their next turn have advantage"
                                     }
@@ -26071,7 +26071,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Restrained (Petrifying)",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -26662,7 +26662,7 @@
                                                         "name": "Poisoned",
                                                         "duration": 10,
                                                         "effects": {
-                                                            "attack_advantage": -1,
+                                                            "attack_advantage": "-1",
                                                             "check_dis": [
                                                                 "all"
                                                             ],
@@ -27130,7 +27130,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Grappled (Restrained) by {{caster.name}}",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -28028,7 +28028,7 @@
                                                 "name": "Restrained",
                                                 "duration": 2,
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -28114,7 +28114,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Restrained (Petrifying)",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -29037,7 +29037,7 @@
                                         "name": "Attacked Recklessly",
                                         "duration": 1,
                                         "effects": {
-                                            "attack_advantage": 1
+                                            "attack_advantage": "1"
                                         },
                                         "desc": "All attacks made against them until the start of their next turn have advantage"
                                     }
@@ -31610,7 +31610,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -32007,7 +32007,7 @@
                                                         "name": "Poisoned",
                                                         "duration": 10,
                                                         "effects": {
-                                                            "attack_advantage": -1,
+                                                            "attack_advantage": "-1",
                                                             "check_dis": [
                                                                 "all"
                                                             ]
@@ -33519,7 +33519,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -34886,7 +34886,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -36172,7 +36172,7 @@
                                                         "name": "Poisoned (Paralyzed)",
                                                         "duration": 10,
                                                         "effects": {
-                                                            "attack_advantage": -1,
+                                                            "attack_advantage": "-1",
                                                             "check_dis": [
                                                                 "all"
                                                             ]
@@ -37530,7 +37530,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Grappled (Restrained) by {{caster.name}}",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -37976,7 +37976,7 @@
                                                                         "name": "Poisoned",
                                                                         "duration": "ieffect.remaining",
                                                                         "effects": {
-                                                                            "attack_advantage": -1,
+                                                                            "attack_advantage": "-1",
                                                                             "check_dis": [
                                                                                 "all"
                                                                             ]
@@ -38901,7 +38901,7 @@
                                                 "name": "Poisoned (Paralyzed)",
                                                 "duration": 10,
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "check_dis": [
                                                         "all"
                                                     ]
@@ -39668,7 +39668,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Latched On",
                                                 "effects": {
-                                                    "attack_advantage": 1
+                                                    "attack_advantage": "1"
                                                 },
                                                 "attacks": [
                                                     {
@@ -39688,7 +39688,7 @@
                                                                                 }
                                                                             ],
                                                                             "attackBonus": "6",
-                                                                            "adv": 1,
+                                                                            "adv": "1",
                                                                             "miss": []
                                                                         }
                                                                     ]
@@ -40464,7 +40464,7 @@
                                                         "type": "ieffect2",
                                                         "name": "Restrained (Petrifying)",
                                                         "effects": {
-                                                            "attack_advantage": -1,
+                                                            "attack_advantage": "-1",
                                                             "save_dis": [
                                                                 "dex"
                                                             ]
@@ -41012,7 +41012,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Grappled (Restrained) by {{caster.name}}",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -41914,7 +41914,7 @@
                                                         "name": "Poisoned (Unconscious)",
                                                         "duration": 14400,
                                                         "effects": {
-                                                            "attack_advantage": -1,
+                                                            "attack_advantage": "-1",
                                                             "check_dis": [
                                                                 "all"
                                                             ]
@@ -41935,7 +41935,7 @@
                                                                                 "name": "Poisoned",
                                                                                 "duration": "ieffect.remaining",
                                                                                 "effects": {
-                                                                                    "attack_advantage": -1,
+                                                                                    "attack_advantage": "-1",
                                                                                     "check_dis": [
                                                                                         "all"
                                                                                     ]
@@ -42854,7 +42854,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Grappled (Restrained) by {{caster.name}}",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -44109,7 +44109,7 @@
                                                         "name": "Prone",
                                                         "duration": -1,
                                                         "effects": {
-                                                            "attack_advantage": -1
+                                                            "attack_advantage": "-1"
                                                         },
                                                         "buttons": [
                                                             {
@@ -44478,7 +44478,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Latched On",
                                                 "effects": {
-                                                    "attack_advantage": 1
+                                                    "attack_advantage": "1"
                                                 },
                                                 "attacks": [
                                                     {
@@ -44498,7 +44498,7 @@
                                                                                 }
                                                                             ],
                                                                             "attackBonus": "5",
-                                                                            "adv": 1,
+                                                                            "adv": "1",
                                                                             "miss": []
                                                                         }
                                                                     ]
@@ -44816,7 +44816,7 @@
                                                         "type": "ieffect2",
                                                         "name": "Poisoned",
                                                         "effects": {
-                                                            "attack_advantage": -1,
+                                                            "attack_advantage": "-1",
                                                             "check_dis": [
                                                                 "all"
                                                             ]
@@ -46266,7 +46266,7 @@
                                                 "name": "Restrained",
                                                 "duration": 2,
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -46352,7 +46352,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Restrained (Petrifying)",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -46881,7 +46881,7 @@
                                                         "name": "Poisoned",
                                                         "duration": 10,
                                                         "effects": {
-                                                            "attack_advantage": -1,
+                                                            "attack_advantage": "-1",
                                                             "check_dis": [
                                                                 "all"
                                                             ]
@@ -47630,7 +47630,7 @@
                                                 "name": "Blinded",
                                                 "duration": 2,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 }
                                             }
                                         ],
@@ -47710,7 +47710,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Cursed",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "all"
                                                     ]
@@ -47780,7 +47780,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -48385,7 +48385,7 @@
                                                         "name": "Prone",
                                                         "duration": -1,
                                                         "effects": {
-                                                            "attack_advantage": -1
+                                                            "attack_advantage": "-1"
                                                         },
                                                         "buttons": [
                                                             {
@@ -48993,7 +48993,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Restrained",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -49862,7 +49862,7 @@
                                                         "name": "Prone",
                                                         "duration": -1,
                                                         "effects": {
-                                                            "attack_advantage": -1
+                                                            "attack_advantage": "-1"
                                                         },
                                                         "buttons": [
                                                             {
@@ -50387,7 +50387,7 @@
                                                                                                     "name": "Poisoned",
                                                                                                     "duration": 1,
                                                                                                     "effects": {
-                                                                                                        "attack_advantage": -1,
+                                                                                                        "attack_advantage": "-1",
                                                                                                         "check_dis": [
                                                                                                             "all"
                                                                                                         ]
@@ -50465,7 +50465,7 @@
                                                                         "name": "Poisoned",
                                                                         "duration": 1,
                                                                         "effects": {
-                                                                            "attack_advantage": -1,
+                                                                            "attack_advantage": "-1",
                                                                             "check_dis": [
                                                                                 "all"
                                                                             ]
@@ -51287,7 +51287,7 @@
                                                                 "name": "Poisoned (Unconscious)",
                                                                 "duration": 600,
                                                                 "effects": {
-                                                                    "attack_advantage": -1,
+                                                                    "attack_advantage": "-1",
                                                                     "check_dis": [
                                                                         "all"
                                                                     ]
@@ -51308,7 +51308,7 @@
                                                                                         "name": "Poisoned",
                                                                                         "duration": "ieffect.remaining",
                                                                                         "effects": {
-                                                                                            "attack_advantage": -1,
+                                                                                            "attack_advantage": "-1",
                                                                                             "check_dis": [
                                                                                                 "all"
                                                                                             ]
@@ -51335,7 +51335,7 @@
                                                                 "name": "Poisoned",
                                                                 "duration": 600,
                                                                 "effects": {
-                                                                    "attack_advantage": -1,
+                                                                    "attack_advantage": "-1",
                                                                     "check_dis": [
                                                                         "all"
                                                                     ]
@@ -51705,7 +51705,7 @@
                                                                 "name": "Poisoned (Unconscious)",
                                                                 "duration": 600,
                                                                 "effects": {
-                                                                    "attack_advantage": -1,
+                                                                    "attack_advantage": "-1",
                                                                     "check_dis": [
                                                                         "all"
                                                                     ]
@@ -51726,7 +51726,7 @@
                                                                                         "name": "Poisoned",
                                                                                         "duration": "ieffect.remaining",
                                                                                         "effects": {
-                                                                                            "attack_advantage": -1,
+                                                                                            "attack_advantage": "-1",
                                                                                             "check_dis": [
                                                                                                 "all"
                                                                                             ]
@@ -51753,7 +51753,7 @@
                                                                 "name": "Poisoned",
                                                                 "duration": 600,
                                                                 "effects": {
-                                                                    "attack_advantage": -1,
+                                                                    "attack_advantage": "-1",
                                                                     "check_dis": [
                                                                         "all"
                                                                     ]
@@ -53555,7 +53555,7 @@
                                         "name": "Invisible",
                                         "duration": 600,
                                         "effects": {
-                                            "attack_advantage": 1
+                                            "attack_advantage": "1"
                                         },
                                         "buttons": [
                                             {
@@ -55357,7 +55357,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -55702,7 +55702,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -56330,7 +56330,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -56629,7 +56629,7 @@
                                                         "type": "ieffect2",
                                                         "name": "Poisoned",
                                                         "effects": {
-                                                            "attack_advantage": -1,
+                                                            "attack_advantage": "-1",
                                                             "check_dis": [
                                                                 "all"
                                                             ]
@@ -56971,7 +56971,7 @@
                                                         "name": "Poisoned",
                                                         "duration": 10,
                                                         "effects": {
-                                                            "attack_advantage": -1,
+                                                            "attack_advantage": "-1",
                                                             "check_dis": [
                                                                 "all"
                                                             ]
@@ -57119,7 +57119,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Restrained (Web)",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -62858,7 +62858,7 @@
                                                 "name": "Poisoned",
                                                 "duration": "{{600*int(hours)}}",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "check_dis": [
                                                         "all"
                                                     ]
@@ -64530,7 +64530,7 @@
                                                         "name": "Prone",
                                                         "duration": -1,
                                                         "effects": {
-                                                            "attack_advantage": -1
+                                                            "attack_advantage": "-1"
                                                         },
                                                         "buttons": [
                                                             {
@@ -65855,7 +65855,7 @@
                                                 "name": "Poisoned",
                                                 "duration": 1,
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "check_dis": [
                                                         "all"
                                                     ]
@@ -67955,7 +67955,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -68289,7 +68289,7 @@
                                                                 "name": "Poisoned (Paralyzed, Stable)",
                                                                 "duration": 600,
                                                                 "effects": {
-                                                                    "attack_advantage": -1,
+                                                                    "attack_advantage": "-1",
                                                                     "check_dis": [
                                                                         "all"
                                                                     ]
@@ -68586,7 +68586,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Grappled (Restrained) by {{caster.name}}",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -69267,7 +69267,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Grappled (Restrained) by {{caster.name}}",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -69382,7 +69382,7 @@
                                                         "name": "Prone",
                                                         "duration": -1,
                                                         "effects": {
-                                                            "attack_advantage": -1
+                                                            "attack_advantage": "-1"
                                                         },
                                                         "buttons": [
                                                             {
@@ -69973,7 +69973,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -70593,7 +70593,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Grappled (Restrained) by {{caster.name}}",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -71009,7 +71009,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -71813,7 +71813,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Grappled (Restrained) by {{caster.name}}",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -73320,7 +73320,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -73924,7 +73924,7 @@
                                                         "name": "Poisoned (Paralyzed, Stable)",
                                                         "duration": 600,
                                                         "effects": {
-                                                            "attack_advantage": -1,
+                                                            "attack_advantage": "-1",
                                                             "check_dis": [
                                                                 "all"
                                                             ]
@@ -74013,7 +74013,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Restrained (Web)",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -74306,7 +74306,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Grappled (Restrained) by {{caster.name}}",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -75071,7 +75071,7 @@
                                                         "name": "Poisoned (Paralyzed, Stable)",
                                                         "duration": 600,
                                                         "effects": {
-                                                            "attack_advantage": -1,
+                                                            "attack_advantage": "-1",
                                                             "check_dis": [
                                                                 "all"
                                                             ]
@@ -75637,7 +75637,7 @@
                                                         "name": "Poisoned (Paralyzed, Stable)",
                                                         "duration": 600,
                                                         "effects": {
-                                                            "attack_advantage": -1,
+                                                            "attack_advantage": "-1",
                                                             "check_dis": [
                                                                 "all"
                                                             ]
@@ -76038,7 +76038,7 @@
                                                         "name": "Prone",
                                                         "duration": -1,
                                                         "effects": {
-                                                            "attack_advantage": -1
+                                                            "attack_advantage": "-1"
                                                         },
                                                         "buttons": [
                                                             {
@@ -77951,7 +77951,7 @@
                                                         "name": "Prone",
                                                         "duration": -1,
                                                         "effects": {
-                                                            "attack_advantage": -1
+                                                            "attack_advantage": "-1"
                                                         },
                                                         "buttons": [
                                                             {
@@ -79383,7 +79383,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -80809,7 +80809,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -80969,7 +80969,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Restrained (Petrifying)",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -81313,7 +81313,7 @@
                                                         "name": "Prone",
                                                         "duration": -1,
                                                         "effects": {
-                                                            "attack_advantage": -1
+                                                            "attack_advantage": "-1"
                                                         },
                                                         "buttons": [
                                                             {
@@ -81421,7 +81421,7 @@
                                                         "name": "Prone",
                                                         "duration": -1,
                                                         "effects": {
-                                                            "attack_advantage": -1
+                                                            "attack_advantage": "-1"
                                                         },
                                                         "buttons": [
                                                             {
@@ -83062,7 +83062,7 @@
                                         "type": "ieffect2",
                                         "name": "Invisible",
                                         "effects": {
-                                            "attack_advantage": 1
+                                            "attack_advantage": "1"
                                         },
                                         "buttons": [
                                             {
@@ -83868,7 +83868,7 @@
                                                         "name": "Poisoned (Paralyzed)",
                                                         "duration": 10,
                                                         "effects": {
-                                                            "attack_advantage": -1,
+                                                            "attack_advantage": "-1",
                                                             "check_dis": [
                                                                 "all"
                                                             ]
@@ -83909,7 +83909,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Grappled (Restrained) by {{caster.name}}",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -88589,7 +88589,7 @@
                                                 "name": "Poisoned",
                                                 "duration": 1,
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "check_dis": [
                                                         "all"
                                                     ]
@@ -90315,7 +90315,7 @@
                                                         "name": "Prone",
                                                         "duration": -1,
                                                         "effects": {
-                                                            "attack_advantage": -1
+                                                            "attack_advantage": "-1"
                                                         },
                                                         "buttons": [
                                                             {
@@ -90746,7 +90746,7 @@
                                                                 "name": "Poisoned, Unconscious",
                                                                 "duration": "{{duration}}",
                                                                 "effects": {
-                                                                    "attack_advantage": -1,
+                                                                    "attack_advantage": "-1",
                                                                     "check_dis": [
                                                                         "all"
                                                                     ]
@@ -90759,7 +90759,7 @@
                                                                 "name": "Poisoned",
                                                                 "duration": 10,
                                                                 "effects": {
-                                                                    "attack_advantage": -1,
+                                                                    "attack_advantage": "-1",
                                                                     "check_dis": [
                                                                         "all"
                                                                     ]
@@ -93629,7 +93629,7 @@
                                         "type": "ieffect2",
                                         "name": "Invisible",
                                         "effects": {
-                                            "attack_advantage": 1
+                                            "attack_advantage": "1"
                                         },
                                         "buttons": [
                                             {
@@ -97340,7 +97340,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Grappled (Restrained) by {{caster.name}}",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -97453,7 +97453,7 @@
                                         "name": "Prone",
                                         "duration": -1,
                                         "effects": {
-                                            "attack_advantage": -1
+                                            "attack_advantage": "-1"
                                         },
                                         "buttons": [
                                             {
@@ -97487,7 +97487,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -98225,7 +98225,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Restrained",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -101015,7 +101015,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -102923,7 +102923,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Grappled (Restrained) by {{caster.name}}",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -104301,7 +104301,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -105403,7 +105403,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -105729,7 +105729,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Grappled (Restrained) by {{caster.name}}",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -106126,7 +106126,7 @@
                                                         "name": "Prone",
                                                         "duration": -1,
                                                         "effects": {
-                                                            "attack_advantage": -1
+                                                            "attack_advantage": "-1"
                                                         },
                                                         "buttons": [
                                                             {
@@ -106423,7 +106423,7 @@
                                                         "type": "ieffect2",
                                                         "name": "Restrained (Petrifying)",
                                                         "effects": {
-                                                            "attack_advantage": -1,
+                                                            "attack_advantage": "-1",
                                                             "save_dis": [
                                                                 "dex"
                                                             ]
@@ -109471,7 +109471,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -109522,7 +109522,7 @@
                                         "name": "Attacked Recklessly",
                                         "duration": 1,
                                         "effects": {
-                                            "attack_advantage": 1
+                                            "attack_advantage": "1"
                                         },
                                         "desc": "All attacks made against them until the start of their next turn have advantage"
                                     }
@@ -109868,7 +109868,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -110560,7 +110560,7 @@
                                                 "name": "Restrained",
                                                 "duration": 1,
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -110686,7 +110686,7 @@
                                                 "name": "Restrained",
                                                 "duration": 10,
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -112474,7 +112474,7 @@
                                                 "name": "Poisoned",
                                                 "duration": 10,
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "check_dis": [
                                                         "all"
                                                     ]
@@ -117941,7 +117941,7 @@
                                         "name": "Battle Cry",
                                         "duration": 1,
                                         "effects": {
-                                            "attack_advantage": 1
+                                            "attack_advantage": "1"
                                         },
                                         "save_as": "cry"
                                     }
@@ -117956,7 +117956,7 @@
                                         "name": "Battle Cry",
                                         "duration": 2,
                                         "effects": {
-                                            "attack_advantage": 1
+                                            "attack_advantage": "1"
                                         },
                                         "parent": "cry"
                                     }
@@ -118496,7 +118496,7 @@
                                                         "type": "ieffect2",
                                                         "name": "Diseased (Poisoned)",
                                                         "effects": {
-                                                            "attack_advantage": -1,
+                                                            "attack_advantage": "-1",
                                                             "check_dis": [
                                                                 "all"
                                                             ]
@@ -118542,7 +118542,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Grappled (Restrained) by {{caster.name}}",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -119546,7 +119546,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -120917,7 +120917,7 @@
                                                         "name": "Poisoned (Paralyzed, Stable)",
                                                         "duration": 600,
                                                         "effects": {
-                                                            "attack_advantage": -1,
+                                                            "attack_advantage": "-1",
                                                             "check_dis": [
                                                                 "all"
                                                             ]
@@ -121510,7 +121510,7 @@
                                                         "type": "ieffect2",
                                                         "name": "Bite Wound (Poisoned)",
                                                         "effects": {
-                                                            "attack_advantage": -1,
+                                                            "attack_advantage": "-1",
                                                             "check_dis": [
                                                                 "all"
                                                             ]
@@ -122065,7 +122065,7 @@
                                         "type": "ieffect2",
                                         "name": "Invisible",
                                         "effects": {
-                                            "attack_advantage": 1
+                                            "attack_advantage": "1"
                                         },
                                         "buttons": [
                                             {
@@ -124449,7 +124449,7 @@
                                                                 "name": "Poisoned (Unconscious)",
                                                                 "duration": 14400,
                                                                 "effects": {
-                                                                    "attack_advantage": -1,
+                                                                    "attack_advantage": "-1",
                                                                     "check_dis": [
                                                                         "all"
                                                                     ]
@@ -124470,7 +124470,7 @@
                                                                                         "name": "Poisoned",
                                                                                         "duration": "ieffect.remaining",
                                                                                         "effects": {
-                                                                                            "attack_advantage": -1,
+                                                                                            "attack_advantage": "-1",
                                                                                             "check_dis": [
                                                                                                 "all"
                                                                                             ]
@@ -124497,7 +124497,7 @@
                                                                 "name": "Poisoned",
                                                                 "duration": 600,
                                                                 "effects": {
-                                                                    "attack_advantage": -1,
+                                                                    "attack_advantage": "-1",
                                                                     "check_dis": [
                                                                         "all"
                                                                     ]
@@ -126628,7 +126628,7 @@
                                                         "name": "Poisoned",
                                                         "duration": 10,
                                                         "effects": {
-                                                            "attack_advantage": -1,
+                                                            "attack_advantage": "-1",
                                                             "check_dis": [
                                                                 "all"
                                                             ]
@@ -126812,7 +126812,7 @@
                                         "name": "Invisible",
                                         "duration": 600,
                                         "effects": {
-                                            "attack_advantage": 1
+                                            "attack_advantage": "1"
                                         },
                                         "buttons": [
                                             {
@@ -129133,7 +129133,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Grappled (Restrained) by {{caster.name}}",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -130002,7 +130002,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -130556,7 +130556,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Grappled (Restrained) by {{caster.name}}",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -130971,7 +130971,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Grappled (Restrained) by {{caster.name}}",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -131318,7 +131318,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Grappled (Restrained, Blinded) by {{caster.name}}",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -131931,7 +131931,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -133594,7 +133594,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Grappled (Restrained) by {{caster.name}}",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -136454,7 +136454,7 @@
                                         "type": "ieffect2",
                                         "name": "Engulfed (Blinded, Restrained)",
                                         "effects": {
-                                            "attack_advantage": -1,
+                                            "attack_advantage": "-1",
                                             "save_dis": [
                                                 "dex"
                                             ]
@@ -138419,7 +138419,7 @@
                                                 "name": "Blinded",
                                                 "duration": 2,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "parent": "endOfCaster"
                                             }
@@ -140994,7 +140994,7 @@
                                                                 "name": "Poisoned (Unconscious)",
                                                                 "duration": 10,
                                                                 "effects": {
-                                                                    "attack_advantage": -1,
+                                                                    "attack_advantage": "-1",
                                                                     "check_dis": [
                                                                         "all"
                                                                     ]
@@ -141015,7 +141015,7 @@
                                                                                         "name": "Poisoned",
                                                                                         "duration": "ieffect.remaining",
                                                                                         "effects": {
-                                                                                            "attack_advantage": -1,
+                                                                                            "attack_advantage": "-1",
                                                                                             "check_dis": [
                                                                                                 "all"
                                                                                             ]
@@ -141042,7 +141042,7 @@
                                                                 "name": "Poisoned",
                                                                 "duration": 10,
                                                                 "effects": {
-                                                                    "attack_advantage": -1,
+                                                                    "attack_advantage": "-1",
                                                                     "check_dis": [
                                                                         "all"
                                                                     ]
@@ -141183,7 +141183,7 @@
                                         "type": "ieffect2",
                                         "name": "Invisible",
                                         "effects": {
-                                            "attack_advantage": 1
+                                            "attack_advantage": "1"
                                         },
                                         "buttons": [
                                             {
@@ -142194,7 +142194,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Latched On",
                                                 "effects": {
-                                                    "attack_advantage": 1
+                                                    "attack_advantage": "1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -142546,7 +142546,7 @@
                                                         "name": "Prone",
                                                         "duration": -1,
                                                         "effects": {
-                                                            "attack_advantage": -1
+                                                            "attack_advantage": "-1"
                                                         },
                                                         "buttons": [
                                                             {
@@ -146922,7 +146922,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Grappled (Restrained) by {{caster.name}}",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -147101,7 +147101,7 @@
                                                         "name": "Prone",
                                                         "duration": -1,
                                                         "effects": {
-                                                            "attack_advantage": -1
+                                                            "attack_advantage": "-1"
                                                         },
                                                         "buttons": [
                                                             {
@@ -147706,7 +147706,7 @@
                                                                 "name": "Poisoned, Paralyzed",
                                                                 "duration": 10,
                                                                 "effects": {
-                                                                    "attack_advantage": -1,
+                                                                    "attack_advantage": "-1",
                                                                     "check_dis": [
                                                                         "all"
                                                                     ]
@@ -147746,7 +147746,7 @@
                                                                 "name": "Poisoned",
                                                                 "duration": 10,
                                                                 "effects": {
-                                                                    "attack_advantage": -1,
+                                                                    "attack_advantage": "-1",
                                                                     "check_dis": [
                                                                         "all"
                                                                     ]
@@ -148425,7 +148425,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -149341,7 +149341,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -150031,7 +150031,7 @@
                                                 "name": "Poisoned",
                                                 "duration": 1,
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "check_dis": [
                                                         "all"
                                                     ]
@@ -151010,7 +151010,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Grappled (Restrained) by {{caster.name}}",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -152223,7 +152223,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -155500,7 +155500,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Grappled (Restrained) by {{caster.name}}",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -155655,7 +155655,7 @@
                                                 "name": "Restrained",
                                                 "duration": 10,
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -156388,7 +156388,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Poisoned",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "check_dis": [
                                                         "all"
                                                     ]
@@ -156932,7 +156932,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -157932,7 +157932,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Grappled (Restrained) by {{caster.name}}",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -159090,7 +159090,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -159751,7 +159751,7 @@
                                                 "name": "Prone",
                                                 "duration": -1,
                                                 "effects": {
-                                                    "attack_advantage": -1
+                                                    "attack_advantage": "-1"
                                                 },
                                                 "buttons": [
                                                     {
@@ -161573,7 +161573,7 @@
                                         "type": "ieffect2",
                                         "name": "Invisible",
                                         "effects": {
-                                            "attack_advantage": 1
+                                            "attack_advantage": "1"
                                         },
                                         "buttons": [
                                             {
@@ -162200,7 +162200,7 @@
                                                         "name": "Prone",
                                                         "duration": -1,
                                                         "effects": {
-                                                            "attack_advantage": -1
+                                                            "attack_advantage": "-1"
                                                         },
                                                         "buttons": [
                                                             {
@@ -162575,7 +162575,7 @@
                                                         "name": "Prone",
                                                         "duration": -1,
                                                         "effects": {
-                                                            "attack_advantage": -1
+                                                            "attack_advantage": "-1"
                                                         },
                                                         "buttons": [
                                                             {
@@ -162852,7 +162852,7 @@
                                                         "name": "Prone",
                                                         "duration": -1,
                                                         "effects": {
-                                                            "attack_advantage": -1
+                                                            "attack_advantage": "-1"
                                                         },
                                                         "buttons": [
                                                             {
@@ -170649,7 +170649,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Grappled (Restrained) by {{caster.name}}",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]
@@ -171912,7 +171912,7 @@
                                                 "type": "ieffect2",
                                                 "name": "Grappled (Restrained) by {{caster.name}}",
                                                 "effects": {
-                                                    "attack_advantage": -1,
+                                                    "attack_advantage": "-1",
                                                     "save_dis": [
                                                         "dex"
                                                     ]

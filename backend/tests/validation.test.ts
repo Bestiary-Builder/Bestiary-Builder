@@ -66,7 +66,7 @@ describe("validate statblocks", () => {
 			abilities: {
 				...defaultStatblock.abilities,
 				stats: {
-					...defaultStatblock.abilities.stats,
+					...defaultStatblock.abilities.stats, 
 					str: "20",
 				},
 			},
