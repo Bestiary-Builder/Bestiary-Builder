@@ -1,4 +1,8 @@
 [//]: # (Remember to update the constant in /src/utils/constants.ts whenever a new release is added)
+## v3.0.5
+_November 5, 2026_
+
+- Added the ability to export single creatures to a PDF.
 ## v3.0.4
 _October 25, 2026_
 

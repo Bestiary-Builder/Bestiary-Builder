@@ -250,7 +250,8 @@ const { statblockColors } = useStatblockColors();
 
 <template>
 	<div
-		class="statblock-outer" :class="design?.toLowerCase()"
+		id="statblock-outer" class="statblock-outer"
+		:class="design?.toLowerCase()"
 		:style="design === 'Custom' && isAllowedCustomTheme ? statblockColors : ''"
 	>
 		<div id="statblock" class="statblock" :class="[v2024 ? 'v2024' : '']">
@@ -534,7 +535,7 @@ const { statblockColors } = useStatblockColors();
 			<h2 v-if="data.description.description" class="feature-container-title">
 				Description
 			</h2>
-			<div v-if="data.description.description" class="markdown" v-html="render(data.description.description)" />
+			<div v-if="data.description.description" class="markdown" v-html="render(data.description.description)" id="description-text"/>
 		</div>
 	</div>
 </template>
