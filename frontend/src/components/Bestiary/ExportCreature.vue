@@ -72,7 +72,6 @@ const exportToImage = async (type: "1x1" | "2x1" | "2x1 wide") => {
 
 const pdfExportOptions = useLocalStorage("pdfExportOptions", {
 	page: "a4" as PdfPageSize, // false means US letter
-	pageMargin: true,
 	includeDescription: true,
 	orientation: "portrait" as PdfOrientation
 });
@@ -97,11 +96,11 @@ const exportToPdf = async () => {
 	if (descriptionTextEl && theme.current.value.dark)
 		descriptionTextEl.style = "color: #000";
 
-	const result = await snapdom(pdfExportOptions.value.includeDescription ? outerEl : innerEl, { plugins: [pdf({ breakAvoid: true })], scale: 2, quality: 1, backgroundColor: "#fff" });
+	const result = await snapdom(pdfExportOptions.value.includeDescription ? outerEl : innerEl, { plugins: [pdf({ breakAvoid: true })], scale: 2, quality: 1, backgroundColor: "#fff", fast: false, embedFonts: true });
 	await result.toPdf({
 		page: pdfExportOptions.value.page ? "a4" : "letter",
 		orientation: pdfExportOptions.value.orientation,
-		margin: pdfExportOptions.value.pageMargin ? 24 : 0,
+		margin: 24,
 		header: {
 			left: "Made with Bestiary Builder",
 			right: data.description.name,
@@ -119,6 +118,8 @@ const exportToPdf = async () => {
 	updateToast(toastId, { text: "Export completed successfully", color: "success" });
 	void getUmami()?.track("Export statblock to pdf");
 };
+
+const isGecko = CSS.supports("-moz-appearance", "none");
 </script>
 
 <template>
@@ -150,7 +151,9 @@ const exportToPdf = async () => {
 						</span>
 						<v-divider class="flex-grow-1" />
 					</div>
-
+					<v-alert v-if="isGecko" color="error">
+						For best results use a different browser other than Firefox.
+					</v-alert>
 					<v-btn class="w-100" color="success" size="large" @click="exportToImage('2x1')">
 						2 columns
 					</v-btn>
@@ -167,10 +170,12 @@ const exportToPdf = async () => {
 						</span>
 						<v-divider class="flex-grow-1" />
 					</div>
+					<v-alert v-if="isGecko" color="error">
+						For best results use a different browser other than Firefox.
+					</v-alert>
 					<div class="w-100">
 						<v-switch v-model="pdfExportOptions.includeDescription" color="primary" label="Include creature description" hide-details density="compact" size="small" />
 						<v-switch v-model="pdfExportOptions.page" color="primary" density="compact" :label="`Page size: ${pdfExportOptions.page === 'a4' ? 'A4' : 'US Letter'}`" hide-details false-value="letter" true-value="a4" size="small" />
-						<v-switch v-model="pdfExportOptions.pageMargin" color="primary" density="compact" label="Page margin" hide-details size="small" />
 						<v-switch v-model="pdfExportOptions.orientation" color="primary" density="compact" :label="`Page orientation: ${pdfExportOptions.orientation}`" false-value="landscape" true-value="portrait" hide-details size="small" />
 					</div>
 					<v-badge class="w-100" color="primary" content="experimental" location="top right" offset-x="60">
