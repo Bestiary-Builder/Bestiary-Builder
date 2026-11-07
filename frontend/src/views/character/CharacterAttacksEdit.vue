@@ -68,7 +68,7 @@ const isDeleteOpen = ref(false);
 const deleteAttack = (index: number) => {
 	if (character.value) {
 		isDeleteOpen.value = false;
-		activeAttackIndex.value = -1
+		activeAttackIndex.value = -1;
 		character.value.overrides.attacks.splice(index, 1);
 	}
 };
@@ -146,7 +146,7 @@ const isVisualEditor = ref(store.user?.preferredEditor === "Visual");
 					{{ attack.name }}
 				</option>
 			</select>
-			<DropdownMenu v-model="isDeleteOpen" v-if="activeAttackIndex > 0">
+			<DropdownMenu v-if="activeAttackIndex > -1" v-model="isDeleteOpen">
 				<template #activator="{ props }">
 					<v-icon-btn
 						icon="mdi:trash" text="Delete currently selected attack" v-bind="props"
