@@ -522,7 +522,7 @@ const importUtilRef = useTemplateRef("import-util");
 								<template #activator="{ props }">
 									<v-icon-btn
 										v-bind="props"
-										icon="mdi-link-variant"
+										icon="mdi:link-variant"
 										size="20"
 										variant="text"
 										:color="parityOptions.updateDescription ? 'primary' : 'grey'"
