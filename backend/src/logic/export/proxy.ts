@@ -176,7 +176,7 @@ proxyRouter.get("/", async (req, res) => {
 		});
 		await pipeline(Readable.fromWeb(upstream.body as any), limitBytes(MAX_BYTES), res);
 	}
-	catch (e) {
+	catch {
 		if (!res.headersSent)
 			res.status(502).send("Proxy error");
 		else
