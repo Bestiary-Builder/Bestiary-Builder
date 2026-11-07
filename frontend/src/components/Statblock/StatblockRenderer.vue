@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FeatureEntity, SaveEntity, SkillsEntity, Stat, Statblock } from "~/shared";
+import type { FeatureEntity, Features, SaveEntity, SkillsEntity, Stat, Statblock } from "~/shared";
 import type { StatblockDesign } from "~/shared/src/prisma-types";
 
 import MarkdownIt from "markdown-it";
@@ -502,8 +502,8 @@ const { statblockColors } = useStatblockColors();
 			</div>
 
 			<!-- TODO: Add features and actions to the generator here once they no longer need special handling because of spellcasting -->
-			<template v-for="title, fType of featureGenerator">
-				<div v-if="data.features[fType].length > 0" :key="fType" class="statblock-row">
+			<template v-for="(title, fType) of featureGenerator">
+				<div v-if="data.features[fType as keyof Features].length > 0" :key="fType" class="statblock-row">
 					<div class="feature-container">
 						<h3 class="feature-container-title">
 							{{ title }}
@@ -513,11 +513,11 @@ const { statblockColors } = useStatblockColors();
 								v-html="render(data.misc.featureHeaderTexts[fType].replace('$NUM$', data.misc.legActionsPerRound.toString()))"
 							/>
 						</p>
-						<p v-else-if="data.misc.featureHeaderTexts[fType]" class="feature-header">
-							<span v-html="render(data.misc.featureHeaderTexts[fType])" />
+						<p v-else-if="data.misc.featureHeaderTexts[fType as keyof Features]" class="feature-header">
+							<span v-html="render(data.misc.featureHeaderTexts[fType as keyof Features])" />
 						</p>
 						<p
-							v-for="(feature, index) in data.features[fType]" :key="index" class="feature-description"
+							v-for="(feature, index) in data.features[fType as keyof Features]" :key="index" class="feature-description"
 							v-html="renderFeature(feature)"
 						/>
 					</div>

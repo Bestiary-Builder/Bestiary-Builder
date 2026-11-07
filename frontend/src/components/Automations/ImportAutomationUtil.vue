@@ -21,6 +21,7 @@ const emit = defineEmits<{
 
 const isOpen = ref(false);
 
+defineExpose({ isOpen });
 const { addToast, updateToast } = useToast();
 
 type AutomationTypes = "automation" | "srd-features/2014" | "srd-features/2024";
@@ -177,6 +178,7 @@ const addToAutomationCollection = async (collection: AutomationCollection | null
 	<v-dialog v-model="isOpen" max-width="700" scrollable>
 		<v-card class="pa-4" title="Manage Source Data" prepend-icon="mdi:database">
 			<v-card-text>
+				<small class="text-medium-emphasis"> <i> Here you can import automations from elsewhere into this one, or add this automation to a character, or export this action to an automation collection.</i></small>
 				<v-row density="comfortable">
 					<v-col>
 						<div class="d-flex align-center w-100 my-2">

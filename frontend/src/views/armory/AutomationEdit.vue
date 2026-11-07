@@ -363,6 +363,7 @@ const addConsumable = () => {
 
 const rules = useRules();
 
+// provide autocomplete for the automation consumable inputs. We use a different language (julia) to avoid namespace pollution as monaco state is global.
 let providerDisposable: Monaco.IDisposable | undefined;
 
 const registerProvider = (monaco: typeof Monaco) => {
@@ -411,6 +412,8 @@ const copySingleCounter = async (consumable: AutomationConsumable) => {
 watch(() => data.value?.name, () => {
 	document.title = `${data.value?.name} | Bestiary Builder`;
 }, { immediate: true });
+
+const importUtilRef = useTemplateRef("import-util");
 </script>
 
 <template>
@@ -442,7 +445,7 @@ watch(() => data.value?.name, () => {
 			v-tooltip="'Change editor'" size="24" icon="mdi:code-block-braces" text="Change editor"
 			@click="EditAutomationRef?.toggleEditor()"
 		/>
-		<ImportAutomationUtil :current-data="data ?? null" current-data-type="fromAutomation" @load-feature="feature => loadFeature(feature)" />
+		<ImportAutomationUtil ref="import-util" :current-data="data ?? null" current-data-type="fromAutomation" @load-feature="feature => loadFeature(feature)" />
 		<v-icon-btn
 			v-if="data && store.isMobile" v-tooltip="'Clear automation'" icon="mdi:delete"
 			text="Clear automation" size="24" @click="data.automation = null"
@@ -457,19 +460,43 @@ watch(() => data.value?.name, () => {
 			<v-row>
 				<v-col cols="4">
 					<v-text-field
-						v-model="data.name" type="text" label="Feature name" :minlength="globalLimits.nameMin"
-						:maxlength="globalLimits.nameLength" hide-details
-					/>
-					<span v-if="isVisualEditor">
-						<input v-model="parityOptions.updateName" type="checkbox" style="scale: .7; translate: 0 4px">
-						<small style="font-size: x-small;"> <i>Updates the name of the first action in the automation
-							structure to this text while enabled.</i> </small>
-					</span>
+						v-model="data.name" type="text" label="Action name"
+						:rules="[rules.required(), rules.minLength(globalLimits.nameMin), rules.maxLength(globalLimits.nameLength)]"
+						hide-details
+					>
+						<template v-if="isVisualEditor" #append-inner>
+							<v-menu :close-on-content-click="false" location="bottom end">
+								<template #activator="{ props }">
+									<v-icon-btn
+										v-bind="props"
+										:icon="parityOptions.updateName ? 'mdi:link-variant' : 'mdi:link-variant-off'"
+										:color="parityOptions.updateName ? 'primary' : 'grey'"
+										title="Name sync options"
+									/>
+								</template>
+								<v-card max-width="280">
+									<v-card-text class="pa-3">
+										<v-checkbox
+											v-model="parityOptions.updateName"
+											label="Sync name to automation"
+											density="compact"
+											hide-details
+										/>
+										<small class="text-medium-emphasis">
+											<i>Updates the name of the first action in the automation structure to this text while enabled.</i>
+										</small>
+									</v-card-text>
+								</v-card>
+							</v-menu>
+						</template>
+					</v-text-field>
 
 					<v-text-field
-						v-model="data.tag" label="Tag" class="mt-4"
-						hint="Use this to organize your automations on the collection page."
+						v-model="data.tag" label="Tag" class="mt-2" hide-details density="compact"
+						hint="Use this to organize your automations on the collection page." prepend-inner-icon="mdi:tag"
 					/>
+
+					<v-select class="text-medium-emphasis mt-2" prepend-inner-icon="mdi:database" density="compact" placeholder="Import Automation from SRD" readonly @click="importUtilRef!.isOpen = true" />
 
 					<div v-if="!isVisualEditor && showDescriptionButtons" class="mt-4">
 						<b class="mt-4"> Descriptions: </b>
@@ -489,14 +516,36 @@ watch(() => data.value?.name, () => {
 					</div>
 				</v-col>
 				<v-col cols="8">
-					<Editor v-model="data.description" :height="115" />
-					<span v-if="isVisualEditor" class="sub-action">
-						<input v-model="parityOptions.updateDescription" type="checkbox">
-						<small> <i>Updates the last text node of the first action in the automation structure to this
-							text
-							while
-							enabled.</i> </small>
-					</span>
+					<Editor v-model="data.description" :height="118">
+						<template #parity-button>
+							<v-menu v-if="isVisualEditor" :close-on-content-click="false" location="bottom end">
+								<template #activator="{ props }">
+									<v-icon-btn
+										v-bind="props"
+										icon="mdi:link-variant"
+										size="20"
+										variant="text"
+										:color="parityOptions.updateDescription ? 'primary' : 'grey'"
+										title="Description sync options"
+									/>
+								</template>
+								<v-card max-width="280">
+									<v-card-text class="pa-3">
+										<v-checkbox
+											v-model="parityOptions.updateDescription"
+											label="Sync description to automation"
+											density="compact"
+											hide-details
+										/>
+										<small class="text-medium-emphasis">
+											<i>Updates the last text node of the first action in the automation structure to this text while enabled.</i>
+										</small>
+									</v-card-text>
+								</v-card>
+							</v-menu>
+							<v-divider vertical />
+						</template>
+					</Editor>
 				</v-col>
 			</v-row>
 		</v-sheet>

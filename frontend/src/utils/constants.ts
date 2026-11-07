@@ -14,14 +14,14 @@ export const resistanceGenerator = {
 } as const;
 
 // TODO: add actions/features once spellcasting has been fixed (#20)
-export const featureGenerator = {
+export const featureGenerator: Record<string, string> = {
 	bonus: "Bonus Actions",
 	reactions: "Reactions",
 	legendary: "Legendary Actions",
 	mythic: "Mythic Actions",
 	lair: "Lair Actions",
 	regional: "Regional Effects"
-} as const;
+};
 
 // constants for StatblockEditor
 export const newFeatureGenerator = {
