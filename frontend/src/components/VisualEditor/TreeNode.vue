@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
-import type { AttackInteraction, AttackModel, ButtonInteraction, EffectKey, EffectWithTarget, IEffect, Target } from "~/shared";
+import type { AttackInteraction, AttackModel, ButtonInteraction, Effect, EffectKey, IEffect, Target } from "~/shared";
 import { Icon } from "@iconify/vue";
 import { computed, h, inject, ref } from "vue";
 import { VueDraggable } from "vue-draggable-plus";
@@ -12,13 +12,13 @@ import EffectAdder from "./EffectAdder.vue";
 import NodeHeader from "./Nodes/shared/NodeHeader.vue";
 import { deepKeys, draggingProps } from "./util";
 
-const props = defineProps<{ data: EffectWithTarget; depth: number; context: string[] }>();
+const props = defineProps<{ data: Effect; depth: number; context: string[] }>();
 
 const selfType = computed<string>(() => {
 	return props.data.type;
 });
 
-const currentEffect = inject<Ref<EffectWithTarget | ButtonInteraction | AttackInteraction | null>>("currentEffect");
+const currentEffect = inject<Ref<Effect | ButtonInteraction | AttackInteraction | null>>("currentEffect");
 const currentContext = inject<Ref<string[]>>("currentContext");
 const automation = inject<Ref<null | AttackModel | AttackModel[]>>("automation");
 const isCollapsed = ref(false);

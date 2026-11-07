@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
-import type { AttackModel, EffectWithTarget } from "~/shared";
+import type { AttackModel, Effect } from "~/shared";
 import { Icon } from "@iconify/vue";
 import { inject } from "vue";
 import { VueDraggable } from "vue-draggable-plus";
@@ -47,7 +47,7 @@ const setAutomationEmpty = () => {
 	currentEffect!.value = null;
 };
 
-const currentEffect = inject<Ref<EffectWithTarget | AttackModel | null>>("currentEffect");
+const currentEffect = inject<Ref<Effect | AttackModel | null>>("currentEffect");
 const currentContext = inject<Ref<string[]>>("currentContext");
 
 const showControls = inject<Ref<boolean>>("showControls");

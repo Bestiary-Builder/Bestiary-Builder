@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type * as Monaco from "monaco-editor";
-import type { AttackModel, ButtonInteraction, EffectWithTarget } from "~/shared";
+import type { AttackModel, ButtonInteraction, Effect } from "~/shared";
 import { loader } from "@guolao/vue-monaco-editor";
 import { computed, onBeforeUnmount, onMounted, provide, ref, useTemplateRef, watch } from "vue";
 import { useDisplay } from "vuetify";
@@ -15,7 +15,7 @@ import TreeRoot from "./TreeRoot.vue";
 
 const { name, noListAttack = false } = defineProps<{ name: string; noListAttack?: boolean }>();
 const emit = defineEmits(["clearAutomation", "takeTour"]);
-const currentEffect = ref<EffectWithTarget | AttackModel | ButtonInteraction | null>(null);
+const currentEffect = ref<Effect | AttackModel | ButtonInteraction | null>(null);
 const currentContext = ref<string[]>([]);
 provide("currentEffect", currentEffect);
 provide("currentContext", currentContext);

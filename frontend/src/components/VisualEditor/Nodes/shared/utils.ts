@@ -1,5 +1,5 @@
 import type { Ref } from "vue";
-import type { AttackInteraction, AttackModel, ButtonInteraction, EffectWithTarget } from "~/shared";
+import type { AttackInteraction, AttackModel, ButtonInteraction, Effect } from "~/shared";
 import { watch } from "vue";
 
 // type NestedData<T> = {
@@ -17,7 +17,7 @@ type EffectNestedData<T> = Omit<
 	NonObjectEffectKeys<T>
 >;
 
-export const useDataCleanup = <T extends EffectWithTarget | AttackModel | ButtonInteraction | AttackInteraction>(
+export const useDataCleanup = <T extends Effect | AttackModel | ButtonInteraction | AttackInteraction>(
 	data: Ref<T> | undefined,
 	throwAwayValues: Array<NonObjectEffectKeys<T>>,
 	throwAwayNestedValues?: EffectNestedData<T>

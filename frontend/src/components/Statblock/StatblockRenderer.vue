@@ -535,7 +535,7 @@ const { statblockColors } = useStatblockColors();
 			<h2 v-if="data.description.description" class="feature-container-title">
 				Description
 			</h2>
-			<div v-if="data.description.description" class="markdown" v-html="render(data.description.description)" id="description-text"/>
+			<div v-if="data.description.description" id="description-text" class="markdown" v-html="render(data.description.description)" />
 		</div>
 	</div>
 </template>

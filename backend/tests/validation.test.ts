@@ -8,6 +8,8 @@ import SRDCreatures2024_ from "@/staticData/2024/SRDCreatures2024.json";
 
 import { defaultStatblock, validateAutomationConsumables, validateAutomationModel, validateStatblock } from "~/shared";
 
+import automations from "./automations.json";
+
 const SRDAttacks2014 = SRDAttacks2014_ as Record<string, { automation: unknown }>;
 const SRDCreatures2014 = SRDCreatures2014_ as Record<string, unknown>;
 const SRDAttacks2024 = SRDAttacks2024_ as Record<string, { automation: unknown }>;
@@ -323,6 +325,13 @@ describe("validate automations", () => {
 		};
 		expectValidAutomation(automation);
 	});
+
+	// Make sure the examples from automations.json are valid too
+	for (const automation of automations) {
+		it(automation?.name ?? "Unknown", () => {
+			expectValidAutomation(automation);
+		});
+	}
 });
 
 // Automation consumables validation

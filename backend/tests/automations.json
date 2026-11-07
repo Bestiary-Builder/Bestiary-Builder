@@ -1,0 +1,94 @@
+[
+	{
+		"_v": 2,
+		"name": "Gore",
+		"automation": [
+			{
+				"type": "target",
+				"target": "each",
+				"effects": [
+					{
+						"adv": "0",
+						"hit": [
+							{
+								"type": "damage",
+								"damage": "4d6+7[piercing]",
+								"higher": {}
+							},
+							{
+								"type": "condition",
+								"onTrue": [
+									{
+										"end": false,
+										"conc": false,
+										"desc": "Grappled by {{caster.name}}\n - Escape DC 14\n - A failed escape deals 8d6 piercing Damage.\nRestrained\n",
+										"name": "Impaled (Grappled, Restrained)",
+										"type": "ieffect2",
+										"buttons": [
+											{
+												"verb": "tries to escape",
+												"label": "Escape Grapple",
+												"automation": [
+													{
+														"type": "target",
+														"target": "self",
+														"effects": [
+															{
+																"dc": "15",
+																"fail": [
+																	{
+																		"type": "damage",
+																		"damage": "8d6[piercing]",
+																		"higher": {}
+																	}
+																],
+																"type": "check",
+																"ability": [
+																	"acrobatics",
+																	"athletics"
+																],
+																"success": [
+																	{
+																		"type": "remove_ieffect",
+																		"removeParent": "if_no_children"
+																	}
+																]
+															}
+														]
+													},
+													{
+														"text": "A creature grappled by the monster can use its action to try to escape. To do so, it must succeed on a Strength (Athletics) or Dexterity (Acrobatics) check against the escape DC in the monster's stat block.",
+														"type": "text"
+													}
+												]
+											}
+										],
+										"effects": {
+											"save_dis": [
+												"dex",
+												" "
+											],
+											"attack_advantage": "-1"
+										},
+										"save_as": "grapple",
+										"stacking": false
+									}
+								],
+								"onFalse": [],
+								"condition": "lastAttackDidCrit"
+							}
+						],
+						"miss": [],
+						"type": "attack",
+						"attackBonus": "10"
+					}
+				]
+			},
+			{
+				"text": "*Melee Attack Roll:* +10, reach 10 ft. Hit: 21 (4d6 + 7) Piercing damage. On a Critical Hit, if the target is Large or smaller, it becomes impaled and has the Grappled condition (escape DC 15). While Grappled, the target has the Restrained condition, and a failed attempt to escape the Grapple deals 28 (8d6) Piercing damage to the target. The rhinotitan can have two creatures impaled at a time.",
+				"type": "text"
+			}
+		],
+		"activation_type": 1
+	}
+]

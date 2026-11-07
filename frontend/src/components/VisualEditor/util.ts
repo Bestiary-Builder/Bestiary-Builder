@@ -1,4 +1,4 @@
-import type { EffectWithTarget, Features } from "~/shared";
+import type { Effect, Features } from "~/shared";
 import { ref } from "vue";
 
 export const displayNames: Record<string, { label: string; icon: string }> = {
@@ -35,7 +35,7 @@ export const displayNames: Record<string, { label: string; icon: string }> = {
 	attackWithGrappleRestrain: { label: "Attack with Grapple (Restrain)", icon: "game-icons:fist" }
 } as const;
 
-export const defaultNodes: Record<string, EffectWithTarget | EffectWithTarget[]> = {
+export const defaultNodes: Record<string, Effect | Effect[]> = {
 	target: {
 		type: "target",
 		target: "each",

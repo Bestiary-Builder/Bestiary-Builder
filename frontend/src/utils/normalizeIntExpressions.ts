@@ -1,4 +1,4 @@
-import type { AttackInteraction, AttackModel, ButtonInteraction, EffectWithTarget, PassiveEffects, Variable } from "~/shared";
+import type { AttackInteraction, AttackModel, ButtonInteraction, Effect, PassiveEffects, Variable } from "~/shared";
 
 type MutableRecord = Record<string, unknown>;
 
@@ -36,12 +36,12 @@ const normalizeVariableHigherLevels = (variable: Variable) => {
 	}
 };
 
-const normalizeEffects = (effects: EffectWithTarget[]) => {
+const normalizeEffects = (effects: Effect[]) => {
 	for (const effect of effects)
 		normalizeEffect(effect);
 };
 
-const normalizeEffect = (effect: EffectWithTarget) => {
+const normalizeEffect = (effect: Effect) => {
 	switch (effect.type) {
 		case "target":
 			normalizeEffects(effect.effects);

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
-import type { AttackInteraction, AttackModel, ButtonInteraction, EffectWithTarget, Features } from "~/shared";
+import type { AttackInteraction, AttackModel, ButtonInteraction, Effect, Features } from "~/shared";
 import { Icon } from "@iconify/vue";
 import { computed, inject, nextTick, ref, useTemplateRef, watch } from "vue";
 import { useRoute } from "vue-router";
@@ -64,7 +64,7 @@ const availableNodes = computed(() => {
 });
 
 const automation = inject<Ref<null | AttackModel | AttackModel[]>>("automation");
-const currentEffect = inject<Ref<EffectWithTarget | ButtonInteraction | AttackInteraction>>("currentEffect");
+const currentEffect = inject<Ref<Effect | ButtonInteraction | AttackInteraction>>("currentEffect");
 const addAndSelect = (node: string) => {
 	// traverse through the tree.
 	if (!automation)
