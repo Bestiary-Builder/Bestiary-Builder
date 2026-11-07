@@ -97,8 +97,8 @@ const exportToPdf = async () => {
 		descriptionTextEl.style = "color: #000";
 	const proxyUrl = `${window.location.origin}/api/proxy`;
 	// we run it twice, as the first one tends to have some issues
-	let result = await snapdom(pdfExportOptions.value.includeDescription ? outerEl : innerEl, { plugins: [pdf({ breakAvoid: true })], scale: 2, quality: 1, backgroundColor: "#fff", fast: false, embedFonts: true, useProxy: proxyUrl });
-	result = await snapdom(pdfExportOptions.value.includeDescription ? outerEl : innerEl, { plugins: [pdf({ breakAvoid: true })], scale: 2, quality: 1, backgroundColor: "#fff", fast: false, embedFonts: true, useProxy: proxyUrl });
+	let result = await snapdom(pdfExportOptions.value.includeDescription ? outerEl : innerEl, { plugins: [pdf({ breakAvoid: true })], scale: 2, quality: 1, backgroundColor: "#fff", fast: false, embedFonts: true });
+	result = await snapdom(pdfExportOptions.value.includeDescription ? outerEl : innerEl, { plugins: [pdf({ breakAvoid: true })], scale: 2, quality: 1, backgroundColor: "#fff", fast: false, embedFonts: true });
 
 	await result.toPdf({
 		page: pdfExportOptions.value.page ? "a4" : "letter",
