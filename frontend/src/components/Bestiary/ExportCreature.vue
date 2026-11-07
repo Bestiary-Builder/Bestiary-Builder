@@ -10,6 +10,7 @@ import { getUmami } from "@/utils/app/analytics";
 import { downloadFile } from "@/utils/app/export";
 import { useToast } from "@/utils/app/toast";
 import { useFetch } from "@/utils/utils";
+import { nextTick } from "vue";
 
 const { data } = defineProps<{ data: Statblock }>();
 const { addToast, updateToast } = useToast();
@@ -95,6 +96,7 @@ const exportToPdf = async () => {
 	innerEl.classList.add("to-print");
 	if (descriptionTextEl && theme.current.value.dark)
 		descriptionTextEl.style = "color: #000";
+	await nextTick()
 	// we run it twice, as the first one tends to have some issues
 	let result = await snapdom(pdfExportOptions.value.includeDescription ? outerEl : innerEl, { plugins: [pdf({ breakAvoid: true })], scale: 2, quality: 1, backgroundColor: "#fff", fast: false, embedFonts: true });
 	result = await snapdom(pdfExportOptions.value.includeDescription ? outerEl : innerEl, { plugins: [pdf({ breakAvoid: true })], scale: 2, quality: 1, backgroundColor: "#fff", fast: false, embedFonts: true });
