@@ -165,4 +165,4 @@ proxyRouter.get("/", async (req, res) => {
 	}
 });
 
-app.use("/proxy", proxyRouter);
+app.use("/api/proxy", proxyRouter);
