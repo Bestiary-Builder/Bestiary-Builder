@@ -15,7 +15,7 @@ const MAX_REDIRECTS = 3;
 const TIMEOUT_MS = 10_000;
 
 // --- SSRF protection ---------------------------------------------------
-const blocked = new net.BlockList();
+const blocked4 = new net.BlockList();
 [
 	["0.0.0.0", 8],
 	["10.0.0.0", 8],
@@ -28,19 +28,41 @@ const blocked = new net.BlockList();
 	["198.18.0.0", 15],
 	["224.0.0.0", 4],
 	["240.0.0.0", 4],
-].forEach(([addr, prefix]) => blocked.addSubnet(addr as string, prefix as number, "ipv4"));
+].forEach(([addr, prefix]) => blocked4.addSubnet(addr as string, prefix as number, "ipv4"));
+
+const blocked6 = new net.BlockList();
 [
 	["::", 128],
 	["::1", 128],
-	["::ffff:0:0", 96],
 	["fc00::", 7],
 	["fe80::", 10],
 	["ff00::", 8],
-].forEach(([addr, prefix]) => blocked.addSubnet(addr as string, prefix as number, "ipv6"));
+].forEach(([addr, prefix]) => blocked6.addSubnet(addr as string, prefix as number, "ipv6"));
 
-const isBlockedIp = (address: string) => {
+const isBlockedIp = (address: string): boolean => {
 	const family = net.isIP(address);
-	return family === 0 || blocked.check(address, family === 6 ? "ipv6" : "ipv4");
+	if (family === 0)
+		return true; // fail closed
+
+	if (family === 4)
+		return blocked4.check(address, "ipv4");
+
+	const lower = address.toLowerCase();
+
+	// IPv4-mapped IPv6, dotted form: ::ffff:127.0.0.1
+	const dotted = lower.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/);
+	if (dotted)
+		return isBlockedIp(dotted[1]);
+
+	// IPv4-mapped IPv6, hex form: ::ffff:7f00:1
+	const hex = lower.match(/^::ffff:([0-9a-f]{1,4}):([0-9a-f]{1,4})$/);
+	if (hex) {
+		const hi = Number.parseInt(hex[1], 16);
+		const lo = Number.parseInt(hex[2], 16);
+		return isBlockedIp(`${hi >> 8}.${hi & 255}.${lo >> 8}.${lo & 255}`);
+	}
+
+	return blocked6.check(address, "ipv6");
 };
 
 // Checks the IP actually being connected to, which defeats DNS rebinding
@@ -68,14 +90,11 @@ const isSafeUrl = (url: URL) => {
 };
 
 // --- helpers -----------------------------------------------------------
-const parseTarget = (originalUrl: string): URL | null => {
-	const q = originalUrl.indexOf("?");
-	if (q === -1)
+const parseTarget = (query: unknown): URL | null => {
+	if (typeof query !== "string")
 		return null;
-	const raw = originalUrl.slice(q + 1);
-	const decoded = /^https?%3A/i.test(raw) ? decodeURIComponent(raw) : raw;
 	try {
-		const url = new URL(decoded);
+		const url = new URL(query);
 		return isSafeUrl(url) ? url : null;
 	}
 	catch {
@@ -90,7 +109,10 @@ const fetchFollowing = async (start: URL) => {
 			dispatcher: agent,
 			redirect: "manual", // re-validate every hop ourselves
 			signal: AbortSignal.timeout(TIMEOUT_MS),
-			headers: { "User-Agent": "cors-proxy" }, // never forward the client's headers or cookies
+			headers: {
+				"User-Agent": "Mozilla/5.0 (compatible; BestiaryBuilder/1.0)",
+				"Accept": "image/*,*/*;q=0.8",
+			},
 		});
 		const location = res.headers.get("location");
 		if (res.status >= 300 && res.status < 400 && location) {
@@ -119,24 +141,21 @@ const limitBytes = (max: number) => {
 // --- router ------------------------------------------------------------
 export const proxyRouter = Router();
 
-proxyRouter.use(rateLimit({ windowMs: 60_000, max: isProduction ? 100 : 1000 }));
+proxyRouter.use(rateLimit({ windowMs: 1000, max: isProduction ? 100 : 1000 }));
 
 proxyRouter.use((req, res, next) => {
-	const origin = req.headers.origin ?? "";
-	if (!ALLOWED_ORIGINS.includes(origin))
+	const origin = req.headers.origin;
+	const site = req.headers["sec-fetch-site"];
+	const allowed = origin
+		? ALLOWED_ORIGINS.includes(origin)
+		: site === "same-origin";
+	if (!allowed)
 		return res.status(403).send("Forbidden");
-	res.set({
-		"Access-Control-Allow-Origin": origin,
-		"Access-Control-Allow-Methods": "GET, OPTIONS",
-		"Vary": "Origin",
-	});
-	if (req.method === "OPTIONS")
-		return res.sendStatus(204);
 	next();
 });
 
 proxyRouter.get("/", async (req, res) => {
-	const target = parseTarget(req.originalUrl);
+	const target = parseTarget(req.query.url);
 	if (!target)
 		return res.status(400).send("Bad URL");
 
@@ -149,15 +168,15 @@ proxyRouter.get("/", async (req, res) => {
 			await upstream.body?.cancel();
 			return res.status(502).send("Upstream rejected");
 		}
-
 		res.set({
 			"Content-Type": type,
 			"Cache-Control": "public, max-age=86400",
+			"X-Content-Type-Options": "nosniff",
+			"Content-Security-Policy": "sandbox; default-src 'none'",
 		});
 		await pipeline(Readable.fromWeb(upstream.body as any), limitBytes(MAX_BYTES), res);
 	}
-	catch {
-		// headers may already be sent if it failed mid-stream
+	catch (e) {
 		if (!res.headersSent)
 			res.status(502).send("Proxy error");
 		else
