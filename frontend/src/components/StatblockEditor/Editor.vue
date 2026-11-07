@@ -426,12 +426,13 @@ const editorOptions: Monaco.editor.IStandaloneEditorConstructionOptions = {
 
 <template>
 	<div
-		ref="wrapper" class="monaco-wrapper-thing"
+		ref="wrapper" class="monaco-wrapper-thing elevation-2"
 		:style="$route.path.startsWith('/automation/view') || $route.path.startsWith('/creature/view') ? { opacity: 'var(--v-disabled-opacity)' } : {}"
 	>
 		<div class="button-container">
-			<span> <b> Description</b></span>
+			<b> Description</b>
 			<v-divider vertical />
+			<slot name="parity-button" />
 			<v-icon-btn size="20" icon="mdi:format-bold" text="Bold" @click="toggleMarkdown(editorRef!, '**')" />
 			<v-icon-btn size="20" icon="mdi:format-italic" text="Italic" @click="toggleMarkdown(editorRef!, '*')" />
 			<v-divider vertical />
@@ -485,6 +486,12 @@ const editorOptions: Monaco.editor.IStandaloneEditorConstructionOptions = {
 	padding: 0.4rem;
 	overflow-x: auto;
 	max-width: 90vw;
+}
+
+.button-container b {
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .wrapper :deep(.monaco-editor),
