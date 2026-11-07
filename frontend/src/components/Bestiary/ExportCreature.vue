@@ -96,7 +96,10 @@ const exportToPdf = async () => {
 	if (descriptionTextEl && theme.current.value.dark)
 		descriptionTextEl.style = "color: #000";
 
-	const result = await snapdom(pdfExportOptions.value.includeDescription ? outerEl : innerEl, { plugins: [pdf({ breakAvoid: true })], scale: 2, quality: 1, backgroundColor: "#fff", fast: false, embedFonts: true });
+	// we run it twice, as the first one tends to have some issues
+	let result = await snapdom(pdfExportOptions.value.includeDescription ? outerEl : innerEl, { plugins: [pdf({ breakAvoid: true })], scale: 2, quality: 1, backgroundColor: "#fff", fast: false, embedFonts: true });
+	result = await snapdom(pdfExportOptions.value.includeDescription ? outerEl : innerEl, { plugins: [pdf({ breakAvoid: true })], scale: 2, quality: 1, backgroundColor: "#fff", fast: false, embedFonts: true });
+
 	await result.toPdf({
 		page: pdfExportOptions.value.page ? "a4" : "letter",
 		orientation: pdfExportOptions.value.orientation,
