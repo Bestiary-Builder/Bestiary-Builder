@@ -4,6 +4,7 @@ import type { Statblock } from "~/shared";
 import { useLocalStorage } from "@vueuse/core";
 import { snapdom } from "@zumer/snapdom";
 import { pdf } from "@zumer/snapdom-plugins/pdf";
+import { nextTick } from "vue";
 import { useRoute } from "vue-router";
 import { useTheme } from "vuetify";
 import { getUmami } from "@/utils/app/analytics";
@@ -77,6 +78,9 @@ const pdfExportOptions = useLocalStorage("pdfExportOptions", {
 });
 
 const theme = useTheme();
+
+const nextFrame = async () => new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+
 const exportToPdf = async () => {
 	if (!data)
 		return;
@@ -84,39 +88,57 @@ const exportToPdf = async () => {
 
 	const outerEl = document.getElementById("statblock-outer");
 	const innerEl = document.getElementById("statblock");
-	const descriptionTextEl = document.getElementById("description-text");
 	if (!outerEl || !innerEl) {
 		updateToast(toastId, { text: "Uh oh! No statblock element found", color: "error" });
 		return;
 	}
 
-	innerEl.style = `width: 800px; column-count: 2`;
-	outerEl.style = "width: 800px;";
-	innerEl.classList.add("to-print");
-	if (descriptionTextEl && theme.current.value.dark)
-		descriptionTextEl.style = "color: #000";
+	const makeDarkTextBlack = theme.current.value.dark;
 
-	const result = await snapdom(pdfExportOptions.value.includeDescription ? outerEl : innerEl, { plugins: [pdf({ breakAvoid: true })], scale: 2, quality: 1, backgroundColor: "#fff", fast: false, embedFonts: true });
-	await result.toPdf({
-		page: pdfExportOptions.value.page ? "a4" : "letter",
-		orientation: pdfExportOptions.value.orientation,
-		margin: 24,
-		header: {
-			left: "Made with Bestiary Builder",
-			right: data.description.name,
-			rule: false
-		},
-		download: `${data.description.name} from BestiaryBuilder.pdf`
-	});
+	try {
+		innerEl.style.cssText = "width: 800px; column-count: 2";
+		outerEl.style.cssText = "width: 800px;";
+		innerEl.classList.add("to-print");
+		if (makeDarkTextBlack)
+			document.getElementById("description-text")?.classList.add("to-print-text");
 
-	innerEl.classList.remove("to-print");
-	innerEl.style = "";
-	outerEl.style = "";
-	if (descriptionTextEl && theme.current.value.dark)
-		descriptionTextEl.style = "";
+		// wait for Vue *and* the browser to apply styles/layout
+		await nextTick();
+		await nextFrame();
+		await nextFrame();
 
-	updateToast(toastId, { text: "Export completed successfully", color: "success" });
-	void getUmami()?.track("Export statblock to pdf");
+		const target = pdfExportOptions.value.includeDescription ? outerEl : innerEl;
+		const options = { plugins: [pdf({ breakAvoid: true })], scale: 2, quality: 1, backgroundColor: "#fff", fast: false, embedFonts: true };
+
+		// we run it twice, as the first one tends to have some issues
+		await snapdom(target, options);
+		const result = await snapdom(target, options);
+
+		await result.toPdf({
+			page: pdfExportOptions.value.page ? "a4" : "letter",
+			orientation: pdfExportOptions.value.orientation,
+			margin: 24,
+			header: {
+				left: "Made with Bestiary Builder",
+				right: data.description.name,
+				rule: false
+			},
+			download: `${data.description.name} from BestiaryBuilder.pdf`
+		});
+
+		updateToast(toastId, { text: "Export completed successfully", color: "success" });
+		void getUmami()?.track("Export statblock to pdf");
+	}
+	catch (e) {
+		console.error(e);
+		updateToast(toastId, { text: "Export failed", color: "error" });
+	}
+	finally {
+		innerEl.classList.remove("to-print");
+		innerEl.style.cssText = "";
+		outerEl.style.cssText = "";
+		document.getElementById("description-text")?.classList.remove("to-print-text");
+	}
 };
 
 const isGecko = CSS.supports("-moz-appearance", "none");

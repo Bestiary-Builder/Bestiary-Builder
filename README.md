@@ -56,7 +56,6 @@ The backend environment variables are configured in `backend/.env`. Copy `backen
 | `PATREON_CAMPAIGN_ID` | No | — | Optional Patreon campaign ID. Leave empty to discover it automatically. |
 | `PATREON_WIRMLING_TIER_ID` | No | — | Optional Patreon Wirmling tier ID. Leave empty to map paid tiers by pledge amount. |
 | `PATREON_GREATWYRM_TIER_ID` | No | — | Optional Patreon Greatwyrm tier ID. Leave empty to map paid tiers by pledge amount. |
-
 ### After upstream changes
 
 To resume working on the project after upstream changes from other contributors do the following:
