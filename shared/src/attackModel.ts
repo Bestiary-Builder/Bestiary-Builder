@@ -16,7 +16,8 @@ export interface AttackModel {
 }
 
 export type IntExpression = string | number;
-export type AnnotatedString = string;
+// despite it being an Annotated_String_, a number is actually valid. Avrae uses Pydantic 1.9 `constr`, which also supports floats and ints by casting them to a string...
+export type AnnotatedString = string | number;
 export type Effect = Target | Remove_IEffect | Roll | Text | Variable | Condition | Counter | Spell | Check | Attack | Save | Damage | TempHP | IEffect;
 export type EffectKey = keyof Target | keyof Attack | keyof Save | keyof Damage | keyof TempHP | keyof IEffect | keyof Remove_IEffect | keyof Roll | keyof Text | keyof Variable | keyof Condition | keyof Counter | keyof Spell | keyof Check;
 
