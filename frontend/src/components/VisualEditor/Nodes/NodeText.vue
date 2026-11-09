@@ -47,7 +47,7 @@ const abilityTitle = (item: Record<string, any>) => {
 				<v-text-field v-model="currentEffect.title" label="Title" placeholder="Effect" persistent-placeholder />
 			</v-col>
 
-			<v-col v-if="typeof (currentEffect!.text) === 'string'" cols="12">
+			<v-col v-if="typeof (currentEffect!.text) === 'string' || typeof (currentEffect!.text) === 'number'" cols="12">
 				<Editor v-model="currentEffect.text" />
 				<small
 					v-if="setDesc" style="font-size: x-small; cursor: pointer" role="button"

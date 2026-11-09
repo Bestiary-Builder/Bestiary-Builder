@@ -24,13 +24,13 @@ watch(() => currentEffect!.value?.style, () => {
 	<template v-if="currentEffect">
 		<v-row density="comfortable">
 			<v-col cols="12">
-				<SectionHeader :title="`Button (${(currentEffect.label || '').substring(0, 40).trim()})`" />
+				<SectionHeader :title="`Button (${(currentEffect.label || '').toString().substring(0, 40).trim()})`" />
 			</v-col>
 
 			<v-col cols="6">
 				<v-text-field
 					v-model="currentEffect.label" label="Button Label"
-					:class="{ required: (currentEffect.label || '').length === 0 }"
+					:class="{ required: (currentEffect.label || '').toString().length === 0 }"
 				/>
 			</v-col>
 			<v-col cols="6">
