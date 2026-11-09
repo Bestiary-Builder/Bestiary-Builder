@@ -2,13 +2,27 @@
 import type * as Monaco from "monaco-editor";
 import { VueMonacoEditor } from "@guolao/vue-monaco-editor";
 import { useElementSize, watchDebounced } from "@vueuse/core";
-import { shallowRef, useTemplateRef } from "vue";
+import { computed, shallowRef, useTemplateRef } from "vue";
 import { useRoute } from "vue-router";
 import { useThemePersistence } from "@/utils/app/theme";
 
-const { height = 150 } = defineProps<{ height?: number }>();
+interface Props {
+	modelValue?: string | number | null;
+	height?: number;
+}
+const props = withDefaults(defineProps<Props>(), {
+	height: 150,
+});
 
-const model = defineModel<string>();
+const emit = defineEmits<{
+	"update:modelValue": [value: string];
+}>();
+
+const code = computed<string>({
+	get: () => props.modelValue === undefined || props.modelValue === null ? "" : String(props.modelValue),
+	set: value => emit("update:modelValue", value),
+});
+
 const editorRef = shallowRef<Monaco.editor.IStandaloneCodeEditor>();
 
 const { monacoTheme } = useThemePersistence();
@@ -465,7 +479,7 @@ const editorOptions: Monaco.editor.IStandaloneEditorConstructionOptions = {
 		<v-divider />
 		<div class="wrapper">
 			<VueMonacoEditor
-				v-model:value="model" :theme="monacoTheme" :options="editorOptions"
+				v-model:value="code" :theme="monacoTheme" :options="editorOptions"
 				class="description-editor" :height="`${height}px`" width="100%" language="markdown"
 				@mount="handleMount"
 			/>

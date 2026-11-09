@@ -1,17 +1,18 @@
 export type AutomationModel = null | AttackModel | AttackModel[];
+type Maybe<T> = T | null | undefined;
 
 export interface AttackModel {
 	_v: 2;
 	name: string;
 	automation: Effect[];
-	verb?: string;
-	proper?: boolean;
-	criton?: number;
-	phrase?: string;
-	thumb?: string;
-	extra_crit_damage?: string;
-	activation_type?: number;
-	list_display_override?: string;
+	verb?: Maybe<string>;
+	proper?: Maybe<boolean>;
+	criton?: Maybe<number>;
+	phrase?: Maybe<string>;
+	thumb?: Maybe<string>;
+	extra_crit_damage?: Maybe<string>;
+	activation_type?: Maybe<number>;
+	list_display_override?: Maybe<string>;
 }
 
 export type IntExpression = string | number;
@@ -23,15 +24,15 @@ export interface Target {
 	type: "target";
 	target: "all" | "each" | number | "self" | "parent" | "children";
 	effects: Effect[];
-	sortBy?: "hp_asc" | "hp_desc" | "user_input";
-	self_target?: boolean;
+	sortBy?: Maybe<"hp_asc" | "hp_desc" | "user_input">;
+	self_target?: Maybe<boolean>;
 }
 export interface Attack {
 	type: "attack";
 	hit: Effect[];
 	miss: Effect[];
-	attackBonus?: IntExpression;
-	adv?: IntExpression;
+	attackBonus?: Maybe<IntExpression>;
+	adv?: Maybe<IntExpression>;
 }
 
 export interface Save {
@@ -39,103 +40,103 @@ export interface Save {
 	stat: "str" | "dex" | "con" | "int" | "wis" | "cha";
 	fail: Effect[];
 	success: Effect[];
-	dc?: IntExpression;
-	adv?: -1 | 0 | 1;
+	dc?: Maybe<IntExpression>;
+	adv?: Maybe<-1 | 0 | 1>;
 }
 
 export interface Damage {
 	type: "damage";
 	damage: AnnotatedString;
-	overheal?: boolean;
-	higher?: { [key: number]: string };
-	cantripScale?: boolean;
-	fixedValue?: boolean;
+	overheal?: Maybe<boolean>;
+	higher?: Maybe<{ [key: number]: string }>;
+	cantripScale?: Maybe<boolean>;
+	fixedValue?: Maybe<boolean>;
 }
 
 export interface TempHP {
 	type: "temphp";
 	amount: AnnotatedString;
-	higher?: { [key: number]: string };
-	cantripScale?: boolean;
+	higher?: Maybe<{ [key: number]: string }>;
+	cantripScale?: Maybe<boolean>;
 }
 
 export interface IEffect {
 	type: "ieffect2";
 	name: AnnotatedString;
-	duration?: IntExpression;
-	effects?: PassiveEffects;
-	attacks?: AttackInteraction[];
-	buttons?: ButtonInteraction[];
-	end?: boolean;
-	conc?: boolean;
-	desc?: AnnotatedString;
-	stacking?: boolean;
-	save_as?: string;
-	parent?: string;
-	target_self?: boolean;
-	tick_on_caster?: boolean;
-	hidden?: boolean;
+	duration?: Maybe<IntExpression>;
+	effects?: Maybe<PassiveEffects>;
+	attacks?: Maybe<AttackInteraction[]>;
+	buttons?: Maybe<ButtonInteraction[]>;
+	end?: Maybe<boolean>;
+	conc?: Maybe<boolean>;
+	desc?: Maybe<AnnotatedString>;
+	stacking?: Maybe<boolean>;
+	save_as?: Maybe<string>;
+	parent?: Maybe<string>;
+	target_self?: Maybe<boolean>;
+	tick_on_caster?: Maybe<boolean>;
+	hidden?: Maybe<boolean>;
 }
 
 export interface PassiveEffects {
-	attack_advantage?: IntExpression;
-	to_hit_bonus?: AnnotatedString;
-	damage_bonus?: AnnotatedString;
-	magical_damage?: IntExpression;
-	silvered_damage?: IntExpression;
-	resistances?: AnnotatedString[];
-	immunities?: AnnotatedString[];
-	vulnerabilities?: AnnotatedString[];
-	ignored_resistances?: AnnotatedString[];
-	ac_value?: IntExpression;
-	ac_bonus?: IntExpression;
-	max_hp_value?: IntExpression;
-	max_hp_bonus?: IntExpression;
-	save_bonus?: AnnotatedString;
-	save_adv?: AnnotatedString[];
-	save_dis?: AnnotatedString[];
-	check_bonus?: AnnotatedString;
-	check_adv?: AnnotatedString[];
-	check_dis?: AnnotatedString[];
-	dc_bonus?: IntExpression;
+	attack_advantage?: Maybe<IntExpression>;
+	to_hit_bonus?: Maybe<AnnotatedString>;
+	damage_bonus?: Maybe<AnnotatedString>;
+	magical_damage?: Maybe<IntExpression>;
+	silvered_damage?: Maybe<IntExpression>;
+	resistances?: Maybe<AnnotatedString[]>;
+	immunities?: Maybe<AnnotatedString[]>;
+	vulnerabilities?: Maybe<AnnotatedString[]>;
+	ignored_resistances?: Maybe<AnnotatedString[]>;
+	ac_value?: Maybe<IntExpression>;
+	ac_bonus?: Maybe<IntExpression>;
+	max_hp_value?: Maybe<IntExpression>;
+	max_hp_bonus?: Maybe<IntExpression>;
+	save_bonus?: Maybe<AnnotatedString>;
+	save_adv?: Maybe<AnnotatedString[]>;
+	save_dis?: Maybe<AnnotatedString[]>;
+	check_bonus?: Maybe<AnnotatedString>;
+	check_adv?: Maybe<AnnotatedString[]>;
+	check_dis?: Maybe<AnnotatedString[]>;
+	dc_bonus?: Maybe<IntExpression>;
 }
 export interface AttackInteraction {
 	attack: AttackModel;
-	defaultDC?: IntExpression;
-	defaultAttackBonus?: IntExpression;
-	defaultCastingMod?: IntExpression;
+	defaultDC?: Maybe<IntExpression>;
+	defaultAttackBonus?: Maybe<IntExpression>;
+	defaultCastingMod?: Maybe<IntExpression>;
 }
 
 export interface ButtonInteraction {
 	automation: Effect[];
 	label: AnnotatedString;
-	verb?: AnnotatedString;
-	style?: IntExpression;
-	defaultDC?: IntExpression;
-	defaultAttackBonus?: IntExpression;
-	defaultCastingMod?: IntExpression;
+	verb?: Maybe<AnnotatedString>;
+	style?: Maybe<IntExpression>;
+	defaultDC?: Maybe<IntExpression>;
+	defaultAttackBonus?: Maybe<IntExpression>;
+	defaultCastingMod?: Maybe<IntExpression>;
 }
 
 export interface Remove_IEffect {
 	type: "remove_ieffect";
-	removeParent?: "always" | "if_no_children";
+	removeParent?: Maybe<"always" | "if_no_children">;
 }
 
 export interface Roll {
 	type: "roll";
 	dice: AnnotatedString;
 	name: string;
-	higher?: { [key: number]: string };
-	cantripScale?: boolean;
-	hidden?: boolean;
-	displayName?: string;
-	fixedValue?: boolean;
+	higher?: Maybe<{ [key: number]: string }>;
+	cantripScale?: Maybe<boolean>;
+	hidden?: Maybe<boolean>;
+	displayName?: Maybe<string>;
+	fixedValue?: Maybe<boolean>;
 }
 
 export interface Text {
 	type: "text";
 	text: AnnotatedString | AbilityReference;
-	title?: string;
+	title?: Maybe<string>;
 }
 
 export interface AbilityReference {
@@ -147,8 +148,8 @@ export interface Variable {
 	type: "variable";
 	name: string;
 	value: IntExpression;
-	higher?: { [key: number]: IntExpression };
-	onError?: IntExpression;
+	higher?: Maybe<{ [key: number]: IntExpression }>;
+	onError?: Maybe<IntExpression>;
 }
 
 export interface Condition {
@@ -156,16 +157,16 @@ export interface Condition {
 	condition: IntExpression;
 	onTrue: Effect[];
 	onFalse: Effect[];
-	errorBehaviour?: "true" | "false" | "both" | "neither" | "raise";
+	errorBehaviour?: Maybe<"true" | "false" | "both" | "neither" | "raise">;
 }
 
 export interface Counter {
 	type: "counter";
 	counter: string | SpellSlotReference | AbilityReference;
 	amount: IntExpression;
-	allowOverflow?: boolean;
-	errorBehaviour?: "warn" | "raise" | "ignore";
-	fixedValue?: boolean;
+	allowOverflow?: Maybe<boolean>;
+	errorBehaviour?: Maybe<"warn" | "raise" | "ignore">;
+	fixedValue?: Maybe<boolean>;
 }
 
 export interface SpellSlotReference {
@@ -175,20 +176,20 @@ export interface SpellSlotReference {
 export interface Spell {
 	type: "spell";
 	id: number;
-	level?: number;
-	dc?: IntExpression;
-	attackBonus?: IntExpression;
-	castingMod?: IntExpression;
-	parent?: string;
+	level?: Maybe<number>;
+	dc?: Maybe<IntExpression>;
+	attackBonus?: Maybe<IntExpression>;
+	castingMod?: Maybe<IntExpression>;
+	parent?: Maybe<string>;
 }
 
 export interface Check {
 	type: "check";
 	ability: string[];
 	contestAbility?: string[];
-	dc?: IntExpression;
+	dc?: Maybe<IntExpression>;
 	success: Effect[];
 	fail: Effect[];
-	contestTie?: "fail" | "success" | "neither";
-	adv?: -1 | 0 | 1;
+	contestTie?: Maybe<"fail" | "success" | "neither">;
+	adv?: Maybe<-1 | 0 | 1>;
 }

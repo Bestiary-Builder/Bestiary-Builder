@@ -9,7 +9,7 @@ type Variant = "outlined" | "filled" | "underlined" | "solo" | "solo-filled" | "
 type Density = "default" | "comfortable" | "compact";
 
 interface Props {
-	modelValue?: string | number;
+	modelValue?: string | number | null;
 	label?: string;
 	variant?: Variant;
 	density?: Density;
@@ -39,7 +39,7 @@ const isFocused = ref(false);
 const editorRef = shallowRef<Monaco.editor.IStandaloneCodeEditor>();
 
 const code = computed<string>({
-	get: () => props.modelValue === undefined ? "" : String(props.modelValue),
+	get: () => props.modelValue === undefined || props.modelValue === null ? "" : String(props.modelValue),
 	set: value => emit("update:modelValue", value),
 });
 
