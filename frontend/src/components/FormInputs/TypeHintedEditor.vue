@@ -9,7 +9,7 @@ type Variant = "outlined" | "filled" | "underlined" | "solo" | "solo-filled" | "
 type Density = "default" | "comfortable" | "compact";
 
 interface Props {
-	modelValue?: string | number;
+	modelValue?: string | number | null;
 	label?: string;
 	variant?: Variant;
 	density?: Density;
