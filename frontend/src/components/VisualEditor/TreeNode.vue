@@ -199,7 +199,7 @@ const DragHandle = () => h(
 							>
 								<NodeHeader
 									:type="key"
-									:additional-text="(button as any as ButtonInteraction).label.trim().substring(0, 16)"
+									:additional-text="(button as any as ButtonInteraction).label.toString().trim().substring(0, 16)"
 									:is-current="JSON.stringify(currentContext) === JSON.stringify([...context, 'buttons', index.toString()])"
 								/>
 

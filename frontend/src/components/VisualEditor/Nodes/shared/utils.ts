@@ -48,8 +48,8 @@ export const useDataCleanup = <T extends Effect | AttackModel | ButtonInteractio
 						) {
 							setTimeout(() => {
 								if (
-									(data.value && data.value[property] && data.value[property][nestedProperty] ) && (!!data.value[property][nestedProperty] === false
-									|| data.value[property][nestedProperty] === "0")
+									(data.value && data.value[property] && data.value[property][nestedProperty]) && (!!data.value[property][nestedProperty] === false
+										|| data.value[property][nestedProperty] === "0")
 								) {
 									delete data.value[property][nestedProperty];
 								}
