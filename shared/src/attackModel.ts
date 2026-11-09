@@ -24,7 +24,7 @@ export interface Target {
 	type: "target";
 	target: "all" | "each" | number | "self" | "parent" | "children";
 	effects: Effect[];
-	sortBy?: "hp_asc" | "hp_desc" | "user_input";
+	sortBy?: Maybe<"hp_asc" | "hp_desc" | "user_input">;
 	self_target?: Maybe<boolean>;
 }
 export interface Attack {
@@ -41,14 +41,14 @@ export interface Save {
 	fail: Effect[];
 	success: Effect[];
 	dc?: Maybe<IntExpression>;
-	adv?: -1 | 0 | 1;
+	adv?: Maybe<-1 | 0 | 1>;
 }
 
 export interface Damage {
 	type: "damage";
 	damage: AnnotatedString;
 	overheal?: Maybe<boolean>;
-	higher?: { [key: number]: string };
+	higher?: Maybe<{ [key: number]: string }>;
 	cantripScale?: Maybe<boolean>;
 	fixedValue?: Maybe<boolean>;
 }
@@ -56,7 +56,7 @@ export interface Damage {
 export interface TempHP {
 	type: "temphp";
 	amount: AnnotatedString;
-	higher?: { [key: number]: string };
+	higher?: Maybe<{ [key: number]: string }>;
 	cantripScale?: Maybe<boolean>;
 }
 
@@ -65,8 +65,8 @@ export interface IEffect {
 	name: AnnotatedString;
 	duration?: Maybe<IntExpression>;
 	effects?: Maybe<PassiveEffects>;
-	attacks?: AttackInteraction[];
-	buttons?: ButtonInteraction[];
+	attacks?: Maybe<AttackInteraction[]>;
+	buttons?: Maybe<ButtonInteraction[]>;
 	end?: Maybe<boolean>;
 	conc?: Maybe<boolean>;
 	desc?: Maybe<AnnotatedString>;
@@ -84,20 +84,20 @@ export interface PassiveEffects {
 	damage_bonus?: Maybe<AnnotatedString>;
 	magical_damage?: Maybe<IntExpression>;
 	silvered_damage?: Maybe<IntExpression>;
-	resistances?: AnnotatedString[];
-	immunities?: AnnotatedString[];
-	vulnerabilities?: AnnotatedString[];
-	ignored_resistances?: AnnotatedString[];
+	resistances?: Maybe<AnnotatedString[]>;
+	immunities?:  Maybe<AnnotatedString[]>;
+	vulnerabilities?: Maybe<AnnotatedString[]>;
+	ignored_resistances?: Maybe<AnnotatedString[]>;
 	ac_value?: Maybe<IntExpression>;
 	ac_bonus?: Maybe<IntExpression>;
 	max_hp_value?: Maybe<IntExpression>;
 	max_hp_bonus?: Maybe<IntExpression>;
 	save_bonus?: Maybe<AnnotatedString>;
-	save_adv?: AnnotatedString[];
-	save_dis?: AnnotatedString[];
+	save_adv?: Maybe<AnnotatedString[]>;
+	save_dis?: Maybe<AnnotatedString[]>;
 	check_bonus?: Maybe<AnnotatedString>;
-	check_adv?: AnnotatedString[];
-	check_dis?: AnnotatedString[];
+	check_adv?: Maybe<AnnotatedString[]>;
+	check_dis?: Maybe<AnnotatedString[]>;
 	dc_bonus?: Maybe<IntExpression>;
 }
 export interface AttackInteraction {
@@ -119,14 +119,14 @@ export interface ButtonInteraction {
 
 export interface Remove_IEffect {
 	type: "remove_ieffect";
-	removeParent?: "always" | "if_no_children";
+	removeParent?: Maybe<"always" | "if_no_children">;
 }
 
 export interface Roll {
 	type: "roll";
 	dice: AnnotatedString;
 	name: string;
-	higher?: { [key: number]: string };
+	higher?: Maybe<{ [key: number]: string }>;
 	cantripScale?: Maybe<boolean>;
 	hidden?: Maybe<boolean>;
 	displayName?: Maybe<string>;
@@ -148,7 +148,7 @@ export interface Variable {
 	type: "variable";
 	name: string;
 	value: IntExpression;
-	higher?: { [key: number]: IntExpression };
+	higher?: Maybe<{ [key: number]: IntExpression }>;
 	onError?: Maybe<IntExpression>;
 }
 
@@ -157,7 +157,7 @@ export interface Condition {
 	condition: IntExpression;
 	onTrue: Effect[];
 	onFalse: Effect[];
-	errorBehaviour?: "true" | "false" | "both" | "neither" | "raise";
+	errorBehaviour?: Maybe<"true" | "false" | "both" | "neither" | "raise">;
 }
 
 export interface Counter {
@@ -165,7 +165,7 @@ export interface Counter {
 	counter: string | SpellSlotReference | AbilityReference;
 	amount: IntExpression;
 	allowOverflow?: Maybe<boolean>;
-	errorBehaviour?: "warn" | "raise" | "ignore";
+	errorBehaviour?: Maybe<"warn" | "raise" | "ignore">;
 	fixedValue?: Maybe<boolean>;
 }
 
@@ -190,6 +190,6 @@ export interface Check {
 	dc?: Maybe<IntExpression>;
 	success: Effect[];
 	fail: Effect[];
-	contestTie?: "fail" | "success" | "neither";
-	adv?: -1 | 0 | 1;
+	contestTie?: Maybe<"fail" | "success" | "neither">;
+	adv?: Maybe<-1 | 0 | 1>;
 }
