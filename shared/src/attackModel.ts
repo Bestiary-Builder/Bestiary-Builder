@@ -85,7 +85,7 @@ export interface PassiveEffects {
 	magical_damage?: Maybe<IntExpression>;
 	silvered_damage?: Maybe<IntExpression>;
 	resistances?: Maybe<AnnotatedString[]>;
-	immunities?:  Maybe<AnnotatedString[]>;
+	immunities?: Maybe<AnnotatedString[]>;
 	vulnerabilities?: Maybe<AnnotatedString[]>;
 	ignored_resistances?: Maybe<AnnotatedString[]>;
 	ac_value?: Maybe<IntExpression>;
