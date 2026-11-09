@@ -39,7 +39,7 @@ const isFocused = ref(false);
 const editorRef = shallowRef<Monaco.editor.IStandaloneCodeEditor>();
 
 const code = computed<string>({
-	get: () => props.modelValue === undefined ? "" : String(props.modelValue),
+	get: () => props.modelValue === undefined || props.modelValue === null ? "" : String(props.modelValue),
 	set: value => emit("update:modelValue", value),
 });
 
