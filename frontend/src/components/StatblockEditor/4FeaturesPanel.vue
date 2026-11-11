@@ -7,12 +7,12 @@ import { useRouter } from "vue-router";
 import { useToast } from "@/utils/app/toast";
 import { newFeatureGenerator } from "@/utils/constants";
 
-const { data, rawInfo } = defineProps<{ data: Statblock; rawInfo: CreatureWithStats | null }>();
+const { data, rawInfo, madeChanges } = defineProps<{ data: Statblock; rawInfo: CreatureWithStats | null; madeChanges: boolean }>();
 const $router = useRouter();
 const { addToast } = useToast();
 const saveStatblock = inject<any>("saveStatblock");
 const openFeature = async (path: string) => {
-	const didSave = await saveStatblock(false);
+	const didSave = madeChanges ? await saveStatblock(false) : true;
 	if (didSave)
 		await $router.push(path);
 	else

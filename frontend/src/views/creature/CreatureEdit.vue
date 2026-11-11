@@ -409,7 +409,7 @@ const isCollapsed = ref(false);
 								</v-tabs-window-item>
 								<v-tabs-window-item :value="5">
 									<v-sheet color="surface-light" class="pa-4">
-										<FeaturesPanel :data="data" :raw-info="rawInfo" />
+										<FeaturesPanel :data="data" :raw-info="rawInfo" :made-changes/>
 									</v-sheet>
 								</v-tabs-window-item>
 								<v-tabs-window-item :value="6">
