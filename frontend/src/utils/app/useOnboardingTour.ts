@@ -81,7 +81,6 @@ export const useOnboardingTour = () => {
 		.step({ id: "editor-14", target: ".right-buttons button:nth-of-type(2)", content: "The magic generate button reads the description of the attack and then tries to generate automation for it!", title: "Magic Generate" })
 		.step({ id: "editor-15", target: ".right-buttons button:nth-of-type(3)", content: "The change editor button allows you to edit your automation as YAML!", title: "Change Editor" })
 		.step({ id: "editor-16", target: ".right-buttons button:nth-of-type(4)", content: "The database button allows you to load automation from the SRD, from your (subscribed) Automation Collections, and your Avrae Characters.", title: "Load Feature" })
-		.step({ id: "editor-17", target: ".right-buttons button:nth-of-type(5)", content: "The Avrae button allows you to load this automation onto a character if you want to quickly test it!", title: "Avrae Character" })
 		.step({ id: "editor-18", target: "#visual-editor-container", content: "Congratulations! You've finished the tour of the new editor, but there's still more to discover. Don't hesitate to join our Discord Server if you need help.", title: "Tour Finished" })
 		.build();
 

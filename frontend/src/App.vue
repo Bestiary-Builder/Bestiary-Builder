@@ -195,6 +195,7 @@ const dismissed = useLocalStorage("update3.0.0dismissed", false);
 			<v-btn to="/" text="Home" variant="plain" />
 			<v-btn text="Discord" variant="plain" href="https://discord.gg/a6bwXCSymN" target="_blank" />
 			<v-btn text="Patreon" variant="plain" href="https://patreon.com/BestiaryBuilder" target="_blank" />
+			<v-btn text="Github" variant="plain" href="https://github.com/Bestiary-Builder/Bestiary-Builder" target="_blank" />
 			<v-btn to="/privacy-policy" text="Privacy Policy" variant="plain" />
 			<v-btn to="/terms-and-conditions" text="Terms and Conditions" variant="plain" />
 
