@@ -64,17 +64,27 @@ const availableNodes = computed(() => {
 });
 
 const automation = inject<Ref<null | AttackModel | AttackModel[]>>("automation");
-const currentEffect = inject<Ref<Effect | ButtonInteraction | AttackInteraction>>("currentEffect");
-const addAndSelect = (node: string) => {
+const currentEffect = inject<Ref<Effect | ButtonInteraction | AttackInteraction | AttackModel>>("currentEffect");
+const currentContext = inject<Ref<string[]>>("currentContext");
+
+const addAndSelect = async (node: string) => {
 	// traverse through the tree.
 	if (!automation)
 		return;
 	if (!automation.value) {
 		const toAdd = defaultNodes[node];
-		if (Array.isArray(toAdd))
+		if (Array.isArray(toAdd)) {
 			automation.value = { _v: 2, name: props.name || "New Attack", automation: [...JSON.parse(JSON.stringify(toAdd))], activation_type: activation_type[type] };
-		else
+			await nextTick();
+			currentEffect!.value = automation.value!;
+			currentContext!.value = ["root"];
+		}
+		else {
 			automation.value = { _v: 2, name: props.name || "New Attack", automation: [JSON.parse(JSON.stringify(defaultNodes[node]))], activation_type: activation_type[type] };
+		}
+		await nextTick();
+		currentEffect!.value = automation.value!;
+		currentContext!.value = ["root"];
 		return;
 	}
 
@@ -111,10 +121,12 @@ const addAndSelect = (node: string) => {
 		if (Array.isArray(toAdd)) {
 			tree.push(...JSON.parse(JSON.stringify(toAdd)));
 			currentEffect!.value = tree[tree.length - toAdd.length];
+			currentContext!.value = [...props.context, (toAdd.length).toString()];
 		}
 		else {
 			tree.push(JSON.parse(JSON.stringify(toAdd)));
 			currentEffect!.value = tree[tree.length - 1];
+			currentContext!.value = [...props.context, (tree.length - 1).toString()];
 		}
 
 		isOpen.value = false;
@@ -203,7 +215,7 @@ const moveHighlight = async (delta: number) => {
 	await scrollToHighlighted();
 };
 const selectNode = async (node: string) => {
-	addAndSelect(node);
+	await addAndSelect(node);
 	menuOpen.value = false;
 	await nextTick(() => btnRef.value?.focus());
 };

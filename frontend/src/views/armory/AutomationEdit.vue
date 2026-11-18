@@ -327,15 +327,15 @@ watch(() => data.value?.description, (newDesc) => {
 });
 
 const setName = (newName: string) => {
-	if (!data.value)
+	if (!data.value || newName === null)
 		return;
 	data.value.name = newName;
 };
 
-const setDesc = (setDesc: string) => {
-	if (!data.value)
+const setDesc = (newDesc: string) => {
+	if (!data.value || newDesc === null)
 		return;
-	data.value.description = setDesc;
+	data.value.description = newDesc;
 };
 
 provide("setActionName", setName);

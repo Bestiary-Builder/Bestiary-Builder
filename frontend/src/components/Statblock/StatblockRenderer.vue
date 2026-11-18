@@ -129,7 +129,7 @@ const alphaSort = (list: string[]) => {
 };
 
 const calculatedSaveNumber = (save: SaveEntity, stat: Stat) => {
-	if (save.override)
+	if (save.override !== null)
 		return save.override || 0;
 	else if (save.isProficient)
 		return data.core.proficiencyBonus + statCalc(stat, data);

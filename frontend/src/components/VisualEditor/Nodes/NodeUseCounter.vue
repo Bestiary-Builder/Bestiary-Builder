@@ -10,9 +10,11 @@ import { useDataCleanup } from "./shared/utils";
 
 const currentEffect = inject<Ref<Counter>>("currentEffect");
 
-const counterType = ref<"cc" | "abi" | "ss">("cc");
+const counterType = ref<"cc" | "abi" | "ss" | null>(null);
 
-watch(counterType, (newValue: string) => {
+watch(counterType, (newValue: string | null, oldValue: string | null) => {
+	if (oldValue === null)
+		return;
 	if (newValue === "cc")
 		currentEffect!.value.counter = "";
 	else if (newValue === "ss")

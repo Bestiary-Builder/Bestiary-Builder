@@ -30,10 +30,6 @@ useDataCleanup(currentEffect, ["title"]);
 
 // eslint-disable-next-line ts/no-unsafe-function-type
 const setDesc = inject<false | Function>("setActionDescription");
-
-const abilityTitle = (item: Record<string, any>) => {
-	return `${item.name} (${item.type})`;
-};
 </script>
 
 <template>
@@ -59,8 +55,8 @@ const abilityTitle = (item: Record<string, any>) => {
 
 			<v-col v-else cols="12">
 				<v-autocomplete
-					v-model="currentEffect.text" :items="abilities" :item-title="abilityTitle" return-object
-					label="Ability Reference"
+					v-model="currentEffect.text" label="Ability Reference" :items="abilities"
+					item-title="title" item-value="value" :menu-props="{ width: 520 }" clearable
 				/>
 			</v-col>
 
