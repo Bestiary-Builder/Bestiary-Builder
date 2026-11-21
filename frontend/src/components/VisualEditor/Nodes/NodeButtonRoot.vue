@@ -28,13 +28,13 @@ watch(() => currentEffect!.value?.style, () => {
 			</v-col>
 
 			<v-col cols="6">
-				<v-text-field
+				<TypeHintedEditor
 					v-model="currentEffect.label" label="Button Label"
-					:class="{ required: (currentEffect.label || '').toString().length === 0 }"
+					is-annotated-string
 				/>
 			</v-col>
 			<v-col cols="6">
-				<v-text-field v-model="currentEffect.verb" label="Verb" placeholder="attacks with" />
+				<TypeHintedEditor v-model="currentEffect.verb" label="Verb (attacks with)" is-annotated-string />
 			</v-col>
 			<v-col cols="6">
 				<v-select

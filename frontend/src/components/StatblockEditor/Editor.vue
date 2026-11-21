@@ -54,11 +54,11 @@ async function handleMount(
 		}
 	);
 
-	editor.layout();
+	await document.fonts.load("13px 'Roboto Mono'");
+	await document.fonts.ready;
 
-	setTimeout(() => {
-		editorRef.value?.layout();
-	}, 1000);
+	monaco.editor.remeasureFonts();
+	editor.layout();
 }
 
 function toggleMarkdown(
@@ -363,13 +363,21 @@ function toggleHeading(
 	);
 }
 
+const sentenceEnd = /[.!?…]["'”’)\]]*$/;
 const replaceNewlinesWithSpaces = (editor: Monaco.editor.IStandaloneCodeEditor) => {
 	const model = editor.getModel();
 	if (!model)
 		return;
 
 	const fullRange = model.getFullModelRange();
-	const newText = model.getValue().replace(/\r\n|\r|\n/g, " ");
+	const newText = model
+		.getValue()
+		.replace(
+			/(\S+)[^\S\r\n]*((?:\r\n|\r|\n)+)[^\S\r\n]*/g,
+			(_match, word: string, breaks: string) =>
+				sentenceEnd.test(word) ? `${word}${breaks}` : `${word} `,
+		)
+		.trim();
 
 	editor.executeEdits("replace-newlines", [
 		{
@@ -388,7 +396,6 @@ watchDebounced(width, async () => {
 const $route = useRoute();
 
 const editorOptions: Monaco.editor.IStandaloneEditorConstructionOptions = {
-	// Highlighting (from before)
 	selectionHighlight: false,
 	occurrencesHighlight: "off",
 
@@ -402,6 +409,8 @@ const editorOptions: Monaco.editor.IStandaloneEditorConstructionOptions = {
 	minimap: { enabled: false },
 	scrollBeyondLastLine: false,
 	renderLineHighlight: "none",
+	automaticLayout: true,
+	wrappingStrategy: "advanced",
 
 	// Wrapping (markdown should wrap like prose)
 	wordWrap: "on",
@@ -430,11 +439,11 @@ const editorOptions: Monaco.editor.IStandaloneEditorConstructionOptions = {
 
 	// Misc
 	contextmenu: true,
-	scrollbar: { vertical: "auto", horizontal: "hidden" },
+	scrollbar: { vertical: "visible", horizontal: "hidden" },
 
 	fontFamily: "'Roboto Mono'",
 	disableMonospaceOptimizations: true,
-	fontSize: 13,
+	fontSize: 12,
 };
 </script>
 

@@ -166,7 +166,6 @@ const focusEditor = () => {
 				</v-tooltip>
 			</template>
 		</v-field>
-		<small v-if="placeholder"> {{ placeholder }}</small>
 	</div>
 </template>
 
